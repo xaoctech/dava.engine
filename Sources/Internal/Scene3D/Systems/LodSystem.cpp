@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "Scene3D/Systems/LodSystem.h"
 #include "Debug/DVAssert.h"
@@ -23,7 +37,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Platform/SystemTimer.h"
-#include "Core/PerformanceSettings.h";
+#include "Core/PerformanceSettings.h"
 
 namespace DAVA
 {
@@ -145,7 +159,17 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	int32 oldLod = lodComponent->currentLod;
-	RecheckLod(entity, psLodOffsetSq, psLodMultSq);
+	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
+	{
+		if (oldLod != LodComponent::INVALID_LOD_LAYER)
+		{
+			lodComponent->SetLayerVisibility(oldLod, false);
+		}
+
+		lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
+		return;
+	}
+
 	if (oldLod != lodComponent->currentLod) 
 	{
 
@@ -158,25 +182,17 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 		
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
-			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
-			for (int32 i = 0; i < size; i++) 
-			{
-				lodComponent->lodLayers[oldLod].nodes[i]->SetLodVisible(false);
-			}
+			lodComponent->SetLayerVisibility(oldLod, false);
 		}
-		int32 size = lodComponent->lodLayers[lodComponent->currentLod].nodes.size();
-		for (int32 i = 0; i < size; i++) 
-		{
-			lodComponent->lodLayers[lodComponent->currentLod].nodes[i]->SetLodVisible(true);
-		}
+
+		lodComponent->SetLayerVisibility(lodComponent->currentLod, true);
 	}
 }
 
-void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return;
+	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return false;
 
 	int32 layersCount = lodComponent->lodLayers.size();	
 	RenderObject *renderObject = GetRenderObject(entity);
@@ -194,10 +210,10 @@ void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 			if (i >= lodComponent->forceLodLayer)
 			{
 				lodComponent->currentLod = i;
-				return;
+				return true;
 			}
 		}
-		return;
+		return false;
 	}
 
 	{
@@ -230,11 +246,17 @@ void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 				}
 				else 
 				{
-					return;
+					return true;
 				}
 			}
+            if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->lodLayers.rbegin()->layer))
+            {
+                return false;
+            }
 		}
 	}
+
+return true;
 }
 
 void LodSystem::SetCamera(Camera * _camera)
