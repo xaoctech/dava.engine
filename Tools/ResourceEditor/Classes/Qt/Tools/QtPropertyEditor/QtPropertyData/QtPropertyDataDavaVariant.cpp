@@ -98,7 +98,19 @@ const DAVA::VariantType& QtPropertyDataDavaVariant::GetVariantValue() const
 void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 {
 	DVASSERT(curVariantValue.type == DAVA::VariantType::TYPE_NONE || curVariantValue.type == value.type);
+
+	bool needChildCreate = false;
+	if(curVariantValue.type == DAVA::VariantType::TYPE_NONE)
+	{
+		needChildCreate = true;
+	}
+
 	curVariantValue = value;
+
+	if(needChildCreate)
+	{
+		ChildsCreate();
+	}
 }
 
 void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue /*= QVariant()*/)
@@ -357,18 +369,18 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
             DAVA::AABBox3 box = curVariantValue.AsAABBox3();
             
             QtPropertyData* min = ChildGet("min");
-            min->SetValue(FromVector3(box.min));
-            min->ChildGet("X")->SetValue(box.min.x);
-            min->ChildGet("Y")->SetValue(box.min.y);
-            min->ChildGet("Z")->SetValue(box.min.z);
+			min->SetValue(FromVector3(box.min));
+			min->ChildGet("X")->SetValue(box.min.x);
+			min->ChildGet("Y")->SetValue(box.min.y);
+			min->ChildGet("Z")->SetValue(box.min.z);
             
             QtPropertyData* max = ChildGet("max");
-            max->SetValue(FromVector3(box.max));
-            max->ChildGet("X")->SetValue(box.max.x);
-            max->ChildGet("Y")->SetValue(box.max.y);
-            max->ChildGet("Z")->SetValue(box.max.z);
+			max->SetValue(FromVector3(box.max));
+			max->ChildGet("X")->SetValue(box.max.x);
+			max->ChildGet("Y")->SetValue(box.max.y);
+			max->ChildGet("Z")->SetValue(box.max.z);
         }
-            break;
+        break;
 	}
 }
 
