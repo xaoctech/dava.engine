@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "SceneHelper.h"
 #include "SceneEditor/SceneValidator.h"
 #include "CubemapEditor/MaterialHelper.h"
@@ -31,8 +60,7 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 			{
 				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-                    Texture * texture = material->GetTexture(t);
-					CollectTexture(textures, texture);
+					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
 				}
 			}
 
@@ -55,17 +83,14 @@ void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTexture((Landscape::eTextureLevel)t));
+		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
 
 
 
-void SceneHelper::CollectTexture(Map<String, Texture *> &textures, Texture *tex)
+void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
 {
-    if (!tex)return;
-    String name = tex->GetPathname().GetAbsolutePathname();
-    
 	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
 	{
 		textures[name] = tex;
@@ -99,7 +124,7 @@ void SceneHelper::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::Fi
 			{
 				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-					CollectDescriptors(descriptors, material->GetTexture(t)->GetPathname());
+					CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
 				}
 			}
 

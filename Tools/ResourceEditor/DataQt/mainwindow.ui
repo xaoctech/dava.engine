@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
+    <width>1103</width>
     <height>796</height>
    </rect>
   </property>
@@ -226,6 +226,7 @@
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
    <addaction name="actionEnableCameraLight"/>
+   <addaction name="actionSetShadowColor"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -237,7 +238,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1068</width>
+     <width>1103</width>
      <height>22</height>
     </rect>
    </property>
@@ -285,17 +286,32 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
-     <addaction name="actionSkyboxNode"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
     <addaction name="menuAdd"/>
     <addaction name="actionRemoveEntity"/>
+    <addaction name="separator"/>
+    <addaction name="actionUniteEntitiesWithLODs"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuDynamicShadowBlendMode">
+     <property name="title">
+      <string>Dynamic Shadow Blend Mode</string>
+     </property>
+     <addaction name="actionDynamicBlendModeAlpha"/>
+     <addaction name="actionDynamicBlendModeMultiply"/>
+    </widget>
+    <widget class="QMenu" name="menuLandscape">
+     <property name="title">
+      <string>Landscape</string>
+     </property>
+     <addaction name="actionSaveHeightmapToPNG"/>
+     <addaction name="actionSaveTiledTexture"/>
+    </widget>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
     <addaction name="separator"/>
@@ -311,6 +327,11 @@
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
     <addaction name="actionEnableCameraLight"/>
+    <addaction name="actionSkyboxEditor"/>
+    <addaction name="actionSetShadowColor"/>
+    <addaction name="menuDynamicShadowBlendMode"/>
+    <addaction name="separator"/>
+    <addaction name="menuLandscape"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -344,6 +365,7 @@
     </widget>
     <addaction name="menuViewPort"/>
     <addaction name="menuTexturesForGPU"/>
+    <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -372,6 +394,7 @@
     </property>
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -545,7 +568,7 @@
    </attribute>
    <addaction name="actionShowMipmapLevel"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="StatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="windowTitle">
     <string>Material View Options</string>
@@ -705,7 +728,7 @@
   </widget>
   <widget class="QDockWidget" name="dockHeightmapEditor">
    <property name="windowTitle">
-    <string>Heightmap Editor</string>
+    <string>Height Map Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -723,7 +746,7 @@
   </widget>
   <widget class="QDockWidget" name="dockTilemaskEditor">
    <property name="windowTitle">
-    <string>Tilemask Editor</string>
+    <string>Tile Mask Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -820,6 +843,15 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockLODEditor">
+   <property name="windowTitle">
+    <string>LOD Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="LODEditor" name="dockLODEditorContent"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -956,7 +988,7 @@
      <normaloff>:/QtIcons/tilemapeditor.png</normaloff>:/QtIcons/tilemapeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Tile Map Editor</string>
+    <string>Tile Mask Editor</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
@@ -1468,6 +1500,83 @@
     <string>Skybox Node</string>
    </property>
   </action>
+  <action name="actionAddActionComponent">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/addcomponent.png</normaloff>:/QtIcons/addcomponent.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add ActionComponent</string>
+   </property>
+  </action>
+  <action name="actionRemoveActionComponent">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove ActionComponent</string>
+   </property>
+  </action>
+  <action name="actionSetupSkybox">
+   <property name="text">
+    <string>Setup Skybox</string>
+   </property>
+  </action>
+  <action name="actionSkyboxEditor">
+   <property name="text">
+    <string>Set up Skybox</string>
+   </property>
+  </action>
+  <action name="actionSetShadowColor">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/color.png</normaloff>:/QtIcons/color.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dynamic Shadow Color</string>
+   </property>
+  </action>
+  <action name="actionDynamicBlendModeAlpha">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Alpha</string>
+   </property>
+  </action>
+  <action name="actionDynamicBlendModeMultiply">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Multiply</string>
+   </property>
+  </action>
+  <action name="actionReloadSprites">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Sprites</string>
+   </property>
+  </action>
+  <action name="actionUniteEntitiesWithLODs">
+   <property name="text">
+    <string>Group to entity with merged LODs</string>
+   </property>
+  </action>
+  <action name="actionSaveHeightmapToPNG">
+   <property name="text">
+    <string>Save Heightmap to PNG</string>
+   </property>
+  </action>
+  <action name="actionSaveTiledTexture">
+   <property name="text">
+    <string>Save Tiled Texture</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1475,6 +1584,10 @@
    <class>LibraryView</class>
    <extends>QTreeView</extends>
    <header>DockLibrary/libraryview.h</header>
+   <slots>
+    <slot>ShowDAE(bool)</slot>
+    <slot>ShowSC2(bool)</slot>
+   </slots>
   </customwidget>
   <customwidget>
    <class>PropertyEditor</class>
@@ -1525,6 +1638,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ConsoleView</class>
+   <extends>QPlainTextEdit</extends>
+   <header>DockConsole/ConsoleView.h</header>
+  </customwidget>
+  <customwidget>
    <class>HeightmapEditorPropertiesView</class>
    <extends>QWidget</extends>
    <header>DockHeightmapEditor/HeightmapEditorPropertiesView.h</header>
@@ -1543,19 +1661,58 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ConsoleView</class>
-   <extends>QPlainTextEdit</extends>
-   <header>DockConsole/ConsoleView.h</header>
-  </customwidget>
-  <customwidget>
    <class>VisibilityToolPropertiesView</class>
    <extends>QWidget</extends>
    <header>DockVisibilityToolEditor/VisibilityToolPropertiesView.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>LODEditor</class>
+   <extends>QWidget</extends>
+   <header>DockLODEditor/LODEditor.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StatusBar</class>
+   <extends>QStatusBar</extends>
+   <header>Main/StatusBar.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="QtIcons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cbShowDAEFiles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>libraryView</receiver>
+   <slot>ShowDAE(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>823</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>840</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbShowSC2Files</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>libraryView</receiver>
+   <slot>ShowSC2(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>953</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>957</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

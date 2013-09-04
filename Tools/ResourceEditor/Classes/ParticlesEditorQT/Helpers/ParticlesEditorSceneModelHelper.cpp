@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
@@ -579,6 +593,12 @@ bool ParticlesEditorSceneModelHelper::NeedMoveItemToParent(GraphItem* movedItem,
 		return true;
 	}
 
+	// Moving Emitters inside the same Effect Node is also allowed.
+	if (dynamic_cast<EmitterParticleEditorNode*>(movedItemUserData) && dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData))
+	{
+		return true;
+	}
+
 	// The move should be separately handled in the following cases:
 	// The Moved Item is Layer or Force.
 	// The New Parent Item is Layer or Force.
@@ -629,7 +649,14 @@ bool ParticlesEditorSceneModelHelper::MoveItemToParent(GraphItem* movedItem, Gra
 	if (movedItemEmitterNode && newEffectParentNode)
 	{
 		// We are moving Emitter from one effect to another one.
-		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEffectParentNode);
+		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEffectParentNode, NULL);
+	}
+
+	newEmitterParentNode = dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData);
+	if (movedItemEmitterNode && newEmitterParentNode)
+	{
+		// We are moving Emitters within the same Effect or between Effects.
+		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEmitterParentNode);
 	}
 
 	if (IsMoveItemToParentForbidden(movedItem, newParentItem))
@@ -676,7 +703,6 @@ bool ParticlesEditorSceneModelHelper::IsMoveItemToParentForbidden(GraphItem* mov
 	}
 	
 	// The following situations are forbidden:
-	// The Particle Emitter node is moved to other Particle Emitter;
 	// The Particle Effect node is moved to other Particle Effect.
 	// The Particle Effect node is moved to Particle Emitter (vise versa is possible though).
 	if (dynamic_cast<EffectParticleEditorNode*>(movedItemData) &&
@@ -685,12 +711,6 @@ bool ParticlesEditorSceneModelHelper::IsMoveItemToParentForbidden(GraphItem* mov
 		return true;
 	}
 
-	if (dynamic_cast<EmitterParticleEditorNode*>(movedItemData) &&
-		dynamic_cast<EmitterParticleEditorNode*>(newParentItemData))
-	{
-		return true;
-	}
-	
 	if (dynamic_cast<EffectParticleEditorNode*>(movedItemData) &&
 		dynamic_cast<EmitterParticleEditorNode*>(newParentItemData))
 	{

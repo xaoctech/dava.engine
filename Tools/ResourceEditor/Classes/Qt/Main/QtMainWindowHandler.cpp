@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "QtMainWindowHandler.h"
 
@@ -21,7 +35,6 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
@@ -69,13 +82,18 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMimeData>
+#include <QColorDialog>
 
 #include "Render/LibDxtHelper.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 #include "Scene3D/SkyBoxNode.h"
 #include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Commands2/AddSwitchEntityCommand.h"
+#include "Classes/EditorScene.h"
+
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 using namespace DAVA;
 
@@ -600,7 +618,7 @@ void QtMainWindowHandler::SquareTextures()
 void QtMainWindowHandler::ReplaceZeroMipmaps()
 {
     EditorScene * scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-    CommandsManager::Instance()->ExecuteAndRelease(new ReplaceMipmapLevelCommand(0, scene), scene);
+    MipMapReplacer::ReplaceMipMaps(scene, 0);
 }
 
 void QtMainWindowHandler::CubemapEditor()
@@ -715,8 +733,7 @@ void QtMainWindowHandler::ReloadMenuTriggered(QAction *reloadAsAction)
 
 void QtMainWindowHandler::ReloadSceneTextures()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(),
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
@@ -2072,6 +2089,28 @@ void QtMainWindowHandler::HandleMenuItemsState(CommandList::eCommandId id, const
 	}
 }
 
+void QtMainWindowHandler::AddActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			//need to remove component at first in order to clean ActionUpdateSystem
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
+			
+			ActionComponent* actionComponent = new ActionComponent();
+			entity->AddComponent(actionComponent);
+
+			sceneData->SelectNode(NULL);
+			sceneData->SelectNode(entity);
+		}
+	}
+}
+
 void QtMainWindowHandler::CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity*>& affectedEntities,
 													bool isEnabled)
 {
@@ -2082,6 +2121,24 @@ void QtMainWindowHandler::CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity
 		{
 			EnableSkyboxMenuItem(isEnabled);
 			break;
+		}
+	}
+}
+
+void QtMainWindowHandler::RemoveActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
+			
+			sceneData->SelectNode(NULL);
+			sceneData->SelectNode(entity);
 		}
 	}
 }
@@ -2101,5 +2158,26 @@ void QtMainWindowHandler::UpdateSkyboxMenuItemAfterSceneLoaded(SceneData* sceneD
     scene->GetChildNodes(nodes);
 	
 	EnableSkyboxMenuItem(nodes.size() == 0);
+}
+
+void QtMainWindowHandler::SetShadowColor()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+
+	QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
+
+	scene->SetShadowColor(QColorToColor(color));
+}
+
+void QtMainWindowHandler::SetShadowBlendAlpha()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+}
+
+void QtMainWindowHandler::SetShadowBlendMultiply()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 

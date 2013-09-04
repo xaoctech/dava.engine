@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Autotesting/Action.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
@@ -147,7 +161,7 @@ WideString Action::GetText(const Vector<String> &controlPath)
 // helpers
 void Action::ProcessInput(const UIEvent &input)
 {
-    Logger::Debug("AutotestingSystem::ProcessInput %d phase=%d point=(%f, %f) key=%c",input.tid, input.phase, input.point.x, input.point.y, input.keyChar);
+    Logger::Debug("Action::ProcessInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
 
     Vector<UIEvent> emptyTouches;
     Vector<UIEvent> touches;
@@ -182,7 +196,7 @@ UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
     if(srcControl)
     {
         int32 index = atoi(controlName.c_str());
-        if((index == 0) && (Format("%d",index) != controlName))
+        if(Format("%d",index) != controlName)
         {
             // not number
             return srcControl->FindByName(controlName);
@@ -235,7 +249,7 @@ UIControl* Action::FindControl(UIList* srcList, int32 index)
             UIListCell* cell = dynamic_cast<UIListCell*>(*it);
             if(cell)
             {
-                if(cell->GetIndex() == index && IsInside(srcList, cell))
+                if(cell->GetIndex() == index && IsCenterInside(srcList, cell))
                 {
                     return cell;
                 }
@@ -257,49 +271,18 @@ Vector2 Action::FindControlPosition(const Vector<String>& controlPath)
     return point;
 }
 
-bool Action::IsInside(UIControl* parent, UIControl* child)
+bool Action::IsCenterInside(UIControl* parent, UIControl* child)
 {
     bool isInside = false;
     if(parent && child)
     {
-        Rect parentRect(parent->GetGeometricData().GetUnrotatedRect());
-        Rect childRect(child->GetGeometricData().GetUnrotatedRect());
+        const Rect &parentRect = parent->GetGeometricData().GetUnrotatedRect();
+        const Rect &childRect = child->GetGeometricData().GetUnrotatedRect();
 
-		if(childRect.dx <= parentRect.dx && childRect.dy <= parentRect.dy)
-		{
-			// can be totally inside parent
-			float32 insidePartX = 1.0f;
-			float32 insidePartY = 1.0f;
-			
-			// for list and cell case we should scroll more on screen
-// 			if(2*childRect.dx <= parentRect.dx)
-// 			{
-// 				insidePartX *= 2;
-// 			}
-// 			if(2*childRect.dy <= parentRect.dy)
-// 			{
-// 				insidePartY *= 2;
-// 			}
-
-			float32 offsetPartX = (1.0f - insidePartX)*0.5f;
-			float32 offsetPartY = (1.0f - insidePartY)*0.5f;
-
-			Rect testInsideRect(childRect.x + offsetPartX*childRect.dx, childRect.y + offsetPartY*childRect.dy, insidePartX*childRect.dx, insidePartY*childRect.dy);
-
-			isInside = ((parentRect.x <= testInsideRect.x) && (testInsideRect.x + testInsideRect.dx <= parentRect.x + parentRect.dx) &&
-            (parentRect.y <= testInsideRect.y) && (testInsideRect.y + testInsideRect.dy <= parentRect.y + parentRect.dy));
-		}
-		else
-		{
-			// check if child center is inside parent rect
-			Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
-			isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
-            (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
-		}
-
-
-        //isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
-        //    (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
+		// check if child center is inside parent rect
+		isInside = ((parentRect.x <= childRect.x + childRect.dx/2) && (childRect.x + childRect.dx/2 <= parentRect.x + parentRect.dx) &&
+            (parentRect.y <= childRect.y + childRect.dy/2) && (childRect.y + childRect.dy/2 <= parentRect.y + parentRect.dy));
+		
     }
     return isInside;
 }
@@ -419,7 +402,11 @@ bool WaitForScreenAction::TestCondition()
         AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
         return true;
     }
-	return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
+    if(UIControlSystem::Instance()->GetScreen())
+    {
+        return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
+    }
+	return false;
 }
 
 String WaitForScreenAction::Dump()

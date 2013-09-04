@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 //
 //  UIListTest.cpp
 //  TemplateProjectMacOS
@@ -15,7 +44,7 @@ static const float LIST_TEST_AUTO_CLOSE_TIME = 30.0f;
 UIListTestDelegate::UIListTestDelegate(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates)
 {
-	cellSize = Vector2(100.0f, 30.0f);
+	cellSize = Vector2(100.0f, 40.0f);
 }
 
 UIListTestDelegate::~UIListTestDelegate()
@@ -33,7 +62,7 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
 	
     if(!cell)
     { //if cell of requested type isn't find in the store create new cell
-        cell = new UIListCell(Rect(0, 0, (float32)list->size.x, (float32)cellSize.y), "List cell", list->GetAggregatorPath());
+        cell = new UIListCell(Rect(0, 0, cellSize.x, cellSize.y), "List cell", list->GetAggregatorPath(), list->GetAggregatorSize());
 		
 		/*Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     	DVASSERT(font);
@@ -48,7 +77,12 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
     return cell;
 }
 
-int32 UIListTestDelegate::CellHeight(UIList *list, int32 index)
+int32 UIListTestDelegate::CellWidth(UIList*, int32)
+{
+   	return (int32)cellSize.x;
+}
+
+int32 UIListTestDelegate::CellHeight(UIList*, int32)
 {
    	return (int32)cellSize.y;
 }
@@ -75,7 +109,7 @@ void UIListTest::LoadResources()
 			
 	if (parser && parser->GetRootNode())
 	{
-		for (MultiMap<String, YamlNode*>::iterator t = parser->GetRootNode()->AsMap().begin(); t != parser->GetRootNode()->AsMap().end(); ++t)
+		for (MultiMap<String, YamlNode*>::const_iterator t = parser->GetRootNode()->AsMap().begin(); t != parser->GetRootNode()->AsMap().end(); ++t)
 		{
 			YamlNode * listNode = t->second;
 			// Skip empty list node
@@ -98,7 +132,7 @@ void UIListTest::LoadResources()
 	SafeRelease(loader);
 	SafeRelease(parser);	
 
-	finishTestBtn = new UIButton(Rect(10, 210, 300, 30));
+	finishTestBtn = new UIButton(Rect(10, 250, 300, 30));
 	finishTestBtn->SetStateFont(0xFF, font);
 	finishTestBtn->SetStateText(0xFF, L"Finish test");
 

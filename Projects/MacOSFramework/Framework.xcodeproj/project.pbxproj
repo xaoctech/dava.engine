@@ -751,12 +751,12 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
-		A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
-		A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
-		A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
+		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102217B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
+		A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
+		A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
 		A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
@@ -797,6 +797,19 @@
 		C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
 		C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
+		C70B56421753C2BB008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */; };
+		C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */; };
+		C7FBCFB516CD1FE5006F1B3F /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */; };
+		C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */; };
+		C7FBCFB716CD1FE5006F1B3F /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAB16CD1FE5006F1B3F /* AutotestingSystemYaml.cpp */; };
+		C7FBCFB816CD1FE5006F1B3F /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFAC16CD1FE5006F1B3F /* AutotestingSystemYaml.h */; };
+		C7FBCFB916CD1FE5006F1B3F /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAD16CD1FE5006F1B3F /* Rect_wrap.cxx */; };
+		C7FBCFBA16CD1FE5006F1B3F /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAE16CD1FE5006F1B3F /* RectSwig.cpp */; };
+		C7FBCFBB16CD1FE5006F1B3F /* UIControl_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAF16CD1FE5006F1B3F /* UIControl_wrap.cxx */; };
+		C7FBCFBC16CD1FE5006F1B3F /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFB016CD1FE5006F1B3F /* UIControlSwig.cpp */; };
+		C7FBCFBD16CD1FE5006F1B3F /* Vector_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFB116CD1FE5006F1B3F /* Vector_wrap.cxx */; };
+		C7FBCFBE16CD1FE5006F1B3F /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFB216CD1FE5006F1B3F /* VectorSwig.cpp */; };
+		C7FBCFC116CD2060006F1B3F /* liblua_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FBCFC016CD2060006F1B3F /* liblua_macos.a */; };
 		CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
 		CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
 		CC24800A16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
@@ -1972,6 +1985,12 @@
 		E9EA496E16DF93FA00C44B6F /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E9EA496B16DF93FA00C44B6F /* UISpinner.h */; };
 		E9EA496F16DF93FA00C44B6F /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E9EA496B16DF93FA00C44B6F /* UISpinner.h */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
+		EA56554A17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA56554817CDFF4B00426EB8 /* PerformanceSettings.cpp */; };
+		EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA56554817CDFF4B00426EB8 /* PerformanceSettings.cpp */; };
+		EA56554C17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA56554817CDFF4B00426EB8 /* PerformanceSettings.cpp */; };
+		EA56554D17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */; };
+		EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */; };
+		EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE444430114E77EC00F5EFD6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
@@ -2108,8 +2127,8 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
-		A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxComponent.cpp; sourceTree = "<group>"; };
-		A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxComponent.h; sourceTree = "<group>"; };
+		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
+		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
 		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
@@ -2132,6 +2151,21 @@
 		C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
 		C18593D916F30BED005D30E2 /* UIAggregatorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAggregatorControl.h; sourceTree = "<group>"; };
 		C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
+		C70B563F1753C2BB008966FA /* KeyedArchive_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchive_wrap.cxx; sourceTree = "<group>"; };
+		C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
+		C7FBCFA716CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
+		C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
+		C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
+		C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
+		C7FBCFAB16CD1FE5006F1B3F /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
+		C7FBCFAC16CD1FE5006F1B3F /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
+		C7FBCFAD16CD1FE5006F1B3F /* Rect_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect_wrap.cxx; sourceTree = "<group>"; };
+		C7FBCFAE16CD1FE5006F1B3F /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
+		C7FBCFAF16CD1FE5006F1B3F /* UIControl_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControl_wrap.cxx; sourceTree = "<group>"; };
+		C7FBCFB016CD1FE5006F1B3F /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
+		C7FBCFB116CD1FE5006F1B3F /* Vector_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector_wrap.cxx; sourceTree = "<group>"; };
+		C7FBCFB216CD1FE5006F1B3F /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
+		C7FBCFC016CD2060006F1B3F /* liblua_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_macos.a; path = ../../Libs/libs/liblua_macos.a; sourceTree = "<group>"; };
 		CC24800616DD174E00183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
 		CC24800716DD174E00183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
 		CC24804116E0DF2800183D40 /* VectorSpinnerAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorSpinnerAdapter.h; sourceTree = "<group>"; };
@@ -2721,6 +2755,8 @@
 		E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
 		E9EA496B16DF93FA00C44B6F /* UISpinner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpinner.h; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		EA56554817CDFF4B00426EB8 /* PerformanceSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerformanceSettings.cpp; sourceTree = "<group>"; };
+		EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerformanceSettings.h; sourceTree = "<group>"; };
 		FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		FE44442F114E77EC00F5EFD6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		FE578C5D1327927C0081BDE9 /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/oggvorbis/lib/libogg_macos.a; sourceTree = SOURCE_ROOT; };
@@ -2763,6 +2799,7 @@
 				02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */,
 				02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */,
 				C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
+				C7FBCFC116CD2060006F1B3F /* liblua_macos.a in Frameworks */,
 				E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
 				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
@@ -2826,6 +2863,7 @@
 				02E9E40817395FDD00C501BC /* libfmodevent.dylib */,
 				02E9E40917395FDD00C501BC /* libfmodex.dylib */,
 				C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */,
+				C7FBCFC016CD2060006F1B3F /* liblua_macos.a */,
 				C151B18B16D37DD400E09BAF /* WebKit.framework */,
 				E89CE91116C549D2006BEFF4 /* libcurl_macos.a */,
 				4910CBF5167B73EC00CF948A /* libdxt_macos.a */,
@@ -2904,6 +2942,20 @@
 		E8989ACD16BD24E400732C04 /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C70B563F1753C2BB008966FA /* KeyedArchive_wrap.cxx */,
+				C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */,
+				C7FBCFA716CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx */,
+				C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */,
+				C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */,
+				C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */,
+				C7FBCFAB16CD1FE5006F1B3F /* AutotestingSystemYaml.cpp */,
+				C7FBCFAC16CD1FE5006F1B3F /* AutotestingSystemYaml.h */,
+				C7FBCFAD16CD1FE5006F1B3F /* Rect_wrap.cxx */,
+				C7FBCFAE16CD1FE5006F1B3F /* RectSwig.cpp */,
+				C7FBCFAF16CD1FE5006F1B3F /* UIControl_wrap.cxx */,
+				C7FBCFB016CD1FE5006F1B3F /* UIControlSwig.cpp */,
+				C7FBCFB116CD1FE5006F1B3F /* Vector_wrap.cxx */,
+				C7FBCFB216CD1FE5006F1B3F /* VectorSwig.cpp */,
 				E8989ACE16BD24E400732C04 /* Action.cpp */,
 				E8989ACF16BD24E400732C04 /* Action.h */,
 				E8989AD016BD24E400732C04 /* AssertAction.cpp */,
@@ -3000,6 +3052,8 @@
 		E8989B0D16BD24E400732C04 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				EA56554817CDFF4B00426EB8 /* PerformanceSettings.cpp */,
+				EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */,
 				E8989B0E16BD24E400732C04 /* ApplicationCore.cpp */,
 				E8989B0F16BD24E400732C04 /* ApplicationCore.h */,
 				E8989B1016BD24E400732C04 /* Core.cpp */,
@@ -3430,6 +3484,8 @@
 				50A5186317B255EC0022E8FA /* RenderBatchArray.h */,
 				50A5186417B255EC0022E8FA /* RenderHierarchy.cpp */,
 				50A5186517B255EC0022E8FA /* RenderHierarchy.h */,
+				A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */,
+				A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */,
 				CCC7A3FA16F1D6170061EA5D /* Camera.cpp */,
 				CCC7A3FB16F1D6170061EA5D /* Camera.h */,
 				CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */,
@@ -3618,8 +3674,6 @@
 				E8989CDC16BD24E500732C04 /* TransformComponent.h */,
 				E8989CDD16BD24E500732C04 /* UpdatableComponent.cpp */,
 				E8989CDE16BD24E500732C04 /* UpdatableComponent.h */,
-				A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */,
-				A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -4170,9 +4224,10 @@
 				A6E4FE121761D9D900B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE161761D9E700B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
-				A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
+				A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
+				EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187517B256250022E8FA /* ShaderCache.h in Headers */,
 				50A5187D17B256590022E8FA /* MaterialSystem.h in Headers */,
 			);
@@ -4463,6 +4518,8 @@
 				E898A04F16BD24E500732C04 /* Utils.h in Headers */,
 				50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
 				CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */,
+				C7FBCFB516CD1FE5006F1B3F /* AutotestingSystemLua.h in Headers */,
+				C7FBCFB816CD1FE5006F1B3F /* AutotestingSystemYaml.h in Headers */,
 				1799E52716CCEC030058061F /* ParticleForce.h in Headers */,
 				840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */,
 				171F938616CE6F28007038AB /* UIWebView.h in Headers */,
@@ -4520,9 +4577,10 @@
 				A6E4FE0A1761D97C00B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
-				A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */,
+				A679102217B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
+				EA56554D17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5186717B255EC0022E8FA /* RenderBatchArray.h in Headers */,
 				50A5186917B255EC0022E8FA /* RenderHierarchy.h in Headers */,
 				50A5187317B256250022E8FA /* ShaderCache.h in Headers */,
@@ -4863,9 +4921,10 @@
 				A6E4FE111761D9D700B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE151761D9E500B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
-				A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
+				A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
+				EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187417B256250022E8FA /* ShaderCache.h in Headers */,
 				50A5187C17B256590022E8FA /* MaterialSystem.h in Headers */,
 			);
@@ -5273,9 +5332,10 @@
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
 				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
+				A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
+				EA56554C17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				50A5186B17B256000022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186D17B256040022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187217B256250022E8FA /* ShaderCache.cpp in Sources */,
@@ -5523,6 +5583,15 @@
 				509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */,
 				E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */,
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
+				C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */,
+				C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */,
+				C7FBCFB716CD1FE5006F1B3F /* AutotestingSystemYaml.cpp in Sources */,
+				C7FBCFB916CD1FE5006F1B3F /* Rect_wrap.cxx in Sources */,
+				C7FBCFBA16CD1FE5006F1B3F /* RectSwig.cpp in Sources */,
+				C7FBCFBB16CD1FE5006F1B3F /* UIControl_wrap.cxx in Sources */,
+				C7FBCFBC16CD1FE5006F1B3F /* UIControlSwig.cpp in Sources */,
+				C7FBCFBD16CD1FE5006F1B3F /* Vector_wrap.cxx in Sources */,
+				C7FBCFBE16CD1FE5006F1B3F /* VectorSwig.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
 				840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */,
 				171F938516CE6F28007038AB /* UIWebView.cpp in Sources */,
@@ -5561,6 +5630,7 @@
 				840D24221703311400267C58 /* DeviceInfo.cpp in Sources */,
 				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */,
+				C70B56421753C2BB008966FA /* KeyedArchiveSwig.cpp in Sources */,
 				748A99731726C5EE00C6411B /* UIScrollView.cpp in Sources */,
 				74D1EAB8172E950700EDE0B7 /* UIScrollViewContainer.cpp in Sources */,
 				E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
@@ -5580,9 +5650,10 @@
 				A6E4FE091761D97C00B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
+				A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
+				EA56554A17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				50A5186617B255EC0022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186817B255EC0022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187017B256250022E8FA /* ShaderCache.cpp in Sources */,
@@ -5881,9 +5952,10 @@
 				A6E4FE131761D9E000B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
 				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
+				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
+				EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				50A5186A17B256000022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186C17B256030022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187117B256250022E8FA /* ShaderCache.cpp in Sources */,
@@ -6021,6 +6093,7 @@
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -6056,6 +6129,7 @@
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -6091,6 +6165,7 @@
 					./../../Sources/External/Freetype,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -6126,6 +6201,7 @@
 					./../../Sources/External/Freetype,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,

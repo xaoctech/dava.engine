@@ -1,8 +1,36 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "ResultScreen.h"
 #include "SettingsManager.h"
 #include "GameCore.h"
 #include "Config.h"
-#include "DeviceInfo.h"
 
 using namespace DAVA;
 
@@ -69,6 +97,39 @@ void ResultScreen::SaveResults()
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
 
+ 
+    float32 avFps = 0.f;
+    int32 count = testData.GetItemCount();
+	results["FPS items count"] = Format("%d", count);
+    for(int32 i = 0; i < count; ++i)
+    {
+        const FpsStatItem& item = testData.GetItem(i);
+        
+        float32 avPerItem = 0.f;
+        
+        for(int32 fps = 0; fps < SECTORS_COUNT; ++fps)
+        {
+            avPerItem += item.avFps[fps];
+        }
+        
+        avPerItem /= (float32)SECTORS_COUNT;
+        
+        results[Format("FPS average fps per %d item", i)] = Format("%f fps", avPerItem);
+        
+        avFps += avPerItem;
+    }
+    
+    if(count)
+    {
+        results["FPS average value"] = Format("%f fps", avFps / (float32)count);
+    }
+    else
+    {
+        results["FPS average value"] = "0 fps";
+    }
+    
+    
+    
 	String filePath = testData.GetSceneFilePath().GetAbsolutePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
@@ -89,7 +150,9 @@ void ResultScreen::SaveResults()
     }
     
     FilePath levelName = FilePath::CreateWithNewExtension(filename, "").GetFilename();
-    GameCore::Instance()->FlushToDB(levelName, results, saveFileName);
+
+    if(!GameCore::Instance()->FlushToDB(levelName, results, saveFileName))
+        Logger::Debug("Error sending data to DB (connection is lost) !!!");
     
     state = RESULT_STATE_FINISHED;
 }

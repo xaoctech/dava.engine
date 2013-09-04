@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "TextureBrowser/TextureListModel.h"
@@ -25,6 +39,9 @@
 #include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 #include "Scene/SceneHelper.h"
+#include "ImageTools/ImageTools.h"
+#include "CubemapEditor/CubemapUtils.h"
+#include "ImageTools/ImageTools.h"
 
 #include "ui_texturebrowser.h"
 
@@ -53,8 +70,8 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	, curDescriptor(NULL)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Window);
-
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
+	
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
 
@@ -177,7 +194,9 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 		else
 		{
 			// set empty info
-			updateInfoOriginal(QImage());
+			DAVA::Vector<QImage> emptyImages;
+			emptyImages.push_back(QImage());
+			updateInfoOriginal(emptyImages);
 
 			// there is no image in cache - start loading it in different thread. image-ready slot will be called 
 			ui->textureAreaOriginal->setImage(QImage());
@@ -310,7 +329,7 @@ void TextureBrowser::updateInfoPos(QLabel *label, const QPoint &pos /* = QPoint(
 	}
 }
 
-void TextureBrowser::updateInfoOriginal(const QImage &origImage)
+void TextureBrowser::updateInfoOriginal(const DAVA::Vector<QImage> &images)
 {
 	if(NULL != curTexture && NULL != curDescriptor)
 	{
@@ -318,10 +337,28 @@ void TextureBrowser::updateInfoOriginal(const QImage &origImage)
 
 		const char *formatStr = DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
 
-		int datasize = origImage.width() * origImage.height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
-		int filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
-
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, origImage.width(), origImage.height(),
+		int datasize = 0;
+		int filesize = 0;
+		for(size_t i = 0; i < images.size(); ++i)
+		{
+			datasize += images[i].width() * images[i].height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
+		}
+		
+		if(!curDescriptor->IsCubeMap())
+		{
+			filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
+		}
+		else
+		{
+			DAVA::Vector<DAVA::String> faceNames;
+			CubemapUtils::GenerateFaceNames(curDescriptor->pathname.GetAbsolutePathname(), faceNames);
+			for(size_t i = 0; i < faceNames.size(); ++i)
+			{
+				filesize += QFileInfo(faceNames[i].c_str()).size();
+			}
+		}
+		
+		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, images[0].width(), images[0].height(),
 			 SizeInBytesToString(datasize).c_str(),
 			 SizeInBytesToString(filesize).c_str());
 
@@ -362,8 +399,8 @@ void TextureBrowser::updateInfoConverted()
 				imgSize = QSize(curTexture->width, curTexture->height);
 			}
 
-			// TODO:
 			// get data size
+			datasize = ImageTools::GetTexturePhysicalSize(curDescriptor, curTextureView);
 		}
 
 		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, imgSize.width(), imgSize.height(),
@@ -570,7 +607,9 @@ void TextureBrowser::resetTextureInfo()
 	updateInfoColor(ui->labelConvertedRGBA);
 	updateInfoPos(ui->labelConvertedXY);
 
-	updateInfoOriginal(QImage());
+	DAVA::Vector<QImage> emptyImages;
+	emptyImages.push_back(QImage());
+	updateInfoOriginal(emptyImages);
 	updateInfoConverted();
 }
 
@@ -702,7 +741,7 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 			ui->textureProperties->setOriginalImageSize(images[0].size());
 
 			// set info about loaded image
-			updateInfoOriginal(images[0]);
+			updateInfoOriginal(images);
 		}
 	}
 }

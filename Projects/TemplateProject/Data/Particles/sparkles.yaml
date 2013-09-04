@@ -9,8 +9,8 @@ emitter:
 
 layer0:
     type: layer
-    sprite: "../Gfx/Sparkles/linda_1"
-    # sprite: "~res:/Gfx/Sparkles/basic_blur"
+    sprite: "../../Gfx/Sparkles/linda_1"
+    # sprite: "../../Gfx/Sparkles/basic_blur"
     
     colorOverLife: [0.0, [228, 189, 156, 255], 1.0, [228, 189, 156, 255]]
     
@@ -43,8 +43,8 @@ layer0:
 
 layer1:
     type: layer
-    sprite: "../Gfx/Sparkles/linda_2"
-    # sprite: "~res:/Gfx/Sparkles/basic_blur"
+    sprite: "../../Gfx/Sparkles/linda_2"
+    # sprite: "../../Gfx/Sparkles/basic_blur"
 
     colorOverLife: [0.0, [242, 212, 122, 255], 1.0, [242, 212, 122, 255]]
 

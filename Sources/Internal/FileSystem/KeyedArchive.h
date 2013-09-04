@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_KEYED_ARCHIVE_H__
 #define __DAVAENGINE_KEYED_ARCHIVE_H__
 
@@ -34,7 +48,6 @@ namespace DAVA
 	\ingroup filesystem
 	\brief this is a class that should be used for serialization & deserialization of the items
  */
-
 class YamlNode;
     
 class KeyedArchive : public BaseObject
@@ -96,7 +109,8 @@ public:
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
-	 */
+		*/
+
 	WideString GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
         \brief Function to get variable from archive.
@@ -160,7 +174,7 @@ public:
      \returns value of variable or defaultValue if key isn't available
 	 */
 	Vector3 GetVector3(const String & key, const Vector3 & defaultValue = Vector3());
-    
+  
     /**
      \brief Function to get variable from archive.
      \param[in] key string key
@@ -199,7 +213,7 @@ public:
      */
     template <class T>
     T GetByteArrayAsType(const String & key, const T & defaultValue = T());
-	
+
 	
 	/**
 		\brief Function to get variable from archive.
@@ -207,7 +221,7 @@ public:
 		\returns value of variable or default VariantType class if value isn't available
 	 */
 	VariantType *GetVariant(const String & key);
-	
+
 	/**
 		\brief Function to set variable in archive.
 		\param[in] key string key
@@ -244,6 +258,7 @@ public:
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
+
 	void SetWideString(const String & key, const WideString & value);
 	/**
         \brief Function to set variable in archive.
@@ -299,7 +314,7 @@ public:
      \param[in] value we want to set for this key
 	 */
 	void SetVector3(const String & key, Vector3 &value);
-    
+ 
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
@@ -370,7 +385,7 @@ public:
      \param[in] file to save
 	 */
 	bool SaveToYamlFile(const FilePath & pathName);
-    
+
 	/**
 		\brief Deletes named key.
 		\param[in] key name of the key to delete
@@ -400,7 +415,7 @@ public:
      \brief Function loads data from given yaml Node.
      \param[in] pathName relative pathname in application documents folder
 	 */
-	bool LoadFromYamlNode(YamlNode* rootNode);
+	bool LoadFromYamlNode(const YamlNode* rootNode);
 
 //	yaml
 // 	/**
@@ -417,6 +432,7 @@ public:
     
 	static const char* GenKeyFromIndex(uint32 index);
 
+
 private:
 	Map<String, VariantType*> objectMap;
 
@@ -425,6 +441,7 @@ public:
 };
     
 // Implementation 
+
 template <class T>
 T KeyedArchive::GetByteArrayAsType(const String & key, const T & defaultValue)
 {
@@ -449,8 +466,6 @@ void KeyedArchive::SetByteArrayAsType(const String & key, const T & value)
     SetByteArray(key, (uint8 * )&value, sizeof(T));
 }
 
-	
-	
 };
 
 #endif // __DAVAENGINE_KEYED_ARCHIVE_H__

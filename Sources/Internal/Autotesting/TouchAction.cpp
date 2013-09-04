@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Autotesting/TouchAction.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
@@ -42,8 +56,10 @@ void TouchAction::TouchDown(const Vector2 &point)
     touchDown.phase = UIEvent::PHASE_BEGAN;
     touchDown.tid = id;
     touchDown.tapCount = 1;
-    touchDown.physPoint = GetPhysicalPoint(point);
-    touchDown.point = GetVirtualPoint(touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchDown.physPoint, touchDown.point);
+    //touchDown.physPoint = GetPhysicalPoint(point);
+    //touchDown.point = GetVirtualPoint(touchDown.physPoint);
 
     ProcessInput(touchDown);
 }
@@ -72,8 +88,10 @@ void TouchAction::TouchMove(const Vector2 &point)
     UIEvent touchMove;
     touchMove.tid = id;
     touchMove.tapCount = 1;
-    touchMove.physPoint = GetPhysicalPoint(point);
-    touchMove.point = GetVirtualPoint(touchMove.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchMove.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchMove.physPoint, touchMove.point);
+    //touchMove.physPoint = GetPhysicalPoint(point);
+    //touchMove.point = GetVirtualPoint(touchMove.physPoint);
         
     if(AutotestingSystem::Instance()->IsTouchDown(id))
     {
@@ -82,7 +100,7 @@ void TouchAction::TouchMove(const Vector2 &point)
     }
     else
     {
-#if defштув(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)        
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)        
         Logger::Warning("TouchAction::TouchMove point=(%f, %f) ignored no touch down found", point.x, point.y);
 #else
         touchMove.phase = UIEvent::PHASE_MOVE;
@@ -91,116 +109,6 @@ void TouchAction::TouchMove(const Vector2 &point)
     }
 }
 
-Vector2 TouchAction::GetPhysicalPoint(const Vector2 &virtualPoint)
-{
-    Vector2 physicalPoint;
-    
-    float32 inputWidth;
-    float32 inputHeight;
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenWidth();
-		inputHeight = Core::Instance()->GetPhysicalScreenHeight();
-	}
-	else
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenHeight();
-		inputHeight = Core::Instance()->GetPhysicalScreenWidth();
-	}
-    
-    Vector2 inputOffset;
-    float32 w, h;
-	w = (float32)Core::Instance()->GetVirtualScreenWidth() / (float32)inputWidth;
-	h = (float32)Core::Instance()->GetVirtualScreenHeight() / (float32)inputHeight;
-	inputOffset.x = inputOffset.y = 0;
-	if(w > h)
-	{
-		inputOffset.y = 0.5f * ((float32)Core::Instance()->GetVirtualScreenHeight() - (float32)inputHeight * w);
-	}
-	else
-	{
-		inputOffset.x = 0.5f * ((float32)Core::Instance()->GetVirtualScreenWidth() - (float32)inputWidth * h);
-	}
-    
-    float32 virtualToPhysicalFactor = Core::Instance()->GetVirtualToPhysicalFactor();
-    
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-        physicalPoint.x = (virtualPoint.y - inputOffset.y)*virtualToPhysicalFactor;
-        physicalPoint.y = inputWidth - (virtualPoint.x - inputOffset.x)*virtualToPhysicalFactor;
-        
-//		virtualPoint.x = (inputWidth - physicalPoint.y);
-//		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-        physicalPoint.x = inputHeight - (virtualPoint.y - inputOffset.y)*virtualToPhysicalFactor;
-        physicalPoint.y = (virtualPoint.x - inputOffset.x)*virtualToPhysicalFactor;
-        
-//		virtualPoint.x = (physicalPoint.y);
-//		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-        physicalPoint = (virtualPoint - inputOffset) * virtualToPhysicalFactor;
-//		virtualPoint = physicalPoint;
-	}
-	
-//	virtualPoint *= scaleFactor;
-//	virtualPoint += inputOffset;
-    
-    return physicalPoint;
-}
-    
-Vector2 TouchAction::GetVirtualPoint(const Vector2 &physicalPoint)
-{
-    Vector2 virtualPoint;
-    float32 inputWidth;
-    float32 inputHeight;
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenWidth();
-		inputHeight = Core::Instance()->GetPhysicalScreenHeight();
-	}
-	else
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenHeight();
-		inputHeight = Core::Instance()->GetPhysicalScreenWidth();
-	}
-    Vector2 inputOffset;
-    float32 w, h;
-	w = (float32)Core::Instance()->GetVirtualScreenWidth() / (float32)inputWidth;
-	h = (float32)Core::Instance()->GetVirtualScreenHeight() / (float32)inputHeight;
-	inputOffset.x = inputOffset.y = 0;
-	if(w > h)
-	{
-		inputOffset.y = 0.5f * ((float32)Core::Instance()->GetVirtualScreenHeight() - (float32)inputHeight * w);
-	}
-	else
-	{
-		inputOffset.x = 0.5f * ((float32)Core::Instance()->GetVirtualScreenWidth() - (float32)inputWidth * h);
-	}
-    float32 physicalToVirtualFactor = Core::Instance()->GetPhysicalToVirtualFactor();
-    
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-		virtualPoint.x = (inputWidth - physicalPoint.y);
-		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-		virtualPoint.x = (physicalPoint.y);
-		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-		virtualPoint = physicalPoint;
-	}
-	
-	virtualPoint *= physicalToVirtualFactor;
-	virtualPoint += inputOffset;
-    return virtualPoint;
-}
 
 String TouchAction::Dump()
 {
@@ -538,7 +446,7 @@ void ScrollControlAction::FindScrollPoints()
             for(List<UIControl*>::const_iterator it = cells.begin(); it != cells.end(); ++it)
             {
                 UIListCell* cell = dynamic_cast<UIListCell*>(*it);
-                if(cell && IsInside(parentList, cell))
+                if(cell && IsCenterInside(parentList, cell))
                 {
                     int32 cellIndex = cell->GetIndex();
                     if(cellIndex < minVisibleIndex)

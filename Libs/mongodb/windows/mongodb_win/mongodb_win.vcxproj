@@ -42,6 +42,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\libs\</OutDir>
+    <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -54,7 +55,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>$(OutDir)$(TargetName)d$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
@@ -79,18 +80,22 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\mongodb\bson.h" />
     <ClInclude Include="..\..\include\mongodb\config.h" />
+    <ClInclude Include="..\..\include\mongodb\gridfs.h" />
     <ClInclude Include="..\..\include\mongodb\mongo.h" />
     <ClInclude Include="..\..\src\encoding.h" />
     <ClInclude Include="..\..\src\env.h" />
-    <ClInclude Include="..\..\src\gridfs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\bson.c" />
     <ClCompile Include="..\..\src\encoding.c" />
     <ClCompile Include="..\..\src\env_win32.c" />
-    <ClCompile Include="..\..\src\gridfs.c" />
+    <ClCompile Include="..\..\src\gridfs.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\md5.c" />
-    <ClCompile Include="..\..\src\mongo.c" />
+    <ClCompile Include="..\..\src\mongo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\numbers.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

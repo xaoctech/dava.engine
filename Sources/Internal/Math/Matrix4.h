@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_MATRIX_H__
 #define __DAVAENGINE_MATRIX_H__
 
@@ -94,7 +108,7 @@ struct Matrix4
 
 	inline bool	Inverse();
 	inline bool GetInverse(Matrix4 & out) const;
-	
+	inline bool Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const;
 
     //! 
     inline static Matrix4 MakeTranslation(const Vector3 & translationVector);
@@ -492,6 +506,31 @@ inline bool	Matrix4::Inverse()
 	}
 	return can;
 }
+
+inline bool Matrix4::Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const
+{
+	//if(_data[3][0] == 0 && _data[3][1] == 0 && _data[3][2] == 0 && _data[3][3] == 1)
+	//{
+	//	return false;
+	//}
+	//else
+	{
+		Matrix3 mat3(_data[0][0], _data[0][1], _data[0][2], 
+			_data[1][0], _data[1][1], _data[1][2], 
+			_data[2][0], _data[2][1], _data[2][2]);
+
+		Matrix3 matQ;
+		Vector3 vecU;
+		mat3.Decomposition(matQ, scale, vecU);
+
+		orientation = Vector3(matQ._21, matQ._02, matQ._10);
+		position = Vector3(_data[0][3], _data[1][3], _data[2][3]);
+
+		return true;
+	}
+
+	return false;
+}
     
 inline Matrix4 Matrix4::operator *(const Matrix4 & m) const
 {
@@ -569,7 +608,10 @@ inline void Matrix4::SetTranslationVector(const Vector3 & _v)
 
 inline Vector3 Matrix4::GetScaleVector() const
 {
-	return Vector3(_00, _11, _22);	
+	Vector3 xAxis(_00, _01, _02);
+	Vector3 yAxis(_10, _11, _12);
+	Vector3 zAxis(_20, _21, _22);
+	return Vector3(xAxis.Length(), yAxis.Length(), zAxis.Length());	
 }
 	
 inline void	Matrix4::CreateScale(const Vector3 & _v)

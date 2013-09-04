@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/Material.h"
 #include "Render/UberShader.h"
 #include "Render/Texture.h"
@@ -182,17 +196,22 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 InstanceMaterialState * InstanceMaterialState::Clone()
 {
 	InstanceMaterialState * newState = new InstanceMaterialState();
-
-	newState->lightmapTexture = SafeRetain(lightmapTexture);
-	newState->lightmapName = lightmapName;
-	newState->lightmapSize = lightmapSize;
-	newState->uvOffset = uvOffset;
-	newState->uvScale = uvScale;
-	newState->flatColor = flatColor;
-	newState->texture0Shift = texture0Shift;
-
+    newState->InitFromState(this);
+    
 	return newState;
 }
+    
+void InstanceMaterialState::InitFromState(const InstanceMaterialState * state)
+{
+    lightmapTexture = SafeRetain(state->lightmapTexture);
+	lightmapName = state->lightmapName;
+	lightmapSize = state->lightmapSize;
+	uvOffset = state->uvOffset;
+	uvScale = state->uvScale;
+	flatColor = state->flatColor;
+	texture0Shift = state->texture0Shift;
+}
+
 
 
 REGISTER_CLASS(Material);
@@ -300,7 +319,95 @@ Material::Material()
 
     SetType(MATERIAL_UNLIT_TEXTURE);
 }
+
+Material * Material::Clone()
+{
+    Material * newMaterial = new Material();
+
+    newMaterial->pointer = pointer;
+    newMaterial->scene = scene;
+    newMaterial->name = name;
+    newMaterial->children = children;
+    newMaterial->index = index;
+
+    newMaterial->type = type;
+    newMaterial->viewOptions = viewOptions;
+
+    newMaterial->reflective = reflective;
+    newMaterial->reflectivity =	reflectivity;
+
+    newMaterial->transparent = transparent;
+    newMaterial->transparency =	transparency; 
+    newMaterial->indexOfRefraction = indexOfRefraction;
+
+    for(int i = 0; i < TEXTURE_COUNT; i++)
+    {
+        newMaterial->textures[i] = SafeRetain(textures[i]);
+        newMaterial->textureSlotNames[i] = textureSlotNames[i];
+    }
+
+    newMaterial->names = names;
+
+    newMaterial->textureSlotCount = textureSlotCount;
+
+    newMaterial->blendSrc = blendSrc;
+    newMaterial->blendDst = blendDst;
+
+    newMaterial->isTranslucent = isTranslucent;
+    newMaterial->isTwoSided = isTwoSided;
+
+	newMaterial->isSetupLightmap = isSetupLightmap;
     
+    newMaterial->shininess = shininess;
+    
+    newMaterial->ambientColor = ambientColor;
+	newMaterial->diffuseColor = diffuseColor;
+	newMaterial->specularColor = specularColor;
+	newMaterial->emissiveColor = emissiveColor;
+    
+    newMaterial->isFogEnabled = isFogEnabled;
+    newMaterial->fogDensity = fogDensity;
+    newMaterial->fogColor = fogColor;
+
+    if(lightingParams)
+    {
+        newMaterial->lightingParams = new StaticLightingParams();
+        newMaterial->lightingParams->transparencyColor = lightingParams->transparencyColor;
+    }
+
+	newMaterial->isAlphablend = isAlphablend;
+    newMaterial->isFlatColorEnabled = isFlatColorEnabled;
+    
+    newMaterial->isTexture0ShiftEnabled = isTexture0ShiftEnabled;
+    
+    newMaterial->isWireframe = isWireframe;
+    
+    newMaterial->shader = shader;
+    
+    newMaterial->uniformTexture0 = uniformTexture0;
+    newMaterial->uniformTexture1 = uniformTexture1;
+    newMaterial->uniformLightPosition0 = uniformLightPosition0;
+    newMaterial->uniformMaterialLightAmbientColor = uniformMaterialLightAmbientColor;
+    newMaterial->uniformMaterialLightDiffuseColor = uniformMaterialLightDiffuseColor;
+    newMaterial->uniformMaterialLightSpecularColor = uniformMaterialLightSpecularColor;
+    newMaterial->uniformMaterialSpecularShininess = uniformMaterialSpecularShininess;
+    newMaterial->uniformLightIntensity0 = uniformLightIntensity0;
+    newMaterial->uniformLightAttenuationQ = uniformLightAttenuationQ;
+    newMaterial->uniformUvOffset = uniformUvOffset;
+    newMaterial->uniformUvScale = uniformUvScale;
+    newMaterial->uniformFogDensity = uniformFogDensity;
+    newMaterial->uniformFogColor = uniformFogColor;
+    newMaterial->uniformFlatColor = uniformFlatColor;
+    newMaterial->uniformTexture0Shift = uniformTexture0Shift;
+
+	newMaterial->renderStateBlock = renderStateBlock;
+    
+    newMaterial->isExportOwnerLayerEnabled = isExportOwnerLayerEnabled;
+    newMaterial->ownerLayerName = ownerLayerName;
+
+    return newMaterial;
+}
+
 void Material::SetScene(Scene * _scene)
 {
     DVASSERT(scene == 0);
@@ -327,6 +434,12 @@ Material::~Material()
 Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
 {
     RebuildShader();
+	
+	if(Material::MATERIAL_SKYBOX == type)
+	{
+		return VALIDATE_COMPATIBLE;
+	}
+	
     /*
         General check if number of attributes in shader is 
      */

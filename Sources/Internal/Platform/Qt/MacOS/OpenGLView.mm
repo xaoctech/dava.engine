@@ -141,6 +141,10 @@
 	NSRect rect = self.frame;
 	RenderManager::Instance()->Init(rect.size.width, rect.size.height);
 	UIControlSystem::Instance()->SetInputScreenAreaSize(rect.size.width, rect.size.height);
+    
+    Core::Instance()->UnregisterAllAvailableResourceSizes();
+    Core::Instance()->RegisterAvailableResourceSize(rect.size.width, rect.size.height, "Gfx");
+    
 	Core::Instance()->SetPhysicalScreenSize(rect.size.width, rect.size.height);
     Core::Instance()->SetVirtualScreenSize(rect.size.width, rect.size.height);
 	
@@ -191,7 +195,7 @@
 
 - (void) resetCursorRects
 {
-	NSLog(@"OpenGLView resetCursorRects");
+//	NSLog(@"OpenGLView resetCursorRects");
     [super resetCursorRects];
 }
 
@@ -371,7 +375,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseDown:(NSEvent *)theEvent
 {
     NSPoint p = theEvent.locationInWindow;
-    printf("click [%f, %f]\n", p.x, p.y);
+//    printf("click [%f, %f]\n", p.x, p.y);
     
     [self CalcOffset:theEvent];
 	[super mouseDown:theEvent];

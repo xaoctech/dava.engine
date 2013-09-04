@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 
 #include "EditorListDelegate.h"
@@ -24,25 +38,23 @@
 #include "HierarchyTreeController.h"
 #include "EditorFontManager.h"
 
-#define CELLS_COUNT 3
-#define DEFAULT_AGGREGATOR_ID 0
-
 namespace DAVA
 {
 	EditorListDelegate::EditorListDelegate(const Rect &rect, UIList::eListOrientation orientation /*ORIENTATION_VERTICAL*/
 																			, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates),
 		aggregatorID(DEFAULT_AGGREGATOR_ID),
-		cellsCount(CELLS_COUNT),
+		cellsCount(CELL_COUNT),
 		isElementsCountNeedUpdate(false)
 	{
+		DVASSERT(cellsCount > 0);
 		if (orientation == UIList::ORIENTATION_VERTICAL)
 		{
-			cellSize = Vector2(rect.dx, (rect.dy / CELLS_COUNT));
+			cellSize = Vector2(rect.dx, (rect.dy / cellsCount));
 		}
 		else
 		{
-			cellSize = Vector2((rect.dx / CELLS_COUNT), rect.dy);
+			cellSize = Vector2((rect.dx / cellsCount), rect.dy);
 		}
 	}
 	
@@ -79,13 +91,15 @@ namespace DAVA
 				SetCellSize(aggregatorSize);
 			}
 			
-			Vector2 listSize = forList->GetSize();			
-			if (forList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
+			Vector2 listSize = forList->GetSize();
+			if(forList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
 			{
+				DVASSERT(cellSize.x > 0);
 				cellsCount =  ceilf( listSize.x / cellSize.x );
 			}
 			else
 			{
+				DVASSERT(cellSize.y > 0);
 				cellsCount =  ceilf( listSize.y / cellSize.y );
 			}
 		}
@@ -100,6 +114,7 @@ namespace DAVA
 	int32 EditorListDelegate::ElementsCount(UIList *forList)
 	{
 		UpdateCellSize(forList);
+		DVASSERT(cellsCount > 0);
 		return cellsCount;
 	}
 	
@@ -125,6 +140,8 @@ namespace DAVA
 		{
 			UIAggregatorControl* control = new UIAggregatorControl();
 			control->CopyDataFrom(aggregatorControl);
+			// DF-1770 - Reset aggregator's background draw type
+			control->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
 			cell->AddControl(control);
 		}
 		else
@@ -154,10 +171,13 @@ namespace DAVA
 		if (aggregatorNode)
 		{
 			forList->SetAggregatorPath(aggregatorNode->GetPath());
+			Rect aggregatorRect = aggregatorNode->GetRect();
+			forList->SetAggregatorSize(Vector2(aggregatorRect.dx, aggregatorRect.dy));
 		}
 		else
 		{
 			forList->SetAggregatorPath(String());
+			forList->SetAggregatorSize(Vector2());
 		}
 	}
 	

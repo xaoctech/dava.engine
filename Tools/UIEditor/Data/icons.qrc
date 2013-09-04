@@ -24,5 +24,6 @@
     <file>Icons/uicustomcontrol.png</file>
     <file>Icons/uitextfield.png</file>
     <file>Icons/uiswitch.png</file>
+    <file>Icons/help.png</file>
   </qresource>
 </RCC>

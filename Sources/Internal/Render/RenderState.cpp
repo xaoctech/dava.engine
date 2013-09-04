@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/RenderState.h"
 #include "Render/RenderManager.h"
 #include "Debug/Backtrace.h"
@@ -839,15 +853,15 @@ void RenderState::LoadFromYamlFile(const FilePath & filePath)
 	SafeRelease(parser);
 }
 
-void RenderState::LoadFromYamlNode(YamlNode * rootNode)
+void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 {
 	if (!rootNode)
 		return;
 
-	YamlNode * renderStateNode = rootNode->Get("RenderState");
+	const YamlNode * renderStateNode = rootNode->Get("RenderState");
 	if(renderStateNode)
 	{
-		YamlNode * stateNode = renderStateNode->Get("state");
+		const YamlNode * stateNode = renderStateNode->Get("state");
 		if(stateNode)
 		{
 			Vector<String> states;
@@ -859,8 +873,8 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			state = currentState;
 		}
 
-		YamlNode * blendSrcNode = renderStateNode->Get("blendSrc");
-		YamlNode * blendDestNode = renderStateNode->Get("blendDest");
+		const YamlNode * blendSrcNode = renderStateNode->Get("blendSrc");
+		const YamlNode * blendDestNode = renderStateNode->Get("blendDest");
 		if(blendSrcNode && blendDestNode)
 		{
 			eBlendMode newBlendScr = GetBlendModeByName(blendSrcNode->AsString());
@@ -868,22 +882,22 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			SetBlendMode(newBlendScr, newBlendDest);
 		}
 
-		YamlNode * cullModeNode = renderStateNode->Get("cullMode");
+		const YamlNode * cullModeNode = renderStateNode->Get("cullMode");
 		if(cullModeNode)
 		{
 			int32 newCullMode = (int32)GetFaceByName(cullModeNode->AsString());
 			SetCullMode(newCullMode);
 		}
 
-		YamlNode * depthFuncNode = renderStateNode->Get("depthFunc");
+		const YamlNode * depthFuncNode = renderStateNode->Get("depthFunc");
 		if(depthFuncNode)
 		{
 			eCmpFunc newDepthFunc = GetCmpFuncByName(depthFuncNode->AsString());
 			SetDepthFunc(newDepthFunc);
 		}
 
-		YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
-		YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
+		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
+		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
 		if(alphaFuncNode && alphaFuncCmpValueNode)
 		{
 			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
@@ -891,39 +905,39 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			SetAlphaFunc(newAlphaFunc, newCmpValue);
 		}
 
-		YamlNode * stencilNode = renderStateNode->Get("stencil");
+		const YamlNode * stencilNode = renderStateNode->Get("stencil");
 		if(stencilNode)
 		{
-			YamlNode * stencilRefNode = stencilNode->Get("ref");
+			const YamlNode * stencilRefNode = stencilNode->Get("ref");
 			if(stencilRefNode)
 				SetStencilRef(stencilRefNode->AsInt32());
 
-			YamlNode * stencilMaskNode = stencilNode->Get("mask");
+			const YamlNode * stencilMaskNode = stencilNode->Get("mask");
 			if(stencilMaskNode)
 				SetStencilMask(stencilMaskNode->AsUInt32());
 
-			YamlNode * stencilFuncNode = stencilNode->Get("funcFront");
+			const YamlNode * stencilFuncNode = stencilNode->Get("funcFront");
 			if(stencilFuncNode)
 				SetStencilFunc(FACE_FRONT, GetCmpFuncByName(stencilFuncNode->AsString()));
 			stencilFuncNode = stencilNode->Get("funcBack");
 			if(stencilFuncNode)
 				SetStencilFunc(FACE_BACK, GetCmpFuncByName(stencilFuncNode->AsString()));
 
-			YamlNode * stencilPassNode = stencilNode->Get("passFront");
+			const YamlNode * stencilPassNode = stencilNode->Get("passFront");
 			if(stencilPassNode)
 				SetStencilPass(FACE_FRONT, GetStencilOpByName(stencilPassNode->AsString()));
 			stencilPassNode = stencilNode->Get("passBack");
 			if(stencilPassNode)
 				SetStencilPass(FACE_BACK, GetStencilOpByName(stencilPassNode->AsString()));
 
-			YamlNode * stencilFailNode = stencilNode->Get("failFront");
+			const YamlNode * stencilFailNode = stencilNode->Get("failFront");
 			if(stencilFailNode)
 				SetStencilFail(FACE_FRONT, GetStencilOpByName(stencilFailNode->AsString()));
 			stencilFailNode = stencilNode->Get("failBack");
 			if(stencilFailNode)
 				SetStencilFail(FACE_BACK, GetStencilOpByName(stencilFailNode->AsString()));
 
-			YamlNode * stencilZFailNode = stencilNode->Get("zFailFront");
+			const YamlNode * stencilZFailNode = stencilNode->Get("zFailFront");
 			if(stencilZFailNode)
 				SetStencilZFail(FACE_FRONT, GetStencilOpByName(stencilZFailNode->AsString()));
 			stencilZFailNode = stencilNode->Get("zFailBack");

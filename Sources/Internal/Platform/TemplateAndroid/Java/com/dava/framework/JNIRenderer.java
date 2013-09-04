@@ -61,9 +61,9 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 			height = h;
 
 			nativeResize(width, height);
-			OnResume();
 			isRenderRecreated = false;
 		}
+		OnResume();
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
 	}
