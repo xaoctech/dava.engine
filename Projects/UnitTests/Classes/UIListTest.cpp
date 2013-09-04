@@ -62,7 +62,7 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
 	
     if(!cell)
     { //if cell of requested type isn't find in the store create new cell
-        cell = new UIListCell(Rect(0, 0, cellSize.x, cellSize.y), "List cell", list->GetAggregatorPath(), list->GetAggregatorSize());
+        cell = new UIListCell(Rect(0, 0, cellSize.x, cellSize.y), "List cell", list->GetAggregatorPath());
 		
 		/*Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     	DVASSERT(font);

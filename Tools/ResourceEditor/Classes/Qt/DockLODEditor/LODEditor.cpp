@@ -115,7 +115,7 @@ void LODEditor::SetupInternalUI()
     ui->forceSlider->setRange(0, DAVA::LodComponent::MAX_LOD_DISTANCE);
     ui->forceSlider->setValue(0);
     
-    connect(ui->distanceSlider, SIGNAL(DistanceChanged(int, double)), SLOT(LODDistanceChangedBySlider(int, double)));
+    connect(ui->distanceSlider, SIGNAL(DistanceChanged(const QSet<int> &, bool)), SLOT(LODDistanceChangedBySlider(const QSet<int> &, bool)));
     
     InitTriangles(ui->labelTriangles0, ui->triangles0, 0);
     InitTriangles(ui->labelTriangles1, ui->triangles1, 1);
@@ -257,10 +257,20 @@ void LODEditor::LODDataChanged()
     UpdateWidgetVisibility();
 }
 
-void LODEditor::LODDistanceChangedBySlider(int layerNum, double value)
+void LODEditor::LODDistanceChangedBySlider(const QSet<int> &changedLayers, bool continuous)
 {
-    editedLODData->SetLayerDistance(layerNum, value);
-    SetSpinboxValue(distanceWidgets[layerNum].distance, value);
+	for (QSet<int>::const_iterator it = changedLayers.begin(); it != changedLayers.end(); ++it)
+	{
+		int layer = *it;
+
+		double value = ui->distanceSlider->GetDistance(layer);
+		SetSpinboxValue(distanceWidgets[layer].distance, value);
+
+		if(!continuous)
+		{
+			editedLODData->SetLayerDistance(layer, value);
+		}
+	}
 }
 
 void LODEditor::LODDistanceChangedBySpinbox(double value)

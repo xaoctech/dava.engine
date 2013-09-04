@@ -46,8 +46,9 @@ public:
 	SceneCameraSystem(DAVA::Scene * scene);
 	~SceneCameraSystem();
 
-	DAVA::Vector3 GetPointDirection(const DAVA::Vector2 &point);
-	DAVA::Vector3 GetCameraPosition();
+	DAVA::Vector3 GetPointDirection(const DAVA::Vector2 &point) const;
+	DAVA::Vector3 GetCameraPosition() const;
+	DAVA::Vector3 GetCameraDirection() const;
 
 	void SetMoveSeep(DAVA::float32 speed);
 	DAVA::float32 GetMoveSpeed();
