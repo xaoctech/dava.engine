@@ -74,6 +74,7 @@ signals:
 	// particles - selection
 	void EffectSelected(SceneEditor2* scene, DAVA::Entity* effectNode);
 	void EmitterSelected(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void InnerEmitterSelected(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
 	void LayerSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
 	void ForceSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
@@ -132,6 +133,7 @@ public:
 	// Particle Editor Selection signals.
 	void EmitEffectSelected(SceneEditor2* scene, DAVA::Entity* effectNode) { emit EffectSelected(scene, effectNode); };
 	void EmitEmitterSelected(SceneEditor2* scene, DAVA::Entity* emitterNode) { emit EmitterSelected(scene, emitterNode); };
+	void EmitInnerEmitterSelected(SceneEditor2* scene, DAVA::ParticleEmitter* emitter) { emit InnerEmitterSelected(scene, emitter); };
 	void EmitLayerSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh)
 	{
 		emit LayerSelected(scene, layer, forceRefresh);

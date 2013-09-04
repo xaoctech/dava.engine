@@ -341,7 +341,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 
 					if(NULL == item)
 					{
-						rootItem->appendRow(new SceneTreeItemParticleLayer(entity, childLayer));
+						rootItem->appendRow(new SceneTreeItemParticleLayer(emitter, childLayer));
 					}
 					else if(childLayer != itemLayer)
 					{
@@ -379,7 +379,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 						}
 						else
 						{
-							rootItem->insertRow(row, new SceneTreeItemParticleLayer(entity, childLayer));
+							rootItem->insertRow(row, new SceneTreeItemParticleLayer(emitter, childLayer));
 						}
 					}
 					else
@@ -405,10 +405,11 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 // SceneTreeItemParticleLayer
 // =========================================================================================
 
-SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::Entity* _parent, DAVA::ParticleLayer *_layer)
+SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEmitter* _parent, DAVA::ParticleLayer *_layer)
 	: SceneTreeItem(SceneTreeItem::EIT_Layer)
 	, parent(_parent)
 	, layer(_layer)
+	, hasInnerEmmiter(false)
 {
 	if(NULL != layer)
 	{
@@ -422,6 +423,7 @@ SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::Entity* _parent, DA
 		{
 			setCheckState(Qt::Checked);
 		}
+		hasInnerEmmiter = (layer->GetInnerEmitter()!=NULL);
 	}
 
 	DoSync(this, layer);
@@ -467,6 +469,12 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleL
 		size_t itemsCount = layer->forces.size();
 		QList<QStandardItem*> items;
 
+		int innerEmiterItem = 0;
+		if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			items.push_back(new SceneTreeItemParticleInnerEmmiter(layer, layer->GetInnerEmitter()));		
+			innerEmiterItem=1;
+		}
 		// add all items to the head
 		for(size_t i = 0; i < itemsCount; ++i)
 		{
@@ -479,7 +487,7 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleL
 		}
 
 		// remove old items from the tail
-		rootItem->removeRows(itemsCount, rootItem->rowCount() - itemsCount);
+		rootItem->removeRows(itemsCount+innerEmiterItem, rootItem->rowCount() - (itemsCount+innerEmiterItem));
 	}
 }
 
@@ -530,3 +538,58 @@ QIcon SceneTreeItemParticleForce::ItemIcon() const
 	static QIcon icon = QIcon(":/QtIcons/force.png");
 	return icon;
 }
+
+
+
+SceneTreeItemParticleInnerEmmiter::SceneTreeItemParticleInnerEmmiter(DAVA::ParticleLayer *_parent, DAVA::ParticleEmitter *_emitter)
+	: SceneTreeItem(SceneTreeItem::EIT_InnerEmmiter)
+	, parent(_parent)
+	, emitter(_emitter)
+{
+	DoSync(this, emitter);
+}
+
+
+
+SceneTreeItemParticleInnerEmmiter::~SceneTreeItemParticleInnerEmmiter()
+{ }
+
+void SceneTreeItemParticleInnerEmmiter::DoSync(QStandardItem *rootItem, DAVA::ParticleEmitter *emitter)
+{
+	if(NULL != rootItem && NULL != emitter)
+	{
+		size_t itemsCount = emitter->GetLayers().size();
+		QList<QStandardItem*> items;
+		
+		for(size_t i = 0; i < itemsCount; ++i)
+		{
+			items.push_back(new SceneTreeItemParticleLayer(emitter, emitter->GetLayers()[i]));
+		}
+
+		if(items.size() > 0)
+		{
+			rootItem->insertRows(0, items);
+		}
+
+		// remove old items from the tail
+		rootItem->removeRows(itemsCount, rootItem->rowCount() - itemsCount);
+	}
+}
+
+QString SceneTreeItemParticleInnerEmmiter::ItemName() const
+{
+	return "innerEmmiter";
+}
+
+QVariant SceneTreeItemParticleInnerEmmiter::ItemData() const
+{
+	return qVariantFromValue(emitter);
+}
+
+
+QIcon SceneTreeItemParticleInnerEmmiter::ItemIcon() const
+{
+	static QIcon icon = QIcon(":/QtIcons/emitter_particle.png");
+	return icon;
+}
+
