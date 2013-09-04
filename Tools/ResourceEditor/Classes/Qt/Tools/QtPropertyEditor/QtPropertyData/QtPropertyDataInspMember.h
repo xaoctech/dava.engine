@@ -26,49 +26,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __QT_PROPERTY_DATA_INSP_MEMBER_H__
+#define __QT_PROPERTY_DATA_INSP_MEMBER_H__
 
-//
-//  UIScrollViewTest.h
-//  TemplateProjectMacOS
-//
-//  Created by Denis Bespalov on 5/20/13.
-//
-//
+#include "Base/Introspection.h"
+#include "../QtPropertyData.h"
+#include "QtPropertyDataDavaVariant.h"
 
-#ifndef __UISCROLL_VIEW_TEST__
-#define __UISCROLL_VIEW_TEST__
-
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-#include "TestTemplate.h"
-
-class UIScrollViewTest: public TestTemplate<UIScrollViewTest>
+class QtPropertyDataInspMember : public QtPropertyDataDavaVariant
 {
-
 public:
-	UIScrollViewTest();
+	QtPropertyDataInspMember(void *_object, const DAVA::InspMember *_member);
+	virtual ~QtPropertyDataInspMember();
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual bool RunTest(int32 testNum);
-	
-	virtual void DidAppear();	
-	virtual void Update(float32 timeElapsed);
-	
-	void TestFunction(PerfFuncData * data);
-	
-private:
-	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
-	
-private:
-	UIButton* 		finishTestBtn;
-	UIStaticText*	testMessageText;
-	UIScrollView*	scrollView;
-	bool 			testFinished;
-		
-	float32 onScreenTime;
+protected:
+	void *object;
+	const DAVA::InspMember *member;
+
+	virtual QVariant GetValueInternal();
+	virtual void SetValueInternal(const QVariant &value);
+	virtual bool EditorDoneInternal(QWidget *editor);
 };
 
-#endif /* defined(__UISCROLL_VIEW_TEST__) */
+#endif // __QT_PROPERTY_DATA_INSP_MEMBER_H__

@@ -43,7 +43,6 @@ class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
 class NMaterial;
-class NMaterialInstance;
 
 class Mesh : public RenderObject
 {

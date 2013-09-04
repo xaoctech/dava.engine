@@ -70,7 +70,7 @@ protected slots:
     
     void LODDataChanged();
     void LODDistanceChangedBySpinbox(double value);
-    void LODDistanceChangedBySlider(int layerNum, double value);
+    void LODDistanceChangedBySlider(const QSet<int> &changedLayers, bool continuous);
     
     void ForceLayerActivated(int index);
     

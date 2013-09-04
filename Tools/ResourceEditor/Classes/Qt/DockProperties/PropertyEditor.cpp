@@ -37,8 +37,8 @@
 
 #include "DockProperties/PropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
-#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -63,7 +63,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 		advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
 	}
 	posSaver.Attach(this, "DocPropetyEditor");
-	
+
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
 	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
 }

@@ -31,8 +31,7 @@
 #include "EditorLODData.h"
 
 #include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Commands2/Command2.h"
-#include "Classes/Commands2/MetaObjModifyCommand.h"
+#include "Classes/Commands2/InspMemberModifyCommand.h"
 
 EditorLODData::EditorLODData()
     :   lodLayersCount(0)
@@ -105,21 +104,15 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
         
         for(DAVA::int32 i = 0; i < componentsCount; ++i)
         {
-            //TODO: need correct introspection
             if(layerNum >= GetLayersCount(lodData[i]))
                 continue;
-            
-            lodData[i]->SetLodLayerDistance(layerNum, distance);
-            
-//            const DAVA::InspMember *member = lodData[i]->lodLayersArray[layerNum].GetTypeInfo()->Member("distance");
-//            if(!member)
-//                continue;
-//            
-//            const DAVA::MetaInfo *info = member->Type();
-//            void *object = member->Pointer(&lodData[i]->lodLayersArray[layerNum]);
-//            
-//            DAVA::VariantType v(distance);
-//            activeScene->Exec(new MetaObjModifyCommand(info, object, v));
+           
+            const DAVA::InspMember *member = lodData[i]->lodLayersArray[layerNum].GetTypeInfo()->Member("distance");
+			if(NULL != member)
+			{
+				DAVA::VariantType v(distance);
+				activeScene->Exec(new InspMemberModifyCommand(member, &lodData[i]->lodLayersArray[layerNum], v));
+			}
         }
         
         activeScene->EndBatch();
@@ -382,8 +375,7 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
     int commandId = command->GetId();
-    
-    if(commandId == CMDID_META_OBJ_MODIFY /* || commandId == ... */) //TODO: need second command id
+    if(commandId == CMDID_META_OBJ_MODIFY || commandId == CMDID_INSP_MEMBER_MODIFY)
     {
         GetDataFromSelection();
     }
