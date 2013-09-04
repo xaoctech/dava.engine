@@ -106,12 +106,19 @@ bool JniTextField::TextFieldKeyPressed(int32 replacementLocation, int32 replacem
 	if (!activeTextField)
 		return false;
 
-	UITextFieldDelegate* delegate = activeTextField->GetDelegate();
-	if (!delegate)
-		return true;
-
+	bool res = true;
 	WideString strText = StringToWString(text);
-	return delegate->TextFieldKeyPressed(activeTextField, replacementLocation, replacementLength, strText);
+	UITextFieldDelegate* delegate = activeTextField->GetDelegate();
+	if (delegate)
+		res = delegate->TextFieldKeyPressed(activeTextField, replacementLocation, replacementLength, strText);
+
+	if (res)
+	{
+		WideString curText = activeTextField->GetText();
+		curText.replace(replacementLocation, replacementLength, strText);
+		activeTextField->SetText(curText);
+	}
+	return res;
 }
 
 UITextFieldAndroid::UITextFieldAndroid(UITextField* textField)
