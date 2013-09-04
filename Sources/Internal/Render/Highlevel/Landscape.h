@@ -323,6 +323,8 @@ protected:
 
 	int GetMaxLod(LandscapeQuad& quad);
 	
+	void SetupMaterialProperties();
+	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
     
