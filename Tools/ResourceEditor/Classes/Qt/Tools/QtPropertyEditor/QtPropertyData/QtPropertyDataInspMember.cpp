@@ -14,51 +14,62 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "QtPropertyDataMetaObject.h"
+#include "QtPropertyDataInspMember.h"
 
-QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta)
-	: QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(_object, _meta))
+QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::InspMember *_member)
+	: QtPropertyDataDavaVariant(DAVA::VariantType())
 	, object(_object)
-	, meta(_meta)
-{ }
-
-QtPropertyDataMetaObject::~QtPropertyDataMetaObject()
-{ }
-
-QVariant QtPropertyDataMetaObject::GetValueInternal()
+	, member(_member)
 {
-	// load current value from meta-object
-	// we should do this because meta-object may change at any time 
-	DAVA::VariantType v = DAVA::VariantType::LoadData(object, meta);
-
-	// if current variant value not equel to the real meta-object value
-	// we should update current variant value
-	if(v != GetVariantValue())
+	if(NULL != member)
 	{
-		QtPropertyDataDavaVariant::SetVariantValue(v);
+		SetVariantValue(member->Value(object));
+	}
+}
+
+QtPropertyDataInspMember::~QtPropertyDataInspMember()
+{ }
+
+QVariant QtPropertyDataInspMember::GetValueInternal()
+{
+	// get current value from introspection member
+	// we should do this because member may change at any time
+	if(NULL != member)
+	{
+		DAVA::VariantType v = member->Value(object);
+
+		// if current variant value not equal to the real member value
+		// we should update current variant value
+		if(v != GetVariantValue())
+		{
+			QtPropertyDataDavaVariant::SetVariantValue(v);
+		}
 	}
 
 	// return current variant value, converted to QVariant
 	return QtPropertyDataDavaVariant::GetValueInternal();
 }
 
-void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
+void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
 
 	// also save value to meta-object
-	DAVA::VariantType::SaveData(object, meta, QtPropertyDataDavaVariant::GetVariantValue());
+	if(NULL != member)
+	{
+		member->SetValue(object, QtPropertyDataDavaVariant::GetVariantValue());
+	}
 }
 
-bool QtPropertyDataMetaObject::EditorDoneInternal(QWidget *editor)
+bool QtPropertyDataInspMember::EditorDoneInternal(QWidget *editor)
 {
 	bool ret = QtPropertyDataDavaVariant::EditorDoneInternal(editor);
 
 	// if there was some changes in current value, done by editor
 	// we should save them into meta-object
-	if(ret)
+	if(ret && NULL != member)
 	{
-		DAVA::VariantType::SaveData(object, meta, QtPropertyDataDavaVariant::GetVariantValue());
+		member->SetValue(object, QtPropertyDataDavaVariant::GetVariantValue());
 	}
 
 	return ret;

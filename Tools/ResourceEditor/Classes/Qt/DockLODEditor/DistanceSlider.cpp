@@ -1,8 +1,38 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "DistanceSlider.h"
 
 #include "DAVAEngine.h"
 
 #include <QHBoxLayout>
+#include <QApplication>
 
 static const QColor backgroundColors[DAVA::LodComponent::MAX_LOD_LAYERS] =
 {
@@ -17,12 +47,12 @@ static const int MIN_WIDGET_WIDTH = 1;
 DistanceSlider::DistanceSlider(QWidget *parent /*= 0*/)
 	: QFrame(parent)
     , layersCount(0)
+	, locked(false)
 {
-
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setObjectName(QString::fromUtf8("layout"));
     
-    splitter = new QSplitter(this);
+    splitter = new DistanceSplitter(this);
     splitter->setObjectName(QString::fromUtf8("splitter"));
     splitter->setGeometry(geometry());
     splitter->setOrientation(Qt::Horizontal);
@@ -71,6 +101,11 @@ DistanceSlider::~DistanceSlider()
 }
 
 
+void DistanceSlider::LockDistances(bool lock)
+{
+	locked = lock;
+}
+
 void DistanceSlider::SetLayersCount(int count)
 {
     layersCount = count;
@@ -83,66 +118,75 @@ void DistanceSlider::SetLayersCount(int count)
 
 void DistanceSlider::SetDistance(int layer, double value)
 {
-    DVASSERT(0 <= layer && layer < DAVA::LodComponent::MAX_LOD_LAYERS);
-    stretchSize[layer] = value;
+	if(!locked)
+	{
+		DVASSERT(0 <= layer && layer < DAVA::LodComponent::MAX_LOD_LAYERS);
+		stretchSize[layer] = value;
     
-    int scaleSize = GetScaleSize();
+		int scaleSize = GetScaleSize();
     
-    QList<int> sizes;
-    for(int i = 1; i < layersCount; ++i)
-    {
-        sizes.push_back((stretchSize[i] - stretchSize[i-1]) * splitter->geometry().width() / scaleSize);
-    }
+		QList<int> sizes;
+		for(int i = 1; i < layersCount; ++i)
+		{
+			sizes.push_back((stretchSize[i] - stretchSize[i-1]) * splitter->geometry().width() / scaleSize);
+		}
     
-    if(layersCount)
-        sizes.push_back((scaleSize - stretchSize[layer]) * splitter->geometry().width() / scaleSize);
+		if(layersCount)
+			sizes.push_back((scaleSize - stretchSize[layer]) * splitter->geometry().width() / scaleSize);
 
     
-    bool wasBlocked = splitter->blockSignals(true);
-    splitter->setSizes(sizes);
-    splitter->blockSignals(wasBlocked);
+		bool wasBlocked = splitter->blockSignals(true);
+		splitter->setSizes(sizes);
+		splitter->blockSignals(wasBlocked);
+	}
+}
+
+double DistanceSlider::GetDistance(int layer) const
+{
+	DVASSERT(0 <= layer && layer < DAVA::LodComponent::MAX_LOD_LAYERS);
+
+	return stretchSize[layer];
 }
 
 void DistanceSlider::SplitterMoved(int pos, int index)
 {
-    QList<int> sizes = splitter->sizes();
+	if(layersCount > 0)
+	{
+		QList<int> sizes = splitter->sizes();
     
-    double scaleSize = GetScaleSize();
-    
-    int fullSize = 0;
-    for(int i = 0; i  < sizes.size() && i < layersCount-1; ++i)
-    {
-        int sz = sizes.at(i);
-        if(sz <= MIN_WIDGET_WIDTH)
-        {
-            int sz = sizes.at(i);
-            if(sz <= MIN_WIDGET_WIDTH)
-            {
-                if(i >= index)
-                {
-                    int ind = i + 1;
-                    double value = fullSize * scaleSize / splitter->geometry().width();
-                    stretchSize[ind] = value;
-                    emit DistanceChanged(ind, (double)stretchSize[ind]);
-                }
-                else
-                {
-                    int ind = i;
-                    double value = fullSize * scaleSize / splitter->geometry().width();
-                    stretchSize[ind] = value;
-                    emit DistanceChanged(ind, (double)stretchSize[ind]);
-                }
-            }
-        }
-        
-        fullSize += sz;
-    }
-    
-    
-    double value = pos * scaleSize / splitter->geometry().width();
+		double scaleSize = GetScaleSize();
+		bool continious = false;
 
-    stretchSize[index] = value;
-    emit DistanceChanged(index, (double)stretchSize[index]);
+		Qt::MouseButtons mouseBtnState = QApplication::mouseButtons();
+		if(mouseBtnState & Qt::LeftButton)
+		{
+			continious = true;
+		}
+    
+		QVector<int> changedLayers;
+
+		int fullSize = 0;
+		int splitterWidth = splitter->geometry().width() - splitter->handleWidth() * (layersCount - 1);
+
+		for(int i = 0; i < sizes.size(); ++i)
+		{
+			int sz = sizes.at(i);
+			double value = fullSize * scaleSize / splitterWidth;
+
+			if(stretchSize[i] != value)
+			{
+				stretchSize[i] = value;
+				changedLayers.push_front(i);
+			}
+
+			fullSize += sz;
+		}
+    
+		if(changedLayers.size() > 0)
+		{
+			emit DistanceChanged(changedLayers, continious);
+		}
+	}
 }
 
 int DistanceSlider::GetScaleSize()

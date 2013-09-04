@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 //
 //  UIScrollViewTest.cpp
 //  TemplateProjectMacOS
@@ -28,17 +57,23 @@ void UIScrollViewTest::LoadResources()
     font->SetColor(Color::White());
 	
 	scrollView = new UIScrollView(Rect(10, 10, 250, 180));
+	scrollView->SetDebugDraw(true);
+	scrollView->SetReturnSpeed(500);
 	AddControl(scrollView);
 	
 	UIControl *testControlChild = new UIControl(Rect(100, 100, 150, 150));
 	testControlChild->SetDebugDraw(true);
 	testControlChild->GetBackground()->SetColor(Color(0.3333, 0.3333, 0.5555, 1.0000));
 	testControlChild->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testControlChild->SetName("CONTROL_3");
+	testControlChild->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	
 	UIControl *testControl = new UIControl(Rect(50, 0, 150, 150));
 	testControl->SetDebugDraw(true);
 	testControl->GetBackground()->SetColor(Color(0.3333, 0.6667, 0.4980, 1.0000));
 	testControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testControl->SetName("CONTROL_2");
+	testControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	testControl->AddControl(testControlChild);
 	
 	UIButton *testButton = new UIButton(Rect(10, 50, 250, 100));
@@ -47,11 +82,17 @@ void UIScrollViewTest::LoadResources()
 	testButton->SetStateText(STATE_NORMAL, L"First button");
 	testButton->GetBackground()->SetColor(Color(0.6667, 0.6667, 0.4980, 1.0000));
 	testButton->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testButton->SetName("CONTROL_1");
+	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	testButton->AddControl(testControl);
 	
 	scrollView->AddControl(testButton);
 	
-	finishTestBtn = new UIButton(Rect(10, 210, 300, 30));
+	testMessageText = new UIStaticText(Rect(10, 210, 300, 30));
+	testMessageText->SetFont(font);
+	AddControl(testMessageText);
+	
+	finishTestBtn = new UIButton(Rect(10, 260, 300, 30));
 	finishTestBtn->SetStateFont(0xFF, font);
 	finishTestBtn->SetStateText(0xFF, L"Finish test");
 
@@ -65,6 +106,7 @@ void UIScrollViewTest::UnloadResources()
 	RemoveAllControls();
 	SafeRelease(scrollView);
 	SafeRelease(finishTestBtn);
+	SafeRelease(testMessageText);
 }
 
 void UIScrollViewTest::DidAppear()
@@ -97,6 +139,17 @@ bool UIScrollViewTest::RunTest(int32 testNum)
 
 void UIScrollViewTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
+	UIControl *control = dynamic_cast<UIControl*>(obj);
+	if (control)
+	{
+		String msg = Format("Tap on control - %s", control->GetName().c_str());
+		testMessageText->SetText(StringToWString(msg));
+	}
+	else
+	{
+		testMessageText->SetText(L"");
+	}
+
 	if (obj == finishTestBtn)
 	{
 		testFinished = true;
