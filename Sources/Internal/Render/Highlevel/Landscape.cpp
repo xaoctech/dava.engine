@@ -102,6 +102,7 @@ static FastName FULL_TILED_TEXTURE_PROPS_NAMES[] =
 Landscape::Landscape()
     : indices(0), currentMaterial(NULL)
 {
+	drawIndices = 0;
     textureNames.resize(TEXTURE_COUNT);
     
     type = TYPE_LANDSCAPE;
@@ -652,6 +653,8 @@ void Landscape::FlushQueue()
     if (queueRenderCount == 0)return;
     
 	currentMaterial->Draw(landscapeRDOArray[queueRdoQuad], indices, queueRenderCount);
+	
+	drawIndices += queueRenderCount;
 
     ClearQueue();
     
@@ -1100,6 +1103,8 @@ void Landscape::UnbindMaterial()
 void Landscape::Draw(Camera * camera)
 {
     TIME_PROFILE("LandscapeNode.Draw");
+	
+	drawIndices = 0;
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
@@ -1691,11 +1696,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	}	
 }
     
-void Landscape::SetFog(bool _isFogEnabled)
+void Landscape::SetFog(const bool& fogState)
 {
-    if(isFogEnabled != _isFogEnabled)
+    if(isFogEnabled != fogState)
     {
-        isFogEnabled = _isFogEnabled;
+        isFogEnabled = fogState;
 		
 		NMaterial* global = MaterialSystem::Instance()->GetMaterial("Global");
 		DVASSERT(global);
@@ -1808,6 +1813,11 @@ void Landscape::SetupMaterialProperties()
 	fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
 	fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
 	fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+}
+	
+uint32 Landscape::GetDrawIndices() const
+{
+	return drawIndices;
 }
 	
 };

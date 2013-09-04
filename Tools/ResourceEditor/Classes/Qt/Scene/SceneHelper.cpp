@@ -60,7 +60,8 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 			{
 				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
+					Texture* tx = material->GetTexture(t);
+					CollectTexture(textures, tx->GetPathname().GetAbsolutePathname(), tx);
 				}
 			}
 
@@ -124,7 +125,8 @@ void SceneHelper::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::Fi
 			{
 				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-					CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
+					Texture* tx = material->GetTexture(t);
+					CollectDescriptors(descriptors, tx->GetPathname());
 				}
 			}
 

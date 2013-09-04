@@ -27,7 +27,8 @@
 =====================================================================================*/
 
 
-
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/MaterialSystem.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 
 namespace DAVA
@@ -86,13 +87,15 @@ namespace DAVA
 		{
 			RenderDataObject* renderDataObj = new RenderDataObject();
 			
-			Material* skyboxMaterial = new Material();
+			/*Material* skyboxMaterial = new Material();
 			skyboxMaterial->SetType(Material::MATERIAL_SKYBOX);
 			skyboxMaterial->SetAlphablend(false);
 			skyboxMaterial->SetName("SkyBox_material");
 			skyboxMaterial->GetRenderState()->SetDepthFunc(CMP_LEQUAL);
 			skyboxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
-			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;
+			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;*/
+			
+			NMaterial* skyboxMaterial = MaterialSystem::Instance()->GetMaterial("Skybox")->CreateChild();
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
 			skyboxRenderBatch->SetRenderDataObject(renderDataObj);
@@ -188,7 +191,7 @@ namespace DAVA
 	{
 		if(renderBatchArray.size() > 0)
 		{
-			Material* skyboxMaterial = renderBatchArray[0]->GetMaterial();
+			NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
 			
 			//since the renderBatchArray is entirely controlled by SkyboxRenderObject
 			//we can safely assume that objects in render batch array are properly initialized
@@ -198,11 +201,11 @@ namespace DAVA
 			
 			if(tx && DAVA::Texture::TEXTURE_2D == tx->textureType)
 			{
-				//this count happen when pink texture were returned
+				//this could happen when pink texture were returned
 				SafeRelease(tx);
 			}
 			
-			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, tx);
 			SafeRelease(tx);
 		}
 	}

@@ -290,7 +290,7 @@ public:
     
 	virtual RenderObject * Clone(RenderObject *newObject);
 
-    int32 GetDrawIndices() const;
+    uint32 GetDrawIndices() const;
 
 protected:	
     
@@ -401,6 +401,8 @@ protected:
 	NMaterial* tileMaskMaterial;
 	NMaterial* fullTiledMaterial;
 	NMaterial* currentMaterial;
+	
+	uint32 drawIndices;
     
 public:
     

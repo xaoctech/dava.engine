@@ -155,7 +155,7 @@ NMaterial::~NMaterial()
 	texturesArray.clear();
 }
     
-void NMaterial::AddMaterialProperty(const String & keyName, YamlNode * uniformNode)
+void NMaterial::AddMaterialProperty(const String & keyName, const YamlNode * uniformNode)
 {
     FastName uniformName = keyName;
     Logger::Debug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
@@ -304,27 +304,27 @@ bool NMaterial::LoadFromFile(const String & pathname)
         return false;
     }
     
-    YamlNode * materialNode = rootNode->Get("Material");
+    const YamlNode * materialNode = rootNode->Get("Material");
 
-    YamlNode * layersNode = materialNode->Get("Layers");
+    const YamlNode * layersNode = materialNode->Get("Layers");
     if (layersNode)
     {
         int32 count = layersNode->GetCount();
         for (int32 k = 0; k < count; ++k)
         {
-            YamlNode * singleLayerNode = layersNode->Get(k);
+            const YamlNode * singleLayerNode = layersNode->Get(k);
             layers.Insert(FastName(singleLayerNode->AsString()));
         }
     }
 	effectiveLayers.Combine(layers);
     
-    YamlNode * uniformsNode = materialNode->Get("Uniforms");
+    const YamlNode * uniformsNode = materialNode->Get("Uniforms");
     if (uniformsNode)
     {
         uint32 count = uniformsNode->GetCount();
         for (uint32 k = 0; k < count; ++k)
         {
-            YamlNode * uniformNode = uniformsNode->Get(k);
+            const YamlNode * uniformNode = uniformsNode->Get(k);
             if (uniformNode)
             {
                 AddMaterialProperty(uniformsNode->GetItemKeyName(k), uniformNode);
@@ -332,13 +332,13 @@ bool NMaterial::LoadFromFile(const String & pathname)
         }
     }
 
-	YamlNode * materialDefinesNode = materialNode->Get("MaterialDefines");
+	const YamlNode * materialDefinesNode = materialNode->Get("MaterialDefines");
     if (materialDefinesNode)
     {
         uint32 count = materialDefinesNode->GetCount();
         for (uint32 k = 0; k < count; ++k)
         {
-            YamlNode * defineNode = materialDefinesNode->Get(k);
+            const YamlNode * defineNode = materialDefinesNode->Get(k);
             if (defineNode)
             {
                 nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
@@ -348,13 +348,13 @@ bool NMaterial::LoadFromFile(const String & pathname)
 	
     for (int32 k = 0; k < rootNode->GetCount(); ++k)
     {
-        YamlNode * renderStepNode = rootNode->Get(k);
+        const YamlNode * renderStepNode = rootNode->Get(k);
         
         if (renderStepNode->AsString() == "RenderPass")
         {
             Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
-            YamlNode * shaderNode = renderStepNode->Get("Shader");
-            YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
+            const YamlNode * shaderNode = renderStepNode->Get("Shader");
+            const YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
 
             if (!shaderNode && !shaderGraphNode)
             {
@@ -386,26 +386,26 @@ bool NMaterial::LoadFromFile(const String & pathname)
             }
             
             FastNameSet definesSet;
-            YamlNode * definesNode = renderStepNode->Get("UniqueDefines");
+            const YamlNode * definesNode = renderStepNode->Get("UniqueDefines");
             if (definesNode)
             {
                 int32 count = definesNode->GetCount();
                 for (int32 k = 0; k < count; ++k)
                 {
-                    YamlNode * singleDefineNode = definesNode->Get(k);
+                    const YamlNode * singleDefineNode = definesNode->Get(k);
                     definesSet.Insert(FastName(singleDefineNode->AsString().c_str()));
                 }
             }
             
             RenderState * renderState = new RenderState();
-            YamlNode * renderStateNode = renderStepNode->Get("RenderState");
+            const YamlNode * renderStateNode = renderStepNode->Get("RenderState");
             if (renderStepNode)
             {
                 renderState->LoadFromYamlNode(renderStepNode);
             }
             
             
-            YamlNode * renderPassNameNode = renderStepNode->Get("Name");
+            const YamlNode * renderPassNameNode = renderStepNode->Get("Name");
             FastName renderPassName;
             if (renderPassNameNode)
             {

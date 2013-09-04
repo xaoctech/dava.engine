@@ -105,6 +105,7 @@ public:
 
 	RenderLayer * AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer);
     
+	RenderPass * GetRenderPass(const FastName & passName);
     
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();

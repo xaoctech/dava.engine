@@ -276,7 +276,7 @@ void RenderSystem::Update(float32 timeElapsed)
         objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
 
-	particleEmitterSystem->Update(timeElapsed);
+	particleEmitterSystem->Update(timeElapsed, camera);
     
     
     // Update nearest lights for objects    
@@ -350,5 +350,9 @@ const Color & RenderSystem::GetShadowRectColor()
     return shadowRect->GetColor();
 }
 
+RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
+{
+	return renderPassesMap[passName];
+}
 
 };
