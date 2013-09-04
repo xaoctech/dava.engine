@@ -15,6 +15,7 @@
 =====================================================================================*/
 
 #include "Scene/System/StructureSystem.h"
+#include "Scene/System/CameraSystem.h"
 #include "Scene/SceneSignals.h"
 #include "Scene/SceneEditor2.h"
 
@@ -296,19 +297,38 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 		DAVA::Entity *loadedEntity = Load(newModelPath);
 		if(NULL != loadedEntity)
 		{
-            KeyedArchive *customProps = loadedEntity->GetCustomProperties();
+			DAVA::Vector3 entityPos = pos;
+
+			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
-            
+
+			if(entityPos.IsZero())
+			{
+				SceneCameraSystem *cameraSystem = sceneEditor->cameraSystem;
+
+				DAVA::Vector3 camDirection = cameraSystem->GetCameraDirection();
+				DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
+
+				DAVA::AABBox3 commonBBox = loadedEntity->GetWTMaximumBoundingBoxSlow();
+				DAVA::float32 bboxSize = (commonBBox.max - commonBBox.min).Length();
+
+				camDirection.Normalize();
+				
+				entityPos = camPosition + camDirection * (bboxSize / 2);
+			}
+
 			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
-			transform.SetTranslationVector(pos);
+			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
 			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
 			loadedEntity->Release();
 
+			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
+			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
-
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+			// <--
             
 			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
