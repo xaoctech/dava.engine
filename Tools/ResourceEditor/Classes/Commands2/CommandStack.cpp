@@ -150,6 +150,8 @@ void CommandStack::Exec(Command2 *command)
 
 void CommandStack::BeginBatch(const DAVA::String &text)
 {
+	DVASSERT(NULL == curBatchCommand);
+
 	if(NULL == curBatchCommand)
 	{
 		curBatchCommand = new CommandBatch();
