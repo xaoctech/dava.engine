@@ -35,6 +35,7 @@
 #include <QTabWidget.h>
 #include <QVBoxLayout>
 #include <QPushButton.h>
+#include <QDialogButtonBox>
 #include "DAVAEngine.h"
 #include "GeneralSettingsEditor.h"
 #include "SystemsSettingsEditor.h"
@@ -53,15 +54,15 @@ public:
 
 	void AddTab(QWidget* tabContent, const QString& tabName);
 
-public slots:
+public	slots:
 	
-	void RestoreInitialSettings();
+	void reject();
 	
 protected:
 	
 	QTabWidget* tabWidget;
 	QVBoxLayout* mainLayout;
-	QPushButton* cancelButton;
+	QDialogButtonBox* btnBox;
 	GeneralSettingsEditor* generalSettingsTab;
 	SystemsSettingsEditor* systemsSettingsTab;
 	
