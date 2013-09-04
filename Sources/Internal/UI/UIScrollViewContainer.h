@@ -34,7 +34,7 @@ public:
 public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Input(UIEvent *currentTouch);
-	
+	virtual bool SystemInput(UIEvent *currentInput);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
 	// Set the speed of returning control to bounds.
@@ -74,7 +74,8 @@ protected:
 
 	// Return to bounds speed, in pixels per second.
 	int32		returnToBoundsSpeed;
-
+	
+	int 		mainTouch;	
 	bool		scrollStartMovement;
 	UIEvent		scrollTouch;
 };
