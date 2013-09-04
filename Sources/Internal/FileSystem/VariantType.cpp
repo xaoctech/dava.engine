@@ -340,6 +340,8 @@ void VariantType::SetFilePath(const FilePath & value)
 
 void VariantType::SetVariant(const VariantType& var)
 {
+	type = TYPE_NONE;
+
 	switch(var.type)
 	{
 	case TYPE_BOOLEAN:
