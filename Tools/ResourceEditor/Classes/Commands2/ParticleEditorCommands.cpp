@@ -252,7 +252,17 @@ void CommandUpdateParticleLayer::Redo()
 	if (layer->type != layerType)
 	{
 		emitter->Stop();
-		layer->type = layerType;
+		if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			layer->RemoveInnerEmitter();
+		}
+		layer->type = layerType;		
+		if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			layer->CreateInnerEmitter();
+			if (!layer->innerEmitterPath.IsEmpty())
+				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);
+		}
 		emitter->Play();
 	}
 	

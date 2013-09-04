@@ -28,6 +28,7 @@
 Q_DECLARE_METATYPE(DAVA::Entity*);
 Q_DECLARE_METATYPE(DAVA::ParticleLayer*);
 Q_DECLARE_METATYPE(DAVA::ParticleForce*);
+Q_DECLARE_METATYPE(DAVA::ParticleEmitter*);
 
 class SceneTreeItem : public QStandardItem
 {
@@ -36,7 +37,8 @@ public:
 	{
 		EIT_Entity,
 		EIT_Layer,
-		EIT_Force
+		EIT_Force, 
+		EIT_InnerEmmiter
 	};
 
 	enum eItemDataRole
@@ -79,18 +81,19 @@ public:
 class SceneTreeItemParticleLayer : public SceneTreeItem
 {
 public:
-	SceneTreeItemParticleLayer(DAVA::Entity* parent, DAVA::ParticleLayer *layer);
+	SceneTreeItemParticleLayer(DAVA::ParticleEmitter* parent, DAVA::ParticleLayer *layer);
 	~SceneTreeItemParticleLayer();
 
-	static DAVA::ParticleLayer* GetLayer(SceneTreeItem *item);
+	static DAVA::ParticleLayer* GetLayer(SceneTreeItem *item);	
 	static void DoSync(QStandardItem *rootItem, DAVA::ParticleLayer *layer);
 
 	virtual QString ItemName() const;
 	virtual QVariant ItemData() const;
 	virtual QIcon ItemIcon() const;
 
-	DAVA::Entity *parent;
+	DAVA::ParticleEmitter *parent;
 	DAVA::ParticleLayer *layer;
+	bool hasInnerEmmiter;
 };
 
 class SceneTreeItemParticleForce : public SceneTreeItem
@@ -107,6 +110,22 @@ public:
 
 	DAVA::ParticleLayer *parent;
 	DAVA::ParticleForce *force;
+};
+
+class SceneTreeItemParticleInnerEmmiter : public SceneTreeItem
+{
+public:
+	SceneTreeItemParticleInnerEmmiter(DAVA::ParticleLayer *parent, DAVA::ParticleEmitter *emitter);
+	~SceneTreeItemParticleInnerEmmiter();
+	
+	static void DoSync(QStandardItem *rootItem, DAVA::ParticleEmitter *emitter);
+
+	virtual QString ItemName() const;
+	virtual QVariant ItemData() const;	
+	virtual QIcon ItemIcon() const;
+
+	DAVA::ParticleLayer *parent;
+	DAVA::ParticleEmitter *emitter;
 };
 
 #endif // __QT_PROPERTY_ITEM_H__
