@@ -31,6 +31,7 @@
 #include "EditorLODData.h"
 
 #include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Commands2/Command2.h"
 #include "Classes/Commands2/MetaObjModifyCommand.h"
 
 EditorLODData::EditorLODData()
@@ -46,6 +47,10 @@ EditorLODData::EditorLODData()
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+
+    connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
+
+
 }
 
 EditorLODData::~EditorLODData()
@@ -372,5 +377,15 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
     }
 
     return lod->GetLodLayersCount();
+}
+
+void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    int commandId = command->GetId();
+    
+    if(commandId == CMDID_META_OBJ_MODIFY /* || commandId == ... */) //TODO: need second command id
+    {
+        GetDataFromSelection();
+    }
 }
 

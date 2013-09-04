@@ -35,6 +35,7 @@
 #include "DAVAEngine.h"
 
 class SceneEditor2;
+class Command2;
 class EditorLODData: public QObject
 {
     Q_OBJECT
@@ -79,6 +80,8 @@ protected slots:
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+
+    void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 
     
 protected:
