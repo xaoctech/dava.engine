@@ -68,6 +68,10 @@ public:
 		void SetNearDistance(const float32 &newDistance);
 		void SetFarDistance(const float32 &newDistance);
         
+		float32 GetNearDistance() const;
+		float32 GetFarDistance() const;
+
+
         INTROSPECTION(LodDistance,
             PROPERTY("distance", "Distance", GetDistance, SetDistance, I_SAVE | I_VIEW | I_EDIT)
             MEMBER(nearDistanceSq, "Near Distance", I_SAVE)

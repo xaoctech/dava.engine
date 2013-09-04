@@ -63,7 +63,6 @@ UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rect
 	,	scrollContainer(NULL)
 	,	scroll(NULL)
 	, 	aggregatorPath(FilePath())
-	,	aggregatorSize(Vector2())
 {
 		InitAfterYaml();
 }
@@ -677,12 +676,6 @@ void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
 		aggregatorPath = aggregatorPathNode->AsString();
 	}
-	// Load aggregator size
-	const YamlNode * aggregatorSizeNode = node->Get("aggregatorSize");
-	if (aggregatorSizeNode)
-	{
-		aggregatorSize = aggregatorSizeNode->AsVector2();
-	}
 		
 	// TODO
 	InitAfterYaml();
@@ -701,7 +694,6 @@ void UIList::CopyDataFrom(UIControl *srcControl)
 	UIList* t = (UIList*) srcControl;
 	InitAfterYaml();
 	aggregatorPath = t->aggregatorPath;
-	aggregatorSize = t->aggregatorSize;
 	orientation = t->orientation;
 }
 
@@ -715,22 +707,11 @@ void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
 	this->aggregatorPath = aggregatorPath;
 }
 
-const Vector2& UIList::GetAggregatorSize()
-{
-	return aggregatorSize;
-}
-
-void UIList::SetAggregatorSize(const Vector2 &aggregatorSize)
-{
-	this->aggregatorSize = aggregatorSize;
-}
-
 YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
 	//Temp variables
 	String stringValue;
-	VariantType *nodeValue = new VariantType();
     
 	//Control Type
 	SetPreferredNodeType(node, "UIList");
@@ -760,13 +741,8 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	// Save aggregator path only if it is not empty
 	if (!aggregatorPath.IsEmpty())
 	{
-		node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());		
-		// Save aggregator size
-		nodeValue->SetVector2(this->aggregatorSize);
-		node->Set("aggregatorSize", nodeValue);
+		node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());
 	}
-	
-	SafeDelete(nodeValue);
     
 	return node;
 }
