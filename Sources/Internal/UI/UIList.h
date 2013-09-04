@@ -191,9 +191,6 @@ public:
 	// Get and set aggregator path
 	const FilePath & GetAggregatorPath();
 	void SetAggregatorPath(const FilePath &aggregatorPath);
-	// Get and set aggregator size
-	const Vector2& GetAggregatorSize();
-	void SetAggregatorSize(const Vector2 &aggregatorSize);
     
     float32 GetScrollPosition();
     void SetScrollPosition(float32 newScrollPos);
@@ -274,7 +271,6 @@ protected:
 	
 	bool needRefresh;
 	FilePath aggregatorPath;
-	Vector2 aggregatorSize;
 
 	Map<String,Vector<UIListCell*>*> cellStore;
 
