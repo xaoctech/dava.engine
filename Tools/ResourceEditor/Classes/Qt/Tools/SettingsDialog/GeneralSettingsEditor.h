@@ -34,7 +34,7 @@
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData.h"
-#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataMetaObject.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
 class GeneralSettingsEditor: public QtPropertyEditor
 {

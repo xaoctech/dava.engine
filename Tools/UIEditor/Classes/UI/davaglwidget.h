@@ -65,6 +65,7 @@ public:
 	virtual void focusInEvent(QFocusEvent *);
 	virtual void focusOutEvent(QFocusEvent *);
 
+
 	void dropEvent(QDropEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
@@ -96,3 +97,4 @@ private:
 };
 
 #endif // DAVAGLWIDGET_H
+

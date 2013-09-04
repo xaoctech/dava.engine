@@ -278,8 +278,19 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 		break;
 	case DropingLayer:
 		{
-			DAVA::Entity *parentEntity = SceneTreeItemEntity::GetEntity(parentItem);
-			DAVA::ParticleEmitter* emitter = DAVA::GetEmitter(parentEntity);
+			
+			DAVA::ParticleEmitter* emitter = NULL;
+			if (parentItem->ItemType() == SceneTreeItem::EIT_Entity)
+			{
+				DAVA::Entity *parentEntity = SceneTreeItemEntity::GetEntity(parentItem);
+				emitter = DAVA::GetEmitter(parentEntity);
+			}
+			else if (parentItem->ItemType() == SceneTreeItem::EIT_InnerEmmiter)
+			{
+				emitter = ((SceneTreeItemParticleInnerEmmiter* )parentItem)->emitter;
+			}
+
+
 			QVector<void*> *layersV = DecodeMimeData(data, mimeFormatLayer);
 
 			if(NULL != emitter && NULL != layersV && layersV->size() > 0)
@@ -392,14 +403,22 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 	case DropingLayer:
 		{
 			// accept layer to be dropped only to entity with particle emitter
-			if(NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Entity)
+			if(NULL != parentItem) 
 			{
-				DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(parentItem);
-				if(NULL != DAVA::GetEmitter(entity))
+				if (parentItem->ItemType() == SceneTreeItem::EIT_Entity)
+				{
+					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(parentItem);
+					if(NULL != DAVA::GetEmitter(entity))
+					{
+						ret = true;
+					}
+				}
+				else if (parentItem->ItemType() == SceneTreeItem::EIT_InnerEmmiter)
 				{
 					ret = true;
 				}
 			}
+
 		}
 		break;
 	case DropingForce:
