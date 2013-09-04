@@ -53,10 +53,22 @@ void LodComponent::LodDistance::SetNearDistance(const float32 &newDistance)
 	nearDistanceSq = newDistance * newDistance;
 }
 
+float32 LodComponent::LodDistance::GetNearDistance() const
+{
+	return sqrtf(nearDistanceSq);
+}
+
+
 void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 {
 	farDistanceSq = newDistance * newDistance;
 }
+
+float32 LodComponent::LodDistance::GetFarDistance() const
+{
+	return sqrtf(farDistanceSq);
+}
+
 
 Component * LodComponent::Clone(Entity * toEntity)
 {
