@@ -16,9 +16,9 @@
 
 #include "DAVAEngine.h"
 #include "QtPropertyDataIntrospection.h"
-#include "QtPropertyDataDavaVariant.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyDataIntoCollection.h"
+#include "QtPropertyDataInspMember.h"
+#include "QtPropertyDataInspColl.h"
 
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, int hasAllFlags)
 	: object(_object)
@@ -87,13 +87,13 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int 
 			// collection
             if(member->Collection() && !isKeyedArchive)
             {
-                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAllFlags);
+                QtPropertyDataInspColl *childCollection = new QtPropertyDataInspColl(memberObject, member->Collection(), hasAllFlags);
                 ChildAdd(member->Name(), childCollection);
             }
 			// variant
             else
             {
-                QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
+                QtPropertyDataInspMember *childData = new QtPropertyDataInspMember(object, member);
                 if(!(member->Flags() & DAVA::I_EDIT))
                 {
                     childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
@@ -127,17 +127,6 @@ QVariant QtPropertyDataIntrospection::GetValueInternal()
 {
 	ChildNeedUpdate();
 	return QVariant(info->Name());
-}
-
-void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyData *data)
-{
-	QtPropertyDataDavaVariant *dataVariant = (QtPropertyDataDavaVariant *) data;
-
-	if(childVariantMembers.contains(dataVariant))
-	{
-		const DAVA::InspMember *member = childVariantMembers[dataVariant];
-		member->SetValue(object, dataVariant->GetVariantValue());
-	}
 }
 
 void QtPropertyDataIntrospection::ChildNeedUpdate()
