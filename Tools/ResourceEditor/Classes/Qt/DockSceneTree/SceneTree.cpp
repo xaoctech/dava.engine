@@ -267,6 +267,15 @@ void SceneTree::ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLay
 		item->setCheckState(sceneTreeItemChecked ? Qt::Unchecked : Qt::Checked);
 		blockSignals(false);
 	}
+	
+	//check if we need to resync tree for superemmiter	
+	SceneTreeItemParticleLayer *itemLayer = (SceneTreeItemParticleLayer *) item;
+	bool needEmmiter = selectedLayer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES;	
+	if (itemLayer->hasInnerEmmiter!=needEmmiter)
+	{
+		itemLayer->hasInnerEmmiter = needEmmiter;
+		treeModel->ResyncStructure(treeModel->invisibleRootItem(), treeModel->GetScene());		
+	}
 }
 
 void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
@@ -299,6 +308,10 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 
 		case SceneTreeItem::EIT_Layer:
 			ShowContextMenuLayer(SceneTreeItemParticleLayer::GetLayer(item), mapToGlobal(pos));
+			break;
+
+		case SceneTreeItem::EIT_InnerEmmiter:
+			ShowContextMenuInnerEmitter(((SceneTreeItemParticleInnerEmmiter *)item)->emitter, mapToGlobal(pos));
 			break;
 
 		case SceneTreeItem::EIT_Force:
@@ -442,6 +455,19 @@ void SceneTree::ShowContextMenuForce(DAVA::ParticleLayer* layer, DAVA::ParticleF
 	contextMenu.exec(pos);
 	
 }
+
+void SceneTree::ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, const QPoint &pos)
+{
+	this->selectedInnerEmmiter = emitter;
+	QMenu contextMenu;		
+	contextMenu.addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
+	contextMenu.addSeparator();
+	contextMenu.addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadInnerEmitterFromYaml()));
+	contextMenu.addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveInnerEmitterToYaml()));
+	contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveInnerEmitterToYamlAs()));
+	contextMenu.exec(pos);
+}
+
 
 void SceneTree::LookAtSelection()
 {
@@ -702,6 +728,13 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 					}
 				}
 				break;
+			case SceneTreeItem::EIT_InnerEmmiter:
+				{
+					SceneTreeItemParticleInnerEmmiter *itemEmitter = (SceneTreeItemParticleInnerEmmiter *) item;
+					SceneSignals::Instance()->EmitInnerEmitterSelected(curScene, itemEmitter->emitter);
+					isParticleElements = true;
+				}
+				break;
 			case SceneTreeItem::EIT_Layer:
 				{
 					SceneTreeItemParticleLayer *itemLayer = (SceneTreeItemParticleLayer *) item;
@@ -822,10 +855,20 @@ void SceneTree::AddLayer()
 	if(NULL != sceneEditor)
 	{
 		QModelIndex realIndex = filteringProxyModel->mapToSource(currentIndex());
+		SceneTreeItem *curItem = treeModel->GetItem(realIndex);
+		DAVA::ParticleEmitter* curEmitter= NULL;
 		DAVA::Entity *curEntity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(realIndex));
-		if(NULL != curEntity && DAVA::GetEmitter(curEntity))
+		if(NULL != curEntity)
 		{
-			CommandAddParticleEmitterLayer* command = new CommandAddParticleEmitterLayer(DAVA::GetEmitter(curEntity));
+			curEmitter = DAVA::GetEmitter(curEntity);
+		}
+		else if (curItem->ItemType() == SceneTreeItem::EIT_InnerEmmiter) //special case for inner emmiter
+		{
+			curEmitter = ((SceneTreeItemParticleInnerEmmiter *)curItem)->emitter;
+		}		
+		if (curEmitter)
+		{
+			CommandAddParticleEmitterLayer* command = new CommandAddParticleEmitterLayer(curEmitter);
 			sceneEditor->Exec(command);
 			treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
 		}
@@ -886,6 +929,81 @@ void SceneTree::SaveEmitterToYamlAs()
 {
 	PerformSaveEmitter(true);
 }
+
+
+void SceneTree::LoadInnerEmitterFromYaml()
+{	
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(!sceneEditor) 
+		return;
+	if (!selectedInnerEmmiter) 
+		return;
+	
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
+		GetParticlesConfigPath(), QString("YAML File (*.yaml)"));
+	if (filePath.isEmpty())
+	{
+		return;
+	}		
+	Set<String> validationErrors;
+	CommandLoadParticleEmitterFromYaml* command = new CommandLoadParticleEmitterFromYaml(selectedInnerEmmiter, filePath.toStdString());
+	sceneEditor->Exec(command);		
+
+	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
+
+	if (!SceneValidator::Instance()->ValidateParticleEmitter(selectedInnerEmmiter, validationErrors))
+	{
+		ShowErrorDialog(validationErrors);
+	}
+	
+}
+void SceneTree::SaveInnerEmitterToYaml()
+{
+	PerformSaveInnerEmitter(false);
+}
+void SceneTree::SaveInnerEmitterToYamlAs()
+{
+	PerformSaveInnerEmitter(true);
+}
+void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(!sceneEditor)	
+		return;
+	if (!selectedInnerEmmiter)
+		return;	
+	
+	forceAskFileName|=selectedInnerEmmiter->GetConfigPath().IsEmpty();	
+
+	FilePath yamlPath;
+	if (forceAskFileName)
+	{
+		QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+		QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
+			projectPath, QString("YAML File (*.yaml)"));
+
+		if (filePath.isEmpty())
+		{
+			return;
+		}
+
+		yamlPath = FilePath(filePath.toStdString());
+	}		
+
+	FilePath curEmitterFilePath;
+	if (forceAskFileName)
+	{
+		curEmitterFilePath = yamlPath;
+	}
+	else
+	{
+		curEmitterFilePath = selectedInnerEmmiter->GetConfigPath().IsEmpty() ? yamlPath : selectedInnerEmmiter->GetConfigPath();
+	}
+
+	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(selectedInnerEmmiter, curEmitterFilePath);
+	sceneEditor->Exec(command);	
+}
+
 
 void SceneTree::CloneLayer()
 {
@@ -1040,4 +1158,5 @@ void SceneTree::CleanupParticleEditorSelectedItems()
 {
 	this->selectedLayer = NULL;
 	this->selectedForce = NULL;
+	this->selectedInnerEmmiter = NULL;
 }

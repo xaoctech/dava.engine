@@ -72,6 +72,10 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
 	connect(SceneSignals::Instance(),
+			SIGNAL(InnerEmitterSelected(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnInnerEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleEmitter*)));
+	connect(SceneSignals::Instance(),
 			SIGNAL(LayerSelected(SceneEditor2*, DAVA::ParticleLayer*, bool)),
 			this,
 			SLOT(OnLayerSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, bool)));
@@ -926,6 +930,12 @@ void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene,
 		emitter = GetEmitter(emitterNode);
 	}
 
+	HandleEmitterSelected(emitter, NULL);
+}
+
+void ParticleTimeLineWidget::OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	activeScene = scene;	
 	HandleEmitterSelected(emitter, NULL);
 }
 

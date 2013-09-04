@@ -57,6 +57,10 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
 	connect(SceneSignals::Instance(),
+		SIGNAL(InnerEmitterSelected(SceneEditor2*, DAVA::ParticleEmitter*)),
+		this,
+		SLOT(OnInnerEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleEmitter*)));
+	connect(SceneSignals::Instance(),
 			SIGNAL(LayerSelected(SceneEditor2*, DAVA::ParticleLayer*, bool)),
 			this,
 			SLOT(OnLayerSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, bool)));
@@ -256,6 +260,16 @@ void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene, D
 	
 	// NULL is accepted here too.
 	ParticleEmitter* emitter = GetEmitter(emitterNode);
+	HandleEmitterSelected(scene, emitter, false);
+}
+
+void ParticleEditorWidget::OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	if (!emitter)
+	{
+		// This means nothing Particle Emitter-related is selected.
+		OnNodeDeselected(NULL);
+	}	
 	HandleEmitterSelected(scene, emitter, false);
 }
 
