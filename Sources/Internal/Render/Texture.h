@@ -280,8 +280,6 @@ public:							// properties for fast access
 	String		debugInfo;
 	uint32		width;			// texture width 
 	uint32		height;			// texture height
-//	uint32		imageWidth;		// image width
-//	uint32		imageHeight;	// image height
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;

@@ -215,11 +215,6 @@ void Texture::ReleaseTextureData()
         
     }
     
-//#if defined(__DAVAENGINE_ANDROID__)
-//		SafeDeleteArray(savedData);
-//		savedDataSize = 0;
-//#endif// #if defined(__DAVAENGINE_ANDROID__)
-    
 	if(rboID != (uint32)-1)
 	{
 		RENDER_VERIFY(glDeleteRenderbuffers(1, &rboID));
@@ -243,9 +238,6 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 {
 	RenderManager::Instance()->LockNonMain();
 	Texture * tx = CreateFromData(format, data, width, height, generateMipMaps);
-//#if defined(__DAVAENGINE_ANDROID__)
-//    tx->SaveData(format, data, width, height);
-//#endif //#if defined(__DAVAENGINE_ANDROID__)
 	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
@@ -317,20 +309,6 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 		uint8 * sourceBits = (uint8*)_data;
 		for (uint32 h = 0; h < height * width; ++h)
 		{
-// 			uint32 r = sourceBits[0];
-// 			uint32 g = sourceBits[1];
-// 			uint32 b = sourceBits[2];
-// 			uint32 a = sourceBits[3];
-// 			
-// 		// 		r = ((r * a) >> 8);
-// 		// 		g = ((g * a) >> 8);
-// 		// 		b = ((b * a) >> 8);
-// 
-// 			destBits[0] = (uint8)b; //sourceBits[3];
-// 			destBits[1] = (uint8)g; //sourceBits[0];
-// 			destBits[2] = (uint8)r;//sourceBits[1];
-// 			destBits[3] = (uint8)a;
-
             destBits[0] = sourceBits[2];
             destBits[1] = sourceBits[1];
             destBits[2] = sourceBits[0];
@@ -728,17 +706,6 @@ void Texture::LoadMipMapFromFile(int32 level, const FilePath & pathname)
 {
     DVASSERT(false);
     return;
-
-    
-//	Image * image = Image::CreateFromFile(pathname);
-//	if (image->GetPixelFormat() != format)
-//	{
-//		Logger::Error("Texture::LoadMipMapFromFile - format of file texture different from this texture"); 
-//		SafeRelease(image);
-//		return;
-//	}
-//	TexImage(level, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
-//	SafeRelease(image);
 }
 	
 Texture * Texture::CreateFromFile(const FilePath & pathName)
