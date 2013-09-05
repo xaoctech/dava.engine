@@ -69,7 +69,8 @@
 
 namespace DAVA 
 {
-	
+    
+#if defined __DAVAENGINE_OPENGL__
 static GLuint CUBE_FACE_GL_NAMES[] =
 {
 	GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -79,8 +80,9 @@ static GLuint CUBE_FACE_GL_NAMES[] =
 	GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
+#endif //#if defined __DAVAENGINE_OPENGL__
 	
-static int CUBE_FACE_MAPPING[] =
+static int32 CUBE_FACE_MAPPING[] =
 {
 	Texture::CUBE_FACE_POSITIVE_X,
 	Texture::CUBE_FACE_NEGATIVE_X,
@@ -90,13 +92,14 @@ static int CUBE_FACE_MAPPING[] =
 	Texture::CUBE_FACE_NEGATIVE_Z
 };
 
-static DAVA::String FACE_NAME_SUFFIX[] = {
-		DAVA::String("_px"),
-		DAVA::String("_nx"),
-		DAVA::String("_py"),
-		DAVA::String("_ny"),
-		DAVA::String("_pz"),
-		DAVA::String("_nz")
+static DAVA::String FACE_NAME_SUFFIX[] =
+{
+    DAVA::String("_px"),
+    DAVA::String("_nx"),
+    DAVA::String("_py"),
+    DAVA::String("_ny"),
+    DAVA::String("_pz"),
+    DAVA::String("_nz")
 };
 	
 class TextureMemoryUsageInfo
@@ -357,18 +360,18 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 
 	TextureDescriptor *descriptor = new TextureDescriptor();
 	descriptor->settings.generateMipMaps = generateMipMaps;
-	descriptor->settings.wrapModeS = TextureWrap::WRAP_CLAMP_TO_EDGE;
-	descriptor->settings.wrapModeT = TextureWrap::WRAP_CLAMP_TO_EDGE;
+	descriptor->settings.wrapModeS = WRAP_CLAMP_TO_EDGE;
+	descriptor->settings.wrapModeT = WRAP_CLAMP_TO_EDGE;
 		
 	if(generateMipMaps)
 	{
-		descriptor->settings.minFilter = TextureFilter::FILTER_LINEAR_MIPMAP_LINEAR;
-		descriptor->settings.magFilter = TextureFilter::FILTER_LINEAR;
+		descriptor->settings.minFilter = FILTER_LINEAR_MIPMAP_LINEAR;
+		descriptor->settings.magFilter = FILTER_LINEAR;
 	}
 	else
 	{
-		descriptor->settings.minFilter = TextureFilter::FILTER_LINEAR;
-		descriptor->settings.magFilter = TextureFilter::FILTER_LINEAR;
+		descriptor->settings.minFilter = FILTER_LINEAR;
+		descriptor->settings.magFilter = FILTER_LINEAR;
 	}
 
 	texture->FlushDataToRenderer(descriptor);
@@ -487,11 +490,6 @@ Texture * Texture::CreateFromImage(const FilePath &pathname, const DAVA::Texture
 Texture * Texture::CreateFromImage(File *file, const TextureDescriptor *descriptor)
 {
     Texture * texture = new Texture();
-    if(!texture)
-    {
-        Logger::Error("[Texture::CreateFromImage] Cannot allocate memory for Texture");
-        return NULL;
-    }
     
 	bool loaded = texture->LoadImages(file, descriptor);
 	if(!loaded)
@@ -733,8 +731,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     
 Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor)
 {
-    eGPUFamily gpuForLoading = (GPU_UNKNOWN == defaultGPU) ? (eGPUFamily)descriptor->exportedAsGpuFamily : defaultGPU;
-    gpuForLoading = GetFormatForLoading(gpuForLoading, descriptor);
+    eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
 
 	return CreateFromDescriptor(descriptor, gpuForLoading);
 }
