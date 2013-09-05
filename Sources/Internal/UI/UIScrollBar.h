@@ -61,11 +61,10 @@ public:
         ,	ORIENTATION_HORIZONTAL
     };
     
-    UIScrollBar();
-    UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientation, bool rectInAbsoluteCoordinates = false);
-    
+    UIScrollBar(const Rect &rect = Rect(), eScrollOrientation requiredOrientation = ORIENTATION_VERTICAL,
+				bool rectInAbsoluteCoordinates = false);
     virtual ~UIScrollBar();
-    
+
     void SetDelegate(UIScrollBarDelegate *newDelegate);
     UIControl *GetSlider();
     
@@ -73,7 +72,9 @@ public:
 
     void Input(UIEvent *currentInput);
 
-    
+	eScrollOrientation GetOrientation() const;
+	void SetOrientation(eScrollOrientation value);
+
 private:
     int32 orientation;
     UIScrollBarDelegate *delegate;
