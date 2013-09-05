@@ -32,7 +32,7 @@
 #include "../QtPropertyEditor/QtPropertyEditor.h"
 
 
-#define TAB_CONTENT_WIDTH 400
+#define TAB_CONTENT_WIDTH 600
 #define TAB_CONTENT_HEIGHT 400
 
 

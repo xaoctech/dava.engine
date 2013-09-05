@@ -61,8 +61,6 @@
 #include <QPushButton>
 
 typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
-//typedef DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> PROPERTY_INITIAL_VAL_MAP;
-//typedef DAVA::Map<QPushButton * , STATE_FLAGS_MAP*>  BUTTON_TO_FLAGS_MAP;
 
 class SceneEditor2;
 
@@ -102,6 +100,32 @@ protected slots:
 	void HandleSelectionDrawMode();
 	
 	void HandlePivotPoint();
+	
+	void HandleEntityModifMode();
+		
+	void HandleEntityModifAxis();
+	
+	void HandleEntityLandscapeSnap();
+	
+	void HandleHightmapBrushSize();
+	
+	void HandleHightmapStrength();
+	
+	void HandleHightmapAverageStrength();
+	
+	void HandleHightmapDrawingType();
+	
+	void HandleTileMaskBrushSize();
+	
+	void HandleTileMaskStrength();
+	
+	void HandleTileTextureIndex();
+	
+	void HandleVisibToolBrushSize();
+	
+	void HandleLightCameraEnbled();
+	
+	void HandleRenderShadowRectColor();
 
 protected slots:
 
@@ -127,7 +151,7 @@ protected:
 		}
 	};
 
-	QPushButton * CreatePushBnt();
+	QPushButton * CreatePushBtn();
 	
 	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
 	
@@ -143,22 +167,6 @@ protected:
 	STATE_FLAGS_MAP collisionSysDrawStateMap;
 
 	DAVA::Map<QPushButton * , PropertyInfo>  buttonsMap;
-//	BUTTON_TO_FLAGS_MAP buttonToFlagsMap;
-
 	
-	/*ParticleEffectSystem * particleEffectSystem;
-	RenderSystem * renderSystem;
-
-	SceneCameraSystem *cameraSystem;
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem *hoodSystem;
-	SceneSelectionSystem *selectionSystem;
-	EntityModificationSystem *modifSystem;
-	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
-	HeightmapEditorSystem* heightmapEditorSystem;
-	TilemaskEditorSystem* tilemaskEditorSystem;
-	CustomColorsSystem* customColorsSystem;
-	VisibilityToolSystem* visibilityToolSystem;
-	EditorLightSystem *editorLightSystem;*/
 };
 #endif /* defined(__RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__) */
