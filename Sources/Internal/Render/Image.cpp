@@ -85,11 +85,26 @@ Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
     }
     else 
     {
-        Logger::Error("Image::Create trying to create image with wrong format");
+        Logger::Error("[Image::Create] trying to create image with wrong format");
+		SafeRelease(image);
     }
     
 	return image;
 }
+
+Image * Image::CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data)
+{
+	Image * image = Image::Create(width, height, format);
+	if(!image) return NULL;
+
+	if(data)
+	{
+		Memcpy(image->data, data, image->dataSize);
+	}
+
+	return image;
+}
+
 
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {

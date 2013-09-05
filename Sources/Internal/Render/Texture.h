@@ -101,6 +101,13 @@ public:
 		TEXTURE_2D = 0,
 		TEXTURE_CUBE = 1
 	};
+
+	enum TextureState
+	{
+		STATE_INVALID	=	0,
+		STATE_DATA_LOADED,
+		STATE_VALID
+	};
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 1024;
@@ -161,8 +168,6 @@ public:
         \param[in] pathName path to the png or pvr file
      */
 	static Texture * CreateFromFile(const FilePath & pathName);
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -250,6 +255,8 @@ public:
 	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
 	void SetInvalidater(TextureInvalidater* invalidater);
 
+	inline TextureState GetState() const;
+
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -310,12 +317,22 @@ private:
     
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
+	static void AddToMap(Texture *tex);
     
+	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
+	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
+
 	static Texture * CreateFromImage(const FilePath & pathname, const TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, const TextureDescriptor *descriptor);
 
-    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
-    bool CheckImageSize(const Vector<Image *> &imageSet);
+	Vector<Image *> images;
+	bool LoadImages(File *file, const TextureDescriptor *descriptor);
+	void SetParamsFromImages();
+	void ReleaseImages();
+	void FlushDataToRenderer(const TextureDescriptor *descriptor);
+
+//    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
+    bool CheckImageSize(const Vector<Image *> &imageSet) const;
     bool IsCompressedFormat(PixelFormat format);
     
 	static PixelFormat defaultRGBAFormat;
@@ -341,6 +358,9 @@ private:
     
     static FilePath GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
 	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
+
+
+	TextureState state;
 };
     
 // Implementation of inline functions
@@ -359,6 +379,12 @@ inline const eGPUFamily Texture::GetSourceFileGPUFamily() const
 {
     return loadedAsFile;
 }
+
+inline Texture::TextureState Texture::GetState() const
+{
+	return state;
+}
+
 
 };
 #endif // __DAVAENGINE_TEXTUREGLES_H__
