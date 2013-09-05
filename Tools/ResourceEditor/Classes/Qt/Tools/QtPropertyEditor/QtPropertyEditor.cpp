@@ -117,6 +117,22 @@ int QtPropertyEditor::GetRefreshTimeout()
 	return refreshTimeout;
 }
 
+QtPropertyItem* QtPropertyEditor::AddHeader(const char *text)
+{
+	QPair<QtPropertyItem*, QtPropertyItem*> propHeader;
+	
+	propHeader = AppendProperty(text, NULL);
+	
+	QFont boldFont = propHeader.first->font();
+	boldFont.setBold(true);
+	
+	propHeader.first->setFont(boldFont);
+	propHeader.first->setBackground(QBrush(QColor(Qt::lightGray)));
+	propHeader.second->setBackground(QBrush(QColor(Qt::lightGray)));
+	
+	return propHeader.first;
+}
+
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
 {
 	QColor gridColor = option.palette.color(QPalette::Normal, QPalette::Window);

@@ -34,6 +34,7 @@
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/CollisionSystem.h"
@@ -55,33 +56,117 @@
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 
-class SystemSettingsEditor: public QtPropertyEditor
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
+
+#include <QPushButton>
+
+typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
+
+class SceneEditor2;
+
+class SystemsSettingsEditor: public QtPropertyEditor
 {
 	Q_OBJECT
 	
 public:
-	explicit SystemSettingsEditor(QWidget* parent = 0);
+	explicit SystemsSettingsEditor(QWidget* parent = 0);
 	
-	~SystemSettingsEditor();
+	~SystemsSettingsEditor();
 	
-	ParticleEffectSystem * particleEffectSystem;
-	RenderSystem * renderSystem;
+	void InitializeProperties();
+	void RestoreInitialSettings();
 
-	SceneCameraSystem *cameraSystem;
-	SceneCollisionSystem *collisionSystem;
-	SceneGridSystem *gridSystem;
-	HoodSystem *hoodSystem;
-	SceneSelectionSystem *selectionSystem;
-	EntityModificationSystem *modifSystem;
-	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
-	HeightmapEditorSystem* heightmapEditorSystem;
-	TilemaskEditorSystem* tilemaskEditorSystem;
-	CustomColorsSystem* customColorsSystem;
-	VisibilityToolSystem* visibilityToolSystem;
-	RulerToolSystem* rulerToolSystem;
-	StructureSystem *structureSystem;
-	EditorParticlesSystem *particlesSystem;
-	EditorLightSystem *editorLightSystem;
-	TextDrawSystem *textDrawSystem;
+	
+protected slots:
+	
+	void HandleCustomColorBrushSize();
+
+	void HandleCustomColorColorIndex();
+
+	void HandleCameraMoveSpeed();
+	
+	void HandleCameraViewportRect();
+	
+	void HandleCollisionDrawMode();
+	
+	void HandleHoodModifMode();
+	
+	void HandleHoodPosition();
+	
+	void HandleHoodModifAxis();
+	
+	void HandleHoodScale();
+	
+	void HandleSelectionDrawMode();
+	
+	void HandlePivotPoint();
+	
+	void HandleEntityModifMode();
+		
+	void HandleEntityModifAxis();
+	
+	void HandleEntityLandscapeSnap();
+	
+	void HandleHightmapBrushSize();
+	
+	void HandleHightmapStrength();
+	
+	void HandleHightmapAverageStrength();
+	
+	void HandleHightmapDrawingType();
+	
+	void HandleTileMaskBrushSize();
+	
+	void HandleTileMaskStrength();
+	
+	void HandleTileTextureIndex();
+	
+	void HandleVisibToolBrushSize();
+	
+	void HandleLightCameraEnbled();
+	
+	void HandleRenderShadowRectColor();
+
+protected slots:
+
+	void ShowDialog();
+
+protected:
+
+	struct PropertyInfo
+	{
+		QtPropertyDataDavaVariant*	property;
+		DAVA::VariantType			defaultValue;
+		STATE_FLAGS_MAP *			flagsMap;
+		PropertyInfo()
+		{
+			property = NULL;
+			flagsMap = NULL;
+		}
+		PropertyInfo(QtPropertyDataDavaVariant* _property, DAVA::VariantType _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
+		{
+			property = _property;
+			defaultValue = _defaultValue;
+			flagsMap = _flagsMap;
+		}
+	};
+
+	QPushButton * CreatePushBtn();
+	
+	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
+	
+	void InitMapWithFlag(STATE_FLAGS_MAP& map, DAVA::uint32 value);
+	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
+	
+	
+	DAVA::List<PropertyInfo> propertiesMap;
+
+	SceneEditor2* sceneEditor;
+
+	STATE_FLAGS_MAP selectionSysDrawStateMap;
+	STATE_FLAGS_MAP collisionSysDrawStateMap;
+
+	DAVA::Map<QPushButton * , PropertyInfo>  buttonsMap;
+	
 };
 #endif /* defined(__RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__) */
