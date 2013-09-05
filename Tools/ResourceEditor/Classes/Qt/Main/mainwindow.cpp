@@ -424,7 +424,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
-	QObject::connect(ui->actionServiceNode, SIGNAL(triggered()), this, SLOT(OnServiceNodeDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
 	QObject::connect(ui->actionImposter, SIGNAL(triggered()), this, SLOT(OnImposterDialog()));
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
@@ -1079,15 +1078,6 @@ void QtMainWindow::OnLightDialog()
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
 	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
-}
-
-void QtMainWindow::OnServiceNodeDialog()
-{	
-	Entity* sceneNode = new Entity();
-	KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-	customProperties->SetBool("editor.isLocked", true);
-	sceneNode->SetName(ResourceEditor::SERVICE_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
 
