@@ -171,9 +171,13 @@ Texture * Texture::Get(const FilePath & pathName)
 	return 0;
 }
 
-void Texture::AddToMap( Texture *tex )
+void Texture::AddToMap( Texture *tex, const FilePath & pathname)
 {
-	textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+    tex->relativePathname = pathname;
+    if(!tex->relativePathname.IsEmpty())
+    {
+        textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+    }
 }
 
 
@@ -243,6 +247,7 @@ void Texture::ReleaseTextureData()
 	RenderManager::Instance()->UnlockNonMain();
 
 	isPink = false;
+    state = STATE_INVALID;
 }
 
 
@@ -253,12 +258,11 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
-		tx->relativePathname = Format("Text texture %d", textureFboCounter);
-	else 
-		tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+        AddToMap(tx, Format("Text texture %d", textureFboCounter));
+	else
+        AddToMap(tx, Format("Text texture %d info:%s", textureFboCounter, addInfo));
 
 	textureFboCounter++;
-	AddToMap(tx);
 	return tx;
 }
 	
@@ -354,30 +358,16 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	Image *image = Image::CreateFromData(_width, _height, _format, _data);
 	if(!image) return NULL;
 
+	TextureDescriptor *descriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
+
 	Texture * texture = new Texture();
 	texture->images.push_back(image);
-	texture->SetParamsFromImages();
-
-	TextureDescriptor *descriptor = new TextureDescriptor();
-	descriptor->settings.generateMipMaps = generateMipMaps;
-	descriptor->settings.wrapModeS = WRAP_CLAMP_TO_EDGE;
-	descriptor->settings.wrapModeT = WRAP_CLAMP_TO_EDGE;
-		
-	if(generateMipMaps)
-	{
-		descriptor->settings.minFilter = FILTER_LINEAR_MIPMAP_LINEAR;
-		descriptor->settings.magFilter = FILTER_LINEAR;
-	}
-	else
-	{
-		descriptor->settings.minFilter = FILTER_LINEAR;
-		descriptor->settings.magFilter = FILTER_LINEAR;
-	}
-
+	
+    texture->SetParamsFromImages();
 	texture->FlushDataToRenderer(descriptor);
+	texture->ReleaseImages();
 
 	SafeRelease(descriptor);
-	texture->ReleaseImages();
 	return texture;
 }		
 	
@@ -571,6 +561,8 @@ void Texture::SetParamsFromImages()
 	format = images[0]->format;
 
 	textureType = (images[0]->cubeFaceID != (uint32)-1) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
+    
+    state = STATE_DATA_LOADED;
 }
 
 
@@ -582,16 +574,13 @@ void Texture::FlushDataToRenderer(const TextureDescriptor *descriptor)
 
 
 	RenderManager::Instance()->LockNonMain();
+    
 #if defined(__DAVAENGINE_OPENGL__)
 	GenerateID();
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	id = CreateTextureNative(Vector2((float32)_width, (float32)_height), texture->format, false, 0);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
-	RenderManager::Instance()->UnlockNonMain();
 
-
-
-	RenderManager::Instance()->LockNonMain();
 	for(uint32 i = 0; i < (uint32)images.size(); ++i)
 	{
 		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
@@ -653,6 +642,7 @@ void Texture::FlushDataToRenderer(const TextureDescriptor *descriptor)
 
 	RenderManager::Instance()->UnlockNonMain();
 
+    state = STATE_VALID;
 }
 
 bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet) const
@@ -699,7 +689,6 @@ Texture * Texture::CreateFromFile(const FilePath & pathName)
 	if(!texture)
 	{
 		texture = CreatePink(pathName);
-		AddToMap(texture);
 	}
 
 	return texture;
@@ -718,11 +707,9 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     if(!descriptor) return NULL;
     
 	texture = CreateFromDescriptor(descriptor);
-
     if(texture)
     {
-		texture->relativePathname = descriptorPathname;
-		AddToMap(texture);
+		AddToMap(texture, descriptorPathname);
     }
     
     SafeRelease(descriptor);
@@ -797,64 +784,29 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor
 	}
 
     bool loaded = false;
-    if(descriptor &&
-	   (file != NULL || descriptor->IsCubeMap()) &&
-	   IsLoadAvailable(gpuForLoading, descriptor))
+    if((file != NULL || descriptor->IsCubeMap()) && IsLoadAvailable(gpuForLoading, descriptor))
     {
 		loaded = LoadImages(file, descriptor);
 		if(loaded)
 		{
+            loadedAsFile = gpuForLoading;
+
 			SetParamsFromImages();
 			FlushDataToRenderer(descriptor);
 			ReleaseImages();
 		}
     }
     
+    SafeRelease(file);
+
     if(!loaded)
     {
-        width = 16;
-		height = 16;
-        format = FORMAT_RGBA8888;
-        
-        RenderManager::Instance()->LockNonMain();
-#if defined(__DAVAENGINE_OPENGL__)
-        GenerateID();
-#elif defined(__DAVAENGINE_DIRECTX9__)
-        id = CreateTextureNative(Vector2((float32)width, (float32)height), format, false, 0);
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-        RenderManager::Instance()->UnlockNonMain();
-        
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.GetAbsolutePathname().c_str());
-        
-        
-        uint32 dataSize = width * height * GetPixelFormatSizeInBytes(format);
-		uint8 * data = new uint8[dataSize];
-		uint32 pink = 0xffff00ff;
-		uint32 gray = 0xff7f7f7f;
-		bool pinkOrGray = false;
-        
-		uint32 * writeData = (uint32*)data;
-		for(uint32 w = 0; w < width; ++w)
-		{
-			pinkOrGray = !pinkOrGray;
-			for(uint32 h = 0; h < height; ++h)
-			{
-				*writeData++ = pinkOrGray ? pink : gray;
-				pinkOrGray = !pinkOrGray;
-			}
-		}
-        
-        TexImage(0, width, height, data, dataSize, Texture::CUBE_FACE_INVALID);
-        GeneratePixelesation();
 
-		isPink = true;
+        MakePink();
+
+        GeneratePixelesation();
     }
-    else
-    {
-        loadedAsFile = gpuForLoading;
-    }
-    
-    SafeRelease(file);
 }
     
 bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
@@ -916,16 +868,16 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	
 #if defined(__DAVAENGINE_OPENGL__)
 
-	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
-	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
-
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy, false);
-    
 	DVASSERT(tx);
 
 	tx->depthFormat = _depthFormat;
-	 
+
+    
+	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
+	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
+ 
 	RenderManager::Instance()->HWglBindTexture(tx->id, tx->textureType);
 	
 	RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
@@ -961,7 +913,6 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	
 	// TODO: Create FBO
 	Texture * tx = new Texture();
-	if (!tx)return 0;
 
 	tx->width = dx;
 	tx->height = dy;
@@ -973,10 +924,9 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 	RenderManager::Instance()->UnlockNonMain();
 
-
-	tx->isRenderTarget = true;
-	tx->relativePathname = Format("FBO texture %d", textureFboCounter);
-	AddToMap(tx);
+    tx->isRenderTarget = true;
+    
+	AddToMap(tx, Format("FBO texture %d", textureFboCounter));
 	
 	textureFboCounter++;
 	
@@ -1192,38 +1142,31 @@ int32 Texture::GetDataSize() const
 
 Texture * Texture::CreatePink(const FilePath &path)
 {
-	static bool pinkInitialized = false;
-	static const uint32 pinkW = 16;
-	static const uint32 pinkH = 16;
-	static uint8 pinkData[16 * 16 * 4];
-
-	if(!pinkInitialized)
-	{
-		uint32 pink = 0xffff00ff;
-		uint32 gray = 0xff7f7f7f;
-		bool pinkOrGray = false;
-
-		uint32 * writeData = (uint32*) pinkData;
-		for(uint32 w = 0; w < pinkW; ++w)
-		{
-			pinkOrGray = !pinkOrGray;
-			for(uint32 h = 0; h < pinkH; ++h)
-			{
-				*writeData++ = pinkOrGray ? pink : gray;
-				pinkOrGray = !pinkOrGray;
-			}
-		}
-
-		pinkInitialized = true;
-	}
-
-	Texture *ret = Texture::CreateFromData(FORMAT_RGBA8888, pinkData, pinkW, pinkH, false);
-	ret->relativePathname = path;
-	ret->isPink = true;
-
-	return ret;
+    Texture *tex = new Texture();
+    tex->MakePink();
+	
+    AddToMap(tex, path);
+    
+	return tex;
 }
 
+void Texture::MakePink()
+{
+    DVASSERT(images.size() == 0);
+    
+	images.push_back(Image::CreatePinkPlaceholder());
+
+    TextureDescriptor *descriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
+    
+	SetParamsFromImages();
+    FlushDataToRenderer(descriptor);
+	ReleaseImages();
+
+    SafeRelease(descriptor);
+
+    isPink = true;
+}
+    
 bool Texture::IsPinkPlaceholder()
 {
 	return isPink;
@@ -1485,7 +1428,5 @@ void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>
 		faceNames.push_back(faceFilePath.GetAbsolutePathname());
 	}
 }
-
-
 
 };
