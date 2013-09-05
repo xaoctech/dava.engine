@@ -686,6 +686,9 @@
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
+		1AD7C35017D8804400B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C34F17D8804400B9977C /* Vector.cpp */; };
+		1AD7C35117D8804400B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C34F17D8804400B9977C /* Vector.cpp */; };
+		1AD7C35217D8804400B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C34F17D8804400B9977C /* Vector.cpp */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
 		4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
@@ -2074,6 +2077,7 @@
 		17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIPluginMacOS.h; sourceTree = "<group>"; };
 		17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIPluginMacOS.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
+		1AD7C34F17D8804400B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
@@ -3197,6 +3201,7 @@
 				E8989BB016BD24E400732C04 /* Spline.cpp */,
 				E8989BB116BD24E400732C04 /* Spline.h */,
 				E8989BB216BD24E400732C04 /* Vector.h */,
+				1AD7C34F17D8804400B9977C /* Vector.cpp */,
 			);
 			path = Math;
 			sourceTree = "<group>";
@@ -5306,6 +5311,7 @@
 				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
 				A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554C17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
+				1AD7C35217D8804400B9977C /* Vector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5621,6 +5627,7 @@
 				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
 				A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554A17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
+				1AD7C35017D8804400B9977C /* Vector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5920,6 +5927,7 @@
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
 				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
+				1AD7C35117D8804400B9977C /* Vector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
