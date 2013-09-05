@@ -116,7 +116,6 @@ public slots:
 		
 	void OnLandscapeDialog();
 	void OnLightDialog();
-	void OnServiceNodeDialog();
 	void OnCameraDialog();
 	void OnImposterDialog();
 
