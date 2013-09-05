@@ -34,6 +34,7 @@
 #include "Main/QtUtils.h"
 #include "../Scene/SceneSignals.h"
 #include "../Scene/SceneEditor2.h"
+#include "../Main/mainwindow.h"
 
 #include <QFileDialog>
 
@@ -41,6 +42,8 @@ VisibilityToolPropertiesView::VisibilityToolPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::VisibilityToolPropertiesView)
 ,	activeScene(NULL)
+,	toolbarAction(NULL)
+,	dockWidget(NULL)
 {
 	ui->setupUi(this);
 
@@ -54,34 +57,37 @@ VisibilityToolPropertiesView::~VisibilityToolPropertiesView()
 
 void VisibilityToolPropertiesView::Init()
 {
+	ui->sliderWidgetAreaSize->Init(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_CAPTION.c_str(), false,
+								   DEF_AREA_MAX_SIZE, DEF_AREA_MIN_SIZE, DEF_AREA_MIN_SIZE);
+
+	toolbarAction = QtMainWindow::Instance()->GetUI()->actionVisibilityCheckTool;
+
+	dockWidget = QtMainWindow::Instance()->GetUI()->dockVisibilityToolEditor;
+	dockWidget->setFeatures(dockWidget->features() & ~(QDockWidget::DockWidgetClosable));
+
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(VisibilityToolStateChanged(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)),
 			this, SLOT(SetVisibilityToolButtonsState(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)));
 
-	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), this, SLOT(Toggle()));
 	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
 	connect(ui->buttonSetVisibilityPoint, SIGNAL(clicked()), this, SLOT(SetVisibilityPoint()));
 	connect(ui->buttonSetVisibilityArea, SIGNAL(clicked()), this, SLOT(SetVisibilityArea()));
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetVisibilityAreaSize(int)));
+	connect(ui->sliderWidgetAreaSize, SIGNAL(ValueChanged(int)), this, SLOT(SetVisibilityAreaSize(int)));
+
+	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
 
 	SetWidgetsState(false);
 }
 
 void VisibilityToolPropertiesView::SetWidgetsState(bool enabled)
 {
-	ui->buttonEnableVisibilityTool->blockSignals(true);
-	ui->buttonEnableVisibilityTool->setCheckable(enabled);
-	ui->buttonEnableVisibilityTool->setChecked(enabled);
-	ui->buttonEnableVisibilityTool->blockSignals(false);
-
-	QString toggleButtonText = enabled ? tr("Disable Visibility Tool"): tr("Enable Visibility Tool");
-	ui->buttonEnableVisibilityTool->setText(toggleButtonText);
+	toolbarAction->setChecked(enabled);
 
 	ui->buttonSaveTexture->setEnabled(enabled);
 	ui->buttonSetVisibilityPoint->setEnabled(enabled);
 	ui->buttonSetVisibilityArea->setEnabled(enabled);
-	ui->sliderBrushSize->setEnabled(enabled);
+	ui->sliderWidgetAreaSize->setEnabled(enabled);
 	BlockAllSignals(!enabled);
 }
 
@@ -90,7 +96,7 @@ void VisibilityToolPropertiesView::BlockAllSignals(bool block)
 	ui->buttonSaveTexture->blockSignals(block);
 	ui->buttonSetVisibilityPoint->blockSignals(block);
 	ui->buttonSetVisibilityArea->blockSignals(block);
-	ui->sliderBrushSize->blockSignals(block);
+	ui->sliderWidgetAreaSize->blockSignals(block);
 }
 
 void VisibilityToolPropertiesView::SceneActivated(SceneEditor2* scene)
@@ -102,18 +108,43 @@ void VisibilityToolPropertiesView::SceneActivated(SceneEditor2* scene)
 
 void VisibilityToolPropertiesView::SceneDeactivated(SceneEditor2* scene)
 {
+	if (activeScene)
+	{
+		KeyedArchive* customProperties = activeScene->GetCustomProperties();
+		if (customProperties)
+		{
+			customProperties->SetInt32(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_MIN,
+									   ui->sliderWidgetAreaSize->GetRangeMin());
+			customProperties->SetInt32(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_MAX,
+									   ui->sliderWidgetAreaSize->GetRangeMax());
+		}
+	}
+
 	activeScene = NULL;
 }
 
 void VisibilityToolPropertiesView::UpdateFromScene(SceneEditor2* scene)
 {
 	bool enabled = scene->visibilityToolSystem->IsLandscapeEditingEnabled();
-	int32 brushSize = scene->visibilityToolSystem->GetBrushSize();
+	int32 brushSize = IntFromAreaSize(scene->visibilityToolSystem->GetBrushSize());
+
+	int32 areaSizeMin = DEF_AREA_MIN_SIZE;
+	int32 areaSizeMax = DEF_AREA_MAX_SIZE;
+
+	KeyedArchive* customProperties = scene->GetCustomProperties();
+	if (customProperties)
+	{
+		areaSizeMin = customProperties->GetInt32(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_MIN, DEF_AREA_MIN_SIZE);
+		areaSizeMax = customProperties->GetInt32(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_MAX, DEF_AREA_MAX_SIZE);
+	}
 
 	SetWidgetsState(enabled);
 
 	BlockAllSignals(true);
-	ui->sliderBrushSize->setValue(brushSize);
+	ui->sliderWidgetAreaSize->SetRangeMin(areaSizeMin);
+	ui->sliderWidgetAreaSize->SetRangeMax(areaSizeMax);
+	ui->sliderWidgetAreaSize->SetValue(brushSize);
+	dockWidget->setVisible(enabled);
 	BlockAllSignals(!enabled);
 }
 
@@ -166,6 +197,7 @@ void VisibilityToolPropertiesView::Toggle()
 		if (activeScene->visibilityToolSystem->DisableLandscapeEdititing())
 		{
 			SetWidgetsState(false);
+			dockWidget->hide();
 		}
 		else
 		{
@@ -178,14 +210,19 @@ void VisibilityToolPropertiesView::Toggle()
 		{
 			SetWidgetsState(true);
 
-			SetVisibilityAreaSize(ui->sliderBrushSize->value());
+			SetVisibilityAreaSize(ui->sliderWidgetAreaSize->GetValue());
+
+			dockWidget->show();
 		}
 		else
 		{
-			QMessageBox::critical(0, "Error enabling Visibility Check Tool",
-								  "Error enabling Visibility Check Tool.\nMake sure there is landscape in scene and disable other landscape editors.");
+			QMessageBox::critical(0,
+								  ResourceEditor::VISIBILITY_TOOL_ERROR_CAPTION.c_str(),
+								  ResourceEditor::VISIBILITY_TOOL_ERROR_MESSAGE.c_str());
 		}
 	}
+
+	toolbarAction->setChecked(activeScene->visibilityToolSystem->IsLandscapeEditingEnabled());
 }
 
 void VisibilityToolPropertiesView::SaveTexture()
@@ -197,9 +234,9 @@ void VisibilityToolPropertiesView::SaveTexture()
 
 	FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
 	QString filePath = QFileDialog::getSaveFileName(NULL,
-													QString("Save visibility tool texture"),
+													QString(ResourceEditor::VISIBILITY_TOOL_SAVE_CAPTION.c_str()),
 													QString(currentPath.GetAbsolutePathname().c_str()),
-													QString("PNG image (*.png)"));
+													QString(ResourceEditor::VISIBILITY_TOOL_FILE_FILTER.c_str()));
 
 	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
 
@@ -236,5 +273,19 @@ void VisibilityToolPropertiesView::SetVisibilityAreaSize(int areaSize)
 		return;
 	}
 
-	activeScene->visibilityToolSystem->SetBrushSize(areaSize);
+	activeScene->visibilityToolSystem->SetBrushSize(AreaSizeFromInt(areaSize));
+}
+
+int32 VisibilityToolPropertiesView::AreaSizeFromInt(int32 val)
+{
+	int32 areaSize = val * 10;
+
+	return areaSize;
+}
+
+int32 VisibilityToolPropertiesView::IntFromAreaSize(int32 areaSize)
+{
+	int32 val = areaSize / 10;
+
+	return val;
 }

@@ -41,8 +41,6 @@
 #include "../../Main/QtUtils.h"
 #include "../../../SceneEditor/EditorSettings.h"
 
-const float32 HeightmapEditorSystem::MAX_STRENGTH = 30.f;
-
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	enabled(false)
@@ -55,7 +53,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	averageStrength(0.5f)
 ,	inverseDrawingEnabled(false)
 ,	toolImagePath("")
-,	drawingType(HEIGHTMAP_DRAW_RELATIVE)
+,	drawingType(HEIGHTMAP_DRAW_ABSOLUTE)
 ,	copyPasteFrom(-1.f, -1.f)
 ,	copyPasteTo(-1.f, -1.f)
 ,	prevCursorPosition(-1.f, -1.f)
@@ -337,7 +335,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	{
 		switch (drawingType)
 		{
-			case HEIGHTMAP_DRAW_RELATIVE:
+			case HEIGHTMAP_DRAW_ABSOLUTE:
 			{
 				float32 koef = (strength * timeElapsed);
 				if(inverseDrawingEnabled)
@@ -354,7 +352,8 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				editorHeightmap->DrawAverageRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
 				break;
 			}
-				
+
+			case HEIGHTMAP_DRAW_RELATIVE:
 			case HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
 			{
 				float32 maxHeight = drawSystem->GetLandscapeMaxHeight();
@@ -367,8 +366,8 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 
 			case HEIGHTMAP_DROPPER:
 			{
-				float32 height = drawSystem->GetHeightAtPoint(cursorPosition);
-				SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), height);
+				float32 curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
+				SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
 				return;
 			}
 
@@ -456,38 +455,18 @@ void HeightmapEditorSystem::AddRectToAccumulator(Rect& accumulator, const Rect& 
 	accumulator = accumulator.Combine(rect);
 }
 
-Rect HeightmapEditorSystem::GetClampedRect(const DAVA::Rect &rect, const DAVA::Rect &boundaries)
-{
-	int32 left = (int32)boundaries.x;
-	int32 right = (int32)(boundaries.x + boundaries.dx) - 1;
-	int32 top = (int32)boundaries.y;
-	int32 bottom = (int32)(boundaries.y + boundaries.dy) - 1;
-
-	Rect r = rect;
-
-	r.x = Clamp(rect.x, (float32)left, (float32)right);
-	r.y = Clamp(rect.y, (float32)top, (float32)bottom);
-	r.dx = Clamp(rect.x + rect.dx, (float32)left, (float32)right) - rect.x;
-	r.dy = Clamp(rect.y + rect.dy, (float32)top, (float32)bottom) - rect.y;
-
-	return r;
-}
-
 Rect HeightmapEditorSystem::GetHeightmapUpdatedRect()
 {
-	EditorHeightmap* editorHeightmap = drawSystem->GetHeightmapProxy();
-	int32 heightmapSize = editorHeightmap->Size();
-	Rect r = Rect(Vector2(0, 0), Vector2(heightmapSize, heightmapSize));
-
-	return GetClampedRect(heightmapUpdatedRect, r);
+	Rect r = heightmapUpdatedRect;
+	drawSystem->ClampToHeightmap(r);
+	return r;
 }
 
 Rect HeightmapEditorSystem::GetTilemaskUpdatedRect()
 {
-	int32 size = drawSystem->GetTextureSize();
-	Rect r(Vector2(0, 0), Vector2(size, size));
-
-	return GetClampedRect(tilemaskUpdatedRect, r);
+	Rect r = tilemaskUpdatedRect;
+	drawSystem->ClampToTexture(r);
+	return r;
 }
 
 void HeightmapEditorSystem::StoreOriginalHeightmap()
@@ -551,15 +530,12 @@ void HeightmapEditorSystem::SetBrushSize(int32 brushSize)
 void HeightmapEditorSystem::SetStrength(float32 strength)
 {
 	float32 s = abs(strength);
-	if (s <= MAX_STRENGTH)
-	{
-		this->strength = s;
+	this->strength = s;
 		
-		inverseDrawingEnabled = false;
-		if (strength < 0.f)
-		{
-			inverseDrawingEnabled = true;
-		}
+	inverseDrawingEnabled = false;
+	if (strength < 0.f)
+	{
+		inverseDrawingEnabled = true;
 	}
 }
 
@@ -652,4 +628,20 @@ bool HeightmapEditorSystem::GetCopyPasteHeightmap()
 bool HeightmapEditorSystem::GetCopyPasteTilemask()
 {
 	return copyPasteTilemask;
+}
+
+void HeightmapEditorSystem::SetDropperHeight(float32 height)
+{
+	float32 maxHeight = drawSystem->GetLandscapeMaxHeight();
+
+	if (height >= 0 && height <= maxHeight)
+	{
+		curHeight = height;
+		SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
+	}
+}
+
+float32 HeightmapEditorSystem::GetDropperHeight()
+{
+	return curHeight;
 }

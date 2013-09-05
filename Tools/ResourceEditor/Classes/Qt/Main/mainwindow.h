@@ -126,7 +126,6 @@ public slots:
 	void OnAddEntityMenuAboutToShow();
 	
 	void OnNotPassableTerrain();
-	void OnRulerTool();
 	
 	void OnSetSkyboxNode();
 	
@@ -197,9 +196,10 @@ private:
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
-	void LoadRulerToolState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
+
+	void HideLandscapeEditorDocks();
     
     bool globalInvalidateTimeoutEnabled;
 };

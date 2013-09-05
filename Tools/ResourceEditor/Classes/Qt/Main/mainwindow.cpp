@@ -97,6 +97,8 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
 
+	HideLandscapeEditorDocks();
+
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed()), this, SLOT(ProjectClosed()));
 
@@ -105,8 +107,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-
-	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
 
 	LoadGPUFormat();
 
@@ -301,10 +301,6 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
 	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
 	QAction *actionConsole = ui->dockConsole->toggleViewAction();
-	QAction *actionCustomColors2 = ui->dockCustomColorsEditor->toggleViewAction();
-	QAction *actionVisibilityTool2 = ui->dockVisibilityToolEditor->toggleViewAction();
-	QAction *actionHeightmapEditor2 = ui->dockHeightmapEditor->toggleViewAction();
-	QAction *actionTilemaskEditor2 = ui->dockTilemaskEditor->toggleViewAction();
 
 	ui->menuView->addAction(actionSceneInfo);
 	ui->menuView->addAction(actionLibrary);
@@ -315,10 +311,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
-	ui->menuView->addAction(actionCustomColors2);
-	ui->menuView->addAction(actionVisibilityTool2);
-	ui->menuView->addAction(actionHeightmapEditor2);
-	ui->menuView->addAction(actionTilemaskEditor2);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
 
 	InitRecent();
@@ -418,7 +410,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
-	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
 	QObject::connect(ui->actionSkyboxEditor, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
 
@@ -519,7 +510,6 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
 	LoadNotPassableState(scene);
-	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -947,31 +937,6 @@ void QtMainWindow::OnNotPassableTerrain()
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
-void QtMainWindow::OnRulerTool()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
-	{
-		return;
-	}
-
-	bool enabled = scene->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (!enabled)
-	{
-		if (!scene->rulerToolSystem->EnableLandscapeEditing())
-		{
-			QMessageBox::critical(0, "Error enabling Ruler Tool",
-								  "Error enabling Ruler Tool.\nMake sure there is landscape in scene and disable other landscape editors.");
-		}
-	}
-	else
-	{
-		scene->rulerToolSystem->DisableLandscapeEdititing();
-	}
-
-	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-}
-
 void QtMainWindow::OnSetSkyboxNode()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -1254,16 +1219,6 @@ void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
-void QtMainWindow::LoadRulerToolState(SceneEditor2* scene)
-{
-	if (!scene)
-	{
-		return;
-	}
-
-	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-}
-
 void QtMainWindow::LoadGPUFormat()
 {
 	int curGPU = GetGPUFormat();
@@ -1420,3 +1375,11 @@ void QtMainWindow::StartGlobalInvalidateTimer()
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
 }
 
+void QtMainWindow::HideLandscapeEditorDocks()
+{
+	ui->dockCustomColorsEditor->hide();
+	ui->dockVisibilityToolEditor->hide();
+	ui->dockHeightmapEditor->hide();
+	ui->dockTilemaskEditor->hide();
+	ui->dockRulerTool->hide();
+}

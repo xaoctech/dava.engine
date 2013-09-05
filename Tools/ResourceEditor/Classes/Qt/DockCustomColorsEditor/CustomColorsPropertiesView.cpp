@@ -35,6 +35,7 @@
 #include "Project/ProjectManager.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../Scene/SceneSignals.h"
+#include "../Main/mainwindow.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -43,6 +44,8 @@ CustomColorsPropertiesView::CustomColorsPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::CustomColorsPropertiesView)
 ,	activeScene(NULL)
+,	toolbarAction(NULL)
+,	dockWidget(NULL)
 {
 	ui->setupUi(this);
 
@@ -56,30 +59,41 @@ CustomColorsPropertiesView::~CustomColorsPropertiesView()
 
 void CustomColorsPropertiesView::Init()
 {
+	ui->sliderWidgetBrushSize->Init(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str(), false,
+									DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+
+	toolbarAction = QtMainWindow::Instance()->GetUI()->actionCustomColorsEditor;
+
+	dockWidget = QtMainWindow::Instance()->GetUI()->dockCustomColorsEditor;
+	dockWidget->setFeatures(dockWidget->features() & ~(QDockWidget::DockWidgetClosable));
+
 	connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 
-	connect(ui->buttonEnableCustomColorsEditor, SIGNAL(clicked()), this, SLOT(Toggle()));
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
 			this, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
 
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetBrushSize(int)));
+	connect(ui->sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(ui->comboColor, SIGNAL(currentIndexChanged(int)), this, SLOT(SetColor(int)));
 	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
 	connect(ui->buttonLoadTexture, SIGNAL(clicked()), this, SLOT(LoadTexture()));
+
+	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
 
 	SetWidgetsState(false);
 }
 
 void CustomColorsPropertiesView::InitColors()
 {
+	ui->comboColor->clear();
+
 	QSize iconSize = ui->comboColor->iconSize();
 	iconSize = iconSize.expandedTo(QSize(100, 0));
 	ui->comboColor->setIconSize(iconSize);
 
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
+	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues(ResourceEditor::CUSTOM_COLORS_PROPERTY_COLORS);
+	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues(ResourceEditor::CUSTOM_COLORS_PROPERTY_DESCRIPTION);
 	for(size_t i = 0; i < customColors.size(); ++i)
 	{
 		QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
@@ -113,6 +127,7 @@ void CustomColorsPropertiesView::Toggle()
 		if (activeScene->customColorsSystem->DisableLandscapeEdititing())
 		{
 			SetWidgetsState(false);
+			dockWidget->hide();
 		}
 		else
 		{
@@ -125,28 +140,28 @@ void CustomColorsPropertiesView::Toggle()
 		{
 			SetWidgetsState(true);
 
-			SetBrushSize(ui->sliderBrushSize->value());
+			SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
 			SetColor(ui->comboColor->currentIndex());
+
+			dockWidget->show();
 		}
 		else
 		{
-			QMessageBox::critical(0, "Error enabling Custom Colors editor", "Error enabling Custom Colors editor.\nMake sure there is landscape in scene and disable other landscape editors.");
+			QMessageBox::critical(0,
+								  ResourceEditor::CUSTOM_COLORS_ERROR_CAPTION.c_str(),
+								  ResourceEditor::CUSTOM_COLORS_ERROR_MESSAGE.c_str());
 		}
 	}
+
+	toolbarAction->setChecked(activeScene->customColorsSystem->IsLandscapeEditingEnabled());
 }
 
 void CustomColorsPropertiesView::SetWidgetsState(bool enabled)
 {
-	ui->buttonEnableCustomColorsEditor->blockSignals(true);
-	ui->buttonEnableCustomColorsEditor->setCheckable(enabled);
-	ui->buttonEnableCustomColorsEditor->setChecked(enabled);
-	ui->buttonEnableCustomColorsEditor->blockSignals(false);
-
-	QString buttonText = enabled ? tr("Disable Custom Colors Editor") : tr("Enable Custom Colors Editor");
-	ui->buttonEnableCustomColorsEditor->setText(buttonText);
+	toolbarAction->setChecked(enabled);
 
 	ui->buttonSaveTexture->setEnabled(enabled);
-	ui->sliderBrushSize->setEnabled(enabled);
+	ui->sliderWidgetBrushSize->setEnabled(enabled);
 	ui->comboColor->setEnabled(enabled);
 	ui->buttonLoadTexture->setEnabled(enabled);
 	BlockAllSignals(!enabled);
@@ -155,22 +170,37 @@ void CustomColorsPropertiesView::SetWidgetsState(bool enabled)
 void CustomColorsPropertiesView::BlockAllSignals(bool block)
 {
 	ui->buttonSaveTexture->blockSignals(block);
-	ui->sliderBrushSize->blockSignals(block);
+	ui->sliderWidgetBrushSize->blockSignals(block);
 	ui->comboColor->blockSignals(block);
 	ui->buttonLoadTexture->blockSignals(block);
 }
 
 void CustomColorsPropertiesView::UpdateFromScene(SceneEditor2* scene)
 {
+	KeyedArchive* ar = scene->GetCustomProperties();
+
 	bool enabled = scene->customColorsSystem->IsLandscapeEditingEnabled();
-	int32 brushSize = scene->customColorsSystem->GetBrushSize();
+	int32 brushSize = IntFromBrushSize(scene->customColorsSystem->GetBrushSize());
 	int32 colorIndex = scene->customColorsSystem->GetColor();
+
+	int32 brushRangeMin = DEF_BRUSH_MIN_SIZE;
+	int32 brushRangeMax = DEF_BRUSH_MAX_SIZE;
+
+	KeyedArchive* customProperties = scene->GetCustomProperties();
+	if (customProperties)
+	{
+		brushRangeMin = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, DEF_BRUSH_MIN_SIZE);
+		brushRangeMax = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, DEF_BRUSH_MAX_SIZE);
+	}
 
 	SetWidgetsState(enabled);
 
 	BlockAllSignals(true);
-	ui->sliderBrushSize->setValue(brushSize);
+	ui->sliderWidgetBrushSize->SetRangeMin(brushRangeMin);
+	ui->sliderWidgetBrushSize->SetRangeMax(brushRangeMax);
+	ui->sliderWidgetBrushSize->SetValue(brushSize);
 	ui->comboColor->setCurrentIndex(colorIndex);
+	dockWidget->setVisible(enabled);
 	BlockAllSignals(!enabled);
 }
 
@@ -183,6 +213,18 @@ void CustomColorsPropertiesView::SceneActivated(SceneEditor2* scene)
 
 void CustomColorsPropertiesView::SceneDeactivated(SceneEditor2* scene)
 {
+	if (activeScene)
+	{
+		KeyedArchive* customProperties = activeScene->GetCustomProperties();
+		if (customProperties)
+		{
+			customProperties->SetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN,
+									   ui->sliderWidgetBrushSize->GetRangeMin());
+			customProperties->SetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX,
+									   ui->sliderWidgetBrushSize->GetRangeMax());
+		}
+	}
+
 	activeScene = NULL;
 }
 
@@ -193,7 +235,7 @@ void CustomColorsPropertiesView::SetBrushSize(int brushSize)
 		return;
 	}
 
-	activeScene->customColorsSystem->SetBrushSize(brushSize);
+	activeScene->customColorsSystem->SetBrushSize(BrushSizeFromInt(brushSize));
 }
 
 void CustomColorsPropertiesView::SetColor(int color)
@@ -219,9 +261,9 @@ void CustomColorsPropertiesView::SaveTexture()
 		selectedPathname = activeScene->GetScenePath().GetDirectory();
 	}
 
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"),
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
 													QString(selectedPathname.GetAbsolutePathname().c_str()),
-													QString("PNG image (*.png)"));
+													QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
 	selectedPathname = PathnameToDAVAStyle(filePath);
 
 	if (!selectedPathname.IsEmpty())
@@ -243,7 +285,9 @@ void CustomColorsPropertiesView::LoadTexture()
 		currentPath = activeScene->GetScenePath().GetDirectory();
 	}
 
-	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	FilePath selectedPathname = GetOpenFileName(ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION,
+												currentPath,
+												ResourceEditor::CUSTOM_COLORS_FILE_FILTER);
 	if(!selectedPathname.IsEmpty())
 	{
 		activeScene->customColorsSystem->LoadTexture(selectedPathname);
@@ -266,4 +310,18 @@ void CustomColorsPropertiesView::NeedSaveCustomColorsTexture(SceneEditor2* scene
 	{
 		SaveTexture();
 	}
+}
+
+int32 CustomColorsPropertiesView::BrushSizeFromInt(int32 val)
+{
+	int32 brushSize = val * 10;
+	
+	return brushSize;
+}
+
+int32 CustomColorsPropertiesView::IntFromBrushSize(int32 brushSize)
+{
+	int32 val = brushSize / 10;
+	
+	return val;
 }

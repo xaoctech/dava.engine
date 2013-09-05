@@ -32,6 +32,7 @@
 #define __RESOURCEEDITORQT__HEIGHTMAPEDITORPROPERTIESVIEW__
 
 #include <QWidget>
+#include <QDockWidget>
 #include "DAVAEngine.h"
 #include "Qt/Scene/System/HeightmapEditorSystem.h"
 
@@ -59,6 +60,7 @@ private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
 	void SetDropperHeight(SceneEditor2* scene, double height);
+	void HeightUpdatedManually();
 
 	void Toggle();
 	void SetBrushSize(int brushSize);
@@ -66,6 +68,7 @@ private slots:
 	void SetRelativeDrawing();
 	void SetAverageDrawing();
 	void SetAbsoluteDrawing();
+	void SetAbsDropDrawing();
 	void SetDropper();
 	void SetHeightmapCopyPaste();
 	void SetStrength(int strength);
@@ -74,14 +77,32 @@ private slots:
 	void SetCopyPasteTilemask(int state);
 
 private:
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
+	static const int DEF_STRENGTH_MAX_VALUE = 30;
+	static const int DEF_AVERAGE_STRENGTH_MIN_VALUE = 0;
+	static const int DEF_AVERAGE_STRENGTH_MAX_VALUE = 60;
+
 	Ui::HeightmapEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
 	QAction* toolbarAction;
+	QDockWidget* dockWidget;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);
 	void UpdateFromScene(SceneEditor2* scene);
 	void SetDrawingType(HeightmapEditorSystem::eHeightmapDrawType type);
+
+	float32 StrengthFromInt(int32 val);
+	int32 IntFromStrength(float32 strength);
+
+	float32 AverageStrengthFromInt(int32 val);
+	int32 IntFromAverageStrength(float32 averageStrength);
+
+	int32 BrushSizeFromInt(int32 val);
+	int32 IntFromBrushSize(int32 brushSize);
+
+	void UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORPROPERTIESVIEW__) */

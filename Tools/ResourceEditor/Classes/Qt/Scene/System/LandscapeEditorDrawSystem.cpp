@@ -229,8 +229,11 @@ void LandscapeEditorDrawSystem::SetCursorTexture(Texture* cursorTexture)
 void LandscapeEditorDrawSystem::SetCursorSize(uint32 cursorSize)
 {
 	this->cursorSize = cursorSize;
-	landscapeProxy->SetCursorScale((float32)cursorSize);
-	UpdateCursorPosition();
+	if (landscapeProxy)
+	{
+		landscapeProxy->SetCursorScale((float32)cursorSize);
+		UpdateCursorPosition();
+	}
 }
 
 void LandscapeEditorDrawSystem::SetCursorPosition(const Vector2& cursorPos)
@@ -491,4 +494,18 @@ bool LandscapeEditorDrawSystem::Init()
 	}
 
 	return true;
+}
+
+void LandscapeEditorDrawSystem::ClampToTexture(Rect& rect)
+{
+	int32 textureSize = (int32)GetTextureSize();
+	Rect bounds(0.f, 0.f, textureSize - 1, textureSize - 1);
+	bounds.ClampToRect(rect);
+}
+
+void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
+{
+	int32 heightmapSize = GetHeightmapProxy()->Size();
+	Rect bounds(0.f, 0.f, heightmapSize - 1, heightmapSize - 1);
+	bounds.ClampToRect(rect);
 }

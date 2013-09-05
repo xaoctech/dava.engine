@@ -41,6 +41,7 @@ HeightmapEditorPropertiesView::HeightmapEditorPropertiesView(QWidget* parent)
 ,	ui(new Ui::HeightmapEditorPropertiesView)
 ,	activeScene(NULL)
 ,	toolbarAction(NULL)
+,	dockWidget(NULL)
 {
 	ui->setupUi(this);
 
@@ -54,29 +55,40 @@ HeightmapEditorPropertiesView::~HeightmapEditorPropertiesView()
 
 void HeightmapEditorPropertiesView::Init()
 {
+	ui->sliderWidgetBrushSize->Init(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION.c_str(), false,
+									DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	ui->sliderWidgetStrength->Init(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_CAPTION.c_str(), true,
+								   DEF_STRENGTH_MAX_VALUE, 0, 0);
+	ui->sliderWidgetAverageStrength->Init(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION.c_str(), false,
+										  DEF_AVERAGE_STRENGTH_MAX_VALUE, DEF_AVERAGE_STRENGTH_MIN_VALUE,
+										  DEF_AVERAGE_STRENGTH_MIN_VALUE);
+
 	InitBrushImages();
 	toolbarAction = QtMainWindow::Instance()->GetUI()->actionHeightMapEditor;
+
+	dockWidget = QtMainWindow::Instance()->GetUI()->dockHeightmapEditor;
+	dockWidget->setFeatures(dockWidget->features() & ~(QDockWidget::DockWidgetClosable));
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(DropperHeightChanged(SceneEditor2*, double)),
 			this, SLOT(SetDropperHeight(SceneEditor2*, double)));
 
-	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), ui->labelStrength, SLOT(setNum(int)));
-	connect(ui->sliderAverageStrength, SIGNAL(valueChanged(int)), ui->labelAverageStrength, SLOT(setNum(int)));
+	connect(ui->sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
+	connect(ui->sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
+	connect(ui->sliderWidgetAverageStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetAverageStrength(int)));
 
-	connect(ui->buttonEnableHeightmapEditor, SIGNAL(clicked()), this, SLOT(Toggle()));
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetBrushSize(int)));
-	connect(ui->comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
-	connect(ui->radioRelAbs, SIGNAL(clicked()), this, SLOT(SetRelativeDrawing()));
-	connect(ui->radioAvg, SIGNAL(clicked()), this, SLOT(SetAverageDrawing()));
-	connect(ui->radioAbsDrop, SIGNAL(clicked()), this, SLOT(SetAbsoluteDrawing()));
+	connect(ui->radioAbsolute, SIGNAL(clicked()), this, SLOT(SetAbsoluteDrawing()));
+	connect(ui->radioRelative, SIGNAL(clicked()), this, SLOT(SetRelativeDrawing()));
+	connect(ui->radioAverage, SIGNAL(clicked()), this, SLOT(SetAverageDrawing()));
+	connect(ui->radioAbsDrop, SIGNAL(clicked()), this, SLOT(SetAbsDropDrawing()));
 	connect(ui->radioDropper, SIGNAL(clicked()), this, SLOT(SetDropper()));
 	connect(ui->radioCopyPaste, SIGNAL(clicked()), this, SLOT(SetHeightmapCopyPaste()));
-	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), this, SLOT(SetStrength(int)));
-	connect(ui->sliderAverageStrength, SIGNAL(valueChanged(int)), this, SLOT(SetAverageStrength(int)));
+
+	connect(ui->comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
 	connect(ui->checkboxHeightmap, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteHeightmap(int)));
 	connect(ui->checkboxTilemask, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteTilemask(int)));
+	connect(ui->editHeight, SIGNAL(editingFinished()), this, SLOT(HeightUpdatedManually()));
 
 	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
 
@@ -89,7 +101,7 @@ void HeightmapEditorPropertiesView::InitBrushImages()
 	iconSize = iconSize.expandedTo(QSize(32, 32));
 	ui->comboBrushImage->setIconSize(iconSize);
 
-	FilePath toolsPath("~res:/LandscapeEditor/Tools/");
+	FilePath toolsPath(ResourceEditor::HEIGHTMAP_EDITOR_TOOLS_PATH.c_str());
 	FileList *fileList = new FileList(toolsPath);
 	for(int32 iFile = 0; iFile < fileList->GetCount(); ++iFile)
 	{
@@ -117,6 +129,24 @@ void HeightmapEditorPropertiesView::SceneActivated(SceneEditor2* scene)
 
 void HeightmapEditorPropertiesView::SceneDeactivated(SceneEditor2* scene)
 {
+	if (activeScene)
+	{
+		KeyedArchive* customProperties = activeScene->GetCustomProperties();
+		if (customProperties)
+		{
+			customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
+									   ui->sliderWidgetBrushSize->GetRangeMin());
+			customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
+									   ui->sliderWidgetBrushSize->GetRangeMax());
+			customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
+									   ui->sliderWidgetStrength->GetRangeMax());
+			customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
+									   ui->sliderWidgetAverageStrength->GetRangeMin());
+			customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
+									   ui->sliderWidgetAverageStrength->GetRangeMax());
+		}
+	}
+
 	activeScene = NULL;
 }
 
@@ -127,29 +157,23 @@ void HeightmapEditorPropertiesView::SetDropperHeight(SceneEditor2* scene, double
 		return;
 	}
 
-	ui->labelDropperHeight->setText(QString::number(height));
+	ui->editHeight->setText(QString::number(height));
 }
 
 void HeightmapEditorPropertiesView::SetWidgetsState(bool enabled)
 {
-	ui->buttonEnableHeightmapEditor->blockSignals(true);
-	ui->buttonEnableHeightmapEditor->setCheckable(enabled);
-	ui->buttonEnableHeightmapEditor->setChecked(enabled);
-	ui->buttonEnableHeightmapEditor->blockSignals(false);
 	toolbarAction->setChecked(enabled);
 
-	QString buttonText = enabled ? tr("Disable Height Map Editor") : tr("Enable Height Map Editor");
-	ui->buttonEnableHeightmapEditor->setText(buttonText);
-
-	ui->sliderBrushSize->setEnabled(enabled);
+	ui->sliderWidgetBrushSize->setEnabled(enabled);
 	ui->comboBrushImage->setEnabled(enabled);
-	ui->radioRelAbs->setEnabled(enabled);
-	ui->radioAvg->setEnabled(enabled);
+	ui->radioAbsolute->setEnabled(enabled);
+	ui->radioRelative->setEnabled(enabled);
+	ui->radioAverage->setEnabled(enabled);
 	ui->radioAbsDrop->setEnabled(enabled);
-	ui->sliderStrength->setEnabled(enabled);
-	ui->sliderAverageStrength->setEnabled(enabled);
 	ui->radioDropper->setEnabled(enabled);
 	ui->radioCopyPaste->setEnabled(enabled);
+	ui->sliderWidgetStrength->setEnabled(enabled);
+	ui->sliderWidgetAverageStrength->setEnabled(enabled);
 	ui->checkboxHeightmap->setEnabled(enabled);
 	ui->checkboxTilemask->setEnabled(enabled);
 
@@ -158,15 +182,16 @@ void HeightmapEditorPropertiesView::SetWidgetsState(bool enabled)
 
 void HeightmapEditorPropertiesView::BlockAllSignals(bool block)
 {
-	ui->sliderBrushSize->blockSignals(block);
+	ui->sliderWidgetBrushSize->blockSignals(block);
 	ui->comboBrushImage->blockSignals(block);
-	ui->radioRelAbs->blockSignals(block);
-	ui->radioAvg->blockSignals(block);
+	ui->radioAbsolute->blockSignals(block);
+	ui->radioRelative->blockSignals(block);
+	ui->radioAverage->blockSignals(block);
 	ui->radioAbsDrop->blockSignals(block);
-	ui->sliderStrength->blockSignals(block);
-	ui->sliderAverageStrength->blockSignals(block);
 	ui->radioDropper->blockSignals(block);
 	ui->radioCopyPaste->blockSignals(block);
+	ui->sliderWidgetStrength->blockSignals(block);
+	ui->sliderWidgetAverageStrength->blockSignals(block);
 	ui->checkboxHeightmap->blockSignals(block);
 	ui->checkboxTilemask->blockSignals(block);
 }
@@ -174,60 +199,57 @@ void HeightmapEditorPropertiesView::BlockAllSignals(bool block)
 void HeightmapEditorPropertiesView::UpdateFromScene(SceneEditor2* scene)
 {
 	bool enabled = scene->heightmapEditorSystem->IsLandscapeEditingEnabled();
-	int32 brushSize = scene->heightmapEditorSystem->GetBrushSize();
-	float32 strength = scene->heightmapEditorSystem->GetStrength();
-	float32 averageStrength = scene->heightmapEditorSystem->GetAverageStrength();
-	int32 averageStrengthVal = (int32)(averageStrength * ui->sliderAverageStrength->maximum());
+	int32 brushSize = IntFromBrushSize(scene->heightmapEditorSystem->GetBrushSize());
+	int32 strength = IntFromStrength(scene->heightmapEditorSystem->GetStrength());
+	int32 averageStrength = IntFromAverageStrength(scene->heightmapEditorSystem->GetAverageStrength());
 	int32 toolImage = scene->heightmapEditorSystem->GetToolImage();
 	HeightmapEditorSystem::eHeightmapDrawType drawingType = scene->heightmapEditorSystem->GetDrawingType();
 	bool copyPasteHeightmap = scene->heightmapEditorSystem->GetCopyPasteHeightmap();
 	bool copyPasteTilemask = scene->heightmapEditorSystem->GetCopyPasteTilemask();
 
+	int32 brushRangeMin = DEF_BRUSH_MIN_SIZE;
+	int32 brushRangeMax = DEF_BRUSH_MAX_SIZE;
+	int32 strRangeMax = DEF_STRENGTH_MAX_VALUE;
+	int32 avStrRangeMin = DEF_AVERAGE_STRENGTH_MIN_VALUE;
+	int32 avStrRangeMax = DEF_AVERAGE_STRENGTH_MAX_VALUE;
+
+	KeyedArchive* customProperties = scene->GetCustomProperties();
+	if (customProperties)
+	{
+		brushRangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
+												   DEF_BRUSH_MIN_SIZE);
+		brushRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
+												   DEF_BRUSH_MAX_SIZE);
+		strRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
+												 DEF_STRENGTH_MAX_VALUE);
+		avStrRangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
+												   DEF_AVERAGE_STRENGTH_MIN_VALUE);
+		avStrRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
+												   DEF_AVERAGE_STRENGTH_MAX_VALUE);
+	}
+
 	SetWidgetsState(enabled);
 
 	BlockAllSignals(true);
-	ui->sliderBrushSize->setValue(brushSize);
-	ui->sliderStrength->setValue(strength);
-	ui->sliderAverageStrength->setValue(averageStrengthVal);
+
+	ui->sliderWidgetBrushSize->SetRangeMin(brushRangeMin);
+	ui->sliderWidgetBrushSize->SetRangeMax(brushRangeMax);
+	ui->sliderWidgetBrushSize->SetValue(brushSize);
+
+	ui->sliderWidgetStrength->SetRangeMax(strRangeMax);
+	ui->sliderWidgetStrength->SetValue(strength);
+
+	ui->sliderWidgetAverageStrength->SetRangeMin(avStrRangeMin);
+	ui->sliderWidgetAverageStrength->SetRangeMax(avStrRangeMax);
+	ui->sliderWidgetAverageStrength->SetValue(averageStrength);
+
 	ui->comboBrushImage->setCurrentIndex(toolImage);
 	ui->checkboxHeightmap->setChecked(copyPasteHeightmap);
 	ui->checkboxTilemask->setChecked(copyPasteTilemask);
 
-	ui->labelStrength->setNum((int32)strength);
-	ui->labelAverageStrength->setNum(averageStrengthVal);
+	UpdateRadioState(drawingType);
 
-	ui->radioRelAbs->setChecked(false);
-	ui->radioAvg->setChecked(false);
-	ui->radioAbsDrop->setChecked(false);
-	ui->radioDropper->setChecked(false);
-	ui->radioCopyPaste->setChecked(false);
-
-	switch (drawingType)
-	{
-		case HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE:
-			ui->radioCopyPaste->setChecked(true);
-			break;
-
-		case HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE:
-			ui->radioRelAbs->setChecked(true);
-			break;
-
-		case HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE:
-			ui->radioAvg->setChecked(true);
-			break;
-
-		case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
-			ui->radioAbsDrop->setChecked(true);
-			break;
-
-		case HeightmapEditorSystem::HEIGHTMAP_DROPPER:
-			ui->radioDropper->setChecked(true);
-			break;
-
-		default:
-			break;
-	}
-
+	dockWidget->setVisible(enabled);
 	BlockAllSignals(!enabled);
 }
 
@@ -243,6 +265,7 @@ void HeightmapEditorPropertiesView::Toggle()
 		if (activeScene->heightmapEditorSystem->DisableLandscapeEdititing())
 		{
 			SetWidgetsState(false);
+			dockWidget->hide();
 		}
 		else
 		{
@@ -255,17 +278,20 @@ void HeightmapEditorPropertiesView::Toggle()
 		{
 			SetWidgetsState(true);
 
-			SetBrushSize(ui->sliderBrushSize->value());
-			SetStrength(ui->sliderStrength->value());
-			SetAverageStrength(ui->sliderAverageStrength->value());
+			SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
+			SetStrength(ui->sliderWidgetStrength->GetValue());
+			SetAverageStrength(ui->sliderWidgetAverageStrength->GetValue());
 			SetToolImage(ui->comboBrushImage->currentIndex());
 			SetCopyPasteHeightmap(ui->checkboxHeightmap->checkState());
 			SetCopyPasteTilemask(ui->checkboxTilemask->checkState());
+
+			dockWidget->show();
 		}
 		else
 		{
-			QMessageBox::critical(0, "Error enabling Height Map editor",
-								  "Error enabling Height Map editor.\nMake sure there is landscape in scene and disable other landscape editors.");
+			QMessageBox::critical(0,
+								  ResourceEditor::HEIGHTMAP_EDITOR_ERROR_CAPTION.c_str(),
+								  ResourceEditor::HEIGHTMAP_EDITOR_ERROR_MESSAGE.c_str());
 		}
 	}
 
@@ -279,7 +305,7 @@ void HeightmapEditorPropertiesView::SetBrushSize(int brushSize)
 		return;
 	}
 
-	activeScene->heightmapEditorSystem->SetBrushSize(brushSize);
+	activeScene->heightmapEditorSystem->SetBrushSize(BrushSizeFromInt(brushSize));
 }
 
 void HeightmapEditorPropertiesView::SetToolImage(int toolImage)
@@ -304,7 +330,7 @@ void HeightmapEditorPropertiesView::SetRelativeDrawing()
 	{
 		return;
 	}
-
+	
 	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE);
 }
 
@@ -314,7 +340,7 @@ void HeightmapEditorPropertiesView::SetAverageDrawing()
 	{
 		return;
 	}
-
+	
 	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE);
 }
 
@@ -324,7 +350,17 @@ void HeightmapEditorPropertiesView::SetAbsoluteDrawing()
 	{
 		return;
 	}
+	
+	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE);
+}
 
+void HeightmapEditorPropertiesView::SetAbsDropDrawing()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+	
 	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER);
 }
 
@@ -334,7 +370,7 @@ void HeightmapEditorPropertiesView::SetDropper()
 	{
 		return;
 	}
-
+	
 	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DROPPER);
 }
 
@@ -344,7 +380,7 @@ void HeightmapEditorPropertiesView::SetHeightmapCopyPaste()
 	{
 		return;
 	}
-
+	
 	SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE);
 }
 
@@ -355,7 +391,7 @@ void HeightmapEditorPropertiesView::SetStrength(int strength)
 		return;
 	}
 
-	activeScene->heightmapEditorSystem->SetStrength(strength);
+	activeScene->heightmapEditorSystem->SetStrength(StrengthFromInt(strength));
 }
 
 void HeightmapEditorPropertiesView::SetAverageStrength(int averageStrength)
@@ -365,10 +401,7 @@ void HeightmapEditorPropertiesView::SetAverageStrength(int averageStrength)
 		return;
 	}
 
-	float32 avStr = (float32)averageStrength;
-	float32 max = ui->sliderAverageStrength->maximum();
-	float32 v = avStr / max;
-	activeScene->heightmapEditorSystem->SetAverageStrength(v);
+	activeScene->heightmapEditorSystem->SetAverageStrength(AverageStrengthFromInt(averageStrength));
 }
 
 void HeightmapEditorPropertiesView::SetCopyPasteHeightmap(int state)
@@ -399,24 +432,71 @@ void HeightmapEditorPropertiesView::SetDrawingType(HeightmapEditorSystem::eHeigh
 	}
 
 	BlockAllSignals(true);
+	UpdateRadioState(type);
+	BlockAllSignals(false);
 
-	ui->radioRelAbs->setChecked(false);
-	ui->radioAvg->setChecked(false);
+	activeScene->heightmapEditorSystem->SetDrawingType(type);
+}
+
+float32 HeightmapEditorPropertiesView::StrengthFromInt(int32 val)
+{
+	return (float32)val;
+}
+
+int32 HeightmapEditorPropertiesView::IntFromStrength(float32 strength)
+{
+	return (int32)strength;
+}
+
+float32 HeightmapEditorPropertiesView::AverageStrengthFromInt(int32 val)
+{
+	float32 averageStrength = (float32)val / DEF_AVERAGE_STRENGTH_MAX_VALUE;
+
+	return averageStrength;
+}
+
+int32 HeightmapEditorPropertiesView::IntFromAverageStrength(float32 averageStrength)
+{
+	int32 val = (int32)(averageStrength * DEF_AVERAGE_STRENGTH_MAX_VALUE);
+
+	return val;
+}
+
+int32 HeightmapEditorPropertiesView::BrushSizeFromInt(int32 val)
+{
+	int32 brushSize = (int32)(val * 2.5f);
+
+	return brushSize;
+}
+
+int32 HeightmapEditorPropertiesView::IntFromBrushSize(int32 brushSize)
+{
+	int32 val = (int32)(brushSize / 2.5f);
+
+	return val;
+}
+
+void HeightmapEditorPropertiesView::UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type)
+{
+	ui->radioAbsolute->setChecked(false);
+	ui->radioRelative->setChecked(false);
+	ui->radioAverage->setChecked(false);
 	ui->radioAbsDrop->setChecked(false);
 	ui->radioDropper->setChecked(false);
 	ui->radioCopyPaste->setChecked(false);
 
 	switch (type)
 	{
-		default:
-			type = HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE;
+		case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE:
+			ui->radioAbsolute->setChecked(true);
+			break;
 
 		case HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE:
-			ui->radioRelAbs->setChecked(true);
+			ui->radioRelative->setChecked(true);
 			break;
 
 		case HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE:
-			ui->radioAvg->setChecked(true);
+			ui->radioAverage->setChecked(true);
 			break;
 
 		case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
@@ -430,9 +510,19 @@ void HeightmapEditorPropertiesView::SetDrawingType(HeightmapEditorSystem::eHeigh
 		case HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE:
 			ui->radioCopyPaste->setChecked(true);
 			break;
+
+		default:
+			break;
+	}
+}
+
+void HeightmapEditorPropertiesView::HeightUpdatedManually()
+{
+	if (!activeScene)
+	{
+		return;
 	}
 
-	BlockAllSignals(false);
-
-	activeScene->heightmapEditorSystem->SetDrawingType(type);
+	float32 height = (float32)ui->editHeight->text().toFloat();
+	activeScene->heightmapEditorSystem->SetDropperHeight(height);
 }

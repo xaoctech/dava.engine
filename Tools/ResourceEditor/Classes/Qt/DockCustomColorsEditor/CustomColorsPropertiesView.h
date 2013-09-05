@@ -32,6 +32,7 @@
 #define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
 
 #include <QWidget>
+#include <QDockWidget>
 #include "DAVAEngine.h"
 
 using namespace DAVA;
@@ -67,12 +68,20 @@ private slots:
 	void LoadTexture();
 
 private:
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
+
 	Ui::CustomColorsPropertiesView* ui;
 	SceneEditor2* activeScene;
+	QAction* toolbarAction;
+	QDockWidget* dockWidget;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);
 	void UpdateFromScene(SceneEditor2* scene);
+
+	int32 BrushSizeFromInt(int32 val);
+	int32 IntFromBrushSize(int32 brushSize);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
