@@ -83,11 +83,6 @@
 		4FAD0B2E1785EB8E00B05A35 /* QtPropertyItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B161785EB8E00B05A35 /* QtPropertyItemDelegate.cpp */; };
 		4FAD0B2F1785EB8E00B05A35 /* QtPropertyModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B181785EB8E00B05A35 /* QtPropertyModel.cpp */; };
 		4FAD0B301785EB8E00B05A35 /* QtColorLineEdit.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B1B1785EB8E00B05A35 /* QtColorLineEdit.cpp */; };
-		4FAD0B311785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B1E1785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.cpp */; };
-		4FAD0B321785EB8E00B05A35 /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B201785EB8E00B05A35 /* QtPropertyDataDavaVariant.cpp */; };
-		4FAD0B331785EB8E00B05A35 /* QtPropertyDataIntoCollection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B221785EB8E00B05A35 /* QtPropertyDataIntoCollection.cpp */; };
-		4FAD0B341785EB8E00B05A35 /* QtPropertyDataIntrospection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B241785EB8E00B05A35 /* QtPropertyDataIntrospection.cpp */; };
-		4FAD0B351785EB8E00B05A35 /* QtPropertyDataMetaObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0B261785EB8E00B05A35 /* QtPropertyDataMetaObject.cpp */; };
 		4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */; };
 		4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */; };
 		4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */; };
@@ -187,11 +182,6 @@
 		4FAD0D3A1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CBE1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp */; };
 		4FAD0D3B1785EC6E00B05A35 /* QtPropertyModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CBF1785EC6E00B05A35 /* QtPropertyModel_moc.cpp */; };
 		4FAD0D3C1785EC6E00B05A35 /* QtColorLineEdit_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC11785EC6E00B05A35 /* QtColorLineEdit_moc.cpp */; };
-		4FAD0D3D1785EC6E00B05A35 /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC31785EC6E00B05A35 /* QtPropertyDataDavaKeyedArchive_moc.cpp */; };
-		4FAD0D3E1785EC6E00B05A35 /* QtPropertyDataDavaVariant_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC41785EC6E00B05A35 /* QtPropertyDataDavaVariant_moc.cpp */; };
-		4FAD0D3F1785EC6E00B05A35 /* QtPropertyDataIntoCollection_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC51785EC6E00B05A35 /* QtPropertyDataIntoCollection_moc.cpp */; };
-		4FAD0D401785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC61785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp */; };
-		4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC71785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp */; };
 		4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC91785EC6E00B05A35 /* SelectPathWidget_moc.cpp */; };
 		4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A211705C90500EB205E /* SceneTabWidget.cpp */; };
 		4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351817B5769E0051833D /* DAEConvertAction.cpp */; };
@@ -479,6 +469,19 @@
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49016F1D7680061EA5D /* EditorLandscape.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E825797A17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */; };
+		E825797B17D886B400070B9C /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */; };
+		E825797C17D886B400070B9C /* QtPropertyDataInspColl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797217D886B400070B9C /* QtPropertyDataInspColl.cpp */; };
+		E825797D17D886B400070B9C /* QtPropertyDataInspMember.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797417D886B400070B9C /* QtPropertyDataInspMember.cpp */; };
+		E825797E17D886B400070B9C /* QtPropertyDataIntrospection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797617D886B400070B9C /* QtPropertyDataIntrospection.cpp */; };
+		E825797F17D886B400070B9C /* QtPropertyDataMetaObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797817D886B400070B9C /* QtPropertyDataMetaObject.cpp */; };
+		E825798617D886EE00070B9C /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798017D886EE00070B9C /* QtPropertyDataDavaKeyedArchive_moc.cpp */; };
+		E825798717D886EE00070B9C /* QtPropertyDataDavaVariant_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798117D886EE00070B9C /* QtPropertyDataDavaVariant_moc.cpp */; };
+		E825798817D886EE00070B9C /* QtPropertyDataInspColl_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798217D886EE00070B9C /* QtPropertyDataInspColl_moc.cpp */; };
+		E825798917D886EE00070B9C /* QtPropertyDataInspMember_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798317D886EE00070B9C /* QtPropertyDataInspMember_moc.cpp */; };
+		E825798A17D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798417D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp */; };
+		E825798B17D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798517D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp */; };
+		E825798E17D8872D00070B9C /* InspMemebrModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */; };
 		E838D56F16AFFED4006F1721 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */; };
 		E838D57016AFFED4006F1721 /* LibraryView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DC16AFFED4006F1721 /* LibraryView.cpp */; };
 		E838D57116AFFED4006F1721 /* EmitterLayerWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DF16AFFED4006F1721 /* EmitterLayerWidget.cpp */; };
@@ -792,16 +795,6 @@
 		4FAD0B191785EB8E00B05A35 /* QtPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyModel.h; sourceTree = "<group>"; };
 		4FAD0B1B1785EB8E00B05A35 /* QtColorLineEdit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit.cpp; sourceTree = "<group>"; };
 		4FAD0B1C1785EB8E00B05A35 /* QtColorLineEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtColorLineEdit.h; sourceTree = "<group>"; };
-		4FAD0B1E1785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaKeyedArchive.cpp; sourceTree = "<group>"; };
-		4FAD0B1F1785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataDavaKeyedArchive.h; sourceTree = "<group>"; };
-		4FAD0B201785EB8E00B05A35 /* QtPropertyDataDavaVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaVariant.cpp; sourceTree = "<group>"; };
-		4FAD0B211785EB8E00B05A35 /* QtPropertyDataDavaVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataDavaVariant.h; sourceTree = "<group>"; };
-		4FAD0B221785EB8E00B05A35 /* QtPropertyDataIntoCollection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataIntoCollection.cpp; sourceTree = "<group>"; };
-		4FAD0B231785EB8E00B05A35 /* QtPropertyDataIntoCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataIntoCollection.h; sourceTree = "<group>"; };
-		4FAD0B241785EB8E00B05A35 /* QtPropertyDataIntrospection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataIntrospection.cpp; sourceTree = "<group>"; };
-		4FAD0B251785EB8E00B05A35 /* QtPropertyDataIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataIntrospection.h; sourceTree = "<group>"; };
-		4FAD0B261785EB8E00B05A35 /* QtPropertyDataMetaObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataMetaObject.cpp; sourceTree = "<group>"; };
-		4FAD0B271785EB8E00B05A35 /* QtPropertyDataMetaObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataMetaObject.h; sourceTree = "<group>"; };
 		4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandSignals_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView_moc.cpp; sourceTree = "<group>"; };
@@ -901,11 +894,6 @@
 		4FAD0CBE1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyItemDelegate_moc.cpp; sourceTree = "<group>"; };
 		4FAD0CBF1785EC6E00B05A35 /* QtPropertyModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyModel_moc.cpp; sourceTree = "<group>"; };
 		4FAD0CC11785EC6E00B05A35 /* QtColorLineEdit_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit_moc.cpp; sourceTree = "<group>"; };
-		4FAD0CC31785EC6E00B05A35 /* QtPropertyDataDavaKeyedArchive_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaKeyedArchive_moc.cpp; sourceTree = "<group>"; };
-		4FAD0CC41785EC6E00B05A35 /* QtPropertyDataDavaVariant_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaVariant_moc.cpp; sourceTree = "<group>"; };
-		4FAD0CC51785EC6E00B05A35 /* QtPropertyDataIntoCollection_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataIntoCollection_moc.cpp; sourceTree = "<group>"; };
-		4FAD0CC61785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataIntrospection_moc.cpp; sourceTree = "<group>"; };
-		4FAD0CC71785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataMetaObject_moc.cpp; sourceTree = "<group>"; };
 		4FAD0CC91785EC6E00B05A35 /* SelectPathWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidget_moc.cpp; sourceTree = "<group>"; };
 		4FAD0CCB1785EC6E00B05A35 /* ui_CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_CustomColorsView.h; path = _GeneratedQt/ui_CustomColorsView.h; sourceTree = "<group>"; };
 		4FAD0CCC1785EC6E00B05A35 /* ui_davaglwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_davaglwidget.h; path = _GeneratedQt/ui_davaglwidget.h; sourceTree = "<group>"; };
@@ -1560,6 +1548,26 @@
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
 		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
+		E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaKeyedArchive.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.cpp; sourceTree = SOURCE_ROOT; };
+		E825796F17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataDavaKeyedArchive.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h; sourceTree = SOURCE_ROOT; };
+		E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaVariant.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.cpp; sourceTree = SOURCE_ROOT; };
+		E825797117D886B400070B9C /* QtPropertyDataDavaVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataDavaVariant.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h; sourceTree = SOURCE_ROOT; };
+		E825797217D886B400070B9C /* QtPropertyDataInspColl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataInspColl.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspColl.cpp; sourceTree = SOURCE_ROOT; };
+		E825797317D886B400070B9C /* QtPropertyDataInspColl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataInspColl.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspColl.h; sourceTree = SOURCE_ROOT; };
+		E825797417D886B400070B9C /* QtPropertyDataInspMember.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataInspMember.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.cpp; sourceTree = SOURCE_ROOT; };
+		E825797517D886B400070B9C /* QtPropertyDataInspMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataInspMember.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h; sourceTree = SOURCE_ROOT; };
+		E825797617D886B400070B9C /* QtPropertyDataIntrospection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataIntrospection.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.cpp; sourceTree = SOURCE_ROOT; };
+		E825797717D886B400070B9C /* QtPropertyDataIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataIntrospection.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h; sourceTree = SOURCE_ROOT; };
+		E825797817D886B400070B9C /* QtPropertyDataMetaObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataMetaObject.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.cpp; sourceTree = SOURCE_ROOT; };
+		E825797917D886B400070B9C /* QtPropertyDataMetaObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataMetaObject.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h; sourceTree = SOURCE_ROOT; };
+		E825798017D886EE00070B9C /* QtPropertyDataDavaKeyedArchive_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaKeyedArchive_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798117D886EE00070B9C /* QtPropertyDataDavaVariant_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaVariant_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798217D886EE00070B9C /* QtPropertyDataInspColl_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataInspColl_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspColl_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798317D886EE00070B9C /* QtPropertyDataInspMember_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataInspMember_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798417D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataIntrospection_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798517D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataMetaObject_moc.cpp; path = _GeneratedQt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspMemberModifyCommand.h; sourceTree = "<group>"; };
+		E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspMemebrModifyCommand.cpp; sourceTree = "<group>"; };
 		E826131D1734170100BF60B6 /* SceneTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTypes.h; sourceTree = "<group>"; };
 		E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
 		E838D4DB16AFFED4006F1721 /* LibraryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryModel.h; sourceTree = "<group>"; };
@@ -1992,7 +2000,7 @@
 				4FAD0B181785EB8E00B05A35 /* QtPropertyModel.cpp */,
 				4FAD0B191785EB8E00B05A35 /* QtPropertyModel.h */,
 				4FAD0B1A1785EB8E00B05A35 /* QtPropertyWidgets */,
-				4FAD0B1D1785EB8E00B05A35 /* QtProperyData */,
+				4FAD0B1D1785EB8E00B05A35 /* QtPropetryData */,
 			);
 			name = QtPropertyEditor;
 			path = Classes/Qt/Tools/QtPropertyEditor;
@@ -2007,20 +2015,23 @@
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
 		};
-		4FAD0B1D1785EB8E00B05A35 /* QtProperyData */ = {
+		4FAD0B1D1785EB8E00B05A35 /* QtPropetryData */ = {
 			isa = PBXGroup;
 			children = (
-				4FAD0B1E1785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.cpp */,
-				4FAD0B1F1785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.h */,
-				4FAD0B201785EB8E00B05A35 /* QtPropertyDataDavaVariant.cpp */,
-				4FAD0B211785EB8E00B05A35 /* QtPropertyDataDavaVariant.h */,
-				4FAD0B221785EB8E00B05A35 /* QtPropertyDataIntoCollection.cpp */,
-				4FAD0B231785EB8E00B05A35 /* QtPropertyDataIntoCollection.h */,
-				4FAD0B241785EB8E00B05A35 /* QtPropertyDataIntrospection.cpp */,
-				4FAD0B251785EB8E00B05A35 /* QtPropertyDataIntrospection.h */,
-				4FAD0B261785EB8E00B05A35 /* QtPropertyDataMetaObject.cpp */,
-				4FAD0B271785EB8E00B05A35 /* QtPropertyDataMetaObject.h */,
+				E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */,
+				E825796F17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.h */,
+				E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */,
+				E825797117D886B400070B9C /* QtPropertyDataDavaVariant.h */,
+				E825797217D886B400070B9C /* QtPropertyDataInspColl.cpp */,
+				E825797317D886B400070B9C /* QtPropertyDataInspColl.h */,
+				E825797417D886B400070B9C /* QtPropertyDataInspMember.cpp */,
+				E825797517D886B400070B9C /* QtPropertyDataInspMember.h */,
+				E825797617D886B400070B9C /* QtPropertyDataIntrospection.cpp */,
+				E825797717D886B400070B9C /* QtPropertyDataIntrospection.h */,
+				E825797817D886B400070B9C /* QtPropertyDataMetaObject.cpp */,
+				E825797917D886B400070B9C /* QtPropertyDataMetaObject.h */,
 			);
+			name = QtPropetryData;
 			path = QtProperyData;
 			sourceTree = "<group>";
 		};
@@ -2340,7 +2351,7 @@
 				4FAD0CBE1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp */,
 				4FAD0CBF1785EC6E00B05A35 /* QtPropertyModel_moc.cpp */,
 				4FAD0CC01785EC6E00B05A35 /* QtPropertyWidgets */,
-				4FAD0CC21785EC6E00B05A35 /* QtProperyData */,
+				4FAD0CC21785EC6E00B05A35 /* QtPropertyData */,
 			);
 			path = QtPropertyEditor;
 			sourceTree = "<group>";
@@ -2353,15 +2364,17 @@
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
 		};
-		4FAD0CC21785EC6E00B05A35 /* QtProperyData */ = {
+		4FAD0CC21785EC6E00B05A35 /* QtPropertyData */ = {
 			isa = PBXGroup;
 			children = (
-				4FAD0CC31785EC6E00B05A35 /* QtPropertyDataDavaKeyedArchive_moc.cpp */,
-				4FAD0CC41785EC6E00B05A35 /* QtPropertyDataDavaVariant_moc.cpp */,
-				4FAD0CC51785EC6E00B05A35 /* QtPropertyDataIntoCollection_moc.cpp */,
-				4FAD0CC61785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp */,
-				4FAD0CC71785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp */,
+				E825798017D886EE00070B9C /* QtPropertyDataDavaKeyedArchive_moc.cpp */,
+				E825798117D886EE00070B9C /* QtPropertyDataDavaVariant_moc.cpp */,
+				E825798217D886EE00070B9C /* QtPropertyDataInspColl_moc.cpp */,
+				E825798317D886EE00070B9C /* QtPropertyDataInspMember_moc.cpp */,
+				E825798417D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp */,
+				E825798517D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp */,
 			);
+			name = QtPropertyData;
 			path = QtProperyData;
 			sourceTree = "<group>";
 		};
@@ -2418,6 +2431,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */,
+				E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */,
 				62B805D217CDFDFD0055EF1E /* GroupEntitiesForMultiselectCommand.cpp */,
 				62B805D317CDFDFD0055EF1E /* GroupEntitiesForMultiselectCommand.h */,
 				E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */,
@@ -4481,11 +4496,6 @@
 				4FAD0B2E1785EB8E00B05A35 /* QtPropertyItemDelegate.cpp in Build Sources */,
 				4FAD0B2F1785EB8E00B05A35 /* QtPropertyModel.cpp in Build Sources */,
 				4FAD0B301785EB8E00B05A35 /* QtColorLineEdit.cpp in Build Sources */,
-				4FAD0B311785EB8E00B05A35 /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */,
-				4FAD0B321785EB8E00B05A35 /* QtPropertyDataDavaVariant.cpp in Build Sources */,
-				4FAD0B331785EB8E00B05A35 /* QtPropertyDataIntoCollection.cpp in Build Sources */,
-				4FAD0B341785EB8E00B05A35 /* QtPropertyDataIntrospection.cpp in Build Sources */,
-				4FAD0B351785EB8E00B05A35 /* QtPropertyDataMetaObject.cpp in Build Sources */,
 				4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */,
 				4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */,
 				4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */,
@@ -4585,11 +4595,6 @@
 				4FAD0D3A1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp in Build Sources */,
 				4FAD0D3B1785EC6E00B05A35 /* QtPropertyModel_moc.cpp in Build Sources */,
 				4FAD0D3C1785EC6E00B05A35 /* QtColorLineEdit_moc.cpp in Build Sources */,
-				4FAD0D3D1785EC6E00B05A35 /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */,
-				4FAD0D3E1785EC6E00B05A35 /* QtPropertyDataDavaVariant_moc.cpp in Build Sources */,
-				4FAD0D3F1785EC6E00B05A35 /* QtPropertyDataIntoCollection_moc.cpp in Build Sources */,
-				4FAD0D401785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */,
-				4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */,
 				74FE1CE5178B117500693D15 /* EditorParticlesSystem.cpp in Build Sources */,
 				499E4A79178ABDD20067FA56 /* CustomColorsSystem.cpp in Build Sources */,
@@ -4664,6 +4669,19 @@
 				62B805D417CDFDFD0055EF1E /* GroupEntitiesForMultiselectCommand.cpp in Build Sources */,
 				E8EBEDFE17CF92B400104156 /* StatusBar.cpp in Build Sources */,
 				E8EBEE0417CF943300104156 /* StatusBar_moc.cpp in Build Sources */,
+				E825797A17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */,
+				E825797B17D886B400070B9C /* QtPropertyDataDavaVariant.cpp in Build Sources */,
+				E825797C17D886B400070B9C /* QtPropertyDataInspColl.cpp in Build Sources */,
+				E825797D17D886B400070B9C /* QtPropertyDataInspMember.cpp in Build Sources */,
+				E825797E17D886B400070B9C /* QtPropertyDataIntrospection.cpp in Build Sources */,
+				E825797F17D886B400070B9C /* QtPropertyDataMetaObject.cpp in Build Sources */,
+				E825798617D886EE00070B9C /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */,
+				E825798717D886EE00070B9C /* QtPropertyDataDavaVariant_moc.cpp in Build Sources */,
+				E825798817D886EE00070B9C /* QtPropertyDataInspColl_moc.cpp in Build Sources */,
+				E825798917D886EE00070B9C /* QtPropertyDataInspMember_moc.cpp in Build Sources */,
+				E825798A17D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp in Build Sources */,
+				E825798B17D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
+				E825798E17D8872D00070B9C /* InspMemebrModifyCommand.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
