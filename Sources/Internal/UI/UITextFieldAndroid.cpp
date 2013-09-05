@@ -40,11 +40,25 @@ void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, co
 	if (activeTextField)
 		HideField();
 
-	jmethodID mid = GetMethodID("ShowField", "(FFFFLjava/lang/String;Z)V");
+	jmethodID mid = GetMethodID("ShowField", "(FFFFLjava/lang/String;ZIIIIII)V");
 	if (mid)
 	{
 		jstring jStrDefaultText = GetEnvironment()->NewStringUTF(defaultText);
-		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, rect.x, rect.y, rect.dx, rect.dy, jStrDefaultText, textField->IsPassword());
+		GetEnvironment()->CallStaticVoidMethod(
+				GetJavaClass(),
+				mid,
+				rect.x,
+				rect.y,
+				rect.dx,
+				rect.dy,
+				jStrDefaultText,
+				textField->IsPassword(),
+				textField->GetAutoCapitalizationType(),
+				textField->GetAutoCorrectionType(),
+				textField->GetSpellCheckingType(),
+				textField->GetKeyboardAppearanceType(),
+				textField->GetKeyboardType(),
+				textField->GetReturnKeyType());
 		GetEnvironment()->DeleteLocalRef(jStrDefaultText);
 		activeTextField = textField;
 		SafeRetain(activeTextField);
