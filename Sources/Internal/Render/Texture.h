@@ -317,7 +317,7 @@ private:
     
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
-	static void AddToMap(Texture *tex);
+	static void AddToMap(Texture *tex, const FilePath & pathname);
     
 	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
 	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
@@ -328,10 +328,11 @@ private:
 	Vector<Image *> images;
 	bool LoadImages(File *file, const TextureDescriptor *descriptor);
 	void SetParamsFromImages();
-	void ReleaseImages();
 	void FlushDataToRenderer(const TextureDescriptor *descriptor);
+	void ReleaseImages();
 
-//    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
+    void MakePink();
+    
     bool CheckImageSize(const Vector<Image *> &imageSet) const;
     bool IsCompressedFormat(PixelFormat format);
     

@@ -105,6 +105,34 @@ Image * Image::CreateFromData(uint32 width, uint32 height, PixelFormat format, c
 	return image;
 }
 
+Image * Image::CreatePinkPlaceholder()
+{
+    Image * image = new Image();
+	image->width = 16;
+	image->height = 16;
+	image->format = FORMAT_RGBA8888;
+    image->dataSize = image->width * image->height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    image->data = new uint8[image->dataSize];
+
+    
+    uint32 pink = 0xffff00ff;
+    uint32 gray = 0xff7f7f7f;
+    bool pinkOrGray = false;
+    
+    uint32 * writeData = (uint32*) image->data;
+    for(uint32 w = 0; w < image->width; ++w)
+    {
+        pinkOrGray = !pinkOrGray;
+        for(uint32 h = 0; h < image->height; ++h)
+        {
+            *writeData++ = pinkOrGray ? pink : gray;
+            pinkOrGray = !pinkOrGray;
+        }
+    }
+
+    return image;
+}
+
 
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {

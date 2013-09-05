@@ -109,7 +109,10 @@ public:
     void SetDefaultValues();
 
     
-    static TextureDescriptor *CreateFromFile(const FilePath &filePathname);
+    static TextureDescriptor * CreateFromFile(const FilePath &filePathname);
+    
+    static TextureDescriptor * CreateDescriptor(Texture::TextureWrap wrap, bool generateMipmaps);
+    
     
     bool Load(const FilePath &filePathname);
 
