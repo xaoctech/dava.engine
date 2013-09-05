@@ -32,6 +32,7 @@
 #define __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
 
 #include <QWidget>
+#include <QDockWidget>
 #include "DAVAEngine.h"
 #include "../Scene/System/VisibilityToolSystem.h"
 
@@ -67,12 +68,20 @@ private slots:
 	void SetVisibilityAreaSize(int areaSize);
 
 private:
+	static const int DEF_AREA_MIN_SIZE = 3;
+	static const int DEF_AREA_MAX_SIZE = 40;
+
 	Ui::VisibilityToolPropertiesView* ui;
 	SceneEditor2* activeScene;
+	QAction* toolbarAction;
+	QDockWidget* dockWidget;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);
 	void UpdateFromScene(SceneEditor2* scene);
+
+	int32 AreaSizeFromInt(int32 val);
+	int32 IntFromAreaSize(int32 areaSize);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__) */

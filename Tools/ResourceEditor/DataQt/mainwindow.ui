@@ -232,6 +232,8 @@
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
+   <addaction name="actionCustomColorsEditor"/>
+   <addaction name="actionVisibilityCheckTool"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -725,6 +727,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockHeightmapEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Height Map Editor</string>
    </property>
@@ -743,6 +748,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockTilemaskEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Tile Mask Editor</string>
    </property>
@@ -761,6 +769,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockCustomColorsEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Custom Colors Editor</string>
    </property>
@@ -825,6 +836,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockVisibilityToolEditor">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Visibility Tool Editor</string>
    </property>
@@ -850,6 +864,27 @@
     <number>1</number>
    </attribute>
    <widget class="LODEditor" name="dockLODEditorContent"/>
+  </widget>
+  <widget class="QDockWidget" name="dockRulerTool">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Ruler Tool</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="RulerToolPropertiesView" name="widget_5" native="true"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1563,6 +1598,28 @@
     <string>Save Tiled Texture</string>
    </property>
   </action>
+  <action name="actionCustomColorsEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Custom Colors Editor</string>
+   </property>
+   <property name="toolTip">
+    <string>Custom Colors Editor</string>
+   </property>
+  </action>
+  <action name="actionVisibilityCheckTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Visibility Check Tool</string>
+   </property>
+   <property name="toolTip">
+    <string>Visibility Check Tool</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1662,6 +1719,12 @@
    <class>StatusBar</class>
    <extends>QStatusBar</extends>
    <header>Main/StatusBar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RulerToolPropertiesView</class>
+   <extends>QWidget</extends>
+   <header>DockRulerTool/RulerToolPropertiesView.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

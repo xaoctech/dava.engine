@@ -203,7 +203,7 @@ Image* Image::CopyImageRegion(const Image* imageToCopy,
 							  uint32 newWidth, uint32 newHeight,
 							  uint32 xOffset, uint32 yOffset)
 {
-	DVASSERT(newWidth > 0 && newHeight > 0 && xOffset >= 0 && yOffset >= 0);
+	DVASSERT(newWidth >= 0 && newHeight >= 0 && xOffset >= 0 && yOffset >= 0);
 
 	uint32 oldWidth = imageToCopy->GetWidth();
 	uint32 oldHeight = imageToCopy->GetHeight();

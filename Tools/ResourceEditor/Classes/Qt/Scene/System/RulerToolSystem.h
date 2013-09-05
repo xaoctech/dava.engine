@@ -54,6 +54,12 @@ public:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 
+	void SetLineWidth(int32 width);
+	int32 GetLineWidth();
+
+	float32 GetLength();
+	float32 GetPreviewLength();
+
 protected:
 	bool enabled;
 
@@ -72,18 +78,23 @@ protected:
 	Vector2 cursorPosition;
 	Vector2 prevCursorPos;
 
+	int32 lineWidth;
 	List<Vector3> linePoints;
-	float32 length;
+	List<float32> lengths;
 	Vector3 previewPoint;
 	float32 previewLength;
+	bool previewEnabled;
 
 	void UpdateCursorPosition(int32 landscapeSize);
 
 	void SetStartPoint(const Vector3 &point);
 	void AddPoint(const Vector3 &point);
-	void CalcPreviewPoint(const Vector3& point);
+	void RemoveLastPoint();
+	void CalcPreviewPoint(const Vector3& point, bool force = false);
 	float32 GetLength(const Vector3 &startPoint, const Vector3 &endPoint);
 	void DrawPoints();
+	void DisablePreview();
+	void SendUpdatedLength();
 
 	bool IsCanBeEnabled();
 
