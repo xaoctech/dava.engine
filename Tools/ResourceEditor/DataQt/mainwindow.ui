@@ -239,7 +239,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -566,7 +566,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionShowMipmapLevel"/>
   </widget>
   <widget class="StatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -1409,18 +1408,6 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
-   </property>
-  </action>
-  <action name="actionShowMipmapLevel">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Zero Mipmap Level</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Zero Mipmap Level</string>
    </property>
   </action>
   <action name="actionSaveSceneAs">
