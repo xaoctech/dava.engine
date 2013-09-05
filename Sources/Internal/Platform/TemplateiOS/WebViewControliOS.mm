@@ -116,18 +116,20 @@ namespace DAVA
 
 WebViewControl::WebViewControl()
 {
-	CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-	webViewPtr = [[UIWebView alloc] initWithFrame:emptyRect];
+    CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+    UIWebView* innerWebView = [[UIWebView alloc] initWithFrame:emptyRect];
+    innerWebView.scrollView.bounces = NO;
+    webViewPtr = innerWebView;
 
-	UIWebView* localWebView = (UIWebView*)webViewPtr;
-	HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-	[[[appDelegate glController] view] addSubview:localWebView];
+    UIWebView* localWebView = (UIWebView*)webViewPtr;
+    HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
+    [[[appDelegate glController] view] addSubview:localWebView];
 
-	webViewURLDelegatePtr = [[WebViewURLDelegate alloc] init];
-	[localWebView setDelegate:(WebViewURLDelegate*)webViewURLDelegatePtr];
+    webViewURLDelegatePtr = [[WebViewURLDelegate alloc] init];
+    [localWebView setDelegate:(WebViewURLDelegate*)webViewURLDelegatePtr];
 
-	[localWebView becomeFirstResponder];
-}
+    [localWebView becomeFirstResponder];
+ }
 
 WebViewControl::~WebViewControl()
 {
