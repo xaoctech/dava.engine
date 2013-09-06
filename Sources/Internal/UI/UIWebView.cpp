@@ -99,3 +99,14 @@ void UIWebView::SetBackgroundTransparency(bool enabled)
 {
 	this->webViewControl->SetBackgroundTransparency(enabled);
 }
+
+// Enable/disable bounces.
+void UIWebView::SetBounces(bool value)
+{
+	this->webViewControl->SetBounces(value);
+}
+
+bool UIWebView::GetBounces() const
+{
+	return this->webViewControl->GetBounces();
+}
