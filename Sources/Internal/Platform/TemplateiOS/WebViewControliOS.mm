@@ -312,13 +312,13 @@ bool WebViewControl::GetBounces() const
 	}
 
 	UIWebView* localWebView = (UIWebView*)webViewPtr;
-	return localWebView.scrollView.bounces == YES ? true : false;
+	return (localWebView.scrollView.bounces == YES);
 }
 	
 void WebViewControl::SetBounces(bool value)
 {
 	UIWebView* localWebView = (UIWebView*)webViewPtr;
-	localWebView.scrollView.bounces = value ?  YES : NO;
+	localWebView.scrollView.bounces = (value == true);
 }
     
 };
