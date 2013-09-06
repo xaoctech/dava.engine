@@ -43,6 +43,7 @@ public:
 private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
+	void RulerToolToggled(SceneEditor2* scene);
 
 	void Toggle();
 	void SetLineWidth(int width);

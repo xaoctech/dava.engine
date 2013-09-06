@@ -30,6 +30,69 @@
 
 #include "TilemaskEditorCommands.h"
 #include "../Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "../Qt/Scene/SceneEditor2.h"
+#include "../Qt/Scene/SceneSignals.h"
+
+
+ActionEnableTilemaskEditor::ActionEnableTilemaskEditor(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_ENABLE_TILEMASK)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionEnableTilemaskEditor::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool enabled = sceneEditor->tilemaskEditorSystem->IsLandscapeEditingEnabled();
+	if (enabled)
+	{
+		return;
+	}
+	
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	
+	if (!success || !sceneEditor->tilemaskEditorSystem->EnableLandscapeEditing())
+	{
+		// show error message
+	}
+	
+	SceneSignals::Instance()->EmitTilemaskEditorToggled(sceneEditor);
+}
+
+ActionDisableTilemaskEditor::ActionDisableTilemaskEditor(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_DISABLE_TILEMASK)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionDisableTilemaskEditor::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool disabled = !sceneEditor->tilemaskEditorSystem->IsLandscapeEditingEnabled();
+	if (disabled)
+	{
+		return;
+	}
+	
+	disabled = sceneEditor->tilemaskEditorSystem->DisableLandscapeEdititing();
+	if (!disabled)
+	{
+		// show error message
+	}
+	
+	SceneSignals::Instance()->EmitTilemaskEditorToggled(sceneEditor);
+}
+
 
 ModifyTilemaskCommand::ModifyTilemaskCommand(Image* originalMask, LandscapeProxy* landscapeProxy, const Rect& updatedRect)
 :	Command2(CMDID_MODIFY_TILEMASK, "Tile Mask Modification")

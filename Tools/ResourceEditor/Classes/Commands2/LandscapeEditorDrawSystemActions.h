@@ -26,80 +26,36 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__
-#define __RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__
+#ifndef __RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEMACTIONS__
+#define __RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEMACTIONS__
 
 #include "Commands2/CommandAction.h"
 #include "DAVAEngine.h"
 
 using namespace DAVA;
 
-class VisibilityToolProxy;
 class SceneEditor2;
 
-class ActionEnableVisibilityTool: public CommandAction
+class ActionEnableNotPassable: public CommandAction
 {
 public:
-	ActionEnableVisibilityTool(SceneEditor2* forSceneEditor);
-
+	ActionEnableNotPassable(SceneEditor2* forSceneEditor);
+	
 protected:
 	SceneEditor2* sceneEditor;
-
+	
 	virtual void Redo();
 };
 
-class ActionDisableVisibilityTool: public CommandAction
+class ActionDisableNotPassable: public CommandAction
 {
 public:
-	ActionDisableVisibilityTool(SceneEditor2* forSceneEditor);
-
+	ActionDisableNotPassable(SceneEditor2* forSceneEditor);
+	
 protected:
 	SceneEditor2* sceneEditor;
-
+	
 	virtual void Redo();
 };
 
-
-class ActionSetVisibilityPoint: public CommandAction
-{
-public:
-	ActionSetVisibilityPoint(Image* originalImage,
-							 Sprite* cursorSprite,
-							 VisibilityToolProxy* visibilityToolProxy,
-							 const Vector2& visibilityPoint);
-	~ActionSetVisibilityPoint();
-
-protected:
-//	Image* undoImage;
-	Sprite* cursorSprite;
-	VisibilityToolProxy* visibilityToolProxy;
-//	Vector2 undoVisibilityPoint;
-	Vector2 redoVisibilityPoint;
-//	bool undoVisibilityPointSet;
-
-	virtual void Redo();
-};
-
-class ActionSetVisibilityArea: public CommandAction
-{
-public:
-	ActionSetVisibilityArea(Image* originalImage,
-							VisibilityToolProxy* visibilityToolProxy,
-							const Rect& updatedRect);
-	virtual ~ActionSetVisibilityArea();
-
-protected:
-//	Image* undoImage;
-	Image* redoImage;
-
-	VisibilityToolProxy* visibilityToolProxy;
-	Rect updatedRect;
-
-	virtual void Redo();
-
-	void ApplyImage(Image* image);
-};
-
-#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__) */
+#endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEMACTIONS__) */

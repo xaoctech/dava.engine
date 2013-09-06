@@ -37,6 +37,13 @@
 
 #include "Classes/SceneEditor/SceneValidator.h"
 
+#include "Commands2/VisibilityToolActions.h"
+#include "Commands2/CustomColorsCommands2.h"
+#include "Commands2/HeightmapEditorCommands2.h"
+#include "Commands2/TilemaskEditorCommands.h"
+#include "Commands2/RulerToolActions.h"
+#include "Commands2/LandscapeEditorDrawSystemActions.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
 
@@ -468,3 +475,72 @@ const RenderManager::Stats & SceneEditor2::GetRenderStats() const
     return renderStats;
 }
 
+void SceneEditor2::DisableTools(int32 toolFlags)
+{
+	if (toolFlags & LANDSCAPE_TOOL_CUSTOM_COLOR)
+	{
+		Exec(new ActionDisableCustomColors(this));
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_VISIBILITY)
+	{
+		Exec(new ActionDisableVisibilityTool(this));
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+	{
+		Exec(new ActionDisableHeightmapEditor(this));
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_TILEMAP_EDITOR)
+	{
+		Exec(new ActionDisableTilemaskEditor(this));
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_RULER)
+	{
+		Exec(new ActionDisableRulerTool(this));
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
+	{
+		Exec(new ActionDisableNotPassable(this));
+	}
+}
+
+bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
+{
+	bool res = false;
+
+	if (toolFlags & LANDSCAPE_TOOL_CUSTOM_COLOR)
+	{
+		res |= customColorsSystem->IsLandscapeEditingEnabled();
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_VISIBILITY)
+	{
+		res |= visibilityToolSystem->IsLandscapeEditingEnabled();
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+	{
+		res |= heightmapEditorSystem->IsLandscapeEditingEnabled();
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_TILEMAP_EDITOR)
+	{
+		res |= tilemaskEditorSystem->IsLandscapeEditingEnabled();
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_RULER)
+	{
+		res |= rulerToolSystem->IsLandscapeEditingEnabled();
+	}
+	
+	if (toolFlags & LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
+	{
+		res |= landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
+	}
+
+	return res;
+}

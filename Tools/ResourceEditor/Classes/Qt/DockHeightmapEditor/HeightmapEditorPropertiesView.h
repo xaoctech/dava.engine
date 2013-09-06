@@ -62,6 +62,8 @@ private slots:
 	void SetDropperHeight(SceneEditor2* scene, double height);
 	void HeightUpdatedManually();
 
+	void HeightmapEditorToggled(SceneEditor2* scene);
+
 	void Toggle();
 	void SetBrushSize(int brushSize);
 	void SetToolImage(int toolImage);
