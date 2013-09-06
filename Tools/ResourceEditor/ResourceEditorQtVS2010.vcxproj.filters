@@ -223,6 +223,12 @@
     <Filter Include="Classes\Qt\Settings">
       <UniqueIdentifier>{0c11ce84-cd79-4a91-8ae8-eb63aca96f0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\SliderWidget">
+      <UniqueIdentifier>{d95815db-d6ea-44d1-82b0-73a7f1f5a5d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\DockRulerTool">
+      <UniqueIdentifier>{281096d8-d8e8-42a6-99f5-88475f7d8c26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2118,6 +2124,18 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockRulerTool\RulerToolPropertiesView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SliderWidget\SliderWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockRulerTool\RulerToolPropertiesView.cpp">
+      <Filter>Classes\Qt\DockRulerTool</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp">
+      <Filter>Classes\Qt\SliderWidget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3685,6 +3703,18 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_RulerToolPropertiesView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_SliderWidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockRulerTool\RulerToolPropertiesView.h">
+      <Filter>Classes\Qt\DockRulerTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h">
+      <Filter>Classes\Qt\SliderWidget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
