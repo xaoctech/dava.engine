@@ -69,7 +69,7 @@ void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -84,7 +84,7 @@ void ParticleEffectComponent::Pause(bool isPaused /*= true*/)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -99,7 +99,7 @@ bool ParticleEffectComponent::IsStopped()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -118,7 +118,7 @@ void ParticleEffectComponent::Restart()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -142,7 +142,7 @@ void ParticleEffectComponent::EffectUpdate(float32 timeElapsed)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -168,7 +168,7 @@ void ParticleEffectComponent::UpdateDurationForChildNodes(float32 newEmitterLife
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -222,7 +222,7 @@ float32 ParticleEffectComponent::GetPlaybackSpeed()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -239,7 +239,7 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
@@ -254,7 +254,7 @@ int32 ParticleEffectComponent::GetActiveParticlesCount()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		RenderObject * ro = GetRenderObject(entity);
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
 		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
