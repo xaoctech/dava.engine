@@ -753,7 +753,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
 	if (this->emitter&&!inheritPosition) //just generate at correct position
 	{		
-		particle->position += emitter->GetPosition();
+		particle->position += emitter->GetPosition()-emitter->GetInitialTranslationVector();
 	}
 
 	//particle->angle += alignToMotion;

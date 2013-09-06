@@ -85,6 +85,9 @@ public:
 	Vector2 LandscapePointToTexturePoint(const Vector2& point);
 	Vector2 TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect);
 
+	void ClampToTexture(Rect& rect);
+	void ClampToHeightmap(Rect& rect);
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;
