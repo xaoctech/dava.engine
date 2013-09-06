@@ -32,7 +32,7 @@
 #include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataMetaObject.h"
 
 #include <QSet>
 #include <QMenu>
@@ -79,7 +79,7 @@ QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 	}
 	else
 	{
-		v = QString("KeyedArchive[NULL]");
+		v = QString("KeyedArchive [NULL]");
 	}
 
 	return v;
@@ -87,18 +87,6 @@ QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 
 void QtPropertyDataDavaKeyedArcive::SetValueInternal(const QVariant &value)
 { }
-
-void QtPropertyDataDavaKeyedArcive::ChildChanged(const QString &key, QtPropertyData *data)
-{
-	if(NULL != curArchive)
-	{
-		QtPropertyDataDavaVariant *variantData = dynamic_cast<QtPropertyDataDavaVariant *>(data);
-		if(NULL != variantData)
-		{
-			curArchive->SetVariant(key.toStdString(), variantData->GetVariantValue());
-		}
-	}
-}
 
 void QtPropertyDataDavaKeyedArcive::ChildsSync()
 {
@@ -157,7 +145,7 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	}
 	else
 	{
-		childData = new QtPropertyDataDavaVariant(*value);
+		childData = new QtPropertyDataMetaObject(value->MetaObject(), value->Meta());
 	}
 
 	ChildAdd(key, childData);
@@ -212,6 +200,8 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 					{
 						curArchive->DeleteKey(child.first.toStdString());
 						ChildsSync();
+
+						emit ValueChanged();
 						break;
 					}
 				}
@@ -228,6 +218,8 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
 		ChildsSync();
+
+		emit ValueChanged();
 	}
 }
 

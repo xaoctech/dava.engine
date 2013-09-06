@@ -20,6 +20,7 @@ QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::In
 	: QtPropertyDataDavaVariant(DAVA::VariantType())
 	, object(_object)
 	, member(_member)
+	, lastCommand(NULL)
 {
 	if(NULL != member)
 	{
@@ -28,7 +29,12 @@ QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::In
 }
 
 QtPropertyDataInspMember::~QtPropertyDataInspMember()
-{ }
+{
+	if(NULL != lastCommand)
+	{
+		delete lastCommand;
+	}
+}
 
 QVariant QtPropertyDataInspMember::GetValueInternal()
 {
@@ -53,11 +59,18 @@ QVariant QtPropertyDataInspMember::GetValueInternal()
 void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
+	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
 
 	// also save value to meta-object
 	if(NULL != member)
 	{
-		member->SetValue(object, QtPropertyDataDavaVariant::GetVariantValue());
+		if(NULL != lastCommand)
+		{
+			delete lastCommand;
+		}
+
+		lastCommand = new InspMemberModifyCommand(member, object, newValue);
+		member->SetValue(object, newValue);
 	}
 }
 
@@ -73,4 +86,16 @@ bool QtPropertyDataInspMember::EditorDoneInternal(QWidget *editor)
 	}
 
 	return ret;
+}
+
+void* QtPropertyDataInspMember::CreateLastCommand() const
+{
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		command = new InspMemberModifyCommand(*lastCommand);
+	}
+
+	return command;
 }

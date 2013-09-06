@@ -52,7 +52,6 @@ protected:
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 
 private:
 	void ChildsSync();

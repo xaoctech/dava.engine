@@ -34,10 +34,16 @@ QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::Me
 	: QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(_object, _meta))
 	, object(_object)
 	, meta(_meta)
+	, lastCommand(NULL)
 { }
 
 QtPropertyDataMetaObject::~QtPropertyDataMetaObject()
-{ }
+{
+	if(NULL != lastCommand)
+	{
+		delete lastCommand;
+	}
+}
 
 QVariant QtPropertyDataMetaObject::GetValueInternal()
 {
@@ -59,9 +65,17 @@ QVariant QtPropertyDataMetaObject::GetValueInternal()
 void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
+	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
+
+	if(NULL != lastCommand)
+	{
+		delete lastCommand;
+	}
+
+	lastCommand = new MetaObjModifyCommand(meta, object, newValue);
 
 	// also save value to meta-object
-	DAVA::VariantType::SaveData(object, meta, QtPropertyDataDavaVariant::GetVariantValue());
+	DAVA::VariantType::SaveData(object, meta, newValue);
 }
 
 bool QtPropertyDataMetaObject::EditorDoneInternal(QWidget *editor)
@@ -76,4 +90,16 @@ bool QtPropertyDataMetaObject::EditorDoneInternal(QWidget *editor)
 	}
 
 	return ret;
+}
+
+void* QtPropertyDataMetaObject::CreateLastCommand() const
+{
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		command = new MetaObjModifyCommand(*lastCommand);
+	}
+
+	return command;
 }

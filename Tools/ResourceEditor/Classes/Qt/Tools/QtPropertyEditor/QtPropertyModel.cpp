@@ -33,6 +33,7 @@
 
 QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
 	: QStandardItemModel(parent)
+	, trackEdit(false)
 {
 	QStringList headerLabels;
 
@@ -124,4 +125,25 @@ void QtPropertyModel::OnItemChanged(QStandardItem* item)
 			propItem->GetPropertyData()->SetValue(QVariant(propItem->checkState() == Qt::Checked));
 		}
 	}
+}
+
+void QtPropertyModel::EmitDataEdited(QtPropertyItem *editedItem)
+{
+	if(trackEdit)
+	{
+		QModelIndex index = indexFromItem(editedItem);
+		QStandardItem *nameItem = item(index.row(), 0);
+
+		emit ItemEdited(nameItem->text(), editedItem->GetPropertyData());
+	}
+}
+
+void QtPropertyModel::SetEditTracking(bool enabled)
+{
+	trackEdit = enabled;
+}
+
+bool QtPropertyModel::GetEditTracking()
+{
+	return trackEdit;
 }

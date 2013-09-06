@@ -94,6 +94,8 @@ public:
 	void ChildRemove(QtPropertyData *data);
 	void ChildRemove(int i);
 
+	virtual void* CreateLastCommand() const;
+
 signals:
 	void ValueChanged();
 	void FlagsChanged();

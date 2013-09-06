@@ -46,9 +46,10 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	curItemDelegate = new QtPropertyItemDelegate();
 	setItemDelegate(curItemDelegate);
 
-	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(ItemClicked(const QModelIndex &)));
+	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
+	QObject::connect(curModel, SIGNAL(ItemEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)));
 	QObject::connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(OnRefreshTimeout()));
 }
 
@@ -91,6 +92,16 @@ QtPropertyData *QtPropertyEditor::GetPropertyData(const QString &key, QtProperty
 	}
 
 	return ret;
+}
+
+void QtPropertyEditor::SetEditTracking(bool enabled)
+{
+	curModel->SetEditTracking(enabled);
+}
+
+bool QtPropertyEditor::GetEditTracking()
+{
+	return curModel->GetEditTracking();
 }
 
 void QtPropertyEditor::Expand(QtPropertyItem *item)
@@ -168,7 +179,7 @@ void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &o
 	}
 }
 
-void QtPropertyEditor::ItemClicked(const QModelIndex &index)
+void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 {
 	QStandardItem *item = curModel->itemFromIndex(index);
 	if(NULL != item && item->isEditable() && item->isEnabled())
@@ -183,4 +194,9 @@ void QtPropertyEditor::OnRefreshTimeout()
 	{
 		curModel->RefreshAll();
 	}
+}
+
+void QtPropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
+{
+	emit PropertyEdited(name, data);
 }

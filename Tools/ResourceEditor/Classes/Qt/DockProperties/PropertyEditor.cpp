@@ -39,6 +39,8 @@
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "Commands2/MetaObjModifyCommand.h"
+#include "Commands2/InspMemberModifyCommand.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -49,8 +51,6 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
-	SetRefreshTimeout(5000);
-	
 	if(connectToSceneSignals)
 	{
 		QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
@@ -66,6 +66,9 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
 	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
+
+	SetRefreshTimeout(5000);
+	SetEditTracking(true);
 }
 
 PropertyEditor::~PropertyEditor()
@@ -211,4 +214,15 @@ void PropertyEditor::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 void PropertyEditor::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
 
+}
+
+void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
+{
+	QtPropertyEditor::OnItemEdited(name, data);
+
+	Command2 *command = (Command2 *) data->CreateLastCommand();
+	if(NULL != command)
+	{
+		QtMainWindow::Instance()->GetCurrentScene()->Exec(command);
+	}
 }

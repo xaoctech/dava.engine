@@ -1223,6 +1223,57 @@ const MetaInfo* VariantType::Meta()
 	return NULL;
 }
 
+void* VariantType::MetaObject()
+{
+	const void *ret = NULL;
+
+	switch(type)
+	{
+	case TYPE_BOOLEAN:
+		ret = &boolValue;
+		break;
+	case TYPE_INT32:
+		ret = &int32Value;
+		break;	
+	case TYPE_UINT32:
+		ret = &uint32Value;
+		break;	
+	case TYPE_FLOAT:
+		ret = &floatValue;
+		break;	
+	case TYPE_STRING:
+		ret = stringValue;
+		break;	
+	case TYPE_WIDE_STRING:
+		ret = wideStringValue;
+		break;
+	case TYPE_INT64:
+	case TYPE_UINT64:
+	case TYPE_VECTOR2:
+	case TYPE_BYTE_ARRAY:
+	case TYPE_VECTOR3:
+	case TYPE_VECTOR4:
+	case TYPE_MATRIX2:
+	case TYPE_MATRIX3:
+	case TYPE_MATRIX4:
+	case TYPE_COLOR:
+	case TYPE_FASTNAME:
+	case TYPE_AABBOX3:
+	case TYPE_FILEPATH:
+		ret = pointerValue;
+		break;
+	case TYPE_KEYED_ARCHIVE:
+		ret = &pointerValue;
+		break;
+	default:
+		{
+			//DVASSERT(0 && "Something went wrong with VariantType");
+		}
+	}
+
+	return (void *) ret;
+}
+
 VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 {
 	VariantType v;

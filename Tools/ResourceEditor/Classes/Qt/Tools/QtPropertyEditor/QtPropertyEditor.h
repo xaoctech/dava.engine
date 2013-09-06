@@ -51,6 +51,9 @@ public:
 	QPair<QtPropertyItem*, QtPropertyItem*> GetProperty(const QString &name, QtPropertyItem* parent = NULL) const;
 	QtPropertyData * GetPropertyData(const QString &key, QtPropertyItem *parent = NULL) const;
 
+	bool GetEditTracking();
+	void SetEditTracking(bool enabled);
+
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
 
@@ -63,6 +66,7 @@ public:
 
 signals:
 	void PropertyChanged(const QString &name, QtPropertyData *data);
+	void PropertyEdited(const QString &name, QtPropertyData *data);
 
 protected:
 	QtPropertyModel *curModel;
@@ -73,8 +77,9 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 protected slots:
-	void ItemClicked(const QModelIndex &);
-	void OnRefreshTimeout();
+	virtual void OnItemClicked(const QModelIndex &);
+	virtual void OnRefreshTimeout();
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
 };
 
 #endif // __QT_PROPERTY_VIEW_H__

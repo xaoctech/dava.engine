@@ -52,6 +52,7 @@ public:
 
 protected:
     QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::InspInfo * info);
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
     
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
