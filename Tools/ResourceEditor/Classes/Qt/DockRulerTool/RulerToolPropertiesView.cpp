@@ -22,6 +22,7 @@
 #include "../SceneEditor/EditorConfig.h"
 #include "../Scene/SceneSignals.h"
 #include "../Main/mainwindow.h"
+#include "../../Commands2/RulerToolActions.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -59,6 +60,8 @@ void RulerToolPropertiesView::Init()
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(RulerToolToggled(SceneEditor2*)),
+			this, SLOT(RulerToolToggled(SceneEditor2*)));
 	connect(ui->sliderWidgetLineWidth, SIGNAL(ValueChanged(int)), this, SLOT(SetLineWidth(int)));
 
 	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
@@ -125,34 +128,14 @@ void RulerToolPropertiesView::Toggle()
 		return;
 	}
 
-	bool enabled = activeScene->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (!enabled)
+	if(activeScene->rulerToolSystem->IsLandscapeEditingEnabled())
 	{
-		if (activeScene->rulerToolSystem->EnableLandscapeEditing())
-		{
-			SetWidgetsState(true);
-
-			activeScene->rulerToolSystem->SetLineWidth(ui->sliderWidgetLineWidth->GetValue());
-
-			dockWidget->show();
-		}
-		else
-		{
-			QMessageBox::critical(0,
-								  ResourceEditor::RULER_TOOL_ERROR_CAPTION.c_str(),
-								  ResourceEditor::RULER_TOOL_ERROR_MESSAGE.c_str());
-		}
+		activeScene->Exec(new ActionDisableRulerTool(activeScene));
 	}
 	else
 	{
-		if (activeScene->rulerToolSystem->DisableLandscapeEdititing())
-		{
-			SetWidgetsState(false);
-			dockWidget->hide();
-		}
+		activeScene->Exec(new ActionEnableRulerTool(activeScene));
 	}
-
-	toolbarAction->setChecked(activeScene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
 void RulerToolPropertiesView::SetLineWidth(int width)
@@ -186,4 +169,24 @@ void RulerToolPropertiesView::UpdateLengths(SceneEditor2 *scene, double length, 
 
 	ui->labelLength->setText(QString::number(length));
 	ui->labelPreview->setText(QString::number(previewLength));
+}
+
+void RulerToolPropertiesView::RulerToolToggled(SceneEditor2* scene)
+{
+	if (!activeScene || activeScene != scene)
+	{
+		return;
+	}
+
+	if (activeScene->rulerToolSystem->IsLandscapeEditingEnabled())
+	{
+		SetWidgetsState(true);
+		activeScene->rulerToolSystem->SetLineWidth(ui->sliderWidgetLineWidth->GetValue());
+		dockWidget->show();
+	}
+	else
+	{
+		SetWidgetsState(false);
+		dockWidget->hide();
+	}
 }

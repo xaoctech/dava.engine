@@ -59,6 +59,7 @@ private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
 
+	void VisibilityToolToggled(SceneEditor2* scene);
 	void SetVisibilityToolButtonsState(SceneEditor2* scene,
 									   VisibilityToolSystem::eVisibilityToolState state);
 	void Toggle();

@@ -33,31 +33,7 @@
 
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
-
-#include "Scene/System/CameraSystem.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/GridSystem.h"
-#include "Scene/System/HoodSystem.h"
-#include "Scene/System/SelectionSystem.h"
-#include "Scene/System/ModifSystem.h"
-#include "Scene/System/LandscapeEditorDrawSystem.h"
-#include "Scene/System/HeightmapEditorSystem.h"
-#include "Scene/System/TilemaskEditorSystem.h"
-#include "Scene/System/CustomColorsSystem.h"
-#include "Scene/System/VisibilityToolSystem.h"
-#include "Scene/System/RulerToolSystem.h"
-#include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
-#include "Scene/System/EditorLightSystem.h"
-#include "Scene/System/TextDrawSystem.h"
-
-#include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-
-#include "Tools/QtPropertyEditor/QtPropertyItem.h"
-
 #include <QPushButton>
 
 typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;

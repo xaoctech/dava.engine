@@ -63,6 +63,7 @@
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
+#include "../../Commands2/LandscapeEditorDrawSystemActions.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -107,6 +108,8 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)),
+			this, SLOT(NotPassableToggled(SceneEditor2*)));
 
 	LoadGPUFormat();
 
@@ -920,21 +923,14 @@ void QtMainWindow::OnNotPassableTerrain()
 		return;
 	}
 
-	bool enabled = scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
-	if (!enabled)
+	if (scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
 	{
-		if (!scene->landscapeEditorDrawSystem->EnableNotPassableTerrain())
-		{
-			QMessageBox::critical(0, "Error enabling Not Passable Landscape",
-								  "Error enabling Not Passable Landscape.\nMake sure there is landscape in scene and disable other landscape editors.");
-		}
+		scene->Exec(new ActionDisableNotPassable(scene));
 	}
 	else
 	{
-		scene->landscapeEditorDrawSystem->DisableNotPassableTerrain();
+		scene->Exec(new ActionEnableNotPassable(scene));
 	}
-
-	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
 void QtMainWindow::OnSetSkyboxNode()
@@ -1382,4 +1378,9 @@ void QtMainWindow::HideLandscapeEditorDocks()
 	ui->dockHeightmapEditor->hide();
 	ui->dockTilemaskEditor->hide();
 	ui->dockRulerTool->hide();
+}
+
+void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
+{
+	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
