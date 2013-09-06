@@ -26,8 +26,11 @@ varying mediump vec2 varTexCoord2;
 varying mediump vec2 varTexCoord3;
 #endif
 
-#if defined(VERTEX_FOG)
+#if defined(VERTEX_FOG) || defined(SPECULAR_LAND)
 uniform mat4 modelViewMatrix;
+#endif
+
+#if defined(VERTEX_FOG)
 uniform float fogDensity;
 #endif
 
@@ -37,6 +40,17 @@ varying float varFogFactor;
 
 #ifdef EDITOR_CURSOR
 varying vec2 varTexCoordCursor;
+#endif
+
+#ifdef SPECULAR_LAND
+attribute vec3 inNormal;
+
+uniform vec3 lightPosition0;
+uniform float lightIntensity0;
+uniform mat3 normalMatrix;
+uniform float materialSpecularShininess;
+
+varying float varSpecularColor;
 #endif
 
 void main()
@@ -50,7 +64,20 @@ void main()
 	varTexCoord1 = inTexCoord0 * texture1Tiling;
 	varTexCoord2 = inTexCoord0 * texture2Tiling;
 	varTexCoord3 = inTexCoord0 * texture3Tiling;
-#endif 
+#endif
+	
+#if defined(SPECULAR_LAND)
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+    vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
+    vec3 lightDir = normalize(lightPosition0 - eyeCoordsPosition);
+    
+    // Blinn-phong reflection
+    vec3 E = normalize(-eyeCoordsPosition);
+    vec3 H = normalize(lightDir + E);
+    float nDotHV = max(0.0, dot(normal, H));
+    
+    varSpecularColor = pow(nDotHV, materialSpecularShininess);
+#endif
     
 #if defined(VERTEX_FOG)
     const float LOG2 = 1.442695;
