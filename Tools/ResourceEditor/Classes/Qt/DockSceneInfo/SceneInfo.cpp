@@ -348,21 +348,22 @@ void SceneInfo::CollectSceneTextures()
         for(uint32 b = 0; b < count; ++b)
         {
             RenderBatch *renderBatch = ro->GetRenderBatch(b);
-            
-            Material *material = renderBatch->GetMaterial();
-            if(material)
-            {
-                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-                {
-                    CollectTexture(sceneTextures, material->GetTextureName((Material::eTextureLevel)t), material->GetTexture((Material::eTextureLevel)t));
-                }
-            }
-            
-            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-            if(instanceMaterial)
-            {
-                CollectTexture(sceneTextures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
-            }
+			
+			//            Logger::Error("Uncommend code below");
+			//            Material *material = renderBatch->GetMaterial();
+			//            if(material)
+			//            {
+			//                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+			//                {
+			//                    CollectTexture(sceneTextures, material->GetTextureName((Material::eTextureLevel)t), material->GetTexture((Material::eTextureLevel)t));
+			//                }
+			//            }
+			//
+			//            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+			//            if(instanceMaterial)
+			//            {
+			//                CollectTexture(sceneTextures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
+			//            }
         }
         
         if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
@@ -373,8 +374,7 @@ void SceneInfo::CollectSceneTextures()
                 CollectTexture(sceneTextures, land->GetTextureName((Landscape::eTextureLevel)t), land->GetTexture((Landscape::eTextureLevel)t));
             }
         }
-    }
-}
+    }}
 
 void SceneInfo::CollectParticlesData()
 {

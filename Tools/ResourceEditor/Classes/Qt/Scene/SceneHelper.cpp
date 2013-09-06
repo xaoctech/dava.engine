@@ -36,41 +36,42 @@ using namespace DAVA;
 void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textures)
 {
 	if(!forNode) return;
-
+	
 	Vector<Entity *> nodes;
 	forNode->GetChildNodes(nodes);
-
+	
 	nodes.push_back(forNode);
-
+	
 	for(int32 n = 0; n < (int32)nodes.size(); ++n)
 	{
 		RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
 		if(!rc) continue;
-
+		
 		RenderObject *ro = rc->GetRenderObject();
 		if(!ro) continue;
-
+		
 		uint32 count = ro->GetRenderBatchCount();
 		for(uint32 b = 0; b < count; ++b)
 		{
 			RenderBatch *renderBatch = ro->GetRenderBatch(b);
-
-			Material *material = renderBatch->GetMaterial();
+			
+			NMaterial *material = renderBatch->GetMaterial();
 			if(material)
 			{
-				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
+					Texture* tx = material->GetTexture(t);
+					CollectTexture(textures, tx->GetPathname().GetAbsolutePathname(), tx);
 				}
 			}
-
-			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-			if(instanceMaterial)
-			{
-				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
-			}
+			
+			//			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+			//			if(instanceMaterial)
+			//			{
+			//				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
+			//			}
 		}
-
+		
 		Landscape *land = dynamic_cast<Landscape *>(ro);
 		if(land)
 		{
@@ -100,41 +101,42 @@ void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String 
 void SceneHelper::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors)
 {
 	if(!forNode)  return;
-
+	
 	Vector<Entity *> nodes;
 	forNode->GetChildNodes(nodes);
-
+	
 	nodes.push_back(forNode);
-
+	
 	for(int32 n = 0; n < (int32)nodes.size(); ++n)
 	{
 		RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
 		if(!rc) continue;
-
+		
 		RenderObject *ro = rc->GetRenderObject();
 		if(!ro) continue;
-
+		
 		uint32 count = ro->GetRenderBatchCount();
 		for(uint32 b = 0; b < count; ++b)
 		{
 			RenderBatch *renderBatch = ro->GetRenderBatch(b);
-
-			Material *material = renderBatch->GetMaterial();
+			
+			NMaterial *material = renderBatch->GetMaterial();
 			if(material)
 			{
-				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
-					CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
+					Texture* tx = material->GetTexture(t);
+					CollectDescriptors(descriptors, tx->GetPathname());
 				}
 			}
-
-			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-			if(instanceMaterial)
-			{
-				CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
-			}
+			
+			//			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+			//			if(instanceMaterial)
+			//			{
+			//				CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
+			//			}
 		}
-
+		
 		Landscape *land = dynamic_cast<Landscape *>(ro);
 		if(land)
 		{
@@ -142,7 +144,6 @@ void SceneHelper::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::Fi
 		}
 	}
 }
-
 void SceneHelper::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, DAVA::Landscape *forNode)
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
