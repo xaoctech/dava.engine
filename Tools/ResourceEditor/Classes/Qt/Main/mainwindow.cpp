@@ -436,7 +436,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
 	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
-	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeMenu()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
 
@@ -521,6 +520,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadEditorLightState(scene);
 	LoadNotPassableState(scene);
 	LoadRulerToolState(scene);
+	LoadShadowBlendModeState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -1274,6 +1274,18 @@ void QtMainWindow::LoadRulerToolState(SceneEditor2* scene)
 	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
+void QtMainWindow::LoadShadowBlendModeState(SceneEditor2* scene)
+{
+	if(NULL != scene)
+	{
+		const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
+
+		ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+		ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+	}
+}
+
+
 void QtMainWindow::LoadGPUFormat()
 {
 	int curGPU = GetGPUFormat();
@@ -1303,17 +1315,6 @@ void QtMainWindow::OnSetShadowColor()
     
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
     scene->SetShadowColor(QColorToColor(color));
-}
-
-void QtMainWindow::OnShadowBlendModeMenu()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-    
-	const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
-
-	ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
-	ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
 void QtMainWindow::OnShadowBlendModeAlpha()
