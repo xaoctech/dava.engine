@@ -171,6 +171,7 @@ public:
 	{
 	public:
 		Vector3 position;
+		Vector3 normal;
 		Vector2 texCoord;
 	};
     

@@ -825,9 +825,9 @@ void NMaterial::SetupPerFrameProperties(Camera* camera)
 		
 		const Matrix4 & matrix = camera->GetMatrix();
 		Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
-		Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color();
-		Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color();
-		Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color();
+		Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color(1, 1, 1, 1);
+		Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color(1, 1, 1, 1);
+		Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color(1, 1, 1, 1);
 		float32 intensity = lights[0]->GetIntensity();
 		
 		materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();

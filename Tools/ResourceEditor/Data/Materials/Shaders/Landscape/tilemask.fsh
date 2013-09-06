@@ -6,6 +6,12 @@ precision highp float;
 #define mediump
 #endif
 
+#ifdef SPECULAR_LAND
+uniform sampler2D specularMap;
+uniform vec3 materialLightSpecularColor;
+varying float varSpecularColor;
+#endif
+
 #ifdef DETAILMASK
 uniform lowp vec3 tileColor0;
 uniform lowp vec3 tileColor1;
@@ -65,10 +71,14 @@ void main()
 	color *= 1.0-colorCursor.a;
 	color += colorCursor.rgb*colorCursor.a;
 #endif
+	
+#ifdef SPECULAR_LAND
+	color = color + varSpecularColor * materialLightSpecularColor * texture2D(specularMap, varTexCoordOrig).rgb;
+#endif
 
 #if defined(VERTEX_FOG)
-    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
+    gl_FragColor = vec4(color, 1.0);//vec4(mix(fogColor, color, varFogFactor), 1.0);
 #else
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, 1.0);//vec4(color, 1.0);
 #endif
 }

@@ -175,13 +175,41 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
             landscapeVertices[index].texCoord = texCoord;
             //landscapeVertices[index].texCoord -= Vector2(0.5f, 0.5f);
 //            Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
+			
+			
+			//VI: calculate normal for the point.
+			uint32 xx = 0;
+			uint32 yy = 0;
+			
+			xx = (x < heightmap->Size() - 1) ? x + 1 : x;
+			Vector3 right = GetPoint(xx, y, heightmap->Data()[y * heightmap->Size() + xx]);
+			
+			xx = (x > 0) ? x - 1 : x;
+			Vector3 left = GetPoint(xx, y, heightmap->Data()[y * heightmap->Size() + xx]);
+			
+			yy = (y < heightmap->Size() - 1) ? y + 1 : y;
+			Vector3 bottom = GetPoint(x, yy, heightmap->Data()[yy * heightmap->Size() + x]);
+			yy = (y > 0) ? y - 1 : y;
+			Vector3 top = GetPoint(x, yy, heightmap->Data()[yy * heightmap->Size() + x]);
+			
+			Vector3 position = landscapeVertices[index].position;
+			Vector3 normal0 = (top != position && right != position) ? CrossProduct(top - position, right - position) : Vector3(0, 0, 0);
+			Vector3 normal1 = (right != position && bottom != position) ? CrossProduct(right - position, bottom - position) : Vector3(0, 0, 0);
+			Vector3 normal2 = (bottom != position && left != position) ? CrossProduct(bottom - position, left - position) : Vector3(0, 0, 0);
+			Vector3 normal3 = (left != position && top != position) ? CrossProduct(left - position, top - position) : Vector3(0, 0, 0);
+						
+			Vector3 normalAverage = normal0 + normal1 + normal2 + normal3;
+			normalAverage.Normalize();
+			landscapeVertices[index].normal = normalAverage;
+			
             index++;
         }
     
     // setup a base RDO
     RenderDataObject * landscapeRDO = new RenderDataObject();
-    landscapeRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].position); 
-    landscapeRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &landscapeVertices[0].texCoord); 
+    landscapeRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].position);
+	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
+    landscapeRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &landscapeVertices[0].texCoord);
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
 //    SafeDeleteArray(landscapeVertices);
     
@@ -1445,6 +1473,15 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     }
 	
 	SetupMaterialProperties();
+	
+	//HACK
+	FilePath specularPath(sceneFile->GetScenePath());
+	specularPath += "landscape/difNnorm2dv4_objLM_NT.thumbnail.tex";
+	Texture* specularMap = Texture::CreateFromFile(specularPath);
+	if(specularMap)
+	{
+		tileMaskMaterial->SetTexture("specularMap", specularMap);
+	}
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
