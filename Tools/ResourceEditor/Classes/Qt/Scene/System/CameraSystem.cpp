@@ -139,7 +139,7 @@ DAVA::Vector3 SceneCameraSystem::GetCameraDirection() const
 	return dir;
 }
 
-void SceneCameraSystem::SetMoveSeep(DAVA::float32 speed)
+void SceneCameraSystem::SetMoveSpeed(DAVA::float32 speed)
 {
 	curSpeed = speed;
 }

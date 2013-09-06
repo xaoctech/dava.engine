@@ -179,7 +179,14 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		return;
 	}
 
-	if (event->tid == UIEvent::BUTTON_1)
+	if (UIEvent::PHASE_KEYCHAR == event->phase)
+	{
+		if (event->tid == DVKEY_ESCAPE)
+		{
+			SetState(VT_STATE_NORMAL);
+		}
+	}
+	else if (event->tid == UIEvent::BUTTON_1)
 	{
 		Vector3 point;
 
@@ -278,15 +285,8 @@ void VisibilityToolSystem::AddRectToAccumulator(const Rect &rect)
 
 Rect VisibilityToolSystem::GetUpdatedRect()
 {
-	int32 textureSize = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetSize().x;
 	Rect r = updatedRectAccumulator;
-
-	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, textureSize - 1);
-	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, textureSize - 1);
-	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
-				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.x;
-	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
-				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.y;
+	drawSystem->ClampToTexture(r);
 
 	return r;
 }

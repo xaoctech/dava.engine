@@ -55,21 +55,20 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 		{
 			RenderBatch *renderBatch = ro->GetRenderBatch(b);
 
-			NMaterial *material = renderBatch->GetMaterial();
+			Material *material = renderBatch->GetMaterial();
 			if(material)
 			{
-				for(int32 t = 0; t < material->GetTextureCount(); ++t)
+				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
 				{
-					Texture* tx = material->GetTexture(t);
-					CollectTexture(textures, tx->GetPathname().GetAbsolutePathname(), tx);
+					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
 				}
 			}
 
-//			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-//			if(instanceMaterial)
-//			{
-//				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
-//			}
+			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+			if(instanceMaterial)
+			{
+				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
+			}
 		}
 
 		Landscape *land = dynamic_cast<Landscape *>(ro);
@@ -120,21 +119,20 @@ void SceneHelper::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::Fi
 		{
 			RenderBatch *renderBatch = ro->GetRenderBatch(b);
 
-			NMaterial *material = renderBatch->GetMaterial();
+			Material *material = renderBatch->GetMaterial();
 			if(material)
 			{
-				for(int32 t = 0; t < material->GetTextureCount(); ++t)
+				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
 				{
-					Texture* tx = material->GetTexture(t);
-					CollectDescriptors(descriptors, tx->GetPathname());
+					CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
 				}
 			}
 
-//			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-//			if(instanceMaterial)
-//			{
-//				CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
-//			}
+			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+			if(instanceMaterial)
+			{
+				CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
+			}
 		}
 
 		Landscape *land = dynamic_cast<Landscape *>(ro);

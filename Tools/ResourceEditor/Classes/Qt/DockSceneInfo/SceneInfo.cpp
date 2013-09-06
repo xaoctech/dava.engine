@@ -132,7 +132,6 @@ void SceneInfo::Initialize3DDrawSection()
     AddChild("TriangleList", header);
     AddChild("TriangleStrip", header);
     AddChild("TriangleFan", header);
-    AddChild("RenderBatch::Draw", header);
 }
 
 void SceneInfo::Refresh3DDrawInfo()
@@ -151,8 +150,6 @@ void SceneInfo::Refresh3DDrawInfo()
     SetChild("TriangleList", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLELIST], header);
     SetChild("TriangleStrip", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLESTRIP], header);
     SetChild("TriangleFan", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLEFAN], header);
-    SetChild("RenderBatch::Draw", renderStats.renderBatchDrawCount, header);
-    
 }
 
 void SceneInfo::InitializeMaterialsSection()
@@ -351,22 +348,21 @@ void SceneInfo::CollectSceneTextures()
         for(uint32 b = 0; b < count; ++b)
         {
             RenderBatch *renderBatch = ro->GetRenderBatch(b);
-
-//            Logger::Error("Uncommend code below");
-//            Material *material = renderBatch->GetMaterial();
-//            if(material)
-//            {
-//                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-//                {
-//                    CollectTexture(sceneTextures, material->GetTextureName((Material::eTextureLevel)t), material->GetTexture((Material::eTextureLevel)t));
-//                }
-//            }
-//            
-//            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-//            if(instanceMaterial)
-//            {
-//                CollectTexture(sceneTextures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
-//            }
+            
+            Material *material = renderBatch->GetMaterial();
+            if(material)
+            {
+                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+                {
+                    CollectTexture(sceneTextures, material->GetTextureName((Material::eTextureLevel)t), material->GetTexture((Material::eTextureLevel)t));
+                }
+            }
+            
+            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+            if(instanceMaterial)
+            {
+                CollectTexture(sceneTextures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
+            }
         }
         
         if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)

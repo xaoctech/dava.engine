@@ -32,6 +32,7 @@
 #define __RESOURCEEDITORQT__TILEMASKEDITORPROPERTIESVIEW__
 
 #include <QWidget>
+#include <QDockWidget>
 #include "DAVAEngine.h"
 
 using namespace DAVA;
@@ -57,6 +58,7 @@ public:
 private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
+	void TilemaskEditorToggled(SceneEditor2* scene);
 
 	void Toggle();
 	void SetBrushSize(int brushSize);
@@ -65,14 +67,26 @@ private slots:
 	void SetDrawTexture(int textureIndex);
 
 private:
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
+	static const int DEF_STRENGTH_MIN_VALUE = 0;
+	static const int DEF_STRENGTH_MAX_VALUE = 60;
+
 	Ui::TilemaskEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
 	QAction* toolbarAction;
+	QDockWidget* dockWidget;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);
 	void UpdateFromScene(SceneEditor2* scene);
 	void UpdateTileTextures();
+
+	float32 StrengthFromInt(int32 val);
+	int32 IntFromStrength(float32 strength);
+
+	int32 BrushSizeFromInt(int32 val);
+	int32 IntFromBrushSize(int32 brushSize);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORPROPERTIESVIEW__) */

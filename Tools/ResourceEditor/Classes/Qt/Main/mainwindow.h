@@ -116,7 +116,6 @@ public slots:
 		
 	void OnLandscapeDialog();
 	void OnLightDialog();
-	void OnServiceNodeDialog();
 	void OnCameraDialog();
 	void OnImposterDialog();
 
@@ -127,7 +126,6 @@ public slots:
 	void OnAddEntityMenuAboutToShow();
 	
 	void OnNotPassableTerrain();
-	void OnRulerTool();
 	
 	void OnSetSkyboxNode();
 	
@@ -179,7 +177,7 @@ protected slots:
     
     void OnGlobalInvalidateTimeout();
 
-    
+	void NotPassableToggled(SceneEditor2* scene);
     
 private:
 	Ui::MainWindow *ui;
@@ -198,9 +196,10 @@ private:
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
-	void LoadRulerToolState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
+
+	void HideLandscapeEditorDocks();
     
     bool globalInvalidateTimeoutEnabled;
 };

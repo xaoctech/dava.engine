@@ -85,8 +85,10 @@ public:
     void SetDistance(int layer, double value);
 	double GetDistance(int layer) const;
 
+	void LockDistances(bool lock);
+
 signals:
-    void DistanceChanged(const QSet<int> &changedLayers, bool continious);
+    void DistanceChanged(const QVector<int> &changedLayers, bool continious);
     
 protected slots:
 
@@ -99,6 +101,7 @@ protected:
 private:
     QSplitter *splitter;
     QFrame *frames[DAVA::LodComponent::MAX_LOD_LAYERS];
+	bool locked;
     
     int layersCount;
     
