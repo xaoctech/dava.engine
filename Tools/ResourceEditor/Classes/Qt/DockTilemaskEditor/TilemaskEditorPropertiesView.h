@@ -58,6 +58,7 @@ public:
 private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
+	void TilemaskEditorToggled(SceneEditor2* scene);
 
 	void Toggle();
 	void SetBrushSize(int brushSize);

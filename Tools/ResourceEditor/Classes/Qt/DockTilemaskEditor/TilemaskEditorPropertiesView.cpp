@@ -36,6 +36,7 @@
 
 #include "Qt/Scene/SceneSignals.h"
 #include "../Main/mainwindow.h"
+#include "../../Commands2/TilemaskEditorCommands.h"
 
 #include <QMessageBox>
 
@@ -70,6 +71,8 @@ void TilemaskEditorPropertiesView::Init()
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(TilemaskEditorToggled(SceneEditor2*)),
+			this, SLOT(TilemaskEditorToggled(SceneEditor2*)));
 
 	connect(ui->sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(ui->sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
@@ -232,39 +235,12 @@ void TilemaskEditorPropertiesView::Toggle()
 
 	if (activeScene->tilemaskEditorSystem->IsLandscapeEditingEnabled())
 	{
-		if (activeScene->tilemaskEditorSystem->DisableLandscapeEdititing())
-		{
-			SetWidgetsState(false);
-			dockWidget->hide();
-		}
-		else
-		{
-			// show "Couldn't disable tilemask editing" message box
-		}
+		activeScene->Exec(new ActionDisableTilemaskEditor(activeScene));
 	}
 	else
 	{
-		if (activeScene->tilemaskEditorSystem->EnableLandscapeEditing())
-		{
-			SetWidgetsState(true);
-
-			UpdateTileTextures();
-			SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
-			SetStrength(ui->sliderWidgetStrength->GetValue());
-			SetToolImage(ui->comboBrushImage->currentIndex());
-			SetDrawTexture(ui->comboTileTexture->currentIndex());
-
-			dockWidget->show();
-		}
-		else
-		{
-			QMessageBox::critical(0,
-								  ResourceEditor::TILEMASK_EDITOR_ERROR_CAPTION.c_str(),
-								  ResourceEditor::TILEMASK_EDITOR_ERROR_MESSAGE.c_str());
-		}
+		activeScene->Exec(new ActionEnableTilemaskEditor(activeScene));
 	}
-
-	toolbarAction->setChecked(activeScene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
 }
 
 void TilemaskEditorPropertiesView::SetBrushSize(int brushSize)
@@ -340,4 +316,28 @@ int32 TilemaskEditorPropertiesView::IntFromBrushSize(int32 brushSize)
 	int32 val = brushSize / 10;
 
 	return val;
+}
+
+void TilemaskEditorPropertiesView::TilemaskEditorToggled(SceneEditor2* scene)
+{
+	if (!activeScene || activeScene != scene)
+	{
+		return;
+	}
+
+	if (activeScene->tilemaskEditorSystem->IsLandscapeEditingEnabled())
+	{
+		SetWidgetsState(true);
+		UpdateTileTextures();
+		SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
+		SetStrength(ui->sliderWidgetStrength->GetValue());
+		SetToolImage(ui->comboBrushImage->currentIndex());
+		SetDrawTexture(ui->comboTileTexture->currentIndex());
+		dockWidget->show();
+	}
+	else
+	{
+		SetWidgetsState(false);
+		dockWidget->hide();
+	}
 }

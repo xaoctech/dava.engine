@@ -177,7 +177,7 @@ protected slots:
     
     void OnGlobalInvalidateTimeout();
 
-    
+	void NotPassableToggled(SceneEditor2* scene);
     
 private:
 	Ui::MainWindow *ui;

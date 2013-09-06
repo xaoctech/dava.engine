@@ -61,6 +61,8 @@ private slots:
 	void SceneDeactivated(SceneEditor2* scene);
 	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
 
+	void CustomColorsToggled(SceneEditor2* scene);
+
 	void Toggle();
 	void SetBrushSize(int brushSize);
 	void SetColor(int color);

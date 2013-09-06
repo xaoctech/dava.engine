@@ -30,6 +30,68 @@
 
 #include "VisibilityToolActions.h"
 #include "../Qt/Scene/System/LandscapeEditorDrawSystem/VisibilityToolProxy.h"
+#include "../Qt/Scene/SceneEditor2.h"
+#include "../Qt/Scene/SceneSignals.h"
+
+ActionEnableVisibilityTool::ActionEnableVisibilityTool(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_ENABLE_VISIBILITY_TOOL)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionEnableVisibilityTool::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool enabled = sceneEditor->visibilityToolSystem->IsLandscapeEditingEnabled();
+	if (enabled)
+	{
+		return;
+	}
+
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	
+	if (!success || !sceneEditor->visibilityToolSystem->EnableLandscapeEditing())
+	{
+		// show error message
+	}
+
+	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);
+}
+
+ActionDisableVisibilityTool::ActionDisableVisibilityTool(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_DISABLE_VISIBILITY_TOOL)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionDisableVisibilityTool::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool disabled = !sceneEditor->visibilityToolSystem->IsLandscapeEditingEnabled();
+	if (disabled)
+	{
+		return;
+	}
+
+	disabled = sceneEditor->visibilityToolSystem->DisableLandscapeEdititing();
+	if (!disabled)
+	{
+		// show error message
+	}
+
+	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);
+}
+
 
 ActionSetVisibilityPoint::ActionSetVisibilityPoint(Image* originalImage,
 												   Sprite* cursorSprite,

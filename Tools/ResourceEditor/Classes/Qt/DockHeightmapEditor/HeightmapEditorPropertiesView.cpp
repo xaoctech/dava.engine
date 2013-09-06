@@ -33,6 +33,7 @@
 
 #include "Qt/Scene/SceneSignals.h"
 #include "../Main/mainwindow.h"
+#include "../../Commands2/HeightmapEditorCommands2.h"
 
 #include <QMessageBox>
 
@@ -73,6 +74,8 @@ void HeightmapEditorPropertiesView::Init()
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(DropperHeightChanged(SceneEditor2*, double)),
 			this, SLOT(SetDropperHeight(SceneEditor2*, double)));
+	connect(SceneSignals::Instance(), SIGNAL(HeightmapEditorToggled(SceneEditor2*)),
+			this, SLOT(HeightmapEditorToggled(SceneEditor2*)));
 
 	connect(ui->sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(ui->sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
@@ -262,40 +265,12 @@ void HeightmapEditorPropertiesView::Toggle()
 
 	if (activeScene->heightmapEditorSystem->IsLandscapeEditingEnabled())
 	{
-		if (activeScene->heightmapEditorSystem->DisableLandscapeEdititing())
-		{
-			SetWidgetsState(false);
-			dockWidget->hide();
-		}
-		else
-		{
-			// show "Couldn't disable heightmap editing" message box
-		}
+		activeScene->Exec(new ActionDisableHeightmapEditor(activeScene));
 	}
 	else
 	{
-		if (activeScene->heightmapEditorSystem->EnableLandscapeEditing())
-		{
-			SetWidgetsState(true);
-
-			SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
-			SetStrength(ui->sliderWidgetStrength->GetValue());
-			SetAverageStrength(ui->sliderWidgetAverageStrength->GetValue());
-			SetToolImage(ui->comboBrushImage->currentIndex());
-			SetCopyPasteHeightmap(ui->checkboxHeightmap->checkState());
-			SetCopyPasteTilemask(ui->checkboxTilemask->checkState());
-
-			dockWidget->show();
-		}
-		else
-		{
-			QMessageBox::critical(0,
-								  ResourceEditor::HEIGHTMAP_EDITOR_ERROR_CAPTION.c_str(),
-								  ResourceEditor::HEIGHTMAP_EDITOR_ERROR_MESSAGE.c_str());
-		}
+		activeScene->Exec(new ActionEnableHeightmapEditor(activeScene));
 	}
-
-	toolbarAction->setChecked(activeScene->heightmapEditorSystem->IsLandscapeEditingEnabled());
 }
 
 void HeightmapEditorPropertiesView::SetBrushSize(int brushSize)
@@ -525,4 +500,29 @@ void HeightmapEditorPropertiesView::HeightUpdatedManually()
 
 	float32 height = (float32)ui->editHeight->text().toFloat();
 	activeScene->heightmapEditorSystem->SetDropperHeight(height);
+}
+
+void HeightmapEditorPropertiesView::HeightmapEditorToggled(SceneEditor2* scene)
+{
+	if (!activeScene || activeScene != scene)
+	{
+		return;
+	}
+
+	if (activeScene->heightmapEditorSystem->IsLandscapeEditingEnabled())
+	{
+		SetWidgetsState(true);
+		SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
+		SetStrength(ui->sliderWidgetStrength->GetValue());
+		SetAverageStrength(ui->sliderWidgetAverageStrength->GetValue());
+		SetToolImage(ui->comboBrushImage->currentIndex());
+		SetCopyPasteHeightmap(ui->checkboxHeightmap->checkState());
+		SetCopyPasteTilemask(ui->checkboxTilemask->checkState());
+		dockWidget->show();
+	}
+	else
+	{
+		SetWidgetsState(false);
+		dockWidget->hide();
+	}
 }
