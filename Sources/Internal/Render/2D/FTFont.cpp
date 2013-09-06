@@ -137,7 +137,6 @@ FTFont *	FTFont::Clone() const
 {
 	FTFont *retFont = new FTFont(internalFont);
 	retFont->size =	size;
-	retFont->SetColor(color);
 
 	retFont->verticalSpacing =	verticalSpacing;
 
@@ -164,11 +163,7 @@ bool FTFont::IsEqual(const Font *font) const
 	
 Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded )
 {
-	uint8 r = ((uint8)(color.r * 255.0f));
-	uint8 g = ((uint8)(color.g * 255.0f)); 
-	uint8 b = ((uint8)(color.b * 255.0f)); 
-	uint8 a = ((uint8)(color.a * 255.0f));
-	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, r, g, b, a, size, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
+	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, size, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
 }
 
 Size2i FTFont::GetStringSize(const WideString& str, Vector<int32> *charSizes) const
