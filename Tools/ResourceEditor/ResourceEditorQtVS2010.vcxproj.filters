@@ -2136,10 +2136,10 @@
     <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp">
       <Filter>Classes\Qt\SliderWidget</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\RulerToolActions.cpp">
+    <ClCompile Include="Classes\Commands2\LandscapeEditorDrawSystemActions.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\LandscapeEditorDrawSystemActions.cpp">
+    <ClCompile Include="Classes\Commands2\RulerToolActions.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3722,10 +3722,10 @@
     <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h">
       <Filter>Classes\Qt\SliderWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\RulerToolActions.h">
+    <ClInclude Include="Classes\Commands2\LandscapeEditorDrawSystemActions.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\LandscapeEditorDrawSystemActions.h">
+    <ClInclude Include="Classes\Commands2\RulerToolActions.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
