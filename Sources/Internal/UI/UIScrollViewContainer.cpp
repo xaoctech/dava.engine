@@ -76,10 +76,14 @@ void UIScrollViewContainer::SetRect(const Rect &rect, bool rectInAbsoluteCoordin
 {
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
 	
-	Rect parentRect = this->GetParent()->GetRect();
-	// We should not allow scrolling when content rect is less than or is equal ScrollView "window"
-	enableHorizontalScroll = rect.dx > parentRect.dx;
-	enableVerticalScroll = rect.dy > parentRect.dy;
+	UIControl *parent = this->GetParent();
+	if (parent)
+	{
+		Rect parentRect = parent->GetRect();
+		// We should not allow scrolling when content rect is less than or is equal ScrollView "window"
+		enableHorizontalScroll = rect.dx > parentRect.dx;
+		enableVerticalScroll = rect.dy > parentRect.dy;
+	}
 }
 
 void UIScrollViewContainer::SetReturnSpeed(int32 speedInPixelsPerSec)
