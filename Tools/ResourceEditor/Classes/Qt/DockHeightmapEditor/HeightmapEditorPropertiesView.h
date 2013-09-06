@@ -55,6 +55,12 @@ public:
 
 	void Init();
 	void InitBrushImages();
+	
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
+	static const int DEF_STRENGTH_MAX_VALUE = 30;
+	static const int DEF_AVERAGE_STRENGTH_MIN_VALUE = 0;
+	static const int DEF_AVERAGE_STRENGTH_MAX_VALUE = 60;
 
 private slots:
 	void SceneActivated(SceneEditor2* scene);
@@ -79,12 +85,6 @@ private slots:
 	void SetCopyPasteTilemask(int state);
 
 private:
-	static const int DEF_BRUSH_MIN_SIZE = 3;
-	static const int DEF_BRUSH_MAX_SIZE = 40;
-	static const int DEF_STRENGTH_MAX_VALUE = 30;
-	static const int DEF_AVERAGE_STRENGTH_MIN_VALUE = 0;
-	static const int DEF_AVERAGE_STRENGTH_MAX_VALUE = 60;
-
 	Ui::HeightmapEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
 	QAction* toolbarAction;
