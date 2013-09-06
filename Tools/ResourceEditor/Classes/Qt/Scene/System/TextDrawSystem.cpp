@@ -76,7 +76,7 @@ void TextDrawSystem::Draw()
 				DAVA::WideString wStr = DAVA::StringToWString(i->text);
 				DAVA::Size2i sSize = font->GetStringSize(wStr);
 
-				font->SetColor(i->color);
+//				font->SetColor(i->color);
 				font->DrawString(i->pos.x - sSize.dx / 2, i->pos.y - sSize.dy, wStr);
 			}
 
