@@ -298,20 +298,6 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menuDynamicShadowBlendMode">
-     <property name="title">
-      <string>Dynamic Shadow Blend Mode</string>
-     </property>
-     <addaction name="actionDynamicBlendModeAlpha"/>
-     <addaction name="actionDynamicBlendModeMultiply"/>
-    </widget>
-    <widget class="QMenu" name="menuLandscape">
-     <property name="title">
-      <string>Landscape</string>
-     </property>
-     <addaction name="actionSaveHeightmapToPNG"/>
-     <addaction name="actionSaveTiledTexture"/>
-    </widget>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
     <addaction name="separator"/>
@@ -325,13 +311,8 @@
     <addaction name="separator"/>
     <addaction name="actionSquareTextures"/>
     <addaction name="separator"/>
-    <addaction name="actionShowSettings"/>
-    <addaction name="actionEnableCameraLight"/>
-    <addaction name="actionSkyboxEditor"/>
-    <addaction name="actionSetShadowColor"/>
-    <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
-    <addaction name="menuLandscape"/>
+    <addaction name="actionShowSettings"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -365,7 +346,6 @@
     </widget>
     <addaction name="menuViewPort"/>
     <addaction name="menuTexturesForGPU"/>
-    <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -402,11 +382,40 @@
     </property>
     <addaction name="actionHelp"/>
    </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+    <widget class="QMenu" name="menuDynamicShadowBlendMode_2">
+     <property name="title">
+      <string>Dynamic Shadow Blend Mode</string>
+     </property>
+     <addaction name="actionDynamicBlendModeAlpha"/>
+     <addaction name="actionDynamicBlendModeMultiply"/>
+    </widget>
+    <widget class="QMenu" name="menuLandscape_2">
+     <property name="title">
+      <string>Landscape</string>
+     </property>
+     <addaction name="actionSaveHeightmapToPNG"/>
+     <addaction name="actionSaveTiledTexture"/>
+    </widget>
+    <addaction name="actionEnableCameraLight"/>
+    <addaction name="actionReloadSprites"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetShadowColor"/>
+    <addaction name="menuDynamicShadowBlendMode_2"/>
+    <addaction name="separator"/>
+    <addaction name="menuLandscape_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionSkyboxEditor"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuComponent"/>
+   <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -1040,7 +1049,7 @@
   </action>
   <action name="actionShowSettings">
    <property name="text">
-    <string>Show Settings</string>
+    <string>Properties...</string>
    </property>
   </action>
   <action name="actionBeast">
@@ -1392,7 +1401,7 @@
      <normaloff>:/QtIcons/light.png</normaloff>:/QtIcons/light.png</iconset>
    </property>
    <property name="text">
-    <string>Enable Camera Light</string>
+    <string>Camera Light</string>
    </property>
    <property name="shortcut">
     <string>Alt+L</string>
@@ -1512,7 +1521,7 @@
   </action>
   <action name="actionSkyboxEditor">
    <property name="text">
-    <string>Set up Skybox</string>
+    <string>Skybox...</string>
    </property>
   </action>
   <action name="actionSetShadowColor">

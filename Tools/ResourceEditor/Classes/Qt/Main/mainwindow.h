@@ -136,7 +136,6 @@ public slots:
 	void OnOpenHelp();
 
 	void OnSetShadowColor();
-	void OnShadowBlendModeMenu();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
     
@@ -199,6 +198,7 @@ private:
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
 	void LoadRulerToolState(SceneEditor2* scene);
+	void LoadShadowBlendModeState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
     
