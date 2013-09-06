@@ -45,7 +45,6 @@
 	AppendProperty(QString(rowName), propertyName, header);\
 	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, DAVA::VariantType(getter)));
-	//propertiesMap[propertyName] = DAVA::VariantType(getter);
 
 #define INIT_PROPERTY_WITH_BTN(propertyName, propertyNameBtn, getter, rowName, handlerName,drawStateMap) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
@@ -341,20 +340,25 @@ QPushButton * SystemsSettingsEditor::CreatePushBtn()
 void SystemsSettingsEditor::HandleCustomColorBrushSize()
 {
 	GET_SENDER_CONTENT
-	int32 max = 130;
-	int32 min = 0;// TODO: ...
+	int32 brushRangeMax = 0;
+	int32 brushRangeMin = 0;
 	int32 current = senderContent.AsInt32();
-	// TODO: ...
-	/*if(current > max || current < min)
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
 	{
-		sender->SetVariantValue(DAVA::VariantType(max));
-		return;
+		brushRangeMin = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, CustomColorsPropertiesView::DEF_BRUSH_MIN_SIZE);
+		brushRangeMax = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, CustomColorsPropertiesView::DEF_BRUSH_MAX_SIZE);
+		if(current > brushRangeMax )
+		{
+			sender->SetValue(QVariant(brushRangeMax));
+			return;
+		}
+		if(current < brushRangeMin)
+		{
+			sender->SetValue(QVariant(brushRangeMin));
+			return;
+		}
 	}
-	if(current < min)
-	{
-		sender->SetVariantValue(DAVA::VariantType(min));
-		return;
-	}*/
 	
 	sceneEditor->customColorsSystem->SetBrushSize(senderContent.AsInt32(), false);
 }
@@ -453,22 +457,77 @@ void SystemsSettingsEditor::HandleEntityLandscapeSnap()
 void SystemsSettingsEditor::HandleHightmapBrushSize()
 {
 	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->heightmapEditorSystem->SetBrushSize(value);
+	int32 current = senderContent.AsInt32();
+	int32 rangeMax = 0;
+	int32 rangeMin = 0;
+	
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
+	{
+		rangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN, HeightmapEditorPropertiesView::DEF_BRUSH_MIN_SIZE);
+		rangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX, HeightmapEditorPropertiesView::DEF_BRUSH_MAX_SIZE);
+		if(current > rangeMax )
+		{
+			sender->SetValue(QVariant(rangeMax));
+			return;
+		}
+		if(current < rangeMin)
+		{
+			sender->SetValue(QVariant(rangeMin));
+			return;
+		}
+	}
+		
+	sceneEditor->heightmapEditorSystem->SetBrushSize(current);
 }
 
 void SystemsSettingsEditor::HandleHightmapStrength()
 {
 	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->heightmapEditorSystem->SetStrength(value);
+	float32 current = senderContent.AsFloat();
+	float32 rangeMax = 0;
+
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
+	{
+		rangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX, HeightmapEditorPropertiesView::DEF_STRENGTH_MAX_VALUE);
+		if(current > rangeMax )
+		{
+			sender->SetValue(QVariant(rangeMax));
+			return;
+		}
+
+	}
+	
+	sceneEditor->heightmapEditorSystem->SetStrength(current);
 }
 
 void SystemsSettingsEditor::HandleHightmapAverageStrength()
 {
 	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->heightmapEditorSystem->SetAverageStrength(value);
+	float32 current = senderContent.AsFloat();
+	
+	float32 rangeMax = 0;
+	float32 rangeMin = 0;
+	
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
+	{
+		rangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN, HeightmapEditorPropertiesView::DEF_AVERAGE_STRENGTH_MIN_VALUE);
+		rangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX, HeightmapEditorPropertiesView::DEF_AVERAGE_STRENGTH_MAX_VALUE);
+		if(current > rangeMax )
+		{
+			sender->SetValue(QVariant(rangeMax));
+			return;
+		}
+		if(current < rangeMin)
+		{
+			sender->SetValue(QVariant(rangeMin));
+			return;
+		}
+	}
+	
+	sceneEditor->heightmapEditorSystem->SetAverageStrength(current);
 }
 
 void SystemsSettingsEditor::HandleHightmapDrawingType()
@@ -481,16 +540,57 @@ void SystemsSettingsEditor::HandleHightmapDrawingType()
 void SystemsSettingsEditor::HandleTileMaskBrushSize()
 {
 	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->tilemaskEditorSystem->SetBrushSize(value);
+	int32 current = senderContent.AsInt32();
+	
+	int32 rangeMax = 0;
+	int32 rangeMin = 0;
+	
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
+	{
+		rangeMin = customProperties->GetInt32(ResourceEditor::TILEMASK_EDITOR_BRUSH_SIZE_MIN, TilemaskEditorPropertiesView::DEF_BRUSH_MIN_SIZE);
+		rangeMax = customProperties->GetInt32(ResourceEditor::TILEMASK_EDITOR_BRUSH_SIZE_MAX, TilemaskEditorPropertiesView::DEF_BRUSH_MAX_SIZE);
+		if(current > rangeMax )
+		{
+			sender->SetValue(QVariant(rangeMax));
+			return;
+		}
+		if(current < rangeMin)
+		{
+			sender->SetValue(QVariant(rangeMin));
+			return;
+		}
+	}
+
+	sceneEditor->tilemaskEditorSystem->SetBrushSize(current);
 }
 
 void SystemsSettingsEditor::HandleTileMaskStrength()
 {
 	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->tilemaskEditorSystem->SetStrength(value);
-
+	float32 current = senderContent.AsFloat();
+	
+	float32 rangeMax = 0;
+	float32 rangeMin = 0;
+	
+	KeyedArchive* customProperties = sceneEditor->GetCustomProperties();
+	if (customProperties)
+	{
+		rangeMin = customProperties->GetInt32(ResourceEditor::TILEMASK_EDITOR_STRENGTH_MIN, TilemaskEditorPropertiesView::DEF_STRENGTH_MIN_VALUE);
+		rangeMax = customProperties->GetInt32(ResourceEditor::TILEMASK_EDITOR_STRENGTH_MAX, TilemaskEditorPropertiesView::DEF_STRENGTH_MAX_VALUE);
+		if(current > rangeMax )
+		{
+			sender->SetValue(QVariant(rangeMax));
+			return;
+		}
+		if(current < rangeMin)
+		{
+			sender->SetValue(QVariant(rangeMin));
+			return;
+		}
+	}
+	
+	sceneEditor->tilemaskEditorSystem->SetStrength(current);
 }
 
 void SystemsSettingsEditor::HandleTileTextureIndex()

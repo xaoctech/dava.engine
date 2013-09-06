@@ -26,80 +26,65 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "RulerToolActions.h"
+#include "../Qt/Scene/SceneEditor2.h"
+#include "../Qt/Scene/SceneSignals.h"
 
-
-#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__
-#define __RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__
-
-#include "Commands2/CommandAction.h"
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-class VisibilityToolProxy;
-class SceneEditor2;
-
-class ActionEnableVisibilityTool: public CommandAction
+ActionEnableRulerTool::ActionEnableRulerTool(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_ENABLE_RULER_TOOL)
+,	sceneEditor(forSceneEditor)
 {
-public:
-	ActionEnableVisibilityTool(SceneEditor2* forSceneEditor);
+}
 
-protected:
-	SceneEditor2* sceneEditor;
-
-	virtual void Redo();
-};
-
-class ActionDisableVisibilityTool: public CommandAction
+void ActionEnableRulerTool::Redo()
 {
-public:
-	ActionDisableVisibilityTool(SceneEditor2* forSceneEditor);
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool enabled = sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
+	if (enabled)
+	{
+		return;
+	}
+	
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	
+	if (!success || !sceneEditor->rulerToolSystem->EnableLandscapeEditing())
+	{
+		// show error message
+	}
+	
+	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
+}
 
-protected:
-	SceneEditor2* sceneEditor;
-
-	virtual void Redo();
-};
-
-
-class ActionSetVisibilityPoint: public CommandAction
+ActionDisableRulerTool::ActionDisableRulerTool(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_DISABLE_RULER_TOOL)
+,	sceneEditor(forSceneEditor)
 {
-public:
-	ActionSetVisibilityPoint(Image* originalImage,
-							 Sprite* cursorSprite,
-							 VisibilityToolProxy* visibilityToolProxy,
-							 const Vector2& visibilityPoint);
-	~ActionSetVisibilityPoint();
+}
 
-protected:
-//	Image* undoImage;
-	Sprite* cursorSprite;
-	VisibilityToolProxy* visibilityToolProxy;
-//	Vector2 undoVisibilityPoint;
-	Vector2 redoVisibilityPoint;
-//	bool undoVisibilityPointSet;
-
-	virtual void Redo();
-};
-
-class ActionSetVisibilityArea: public CommandAction
+void ActionDisableRulerTool::Redo()
 {
-public:
-	ActionSetVisibilityArea(Image* originalImage,
-							VisibilityToolProxy* visibilityToolProxy,
-							const Rect& updatedRect);
-	virtual ~ActionSetVisibilityArea();
-
-protected:
-//	Image* undoImage;
-	Image* redoImage;
-
-	VisibilityToolProxy* visibilityToolProxy;
-	Rect updatedRect;
-
-	virtual void Redo();
-
-	void ApplyImage(Image* image);
-};
-
-#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLACTIONS__) */
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool disabled = !sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
+	if (disabled)
+	{
+		return;
+	}
+	
+	disabled = sceneEditor->rulerToolSystem->DisableLandscapeEdititing();
+	if (!disabled)
+	{
+		// show error message
+	}
+	
+	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
+}

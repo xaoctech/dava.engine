@@ -34,6 +34,8 @@
 		494A7CDD172A92C0005D7C7F /* CommandSignals.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 494A7CDB172A92C0005D7C7F /* CommandSignals.cpp */; };
 		496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A416BBBAA100C21DB0 /* TilemapEditorCommands.cpp */; };
 		496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */; };
+		497DB3DA17D9DCD000E6A643 /* RulerToolActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */; };
+		497DB3E417D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */; };
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
@@ -700,6 +702,10 @@
 		496566A516BBBAA200C21DB0 /* TilemapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemapEditorCommands.h; path = Classes/Commands/TilemapEditorCommands.h; sourceTree = "<group>"; };
 		496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorCommands.cpp; path = Classes/Commands/HeightmapEditorCommands.cpp; sourceTree = "<group>"; };
 		496566A816BBCDA400C21DB0 /* HeightmapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapEditorCommands.h; path = Classes/Commands/HeightmapEditorCommands.h; sourceTree = "<group>"; };
+		497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RulerToolActions.cpp; sourceTree = "<group>"; };
+		497DB3D917D9DCD000E6A643 /* RulerToolActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulerToolActions.h; sourceTree = "<group>"; };
+		497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorDrawSystemActions.cpp; sourceTree = "<group>"; };
+		497DB3E317D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorDrawSystemActions.h; sourceTree = "<group>"; };
 		49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneEditorScreenMainCommands.cpp; path = Classes/Commands/SceneEditorScreenMainCommands.cpp; sourceTree = "<group>"; };
 		49802D4616C2596600E40105 /* SceneEditorScreenMainCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneEditorScreenMainCommands.h; path = Classes/Commands/SceneEditorScreenMainCommands.h; sourceTree = "<group>"; };
 		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
@@ -2529,6 +2535,10 @@
 				4FFE5C7F176B37B600728624 /* CommandStack.h */,
 				4FFE5C80176B37B600728624 /* TransformCommand.cpp */,
 				4FFE5C81176B37B600728624 /* TransformCommand.h */,
+				497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */,
+				497DB3D917D9DCD000E6A643 /* RulerToolActions.h */,
+				497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */,
+				497DB3E317D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.h */,
 			);
 			name = Commands2;
 			path = Classes/Commands2;
@@ -4748,6 +4758,8 @@
 				499BD24017D8B2980035CF5F /* SliderWidget_moc.cpp in Build Sources */,
 				499BD24717D8C35E0035CF5F /* SliderWidget.cpp in Build Sources */,
 				499BD24A17D8C36C0035CF5F /* RulerToolPropertiesView.cpp in Build Sources */,
+				497DB3DA17D9DCD000E6A643 /* RulerToolActions.cpp in Build Sources */,
+				497DB3E417D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

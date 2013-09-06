@@ -54,10 +54,16 @@ public:
 
 	void Init();
 	void InitBrushImages();
+	
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
+	static const int DEF_STRENGTH_MIN_VALUE = 0;
+	static const int DEF_STRENGTH_MAX_VALUE = 60;
 
 private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
+	void TilemaskEditorToggled(SceneEditor2* scene);
 
 	void Toggle();
 	void SetBrushSize(int brushSize);
@@ -66,11 +72,6 @@ private slots:
 	void SetDrawTexture(int textureIndex);
 
 private:
-	static const int DEF_BRUSH_MIN_SIZE = 3;
-	static const int DEF_BRUSH_MAX_SIZE = 40;
-	static const int DEF_STRENGTH_MIN_VALUE = 0;
-	static const int DEF_STRENGTH_MAX_VALUE = 60;
-
 	Ui::TilemaskEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
 	QAction* toolbarAction;

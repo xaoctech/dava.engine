@@ -35,6 +35,7 @@
 #include "../Scene/SceneSignals.h"
 #include "../Scene/SceneEditor2.h"
 #include "../Main/mainwindow.h"
+#include "../../Commands2/VisibilityToolActions.h"
 
 #include <QFileDialog>
 
@@ -69,6 +70,8 @@ void VisibilityToolPropertiesView::Init()
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(VisibilityToolStateChanged(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)),
 			this, SLOT(SetVisibilityToolButtonsState(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)));
+	connect(SceneSignals::Instance(), SIGNAL(VisibilityToolToggled(SceneEditor2*)),
+			this, SLOT(VisibilityToolToggled(SceneEditor2*)));
 
 	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
 	connect(ui->buttonSetVisibilityPoint, SIGNAL(clicked()), this, SLOT(SetVisibilityPoint()));
@@ -194,35 +197,12 @@ void VisibilityToolPropertiesView::Toggle()
 
 	if (activeScene->visibilityToolSystem->IsLandscapeEditingEnabled())
 	{
-		if (activeScene->visibilityToolSystem->DisableLandscapeEdititing())
-		{
-			SetWidgetsState(false);
-			dockWidget->hide();
-		}
-		else
-		{
-			// show "Couldn't disable visibility tool" message box
-		}
+		activeScene->Exec(new ActionDisableVisibilityTool(activeScene));
 	}
 	else
 	{
-		if (activeScene->visibilityToolSystem->EnableLandscapeEditing())
-		{
-			SetWidgetsState(true);
-
-			SetVisibilityAreaSize(ui->sliderWidgetAreaSize->GetValue());
-
-			dockWidget->show();
-		}
-		else
-		{
-			QMessageBox::critical(0,
-								  ResourceEditor::VISIBILITY_TOOL_ERROR_CAPTION.c_str(),
-								  ResourceEditor::VISIBILITY_TOOL_ERROR_MESSAGE.c_str());
-		}
+		activeScene->Exec(new ActionEnableVisibilityTool(activeScene));
 	}
-
-	toolbarAction->setChecked(activeScene->visibilityToolSystem->IsLandscapeEditingEnabled());
 }
 
 void VisibilityToolPropertiesView::SaveTexture()
@@ -288,4 +268,24 @@ int32 VisibilityToolPropertiesView::IntFromAreaSize(int32 areaSize)
 	int32 val = areaSize / 10;
 
 	return val;
+}
+
+void VisibilityToolPropertiesView::VisibilityToolToggled(SceneEditor2* scene)
+{
+	if (!activeScene || activeScene != scene)
+	{
+		return;
+	}
+	
+	if (activeScene->visibilityToolSystem->IsLandscapeEditingEnabled())
+	{
+		SetWidgetsState(true);
+		SetVisibilityAreaSize(ui->sliderWidgetAreaSize->GetValue());
+		dockWidget->show();
+	}
+	else
+	{
+		SetWidgetsState(false);
+		dockWidget->hide();
+	}
 }

@@ -36,6 +36,7 @@
 #include "../SceneEditor/EditorConfig.h"
 #include "../Scene/SceneSignals.h"
 #include "../Main/mainwindow.h"
+#include "../../Commands2/CustomColorsCommands2.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -73,6 +74,8 @@ void CustomColorsPropertiesView::Init()
 
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
 			this, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(CustomColorsToggled(SceneEditor2*)),
+			this, SLOT(CustomColorsToggled(SceneEditor2*)));
 
 	connect(ui->sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(ui->comboColor, SIGNAL(currentIndexChanged(int)), this, SLOT(SetColor(int)));
@@ -121,39 +124,15 @@ void CustomColorsPropertiesView::Toggle()
 	{
 		return;
 	}
-
+	
 	if (activeScene->customColorsSystem->IsLandscapeEditingEnabled())
 	{
-		if (activeScene->customColorsSystem->DisableLandscapeEdititing())
-		{
-			SetWidgetsState(false);
-			dockWidget->hide();
-		}
-		else
-		{
-			// show "Couldn't disable custom colors editing" message box
-		}
+		activeScene->Exec(new ActionDisableCustomColors(activeScene));
 	}
 	else
 	{
-		if (activeScene->customColorsSystem->EnableLandscapeEditing())
-		{
-			SetWidgetsState(true);
-
-			SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
-			SetColor(ui->comboColor->currentIndex());
-
-			dockWidget->show();
-		}
-		else
-		{
-			QMessageBox::critical(0,
-								  ResourceEditor::CUSTOM_COLORS_ERROR_CAPTION.c_str(),
-								  ResourceEditor::CUSTOM_COLORS_ERROR_MESSAGE.c_str());
-		}
+		activeScene->Exec(new ActionEnableCustomColors(activeScene));
 	}
-
-	toolbarAction->setChecked(activeScene->customColorsSystem->IsLandscapeEditingEnabled());
 }
 
 void CustomColorsPropertiesView::SetWidgetsState(bool enabled)
@@ -324,4 +303,27 @@ int32 CustomColorsPropertiesView::IntFromBrushSize(int32 brushSize)
 	int32 val = brushSize / 10;
 	
 	return val;
+}
+
+void CustomColorsPropertiesView::CustomColorsToggled(SceneEditor2* scene)
+{
+	if (!activeScene || activeScene != scene)
+	{
+		return;
+	}
+	
+	if (activeScene->customColorsSystem->IsLandscapeEditingEnabled())
+	{
+		SetWidgetsState(true);
+		
+		SetBrushSize(ui->sliderWidgetBrushSize->GetValue());
+		SetColor(ui->comboColor->currentIndex());
+		
+		dockWidget->show();
+	}
+	else
+	{
+		SetWidgetsState(false);
+		dockWidget->hide();
+	}
 }

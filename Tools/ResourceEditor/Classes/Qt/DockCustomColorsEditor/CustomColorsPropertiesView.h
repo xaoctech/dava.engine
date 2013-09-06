@@ -54,12 +54,17 @@ public:
 
 	void Init();
 	void InitColors();
+	
+	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MAX_SIZE = 40;
 
 private slots:
 	void ProjectOpened(const QString &path);
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
 	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
+
+	void CustomColorsToggled(SceneEditor2* scene);
 
 	void Toggle();
 	void SetBrushSize(int brushSize);
@@ -68,8 +73,6 @@ private slots:
 	void LoadTexture();
 
 private:
-	static const int DEF_BRUSH_MIN_SIZE = 3;
-	static const int DEF_BRUSH_MAX_SIZE = 40;
 
 	Ui::CustomColorsPropertiesView* ui;
 	SceneEditor2* activeScene;
