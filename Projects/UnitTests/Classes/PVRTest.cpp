@@ -85,12 +85,12 @@ void PVRTest::LoadResources()
     DVASSERT(font);
 
     font->SetSize(20);
-    font->SetColor(Color::White());
 
     compareResultText = new UIStaticText(Rect(0, 256, 512, 200));
     compareResultText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
     compareResultText->SetMultiline(true);
     compareResultText->SetFont(font);
+    compareResultText->SetTextColor(Color::White());
     AddControl(compareResultText);
 
     SafeRelease(font);
