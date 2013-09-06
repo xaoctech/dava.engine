@@ -58,6 +58,18 @@
 class SceneEditor2 : public DAVA::Scene
 {
 public:
+	enum LandscapeTools
+	{
+		LANDSCAPE_TOOL_CUSTOM_COLOR			= 1 << 0,
+		LANDSCAPE_TOOL_VISIBILITY			= 1 << 1,
+		LANDSCAPE_TOOL_HEIGHTMAP_EDITOR		= 1 << 2,
+		LANDSCAPE_TOOL_TILEMAP_EDITOR		= 1 << 3,
+		LANDSCAPE_TOOL_RULER				= 1 << 4,
+		LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN	= 1 << 5,
+
+		LANDSCAPE_TOOLS_ALL					= 0x7FFFFFFF
+	};
+
 	SceneEditor2();
 	~SceneEditor2();
 
@@ -124,6 +136,9 @@ public:
 	ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
 
     const RenderManager::Stats & GetRenderStats() const;
+
+	void DisableTools(int32 toolFlags);
+	bool IsToolsEnabled(int32 toolFlags);
 
 protected:
 	bool isLoaded;

@@ -460,6 +460,7 @@
     <ClCompile Include="Classes\Qt\DockProperties\ActionComponentEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockRulerTool\RulerToolPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphModel.cpp" />
@@ -530,6 +531,8 @@
     <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp" />
+    <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
+    <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -564,6 +567,7 @@
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
@@ -668,6 +672,7 @@
     <ClCompile Include="_GeneratedQt\DockProperties\ActionComponentEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditorStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockRulerTool\RulerToolPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\ExtraUserData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphModel_moc.cpp" />
@@ -742,6 +747,8 @@
     <ClCompile Include="_GeneratedQt\Scene\System\TilemaskEditorSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\VisibilityToolSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SliderWidget\SliderWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
@@ -775,6 +782,7 @@
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -1148,6 +1156,7 @@
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h" />
+    <ClInclude Include="Classes\Qt\DockRulerTool\RulerToolPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h" />
@@ -1219,6 +1228,8 @@
     <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h" />
+    <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
+    <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
@@ -1253,6 +1264,7 @@
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
@@ -1341,7 +1353,9 @@
     <ClInclude Include="_GeneratedQt\ui_MaterialViewOptions.h" />
     <ClInclude Include="_GeneratedQt\ui_ModificationWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
+    <ClInclude Include="_GeneratedQt\ui_RulerToolPropertiesView.h" />
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
+    <ClInclude Include="_GeneratedQt\ui_SliderWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_tilemaskEditorProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolPropertiesView.h" />

@@ -99,6 +99,13 @@ signals:
 	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
 	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
 
+	void VisibilityToolToggled(SceneEditor2* scene);
+	void CustomColorsToggled(SceneEditor2* scene);
+	void HeightmapEditorToggled(SceneEditor2* scene);
+	void TilemaskEditorToggled(SceneEditor2* scene);
+	void RulerToolToggled(SceneEditor2* scene);
+	void NotPassableTerrainToggled(SceneEditor2* scene);
+
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
 	void EmitClosed(SceneEditor2 *scene) { emit Closed(scene); }
@@ -115,6 +122,13 @@ public:
 
 	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }
 	void EmitDeselected(SceneEditor2 *scene, DAVA::Entity *entity)  { emit Deselected(scene, entity); }
+
+	void EmitVisibilityToolToggled(SceneEditor2* scene) { emit VisibilityToolToggled(scene); }
+	void EmitCustomColorsToggled(SceneEditor2* scene) { emit CustomColorsToggled(scene); }
+	void EmitHeightmapEditorToggled(SceneEditor2* scene) { emit HeightmapEditorToggled(scene); }
+	void EmitTilemaskEditorToggled(SceneEditor2* scene) { emit TilemaskEditorToggled(scene); }
+	void EmitRulerToolToggled(SceneEditor2* scene) { emit RulerToolToggled(scene); }
+	void EmitNotPassableTerrainToggled(SceneEditor2* scene) { emit NotPassableTerrainToggled(scene); }
 
 	void EmitDropperHeightChanged(SceneEditor2* scene, DAVA::float32 height) { emit DropperHeightChanged(scene, (double)height); };
 	void EmitVisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state)

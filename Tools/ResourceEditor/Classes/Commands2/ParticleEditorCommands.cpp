@@ -149,6 +149,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  RefPtr< PropertyLine<float32> > spin,
 									  RefPtr< PropertyLine<float32> > spinVariation,
 									  RefPtr< PropertyLine<float32> > spinOverLife,
+									  bool randomSpinDirection,
+
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
@@ -189,6 +191,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->spin = spin;
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
+	this->randomSpinDirection = randomSpinDirection;
 
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
@@ -233,6 +236,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->spin = spin;
 	layer->spinVariation = spinVariation;
 	layer->spinOverLife = spinOverLife;
+	layer->randomSpinDirection = randomSpinDirection;
 
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;

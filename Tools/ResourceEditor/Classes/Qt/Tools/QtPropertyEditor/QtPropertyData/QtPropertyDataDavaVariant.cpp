@@ -98,7 +98,19 @@ const DAVA::VariantType& QtPropertyDataDavaVariant::GetVariantValue() const
 void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 {
 	DVASSERT(curVariantValue.type == DAVA::VariantType::TYPE_NONE || curVariantValue.type == value.type);
+
+	bool needChildCreate = false;
+	if(curVariantValue.type == DAVA::VariantType::TYPE_NONE)
+	{
+		needChildCreate = true;
+	}
+
 	curVariantValue = value;
+
+	if(needChildCreate)
+	{
+		ChildsCreate();
+	}
 }
 
 void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue /*= QVariant()*/)
@@ -355,20 +367,20 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 	case DAVA::VariantType::TYPE_AABBOX3:
         {
             DAVA::AABBox3 box = curVariantValue.AsAABBox3();
-			            
+            
             QtPropertyData* min = ChildGet("min");
-            min->SetValue(FromVector3(box.min));
-            min->ChildGet("X")->SetValue(box.min.x);
-            min->ChildGet("Y")->SetValue(box.min.y);
-            min->ChildGet("Z")->SetValue(box.min.z);
+			min->SetValue(FromVector3(box.min));
+			min->ChildGet("X")->SetValue(box.min.x);
+			min->ChildGet("Y")->SetValue(box.min.y);
+			min->ChildGet("Z")->SetValue(box.min.z);
             
             QtPropertyData* max = ChildGet("max");
-            max->SetValue(FromVector3(box.max));
-            max->ChildGet("X")->SetValue(box.max.x);
-            max->ChildGet("Y")->SetValue(box.max.y);
-            max->ChildGet("Z")->SetValue(box.max.z);
+			max->SetValue(FromVector3(box.max));
+			max->ChildGet("X")->SetValue(box.max.x);
+			max->ChildGet("Y")->SetValue(box.max.y);
+			max->ChildGet("Z")->SetValue(box.max.z);
         }
-            break;
+        break;
 	}
 }
 
@@ -424,7 +436,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
         case DAVA::VariantType::TYPE_AABBOX3:
         {
             DAVA::AABBox3 box;
-			            
+            
             QtPropertyData* min = ChildGet("min");
             box.min.x = min->ChildGet("X")->GetValue().toFloat();
             box.min.y = min->ChildGet("Y")->GetValue().toFloat();
@@ -581,8 +593,8 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	QVariant v;
 
 	v = QString().sprintf("([%8.2f, %8.2f]\n[%8.2f, %8.2f])",
-		matrix._00, matrix._10,
-		matrix._01, matrix._11);
+		matrix._00, matrix._01,
+		matrix._10, matrix._11);
 
 	return v;
 }
@@ -778,6 +790,7 @@ void QtPropertyDataDavaVariant::FilePathOWPressed()
 		SetValue(path);
 	}
 }
+
 
 QIcon QtPropertyDataDavaVariant::GetIcon()
 {

@@ -366,13 +366,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 			editText.setTransformationMethod(new PswTransformationMethod());
 		}
 		
-		editText.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 		addContentView(editText, params);
 		
 		editText.setFilters(new InputFilter[]{inputFilter});
 	}
 	
-	public void ShowEditText(float x, float y, float dx, float dy, String defaultText, boolean isPassword)
+	public EditText ShowEditText(float x, float y, float dx, float dy, String defaultText, boolean isPassword)
 	{
 		if (editText != null) {
 			RemoveEditText();
@@ -387,10 +386,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		editText.requestFocus();
 		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		input.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+		
+		return editText;
 	}
 	
-	public void HideEditText()
-	{
+	public void HideEditText() {
 		if (editText == null)
 			return;
 
@@ -416,8 +416,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		return "";
 	}
 	
-	public void PostEventToGL(Runnable event)
-	{
+	public void PostEventToGL(Runnable event) {
 		glView.queueEvent(event);
 	}
 }

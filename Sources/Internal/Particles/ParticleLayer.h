@@ -363,6 +363,7 @@ public:
 	RefPtr< PropertyLine<float32> > spin;				// spin of angle / second
 	RefPtr< PropertyLine<float32> > spinVariation;
 	RefPtr< PropertyLine<float32> > spinOverLife;
+	bool randomSpinDirection;
 	
 	RefPtr< PropertyLine<float32> > motionRandom;		//
 	RefPtr< PropertyLine<float32> > motionRandomVariation;
