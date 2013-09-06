@@ -34,6 +34,7 @@
 #include "Base/Introspection.h"
 #include "../QtPropertyData.h"
 #include "QtPropertyDataDavaVariant.h"
+#include "Commands2/MetaObjModifyCommand.h"
 
 class QtPropertyDataMetaObject : public QtPropertyDataDavaVariant
 {
@@ -41,9 +42,13 @@ public:
 	QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta);
 	virtual ~QtPropertyDataMetaObject();
 
+	virtual void* CreateLastCommand() const;
+
 protected:
 	void *object;
 	const DAVA::MetaInfo *meta;
+
+	MetaObjModifyCommand* lastCommand;
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);

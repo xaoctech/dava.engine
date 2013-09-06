@@ -30,6 +30,7 @@
 
 #include "QtPropertyItem.h"
 #include "QtPropertyData.h"
+#include "QtPropertyModel.h"
 
 QtPropertyItem::QtPropertyItem()
 	: QStandardItem()
@@ -246,4 +247,7 @@ void QtPropertyItem::DataFlagsChanged()
 void QtPropertyItem::DataValueChanged()
 {
 	emitDataChanged();
+
+	QtPropertyModel *propModel = (QtPropertyModel *) model();
+	propModel->EmitDataEdited(this);
 }

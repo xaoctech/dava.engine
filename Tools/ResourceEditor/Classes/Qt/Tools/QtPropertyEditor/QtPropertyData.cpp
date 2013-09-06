@@ -306,6 +306,13 @@ void QtPropertyData::SetOWViewport(QWidget *viewport)
 	}
 }
 
+void* QtPropertyData::CreateLastCommand() const
+{
+	// can be re-implemented by sub-class
+
+	return NULL;
+}
+
 QVariant QtPropertyData::GetValueInternal()
 {
 	// should be re-implemented by sub-class

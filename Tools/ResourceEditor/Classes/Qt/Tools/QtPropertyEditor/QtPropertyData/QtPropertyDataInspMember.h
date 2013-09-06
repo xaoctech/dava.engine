@@ -20,6 +20,7 @@
 #include "Base/Introspection.h"
 #include "../QtPropertyData.h"
 #include "QtPropertyDataDavaVariant.h"
+#include "Commands2/InspMemberModifyCommand.h"
 
 class QtPropertyDataInspMember : public QtPropertyDataDavaVariant
 {
@@ -27,9 +28,13 @@ public:
 	QtPropertyDataInspMember(void *_object, const DAVA::InspMember *_member);
 	virtual ~QtPropertyDataInspMember();
 
+	virtual void* CreateLastCommand() const;
+
 protected:
 	void *object;
 	const DAVA::InspMember *member;
+
+	InspMemberModifyCommand* lastCommand;
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
