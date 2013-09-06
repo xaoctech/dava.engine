@@ -77,8 +77,8 @@ void main()
 #endif
 
 #if defined(VERTEX_FOG)
-    gl_FragColor = vec4(color, 1.0);//vec4(mix(fogColor, color, varFogFactor), 1.0);
+    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
 #else
-    gl_FragColor = vec4(color, 1.0);//vec4(color, 1.0);
+    gl_FragColor = vec4(color, 1.0);
 #endif
 }

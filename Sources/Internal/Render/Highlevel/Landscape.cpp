@@ -1475,13 +1475,13 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	SetupMaterialProperties();
 	
 	//HACK
-	FilePath specularPath(sceneFile->GetScenePath());
-	specularPath += "landscape/difNnorm2dv4_objLM_NT.thumbnail.tex";
-	Texture* specularMap = Texture::CreateFromFile(specularPath);
-	if(specularMap)
-	{
-		tileMaskMaterial->SetTexture("specularMap", specularMap);
-	}
+	//FilePath specularPath(sceneFile->GetScenePath());
+	//specularPath += "landscape/difNnorm2dv4_objLM_NT.thumbnail.tex";
+	//Texture* specularMap = Texture::CreateFromFile(specularPath);
+	//if(specularMap)
+	//{
+	//	tileMaskMaterial->SetTexture("specularMap", specularMap);
+	//}
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1855,6 +1855,73 @@ void Landscape::SetupMaterialProperties()
 uint32 Landscape::GetDrawIndices() const
 {
 	return drawIndices;
+}
+	
+void Landscape::SetSpecularColor(const Color& color)
+{
+	tileMaskMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &color);
+}
+	
+Color Landscape::GetSpecularColor()
+{
+	Color specularColor = Color(1, 1, 1, 1);
+	NMaterialProperty* specularColorProp = tileMaskMaterial->GetMaterialProperty("prop_specularColor");
+	
+	if(specularColorProp)
+	{
+		memcpy(&specularColor, specularColorProp->data, sizeof(Color));
+	}
+	
+	return specularColor;
+}
+	
+void Landscape::SetSpecularShininess(const float32& shininess)
+{
+	tileMaskMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &shininess);
+}
+	
+float32 Landscape::GetSpecularShininess()
+{
+	float32 shininess = 1.0f;
+	NMaterialProperty* shininessProp = tileMaskMaterial->GetMaterialProperty("materialSpecularShininess");
+	
+	if(shininessProp)
+	{
+		memcpy(&shininess, shininessProp->data, sizeof(float32));
+	}
+	
+	return shininess;
+}
+	
+void Landscape::SetSpecularMapPath(const FilePath& path)
+{
+	bool needReload = true;
+	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
+	if(specularMapTexture)
+	{
+		needReload = (specularMapTexture->GetPathname().GetAbsolutePathname() != path.GetAbsolutePathname());
+	}
+	
+	if(needReload)
+	{
+		Texture* specularMapTexture = Texture::CreateFromFile(path);
+		if(specularMapTexture)
+		{
+			tileMaskMaterial->SetTexture("specularMap", specularMapTexture);
+		}
+	}
+}
+	
+FilePath Landscape::GetSpecularMapPath()
+{
+	FilePath texturePath;
+	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
+	if(specularMapTexture)
+	{
+		texturePath = specularMapTexture->GetPathname().GetAbsolutePathname();
+	}
+	
+	return texturePath;
 }
 	
 };

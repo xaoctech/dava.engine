@@ -167,6 +167,8 @@ public:
         TEXTURE_COUNT
     };
 
+	//TODO: think about how to switch normal generation for landscape on/off
+	//ideally it should be runtime option and normal generaiton should happen when material that requires landscape has been set
 	class LandscapeVertex
 	{
 	public:
@@ -341,6 +343,13 @@ protected:
 	
 	void SetupMaterialProperties();
 	
+	void SetSpecularColor(const Color& color);
+	Color GetSpecularColor();
+	void SetSpecularShininess(const float32& shininess);
+	float32 GetSpecularShininess();
+	void SetSpecularMapPath(const FilePath& path);
+	FilePath GetSpecularMapPath();
+	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
     
@@ -416,6 +425,10 @@ public:
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
+						 
+		PROPERTY("specularColor", "Specular Color", GetSpecularColor, SetSpecularColor, I_SAVE | I_VIEW | I_EDIT)
+		PROPERTY("specularShininess", "Specular Shininess", GetSpecularShininess, SetSpecularShininess, I_SAVE | I_VIEW | I_EDIT)
+		PROPERTY("specularMap", "Specular Map", GetSpecularMapPath, SetSpecularMapPath, I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

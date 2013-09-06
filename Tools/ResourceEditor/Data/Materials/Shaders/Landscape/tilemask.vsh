@@ -66,8 +66,11 @@ void main()
 	varTexCoord3 = inTexCoord0 * texture3Tiling;
 #endif
 	
+#if defined(SPECULAR_LAND) || defined(VERTEX_FOG)
+	vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+#endif
+	
 #if defined(SPECULAR_LAND)
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
     vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = normalize(lightPosition0 - eyeCoordsPosition);
     
@@ -81,7 +84,6 @@ void main()
     
 #if defined(VERTEX_FOG)
     const float LOG2 = 1.442695;
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
     float fogFragCoord = length(eyeCoordsPosition);
     varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     varFogFactor = clamp(varFogFactor, 0.0, 1.0);
