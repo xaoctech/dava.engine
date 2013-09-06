@@ -255,16 +255,37 @@ void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFold
 	String pathname = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 	if(pathname.empty()) return;
 
-	String fullPath = sceneFolder.GetAbsolutePathname();
+    FilePath projectPath = CreateProjectPathFromPath(sceneFolder);
+    if(projectPath.IsEmpty())
+    {
+		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
+        return;
+    }
+
+    FilePath texPathname = projectPath + pathname;
+    sceneUtils.CopyFile(texPathname, errorLog);
+    
+    FilePath newTexPathname = sceneUtils.GetNewFilePath(texPathname);
+    FilePath newProjectPathname = CreateProjectPathFromPath(sceneUtils.dataFolder);
+    if(newProjectPathname.IsEmpty())
+    {
+		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't save custom colors texture (%s)", pathname.c_str());
+        return;
+    }
+    
+    //save new path to custom colors texture
+    customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, newTexPathname.GetRelativePathname(newProjectPathname));
+}
+
+FilePath SceneSaver::CreateProjectPathFromPath(const FilePath & pathname)
+{
+	String fullPath = pathname.GetAbsolutePathname();
 	String::size_type pos = fullPath.find("/Data");
 	if(pos != String::npos)
 	{
-		FilePath texPathname = fullPath.substr(0, pos+1) + pathname;
-		sceneUtils.CopyFile(texPathname, errorLog);
+        return fullPath.substr(0, pos+1);
 	}
-	else
-	{
-		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
-	}
+    
+    return FilePath();
 }
 
