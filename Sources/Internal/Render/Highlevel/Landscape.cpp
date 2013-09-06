@@ -1475,13 +1475,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	SetupMaterialProperties();
 	
 	//HACK
-	//FilePath specularPath(sceneFile->GetScenePath());
-	//specularPath += "landscape/difNnorm2dv4_objLM_NT.thumbnail.tex";
-	//Texture* specularMap = Texture::CreateFromFile(specularPath);
-	//if(specularMap)
-	//{
-	//	tileMaskMaterial->SetTexture("specularMap", specularMap);
-	//}
+	tileMaskMaterial->SetTexture("specularMap", SafeRetain(textures[TEXTURE_COLOR]));
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1902,7 +1896,7 @@ void Landscape::SetSpecularMapPath(const FilePath& path)
 		needReload = (specularMapTexture->GetPathname().GetAbsolutePathname() != path.GetAbsolutePathname());
 	}
 	
-	if(needReload)
+	if(needReload && path.Exists())
 	{
 		Texture* specularMapTexture = Texture::CreateFromFile(path);
 		if(specularMapTexture)
