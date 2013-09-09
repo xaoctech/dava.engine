@@ -38,6 +38,8 @@
 #include "LandscapeEditorDrawSystem/RulerToolProxy.h"
 #include "LandscapeEditor/LandscapeRenderer.h"
 
+#include "Scene3D/Systems/RenderUpdateSystem.h"
+
 LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	customDrawRequestCount(0)
@@ -508,4 +510,34 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 	int32 heightmapSize = GetHeightmapProxy()->Size();
 	Rect bounds(0.f, 0.f, heightmapSize - 1, heightmapSize - 1);
 	bounds.ClampToRect(rect);
+}
+
+void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
+{
+}
+
+void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	if (entity == landscapeNode)
+	{
+		SceneEditor2* sceneEditor = dynamic_cast<SceneEditor2*>(entity->GetScene());
+		if (!sceneEditor)
+		{
+			return;
+		}
+
+		bool needRemoveBaseLandscape = sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL
+																   & ~SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR);
+
+		sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+
+		if (needRemoveBaseLandscape)
+		{
+			sceneEditor->renderUpdateSystem->RemoveEntity(entity);
+		}
+
+		landscapeNode = NULL;
+		SafeRelease(landscapeProxy);
+		SafeRelease(baseLandscape);
+	}
 }
