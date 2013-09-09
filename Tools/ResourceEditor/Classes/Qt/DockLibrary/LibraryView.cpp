@@ -106,6 +106,7 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 			else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))
 			{
 				contextMenu.addAction("Convert", this, SLOT(OnDAEConvert()));
+				contextMenu.addAction("Convert with saved settings", this, SLOT(OnDAEConvertWithSavingOfSettings()));
 			}
 
 			contextMenu.exec(mapToGlobal(point));
@@ -181,6 +182,24 @@ void LibraryView::OnDAEConvert()
 
 		QtMainWindow::Instance()->WaitStop();
 	}
+}
+
+void LibraryView::OnDAEConvertWithSavingOfSettings()
+{
+	const QModelIndex index = currentIndex();
+	if(index.isValid())
+	{
+		QFileInfo fileInfo = libModel->fileInfo(index);
+        
+		QtMainWindow::Instance()->WaitStart("DAE to SC2 Conversion", fileInfo.absoluteFilePath());
+        
+		Command2 *daeCmd = new DAEConvertWithSettingsAction(fileInfo.absoluteFilePath().toStdString());
+		daeCmd->Redo();
+		delete daeCmd;
+        
+		QtMainWindow::Instance()->WaitStop();
+	}
+    
 }
 
 void LibraryView::ShowDAE(bool show)
