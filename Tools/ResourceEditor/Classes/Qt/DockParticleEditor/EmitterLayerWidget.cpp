@@ -185,7 +185,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	//particle orieantation
 	QVBoxLayout* orientationLayout = new QVBoxLayout();	
-	orientationLayout->addWidget(new QLabel("Particle Orientation"));
+	particleOrientationLabel = new QLabel("Particle Orientation");
+	orientationLayout->addWidget(particleOrientationLabel);
 	QHBoxLayout* facingLayout = new QHBoxLayout();
 	
 	cameraFacingCheckBox = new QCheckBox("Camera Facing");
@@ -994,6 +995,14 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	pivotPointYSpinBox->setVisible(!isSuperemitter);
 	pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
 	pivotPointResetButton->setVisible(!isSuperemitter);
+
+	//particle orientation would be set up in inner emitter layers
+	particleOrientationLabel->setVisible(!isSuperemitter);
+	cameraFacingCheckBox->setVisible(!isSuperemitter);
+	xFacingCheckBox->setVisible(!isSuperemitter);
+	yFacingCheckBox->setVisible(!isSuperemitter);
+	zFacingCheckBox->setVisible(!isSuperemitter);
+	worldAlignCheckBox->setVisible(!isSuperemitter);
 
 	// Some controls are however specific for this mode only - display and update them.
 	innerEmitterLabel->setVisible(isSuperemitter);
