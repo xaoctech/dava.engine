@@ -282,7 +282,10 @@ void CommandUpdateParticleLayer::Redo()
 		{
 			layer->CreateInnerEmitter();
 			if (!layer->innerEmitterPath.IsEmpty())
-				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);
+			{
+				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);				
+			}
+			layer->GetInnerEmitter()->SetPlaybackSpeed(layer->GetPlaybackSpeed());
 		}
 		emitter->Play();
 	}
