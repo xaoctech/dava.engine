@@ -89,7 +89,7 @@ protected slots:
 	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
 	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
 	void ShowContextMenuForce(DAVA::ParticleLayer *layer, DAVA::ParticleForce *force, const QPoint &pos);
-	void ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, const QPoint &pos);
+	void ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer *parentLayer, const QPoint &pos);
 
 	void LookAtSelection();
 	void RemoveSelection();
@@ -140,6 +140,7 @@ private:
 	ParticleLayer* selectedLayer;
 	ParticleForce* selectedForce;
 	ParticleEmitter *selectedInnerEmmiter;
+	ParticleLayer *selectedInnerEmmiterParentLayer;
 };
 
 #endif // __QT_SCENE_TREE_H__
