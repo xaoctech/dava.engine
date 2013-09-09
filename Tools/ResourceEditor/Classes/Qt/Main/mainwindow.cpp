@@ -911,7 +911,9 @@ void QtMainWindow::OnSceneLightMode()
 
 void QtMainWindow::OnCubemapEditor()
 {
-	CubeMapTextureBrowser dlg(dynamic_cast<QWidget*>(parent()));
+	SceneEditor2* scene = GetCurrentScene();
+	
+	CubeMapTextureBrowser dlg(scene, dynamic_cast<QWidget*>(parent()));
 	dlg.exec();
 }
 
