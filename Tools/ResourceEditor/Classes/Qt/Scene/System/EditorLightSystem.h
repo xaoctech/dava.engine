@@ -64,8 +64,6 @@ protected:
 
 	DAVA::int32 CountLightsForEntityRecursive(DAVA::Entity *entity);
 
-    DAVA_DEPRECATED(void AddEditorEntity(DAVA::Entity *entity)); //need to work with SceneEditor2 && EditorScene classes
-    
 protected:
 
 	bool isEnabled;
