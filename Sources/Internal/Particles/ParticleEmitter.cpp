@@ -305,6 +305,23 @@ void ParticleEmitter::SetShortEffect(bool isShort)
 	}
 }
 
+Matrix3 ParticleEmitter::GetRotationMatrix()
+{
+	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	Matrix3 rotationMatrix;	
+
+	if(worldTransformPtr)
+	{	
+		rotationMatrix = Matrix3(*worldTransformPtr);
+	}
+	else
+	{
+		rotationMatrix.Identity();
+	}
+
+	return rotationMatrix;
+}
+
 void ParticleEmitter::Play()
 {
     Pause(false);
