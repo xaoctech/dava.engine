@@ -131,10 +131,15 @@ void QtPropertyModel::EmitDataEdited(QtPropertyItem *editedItem)
 {
 	if(trackEdit)
 	{
-		QModelIndex index = indexFromItem(editedItem);
-		QStandardItem *nameItem = item(index.row(), 0);
+		QString name;
 
-		emit ItemEdited(nameItem->text(), editedItem->GetPropertyData());
+		QtPropertyItem *parentName = editedItem->GetParentNameItem();
+		if(NULL != parentName)
+		{
+			name = parentName->text();
+		}
+
+		emit ItemEdited(name, editedItem->GetPropertyData());
 	}
 }
 

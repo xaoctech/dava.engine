@@ -53,6 +53,7 @@ public:
 	~QtPropertyItem();
 
 	QtPropertyData* GetPropertyData() const;
+	QtPropertyItem* GetParentNameItem() const;
 
 	int	type() const;
 	QVariant data(int role) const;

@@ -377,6 +377,7 @@
     <ClCompile Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
     <ClCompile Include="Classes\Commands2\InspMemebrModifyCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\KeyedArchiveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\LandscapeEditorDrawSystemActions.cpp" />
     <ClCompile Include="Classes\Commands2\MetaObjModifyCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleEditorCommands.cpp" />
@@ -555,6 +556,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItem.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
@@ -1067,6 +1069,7 @@
     <ClInclude Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />
     <ClInclude Include="Classes\Commands2\InspMemberModifyCommand.h" />
+    <ClInclude Include="Classes\Commands2\KeyedArchiveCommand.h" />
     <ClInclude Include="Classes\Commands2\LandscapeEditorDrawSystemActions.h" />
     <ClInclude Include="Classes\Commands2\MetaObjModifyCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleEditorCommands.h" />
@@ -1254,6 +1257,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItem.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.h" />

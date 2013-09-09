@@ -87,6 +87,11 @@ QtPropertyData* QtPropertyItem::GetPropertyData() const
 	return itemData;
 }
 
+QtPropertyItem* QtPropertyItem::GetParentNameItem() const
+{
+	return parentName;
+}
+
 int QtPropertyItem::type() const
 {
 	return QStandardItem::UserType + 1;

@@ -32,7 +32,7 @@
 #include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyDataMetaObject.h"
+#include "QtPropertyDataKeyedArchiveMember.h"
 
 #include <QSet>
 #include <QMenu>
@@ -45,6 +45,7 @@
 QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive)
 	: curArchive(archive)
 	, lastAddedType(DAVA::VariantType::TYPE_STRING)
+	, lastCommand(NULL)
 {
 	if(NULL != curArchive)
 	{
@@ -67,11 +68,18 @@ QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
 	{
 		curArchive->Release();
 	}
+
+	if(NULL != lastCommand)
+	{
+		delete lastCommand;
+	}
 }
 
 QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 {
 	QVariant v;
+
+	ChildsSync();
 
 	if(NULL != curArchive)
 	{
@@ -145,7 +153,7 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	}
 	else
 	{
-		childData = new QtPropertyDataMetaObject(value->MetaObject(), value->Meta());
+		childData = new QtPropertyKeyedArchiveMember(curArchive, key.toStdString());
 	}
 
 	ChildAdd(key, childData);
@@ -198,6 +206,13 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 					const QtPropertyOW *ow = childData->GetOW(j);
 					if(NULL != ow && ow->widget == btn)
 					{
+						if(NULL != lastCommand)
+						{
+							delete lastCommand;
+						}
+
+						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, child.first.toStdString());
+
 						curArchive->DeleteKey(child.first.toStdString());
 						ChildsSync();
 
@@ -213,16 +228,30 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 
 void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value)
 {
+	DVASSERT(value.type != DAVA::VariantType::TYPE_NONE && value.type < DAVA::VariantType::TYPES_COUNT);
 	if(NULL != curArchive)
 	{
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
 		ChildsSync();
 
+		if(NULL != lastCommand)
+		{
+			delete lastCommand;
+		}
+
+		lastCommand = new KeyeadArchiveAddValueCommand(curArchive, key, value);
+
 		emit ValueChanged();
 	}
 }
 
+void* QtPropertyDataDavaKeyedArcive::CreateLastCommand() const
+{
+	Command2* cmd = lastCommand;
+	lastCommand = NULL;
+	return cmd;
+}
 
 KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int defaultType, QWidget *parent /* = NULL */) 
 	: QWidget(parent)

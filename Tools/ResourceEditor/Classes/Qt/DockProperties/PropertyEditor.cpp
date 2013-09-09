@@ -39,6 +39,7 @@
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h"
 #include "Commands2/MetaObjModifyCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
 
@@ -223,6 +224,10 @@ void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
 	Command2 *command = (Command2 *) data->CreateLastCommand();
 	if(NULL != command)
 	{
-		QtMainWindow::Instance()->GetCurrentScene()->Exec(command);
+		SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+		if(NULL != curScene)
+		{
+			curScene->Exec(command);
+		}
 	}
 }
