@@ -430,7 +430,7 @@ void LandscapeEditorColor::RecreateHeightmapNode()
 
 bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 {
-    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(newScene->GetLandscape(newScene));
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(FindLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start tile mask editor. Remove EditorLandscape from scene"));

@@ -586,7 +586,7 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 void SceneInfo::SceneActivated(SceneEditor2 *scene)
 {
     activeScene = scene;
-    landscape = activeScene->structureSystem->FindLanscape();
+    landscape = FindLandscape(activeScene);
     RefreshAllData(scene);
 }
 
@@ -604,7 +604,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
 {
     if(activeScene == scene)
     {
-        landscape = activeScene->structureSystem->FindLanscape();
+        landscape = FindLandscape(activeScene);
         RefreshAllData(scene);
     }
 }

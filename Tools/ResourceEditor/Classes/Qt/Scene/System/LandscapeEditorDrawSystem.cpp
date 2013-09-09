@@ -462,7 +462,7 @@ bool LandscapeEditorDrawSystem::Init()
 {
 	if (!landscapeNode)
 	{
-		landscapeNode = EditorScene::GetLandscapeNode(GetScene());
+		landscapeNode = FindLandscapeEntity(GetScene());
 	}
 	if (!baseLandscape)
 	{
