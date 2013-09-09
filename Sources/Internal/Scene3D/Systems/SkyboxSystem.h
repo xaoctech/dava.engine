@@ -63,6 +63,7 @@ namespace DAVA
 		Entity* AddSkybox();
 		
 		bool IsSkyboxPresent();
+		void Reload();
 	};
 };
 

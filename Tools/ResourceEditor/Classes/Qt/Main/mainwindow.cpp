@@ -108,8 +108,10 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)),
-			this, SLOT(NotPassableToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
+
 
 	LoadGPUFormat();
 
@@ -911,7 +913,9 @@ void QtMainWindow::OnSceneLightMode()
 
 void QtMainWindow::OnCubemapEditor()
 {
-	CubeMapTextureBrowser dlg(dynamic_cast<QWidget*>(parent()));
+	SceneEditor2* scene = GetCurrentScene();
+	
+	CubeMapTextureBrowser dlg(scene, dynamic_cast<QWidget*>(parent()));
 	dlg.exec();
 }
 
@@ -1279,7 +1283,7 @@ void QtMainWindow::OnSaveHeightmapToPNG()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-    Landscape *landscape = scene->structureSystem->FindLanscape();
+    Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
     
     Heightmap * heightmap = landscape->GetHeightmap();
@@ -1293,7 +1297,7 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-    Landscape *landscape = scene->structureSystem->FindLanscape();
+    Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
     
     FilePath texPathname = landscape->SaveFullTiledTexture();
@@ -1384,4 +1388,9 @@ void QtMainWindow::HideLandscapeEditorDocks()
 void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
 {
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+}
+
+void QtMainWindow::EditorLightEnabled( bool enabled )
+{
+	ui->actionEnableCameraLight->setChecked(enabled);
 }

@@ -65,9 +65,6 @@ public:
 	void LockSignals();
 	void UnlockSignals();
 
-	DAVA::Landscape * FindLanscape() const;
-	DAVA::Entity * FindLandscapeEntity() const;
-
 protected:
 	bool lockedSignals;
 
@@ -86,8 +83,6 @@ protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
-	DAVA::Entity * FindLandscapeEntityRecursive(DAVA::Entity *entity) const;
-    
     bool CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const;
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 };

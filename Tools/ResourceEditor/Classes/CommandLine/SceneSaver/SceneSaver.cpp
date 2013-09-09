@@ -154,7 +154,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     CopyTextures(scene, errorLog);
 	ReleaseTextures();
 
-	Landscape *landscape = EditorScene::GetLandscape(scene);
+	Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
@@ -264,7 +264,7 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 
 void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
 {
-	Entity *land = EditorScene::GetLandscapeNode(scene);
+	Entity *land = FindLandscapeEntity(scene);
 	if(!land) return;
 
 	KeyedArchive* customProps = land->GetCustomProperties();

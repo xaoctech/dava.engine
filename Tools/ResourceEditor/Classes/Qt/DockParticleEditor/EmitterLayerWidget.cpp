@@ -181,6 +181,35 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	pivotPointLayout->addLayout(pivotPointInnerLayout);
 	mainBox->addLayout(pivotPointLayout);
+	
+
+	//particle orieantation
+	QVBoxLayout* orientationLayout = new QVBoxLayout();	
+	particleOrientationLabel = new QLabel("Particle Orientation");
+	orientationLayout->addWidget(particleOrientationLabel);
+	QHBoxLayout* facingLayout = new QHBoxLayout();
+	
+	cameraFacingCheckBox = new QCheckBox("Camera Facing");
+	facingLayout->addWidget(cameraFacingCheckBox);
+	connect(cameraFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));		
+
+	xFacingCheckBox = new QCheckBox("X-Facing");
+	facingLayout->addWidget(xFacingCheckBox);
+	connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	yFacingCheckBox = new QCheckBox("Y-Facing");
+	facingLayout->addWidget(yFacingCheckBox);
+	connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	zFacingCheckBox = new QCheckBox("Z-Facing");
+	facingLayout->addWidget(zFacingCheckBox);
+	connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	orientationLayout->addLayout(facingLayout);
+
+	worldAlignCheckBox = new QCheckBox("World Align");
+	orientationLayout->addWidget(worldAlignCheckBox);
+	connect(worldAlignCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+	mainBox->addLayout(orientationLayout);
+
 
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
@@ -420,6 +449,27 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			this,
 			SLOT(OnLodsChanged()));		
 	}
+	
+	disconnect(cameraFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(xFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(yFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(zFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(worldAlignCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -482,6 +532,13 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 		spriteName = QString::fromStdString(sprite->GetRelativePathname().GetAbsolutePathname());
 	}
 	spritePathLabel->setText(spriteName);
+
+	//particle orientation
+	cameraFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
+	xFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING);
+	yFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Y_FACING);
+	zFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Z_FACING);
+	worldAlignCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
 	lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -772,6 +829,18 @@ void EmitterLayerWidget::OnValueChanged()
 
 	ParticleLayer::eType propLayerType = layerTypeMap[layerTypeComboBox->currentIndex()].layerType;
 
+	int32 particleOrientation = 0;
+	if (cameraFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING;
+	if (xFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_X_FACING;
+	if (yFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_Y_FACING;
+	if (zFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_Z_FACING;
+	if (worldAlignCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
 	updateLayerCmd->Init(layerNameLineEdit->text().toStdString(),
 						 propLayerType,
@@ -781,6 +850,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 isLongCheckBox->isChecked(),
 						 isLoopedCheckBox->isChecked(),
 						 sprite,
+						 particleOrientation,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
 						 propNumber.GetPropLine(),
@@ -925,6 +995,14 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	pivotPointYSpinBox->setVisible(!isSuperemitter);
 	pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
 	pivotPointResetButton->setVisible(!isSuperemitter);
+
+	//particle orientation would be set up in inner emitter layers
+	particleOrientationLabel->setVisible(!isSuperemitter);
+	cameraFacingCheckBox->setVisible(!isSuperemitter);
+	xFacingCheckBox->setVisible(!isSuperemitter);
+	yFacingCheckBox->setVisible(!isSuperemitter);
+	zFacingCheckBox->setVisible(!isSuperemitter);
+	worldAlignCheckBox->setVisible(!isSuperemitter);
 
 	// Some controls are however specific for this mode only - display and update them.
 	innerEmitterLabel->setVisible(isSuperemitter);

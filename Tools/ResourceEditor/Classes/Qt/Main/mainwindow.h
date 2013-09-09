@@ -167,17 +167,17 @@ protected slots:
 	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
     
-    
 	void AddSwitchDialogFinished(int result);
 
 	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
 
-    
-    
     void OnGlobalInvalidateTimeout();
 
 	void NotPassableToggled(SceneEditor2* scene);
-    
+
+	void EditorLightEnabled(bool enabled);
+
+
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;

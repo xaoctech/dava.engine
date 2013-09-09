@@ -66,6 +66,15 @@ public:
 		TYPE_PARTICLES,				// default for any particle layer loaded from yaml file
 		TYPE_SUPEREMITTER_PARTICLES
 	};
+
+	enum eParticleOrientation
+	{
+		PARTICLE_ORIENTATION_CAMERA_FACING = 1<<0, //default
+		PARTICLE_ORIENTATION_X_FACING = 1<<1,
+		PARTICLE_ORIENTATION_Y_FACING = 1<<2,
+		PARTICLE_ORIENTATION_Z_FACING = 1<<3,
+		PARTICLE_ORIENTATION_WORLD_ALIGN = 1<<4 
+	};
 	
 	ParticleLayer();
 	virtual ~ParticleLayer();
@@ -396,6 +405,8 @@ public:
 	int32		frameEnd;
 
 	eType		type;
+
+	int32 particleOrientation;
 
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;

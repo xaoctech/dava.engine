@@ -88,6 +88,9 @@ public:
 	void ClampToTexture(Rect& rect);
 	void ClampToHeightmap(Rect& rect);
 
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;

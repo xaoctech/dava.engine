@@ -120,6 +120,13 @@ private:
 	QLabel* pivotPointYSpinBoxLabel;
 	QPushButton* pivotPointResetButton;
 
+	QLabel *particleOrientationLabel;
+	QCheckBox *cameraFacingCheckBox;
+	QCheckBox *xFacingCheckBox;
+	QCheckBox *yFacingCheckBox;
+	QCheckBox *zFacingCheckBox;
+	QCheckBox *worldAlignCheckBox;
+
 	TimeLineWidget* lifeTimeLine;
 	TimeLineWidget* numberTimeLine;
 	TimeLineWidget* sizeTimeLine;
