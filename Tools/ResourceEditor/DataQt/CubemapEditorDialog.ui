@@ -19,7 +19,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <widget class="ClickableQLabel" name="labelNX">
+  <widget class="ClickableQLabel" name="labelPX">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -57,7 +57,7 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="ClickableQLabel" name="labelPX">
+  <widget class="ClickableQLabel" name="labelNX">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -95,7 +95,7 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="ClickableQLabel" name="labelNY">
+  <widget class="ClickableQLabel" name="labelPY">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -114,7 +114,7 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="ClickableQLabel" name="labelPY">
+  <widget class="ClickableQLabel" name="labelNY">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -485,12 +485,12 @@
   <zorder>label_12</zorder>
   <zorder>label_11</zorder>
   <zorder>label_10</zorder>
-  <zorder>labelPX</zorder>
+  <zorder>labelNX</zorder>
   <zorder>label_9</zorder>
   <zorder>labelNZ</zorder>
   <zorder>labelPZ</zorder>
-  <zorder>labelNY</zorder>
   <zorder>labelPY</zorder>
+  <zorder>labelNY</zorder>
   <zorder>buttonSave</zorder>
   <zorder>buttonClose</zorder>
   <zorder>labelDescription</zorder>
@@ -498,7 +498,7 @@
   <zorder>label_8</zorder>
   <zorder>labelFaceWidth</zorder>
   <zorder>labelFaceHeight</zorder>
-  <zorder>labelNX</zorder>
+  <zorder>labelPX</zorder>
   <zorder>legend</zorder>
  </widget>
  <customwidgets>
