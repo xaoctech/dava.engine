@@ -55,54 +55,14 @@ public:
 	
 protected slots:
 	
-	void HandleCustomColorBrushSize();
-
-	void HandleCustomColorColorIndex();
-
-	void HandleCameraMoveSpeed();
+	void HandleGridMax();
 	
-	void HandleCameraViewportRect();
+	void HandleGridStep();
 	
 	void HandleCollisionDrawMode();
-	
-	void HandleHoodModifMode();
-	
-	void HandleHoodPosition();
-	
-	void HandleHoodModifAxis();
-	
-	void HandleHoodScale();
-	
+
 	void HandleSelectionDrawMode();
 	
-	void HandlePivotPoint();
-	
-	void HandleEntityModifMode();
-		
-	void HandleEntityModifAxis();
-	
-	void HandleEntityLandscapeSnap();
-	
-	void HandleHightmapBrushSize();
-	
-	void HandleHightmapStrength();
-	
-	void HandleHightmapAverageStrength();
-	
-	void HandleHightmapDrawingType();
-	
-	void HandleTileMaskBrushSize();
-	
-	void HandleTileMaskStrength();
-	
-	void HandleTileTextureIndex();
-	
-	void HandleVisibToolBrushSize();
-	
-	void HandleLightCameraEnbled();
-	
-	void HandleRenderShadowRectColor();
-
 protected slots:
 
 	void ShowDialog();
@@ -112,14 +72,14 @@ protected:
 	struct PropertyInfo
 	{
 		QtPropertyDataDavaVariant*	property;
-		DAVA::VariantType			defaultValue;
+		QVariant					defaultValue;
 		STATE_FLAGS_MAP *			flagsMap;
 		PropertyInfo()
 		{
 			property = NULL;
 			flagsMap = NULL;
 		}
-		PropertyInfo(QtPropertyDataDavaVariant* _property, DAVA::VariantType _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
+		PropertyInfo(QtPropertyDataDavaVariant* _property, QVariant _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
 		{
 			property = _property;
 			defaultValue = _defaultValue;
@@ -131,8 +91,10 @@ protected:
 	
 	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
 	
-	void InitMapWithFlag(STATE_FLAGS_MAP& map, DAVA::uint32 value);
+	void InitMapWithFlag(STATE_FLAGS_MAP* map, DAVA::uint32 value);
 	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
+	
+	void SetAllCheckedToFalse(STATE_FLAGS_MAP* map);
 	
 	
 	DAVA::List<PropertyInfo> propertiesMap;
