@@ -113,4 +113,29 @@ namespace DAVA
 		
 		return result;
 	}
+	
+	void SkyboxSystem::Reload()
+	{
+		if(skyboxEntity)
+		{
+			RenderComponent* renderComponent = static_cast<RenderComponent*>(skyboxEntity->GetComponent(Component::RENDER_COMPONENT));
+			SkyboxRenderObject* renderObj = cast_if_equal<SkyboxRenderObject*>(renderComponent->GetRenderObject());
+			
+			if(renderObj &&
+			   renderObj->GetRenderBatchCount() > 0)
+			{
+				RenderBatch* renderBatch = renderObj->GetRenderBatch(0);
+				Material* material = renderBatch->GetMaterial();
+				
+				if(material)
+				{
+					Texture* texture = material->GetTexture(Material::TEXTURE_DIFFUSE);
+					if(texture)
+					{
+						texture->Reload();
+					}
+				}
+			}
+		}
+	}
 };
