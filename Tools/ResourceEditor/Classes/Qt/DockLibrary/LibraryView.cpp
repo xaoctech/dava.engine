@@ -56,7 +56,7 @@ LibraryView::LibraryView(QWidget *parent /* = 0 */)
 	setModel(libModel);
 
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
-	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed(const QString &)), this, SLOT(ProjectClosed(const QString &)));
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed()), this, SLOT(ProjectClosed()));
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowContextMenu(const QPoint &)));
 	QObject::connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(FileSelectionChanged(const QItemSelection &, const QItemSelection &)));
@@ -81,7 +81,7 @@ void LibraryView::ProjectOpened(const QString &path)
 	libModel->SetLibraryPath(ProjectManager::Instance()->CurProjectDataSourcePath());
 }
 
-void LibraryView::ProjectClosed(const QString &path)
+void LibraryView::ProjectClosed()
 {
 	libModel->SetLibraryPath("");
 }
@@ -131,8 +131,9 @@ void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QI
 			previewPath = fileInfo.filePath().toStdString();
 		}
 	}
-    
-    SceneDataManager::Instance()->SceneShowPreview(previewPath);
+
+	SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
+	widget->ShowScenePreview(previewPath);
 }
 
 void LibraryView::LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files)
