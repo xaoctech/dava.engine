@@ -93,6 +93,7 @@ protected:
 	Vector<float32> verts;
 	Vector<float32> textures;
 	Vector<uint32> colors;
+	Vector<uint16> indices;
 
 	Vector3 _up;
 	Vector3 _left;
