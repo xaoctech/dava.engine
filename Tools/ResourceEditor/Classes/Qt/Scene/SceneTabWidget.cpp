@@ -35,6 +35,8 @@
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
 
+#include "Classes/Deprecated/ScenePreviewDialog.h"
+
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QMessageBox>
@@ -91,10 +93,14 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
+
+	previewDialog = new ScenePreviewDialog();
 }
 
 SceneTabWidget::~SceneTabWidget()
 {
+	SafeRelease(previewDialog);
+
 	ReleaseDAVAUI();
 }
 
@@ -135,6 +141,11 @@ int SceneTabWidget::OpenTab()
 
 int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
+	if(previewDialog && previewDialog->GetParent())
+	{
+		previewDialog->Close();
+	}
+
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
 
@@ -427,6 +438,20 @@ SceneEditor2* SceneTabWidget::GetCurrentScene() const
 	return curScene;
 }
 
+void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
+{
+	if(!previewDialog) return;
+
+	if(scenePath.IsEqualToExtension(".sc2"))
+	{
+		previewDialog->Show(scenePath);
+	}
+	else
+	{
+		previewDialog->Close();
+	}
+}
+
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 	: QTabBar(parent)
 {
@@ -455,3 +480,4 @@ void MainTabBar::dropEvent(QDropEvent *event)
 		emit OnDrop(mimeData);
 	}
 }
+

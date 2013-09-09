@@ -53,6 +53,8 @@ class SceneEditor2;
 class DAVAUI3DView;
 class MainTabBar;
 
+class ScenePreviewDialog;
+
 Q_DECLARE_METATYPE(SceneEditor2 *);
 
 class SceneTabWidget : public QWidget
@@ -73,6 +75,8 @@ public:
 	int GetTabCount() const;
 	SceneEditor2* GetCurrentScene() const;
 	SceneEditor2* GetTabScene(int index) const;
+
+	void ShowScenePreview(const DAVA::FilePath &scenePath);
 
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
@@ -102,6 +106,8 @@ protected:
 	void SetTabScene(int index, SceneEditor2* scene);
 
 	virtual void resizeEvent(QResizeEvent * event);
+
+	ScenePreviewDialog *previewDialog;
 
 private:
 	int newSceneCounter;

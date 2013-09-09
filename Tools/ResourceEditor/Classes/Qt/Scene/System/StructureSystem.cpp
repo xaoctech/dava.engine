@@ -495,39 +495,6 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 	return loadedEntity;
 }
 
-DAVA::Landscape * StructureSystem::FindLanscape() const
-{
-    Entity *entity = FindLandscapeEntity();
-    return GetLandscape(entity);
-}
-
-DAVA::Entity * StructureSystem::FindLandscapeEntity() const
-{
-	return FindLandscapeEntityRecursive(GetScene());
-}
-
-
-DAVA::Entity * StructureSystem::FindLandscapeEntityRecursive( DAVA::Entity *entity ) const
-{
-	if(GetLandscape(entity))
-	{
-		return entity;
-	}
-
-	DAVA::int32 count = entity->GetChildrenCount();
-	for(DAVA::int32 i = 0; i < count; ++i)
-	{
-		Entity *child = entity->GetChild(i);
-		if(FindLandscapeEntityRecursive(child))
-		{
-			return child;
-		}
-	}
-
-	return NULL;
-}
-
-
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
 {
     DAVA::Vector<DAVA::RenderObject *> fromMeshes;

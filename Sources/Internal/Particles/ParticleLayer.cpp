@@ -111,6 +111,8 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 	randomFrameOnStart = false;
 
+	particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
+
     isDisabled = false;
 	isLooped = false;
 
@@ -244,6 +246,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 	dstLayer->randomFrameOnStart = randomFrameOnStart;
+	dstLayer->particleOrientation = particleOrientation;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
@@ -544,8 +547,9 @@ void ParticleLayer::RestartLayerIfNeed()
 
 void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 {
-	// increment timer, take the playbackSpeed into account.
-	timeElapsed *= playbackSpeed;
+	// it is already multiplied by playbackSpeed in Emitter
+	//timeElapsed *= playbackSpeed;
+
 	layerTime += timeElapsed;
 	loopLayerTime += timeElapsed;
 	
@@ -1024,6 +1028,13 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		randomFrameOnStart = randomFrameOnStartNode->AsBool();
 	}
 
+	const YamlNode* particleOrientationNode = node->Get("particleOrientation");
+	if (particleOrientationNode)
+	{
+		particleOrientation = particleOrientationNode->AsInt32();
+	}
+
+
 	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
 	if (frameOverLifeFPSNode)
 	{
@@ -1261,6 +1272,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
 
 	layerNode->Set("inheritPosition", inheritPosition);	
+
+	layerNode->Set("particleOrientation", particleOrientation);
 
 	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
 	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
@@ -1511,12 +1524,14 @@ void ParticleLayer::UpdatePlaybackSpeedForInnerEmitters(float value)
 		
 		current = current->next;
 	}
+	if (innerEmitter)
+		innerEmitter->SetPlaybackSpeed(value);
 }
 
 void ParticleLayer::CreateInnerEmitter()
 {
 	SafeRelease(innerEmitter);
-	innerEmitter = new ParticleEmitter();
+	innerEmitter = new ParticleEmitter();	
 }
 
 ParticleEmitter* ParticleLayer::GetInnerEmitter()

@@ -136,6 +136,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  bool isLong,
 									  bool isLooped,
 									  Sprite* sprite,
+									  int32 particleOrientation,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
 									  RefPtr< PropertyLine<float32> > number,
@@ -192,6 +193,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
 	this->randomSpinDirection = randomSpinDirection;
+	this->particleOrientation = particleOrientation;
 
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
@@ -237,6 +239,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->spinVariation = spinVariation;
 	layer->spinOverLife = spinOverLife;
 	layer->randomSpinDirection = randomSpinDirection;
+	layer->particleOrientation = particleOrientation;
 
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
@@ -279,7 +282,10 @@ void CommandUpdateParticleLayer::Redo()
 		{
 			layer->CreateInnerEmitter();
 			if (!layer->innerEmitterPath.IsEmpty())
-				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);
+			{
+				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);				
+			}
+			layer->GetInnerEmitter()->SetPlaybackSpeed(layer->GetPlaybackSpeed());
 		}
 		emitter->Play();
 	}
