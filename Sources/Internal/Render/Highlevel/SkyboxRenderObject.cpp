@@ -115,11 +115,11 @@ namespace DAVA
 		}
 		
 		Vector3 cubeTexCoords[SKYBOX_VERTEX_COUNT] = {
-			Vector3(-1, -1, -1), Vector3(-1, -1, 1), Vector3(1, -1, -1), Vector3(1, -1, -1), Vector3(-1, -1, 1), Vector3(1, -1, 1),
-			Vector3(1, -1, -1), Vector3(1, -1, 1), Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, 1, 1),
-			Vector3(1, 1, -1), Vector3(1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, 1, -1), Vector3(1, 1, 1), Vector3(-1, 1, 1),
-			Vector3(-1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Vector3(-1, -1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, 1),
-			Vector3(-1, -1, 1), Vector3(-1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, 1, 1), Vector3(1, 1, 1)
+			Vector3(-1, -1, 1), Vector3(-1, -1, -1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, -1, -1), Vector3(1, -1, -1),
+			Vector3(1, -1, 1), Vector3(1, -1, -1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, -1, -1), Vector3(1, 1, -1),
+			Vector3(1, 1, 1), Vector3(1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, 1, 1), Vector3(1, 1, -1), Vector3(-1, 1, -1),
+			Vector3(-1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(-1, 1, -1), Vector3(-1, -1, -1),
+			Vector3(1, -1, 1), Vector3(1, 1, 1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(1, 1, 1), Vector3(-1, 1, 1)
 		};
 		
 		PolygonGroup* polygonGroup = new PolygonGroup();
