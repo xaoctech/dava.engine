@@ -84,6 +84,7 @@ public slots:
 	void OnModelEdit();
 	void OnModelAdd();
 	void OnDAEConvert();
+	void OnDAEConvertWithSavingOfSettings();
 
 	void ShowDAE(bool show);
 	void ShowSC2(bool show);

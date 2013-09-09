@@ -247,6 +247,7 @@ public:
     float32 GetShininess() const;
 
 	void SetSetupLightmap(bool isSetupLightmap);
+    bool GetSetupLightmap() const;
     
     
     void EnableTextureShift(const bool & isEnabled);
