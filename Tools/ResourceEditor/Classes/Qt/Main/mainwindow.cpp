@@ -1282,7 +1282,7 @@ void QtMainWindow::OnSaveHeightmapToPNG()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-    Landscape *landscape = scene->structureSystem->FindLanscape();
+    Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
     
     Heightmap * heightmap = landscape->GetHeightmap();
@@ -1296,7 +1296,7 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-    Landscape *landscape = scene->structureSystem->FindLanscape();
+    Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
     
     FilePath texPathname = landscape->SaveFullTiledTexture();

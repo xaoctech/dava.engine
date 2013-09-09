@@ -109,7 +109,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
         Vector3 nodePos = pos + 10 * direction;
         nodePos.z = 0;
         
-        Landscape * ls = scene->GetLandscape(scene);
+        Landscape * ls = FindLandscape(scene);
         if(ls)
         {
             Vector3 result;
@@ -126,7 +126,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
     }
 
 	
-    Landscape *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = FindLandscape(scene);
     bool needUpdateLandscapeController = (landscape != NULL);
 
     //TODO: need save scene automatically?
@@ -246,7 +246,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         return;
     }
 
-    Landscape* landscape = EditorScene::GetLandscape(currentScene->GetScene());
+    Landscape* landscape = FindLandscape(currentScene->GetScene());
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
