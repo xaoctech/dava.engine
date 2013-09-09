@@ -547,8 +547,9 @@ void ParticleLayer::RestartLayerIfNeed()
 
 void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 {
-	// increment timer, take the playbackSpeed into account.
-	timeElapsed *= playbackSpeed;
+	// it is already multiplied by playbackSpeed in Emitter
+	//timeElapsed *= playbackSpeed;
+
 	layerTime += timeElapsed;
 	loopLayerTime += timeElapsed;
 	
@@ -1523,12 +1524,14 @@ void ParticleLayer::UpdatePlaybackSpeedForInnerEmitters(float value)
 		
 		current = current->next;
 	}
+	if (innerEmitter)
+		innerEmitter->SetPlaybackSpeed(value);
 }
 
 void ParticleLayer::CreateInnerEmitter()
 {
 	SafeRelease(innerEmitter);
-	innerEmitter = new ParticleEmitter();
+	innerEmitter = new ParticleEmitter();	
 }
 
 ParticleEmitter* ParticleLayer::GetInnerEmitter()
