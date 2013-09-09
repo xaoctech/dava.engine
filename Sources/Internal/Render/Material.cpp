@@ -1160,6 +1160,12 @@ void Material::SetSetupLightmap(bool _isSetupLightmap)
 	}
 }
     
+bool Material::GetSetupLightmap() const
+{
+    return isSetupLightmap;
+}
+
+    
 void Material::SetTexture(eTextureLevel level, Texture * texture)
 {
     if (texture == textures[level])return;
