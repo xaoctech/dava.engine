@@ -99,6 +99,15 @@ signals:
 	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
 	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
 
+	void VisibilityToolToggled(SceneEditor2* scene);
+	void CustomColorsToggled(SceneEditor2* scene);
+	void HeightmapEditorToggled(SceneEditor2* scene);
+	void TilemaskEditorToggled(SceneEditor2* scene);
+	void RulerToolToggled(SceneEditor2* scene);
+	void NotPassableTerrainToggled(SceneEditor2* scene);
+
+	void EditorLightEnabled(bool enabled);
+
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
 	void EmitClosed(SceneEditor2 *scene) { emit Closed(scene); }
@@ -183,6 +192,12 @@ public:
 	{
 		emit ParticleLayerRemoved(scene, emitter);
 	}
+
+	void EmitEditorLightEnabled(bool enabled)
+	{
+		emit EditorLightEnabled(enabled);
+	}
+
 };
 
 #endif // __SCENE_MANAGER_H__
