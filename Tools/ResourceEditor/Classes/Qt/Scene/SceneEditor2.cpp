@@ -419,7 +419,7 @@ void SceneEditor2::EditorCommandNotify::CleanChanged(bool clean)
 void SceneEditor2::UpdateShadowColorFromLandscape()
 {
 	// try to get shadow color for landscape
-	Entity *land = structureSystem->FindLandscapeEntity();
+	Entity *land = FindLandscapeEntity(this);
 	if(!land || !GetRenderSystem()) return;
 
 	KeyedArchive * props = land->GetCustomProperties();
@@ -431,7 +431,7 @@ void SceneEditor2::UpdateShadowColorFromLandscape()
 
 void SceneEditor2::SetShadowColor( const Color &color )
 {
-	Entity *land = structureSystem->FindLandscapeEntity();
+	Entity *land = FindLandscapeEntity(this);
 	if(!land) return;
 
 	KeyedArchive * props = land->GetCustomProperties();

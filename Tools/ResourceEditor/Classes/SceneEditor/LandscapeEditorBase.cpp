@@ -101,8 +101,8 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
     SafeRelease(workingScene);
     
-    workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
-	workingLandscapeEntity = SafeRetain(newScene->GetLandscapeNode(newScene));
+    workingLandscape = SafeRetain(FindLandscape(newScene));
+	workingLandscapeEntity = SafeRetain(FindLandscapeEntity(newScene));
 
     if(!workingLandscape)
     {
