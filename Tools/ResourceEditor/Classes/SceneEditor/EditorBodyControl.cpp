@@ -756,7 +756,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
-		Landscape *land = scene->GetLandscape(scene);
+		Landscape *land = FindLandscape(scene);
 		if(land)
 		{
 			FilePath textureName = land->GetTextureName(DAVA::Landscape::TEXTURE_COLOR);
@@ -978,7 +978,7 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    Landscape *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         landscape->UpdateFullTiledTexture();
@@ -1096,7 +1096,7 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-	Entity* sceneNode = EditorScene::GetLandscapeNode(scene);
+	Entity* sceneNode = FindLandscapeEntity(scene);
 	if (sceneNode)
 	{
 		scene->SetSelection(sceneNode);
@@ -1492,7 +1492,7 @@ Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
 	Matrix4 resTransform;
 	resTransform.Identity();
 
-	Landscape* landscape = scene->GetLandscape(scene);
+	Landscape* landscape = FindLandscape(scene);
 	if(!landscape) return resTransform;
 
 	Vector3 p = Vector3(0, 0, 0) * transform;

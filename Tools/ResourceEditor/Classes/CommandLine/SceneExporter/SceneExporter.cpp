@@ -296,7 +296,7 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
 
-    Landscape *landscape = EditorScene::GetLandscape(scene);
+    Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);

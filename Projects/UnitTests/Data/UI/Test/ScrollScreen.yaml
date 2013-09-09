@@ -3,18 +3,18 @@ Scrollview:
     clip: "true"
     drawType: "DRAW_ALIGNED"
     leftAlign: 0
-    rect: [0.0000, 0.0000, 940.0000, 620.0000]
+    rect: [0.0000, 0.0000, 940.0000, 120.0000]
     rightAlign: 20
     topAlign: 0
     type: "UIScrollView"
     scrollContainerControl:
         drawType: "DRAW_ALIGNED"
-        rect: [0.0000, 0.0000, 1095.0000, 753.0000]
+        rect: [0.0000, 0.0000, 1095.0000, 2000.0000]
         type: "UIScrollViewContainer"
         BigContent:
             drawType: "DRAW_FILL"
             noInput: "true"
-            rect: [0.0000, 0.0000, 1095.0000, 753.0000]
+            rect: [0.0000, 0.0000, 1095.0000, 1753.0000]
             type: "UIControl"
             UIControl1:
                 color: [0.6431, 0.0627, 1.0000, 1.0000]
