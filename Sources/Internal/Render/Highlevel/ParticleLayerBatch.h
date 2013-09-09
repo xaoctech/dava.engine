@@ -52,9 +52,11 @@ public:
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 
 	void SetLayerBoundingBox(const AABBox3 & bbox);
+	void SetIndices(void *indices);
 protected:
 	int32 totalCount;
 	ParticleLayer * particleLayer;
+	void *indices;
     
 public:
     INTROSPECTION_EXTEND(ParticleLayerBatch, RenderBatch,

@@ -209,6 +209,7 @@ public:
   			  bool isLong,
 			  bool isLooped,
 			  Sprite* sprite,
+			  int32 particleOrientation,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
 			  RefPtr< PropertyLine<float32> > number,
@@ -256,6 +257,7 @@ protected:
 	bool inheritPosition;
 	bool isLooped;
 	Sprite* sprite;
+	int32 particleOrientation;
 	RefPtr< PropertyLine<float32> > life;
 	RefPtr< PropertyLine<float32> > lifeVariation;
 	RefPtr< PropertyLine<float32> > number;
