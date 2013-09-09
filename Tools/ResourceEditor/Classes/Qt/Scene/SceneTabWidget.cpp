@@ -94,7 +94,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
 
-	previewDialog = new ScenePreviewDialog();
+    previewDialog = NULL;
 }
 
 SceneTabWidget::~SceneTabWidget()
@@ -440,7 +440,10 @@ SceneEditor2* SceneTabWidget::GetCurrentScene() const
 
 void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
 {
-	if(!previewDialog) return;
+	if(!previewDialog)
+    {
+        previewDialog = new ScenePreviewDialog();
+    }
 
 	if(scenePath.IsEqualToExtension(".sc2"))
 	{
