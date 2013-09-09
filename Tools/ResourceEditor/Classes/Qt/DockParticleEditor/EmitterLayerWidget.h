@@ -120,6 +120,7 @@ private:
 	QLabel* pivotPointYSpinBoxLabel;
 	QPushButton* pivotPointResetButton;
 
+	QLabel *particleOrientationLabel;
 	QCheckBox *cameraFacingCheckBox;
 	QCheckBox *xFacingCheckBox;
 	QCheckBox *yFacingCheckBox;
