@@ -311,7 +311,7 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 			break;
 
 		case SceneTreeItem::EIT_InnerEmmiter:
-			ShowContextMenuInnerEmitter(((SceneTreeItemParticleInnerEmmiter *)item)->emitter, mapToGlobal(pos));
+			ShowContextMenuInnerEmitter(((SceneTreeItemParticleInnerEmmiter *)item)->emitter, ((SceneTreeItemParticleInnerEmmiter *)item)->parent, mapToGlobal(pos));
 			break;
 
 		case SceneTreeItem::EIT_Force:
@@ -456,9 +456,10 @@ void SceneTree::ShowContextMenuForce(DAVA::ParticleLayer* layer, DAVA::ParticleF
 	
 }
 
-void SceneTree::ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, const QPoint &pos)
+void SceneTree::ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer *parentLayer, const QPoint &pos)
 {
 	this->selectedInnerEmmiter = emitter;
+	this->selectedInnerEmmiterParentLayer = parentLayer;
 	QMenu contextMenu;		
 	contextMenu.addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
 	contextMenu.addSeparator();
@@ -938,6 +939,8 @@ void SceneTree::LoadInnerEmitterFromYaml()
 		return;
 	if (!selectedInnerEmmiter) 
 		return;
+	if (!selectedInnerEmmiterParentLayer)
+		return;
 	
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
 		GetParticlesConfigPath(), QString("YAML File (*.yaml)"));
@@ -945,9 +948,11 @@ void SceneTree::LoadInnerEmitterFromYaml()
 	{
 		return;
 	}		
+
+	selectedInnerEmmiterParentLayer->innerEmitterPath = filePath.toStdString();
 	Set<String> validationErrors;
 	CommandLoadParticleEmitterFromYaml* command = new CommandLoadParticleEmitterFromYaml(selectedInnerEmmiter, filePath.toStdString());
-	sceneEditor->Exec(command);		
+	sceneEditor->Exec(command);			
 
 	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
 
@@ -1000,6 +1005,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 		curEmitterFilePath = selectedInnerEmmiter->GetConfigPath().IsEmpty() ? yamlPath : selectedInnerEmmiter->GetConfigPath();
 	}
 
+	selectedInnerEmmiterParentLayer->innerEmitterPath = curEmitterFilePath;
 	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(selectedInnerEmmiter, curEmitterFilePath);
 	sceneEditor->Exec(command);	
 }
@@ -1159,4 +1165,5 @@ void SceneTree::CleanupParticleEditorSelectedItems()
 	this->selectedLayer = NULL;
 	this->selectedForce = NULL;
 	this->selectedInnerEmmiter = NULL;
+	this->selectedInnerEmmiterParentLayer = NULL;
 }
