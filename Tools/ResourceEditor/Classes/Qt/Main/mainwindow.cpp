@@ -62,7 +62,9 @@
 #include "Classes/CommandLine/CommandLineManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
-#include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
+#include "Classes/Commands2/GroupEntitiesForMultiselectCommand.h"
+#include "Classes/Commands2/ConvertToShadowCommand.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -384,6 +386,10 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
 
+    //edit
+	QObject::connect(ui->actionConvertToShadow, SIGNAL(triggered()), this, SLOT(OnConvertToShadow()));
+    
+    
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
@@ -1427,5 +1433,25 @@ void QtMainWindow::EnableGlobalTimeout(bool enable)
 void QtMainWindow::StartGlobalInvalidateTimer()
 {
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
+}
+
+void QtMainWindow::OnConvertToShadow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+    
+    const EntityGroup *selection = scene->selectionSystem->GetSelection();
+    if(selection->Size())
+    {
+        scene->BeginBatch("Convert To Shadow");
+        
+        size_t count = selection->Size();
+        for(size_t i = 0; i < count; ++i)
+        {
+            scene->Exec(new ConvertToShadowCommand(selection->GetEntity(i)));
+        }
+        
+        scene->EndBatch();
+    }
 }
 
