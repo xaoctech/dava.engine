@@ -63,6 +63,8 @@ public:
 
 	void PlaceOnLandscape(const EntityGroup *entities);
 
+	bool InModifState() const;
+
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
