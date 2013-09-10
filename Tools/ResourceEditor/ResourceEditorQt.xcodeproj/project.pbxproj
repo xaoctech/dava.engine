@@ -192,6 +192,8 @@
 		4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A211705C90500EB205E /* SceneTabWidget.cpp */; };
 		4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351817B5769E0051833D /* DAEConvertAction.cpp */; };
 		4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351F17BA38940051833D /* TextDrawSystem.cpp */; };
+		4FFA515217DF49B9008B6A1E /* KeyedArchiveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */; };
+		4FFA515C17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFA515A17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp */; };
 		4FFE5C75176B379600728624 /* SceneEditor2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C73176B379600728624 /* SceneEditor2.cpp */; };
 		4FFE5C82176B37B600728624 /* Command2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C77176B37B600728624 /* Command2.cpp */; };
 		4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C79176B37B600728624 /* CommandBatch.cpp */; };
@@ -932,6 +934,10 @@
 		4FBD351917B5769E0051833D /* DAEConvertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAEConvertAction.h; sourceTree = "<group>"; };
 		4FBD351F17BA38940051833D /* TextDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextDrawSystem.cpp; sourceTree = "<group>"; };
 		4FBD352017BA38940051833D /* TextDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDrawSystem.h; sourceTree = "<group>"; };
+		4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveCommand.cpp; sourceTree = "<group>"; };
+		4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiveCommand.h; sourceTree = "<group>"; };
+		4FFA515A17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataKeyedArchiveMember.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.cpp; sourceTree = SOURCE_ROOT; };
+		4FFA515B17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataKeyedArchiveMember.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h; sourceTree = SOURCE_ROOT; };
 		4FFE5C73176B379600728624 /* SceneEditor2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditor2.cpp; sourceTree = "<group>"; };
 		4FFE5C74176B379600728624 /* SceneEditor2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditor2.h; sourceTree = "<group>"; };
 		4FFE5C77176B37B600728624 /* Command2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command2.cpp; sourceTree = "<group>"; };
@@ -2075,6 +2081,8 @@
 		4FAD0B1D1785EB8E00B05A35 /* QtPropetryData */ = {
 			isa = PBXGroup;
 			children = (
+				4FFA515A17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp */,
+				4FFA515B17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.h */,
 				E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */,
 				E825796F17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.h */,
 				E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */,
@@ -2488,6 +2496,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */,
+				4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */,
 				E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */,
 				E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */,
 				62B805D217CDFDFD0055EF1E /* GroupEntitiesForMultiselectCommand.cpp */,
@@ -4760,6 +4770,8 @@
 				499BD24A17D8C36C0035CF5F /* RulerToolPropertiesView.cpp in Build Sources */,
 				497DB3DA17D9DCD000E6A643 /* RulerToolActions.cpp in Build Sources */,
 				497DB3E417D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp in Build Sources */,
+				4FFA515217DF49B9008B6A1E /* KeyedArchiveCommand.cpp in Build Sources */,
+				4FFA515C17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
