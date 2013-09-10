@@ -72,7 +72,8 @@ void ParticleLayer3D::Draw(Camera * camera)
 
 void ParticleLayer3D::PrepareRenderData(Camera* camera)
 {
-	AABBox3 bbox;
+	Vector3 emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();
+	AABBox3 bbox = AABBox3(emmiterPos, emmiterPos);
 	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
 	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
 	{		
@@ -243,9 +244,9 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	}
 
 	renderBatch->SetTotalCount(totalCount);	
+	renderBatch->SetLayerBoundingBox(bbox);
 	if(totalCount > 0)
-	{			
-		renderBatch->SetLayerBoundingBox(bbox);
+	{					
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
@@ -257,10 +258,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		}
 		renderBatch->SetRenderDataObject(renderData);
 	}
-	else
-	{
-		renderBatch->SetLayerBoundingBox(AABBox3(Vector3(), Vector3()));
-	}
+	
 }
 
 void ParticleLayer3D::CalcNonLong(Particle* current,
