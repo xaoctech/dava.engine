@@ -66,11 +66,14 @@ protected:
 
     void TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath) const;
     
-    void CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const;
-    void CopyMaterial(DAVA::Material * src, DAVA::Material * dst) const;
+    static void CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
     
     void CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const;
-    void CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const;
+//    void CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const;
+    
+    static DAVA::Vector<DAVA::Material *> CreateMaterialsVector(DAVA::Scene *scene);
+    static bool CompareMaterials(const DAVA::Material *left, const DAVA::Material *right);
+
 };
 
 #endif // __RESOURCEEDITORQT__DAECONVERTACTION__

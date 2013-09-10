@@ -320,10 +320,15 @@ Material::Material()
     SetType(MATERIAL_UNLIT_TEXTURE);
 }
 
-Material * Material::Clone()
+Material * Material::Clone(Material *newMaterial /* = NULL */)
 {
-    Material * newMaterial = new Material();
-
+    if(!newMaterial)
+    {
+		DVASSERT_MSG(IsPointerToExactClass<Material>(this), "Can clone only Material");
+        
+        newMaterial = new Material();
+    }
+    
     newMaterial->pointer = pointer;
     newMaterial->scene = scene;
     newMaterial->name = name;
@@ -342,6 +347,8 @@ Material * Material::Clone()
 
     for(int i = 0; i < TEXTURE_COUNT; i++)
     {
+        SafeRelease(newMaterial->textures[i]);
+        
         newMaterial->textures[i] = SafeRetain(textures[i]);
         newMaterial->textureSlotNames[i] = textureSlotNames[i];
     }
@@ -371,6 +378,8 @@ Material * Material::Clone()
 
     if(lightingParams)
     {
+        SafeDelete(newMaterial->lightingParams);
+
         newMaterial->lightingParams = new StaticLightingParams();
         newMaterial->lightingParams->transparencyColor = lightingParams->transparencyColor;
     }

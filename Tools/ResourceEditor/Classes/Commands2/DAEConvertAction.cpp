@@ -34,6 +34,8 @@
 #include "Classes/SceneEditor/SceneValidator.h"
 #include "Classes/Qt/DockLODEditor/EditorLODData.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+
 using namespace DAVA;
 
 DAEConvertAction::DAEConvertAction(const DAVA::FilePath &path)
@@ -174,76 +176,42 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
 }
 
 
-void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const
+void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene)
 {
-    Vector<Material *> srcMaterials;
-    srcScene->GetDataNodes(srcMaterials);
-    
-    Vector<Material *> dstMaterials;
-    dstScene->GetDataNodes(dstMaterials);
+    Vector<Material *> srcMaterials = CreateMaterialsVector(srcScene);
+    Vector<Material *> dstMaterials = CreateMaterialsVector(dstScene);
     
     if (srcMaterials.size() == dstMaterials.size())
     {
         uint32 count = srcMaterials.size();
         for (uint32 i = 0; i < count; ++i)
         {
-            CopyMaterial(srcMaterials[i], dstMaterials[i]);
+            if(srcMaterials[i]->GetName() == dstMaterials[i]->GetName())
+            {
+                srcMaterials[i]->Clone(dstMaterials[i]);
+            }
         }
     }
 }
 
-void DAEConvertWithSettingsAction::CopyMaterial(DAVA::Material *src, DAVA::Material *dst) const
+DAVA::Vector<DAVA::Material *> DAEConvertWithSettingsAction::CreateMaterialsVector(DAVA::Scene *scene)
 {
-    if(src->GetName() != dst->GetName())
-        return;
+    Vector<Material *> materials;
+    SceneHelper::EnumerateMaterials(scene, materials);
     
-    dst->SetType((Material::eType)src->type);
-    dst->SetViewOption(src->GetViewOption());
-    
-    dst->reflective = src->reflective;
-    dst->reflectivity =	src->reflectivity;
-    
-    dst->transparent = src->transparent;
-    dst->transparency =	src->transparency;
-    dst->indexOfRefraction = src->indexOfRefraction;
-    
-    for(uint32 i = 0; i < Material::TEXTURE_COUNT; ++i)
+    if(materials.size())
     {
-        dst->SetTexture((Material::eTextureLevel)i, src->GetTextureName((Material::eTextureLevel)i));
+        std::sort(materials.begin(), materials.end(), DAEConvertWithSettingsAction::CompareMaterials);
     }
-
-    dst->SetBlendSrc(src->GetBlendSrc());
-    dst->SetBlendDest(src->GetBlendDest());
     
-    dst->SetOpaque(src->GetOpaque());
-    dst->SetTwoSided(src->GetTwoSided());
-    
-    dst->SetSetupLightmap(src->GetSetupLightmap());
-    
-    dst->SetShininess(src->GetShininess());
-    
-    dst->SetAmbientColor(src->GetAmbientColor());
-    dst->SetDiffuseColor(src->GetDiffuseColor());
-    dst->SetSpecularColor(src->GetSpecularColor());
-    dst->SetEmissiveColor(src->GetEmissiveColor());
-
-    dst->SetFog(src->IsFogEnabled());
-    dst->SetFogColor(src->GetFogColor());
-    dst->SetFogDensity(src->GetFogDensity());
-
-//    if(lightingParams)
-//    {
-//        dst->lightingParams = new StaticLightingParams();
-//        dst->lightingParams->transparencyColor = lightingParams->transparencyColor;
-//    }
-
-    dst->SetAlphablend(src->GetAlphablend());
-    dst->EnableFlatColor(src->IsFlatColorEnabled());
-    
-    dst->EnableTextureShift(src->IsTextureShiftEnabled());
-
-    dst->SetWireframe(src->GetWireframe());
+    return materials;
 }
+
+bool DAEConvertWithSettingsAction::CompareMaterials(const DAVA::Material *left, const DAVA::Material *right)
+{
+    return (left->GetName() < right->GetName());
+}
+
 
 void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const
 {
@@ -258,24 +226,11 @@ void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA:
         uint32 count = srcLODs.size();
         for (uint32 i = 0; i < count; ++i)
         {
-            CopyLOD(srcLODs[i], dstLODs[i]);
+            if(srcLODs[i]->GetEntity()->GetName() == dstLODs[i]->GetEntity()->GetName())
+            {
+                dstLODs[i]->CopyLODSettings(srcLODs[i]);
+            }
         }
     }
 }
-
-void DAEConvertWithSettingsAction::CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const
-{
-    if(src->GetEntity()->GetName() != dst->GetEntity()->GetName())
-        return;
-    
-	//Lod values
-	for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
-	{
-        dst->SetLodLayerDistance(iLayer, src->GetLodLayerDistance(iLayer));
-	}
-    
-    dst->SetForceDistance(src->GetForceDistance());
-    dst->SetForceLodLayer(src->GetForceLodLayer());
-}
-
 
