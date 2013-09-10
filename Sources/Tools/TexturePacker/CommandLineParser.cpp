@@ -213,7 +213,7 @@ String CommandLineParser::GetCommandParamAdditional(const String &command, const
 int32 CommandLineParser::GetCommandsCount()
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    return commandLine.size();
+    return (int32)commandLine.size();
 }
 
 bool CommandLineParser::CheckPosition(int32 commandPosition)
