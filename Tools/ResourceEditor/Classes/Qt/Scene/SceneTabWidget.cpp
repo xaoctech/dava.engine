@@ -91,8 +91,6 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
-
-    previewDialog = NULL;
 }
 
 SceneTabWidget::~SceneTabWidget()
@@ -429,22 +427,6 @@ SceneEditor2* SceneTabWidget::GetCurrentScene() const
 	return curScene;
 }
 
-void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
-{
-	if(!previewDialog)
-    {
-        previewDialog = new ScenePreviewDialog();
-    }
-
-	if(scenePath.IsEqualToExtension(".sc2"))
-	{
-		previewDialog->Show(scenePath);
-	}
-	else
-	{
-		previewDialog->Close();
-	}
-}
 
 
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
