@@ -48,6 +48,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	, dava3DViewMargin(3)
 	, newSceneCounter(0)
 	, curScene(NULL)
+	, previewDialog(NULL)
 	/*
 	, curModifAxis(ST_AXIS_X)
 	, curModifMode(ST_MODIF_MOVE)
@@ -94,7 +95,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
 
-    previewDialog = NULL;
+	SetCurrentTab(0);
 }
 
 SceneTabWidget::~SceneTabWidget()
@@ -191,7 +192,7 @@ void SceneTabWidget::CloseTab(int index)
 			
 			if(answer == QMessageBox::Yes)
 			{
-
+				
 			}
 			else if(answer == QMessageBox::Cancel)
 			{
@@ -225,6 +226,8 @@ int SceneTabWidget::GetCurrentTab() const
 
 void SceneTabWidget::SetCurrentTab(int index)
 {
+	davaWidget->setVisible(false);
+
 	if(index >= 0 && index < tabBar->count())
 	{
 		SceneEditor2 *oldScene = curScene;
@@ -245,6 +248,8 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 			SceneSignals::Instance()->EmitActivated(curScene);
 			curScene->selectionSystem->LockSelection(false);
+
+			davaWidget->setVisible(true);
 		}
 	}
 }
@@ -414,6 +419,30 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		}
 	}
 }
+
+void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls()) 
+	{
+		event->acceptProposedAction();
+	}
+	else
+	{
+		event->setDropAction(Qt::IgnoreAction);
+		event->accept();
+	}
+}
+
+void SceneTabWidget::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls())
+	{
+		TabBarDataDropped(mimeData);
+	}
+}
+
 
 void SceneTabWidget::UpdateTabName(int index)
 {

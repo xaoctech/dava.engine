@@ -32,12 +32,6 @@
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QFrame" name="mainFrame">
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout_8">
     <property name="spacing">
      <number>3</number>
@@ -222,18 +216,6 @@
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
-   <addaction name="separator"/>
-   <addaction name="actionMaterialEditor"/>
-   <addaction name="actionTextureConverter"/>
-   <addaction name="actionEnableCameraLight"/>
-   <addaction name="actionSetShadowColor"/>
-   <addaction name="separator"/>
-   <addaction name="actionHeightMapEditor"/>
-   <addaction name="actionTileMapEditor"/>
-   <addaction name="actionShowNotPassableLandscape"/>
-   <addaction name="actionRulerTool"/>
-   <addaction name="actionCustomColorsEditor"/>
-   <addaction name="actionVisibilityCheckTool"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -241,7 +223,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -280,7 +262,6 @@
      <property name="title">
       <string>Add Entity</string>
      </property>
-     <addaction name="actionLandscape"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
      <addaction name="actionImposter"/>
@@ -299,19 +280,18 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
+    <addaction name="actionMaterialEditor"/>
+    <addaction name="actionCubemapEditor"/>
     <addaction name="separator"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
-    <addaction name="actionCubemapEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
     <addaction name="actionSquareTextures"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
@@ -396,7 +376,7 @@
     </widget>
     <widget class="QMenu" name="menuLandscape_2">
      <property name="title">
-      <string>Landscape</string>
+      <string>Landscape tools</string>
      </property>
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
@@ -407,6 +387,7 @@
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode_2"/>
     <addaction name="separator"/>
+    <addaction name="actionLandscape"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
@@ -895,6 +876,33 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolsToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionEnableCameraLight"/>
+   <addaction name="separator"/>
+   <addaction name="actionMaterialEditor"/>
+   <addaction name="actionTextureConverter"/>
+   <addaction name="actionHeightMapEditor"/>
+   <addaction name="actionTileMapEditor"/>
+   <addaction name="actionShowNotPassableLandscape"/>
+   <addaction name="actionRulerTool"/>
+   <addaction name="actionCustomColorsEditor"/>
+   <addaction name="actionVisibilityCheckTool"/>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -966,7 +974,7 @@
   </action>
   <action name="actionLandscape">
    <property name="text">
-    <string>Landscape</string>
+    <string>Landscape...</string>
    </property>
   </action>
   <action name="actionLight">
@@ -1082,6 +1090,10 @@
    </property>
   </action>
   <action name="actionShowSettings">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
+   </property>
    <property name="text">
     <string>Properties...</string>
    </property>
@@ -1301,18 +1313,6 @@
     <string>Advanced View</string>
    </property>
   </action>
-  <action name="actionReloadAll">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
-   </property>
-   <property name="text">
-    <string>Reload</string>
-   </property>
-   <property name="toolTip">
-    <string>Repack and reload all scene resources</string>
-   </property>
-  </action>
   <action name="actionModifyReset">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1516,15 +1516,6 @@
     <string>Cubemap Editor</string>
    </property>
   </action>
-  <action name="actionReloadTextures">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
-   </property>
-   <property name="text">
-    <string>Reload Textures</string>
-   </property>
-  </action>
   <action name="actionSkyboxNode">
    <property name="text">
     <string>Skybox Node</string>
@@ -1586,7 +1577,7 @@
   <action name="actionReloadSprites">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+     <normaloff>:/QtIcons/refresh_particle.png</normaloff>:/QtIcons/refresh_particle.png</iconset>
    </property>
    <property name="text">
     <string>Reload Sprites</string>
@@ -1627,6 +1618,15 @@
    </property>
    <property name="toolTip">
     <string>Visibility Check Tool</string>
+   </property>
+  </action>
+  <action name="actionReloadTextures">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Textures</string>
    </property>
   </action>
  </widget>

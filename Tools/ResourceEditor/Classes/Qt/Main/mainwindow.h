@@ -191,6 +191,9 @@ private:
 	MaterialEditor *materialEditor;
 	// <--
 
+	void EnableSceneActions(bool enable);
+	void EnableProjectActions(bool enable);
+
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);

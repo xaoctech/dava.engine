@@ -37,6 +37,7 @@
 ModificationWidget::ModificationWidget(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::ModificationWidget)
+	, curScene(NULL)
 	, groupMode(false)
 	, pivotMode(PivotAbsolute)
 	, modifMode(ST_MODIF_OFF)

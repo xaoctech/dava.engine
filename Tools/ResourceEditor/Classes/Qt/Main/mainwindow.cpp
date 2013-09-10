@@ -73,6 +73,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
 	, waitDialog(NULL)
+	, materialEditor(NULL)
+	, addSwitchEntityDialog(NULL)
+	, globalInvalidateTimeoutEnabled(false)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -89,16 +92,10 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
-    materialEditor = NULL;
 	waitDialog = new QtWaitDialog(this);
-
-	// initial state is as project closed
-	ProjectClosed();
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
-
-	HideLandscapeEditorDocks();
 
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed()), this, SLOT(ProjectClosed()));
@@ -112,13 +109,13 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
-
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = NULL;
-    
-    globalInvalidateTimeoutEnabled = false;
     EnableGlobalTimeout(enableGlobalTimeout);
+	HideLandscapeEditorDocks();
+
+	EnableProjectActions(false);
+	EnableSceneActions(false);
 }
 
 QtMainWindow::~QtMainWindow()
@@ -334,16 +331,16 @@ void QtMainWindow::SetupToolBars()
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
-	// reload
-    QToolButton *reloadSpritesBtn = new QToolButton();
-	reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
-	reloadSpritesBtn->setMaximumWidth(100);
-	reloadSpritesBtn->setMinimumWidth(100);
-	ui->mainToolBar->addSeparator();
-    QAction *a = ui->mainToolBar->addWidget(reloadSpritesBtn);
-	reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	reloadSpritesBtn->setAutoRaise(false);
+	// adding reload sprites action
+	//QToolButton *reloadSpritesBtn = new QToolButton();
+	//reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
+	//reloadSpritesBtn->setMaximumWidth(100);
+	//reloadSpritesBtn->setMinimumWidth(100);
+	//ui->sceneToolBar->addSeparator();
+	//ui->sceneToolBar->addWidget(reloadSpritesBtn);
+	//reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
+	// adding reload textures actions
 	QToolButton *reloadTexturesBtn = new QToolButton();
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
 	reloadTexturesBtn->setPopupMode(QToolButton::MenuButtonPopup);
@@ -351,16 +348,9 @@ void QtMainWindow::SetupToolBars()
 	reloadTexturesBtn->setMaximumWidth(100);
 	reloadTexturesBtn->setMinimumWidth(100);
 	ui->mainToolBar->addSeparator();
-	ui->mainToolBar->insertWidget(a, reloadTexturesBtn);
+	ui->mainToolBar->addWidget(reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
-
-	/*
-	QAction *reloadMenuAction = ui->menuReload->menuAction();
-	reloadMenuAction->setIcon(QIcon(":/QtIcons/reloadtextures.png"));
-	ui->mainToolBar->addAction(reloadMenuAction);
-	ShowActionWithText(ui->mainToolBar, reloadMenuAction, true);
-	*/
 }
 
 void QtMainWindow::SetupDocks()
@@ -490,26 +480,20 @@ void QtMainWindow::AddRecent(const QString &path)
 
 void QtMainWindow::ProjectOpened(const QString &path)
 {
-	ui->actionNewScene->setEnabled(true);
-	ui->actionOpenScene->setEnabled(true);
-	ui->actionSaveScene->setEnabled(true);
-	ui->actionSaveToFolder->setEnabled(true);
-
+	EnableProjectActions(true);
 	SetupTitle();
 }
 
 void QtMainWindow::ProjectClosed()
 {
-	ui->actionNewScene->setEnabled(false);
-	ui->actionOpenScene->setEnabled(false);
-	ui->actionSaveScene->setEnabled(false);
-	ui->actionSaveToFolder->setEnabled(false);
-
+	EnableProjectActions(false);
 	SetupTitle();
 }
 
 void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 {
+	EnableSceneActions(true);
+
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
@@ -533,27 +517,81 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
     UpdateStatusBar();
 }
 
-void QtMainWindow::CreateMaterialEditorIfNeed()
-{
-    if(!materialEditor)
-    {
-        if(HintManager::Instance() == NULL)
-        {
-            new HintManager();//needed for hints in MaterialEditor
-        }
-        
-        materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
-    }
-}
-
-
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
 {
-	// TODO:
 	// block some actions, when there is no scene
-	// ...
-	// 
+	EnableSceneActions(false);
+}
 
+void QtMainWindow::EnableProjectActions(bool enable)
+{
+	ui->actionNewScene->setEnabled(enable);
+	ui->actionOpenScene->setEnabled(enable);
+	ui->actionSaveScene->setEnabled(enable);
+	ui->actionSaveToFolder->setEnabled(enable);
+	ui->actionCubemapEditor->setEnabled(enable);
+	ui->dockLibrary->setEnabled(enable);
+}
+
+void QtMainWindow::EnableSceneActions(bool enable)
+{
+	ui->actionUndo->setEnabled(enable);
+	ui->actionRedo->setEnabled(enable);
+
+	ui->dockLODEditor->setEnabled(enable);
+	ui->dockProperties->setEnabled(enable);
+	ui->dockSceneTree->setEnabled(enable);
+	ui->dockSceneInfo->setEnabled(enable);
+
+	ui->actionSaveScene->setEnabled(enable);
+	ui->actionSaveSceneAs->setEnabled(enable);
+	ui->actionSaveToFolder->setEnabled(enable);
+
+	ui->actionModifySelect->setEnabled(enable);
+	ui->actionModifyMove->setEnabled(enable);
+	ui->actionModifyReset->setEnabled(enable);
+	ui->actionModifyRotate->setEnabled(enable);
+	ui->actionModifyScale->setEnabled(enable);
+	ui->actionModifyPlaceOnLandscape->setEnabled(enable);
+	ui->actionModifySnapToLandscape->setEnabled(enable);
+	ui->actionConvertToShadow->setEnabled(enable);
+	ui->actionPivotCenter->setEnabled(enable);
+	ui->actionPivotCommon->setEnabled(enable);
+	ui->actionManualModifMode->setEnabled(enable);
+
+	modificationWidget->setEnabled(enable);
+
+	ui->actionTextureConverter->setEnabled(enable);
+	ui->actionMaterialEditor->setEnabled(enable);
+	ui->actionSkyboxEditor->setEnabled(enable);
+	ui->actionHeightMapEditor->setEnabled(enable);
+	ui->actionTileMapEditor->setEnabled(enable);
+	ui->actionShowNotPassableLandscape->setEnabled(enable);
+	ui->actionRulerTool->setEnabled(enable);
+	ui->actionVisibilityCheckTool->setEnabled(enable);
+	ui->actionCustomColorsEditor->setEnabled(enable);
+
+	ui->actionEnableCameraLight->setEnabled(enable);
+	ui->actionReloadTextures->setEnabled(enable);
+	ui->actionReloadSprites->setEnabled(enable);
+
+	ui->menuExport->setEnabled(enable);
+	ui->menuEdit->setEnabled(enable);
+	ui->menuComponent->setEnabled(enable);
+	ui->menuScene->setEnabled(enable);
+}
+
+void QtMainWindow::CreateMaterialEditorIfNeed()
+{
+	if(!materialEditor)
+	{
+		if(HintManager::Instance() == NULL)
+		{
+			new HintManager();//needed for hints in MaterialEditor
+		}
+
+		materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+	}
 }
 
 void QtMainWindow::AddSwitchDialogFinished(int result)
@@ -752,10 +790,6 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
 	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
-		// TODO:
-		// show wait message
-		// ...
-
 		SetGPUFormat(gpu);
 	}
 }
