@@ -323,10 +323,12 @@ void QtMainWindow::SetupToolBars()
 	QAction *actionMainToolBar = ui->mainToolBar->toggleViewAction();
 	QAction *actionModifToolBar = ui->modificationToolBar->toggleViewAction();
 	QAction *actionViewModeToolBar = ui->viewModeToolBar->toggleViewAction();
+	QAction *actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
 
 	ui->menuToolbars->addAction(actionMainToolBar);
 	ui->menuToolbars->addAction(actionModifToolBar);
 	ui->menuToolbars->addAction(actionViewModeToolBar);
+	ui->menuToolbars->addAction(actionLandscapeToolbar);
 
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
@@ -575,10 +577,10 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->actionReloadSprites->setEnabled(enable);
 
-	ui->menuExport->setEnabled(enable);
-	ui->menuEdit->setEnabled(enable);
-	ui->menuComponent->setEnabled(enable);
-	ui->menuScene->setEnabled(enable);
+	//ui->menuExport->setEnabled(enable);
+	//ui->menuEdit->setEnabled(enable);
+	//ui->menuComponent->setEnabled(enable);
+	//ui->menuScene->setEnabled(enable);
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()

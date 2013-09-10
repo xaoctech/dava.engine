@@ -115,6 +115,11 @@ void EntityModificationSystem::PlaceOnLandscape(const EntityGroup *entities)
 	}
 }
 
+bool EntityModificationSystem::InModifState() const
+{
+	return inModifState;
+}
+
 void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
 { }
 

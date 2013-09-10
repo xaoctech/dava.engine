@@ -216,6 +216,11 @@
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionTextureConverter"/>
+   <addaction name="actionMaterialEditor"/>
+   <addaction name="separator"/>
+   <addaction name="actionEnableCameraLight"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -876,9 +881,9 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QToolBar" name="toolsToolBar">
+  <widget class="QToolBar" name="landscapeToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Landscape toolbar</string>
    </property>
    <property name="iconSize">
     <size>
@@ -892,10 +897,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionEnableCameraLight"/>
-   <addaction name="separator"/>
-   <addaction name="actionMaterialEditor"/>
-   <addaction name="actionTextureConverter"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
