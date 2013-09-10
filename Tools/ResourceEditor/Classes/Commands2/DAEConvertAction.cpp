@@ -266,7 +266,7 @@ void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA:
 void DAEConvertWithSettingsAction::CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const
 {
     if(src->GetEntity()->GetName() != dst->GetEntity()->GetName())
-        return false;
+        return;
     
 	//Lod values
 	for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
