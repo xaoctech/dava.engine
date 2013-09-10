@@ -84,16 +84,7 @@ Component * LodComponent::Clone(Entity * toEntity)
 	}
 
 	//Lod values
-	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
-	{
-		newLod->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
-		newLod->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
-		newLod->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
-	}
-
-	newLod->forceDistance = forceDistance;
-	newLod->forceDistanceSq = forceDistanceSq;
-	newLod->forceLodLayer = forceLodLayer;
+    newLod->CopyLODSettings(this);
 
 	return newLod;
 }
@@ -302,18 +293,18 @@ void LodComponent::SetForceLodLayer(int32 layer)
     forceLodLayer = layer;
 }
     
-int32 LodComponent::GetForceLodLayer()
+int32 LodComponent::GetForceLodLayer() const
 {
     return forceLodLayer;
 }
 
-int32 LodComponent::GetMaxLodLayer()
+int32 LodComponent::GetMaxLodLayer() const
 {
 	int32 ret = -1;
 	const Vector<LodData>::const_iterator &end = lodLayers.end();
-	for (Vector<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+	for (Vector<LodData>::const_iterator it = lodLayers.begin(); it != end; ++it)
 	{
-		LodData & ld = *it;
+		const LodData & ld = *it;
 		if(ld.layer > ret)
 		{
 			ret = ld.layer;
@@ -332,6 +323,15 @@ void LodComponent::SetLayerVisibility(int32 layerNum, bool visible)
 	{
 		lodLayers[layerNum].nodes[i]->SetLodVisible(visible);
 	}
+}
+
+void LodComponent::CopyLODSettings(const LodComponent * fromLOD)
+{
+    lodLayersArray = fromLOD->lodLayersArray;
+
+    forceDistance = fromLOD->forceDistance;
+    forceDistanceSq = fromLOD->forceDistanceSq;
+    forceLodLayer = fromLOD->forceLodLayer;
 }
 
 

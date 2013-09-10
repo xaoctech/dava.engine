@@ -100,12 +100,12 @@ public:
 	static float32 GetDefaultDistance(int32 layer);
 	void SetCurrentLod(int32 newLod);
 
-	inline int32 GetLodLayersCount();
-	inline float32 GetLodLayerDistance(int32 layerNum);
-	inline float32 GetLodLayerNear(int32 layerNum);
-	inline float32 GetLodLayerFar(int32 layerNum);
-	inline float32 GetLodLayerNearSquare(int32 layerNum);
-	inline float32 GetLodLayerFarSquare(int32 layerNum);
+	inline int32 GetLodLayersCount() const;
+	inline float32 GetLodLayerDistance(int32 layerNum) const;
+	inline float32 GetLodLayerNear(int32 layerNum) const;
+	inline float32 GetLodLayerFar(int32 layerNum) const;
+	inline float32 GetLodLayerNearSquare(int32 layerNum) const;
+	inline float32 GetLodLayerFarSquare(int32 layerNum) const;
 
 	void GetLodData(Vector<LodData*> &retLodLayers);
 
@@ -134,12 +134,14 @@ public:
          \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
 	 */
     void SetForceLodLayer(int32 layer);
-    int32 GetForceLodLayer();
+    int32 GetForceLodLayer() const;
 
-	int32 GetMaxLodLayer();
+	int32 GetMaxLodLayer() const;
 
 	void SetLayerVisibility(int32 layerNum, bool visible);
 
+    void CopyLODSettings(const LodComponent * fromLOD);
+    
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
@@ -178,24 +180,24 @@ public:
 
 };
 
-int32 LodComponent::GetLodLayersCount()
+int32 LodComponent::GetLodLayersCount() const
 {
 	return (int32)lodLayers.size();
 }
 
-float32 LodComponent::GetLodLayerDistance(int32 layerNum)
+float32 LodComponent::GetLodLayerDistance(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].distance;
 }
 
-float32 LodComponent::GetLodLayerNearSquare(int32 layerNum)
+float32 LodComponent::GetLodLayerNearSquare(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].nearDistanceSq;
 }
 
-float32 LodComponent::GetLodLayerFarSquare(int32 layerNum)
+float32 LodComponent::GetLodLayerFarSquare(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].farDistanceSq;
