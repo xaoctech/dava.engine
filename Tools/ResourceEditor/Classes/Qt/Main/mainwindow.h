@@ -142,6 +142,8 @@ public slots:
     
     void OnSaveHeightmapToPNG();
     void OnSaveTiledTexture();
+    
+    void OnConvertToShadow();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
