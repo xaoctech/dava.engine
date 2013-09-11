@@ -140,6 +140,33 @@ bool SceneTreeModel::GetLocked(const QModelIndex &index) const
 	return ret;
 }
 
+QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex &index) const
+{
+	static QIcon lockedIcon = QIcon(":/QtIcons/locked.png");
+	static QIcon eyeIcon = QIcon(":/QtIcons/eye.png");
+
+	QVector<QIcon> ret;
+
+	DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(GetItem(index));
+	if(NULL != entity)
+	{
+		if(entity->GetLocked())
+		{
+			ret.push_back(lockedIcon);
+		}
+
+		if(NULL != GetCamera(entity))
+		{
+			if(curScene->GetCurrentCamera() == GetCamera(entity))
+			{
+				ret.push_back(eyeIcon);
+			}
+		}
+	}
+
+	return ret;
+}
+
 QModelIndex SceneTreeModel::GetIndex(DAVA::Entity *entity) const
 {
 	return indexesCacheEntities.value(entity, QModelIndex());

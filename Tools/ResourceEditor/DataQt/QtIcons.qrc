@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/eye.png</file>
+    <file>QtIcons/camera.png</file>
     <file>QtIcons/refresh_particle.png</file>
     <file>QtIcons/wait.png</file>
     <file>QtIcons/move_absolute.png</file>
