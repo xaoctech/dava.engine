@@ -35,6 +35,7 @@
 #include "Classes/Qt/DockLODEditor/EditorLODData.h"
 
 #include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Commands2/ConvertToShadowCommand.h"
 
 using namespace DAVA;
 
@@ -66,10 +67,8 @@ void DAEConvertAction::Redo()
 void DAEConvertAction::ConvertFromSceToSc2() const
 {
     Scene *scene = CreateSceneFromSce();
-
-    // Export to *.sc2
     FilePath sc2Path = FilePath::CreateWithNewExtension(daePath, ".sc2");
-    SaveScene(sc2Path, scene);
+	SceneHelper::SaveScene(scene, sc2Path);
     scene->Release();
 }
 
@@ -84,15 +83,6 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
     scene->BakeTransforms();
     
     return scene;
-}
-
-void DAEConvertAction::SaveScene(const DAVA::FilePath &scenePathname, DAVA::Scene *scene) const
-{
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(scenePathname, scene);
-    
-    SafeRelease(file);
 }
 
 
@@ -111,7 +101,7 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
         
         FilePath newSc2Path = sc2Path;
         newSc2Path.ReplaceBasename(sc2Path.GetBasename() + "_new");
-        SaveScene(newSc2Path, scene);
+        SceneHelper::SaveScene(scene, newSc2Path);
         SafeRelease(scene);
         
         TryToMergeScenes(sc2Path, newSc2Path);
@@ -125,21 +115,22 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
 }
 
 
-void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath) const
+void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath)
 {
     Scene * oldScene = CreateSceneFromSc2(originalPath);
     Scene * newScene = CreateSceneFromSc2(newPath);
     
     CopyMaterialsSettings(oldScene, newScene);
     CopyLODSettings(oldScene, newScene);
+	CopyShadowSettings(oldScene, newScene);
     
-    SaveScene(originalPath, newScene);
+    SceneHelper::SaveScene(newScene, originalPath);
     
     oldScene->Release();
     newScene->Release();
 }
 
-DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FilePath &scenePathname) const
+DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FilePath &scenePathname)
 {
     Scene * scene = new Scene();
     
@@ -188,7 +179,7 @@ void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene,
         {
             if(srcMaterials[i]->GetName() == dstMaterials[i]->GetName())
             {
-                srcMaterials[i]->Clone(dstMaterials[i]);
+				dstMaterials[i]->CopySettings(srcMaterials[i]);
             }
         }
     }
@@ -213,7 +204,7 @@ bool DAEConvertWithSettingsAction::CompareMaterials(const DAVA::Material *left, 
 }
 
 
-void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const
+void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene)
 {
     Vector<LodComponent *> srcLODs;
     EditorLODData::EnumerateLODsRecursive(srcScene, srcLODs);
@@ -234,3 +225,35 @@ void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA:
     }
 }
 
+void DAEConvertWithSettingsAction::CopyShadowSettings( DAVA::Scene * srcScene, DAVA::Scene * dstScene )
+{
+	uint32 srcCount = srcScene->GetChildrenCount();
+	uint32 dstCount = dstScene->GetChildrenCount();
+	if(srcCount == dstCount)
+	{
+		for(uint32 i = 0; i < srcCount; ++i)
+		{
+			CopyShadowSettingsRecursive(srcScene->GetChild(i), dstScene->GetChild(i));
+		}
+	}
+}
+
+
+void DAEConvertWithSettingsAction::CopyShadowSettingsRecursive(const DAVA::Entity * srcEntity, DAVA::Entity * dstEntity )
+{
+	if((srcEntity->GetName() == dstEntity->GetName()) && ConvertToShadowCommand::IsEntityWithShadowVolume(srcEntity))
+	{
+		DAVA::RenderBatch *oldBatch = ConvertToShadowCommand::ConvertToShadowVolume(dstEntity);
+		SafeRelease(oldBatch);
+	}
+
+	uint32 srcCount = srcEntity->GetChildrenCount();
+	uint32 dstCount = dstEntity->GetChildrenCount();
+	if(srcCount == dstCount)
+	{
+		for(uint32 i = 0; i < srcCount; ++i)
+		{
+			CopyShadowSettingsRecursive(srcEntity->GetChild(i), dstEntity->GetChild(i));
+		}
+	}
+}

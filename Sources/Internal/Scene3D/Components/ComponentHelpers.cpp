@@ -44,7 +44,7 @@
 namespace DAVA
 {
 
-RenderObject * GetRenderObject(Entity * fromEntity)
+RenderObject * GetRenderObject(const Entity * fromEntity)
 {
 	RenderObject * object = 0;
 

@@ -46,8 +46,7 @@ protected:
     virtual void ConvertFromSceToSc2() const;
     
     DAVA::Scene * CreateSceneFromSce() const;
-    void SaveScene(const DAVA::FilePath &scenePathname, DAVA::Scene *scene) const;
-    
+
 protected:
 	DAVA::FilePath daePath;
 };
@@ -62,14 +61,14 @@ protected:
 
     virtual void ConvertFromSceToSc2() const;
 
-    DAVA::Scene * CreateSceneFromSc2(const DAVA::FilePath &scenePathname) const;
+    static DAVA::Scene * CreateSceneFromSc2(const DAVA::FilePath &scenePathname);
 
-    void TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath) const;
+    static void TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath);
     
     static void CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
-    
-    void CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const;
-//    void CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const;
+    static void CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
+	static void CopyShadowSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
+	static void CopyShadowSettingsRecursive(const DAVA::Entity * srcEntity, DAVA::Entity * dstEntity);
     
     static DAVA::Vector<DAVA::Material *> CreateMaterialsVector(DAVA::Scene *scene);
     static bool CompareMaterials(const DAVA::Material *left, const DAVA::Material *right);

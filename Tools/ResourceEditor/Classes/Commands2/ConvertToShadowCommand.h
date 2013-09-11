@@ -44,6 +44,9 @@ public:
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
 
+	static bool IsEntityWithShadowVolume(const DAVA::Entity *entity);
+	static DAVA::RenderBatch * ConvertToShadowVolume(DAVA::Entity *entity);
+
 protected:
 
 	DAVA::Entity * affectedEntity;
