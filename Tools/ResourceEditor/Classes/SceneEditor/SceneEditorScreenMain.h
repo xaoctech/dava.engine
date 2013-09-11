@@ -195,7 +195,6 @@ public: //For Qt integration
     void NewScene();
 
     bool SaveIsAvailable();
-    void SaveSceneToFile(const FilePath &pathToFile);
    
 
     void ExportAs(eGPUFamily forGPU);

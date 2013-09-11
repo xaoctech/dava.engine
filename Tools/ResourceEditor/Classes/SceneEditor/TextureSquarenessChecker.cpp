@@ -75,10 +75,12 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
         {
             ValidateTextureCoordsOfNodeGeometry(scene);
 
-			FilePath currentPath = QtMainWindow::Instance()->GetCurrentScene()->GetScenePath();
-
-			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-            screen->SaveSceneToFile(currentPath);
+//			FilePath currentPath = QtMainWindow::Instance()->GetCurrentScene()->GetScenePath();
+//
+            QtMainWindow::Instance()->GetCurrentScene()->Save();
+            
+//			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+//            screen->SaveSceneToFile(currentPath);
         }
     }
 
