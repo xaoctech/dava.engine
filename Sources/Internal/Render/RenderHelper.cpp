@@ -981,6 +981,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		}
 	}
 
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 	void RenderHelper::GetLineWidthRange(int32& rangeMin, int32& rangeMax)
 	{
 		int32 lineWidthMin = 1;
@@ -996,4 +997,5 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		rangeMin = lineWidthMin;
 		rangeMax = lineWidthMax;
 	}
+#endif
 };
