@@ -2103,6 +2103,9 @@
     <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3658,6 +3661,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\StatusBar.h">
       <Filter>Classes\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
