@@ -156,8 +156,6 @@ void CustomColorsPropertiesView::BlockAllSignals(bool block)
 
 void CustomColorsPropertiesView::UpdateFromScene(SceneEditor2* scene)
 {
-	KeyedArchive* ar = scene->GetCustomProperties();
-
 	bool enabled = scene->customColorsSystem->IsLandscapeEditingEnabled();
 	int32 brushSize = IntFromBrushSize(scene->customColorsSystem->GetBrushSize());
 	int32 colorIndex = scene->customColorsSystem->GetColor();
