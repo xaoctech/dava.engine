@@ -31,7 +31,7 @@
 #include "EditorLODData.h"
 
 #include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Commands2/InspMemberModifyCommand.h"
+#include "Classes/Commands2/ChangeLODDistanceCommand.h"
 
 EditorLODData::EditorLODData()
     :   lodLayersCount(0)
@@ -48,8 +48,6 @@ EditorLODData::EditorLODData()
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 
     connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
-
-
 }
 
 EditorLODData::~EditorLODData()
@@ -107,17 +105,42 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
             if(layerNum >= GetLayersCount(lodData[i]))
                 continue;
            
-            const DAVA::InspMember *member = lodData[i]->lodLayersArray[layerNum].GetTypeInfo()->Member("distance");
-			if(NULL != member)
-			{
-				DAVA::VariantType v(distance);
-				activeScene->Exec(new InspMemberModifyCommand(member, &lodData[i]->lodLayersArray[layerNum], v));
-			}
+			activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
         }
         
         activeScene->EndBatch();
     }
 }
+
+void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32> & newDistances )
+{
+	DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
+	if(componentsCount && activeScene && newDistances.size() != 0)
+	{
+		activeScene->BeginBatch("LOD Distances Changed");
+
+		DAVA::Map<DAVA::int32, DAVA::float32>::const_iterator endIt = newDistances.end();
+		for(auto it = newDistances.begin(); it != endIt; ++it)
+		{
+			DAVA::int32 layerNum = it->first;
+			DAVA::float32 distance = it->second;
+
+			DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+			lodDistances[layerNum] = distance;
+
+			for(DAVA::int32 i = 0; i < componentsCount; ++i)
+			{
+				if(layerNum < GetLayersCount(lodData[i]))
+				{
+					activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
+				}
+			}
+		}
+
+		activeScene->EndBatch();
+	}
+}
+
 
 
 DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::int32 layerNum) const
@@ -374,10 +397,15 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
 
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-    int commandId = command->GetId();
-    if(commandId == CMDID_META_OBJ_MODIFY || commandId == CMDID_INSP_MEMBER_MODIFY)
+    if(command->GetId() == CMDID_BATCH)
     {
-        GetDataFromSelection();
+		CommandBatch *batch = (CommandBatch *)command;
+		Command2 *firstCommand = batch->GetCommand(0);
+		if(firstCommand && (firstCommand->GetId() == CMDID_CHANGE_LOD_DISTANCE))
+		{
+			GetDataFromSelection();
+		}
     }
 }
+
 

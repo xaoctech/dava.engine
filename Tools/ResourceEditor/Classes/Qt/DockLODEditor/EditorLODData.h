@@ -51,6 +51,8 @@ public:
     DAVA::float32 GetLayerDistance(DAVA::int32 layerNum) const;
     void SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distance);
 
+	void UpdateDistances(const DAVA::Map<DAVA::int32, DAVA::float32> & lodDistances);
+
     DAVA::uint32 GetLayerTriangles(DAVA::int32 layerNum) const;
 
     void EnableForceDistance(bool enable);
