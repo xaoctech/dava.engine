@@ -111,7 +111,7 @@ private:
 	bool Init();
 
 	bool InitLandscape(Entity* landscape);
-	bool DeinitLandscape();
+	void DeinitLandscape();
 
 	bool IsNotPassableTerrainCanBeEnabled();
 };

@@ -507,7 +507,7 @@ bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscape)
 	return true;
 }
 
-bool LandscapeEditorDrawSystem::DeinitLandscape()
+void LandscapeEditorDrawSystem::DeinitLandscape()
 {
 	landscapeNode = NULL;
 	SafeRelease(landscapeProxy);
