@@ -56,7 +56,7 @@ SceneEditor2::SceneEditor2()
 	SafeRelease(notify);
 
 	cameraSystem = new SceneCameraSystem(this);
-	AddSystem(cameraSystem, 0);
+	AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
 
 	gridSystem = new SceneGridSystem(this);
 	AddSystem(gridSystem, 0);

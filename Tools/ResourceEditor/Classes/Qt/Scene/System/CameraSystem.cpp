@@ -33,12 +33,15 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
+#include "Scene/System/CollisionSystem.h"
 
 // framework
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Scene.h"
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "Render/RenderManager.h"
+#include "Render/RenderHelper.h"
 
 #include "../StringConstants.h"
 
@@ -51,50 +54,8 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	, maxViewAngle(89.0f)
 	, animateToNewPos(false)
 	, animateToNewPosTime(0)
-{
-	// add debug cameras
-	// there already can be other cameras in scene
-	if(NULL != scene)
-	{
-		DAVA::Camera *mainCamera = NULL;
-		DAVA::Camera *topCamera = NULL;
-
-		mainCamera = new DAVA::Camera();
-		mainCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
-		mainCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
-		mainCamera->SetTarget(DAVA::Vector3(0.0f, 1.0f, 0.0f));
-		mainCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
-
-		DAVA::Entity *mainCameraEntity = new DAVA::Entity();
-		mainCameraEntity->SetName(ResourceEditor::EDITOR_MAIN_CAMERA);
-		mainCameraEntity->AddComponent(new DAVA::CameraComponent(mainCamera));
-		scene->AddNode(mainCameraEntity);
-		scene->AddCamera(mainCamera);
-
-		topCamera = new DAVA::Camera();
-		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
-		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
-		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
-		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
-
-		DAVA::Entity *topCameraEntity = new DAVA::Entity();
-		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
-		scene->AddNode(topCameraEntity);
-		scene->AddCamera(topCamera);
-
-		// set current default camera
-		if(NULL == scene->GetCurrentCamera())
-		{
-			scene->SetCurrentCamera(topCamera);
-		}
-
-		SafeRelease(mainCamera);
-		SafeRelease(topCamera);
-	}
-
-	RecalcCameraViewAngles();
-}
+	, debugCamerasCreated(false)
+{ }
 
 SceneCameraSystem::~SceneCameraSystem()
 {
@@ -213,6 +174,11 @@ void SceneCameraSystem::MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &di
 
 void SceneCameraSystem::Update(float timeElapsed)
 {
+	if(!debugCamerasCreated)
+	{
+		CreateDebugCameras();
+	}
+
 	DAVA::Scene *scene = GetScene();
 	if(NULL != scene)
 	{
@@ -281,11 +247,65 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCameraSystem::Draw()
 {
-	// Nothing to draw
+	int oldState = DAVA::RenderManager::Instance()->GetState();
+	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+
+	SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
+	if(NULL != sceneEditor)
+	{
+		SceneCollisionSystem *collSystem = sceneEditor->collisionSystem;
+
+		if(NULL != collSystem)
+		{
+			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));		
+
+			DAVA::Set<DAVA::Entity *>::iterator it = sceneCameras.begin();
+			for(; it != sceneCameras.end(); ++it)
+			{
+				DAVA::Entity *entity = *it;
+				DAVA::Camera *camera = GetCamera(entity);
+
+				if(NULL != entity && NULL != camera && camera != curSceneCamera)
+				{
+					AABBox3 worldBox;
+					AABBox3 collBox = collSystem->GetBoundingBox(*it);
+					Matrix4 transform;
+
+					transform.Identity();
+					transform.SetTranslationVector(camera->GetPosition());
+					collBox.GetTransformedBox(transform, worldBox);	
+					DAVA::RenderHelper::Instance()->FillBox(worldBox);
+				}
+			}
+
+			DAVA::RenderManager::Instance()->ResetColor();
+		}
+	}
+
+	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void SceneCameraSystem::ProcessCommand(const Command2 *command, bool redo)
 { }
+
+void SceneCameraSystem::AddEntity(DAVA::Entity * entity)
+{
+	DAVA::Camera *camera = GetCamera(entity);
+	if(NULL != camera)
+	{
+		sceneCameras.insert(entity);
+		GetScene()->AddCamera(camera);
+	}
+}
+
+void SceneCameraSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	DAVA::Set<DAVA::Entity *>::iterator it = sceneCameras.find(entity);
+	if(it != sceneCameras.end())
+	{
+		sceneCameras.erase(it);
+	}
+}
 
 void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 {
@@ -341,6 +361,55 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 			}
 		}
 	}
+}
+
+
+void SceneCameraSystem::CreateDebugCameras()
+{
+	DAVA::Scene *scene = GetScene();
+
+	// add debug cameras
+	// there already can be other cameras in scene
+	if(NULL != scene)
+	{
+		DAVA::Camera *mainCamera = NULL;
+		DAVA::Camera *topCamera = NULL;
+
+		mainCamera = new DAVA::Camera();
+		mainCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
+		mainCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
+		mainCamera->SetTarget(DAVA::Vector3(0.0f, 1.0f, 0.0f));
+		mainCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+
+		DAVA::Entity *mainCameraEntity = new DAVA::Entity();
+		mainCameraEntity->SetName(ResourceEditor::EDITOR_MAIN_CAMERA);
+		mainCameraEntity->AddComponent(new DAVA::CameraComponent(mainCamera));
+		scene->InsertBeforeNode(mainCameraEntity, scene->GetChild(0));
+
+		topCamera = new DAVA::Camera();
+		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
+		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
+		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
+		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+
+		DAVA::Entity *topCameraEntity = new DAVA::Entity();
+		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
+		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
+		scene->InsertBeforeNode(topCameraEntity, scene->GetChild(0));
+
+		// set current default camera
+		if(NULL == scene->GetCurrentCamera())
+		{
+			scene->SetCurrentCamera(topCamera);
+		}
+
+		SafeRelease(mainCamera);
+		SafeRelease(topCamera);
+
+		debugCamerasCreated = true;
+	}
+
+	RecalcCameraViewAngles();
 }
 
 void SceneCameraSystem::RecalcCameraViewAngles()

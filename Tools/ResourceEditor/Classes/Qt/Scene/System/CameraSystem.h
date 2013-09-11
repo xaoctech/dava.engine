@@ -69,8 +69,12 @@ protected:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
 protected:
 	DAVA::Rect viewportRect;
+	bool debugCamerasCreated;
 
 	DAVA::float32 curSpeed;
 	DAVA::Camera* curSceneCamera;
@@ -86,8 +90,11 @@ protected:
 	DAVA::float32 curViewAngleZ, curViewAngleY;
 	const DAVA::float32 maxViewAngle;
 
+	DAVA::Set<DAVA::Entity *> sceneCameras;
+
 	void ProcessKeyboardMove(float timeElapsed);
 
+	void CreateDebugCameras();
 	void RecalcCameraViewAngles();
 	void MouseMoveCameraPosition();
 	void MouseMoveCameraDirection();

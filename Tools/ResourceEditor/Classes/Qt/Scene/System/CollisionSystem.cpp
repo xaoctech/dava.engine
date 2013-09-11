@@ -32,6 +32,7 @@
 #include "Scene/System/CollisionSystem/CollisionRenderObject.h"
 #include "Scene/System/CollisionSystem/CollisionLandscape.h"
 #include "Scene/System/CollisionSystem/CollisionParticleEmitter.h"
+#include "Scene/System/CollisionSystem/CollisionCamera.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/SceneEditor2.h"
@@ -425,21 +426,34 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
-	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
-	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
-
-	if(NULL != landscape)
+	if( NULL == collObj &&
+		NULL != landscape)
 	{
 		collObj = new CollisionLandscape(entity, landCollWorld, landscape);
 		curLandscape = landscape;
+
+		return collObj;
 	}
-	else if(NULL != particleEmitter)
+
+	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
+	if( NULL == collObj &&
+		NULL != particleEmitter)
 	{
 		collObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
 	}
-	else if(NULL != renderObject && entity->IsLodMain(0))
+
+	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
+	if( NULL == collObj &&
+		NULL != renderObject && entity->IsLodMain(0))
 	{
 		collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+	}
+
+	DAVA::Camera *camera = DAVA::GetCamera(entity);
+	if( NULL == collObj && 
+		NULL != camera)
+	{
+		collObj = new CollisionCamera(entity, objectsCollWorld, camera);
 	}
 
 	if(NULL != collObj)
