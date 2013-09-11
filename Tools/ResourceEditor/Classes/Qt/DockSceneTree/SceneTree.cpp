@@ -198,6 +198,12 @@ void SceneTree::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 			SyncSelectionToTree();
 			skipTreeSelectionProcessing = false;
 		}
+
+		DAVA::Camera *camera = GetCamera(entity);
+		if(NULL != camera)
+		{
+			scene->SetCurrentCamera(camera);
+		}
 	}
 }
 
