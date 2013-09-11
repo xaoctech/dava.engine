@@ -2163,6 +2163,9 @@
     <ClCompile Include="_GeneratedQt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3760,6 +3763,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.h">
       <Filter>Classes\Qt\Tools\AddLandscapeEntityDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
