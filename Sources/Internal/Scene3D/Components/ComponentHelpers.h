@@ -48,7 +48,7 @@ class LodComponent;
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 
-RenderObject * GetRenderObject(Entity * fromEntity);
+RenderObject * GetRenderObject(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);

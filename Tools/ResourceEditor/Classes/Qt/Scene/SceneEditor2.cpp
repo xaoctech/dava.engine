@@ -36,6 +36,7 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 #include "Classes/SceneEditor/SceneValidator.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -186,10 +187,7 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 		}
 	}
 
-	DAVA::SceneFileV2 *file = new DAVA::SceneFileV2();
-	file->EnableDebugLog(false);
-
-	DAVA::SceneFileV2::eError err = file->SaveScene(path, this);
+	DAVA::SceneFileV2::eError err = SceneHelper::SaveScene(this, path);
 	ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
 
 	if(ret)
@@ -200,8 +198,6 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 		// mark current position in command stack as clean
 		commandStack.SetClean(true);
 	}
-
-	SafeRelease(file);
 
 	// restore editor nodes
 	{

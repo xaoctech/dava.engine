@@ -47,49 +47,58 @@ ConvertToShadowCommand::~ConvertToShadowCommand()
 void ConvertToShadowCommand::Redo()
 {
     DVASSERT(affectedEntity);
-    
-    RenderObject * ro = GetRenderObject(affectedEntity);
-    if (NULL == ro)
-    {
-        // Yuri Coder, 2013/05/17. This Entity doesn't have Render Object and can't be converted to Shadow.
-        // See also DF-1184.
-        return;
-    }
-    
-    if(ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
-    {
-        ShadowVolume * shadowVolume = ro->CreateShadow();
-        
-        changedRenderBatch = ro->GetRenderBatch(0);
-        changedRenderBatch->Retain();
-        
-        ro->RemoveRenderBatch(changedRenderBatch);
-        ro->AddRenderBatch(shadowVolume);
-        shadowVolume->Release();
 
-        affectedEntity->SetLocalTransform(affectedEntity->GetLocalTransform());//just forced update of worldTransform
-    }
+	changedRenderBatch = ConvertToShadowVolume(affectedEntity);
 }
 
 void ConvertToShadowCommand::Undo()
 {
     if(changedRenderBatch && affectedEntity)
     {
-        RenderObject * ro = GetRenderObject(affectedEntity);
-        if(ro && ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume))
-        {
-            RenderBatch * shadowVolume = ro->GetRenderBatch(0);
-            ro->RemoveRenderBatch(shadowVolume);
+		if(IsEntityWithShadowVolume(affectedEntity))
+		{
+			RenderObject * ro = GetRenderObject(affectedEntity);
 
-            ro->AddRenderBatch(changedRenderBatch);
-            SafeRelease(changedRenderBatch);
+			RenderBatch * shadowVolume = ro->GetRenderBatch(0);
+			ro->RemoveRenderBatch(shadowVolume);
 
-            affectedEntity->SetLocalTransform(affectedEntity->GetLocalTransform());
-        }
+			ro->AddRenderBatch(changedRenderBatch);
+			SafeRelease(changedRenderBatch);
+
+			affectedEntity->SetLocalTransform(affectedEntity->GetLocalTransform());
+		}
     }
 }
 
 DAVA::Entity* ConvertToShadowCommand::GetEntity() const
 {
     return affectedEntity;
+}
+
+bool ConvertToShadowCommand::IsEntityWithShadowVolume(const DAVA::Entity *entity)
+{
+	RenderObject * ro = GetRenderObject(entity);
+	return (ro && ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume));
+}
+
+DAVA::RenderBatch * ConvertToShadowCommand::ConvertToShadowVolume( DAVA::Entity *entity )
+{
+	RenderObject * ro = GetRenderObject(entity);
+	if(ro && (ro->GetRenderBatchCount() == 1) && (typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch)))
+	{
+		ShadowVolume * shadowVolume = ro->CreateShadow();
+
+		RenderBatch * oldBatch = ro->GetRenderBatch(0);
+		oldBatch->Retain();
+
+		ro->RemoveRenderBatch(oldBatch);
+		ro->AddRenderBatch(shadowVolume);
+		shadowVolume->Release();
+
+		entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
+
+		return oldBatch;
+	}
+
+	return NULL;
 }
