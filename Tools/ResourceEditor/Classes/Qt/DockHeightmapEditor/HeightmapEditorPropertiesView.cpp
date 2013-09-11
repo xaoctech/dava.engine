@@ -455,9 +455,7 @@ int32 HeightmapEditorPropertiesView::BrushSizeFromInt(int32 val)
 {
 	// height map size is differ from the landscape texture size.
 	// so to unify brush size necessary to additionally scale brush size by (texture size / height map size) coefficient
-	float32 heightmapSize = activeScene->landscapeEditorDrawSystem->GetHeightmapProxy()->Size();
-	float32 textureSize = activeScene->landscapeEditorDrawSystem->GetTextureSize();
-	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / (textureSize / heightmapSize);
+	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
 	int32 brushSize = (int32)(val * coef);
 
 	return brushSize;
@@ -466,12 +464,24 @@ int32 HeightmapEditorPropertiesView::BrushSizeFromInt(int32 val)
 // int32 IntFromBrushSize(int32) converts brush size value from the system to the ui value
 int32 HeightmapEditorPropertiesView::IntFromBrushSize(int32 brushSize)
 {
-	float32 heightmapSize = activeScene->landscapeEditorDrawSystem->GetHeightmapProxy()->Size();
-	float32 textureSize = activeScene->landscapeEditorDrawSystem->GetTextureSize();
-	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / (textureSize / heightmapSize);
+	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
 	int32 val = (int32)(brushSize / coef);
 
 	return val;
+}
+
+float32 HeightmapEditorPropertiesView::GetBrushScaleCoef()
+{
+	HeightmapProxy* heightmapProxy = activeScene->landscapeEditorDrawSystem->GetHeightmapProxy();
+	if (!heightmapProxy)
+	{
+		return ResourceEditor::HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+	}
+
+	float32 heightmapSize = heightmapProxy->Size();
+	float32 textureSize = activeScene->landscapeEditorDrawSystem->GetTextureSize();
+
+	return textureSize / heightmapSize;
 }
 
 // end of convert functions ==========================
