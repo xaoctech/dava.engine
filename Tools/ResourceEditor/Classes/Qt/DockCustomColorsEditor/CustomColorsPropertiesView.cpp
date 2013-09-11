@@ -289,16 +289,20 @@ void CustomColorsPropertiesView::NeedSaveCustomColorsTexture(SceneEditor2* scene
 	}
 }
 
+// these functions are designed to convert brush size from slider value in ui
+// to the value suitable for custom colors system
+// int32 BrushSizeFromInt(int32) - converts from UI value to system value
 int32 CustomColorsPropertiesView::BrushSizeFromInt(int32 val)
 {
-	int32 brushSize = val * 10;
+	int32 brushSize = val * BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 	
 	return brushSize;
 }
 
+// int32 IntFromBrushSize(int32) - converts from system value to UI value
 int32 CustomColorsPropertiesView::IntFromBrushSize(int32 brushSize)
 {
-	int32 val = brushSize / 10;
+	int32 val = brushSize / BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 	
 	return val;
 }
