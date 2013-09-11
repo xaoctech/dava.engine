@@ -198,12 +198,6 @@ void SceneTree::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 			SyncSelectionToTree();
 			skipTreeSelectionProcessing = false;
 		}
-
-		DAVA::Camera *camera = GetCamera(entity);
-		if(NULL != camera)
-		{
-			scene->SetCurrentCamera(camera);
-		}
 	}
 }
 
@@ -351,13 +345,19 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 
 		// look at
 		contextMenu.addAction(QIcon(":/QtIcons/zoom.png"), "Look at", this, SLOT(LookAtSelection()));
-		contextMenu.addSeparator();
+
+		// look from
+		if(NULL != GetCamera(entity))
+		{
+			contextMenu.addAction(QIcon(":/QtIcons/camera.png"), "Look from", this, SLOT(SetCurrentCamera()));
+		}
 
 		// add/remove
-		contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
 		contextMenu.addSeparator();
+		contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
 
 		// lock/unlock
+		contextMenu.addSeparator();
 		QAction *lockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_add.png"), "Lock", this, SLOT(LockEntities()));
 		QAction *unlockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_delete.png"), "Unlock", this, SLOT(UnlockEntities()));
 		if(entity->GetLocked())
@@ -372,7 +372,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		// save model as
 		contextMenu.addSeparator();
 		contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
-
 
 		// custom properties
 		DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
@@ -521,6 +520,23 @@ void SceneTree::UnlockEntities()
 		for(size_t i = 0; i < selection->Size(); ++i)
 		{
 			selection->GetEntity(i)->SetLocked(false);
+		}
+	}
+}
+
+void SceneTree::SetCurrentCamera()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		if(NULL != selection)
+		{
+			DAVA::Camera *camera = GetCamera(selection->GetEntity(0));
+			if(NULL != camera)
+			{
+				sceneEditor->SetCurrentCamera(camera);
+			}
 		}
 	}
 }

@@ -56,8 +56,7 @@
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
-    <LinkIncremental>
-    </LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
@@ -92,6 +91,8 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkStatus>
+      </LinkStatus>
     </Link>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -503,6 +504,7 @@
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
@@ -1204,6 +1206,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />

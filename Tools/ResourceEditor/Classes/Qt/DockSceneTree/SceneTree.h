@@ -95,6 +95,8 @@ protected slots:
 	void RemoveSelection();
 	void LockEntities();
 	void UnlockEntities();
+
+	void SetCurrentCamera();
 	
 	// Particle Emitter handlers.
 	void AddEmitter();

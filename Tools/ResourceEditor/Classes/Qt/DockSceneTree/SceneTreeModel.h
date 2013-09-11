@@ -79,6 +79,8 @@ public:
 	void SetLocked(const QModelIndex &index, bool locked);
 	bool GetLocked(const QModelIndex &index) const;
 
+	QVector<QIcon> GetCustomIcons(const QModelIndex &index) const;
+
 	// drag and drop support
 	Qt::DropActions supportedDropActions() const;
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;

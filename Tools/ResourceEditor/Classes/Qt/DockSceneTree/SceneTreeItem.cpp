@@ -135,6 +135,8 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon lodobjIcon(":/QtIcons/lod_object.png");
 	static QIcon userobjIcon(":/QtIcons/user_object.png");
 	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
+	static QIcon cameraIcon(":/QtIcons/camera.png");
+	static QIcon lightIcon(":/QtIcons/light.png");
 
 	QIcon ret;
 
@@ -163,6 +165,14 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 		{
 			ret = userobjIcon;
+		}
+		else if(NULL != DAVA::GetCamera(entity))
+		{
+			ret = cameraIcon;
+		}
+		else if(NULL != DAVA::GetLight(entity))
+		{
+			ret = lightIcon;
 		}
 	}
 

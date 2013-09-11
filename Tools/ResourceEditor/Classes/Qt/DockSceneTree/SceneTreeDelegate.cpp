@@ -37,9 +37,7 @@
 
 SceneTreeDelegate::SceneTreeDelegate(QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
-{
-	lockedIcon = QIcon(":/QtIcons/locked.png");
-}
+{ }
 
 void SceneTreeDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -66,13 +64,19 @@ void SceneTreeDelegate::customDraw(QPainter *painter, QStyleOptionViewItem *opti
 		if(NULL != model)
 		{
 			QModelIndex realIndex = proxyModel->mapToSource(index);
+			QVector<QIcon> icons = model->GetCustomIcons(realIndex);
 
-			if(model->GetLocked(realIndex))
+			if(icons.size() > 0)
 			{
 				QRect owRect = option->rect;
-				owRect.setLeft(owRect.right() - 16);
+				owRect.setLeft(owRect.right() - 1);
 
-				lockedIcon.paint(painter, owRect);
+				for(int i = 0; i < icons.size(); ++i)
+				{
+					owRect.setLeft(owRect.left() - 16);
+					owRect.setRight(owRect.left() + 16);
+					icons[i].paint(painter, owRect);
+				}
 
 				option->rect.setRight(owRect.left());
 			}
