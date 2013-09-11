@@ -549,6 +549,7 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
@@ -1255,6 +1256,7 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h" />
     <ClInclude Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
