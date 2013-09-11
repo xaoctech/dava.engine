@@ -147,6 +147,7 @@
     
 	Core::Instance()->SetPhysicalScreenSize(rect.size.width, rect.size.height);
     Core::Instance()->SetVirtualScreenSize(rect.size.width, rect.size.height);
+	Core::Instance()->CalculateScaleMultipliers();
 	
     isFirstDraw = true;
     
