@@ -980,4 +980,20 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 			FillPolygon(poly);
 		}
 	}
+
+	void RenderHelper::GetLineWidthRange(int32& rangeMin, int32& rangeMax)
+	{
+		int32 lineWidthMin = 1;
+		int32 lineWidthMax = 1;
+
+#if defined (__DAVAENGINE_OPENGL__)
+		GLint range[2];
+		glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
+		lineWidthMin = range[0];
+		lineWidthMax = range[1];
+#endif
+
+		rangeMin = lineWidthMin;
+		rangeMax = lineWidthMax;
+	}
 };

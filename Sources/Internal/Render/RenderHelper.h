@@ -219,6 +219,8 @@ public:
     //static void DrawLineWithEndPoints(const Vector3 & pt1, const Vector3 & pt2); 
 	//static void DrawStrippedLine(Polygon2 & polygon, float lineLen, float spaceLen, float halfWidth, Texture * texture, float initialPos);
 
+	void GetLineWidthRange(int32& rangeMin, int32& rangeMax);
+
 private:
     RenderDataObject * renderDataObject;
     RenderDataStream * vertexStream; 
