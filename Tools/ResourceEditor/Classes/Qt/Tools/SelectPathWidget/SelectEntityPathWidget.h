@@ -28,73 +28,40 @@
 
 
 
-#ifndef DAVAGLWIDGET_H
-#define DAVAGLWIDGET_H
+#ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
+#define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
 
 #include <QWidget>
-#include <QTimer>
 #include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+#include "SelectPathWidgetBase.h"
 
-#include "Platform/Qt/QtLayer.h"
+#include "DAVAEngine.h"
+class SceneEditor2;
 
-namespace Ui {
-class DavaGLWidget;
-}
-
-class DavaGLWidget : public QWidget, public DAVA::QtLayerDelegate
+class SelectEntityPathWidget: public SelectPathWidgetBase
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit DavaGLWidget(QWidget *parent = 0);
-    ~DavaGLWidget();
+	explicit SelectEntityPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
 
-	void SetMaxFPS(int fps);
-	int GetMaxFPS();
-	int GetFPS() const;
-    
-	virtual QPaintEngine *paintEngine() const;
+	void EraseWidget();
 	
-	virtual void paintEvent(QPaintEvent *);
-	virtual void resizeEvent(QResizeEvent *);
-	virtual void changeEvent(QEvent * event);
+	DAVA::Entity* GetOutputEntity(SceneEditor2*);
 
-	virtual void showEvent(QShowEvent *);
-	virtual void hideEvent(QHideEvent *);
 
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
+protected:
 
-	virtual void dropEvent(QDropEvent *);
-	virtual void dragMoveEvent(QDragMoveEvent *);
-	virtual void dragEnterEvent(QDragEnterEvent *);
-    
-#if defined (Q_WS_MAC)
-    virtual void mouseMoveEvent(QMouseEvent *);
-#endif //#if defined (Q_WS_MAC)
-    
-#if defined(Q_WS_WIN)
-	virtual bool winEvent(MSG *message, long *result);
-#endif //#if defined(Q_WS_WIN)
+	void dragEnterEvent(QDragEnterEvent* event);
+	
+	void dropEvent(QDropEvent * event);
+	
+	void HandlePathSelected(DAVA::String name);
+	
+	QMimeData				mimeData;
 
-signals:
-	void OnDrop(const QMimeData *mimeData);
-
-protected slots:
-	void Render();
-
-private:
-	Ui::DavaGLWidget *ui;
-
-	int maxFPS;
-    int minFrameTimeMs;
-	int fps;
-
-	qint64 fpsCountTime;
-	int fpsCount;
-
-	void Quit();
-	void EnableCustomPaintFlags(bool enable);
 };
 
-#endif // DAVAGLWIDGET_H
+#endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */

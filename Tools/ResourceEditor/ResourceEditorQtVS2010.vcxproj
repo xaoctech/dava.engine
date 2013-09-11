@@ -546,6 +546,7 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureListModel.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
@@ -568,7 +569,8 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
@@ -763,6 +765,7 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureList_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
@@ -783,7 +786,8 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
@@ -1247,6 +1251,7 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h" />
+    <ClInclude Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
@@ -1269,7 +1274,8 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.h" />
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
-    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h" />
+    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h" />
+    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />

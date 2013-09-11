@@ -48,7 +48,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	//TODO: set material from outside
 	
 	Material * material = new Material();
-	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
+	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);	
 	material->SetAlphablend(true);
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
@@ -382,12 +382,6 @@ void ParticleLayer3D::CalcLong(Particle* current,
 }
 
 
-void ParticleLayer3D::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
-{
-	ParticleLayer::LoadFromYaml(configPath, node);
-	SetAdditive(additive);
-}
-
 ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
@@ -413,21 +407,20 @@ Material * ParticleLayer3D::GetMaterial()
 {
 	return renderBatch->GetMaterial();
 }
-	
-void ParticleLayer3D::SetAdditive(bool additive)
+
+void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 {
-	ParticleLayer::SetAdditive(additive);
-	if(additive)
-	{
-		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE);
-	}
-	else
-	{
-		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
-	}
+	ParticleLayer::SetBlendMode(sFactor, dFactor);
+	renderBatch->GetMaterial()->SetBlendSrc(srcBlendFactor);
+	renderBatch->GetMaterial()->SetBlendDest(dstBlendFactor);
 }
+
+void ParticleLayer3D::SetFog(bool enable)
+{
+	ParticleLayer::SetFog(enable);
+	renderBatch->GetMaterial()->SetFog(enableFog);
+}
+
 
 bool ParticleLayer3D::IsLong()
 {

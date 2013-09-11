@@ -49,9 +49,13 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-#include "Tools/SelectPathWidget/SelectPathWidget.h"
+
+
+#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "../Tools/AddLandscapeEntityDialog/AddLandscapeEntityDialog.h"
+
 #include "../../Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
 #include "SceneEditor/HintManager.h"
@@ -1068,10 +1072,42 @@ void QtMainWindow::OnSwitchEntityDialog()
 
 void QtMainWindow::OnLandscapeDialog()
 {
-	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
-	sceneNode->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(!sceneEditor)
+	{
+		return;	
+	}
+	Entity *landscapeEntity = FindLandscapeEntity(sceneEditor);
+	Entity* entityToProcess = NULL;
+	if(!landscapeEntity)
+	{
+		entityToProcess = new Entity();
+		entityToProcess->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
+		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+	}
+	else
+	{
+		entityToProcess = landscapeEntity;
+	}
+	
+	AddLandscapeEntityDialog * dlg = new AddLandscapeEntityDialog(entityToProcess, this);
+	
+	dlg->SetEntity(entityToProcess);
+	dlg->exec();
+	
+	if(dlg->result() == QDialog::Accepted && !landscapeEntity)
+	{
+		AddEntityCommand* command = new AddEntityCommand(entityToProcess, sceneEditor);
+		sceneEditor->Exec(command);
+		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
+	}
+	
+	if(!landscapeEntity)
+	{
+		SafeRelease(entityToProcess);
+	}
+	
+	delete dlg;
 }
 
 void QtMainWindow::OnLightDialog()

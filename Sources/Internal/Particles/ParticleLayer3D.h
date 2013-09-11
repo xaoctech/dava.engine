@@ -46,8 +46,7 @@ class ParticleLayer3D : public ParticleLayer
 public:
 	ParticleLayer3D(ParticleEmitter* parent);
 	virtual ~ParticleLayer3D();
-
-	virtual void LoadFromYaml(const FilePath & configPath, const YamlNode * node);
+	
 	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
 	virtual void Draw(Camera * camera);
@@ -57,7 +56,9 @@ public:
 
 	Material * GetMaterial();
 	
-	virtual void SetAdditive(bool additive);
+	virtual void SetBlendMode(eBlendMode sFactor, eBlendMode dFactor);
+
+	virtual void SetFog(bool enable);
 
 	// Whether this layer should be drawn as "long" one?
 	virtual bool IsLong();

@@ -1096,7 +1096,7 @@
      <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
    </property>
    <property name="text">
-    <string>Properties...</string>
+    <string>Settings...</string>
    </property>
   </action>
   <action name="actionBeast">

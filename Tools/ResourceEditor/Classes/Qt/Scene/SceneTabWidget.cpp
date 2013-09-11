@@ -226,7 +226,7 @@ int SceneTabWidget::GetCurrentTab() const
 
 void SceneTabWidget::SetCurrentTab(int index)
 {
-	davaWidget->setVisible(false);
+	davaWidget->setEnabled(false);
 
 	if(index >= 0 && index < tabBar->count())
 	{
@@ -249,7 +249,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			SceneSignals::Instance()->EmitActivated(curScene);
 			curScene->selectionSystem->LockSelection(false);
 
-			davaWidget->setVisible(true);
+			davaWidget->setEnabled(true);
 		}
 	}
 }
