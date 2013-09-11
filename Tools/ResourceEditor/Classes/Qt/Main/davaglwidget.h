@@ -57,6 +57,7 @@ public:
 	
 	virtual void paintEvent(QPaintEvent *);
 	virtual void resizeEvent(QResizeEvent *);
+	virtual void changeEvent(QEvent * event);
 
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
@@ -93,6 +94,7 @@ private:
 	int fpsCount;
 
 	void Quit();
+	void EnableCustomPaintFlags(bool enable);
 };
 
 #endif // DAVAGLWIDGET_H
