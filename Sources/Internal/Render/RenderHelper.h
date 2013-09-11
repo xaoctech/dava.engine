@@ -219,7 +219,9 @@ public:
     //static void DrawLineWithEndPoints(const Vector3 & pt1, const Vector3 & pt2); 
 	//static void DrawStrippedLine(Polygon2 & polygon, float lineLen, float spaceLen, float halfWidth, Texture * texture, float initialPos);
 
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 	void GetLineWidthRange(int32& rangeMin, int32& rangeMax);
+#endif
 
 private:
     RenderDataObject * renderDataObject;
