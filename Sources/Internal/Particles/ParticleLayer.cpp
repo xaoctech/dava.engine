@@ -95,8 +95,8 @@ ParticleLayer::ParticleLayer()
 
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
-	srcBlendFactor = eBlendMode::BLEND_SRC_ALPHA;
-	dstBlendFactor = eBlendMode::BLEND_ONE;
+	srcBlendFactor = BLEND_SRC_ALPHA;
+	dstBlendFactor = BLEND_ONE;
 	enableFog = true;
 	inheritPosition = true;
 	type = TYPE_PARTICLES;
@@ -1109,9 +1109,9 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	if (blend)
 	{
 		if (blend->AsString() == "alpha")
-			SetBlendMode(eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE_MINUS_SRC_ALPHA);
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		if (blend->AsString() == "add")
-			SetBlendMode(eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE);
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
 	}
 	
 	//or set blending factors directly
@@ -1363,13 +1363,13 @@ void ParticleLayer::UpdateFrameTimeline()
 void ParticleLayer::SetAdditive(bool additive)
 {
 	if (additive)
-		SetBlendMode(eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE);
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
 	else
-		SetBlendMode(eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 }
 bool ParticleLayer::GetAdditive() const
 {
-	return  (srcBlendFactor == eBlendMode::BLEND_SRC_ALPHA) && (dstBlendFactor == eBlendMode::BLEND_ONE);
+	return  (srcBlendFactor == BLEND_SRC_ALPHA) && (dstBlendFactor == BLEND_ONE);
 }
 
 void ParticleLayer::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)

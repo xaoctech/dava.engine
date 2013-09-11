@@ -54,12 +54,12 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 
 const EmitterLayerWidget::BlendPreset EmitterLayerWidget::blendPresetsMap[]=
 {
-	{eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE_MINUS_SRC_ALPHA, "Alpha blend"},
-	{eBlendMode::BLEND_ONE, eBlendMode::BLEND_ONE, "Additive"},
-	{eBlendMode::BLEND_SRC_ALPHA, eBlendMode::BLEND_ONE, "Alpha additive"},
-	{eBlendMode::BLEND_ONE_MINUS_DST_COLOR, eBlendMode::BLEND_ONE, "Soft additive"},
-	{eBlendMode::BLEND_DST_COLOR, eBlendMode::BLEND_ZERO, "Multiplicative"},
-	{eBlendMode::BLEND_DST_COLOR, eBlendMode::BLEND_SRC_COLOR, "2x Multiplicative"}
+	{BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA, "Alpha blend"},
+	{BLEND_ONE, BLEND_ONE, "Additive"},
+	{BLEND_SRC_ALPHA, BLEND_ONE, "Alpha additive"},
+	{BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE, "Soft additive"},
+	{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
+	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}
 };
 
 
@@ -1046,7 +1046,7 @@ void EmitterLayerWidget::FillBlendCombos()
 	}
 	presetComboBox->addItem("Custom");
 
-	for (int32 i = 1; i<eBlendMode::BLEND_MODE_COUNT; i++) //start from 1 to avoid none
+	for (int32 i = 1; i<BLEND_MODE_COUNT; i++) //start from 1 to avoid none
 	{
 		srcFactorComboBox->addItem(BLEND_MODE_NAMES[i].c_str());
 		dstFactorComboBox->addItem(BLEND_MODE_NAMES[i].c_str());
