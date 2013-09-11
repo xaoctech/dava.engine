@@ -28,73 +28,90 @@
 
 
 
-#ifndef DAVAGLWIDGET_H
-#define DAVAGLWIDGET_H
+#ifndef __RESOURCEEDITORQT__SELECTPATHWIDGET__
+#define __RESOURCEEDITORQT__SELECTPATHWIDGET__
 
 #include <QWidget>
-#include <QTimer>
 #include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
 
-#include "Platform/Qt/QtLayer.h"
+#include "DAVAEngine.h"
+class SceneEditor2;
 
-namespace Ui {
-class DavaGLWidget;
-}
-
-class DavaGLWidget : public QWidget, public DAVA::QtLayerDelegate
+class SelectPathWidgetBase: public QLineEdit
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit DavaGLWidget(QWidget *parent = 0);
-    ~DavaGLWidget();
-
-	void SetMaxFPS(int fps);
-	int GetMaxFPS();
-	int GetFPS() const;
-    
-	virtual QPaintEngine *paintEngine() const;
+	explicit SelectPathWidgetBase( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "",
+								  DAVA::String openFileDialogTitle = "OpenFile", DAVA::String fileFormatDescriotion = "*.*");
 	
-	virtual void paintEvent(QPaintEvent *);
-	virtual void resizeEvent(QResizeEvent *);
-	virtual void changeEvent(QEvent * event);
+	virtual ~SelectPathWidgetBase();
+	
+	void setText(const DAVA::String &);
 
-	virtual void showEvent(QShowEvent *);
-	virtual void hideEvent(QHideEvent *);
+	DAVA::String getText();
 
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
+	virtual void EraseWidget();
+	
+	DAVA::FilePath GetRelativPath()
+	{
+		return relativePath;
+	}
 
-	virtual void dropEvent(QDropEvent *);
-	virtual void dragMoveEvent(QDragMoveEvent *);
-	virtual void dragEnterEvent(QDragEnterEvent *);
-    
-#if defined (Q_WS_MAC)
-    virtual void mouseMoveEvent(QMouseEvent *);
-#endif //#if defined (Q_WS_MAC)
-    
-#if defined(Q_WS_WIN)
-	virtual bool winEvent(MSG *message, long *result);
-#endif //#if defined(Q_WS_WIN)
+	void SetRelativePath(const DAVA::String& );
+
+	DAVA::String GetOpenDialogDefaultPath()
+	{
+		return openDialogDefaultPath;
+	}
+
+	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
+	{
+		openDialogDefaultPath = newPath;
+	}
+	
+public slots:
+
+	void setText(const QString&);
+		
+	void acceptEditing();
 
 signals:
-	void OnDrop(const QMimeData *mimeData);
+	
+	void PathSelected(DAVA::String selectedFile);
 
+protected:
+
+	void resizeEvent(QResizeEvent *);
+	
+	virtual void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath,DAVA::String _openFileDialogTitle, DAVA::String _fileFormatDescriotion);
+	
+	virtual void HandlePathSelected(DAVA::String name);
+		
+	DAVA::String ConvertToRelativPath(const DAVA::String& path);
+	
+	QToolButton* CreateToolButton(const DAVA::String& iconPath);
+	
+	DAVA::FilePath			relativePath;
+	
+	DAVA::String			openDialogDefaultPath;
+	
+	DAVA::String			fileFormatFilter;// like "Scene File (*.sc2)"
+	
+	DAVA::String			openFileDialogTitle;
+	
 protected slots:
-	void Render();
 
+	void EraseClicked();
+
+	void OpenClicked();
+	
 private:
-	Ui::DavaGLWidget *ui;
 
-	int maxFPS;
-    int minFrameTimeMs;
-	int fps;
-
-	qint64 fpsCountTime;
-	int fpsCount;
-
-	void Quit();
-	void EnableCustomPaintFlags(bool enable);
+	QToolButton *clearButton;
+	QToolButton *openButton;
 };
 
-#endif // DAVAGLWIDGET_H
+#endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */

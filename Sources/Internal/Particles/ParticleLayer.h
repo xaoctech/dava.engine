@@ -234,8 +234,14 @@ public:
     
 	RenderBatch * GetRenderBatch();
 
-	virtual void SetAdditive(bool additive);
-	bool GetAdditive() const {return additive;};
+	DAVA_DEPRECATED(void SetAdditive(bool additive));
+	DAVA_DEPRECATED(bool GetAdditive() const);
+	virtual void SetBlendMode(eBlendMode sFactor, eBlendMode dFactor);	
+	eBlendMode GetBlendSrcFactor();
+	eBlendMode GetBlendDstFactor();
+
+	virtual void SetFog(bool enable);
+	bool IsFogEnabled();
 
 	void SetInheritPosition(bool inherit);
 	bool GetInheritPosition() const {return inheritPosition;}
@@ -334,11 +340,14 @@ protected:
 
 	ParticleLayerBatch * renderBatch;
 
-	bool		isDisabled;
-	bool		additive;
+	bool		isDisabled;	
 	bool		isLooped;
 
-	bool inheritPosition;  //for supperemitter - if true the whole emitter would be moved, otherwise just emission point
+	eBlendMode srcBlendFactor, dstBlendFactor;
+
+	bool enableFog;
+
+	bool inheritPosition;  //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
 	float32		playbackSpeed;
 
