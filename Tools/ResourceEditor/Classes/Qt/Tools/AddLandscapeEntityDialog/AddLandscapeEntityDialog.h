@@ -28,82 +28,56 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SELECTPATHWIDGET__
-#define __RESOURCEEDITORQT__SELECTPATHWIDGET__
+#ifndef __RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__
+#define __RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__
 
-#include <QWidget>
-#include <QMimeData>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
-
+#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
-class SceneEditor2;
+#include "Qt/Scene/SceneEditor2.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "./../Qt/Tools/SelectPathWidget/SelectPathWidgetBase.h"
 
-class SelectPathWidget: public QLineEdit
+class SelectEntityPathWidget;
+
+class AddLandscapeEntityDialog: public BaseAddEntityDialog
 {
 	Q_OBJECT
-
+	
 public:
-	explicit SelectPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+	AddLandscapeEntityDialog(Entity* landscapeEntity, QWidget* parent = 0);
 	
-	~SelectPathWidget();
+	~AddLandscapeEntityDialog();
 	
-	void SetPathText(const DAVA::String &);
+	void CleanupPathWidgets();
 
-	DAVA::String GetPathText();
-
-	void EraseWidget();
+	void reject();
 	
-	DAVA::FilePath GetRelativPath()
-	{
-		return relativePath;
-	}
-
-	void SetRelativePath(const DAVA::String& );
-
-	DAVA::Entity* GetOutputEntity(SceneEditor2*);
-
-	DAVA::String GetOpenDialogDefaultPath()
-	{
-		return openDialogDefaultPath;
-	}
-
-	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
-	{
-		openDialogDefaultPath = newPath;
-	}
-
-protected:
-
-	void dragEnterEvent(QDragEnterEvent* event);
-	
-	void resizeEvent(QResizeEvent *);
-
-	void dropEvent(QDropEvent * event);
-	
-	void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath);
-	
-	DAVA::String ConvertToRelativPath(const DAVA::String& path);
-	
-	QToolButton* CreateToolButton(const DAVA::String& iconPath);
-	
-	DAVA::FilePath			relativePath;
-	
-	DAVA::String			openDialogDefaultPath;
-	
-	QMimeData				mimeData;
-	
-
 protected slots:
-
-	void EraseClicked();
-
-	void OpenClicked();
 	
-private:
-
-	QToolButton *clearButton;
-	QToolButton *openButton;
+	void ValueChanged(DAVA::String fileName);
+	
+protected:
+		
+	
+	DAVA::Vector<QWidget*>			additionalWidgets;
+	
+	Landscape*						landscape;
+	
+	struct DefaultInfo
+	{
+		int32 specificInfo;
+		FilePath path;
+		DefaultInfo()
+		{}
+		
+		DefaultInfo(int32 _specificInfo, FilePath _path)
+		{
+			specificInfo = _specificInfo;
+			path  = _path;
+		}
+	};
+	
+	DAVA::Map<SelectPathWidgetBase*,DefaultInfo>  widgetMap;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */
+#endif /* defined(__RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__) */

@@ -28,37 +28,40 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
-#define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
+#ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
+#define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
 
-#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
+#include <QWidget>
+#include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+#include "SelectPathWidgetBase.h"
+
 #include "DAVAEngine.h"
-#include "Qt/Scene/SceneEditor2.h"
+class SceneEditor2;
 
-class SelectEntityPathWidget;
-
-class AddSwitchEntityDialog: public BaseAddEntityDialog
+class SelectEntityPathWidget: public SelectPathWidgetBase
 {
-public:
-	AddSwitchEntityDialog( QWidget* parent = 0);
-	
-	~AddSwitchEntityDialog();
-	
-	void CleanupPathWidgets();
+	Q_OBJECT
 
-	const DAVA::Vector<SelectEntityPathWidget*>& GetPathWidgets()
-	{
-		return pathWidgets;
-	}
+public:
+	explicit SelectEntityPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+
+	void EraseWidget();
 	
-	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
+	DAVA::Entity* GetOutputEntity(SceneEditor2*);
+
 
 protected:
+
+	void dragEnterEvent(QDragEnterEvent* event);
 	
-	DAVA::Vector<SelectEntityPathWidget*> pathWidgets;
+	void dropEvent(QDropEvent * event);
 	
-	DAVA::Vector<QWidget*>			additionalWidgets;
+	void HandlePathSelected(DAVA::String name);
 	
+	QMimeData				mimeData;
+
 };
 
-#endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */
+#endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */
