@@ -103,6 +103,7 @@ private:
 
 	int32 BrushSizeFromInt(int32 val);
 	int32 IntFromBrushSize(int32 brushSize);
+	float32 GetBrushScaleCoef();
 
 	void UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type);
 };

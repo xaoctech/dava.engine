@@ -256,19 +256,26 @@ void VisibilityToolPropertiesView::SetVisibilityAreaSize(int areaSize)
 	activeScene->visibilityToolSystem->SetBrushSize(AreaSizeFromInt(areaSize));
 }
 
+// these functions are designed to convert values from sliders in ui
+// to the values suitable for visibility check tool system
+
+// int32 AreaSizeFromInt(int32) converts area size value from the ui to the system value
 int32 VisibilityToolPropertiesView::AreaSizeFromInt(int32 val)
 {
-	int32 areaSize = val * 10;
+	int32 areaSize = val * ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 
 	return areaSize;
 }
 
+// int32 IntFromAreaSize(int32) converts area size value from the system to the ui value
 int32 VisibilityToolPropertiesView::IntFromAreaSize(int32 areaSize)
 {
-	int32 val = areaSize / 10;
+	int32 val = areaSize / ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 
 	return val;
 }
+
+// end of convert functions ==========================
 
 void VisibilityToolPropertiesView::VisibilityToolToggled(SceneEditor2* scene)
 {

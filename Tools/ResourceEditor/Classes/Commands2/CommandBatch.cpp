@@ -36,8 +36,8 @@ CommandBatch::CommandBatch()
 
 CommandBatch::~CommandBatch()
 {
-	std::list<Command2 *>::iterator i = commandList.begin();
-	std::list<Command2 *>::iterator end = commandList.end(); 
+	std::vector<Command2 *>::iterator i = commandList.begin();
+	std::vector<Command2 *>::iterator end = commandList.end(); 
 
 	for(; i != end; i++)
 	{
@@ -49,8 +49,8 @@ CommandBatch::~CommandBatch()
 
 void CommandBatch::Undo()
 {
-	std::list<Command2 *>::reverse_iterator i = commandList.rbegin();
-	std::list<Command2 *>::reverse_iterator end = commandList.rend(); 
+	std::vector<Command2 *>::reverse_iterator i = commandList.rbegin();
+	std::vector<Command2 *>::reverse_iterator end = commandList.rend(); 
 
 	for(; i != end; i++)
 	{
@@ -60,8 +60,8 @@ void CommandBatch::Undo()
 
 void CommandBatch::Redo()
 {
-	std::list<Command2 *>::iterator i = commandList.begin();
-	std::list<Command2 *>::iterator end = commandList.end(); 
+	std::vector<Command2 *>::iterator i = commandList.begin();
+	std::vector<Command2 *>::iterator end = commandList.end(); 
 
 	for(; i != end; i++)
 	{
@@ -86,4 +86,12 @@ void CommandBatch::AddAndExec(Command2 *command)
 int CommandBatch::Size() const
 {
 	return commandList.size();
+}
+
+Command2 * CommandBatch::GetCommand( int index ) const
+{
+	if(index >= 0 && index < commandList.size())
+		return commandList[index];
+
+	return NULL;
 }

@@ -28,62 +28,90 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
+#ifndef __RESOURCEEDITORQT__SELECTPATHWIDGET__
+#define __RESOURCEEDITORQT__SELECTPATHWIDGET__
 
 #include <QWidget>
-#include <QDockWidget>
+#include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+
 #include "DAVAEngine.h"
-
-using namespace DAVA;
-
 class SceneEditor2;
 
-namespace Ui
-{
-	class CustomColorsPropertiesView;
-}
-
-class CustomColorsPropertiesView: public QWidget
+class SelectPathWidgetBase: public QLineEdit
 {
 	Q_OBJECT
 
 public:
-	explicit CustomColorsPropertiesView(QWidget* parent = 0);
-	~CustomColorsPropertiesView();
-
-	void Init();
-	void InitColors();
+	explicit SelectPathWidgetBase( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "",
+								  DAVA::String openFileDialogTitle = "OpenFile", DAVA::String fileFormatDescriotion = "*.*");
 	
-	static const int DEF_BRUSH_MIN_SIZE = 3;
-	static const int DEF_BRUSH_MAX_SIZE = 40;
+	virtual ~SelectPathWidgetBase();
+	
+	void setText(const DAVA::String &);
 
-private slots:
-	void ProjectOpened(const QString &path);
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
-	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
+	DAVA::String getText();
 
-	void CustomColorsToggled(SceneEditor2* scene);
+	virtual void EraseWidget();
+	
+	DAVA::FilePath GetRelativPath()
+	{
+		return relativePath;
+	}
 
-	void Toggle();
-	void SetBrushSize(int brushSize);
-	void SetColor(int color);
-	void SaveTexture();
-	void LoadTexture();
+	void SetRelativePath(const DAVA::String& );
 
+	DAVA::String GetOpenDialogDefaultPath()
+	{
+		return openDialogDefaultPath;
+	}
+
+	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
+	{
+		openDialogDefaultPath = newPath;
+	}
+	
+public slots:
+
+	void setText(const QString&);
+		
+	void acceptEditing();
+
+signals:
+	
+	void PathSelected(DAVA::String selectedFile);
+
+protected:
+
+	void resizeEvent(QResizeEvent *);
+	
+	virtual void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath,DAVA::String _openFileDialogTitle, DAVA::String _fileFormatDescriotion);
+	
+	virtual void HandlePathSelected(DAVA::String name);
+		
+	DAVA::String ConvertToRelativPath(const DAVA::String& path);
+	
+	QToolButton* CreateToolButton(const DAVA::String& iconPath);
+	
+	DAVA::FilePath			relativePath;
+	
+	DAVA::String			openDialogDefaultPath;
+	
+	DAVA::String			fileFormatFilter;// like "Scene File (*.sc2)"
+	
+	DAVA::String			openFileDialogTitle;
+	
+protected slots:
+
+	void EraseClicked();
+
+	void OpenClicked();
+	
 private:
-	Ui::CustomColorsPropertiesView* ui;
-	SceneEditor2* activeScene;
-	QAction* toolbarAction;
-	QDockWidget* dockWidget;
 
-	void SetWidgetsState(bool enabled);
-	void BlockAllSignals(bool block);
-	void UpdateFromScene(SceneEditor2* scene);
-
-	int32 BrushSizeFromInt(int32 val);
-	int32 IntFromBrushSize(int32 brushSize);
+	QToolButton *clearButton;
+	QToolButton *openButton;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
+#endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */

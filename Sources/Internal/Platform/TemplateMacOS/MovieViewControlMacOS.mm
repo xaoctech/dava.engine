@@ -30,10 +30,7 @@
 #include "MovieViewControlMacOS.h"
 
 #import <QTKit/QTKit.h>
-/*
-#import <MediaPlayer/MediaPlayer.h>
-#import <HelperAppDelegate.h>
-*/
+
 namespace DAVA
 {
 MovieViewControl::MovieViewControl()

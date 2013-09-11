@@ -229,6 +229,12 @@
     <Filter Include="Classes\Qt\DockRulerTool">
       <UniqueIdentifier>{281096d8-d8e8-42a6-99f5-88475f7d8c26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\AddLandscapeEntityDialog">
+      <UniqueIdentifier>{169dd272-c85b-4165-ac44-7a69cbd76d41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
+      <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1374,9 +1380,6 @@
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp">
       <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp">
-      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp">
       <Filter>Classes\Deprecated</Filter>
     </ClCompile>
@@ -1950,9 +1953,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\CubemapEditor\ClickableQLabel.cpp">
       <Filter>Classes\Qt\CubemapEditor</Filter>
     </ClCompile>
@@ -2150,6 +2150,30 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.cpp">
       <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp">
+      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp">
+      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.cpp">
+      <Filter>Classes\Qt\Tools\AddLandscapeEntityDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp">
+      <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3368,9 +3392,6 @@
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h">
       <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h">
-      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h">
       <Filter>Classes\Deprecated</Filter>
     </ClInclude>
@@ -3745,6 +3766,21 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.h">
       <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h">
+      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h">
+      <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.h">
+      <Filter>Classes\Qt\Tools\AddLandscapeEntityDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h">
+      <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
