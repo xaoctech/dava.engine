@@ -60,6 +60,7 @@
 #include "FormatsTest.h"
 #include "UIScrollViewTest.h"
 #include "ThreadSyncTest.h"
+#include "UIMovieTest.h"
 
 using namespace DAVA;
 
@@ -85,6 +86,8 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
     
+	new UIMovieTest();
+	
 	new InputTest();
 	
     new FormatsTest();
