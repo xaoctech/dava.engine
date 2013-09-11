@@ -146,7 +146,7 @@ void HoodSystem::SetModifScale(const DAVA::float32 &scale)
 
 void HoodSystem::SetScale(DAVA::float32 scale)
 {
-	if(curScale != scale)
+	if(curScale != scale && 0 != scale)
 	{
 		curScale = scale;
 
