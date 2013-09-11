@@ -261,17 +261,23 @@ void LODEditor::LODDistanceChangedBySlider(const QVector<int> &changedLayers, bo
 {
 	ui->distanceSlider->LockDistances(true);
 
-	for (int i = 0; i < changedLayers.size(); i++)
+	if(changedLayers.size() != 0)
 	{
-		int layer = changedLayers[i];
-
-		double value = ui->distanceSlider->GetDistance(layer);
-		SetSpinboxValue(distanceWidgets[layer].distance, value);
-
-		if(!continuous)
+		DAVA::Map<DAVA::int32, DAVA::float32> lodDistances;
+		for (int i = 0; i < changedLayers.size(); i++)
 		{
-			editedLODData->SetLayerDistance(layer, value);
+			int layer = changedLayers[i];
+
+			double value = ui->distanceSlider->GetDistance(layer);
+			SetSpinboxValue(distanceWidgets[layer].distance, value);
+
+			if(!continuous)
+			{
+				lodDistances[layer] = value;
+			}
 		}
+
+		editedLODData->UpdateDistances(lodDistances);
 	}
 
 	ui->distanceSlider->LockDistances(false);

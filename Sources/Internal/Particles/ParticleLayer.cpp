@@ -95,7 +95,9 @@ ParticleLayer::ParticleLayer()
 
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
-	additive = true;
+	srcBlendFactor = BLEND_SRC_ALPHA;
+	dstBlendFactor = BLEND_ONE;
+	enableFog = true;
 	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
@@ -227,7 +229,8 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
-	dstLayer->SetAdditive(additive);
+	dstLayer->SetBlendMode(srcBlendFactor, dstBlendFactor);
+	dstLayer->SetFog(enableFog);
 	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
@@ -903,15 +906,9 @@ void ParticleLayer::PrepareRenderData(Camera * camera)
 }
 
 void ParticleLayer::Draw(Camera * camera)
-{
-	if (additive)
-	{
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
-	}
-	else 
-	{
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-	}
+{	
+
+	RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
 
 	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)
@@ -1107,15 +1104,32 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	motionRandomVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomVariation");	
 	motionRandomOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomOverLife");	
 
-
+	//read blend node for backward compatibility with old effect files
 	const YamlNode * blend = node->Get("blend");
 	if (blend)
 	{
 		if (blend->AsString() == "alpha")
-			additive = false;
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		if (blend->AsString() == "add")
-			additive = true;
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
 	}
+	
+	//or set blending factors directly
+	const YamlNode * blendSrcNode = node->Get("srcBlendFactor");
+	const YamlNode * blendDestNode = node->Get("dstBlendFactor");
+	if(blendSrcNode && blendDestNode)
+	{
+		eBlendMode newBlendScr = GetBlendModeByName(blendSrcNode->AsString());
+		eBlendMode newBlendDest = GetBlendModeByName(blendDestNode->AsString());
+		SetBlendMode(newBlendScr, newBlendDest);
+	}
+
+	const YamlNode * fogNode = node->Get("enableFog");
+	if (fogNode)
+	{
+		SetFog(fogNode->AsBool());
+	}
+	
 
 	const YamlNode * alignToMotionNode = node->Get("alignToMotion");
 	if (alignToMotionNode)
@@ -1220,6 +1234,12 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
         relativePath.substr(0, relativePath.size()-4));
 
+
+	layerNode->Add("srcBlendFactor", BLEND_MODE_NAMES[(int32)srcBlendFactor]);
+	layerNode->Add("dstBlendFactor", BLEND_MODE_NAMES[(int32)dstBlendFactor]);
+
+	layerNode->Add("enableFog", enableFog);	
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
@@ -1257,8 +1277,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
 
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);    
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
@@ -1343,7 +1362,37 @@ void ParticleLayer::UpdateFrameTimeline()
 	
 void ParticleLayer::SetAdditive(bool additive)
 {
-	this->additive = additive;
+	if (additive)
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
+	else
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+}
+bool ParticleLayer::GetAdditive() const
+{
+	return  (srcBlendFactor == BLEND_SRC_ALPHA) && (dstBlendFactor == BLEND_ONE);
+}
+
+void ParticleLayer::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
+{
+	srcBlendFactor = sFactor;
+	dstBlendFactor = dFactor;
+}
+eBlendMode ParticleLayer::GetBlendSrcFactor()
+{
+	return srcBlendFactor;
+}
+eBlendMode ParticleLayer::GetBlendDstFactor()
+{
+	return dstBlendFactor;
+}
+
+void ParticleLayer::SetFog(bool enable)
+{
+	enableFog = enable;
+}
+bool ParticleLayer::IsFogEnabled()
+{
+	return enableFog;
 }
 
 void ParticleLayer::SetInheritPosition(bool inherit)

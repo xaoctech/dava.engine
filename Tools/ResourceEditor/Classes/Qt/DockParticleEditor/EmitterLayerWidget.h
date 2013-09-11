@@ -76,6 +76,7 @@ signals:
 protected slots:
 	void OnLodsChanged();
 	void OnValueChanged();
+	void OnPresetChanged();
 	void OnSpriteBtn();
 	void OnSpritePathChanged(const QString& text);
 	
@@ -88,13 +89,14 @@ private:
 	void FillLayerTypes();
 	int32 LayerTypeToIndex(ParticleLayer::eType layerType);
 
+	void FillBlendCombos();
+
 private:
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	
 	QLineEdit* layerNameLineEdit;
-	QCheckBox* enableCheckBox;
-	QCheckBox* additiveCheckBox;
+	QCheckBox* enableCheckBox;	
 	QCheckBox* isLongCheckBox;
 	QCheckBox* isLoopedCheckBox;
 	QCheckBox* inheritPostionCheckBox;
@@ -126,6 +128,15 @@ private:
 	QCheckBox *yFacingCheckBox;
 	QCheckBox *zFacingCheckBox;
 	QCheckBox *worldAlignCheckBox;
+
+	QLabel *blendOptionsLabel;
+	QLabel *presetLabel;
+	QComboBox *presetComboBox;
+	QLabel *srcFactorLabel;
+	QComboBox *srcFactorComboBox;
+	QLabel *dstFactorLabel;
+	QComboBox *dstFactorComboBox;
+	QCheckBox *fogCheckBox;	
 
 	TimeLineWidget* lifeTimeLine;
 	TimeLineWidget* numberTimeLine;
@@ -170,6 +181,15 @@ private:
 	};
 
 	static const LayerTypeMap layerTypeMap[];
+
+	struct BlendPreset
+	{
+		eBlendMode srcFactor;
+		eBlendMode dstFactor;
+		QString presetName;
+	};
+
+	static const BlendPreset blendPresetsMap[];
 };
 
 #endif /* defined(__ResourceEditorQt__EmitterLayerWidget__) */

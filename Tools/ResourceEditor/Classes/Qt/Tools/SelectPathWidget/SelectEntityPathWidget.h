@@ -28,90 +28,40 @@
 
 
 
-#ifndef __CONSTANTS_H__
-#define __CONSTANTS_H__
+#ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
+#define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
 
-namespace ResourceEditor 
-{
+#include <QWidget>
+#include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+#include "SelectPathWidgetBase.h"
 
-enum eNodeType
-{
-    NODE_LANDSCAPE  = 0,
-    NODE_LIGHT,
-    NODE_SERVICE_NODE,
-    NODE_CAMERA,
-    NODE_IMPOSTER,
-    NODE_PARTICLE_EMITTER,
-    NODE_USER_NODE,
-	NODE_SWITCH_NODE,
-	NODE_PARTICLE_EFFECT,
-	NODE_SKYBOX,
-    
-    NODE_COUNT
-};
-    
-enum eViewportType
-{
-    VIEWPORT_IPHONE = 0,
-    VIEWPORT_RETINA,
-    VIEWPORT_IPAD,
-    VIEWPORT_DEFAULT,
-    
-    VIEWPORT_COUNT
-};
-  
-  
-enum eHideableWidgets
-{
-    HIDABLEWIDGET_SCENE_GRAPH = 0,
-    HIDABLEWIDGET_PROPERTIES,
-    HIDABLEWIDGET_LIBRARY,
-    HIDABLEWIDGET_TOOLBAR,
-	HIDABLEWIDGET_REFERENCES,
-    HIDABLEWIDGET_CUSTOMCOLORS,
-	HIDEBLEWIDGET_VISIBILITYCHECKTOOL,
-    HIDEBLEWIDGET_PARTICLE_EDITOR,
-	HIDEBLEWIDGET_HANGINGOBJECTS,
-	HIDEBLEWIDGET_SETSWITCHINDEX,
-	HIDEBLEWIDGET_SCENEINFO,
-	HIDABLEWIDGET_CUSTOMCOLORS2,
-	HIDEBLEWIDGET_VISIBILITYCHECKTOOL2,
-	HIDEBLEWIDGET_HEIGHTMAPEDITOR,
-	HIDEBLEWIDGET_TILEMASKEDITOR,
+#include "DAVAEngine.h"
+class SceneEditor2;
 
-    HIDABLEWIDGET_COUNT
-};
+class SelectEntityPathWidget: public SelectPathWidgetBase
+{
+	Q_OBJECT
+
+public:
+	explicit SelectEntityPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+
+	void EraseWidget();
 	
-enum eModificationActions
-{
-	MODIFY_NONE = 0,
-	MODIFY_MOVE,
-	MODIFY_ROTATE,
-	MODIFY_SCALE,
-	MODIFY_PLACE_ON_LAND,
-	MODIFY_SNAP_TO_LAND,
+	DAVA::Entity* GetOutputEntity(SceneEditor2*);
 
-	MODIFY_COUNT
-};
 
-enum eEditActions
-{
-	EDIT_UNDO,
-	EDIT_REDO,
+protected:
+
+	void dragEnterEvent(QDragEnterEvent* event);
 	
-	EDIT_COUNT
+	void dropEvent(QDropEvent * event);
+	
+	void HandlePathSelected(DAVA::String name);
+	
+	QMimeData				mimeData;
+
 };
 
-// coefficient for converting brush size from UI value to system value for landscape editors
-const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
-
-// default coefficient for converting brush size from UI value to system value for heightmap editors
-// heightmap size in heightmap editor is almost 4 times smaller than landscape texture size
-const DAVA::float32 HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
-    
-};
-
-
-
-
-#endif //#ifndef __CONSTANTS_H__
+#endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */

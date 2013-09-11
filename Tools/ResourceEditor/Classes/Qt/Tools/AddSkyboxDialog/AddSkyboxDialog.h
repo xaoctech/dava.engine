@@ -26,48 +26,24 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_UIMOVIEVIEW__H__
-#define __DAVAENGINE_UIMOVIEVIEW__H__
 
+
+#ifndef __RESOURCEEDITORQT__ADDSKYBOXDIALOG__
+#define __RESOURCEEDITORQT__ADDSKYBOXDIALOG__
+
+#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
-#include "IMovieViewControl.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-namespace DAVA {
-
-// The purpose of UIMovieView class is to display movies.
-class UIMovieView : public UIControl
+class AddSkyboxDialog: public BaseAddEntityDialog
 {
 public:
-	UIMovieView(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-	virtual ~UIMovieView();
-
-	// Open the Movie.
-	void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
-
-	// Overloaded virtual methods.
-	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
-	virtual void SetSize(const Vector2 &newSize);
-	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
-	virtual void SystemDraw(const UIGeometricData &geometricData);
-
-	// Start/stop the video playback.
-	void Play();
-	void Stop();
-
-	// Pause/resume the playback.
-	void Pause();
-	void Resume();
 	
-	// Whether the movie is being played?
-	bool IsPlaying();
-
-protected:
-	// Platform-specific implementation of the Movie Control.
-	IMovieViewControl* movieViewControl;
+	AddSkyboxDialog(QWidget* parent = 0);
+	
+	~AddSkyboxDialog();
+	
+	void Show(SceneEditor2* scene);
 };
 
-};
-
-
-#endif /* defined(__DAVAENGINE_UIMOVIEVIEW__H__) */
+#endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */

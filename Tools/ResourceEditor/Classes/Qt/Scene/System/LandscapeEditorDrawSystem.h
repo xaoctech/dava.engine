@@ -110,6 +110,9 @@ private:
 	void UpdateBaseLandscapeHeightmap();
 	bool Init();
 
+	bool InitLandscape(Entity* landscape);
+	void DeinitLandscape();
+
 	bool IsNotPassableTerrainCanBeEnabled();
 };
 

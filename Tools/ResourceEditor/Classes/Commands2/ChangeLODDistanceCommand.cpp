@@ -28,90 +28,39 @@
 
 
 
-#ifndef __CONSTANTS_H__
-#define __CONSTANTS_H__
+#include "ChangeLODDistanceCommand.h"
 
-namespace ResourceEditor 
+using namespace DAVA;
+
+ChangeLODDistanceCommand::ChangeLODDistanceCommand(DAVA::LodComponent *lod, DAVA::int32 lodLayer, DAVA::float32 distance)
+	: Command2(CMDID_CHANGE_LOD_DISTANCE, "Change LOD Distance")
+	, lodComponent(lod)
+	, layer(lodLayer)
+	, newDistance(distance)
+	, oldDistance(0)
 {
 
-enum eNodeType
+}
+
+void ChangeLODDistanceCommand::Redo()
 {
-    NODE_LANDSCAPE  = 0,
-    NODE_LIGHT,
-    NODE_SERVICE_NODE,
-    NODE_CAMERA,
-    NODE_IMPOSTER,
-    NODE_PARTICLE_EMITTER,
-    NODE_USER_NODE,
-	NODE_SWITCH_NODE,
-	NODE_PARTICLE_EFFECT,
-	NODE_SKYBOX,
-    
-    NODE_COUNT
-};
-    
-enum eViewportType
+	if(!lodComponent) return;
+
+	oldDistance = lodComponent->GetLodLayerDistance(layer);
+	lodComponent->SetLodLayerDistance(layer, newDistance);
+}
+
+void ChangeLODDistanceCommand::Undo()
 {
-    VIEWPORT_IPHONE = 0,
-    VIEWPORT_RETINA,
-    VIEWPORT_IPAD,
-    VIEWPORT_DEFAULT,
-    
-    VIEWPORT_COUNT
-};
-  
-  
-enum eHideableWidgets
+	if(!lodComponent) return;
+
+	lodComponent->SetLodLayerDistance(layer, oldDistance);
+}
+
+Entity * ChangeLODDistanceCommand::GetEntity() const
 {
-    HIDABLEWIDGET_SCENE_GRAPH = 0,
-    HIDABLEWIDGET_PROPERTIES,
-    HIDABLEWIDGET_LIBRARY,
-    HIDABLEWIDGET_TOOLBAR,
-	HIDABLEWIDGET_REFERENCES,
-    HIDABLEWIDGET_CUSTOMCOLORS,
-	HIDEBLEWIDGET_VISIBILITYCHECKTOOL,
-    HIDEBLEWIDGET_PARTICLE_EDITOR,
-	HIDEBLEWIDGET_HANGINGOBJECTS,
-	HIDEBLEWIDGET_SETSWITCHINDEX,
-	HIDEBLEWIDGET_SCENEINFO,
-	HIDABLEWIDGET_CUSTOMCOLORS2,
-	HIDEBLEWIDGET_VISIBILITYCHECKTOOL2,
-	HIDEBLEWIDGET_HEIGHTMAPEDITOR,
-	HIDEBLEWIDGET_TILEMASKEDITOR,
+	if(lodComponent)
+		return lodComponent->GetEntity();
 
-    HIDABLEWIDGET_COUNT
-};
-	
-enum eModificationActions
-{
-	MODIFY_NONE = 0,
-	MODIFY_MOVE,
-	MODIFY_ROTATE,
-	MODIFY_SCALE,
-	MODIFY_PLACE_ON_LAND,
-	MODIFY_SNAP_TO_LAND,
-
-	MODIFY_COUNT
-};
-
-enum eEditActions
-{
-	EDIT_UNDO,
-	EDIT_REDO,
-	
-	EDIT_COUNT
-};
-
-// coefficient for converting brush size from UI value to system value for landscape editors
-const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
-
-// default coefficient for converting brush size from UI value to system value for heightmap editors
-// heightmap size in heightmap editor is almost 4 times smaller than landscape texture size
-const DAVA::float32 HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
-    
-};
-
-
-
-
-#endif //#ifndef __CONSTANTS_H__
+	return NULL;
+}

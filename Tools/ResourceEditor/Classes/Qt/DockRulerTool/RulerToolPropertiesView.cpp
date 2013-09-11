@@ -46,10 +46,7 @@ RulerToolPropertiesView::~RulerToolPropertiesView()
 
 void RulerToolPropertiesView::Init()
 {
-	GLint range[2];
-	glGetIntegerv(GL_LINE_WIDTH_RANGE, range);
-	defLineWidthMinValue = range[0];
-	defLineWidthMaxValue = range[1];
+	RenderHelper::Instance()->GetLineWidthRange(defLineWidthMinValue, defLineWidthMaxValue);
 
 	ui->sliderWidgetLineWidth->Init(ResourceEditor::RULER_TOOL_LINE_WIDTH_CAPTION.c_str(), false,
 									defLineWidthMaxValue, defLineWidthMinValue, defLineWidthMinValue);
