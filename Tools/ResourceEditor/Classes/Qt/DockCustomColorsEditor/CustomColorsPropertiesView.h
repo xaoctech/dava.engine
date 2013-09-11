@@ -73,6 +73,7 @@ private slots:
 	void LoadTexture();
 
 private:
+	static const int32 BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10;
 
 	Ui::CustomColorsPropertiesView* ui;
 	SceneEditor2* activeScene;
