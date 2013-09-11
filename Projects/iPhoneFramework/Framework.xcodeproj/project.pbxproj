@@ -32,6 +32,11 @@
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
 		17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */; };
 		17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */; };
+		17DC600A17DE16D40075813E /* IMovieViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC600717DE16D40075813E /* IMovieViewControl.h */; };
+		17DC600B17DE16D40075813E /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC600817DE16D40075813E /* UIMovieView.cpp */; };
+		17DC600C17DE16D40075813E /* UIMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC600917DE16D40075813E /* UIMovieView.h */; };
+		17DC600F17DE18460075813E /* MovieViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DC600D17DE18460075813E /* MovieViewControliOS.mm */; };
+		17DC601017DE18460075813E /* MovieViewControliOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC600E17DE18460075813E /* MovieViewControliOS.h */; };
 		17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2C16D36FF3004D5099 /* IWebViewControl.h */; };
 		17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E2D16D36FF3004D5099 /* UIWebView.cpp */; };
 		17F53E3116D36FF3004D5099 /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2E16D36FF3004D5099 /* UIWebView.h */; };
@@ -734,6 +739,11 @@
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
 		17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
+		17DC600717DE16D40075813E /* IMovieViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMovieViewControl.h; sourceTree = "<group>"; };
+		17DC600817DE16D40075813E /* UIMovieView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIMovieView.cpp; sourceTree = "<group>"; };
+		17DC600917DE16D40075813E /* UIMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMovieView.h; sourceTree = "<group>"; };
+		17DC600D17DE18460075813E /* MovieViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MovieViewControliOS.mm; sourceTree = "<group>"; };
+		17DC600E17DE18460075813E /* MovieViewControliOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieViewControliOS.h; sourceTree = "<group>"; };
 		17F53E2C16D36FF3004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		17F53E2D16D36FF3004D5099 /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		17F53E2E16D36FF3004D5099 /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
@@ -1893,6 +1903,8 @@
 				E8B3C8E216B9326D002BD35F /* ESRenderer.h */,
 				E8B3C8E316B9326D002BD35F /* HelperAppDelegate.h */,
 				E8B3C8E416B9326D002BD35F /* HelperAppDelegate.mm */,
+				17DC600D17DE18460075813E /* MovieViewControliOS.mm */,
+				17DC600E17DE18460075813E /* MovieViewControliOS.h */,
 			);
 			path = TemplateiOS;
 			sourceTree = "<group>";
@@ -2276,6 +2288,9 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				17DC600717DE16D40075813E /* IMovieViewControl.h */,
+				17DC600817DE16D40075813E /* UIMovieView.cpp */,
+				17DC600917DE16D40075813E /* UIMovieView.h */,
 				E8C0A6FC17D5D8EC00F8F93C /* UIScrollViewContainer.cpp */,
 				E8C0A6FD17D5D8EC00F8F93C /* UIScrollViewContainer.h */,
 				E8C0A6F817D5D8B300F8F93C /* UIScrollView.cpp */,
@@ -2785,6 +2800,9 @@
 				EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */,
 				E8C0A6FB17D5D8B300F8F93C /* UIScrollView.h in Headers */,
 				E8C0A6FF17D5D8EC00F8F93C /* UIScrollViewContainer.h in Headers */,
+				17DC600A17DE16D40075813E /* IMovieViewControl.h in Headers */,
+				17DC600C17DE16D40075813E /* UIMovieView.h in Headers */,
+				17DC601017DE18460075813E /* MovieViewControliOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3169,6 +3187,8 @@
 				E8C0A6FA17D5D8B300F8F93C /* UIScrollView.cpp in Sources */,
 				E8C0A6FE17D5D8EC00F8F93C /* UIScrollViewContainer.cpp in Sources */,
 				1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */,
+				17DC600B17DE16D40075813E /* UIMovieView.cpp in Sources */,
+				17DC600F17DE18460075813E /* MovieViewControliOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
