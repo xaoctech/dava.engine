@@ -30,7 +30,7 @@
 
 #include "AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectPathWidget.h"
+#include "./../Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include <QLabel>
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
@@ -38,9 +38,9 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(false);
 	
-	SelectPathWidget* firstWidget = new SelectPathWidget(parent);
-	SelectPathWidget* secondWidget = new SelectPathWidget(parent);
-	SelectPathWidget* thirdWidget = new SelectPathWidget(parent);
+	SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent);
+	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent);
+	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent);
 
 	QLabel* label1 = new QLabel("First Entity:", parent);
 	QLabel* label2 = new QLabel("Second Entity:", parent);
@@ -67,7 +67,7 @@ AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {
 	RemoveAllControlsFromUserContainer();
 	
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
 		delete widget;
 	}
@@ -79,7 +79,7 @@ AddSwitchEntityDialog::~AddSwitchEntityDialog()
 
 void AddSwitchEntityDialog::CleanupPathWidgets()
 {
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
 		widget->EraseWidget();
 	}
@@ -87,7 +87,7 @@ void AddSwitchEntityDialog::CleanupPathWidgets()
 
 void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor)
 {
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
 		entities.push_back(widget->GetOutputEntity(editor));
 	}
