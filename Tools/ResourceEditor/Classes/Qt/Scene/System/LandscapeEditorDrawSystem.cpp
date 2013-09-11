@@ -462,21 +462,9 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 
 bool LandscapeEditorDrawSystem::Init()
 {
-	if (!landscapeNode)
-	{
-		landscapeNode = FindLandscapeEntity(GetScene());
-	}
-	if (!baseLandscape)
-	{
-		baseLandscape = SafeRetain(GetLandscape(landscapeNode));
-	}
-	if (!baseLandscape)
+	if (!InitLandscape(FindLandscapeEntity(GetScene())))
 	{
 		return false;
-	}
-	if (baseLandscape && !landscapeProxy)
-	{
-		landscapeProxy = new LandscapeProxy(baseLandscape);
 	}
 	if (!heightmapProxy)
 	{
@@ -498,6 +486,34 @@ bool LandscapeEditorDrawSystem::Init()
 	return true;
 }
 
+bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscape)
+{
+	DeinitLandscape();
+
+	if (!landscape)
+	{
+		return false;
+	}
+
+	landscapeNode = landscape;
+	baseLandscape = SafeRetain(GetLandscape(landscapeNode));
+	if (!baseLandscape)
+	{
+		DeinitLandscape();
+		return false;
+	}
+	landscapeProxy = new LandscapeProxy(baseLandscape);
+
+	return true;
+}
+
+bool LandscapeEditorDrawSystem::DeinitLandscape()
+{
+	landscapeNode = NULL;
+	SafeRelease(landscapeProxy);
+	SafeRelease(baseLandscape);
+}
+
 void LandscapeEditorDrawSystem::ClampToTexture(Rect& rect)
 {
 	int32 textureSize = (int32)GetTextureSize();
@@ -514,6 +530,10 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 
 void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 {
+	if (GetLandscape(entity) != NULL)
+	{
+		InitLandscape(entity);
+	}
 }
 
 void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
@@ -532,8 +552,6 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 			sceneEditor->renderUpdateSystem->RemoveEntity(entity);
 		}
 
-		landscapeNode = NULL;
-		SafeRelease(landscapeProxy);
-		SafeRelease(baseLandscape);
+		DeinitLandscape();
 	}
 }
