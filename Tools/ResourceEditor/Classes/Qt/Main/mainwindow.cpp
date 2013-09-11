@@ -45,11 +45,9 @@
 
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
-#include "Scene3D/Systems/SkyboxSystem.h"
-#include "Render/Highlevel/SkyboxRenderObject.h"
+#include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-
 
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
@@ -985,67 +983,8 @@ void QtMainWindow::OnSetSkyboxNode()
 		return;
 	}
 	
-	bool skyboxInitiallyPresent = scene->skyboxSystem->IsSkyboxPresent();
-	
-	Entity* skyboxNode = scene->skyboxSystem->AddSkybox();
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(skyboxNode->GetComponent(Component::RENDER_COMPONENT));
-	DVASSERT(renderComponent);
-	
-	if(renderComponent)
-	{
-		SkyboxRenderObject* renderObject = cast_if_equal<SkyboxRenderObject*>(renderComponent->GetRenderObject());
-		DVASSERT(renderObject);
-		
-		if(renderObject)
-		{
-			if(renderObject->GetTextureValidator() == NULL)
-			{
-				renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}
-			
-			FilePath currentTexture = renderObject->GetTexture();
-			DAVA::float32 currentOffset = renderObject->GetOffsetZ();
-			DAVA::float32 currentRotation = renderObject->GetRotationZ();
-			
-			BaseAddEntityDialog dlg(this);
-			dlg.SetEntity(skyboxNode);
-			dlg.setWindowTitle("Set up Skybox");
-			dlg.exec();
-						
-			if(dlg.result() != QDialog::Accepted)
-			{
-				if(!skyboxInitiallyPresent)
-				{
-					skyboxNode->GetParent()->RemoveNode(skyboxNode);
-					skyboxNode = NULL;
-				}
-				else
-				{
-					if(renderObject->GetTexture() != currentTexture)
-					{
-						renderObject->SetTexture(currentTexture);
-					}
-					
-					if(renderObject->GetRotationZ() != currentRotation)
-					{
-						renderObject->SetRotationZ(currentRotation);
-					}
-					
-					if(renderObject->GetOffsetZ() != currentOffset)
-					{
-						renderObject->SetOffsetZ(currentOffset);
-					}
-				}
-			}
-			else
-			{
-				if(!skyboxInitiallyPresent)
-				{
-					scene->selectionSystem->SetSelection(skyboxNode);
-				}
-			}			
-		}
-	}
+	AddSkyboxDialog dlg(this);
+	dlg.Show(scene);
 }
 
 void QtMainWindow::OnSwitchEntityDialog()
