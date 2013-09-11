@@ -201,13 +201,15 @@ void HierarchyTreeControl::dropEvent(QDropEvent *event)
 	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
 	if (controlMimeData)
 	{
-		return HandleDropControlMimeData(event, controlMimeData);
+		HandleDropControlMimeData(event, controlMimeData);
+		return;
 	}
 	
 	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
 	if (hierarchyMimeData)
 	{
-		return HandleDropHierarchyMimeData(event, hierarchyMimeData);
+		HandleDropHierarchyMimeData(event, hierarchyMimeData);
+		return;
 	}
 }
 
@@ -286,13 +288,15 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
 	if (controlMimeData)
 	{
-		return HandleDragEnterControlMimeData(event, controlMimeData);
+		HandleDragEnterControlMimeData(event, controlMimeData);
+		return;
 	}
 	
 	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
 	if (hierarchyMimeData)
 	{
-		return HandleDragEnterHierarchyMimeData(event, hierarchyMimeData);
+		HandleDragEnterHierarchyMimeData(event, hierarchyMimeData);
+		return;
 	}
 	
 	// Not ours...
@@ -333,13 +337,15 @@ void HierarchyTreeControl::dragMoveEvent(QDragMoveEvent *event)
 	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
 	if (controlMimeData)
 	{
-		return HandleDragMoveControlMimeData(event, controlMimeData);
+		HandleDragMoveControlMimeData(event, controlMimeData);
+		return;
 	}
 	
 	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
 	if (hierarchyMimeData)
 	{
-		return HandleDragMoveHierarchyMimeData(event, hierarchyMimeData);
+		HandleDragMoveHierarchyMimeData(event, hierarchyMimeData);
+		return;
 	}
 }
 
