@@ -289,14 +289,22 @@ void TilemaskEditorPropertiesView::SetDrawTexture(int textureIndex)
 	activeScene->tilemaskEditorSystem->SetTileTexture(textureIndex);
 }
 
+
+// these functions are designed to convert values from sliders in ui
+// to the values suitable for tilemask editor system
+
+// float32 StrengthFromInt(int32) converts value, received from ui to the strength value,
+// understood by the tilemask editor system
 float32 TilemaskEditorPropertiesView::StrengthFromInt(int32 val)
 {
+	// strength in tilemask editor is the real number in the range [0 .. 0.5] (by default, upper bound could be different)
 	float32 max = 2.0 * DEF_STRENGTH_MAX_VALUE;
 	float32 strength = val / max;
 
 	return strength;
 }
 
+// int32 IntFromStrength(float32) converts strength value from the system to the ui value
 int32 TilemaskEditorPropertiesView::IntFromStrength(float32 strength)
 {
 	int32 value = (int32)(strength * 2.f * DEF_STRENGTH_MAX_VALUE);
@@ -304,19 +312,24 @@ int32 TilemaskEditorPropertiesView::IntFromStrength(float32 strength)
 	return value;
 }
 
+// int32 BrushSizeFromInt(int32) converts brush size value from the ui to the system value
 int32 TilemaskEditorPropertiesView::BrushSizeFromInt(int32 val)
 {
-	int32 brushSize = val * 10;
+	int32 brushSize = val * ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 
 	return brushSize;
 }
 
+// int32 IntFromBrushSize(int32) converts brush size value from the system to the ui value
 int32 TilemaskEditorPropertiesView::IntFromBrushSize(int32 brushSize)
 {
-	int32 val = brushSize / 10;
+	int32 val = brushSize / ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
 
 	return val;
 }
+
+// end of convert functions ==========================
+
 
 void TilemaskEditorPropertiesView::TilemaskEditorToggled(SceneEditor2* scene)
 {
