@@ -203,12 +203,14 @@ public:
 	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
 	void Init(const String& layerName,
 			  ParticleLayer::eType layerType,
-			  bool isDisabled,
-			  bool additive,
+			  bool isDisabled,			  
 			  bool inheritPosition,
   			  bool isLong,
 			  bool isLooped,
 			  Sprite* sprite,
+			  eBlendMode srcFactor,
+			  eBlendMode dstFactor,
+			  bool enableFog,
 			  int32 particleOrientation,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -252,11 +254,12 @@ protected:
 	String layerName;
 	ParticleLayer::eType layerType;
 	bool isDisabled;
-	bool isLong;
-	bool additive;
+	bool isLong;	
 	bool inheritPosition;
 	bool isLooped;
 	Sprite* sprite;
+	eBlendMode srcFactor, dstFactor;
+	bool enableFog;
 	int32 particleOrientation;
 	RefPtr< PropertyLine<float32> > life;
 	RefPtr< PropertyLine<float32> > lifeVariation;
