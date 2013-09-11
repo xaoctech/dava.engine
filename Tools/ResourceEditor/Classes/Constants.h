@@ -101,7 +101,9 @@ enum eEditActions
 	
 	EDIT_COUNT
 };
-    
+
+// coefficient for converting brush size from UI value to system value for landscape editors
+const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
     
 };
 

@@ -35,6 +35,8 @@
 #include "../Main/mainwindow.h"
 #include "../../Commands2/HeightmapEditorCommands2.h"
 
+#include "Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
+
 #include <QMessageBox>
 
 HeightmapEditorPropertiesView::HeightmapEditorPropertiesView(QWidget* parent)
@@ -413,23 +415,34 @@ void HeightmapEditorPropertiesView::SetDrawingType(HeightmapEditorSystem::eHeigh
 	activeScene->heightmapEditorSystem->SetDrawingType(type);
 }
 
+
+// these functions are designed to convert values from sliders in ui
+// to the values suitable for heightmap editor system
+
+// float32 StrengthFromInt(int32) - converts strength from UI value to system value
 float32 HeightmapEditorPropertiesView::StrengthFromInt(int32 val)
 {
+	// no conversion needed now. this function is for future compatibiilty
 	return (float32)val;
 }
 
+// int32 IntFromStrength(float32) - converts strength from system value to UI value
 int32 HeightmapEditorPropertiesView::IntFromStrength(float32 strength)
 {
 	return (int32)strength;
 }
 
+// float32 AverageStrengthFromInt(int32) converts value, received from ui to the average strength value,
+// understood by the heightmap editor system
 float32 HeightmapEditorPropertiesView::AverageStrengthFromInt(int32 val)
 {
+	// average strength in heightmap editor is the real number in the range [0 .. 1.0] (by default, upper bound could be different)
 	float32 averageStrength = (float32)val / DEF_AVERAGE_STRENGTH_MAX_VALUE;
 
 	return averageStrength;
 }
 
+// float32 AverageStrengthFromInt(int32) converts average strength value from the system to the ui value
 int32 HeightmapEditorPropertiesView::IntFromAverageStrength(float32 averageStrength)
 {
 	int32 val = (int32)(averageStrength * DEF_AVERAGE_STRENGTH_MAX_VALUE);
@@ -437,19 +450,31 @@ int32 HeightmapEditorPropertiesView::IntFromAverageStrength(float32 averageStren
 	return val;
 }
 
+// int32 BrushSizeFromInt(int32) converts brush size value from the ui to the system value
 int32 HeightmapEditorPropertiesView::BrushSizeFromInt(int32 val)
 {
-	int32 brushSize = (int32)(val * 2.5f);
+	// height map size is differ from the landscape texture size.
+	// so to unify brush size necessary to additionally scale brush size by (texture size / height map size) coefficient
+	float32 heightmapSize = activeScene->landscapeEditorDrawSystem->GetHeightmapProxy()->Size();
+	float32 textureSize = activeScene->landscapeEditorDrawSystem->GetTextureSize();
+	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / (textureSize / heightmapSize);
+	int32 brushSize = (int32)(val * coef);
 
 	return brushSize;
 }
 
+// int32 IntFromBrushSize(int32) converts brush size value from the system to the ui value
 int32 HeightmapEditorPropertiesView::IntFromBrushSize(int32 brushSize)
 {
-	int32 val = (int32)(brushSize / 2.5f);
+	float32 heightmapSize = activeScene->landscapeEditorDrawSystem->GetHeightmapProxy()->Size();
+	float32 textureSize = activeScene->landscapeEditorDrawSystem->GetTextureSize();
+	float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / (textureSize / heightmapSize);
+	int32 val = (int32)(brushSize / coef);
 
 	return val;
 }
+
+// end of convert functions ==========================
 
 void HeightmapEditorPropertiesView::UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type)
 {
