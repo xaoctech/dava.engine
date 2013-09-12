@@ -462,7 +462,8 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 
 bool LandscapeEditorDrawSystem::Init()
 {
-	if (!InitLandscape(FindLandscapeEntity(GetScene())))
+	//landscape initialization should be handled by AddEntity/RemoveEntity methods
+	if (!landscapeNode || !baseLandscape || !landscapeProxy)
 	{
 		return false;
 	}
