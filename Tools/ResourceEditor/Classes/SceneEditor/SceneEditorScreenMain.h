@@ -200,8 +200,6 @@ public: //For Qt integration
 
     void ExportAs(eGPUFamily forGPU);
 
-	void SaveToFolder(const FilePath & folder);
-	
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
     
