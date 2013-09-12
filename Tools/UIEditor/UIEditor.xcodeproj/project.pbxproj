@@ -170,8 +170,15 @@
 		7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */; };
 		7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */; };
 		7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */; };
+		7499C4BC17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7499C4BA17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp */; };
+		749B303117E0B78700900A2E /* scrollcontrolpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 749B303017E0B78700900A2E /* scrollcontrolpropertygridwidget.ui */; };
+		749B303917E0B7C700900A2E /* scrollcontrolpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749B303717E0B7C400900A2E /* scrollcontrolpropertygridwidget.cpp */; };
+		749B306217E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749B306117E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp */; };
+		749B309417E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749B309117E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp */; };
+		749B309517E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749B309217E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp */; };
 		749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749D71251636920600C99861 /* textpropertygridwidget.cpp */; };
 		749EBEF4178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */; };
+		74A0C5CE17DDD72D00392D94 /* UIScrollBarMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A0C5CC17DDD72D00392D94 /* UIScrollBarMetadata.cpp */; };
 		74AD4BCD1727DB880082EFB3 /* scrollviewpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74AD4BCC1727DB880082EFB3 /* scrollviewpropertygridwidget.ui */; };
 		74AD4BD11727DBA50082EFB3 /* scrollviewpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74AD4BCF1727DBA50082EFB3 /* scrollviewpropertygridwidget.cpp */; };
 		74AD4BD41727DDB90082EFB3 /* scrollviewpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74AD4BD31727DDB90082EFB3 /* scrollviewpropertygridwidget_moc.cpp */; };
@@ -557,10 +564,21 @@
 		7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISwitchMetadata.cpp; path = Metadata/UISwitchMetadata.cpp; sourceTree = "<group>"; };
 		7497D74C1705AD5500E1DE60 /* UISwitchMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISwitchMetadata.h; path = Metadata/UISwitchMetadata.h; sourceTree = "<group>"; };
 		7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitchMetadata_moc.cpp; sourceTree = "<group>"; };
+		7499C4BA17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScrollPropertyGridWidgetHelper.cpp; path = Helpers/ScrollPropertyGridWidgetHelper.cpp; sourceTree = "<group>"; };
+		7499C4BB17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScrollPropertyGridWidgetHelper.h; path = Helpers/ScrollPropertyGridWidgetHelper.h; sourceTree = "<group>"; };
+		749B303017E0B78700900A2E /* scrollcontrolpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = scrollcontrolpropertygridwidget.ui; sourceTree = "<group>"; };
+		749B303717E0B7C400900A2E /* scrollcontrolpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scrollcontrolpropertygridwidget.cpp; path = PropertyGridWidgets/scrollcontrolpropertygridwidget.cpp; sourceTree = "<group>"; };
+		749B303817E0B7C500900A2E /* scrollcontrolpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scrollcontrolpropertygridwidget.h; path = PropertyGridWidgets/scrollcontrolpropertygridwidget.h; sourceTree = "<group>"; };
+		749B306117E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scrollcontrolpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
+		749B306517E0BE2E00900A2E /* ui_scrollcontrolpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_scrollcontrolpropertygridwidget.h; sourceTree = "<group>"; };
+		749B309117E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorMetadata_moc.cpp; sourceTree = "<group>"; };
+		749B309217E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollBarMetadata_moc.cpp; sourceTree = "<group>"; };
 		749D71251636920600C99861 /* textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textpropertygridwidget.cpp; path = PropertyGridWidgets/textpropertygridwidget.cpp; sourceTree = "<group>"; };
 		749D71261636920600C99861 /* textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textpropertygridwidget.h; path = PropertyGridWidgets/textpropertygridwidget.h; sourceTree = "<group>"; };
 		749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ListPropertyGridWidgetHelper.cpp; path = Helpers/ListPropertyGridWidgetHelper.cpp; sourceTree = "<group>"; };
 		749EBEF3178D9C3000D0699F /* ListPropertyGridWidgetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ListPropertyGridWidgetHelper.h; path = Helpers/ListPropertyGridWidgetHelper.h; sourceTree = "<group>"; };
+		74A0C5CC17DDD72D00392D94 /* UIScrollBarMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIScrollBarMetadata.cpp; path = Metadata/UIScrollBarMetadata.cpp; sourceTree = "<group>"; };
+		74A0C5CD17DDD72D00392D94 /* UIScrollBarMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScrollBarMetadata.h; path = Metadata/UIScrollBarMetadata.h; sourceTree = "<group>"; };
 		74AD4BCC1727DB880082EFB3 /* scrollviewpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = scrollviewpropertygridwidget.ui; sourceTree = "<group>"; };
 		74AD4BCF1727DBA50082EFB3 /* scrollviewpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scrollviewpropertygridwidget.cpp; path = PropertyGridWidgets/scrollviewpropertygridwidget.cpp; sourceTree = "<group>"; };
 		74AD4BD01727DBA50082EFB3 /* scrollviewpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scrollviewpropertygridwidget.h; path = PropertyGridWidgets/scrollviewpropertygridwidget.h; sourceTree = "<group>"; };
@@ -723,7 +741,7 @@
 		02D69C4616F08CED00F3803F /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				748A997E1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp */,
+				749B309117E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp */,
 				7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */,
 				C185940516F3243E005D30E2 /* AggregatorMetadata_moc.cpp */,
 				02D69C4716F08CED00F3803F /* BaseMetadata_moc.cpp */,
@@ -736,6 +754,8 @@
 				02D69C4E16F08CED00F3803F /* UIControlMetadata_moc.cpp */,
 				02D69C4F16F08CED00F3803F /* UIListMetadata_moc.cpp */,
 				02D69C5016F08CED00F3803F /* UISliderMetadata_moc.cpp */,
+				749B309217E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp */,
+				748A997E1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp */,
 				02D69C5116F08CED00F3803F /* UISpinnerMetadata_moc.cpp */,
 				02D69C5216F08CED00F3803F /* UIStaticTextMetadata_moc.cpp */,
 				02D69C5316F08CED00F3803F /* UITextControlMetadata_moc.cpp */,
@@ -792,6 +812,7 @@
 		02D69C7616F08CED00F3803F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				749B306117E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp */,
 				74AD4BD31727DDB90082EFB3 /* scrollviewpropertygridwidget_moc.cpp */,
 				84B61F7A1727CF560011E66D /* textpropertygridwidget_moc.cpp */,
 				C185940016F31CDF005D30E2 /* aggregatorpropertygridwidget_moc.cpp */,
@@ -867,6 +888,8 @@
 				1700E41C162EB8C60069650D /* rectpropertygridwidget.h */,
 				17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */,
 				17DF04EA1636850C001F7ED2 /* screenpropertygridwidget.h */,
+				749B303717E0B7C400900A2E /* scrollcontrolpropertygridwidget.cpp */,
+				749B303817E0B7C500900A2E /* scrollcontrolpropertygridwidget.h */,
 				74AD4BCF1727DBA50082EFB3 /* scrollviewpropertygridwidget.cpp */,
 				74AD4BD01727DBA50082EFB3 /* scrollviewpropertygridwidget.h */,
 				7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */,
@@ -899,6 +922,8 @@
 				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
 				749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */,
 				749EBEF3178D9C3000D0699F /* ListPropertyGridWidgetHelper.h */,
+				7499C4BA17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp */,
+				7499C4BB17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.h */,
 				7487A43D170ADBED005EA703 /* StringConstants.h */,
 				178F303C165677BF008678AD /* StringUtils.cpp */,
 				178F303D165677BF008678AD /* StringUtils.h */,
@@ -975,6 +1000,8 @@
 				176D3960162C3E890099AACF /* UIControlMetadata.h */,
 				17AB665116EDF86B00634657 /* UIListMetadata.cpp */,
 				17AB665216EDF86B00634657 /* UIListMetadata.h */,
+				74A0C5CC17DDD72D00392D94 /* UIScrollBarMetadata.cpp */,
+				74A0C5CD17DDD72D00392D94 /* UIScrollBarMetadata.h */,
 				748A997B1726D7A600C6411B /* UIScrollViewMetadata.cpp */,
 				748A997C1726D7A600C6411B /* UIScrollViewMetadata.h */,
 				7482C8C51688AA9100435155 /* UISliderMetadata.cpp */,
@@ -1041,6 +1068,7 @@
 				02D69A5116F0783000F3803F /* rectpropertygridwidget.ui */,
 				02D69A5216F0783000F3803F /* screenpropertygridwidget.ui */,
 				74AD4BCC1727DB880082EFB3 /* scrollviewpropertygridwidget.ui */,
+				749B303017E0B78700900A2E /* scrollcontrolpropertygridwidget.ui */,
 				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
 				17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */,
 				02D69A5316F0783000F3803F /* statepropertygridwidget.ui */,
@@ -1121,7 +1149,6 @@
 				02D69C3B16F08CED00F3803F /* EditorSettings_moc.cpp */,
 				02D69C3C16F08CED00F3803F /* FrameworkMain_moc.cpp */,
 				02D69C3D16F08CED00F3803F /* GameCore_moc.cpp */,
-				1719682C17CE501000053905 /* ScaleSlider_moc.cpp */,
 				02D69C3E16F08CED00F3803F /* Helpers */,
 				02D69C4616F08CED00F3803F /* Metadata */,
 				02D69C5516F08CED00F3803F /* Models */,
@@ -1161,6 +1188,7 @@
 				02D69C9616F08CEE00F3803F /* ui_propertygridcontainerwidget.h */,
 				02D69C9716F08CEE00F3803F /* ui_rectpropertygridwidget.h */,
 				02D69C9816F08CEE00F3803F /* ui_screenpropertygridwidget.h */,
+				749B306517E0BE2E00900A2E /* ui_scrollcontrolpropertygridwidget.h */,
 				02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */,
 				02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */,
 				02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */,
@@ -1419,6 +1447,7 @@
 				49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */,
 				49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */,
 				74AD4BCD1727DB880082EFB3 /* scrollviewpropertygridwidget.ui in Bundle Resources */,
+				749B303117E0B78700900A2E /* scrollcontrolpropertygridwidget.ui in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1652,6 +1681,12 @@
 				7490884E17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp in Build Sources */,
 				1719682217CE4BD400053905 /* ScaleSlider.cpp in Build Sources */,
 				1719682617CE4C2900053905 /* ScaleSlider_moc.cpp in Build Sources */,
+				74A0C5CE17DDD72D00392D94 /* UIScrollBarMetadata.cpp in Build Sources */,
+				749B303917E0B7C700900A2E /* scrollcontrolpropertygridwidget.cpp in Build Sources */,
+				749B306217E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp in Build Sources */,
+				749B309417E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp in Build Sources */,
+				749B309517E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp in Build Sources */,
+				7499C4BC17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

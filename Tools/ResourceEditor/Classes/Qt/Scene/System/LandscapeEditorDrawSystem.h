@@ -91,6 +91,10 @@ public:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
+	Rect GetTextureRect();
+	Rect GetHeightmapRect();
+	Rect GetLandscapeRect();
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;
@@ -110,7 +114,7 @@ private:
 	void UpdateBaseLandscapeHeightmap();
 	bool Init();
 
-	bool InitLandscape(Entity* landscape);
+	bool InitLandscape(Entity* landscapeEntity, Landscape* landscape);
 	void DeinitLandscape();
 
 	bool IsNotPassableTerrainCanBeEnabled();

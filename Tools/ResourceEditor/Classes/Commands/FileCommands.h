@@ -78,14 +78,5 @@ protected:
     
 };
 
-class CommandSaveToFolderWithChilds: public Command
-{
-public:
-	DAVA_DEPRECATED(CommandSaveToFolderWithChilds()); // DEPRECATED: using QFileDialog
-protected:
-        virtual void Execute();
-};
-
-
 
 #endif // #ifndef __FILE_COMMANDS_H__

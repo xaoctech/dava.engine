@@ -187,7 +187,7 @@ bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	notPassableTerrainProxy->Enable();
 	notPassableTerrainProxy->UpdateTexture(heightmapProxy,
 										   landscapeProxy->GetLandscapeBoundingBox(),
-										   Rect(0.f, 0.f, (float32)(heightmapProxy->Size() - 1), (float32)(heightmapProxy->Size() - 1)));
+										   GetHeightmapRect());
 	
 	landscapeProxy->SetNotPassableTexture(notPassableTerrainProxy->GetTexture());
 	landscapeProxy->SetNotPassableTextureEnabled(true);
@@ -333,6 +333,28 @@ float32 LandscapeEditorDrawSystem::GetLandscapeMaxHeight()
 	return landSize.z;
 }
 
+Rect LandscapeEditorDrawSystem::GetTextureRect()
+{
+	float32 textureSize = GetTextureSize();
+	return Rect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+}
+
+Rect LandscapeEditorDrawSystem::GetHeightmapRect()
+{
+	float32 heightmapSize = (float32)GetHeightmapProxy()->Size();
+	return Rect(Vector2(0.f, 0.f), Vector2(heightmapSize, heightmapSize));
+}
+
+Rect LandscapeEditorDrawSystem::GetLandscapeRect()
+{
+	AABBox3 boundingBox = GetLandscapeProxy()->GetLandscapeBoundingBox();
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+					 (boundingBox.max - boundingBox.min).y);
+
+	return Rect(landPos, landSize);
+}
+
 float32 LandscapeEditorDrawSystem::GetHeightAtPoint(const Vector2& point)
 {
 	Heightmap *heightmap = GetHeightmapProxy();
@@ -354,10 +376,7 @@ float32 LandscapeEditorDrawSystem::GetHeightAtPoint(const Vector2& point)
 
 float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(const Vector2& point)
 {
-	float32 textureSize = (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
-
-	if (textureRect.PointInside(point))
+	if (GetTextureRect().PointInside(point))
 	{
 		return GetHeightAtPoint(TexturePointToHeightmapPoint(point));
 	}
@@ -367,54 +386,22 @@ float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(const Vector2& point)
 
 Vector2 LandscapeEditorDrawSystem::HeightmapPointToTexturePoint(const Vector2& point)
 {
-	float32 heightmapSize = (float32)GetHeightmapProxy()->Size();
-	float32 textureSize = (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-
-	Rect heightmapRect(Vector2(0.f, 0.f), Vector2(heightmapSize, heightmapSize));
-	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
-
-	return TranslatePoint(point, heightmapRect, textureRect);
+	return TranslatePoint(point, GetHeightmapRect(), GetTextureRect());
 }
 
 Vector2 LandscapeEditorDrawSystem::TexturePointToHeightmapPoint(const Vector2& point)
 {
-	float32 heightmapSize = (float32)GetHeightmapProxy()->Size();
-	float32 textureSize = (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-
-	Rect heightmapRect(Vector2(0.f, 0.f), Vector2(heightmapSize, heightmapSize));
-	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
-
-	return TranslatePoint(point, textureRect, heightmapRect);
+	return TranslatePoint(point, GetTextureRect(), GetHeightmapRect());
 }
 
 Vector2 LandscapeEditorDrawSystem::TexturePointToLandscapePoint(const Vector2& point)
 {
-	AABBox3 boundingBox = GetLandscapeProxy()->GetLandscapeBoundingBox();
-	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
-	Vector2 landSize((boundingBox.max - boundingBox.min).x,
-					 (boundingBox.max - boundingBox.min).y);
-
-	float32 textureSize = (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-
-	Rect landRect(landPos, landSize);
-	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
-
-	return TranslatePoint(point, textureRect, landRect);
+	return TranslatePoint(point, GetTextureRect(), GetLandscapeRect());
 }
 
 Vector2 LandscapeEditorDrawSystem::LandscapePointToTexturePoint(const Vector2& point)
 {
-	AABBox3 boundingBox = GetLandscapeProxy()->GetLandscapeBoundingBox();
-	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
-	Vector2 landSize((boundingBox.max - boundingBox.min).x,
-					 (boundingBox.max - boundingBox.min).y);
-
-	float32 textureSize = (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-
-	Rect landRect(landPos, landSize);
-	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
-
-	return TranslatePoint(point, landRect, textureRect);
+	return TranslatePoint(point, GetLandscapeRect(), GetTextureRect());
 }
 
 Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect)
@@ -462,7 +449,8 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 
 bool LandscapeEditorDrawSystem::Init()
 {
-	if (!InitLandscape(FindLandscapeEntity(GetScene())))
+	//landscape initialization should be handled by AddEntity/RemoveEntity methods
+	if (!landscapeNode || !baseLandscape || !landscapeProxy)
 	{
 		return false;
 	}
@@ -486,22 +474,17 @@ bool LandscapeEditorDrawSystem::Init()
 	return true;
 }
 
-bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscape)
+bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscapeEntity, Landscape* landscape)
 {
 	DeinitLandscape();
 
-	if (!landscape)
+	if (!landscapeEntity || !landscape)
 	{
 		return false;
 	}
 
-	landscapeNode = landscape;
-	baseLandscape = SafeRetain(GetLandscape(landscapeNode));
-	if (!baseLandscape)
-	{
-		DeinitLandscape();
-		return false;
-	}
+	landscapeNode = landscapeEntity;
+	baseLandscape = SafeRetain(landscape);
 	landscapeProxy = new LandscapeProxy(baseLandscape);
 
 	return true;
@@ -516,23 +499,20 @@ void LandscapeEditorDrawSystem::DeinitLandscape()
 
 void LandscapeEditorDrawSystem::ClampToTexture(Rect& rect)
 {
-	int32 textureSize = (int32)GetTextureSize();
-	Rect bounds(0.f, 0.f, textureSize - 1, textureSize - 1);
-	bounds.ClampToRect(rect);
+	GetTextureRect().ClampToRect(rect);
 }
 
 void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 {
-	int32 heightmapSize = GetHeightmapProxy()->Size();
-	Rect bounds(0.f, 0.f, heightmapSize - 1, heightmapSize - 1);
-	bounds.ClampToRect(rect);
+	GetHeightmapRect().ClampToRect(rect);
 }
 
 void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 {
-	if (GetLandscape(entity) != NULL)
+	Landscape* landscape = GetLandscape(entity);
+	if (landscape != NULL)
 	{
-		InitLandscape(entity);
+		InitLandscape(entity, landscape);
 	}
 }
 

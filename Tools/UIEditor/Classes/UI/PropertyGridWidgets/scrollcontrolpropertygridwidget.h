@@ -27,58 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef SCROLLCONTROLPROPERTYGRIDWIDGET_H
+#define SCROLLCONTROLPROPERTYGRIDWIDGET_H
 
-#include "SetSwitchIndexView.h"
-#include "ui_SetSwitchIndexView.h"
-#include <stdlib.h> 
-#include "Project/ProjectManager.h"
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EditorConfig.h"
+#include <QWidget>
+#include "basepropertygridwidget.h"
 
-SetSwitchIndexView::SetSwitchIndexView(QWidget* parent)
-:	QWidget(parent),
-	ui(new Ui::SetSwitchIndexView)
+namespace Ui {
+class ScrollControlPropertyGridWidget;
+}
+
+class ScrollControlPropertyGridWidget : public BasePropertyGridWidget
 {
-	ui->setupUi(this);
+    Q_OBJECT
+
+public:
+    explicit ScrollControlPropertyGridWidget(QWidget *parent = 0);
+    ~ScrollControlPropertyGridWidget();
+
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
+private:   
 	
-	Init();
-}
-
-SetSwitchIndexView::~SetSwitchIndexView()
-{
-	delete ui;
-}
-
-void SetSwitchIndexView::Init()
-{
-	// TODO: mainwindow
-	/*
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(this, SIGNAL(Clicked(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)), handler, SLOT(ToggleSetSwitchIndex(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)));
-	connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(Clicked()));
+	// Fill the combo with appropriate values.
+    void FillComboboxes();
 	
-	ui->btnOK->blockSignals(true);
-	QtMainWindowHandler::Instance()->RegisterSetSwitchIndexWidgets(ui->spinBox,
-		ui->rBtnSelection,
-		ui->rBtnScene,
-		ui->btnOK);
+protected:
+	Ui::ScrollControlPropertyGridWidget *ui;
+    // Background Control contains Comboboxes which should be processed in the specific way.
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
 
-	handler->SetSwitchIndexWidgetsState(true);
-	*/	
-}
+    // Handler for the custom combobox values.
+    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
+};
 
-void SetSwitchIndexView::Clicked()
-{
-	uint32 value = ui->spinBox->value();
-	SetSwitchIndexHelper::eSET_SWITCH_INDEX state;
-	if ( ui->rBtnSelection->isChecked())
-	{
-		state = SetSwitchIndexHelper::FOR_SELECTED;
-	}
-	else
-	{
-		state = SetSwitchIndexHelper::FOR_SCENE;
-	}
-
-	emit Clicked(value, state);
-}
+#endif // SCROLLCONTROLPROPERTYGRIDWIDGET_H
