@@ -459,6 +459,12 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+    
+#if defined(__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#elif defined(__DAVAENGINE_WIN32__)
+#endif //OS
+    
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
