@@ -217,8 +217,8 @@
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
-   <addaction name="actionTextureConverter"/>
    <addaction name="actionMaterialEditor"/>
+   <addaction name="actionTextureConverter"/>
    <addaction name="separator"/>
    <addaction name="actionEnableCameraLight"/>
   </widget>

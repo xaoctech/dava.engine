@@ -349,7 +349,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		// look from
 		if(NULL != GetCamera(entity))
 		{
-			contextMenu.addAction(QIcon(":/QtIcons/camera.png"), "Look from", this, SLOT(SetCurrentCamera()));
+			contextMenu.addAction(QIcon(":/QtIcons/eye.png"), "Look from", this, SLOT(SetCurrentCamera()));
 		}
 
 		// add/remove
