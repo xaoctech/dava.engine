@@ -402,6 +402,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
 
+    QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
+
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
@@ -480,37 +482,19 @@ void QtMainWindow::InitRecent()
 		action->setData(QString(path.c_str()));
 		recentScenes.push_back(action);
 	}
-
-	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 }
 
 void QtMainWindow::AddRecent(const QString &path)
 {
-	for(int i = 0; i < recentScenes.size(); ++i)
-	{
-		if(recentScenes[i]->data() == path)
-		{
-			ui->menuFile->removeAction(recentScenes[i]);
-			recentScenes.removeAt(i);
-			i--;
-		}
-	}
+    while(recentScenes.size())
+    {
+        ui->menuFile->removeAction(recentScenes[0]);
+        recentScenes.removeAt(0);
+    }
+    
+    EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
 
-	QAction *action = new QAction(path, NULL);
-	action->setData(path);
-
-	if(recentScenes.size() > 0)
-	{
-		ui->menuFile->insertAction(recentScenes[0], action);
-	}
-	else
-	{
-		ui->menuFile->addAction(action);
-	}
-
-	recentScenes.push_front(action);
-
-	EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
+    InitRecent();
 }
 
 // ###################################################################################################
