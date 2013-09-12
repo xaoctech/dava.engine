@@ -540,7 +540,7 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 {
 	if (entity == landscapeNode)
 	{
-		SceneEditor2* sceneEditor = dynamic_cast<SceneEditor2*>(GetScene());
+		SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
 
 		bool needRemoveBaseLandscape = sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL
 																   & ~SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR);
