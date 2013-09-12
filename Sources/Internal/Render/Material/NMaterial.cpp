@@ -132,6 +132,7 @@ NMaterial::NMaterial()
 {
     activeTechnique = 0;
 	ready = false;
+	materialDynamicLit = false;
 }
     
 NMaterial::~NMaterial()
@@ -715,7 +716,14 @@ void NMaterial::Rebuild(bool recursive)
 	HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
 	while(iter != techniqueForRenderPass.End())
 	{
-		iter.GetValue()->RecompileShader(combinedDefines);
+		MaterialTechnique* technique = iter.GetValue();
+		technique->RecompileShader(combinedDefines);
+		
+		Shader* shader = technique->GetShader();
+		
+		//VI: assume that uniform "lightPosition0" indicates vertex or pixel lighting
+		int lightPositionUniformIndex = shader->FindUniformIndexByName("lightPosition0");
+		materialDynamicLit = (lightPositionUniformIndex >= 0);		
 		++iter;
 	}
 	
@@ -812,12 +820,10 @@ NMaterial* NMaterial::CreateChild()
 	
 void NMaterial::SetupPerFrameProperties(Camera* camera)
 {
-	NMaterialProperty* propLitMaterial = GetMaterialProperty("prop_litMaterial");
-	
 	//VI: this is vertex or pixel lit material
 	//VI: setup light for the material
 	//VI: TODO: deal with multiple lights
-	if(camera && propLitMaterial && lights[0])
+	if(camera && materialDynamicLit && lights[0])
 	{
 		NMaterialProperty* propAmbientColor = GetMaterialProperty("prop_ambientColor");
 		NMaterialProperty* propDiffuseColor = GetMaterialProperty("prop_diffuseColor");

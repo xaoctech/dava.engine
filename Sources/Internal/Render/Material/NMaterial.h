@@ -146,6 +146,7 @@ public:
 	
 	void Rebuild(bool recursive = true);
 	bool IsReady() {return ready;}
+	bool IsDynamicLit() {return materialDynamicLit;}
 	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild
@@ -191,6 +192,8 @@ private:
     FastName activeTechniqueName;
     MaterialTechnique * activeTechnique;
 	bool ready;
+	
+	bool materialDynamicLit;
 	
 private:
 	

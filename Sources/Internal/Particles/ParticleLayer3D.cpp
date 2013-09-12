@@ -50,7 +50,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
     NMaterial * material = MaterialSystem::Instance()->GetMaterial("Global.Textured.VertexColor.ParticlesBlend");
 	DVASSERT(material);
 	
-	renderBatch->SetMaterial(material);
+	renderBatch->SetMaterial(material->CreateChild());
 	SafeRelease(material);
 }
 
@@ -369,7 +369,7 @@ void ParticleLayer3D::SetAdditive(bool additive)
 		(additive) ? "Global.Textured.VertexColor.ParticlesAdditive" : "Global.Textured.VertexColor.ParticlesBlend");
 	DVASSERT(material);
 
-	renderBatch->SetMaterial(material);
+	renderBatch->SetMaterial(material->CreateChild());
 }
 
 bool ParticleLayer3D::IsLong()
