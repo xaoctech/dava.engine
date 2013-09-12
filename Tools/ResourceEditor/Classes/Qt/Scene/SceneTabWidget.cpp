@@ -36,6 +36,7 @@
 #include "AppScreens.h"
 
 #include "Classes/Deprecated/ScenePreviewDialog.h"
+#include "Classes/Qt/Main/Request.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -165,7 +166,7 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		// message box about can't load scene
 		// ...
 		
-		delete scene;
+        SafeRelease(scene);
 	}
 
 	if(tabBar->count() == 1)
@@ -180,43 +181,24 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 
 void SceneTabWidget::CloseTab(int index)
 {
-	bool doCloseScene = true;
+    Request request;
+    
+    emit CloseTabRequest(index, &request);
+    
+    if(!request.IsAccepted())
+        return;
+    
+    
 	SceneEditor2 *scene = GetTabScene(index);
-
-	if(NULL != scene)
-	{
-		if(scene->IsChanged())
-		{
-			int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?", 
-				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-			
-			if(answer == QMessageBox::Yes)
-			{
-				
-			}
-			else if(answer == QMessageBox::Cancel)
-			{
-				doCloseScene = false;
-			}
-		}
-	}
-
-	if(doCloseScene)
-	{
-		if(index == tabBar->currentIndex())
-		{
-			dava3DView->SetScene(NULL);
-			SceneSignals::Instance()->EmitDeactivated(scene);
-		}
-
-		if(scene == curScene)
-		{
-			curScene = NULL;
-		}
-
-		tabBar->removeTab(index);
-		delete scene;
-	}
+    if(index == tabBar->currentIndex())
+    {
+        curScene = NULL;
+        dava3DView->SetScene(NULL);
+        SceneSignals::Instance()->EmitDeactivated(scene);
+    }
+    
+    tabBar->removeTab(index);
+    SafeRelease(scene);
 }
 
 int SceneTabWidget::GetCurrentTab() const
