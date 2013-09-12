@@ -30,10 +30,7 @@ QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::In
 
 QtPropertyDataInspMember::~QtPropertyDataInspMember()
 {
-	if(NULL != lastCommand)
-	{
-		delete lastCommand;
-	}
+	DAVA::SafeDelete(lastCommand);
 }
 
 QVariant QtPropertyDataInspMember::GetValueInternal()
@@ -64,12 +61,9 @@ void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 	// also save value to meta-object
 	if(NULL != member)
 	{
-		if(NULL != lastCommand)
-		{
-			delete lastCommand;
-		}
-
+		DAVA::SafeDelete(lastCommand);
 		lastCommand = new InspMemberModifyCommand(member, object, newValue);
+
 		member->SetValue(object, newValue);
 	}
 }

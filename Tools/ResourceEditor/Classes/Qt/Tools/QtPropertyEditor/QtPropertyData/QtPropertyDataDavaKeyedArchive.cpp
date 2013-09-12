@@ -240,7 +240,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 			delete lastCommand;
 		}
 
-		lastCommand = new KeyeadArchiveAddValueCommand(curArchive, key, value);
+		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
 
 		emit ValueChanged();
 	}
@@ -248,9 +248,21 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 
 void* QtPropertyDataDavaKeyedArcive::CreateLastCommand() const
 {
-	Command2* cmd = lastCommand;
-	lastCommand = NULL;
-	return cmd;
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		if(CMDID_KEYEDARCHIVE_REM_KEY == lastCommand->GetId())
+		{
+			command = new KeyeadArchiveRemValueCommand(*((KeyeadArchiveRemValueCommand *) lastCommand));
+		}
+		else if(CMDID_KEYEDARCHIVE_ADD_KEY == lastCommand->GetId())
+		{
+			command = new KeyedArchiveAddValueCommand(*((KeyedArchiveAddValueCommand *) lastCommand));
+		}
+	}
+
+	return command;
 }
 
 KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int defaultType, QWidget *parent /* = NULL */) 
