@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Form Files">
@@ -603,6 +603,21 @@
     <ClCompile Include="GeneratedFiles\ScaleSlider_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\scrollcontrolpropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UIScrollBarMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Helpers\ScrollPropertyGridWidgetHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UIScrollBarMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\scrollcontrolpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -938,9 +953,6 @@
     <ClInclude Include="Classes\Helpers\ListPropertyGridWidgetHelper.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Metadata\UIScrollViewMetadata.h">
       <Filter>Sources\Metadata</Filter>
     </ClInclude>
@@ -955,6 +967,18 @@
     </ClInclude>
     <ClInclude Include="Classes\ScaleSlider.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\scrollcontrolpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIScrollBarMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\ScrollPropertyGridWidgetHelper.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_scrollcontrolpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1032,6 +1056,9 @@
     </None>
     <None Include="UI\platformimportdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\scrollcontrolpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
   </ItemGroup>
 </Project>
