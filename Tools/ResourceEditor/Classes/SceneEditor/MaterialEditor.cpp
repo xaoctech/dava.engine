@@ -543,16 +543,12 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
     
     if(workingScene)
     {
-        EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
-        if(editorScene)
+        Landscape *landscape = FindLandscape(workingScene);
+        if (landscape)
         {
-            Landscape *landscape = FindLandscape(editorScene);
-            if (landscape)
-            {
-                landscape->SetFog(enabled);
-                landscape->SetFogDensity(dencity);
-                landscape->SetFogColor(newColor);
-            }
+            landscape->SetFog(enabled);
+            landscape->SetFogDensity(dencity);
+            landscape->SetFogColor(newColor);
         }
     }
 }
