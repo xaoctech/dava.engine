@@ -39,6 +39,8 @@
 namespace DAVA
 {
 
+Vector<uint16> ParticleLayer3D::indices;
+
 ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
