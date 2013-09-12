@@ -115,6 +115,9 @@ SceneEditor2::~SceneEditor2()
 
     RemoveSystem(structureSystem);
     SafeDelete(structureSystem);
+
+	RemoveSystem(landscapeEditorDrawSystem);
+	SafeDelete(landscapeEditorDrawSystem);
     
 	SceneSignals::Instance()->EmitClosed(this);
 }
