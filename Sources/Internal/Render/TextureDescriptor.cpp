@@ -75,7 +75,7 @@ TextureDescriptor::~TextureDescriptor()
 {
 }
 
-TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathname)
+TextureDescriptor * TextureDescriptor::CreateFromFile(const FilePath &filePathname)
 {
 	if(filePathname.IsEmpty() || filePathname.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
@@ -92,6 +92,29 @@ TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathnam
     
     return descriptor;
 }
+    
+TextureDescriptor * TextureDescriptor::CreateDescriptor(Texture::TextureWrap wrap, bool generateMipmaps)
+{
+    TextureDescriptor *descriptor = new TextureDescriptor();
+	
+	descriptor->settings.wrapModeS = wrap;
+	descriptor->settings.wrapModeT = wrap;
+    
+    descriptor->settings.generateMipMaps = generateMipmaps;
+	if(descriptor->settings.generateMipMaps)
+	{
+		descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+		descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+	}
+	else
+	{
+		descriptor->settings.minFilter = Texture::FILTER_LINEAR;
+		descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+	}
+    
+    return descriptor;
+}
+
     
     
 void TextureDescriptor::InitializeValues()

@@ -462,7 +462,8 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 
 bool LandscapeEditorDrawSystem::Init()
 {
-	if (!InitLandscape(FindLandscapeEntity(GetScene())))
+	//landscape initialization should be handled by AddEntity/RemoveEntity methods
+	if (!landscapeNode || !baseLandscape || !landscapeProxy)
 	{
 		return false;
 	}
@@ -486,22 +487,17 @@ bool LandscapeEditorDrawSystem::Init()
 	return true;
 }
 
-bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscape)
+bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscapeEntity, Landscape* landscape)
 {
 	DeinitLandscape();
 
-	if (!landscape)
+	if (!landscapeEntity || !landscape)
 	{
 		return false;
 	}
 
-	landscapeNode = landscape;
-	baseLandscape = SafeRetain(GetLandscape(landscapeNode));
-	if (!baseLandscape)
-	{
-		DeinitLandscape();
-		return false;
-	}
+	landscapeNode = landscapeEntity;
+	baseLandscape = SafeRetain(landscape);
 	landscapeProxy = new LandscapeProxy(baseLandscape);
 
 	return true;
@@ -530,9 +526,10 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 
 void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 {
-	if (GetLandscape(entity) != NULL)
+	Landscape* landscape = GetLandscape(entity);
+	if (landscape != NULL)
 	{
-		InitLandscape(entity);
+		InitLandscape(entity, landscape);
 	}
 }
 
@@ -540,7 +537,7 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 {
 	if (entity == landscapeNode)
 	{
-		SceneEditor2* sceneEditor = dynamic_cast<SceneEditor2*>(GetScene());
+		SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
 
 		bool needRemoveBaseLandscape = sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL
 																   & ~SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR);
