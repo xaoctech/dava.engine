@@ -40,6 +40,8 @@
 
 #include "FileSystem/FilePath.h"
 
+//#define LANDSCAPE_SPECULAR_LIT 1
+
 namespace DAVA
 {
 
@@ -173,8 +175,10 @@ public:
 	{
 	public:
 		Vector3 position;
-		Vector3 normal;
 		Vector2 texCoord;
+#ifdef LANDSCAPE_SPECULAR_LIT
+		Vector3 normal;
+#endif
 	};
     
     /**
@@ -425,10 +429,12 @@ public:
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
-						 
+		
+#ifdef LANDSCAPE_SPECULAR_LIT
 		PROPERTY("specularColor", "Specular Color", GetSpecularColor, SetSpecularColor, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularShininess", "Specular Shininess", GetSpecularShininess, SetSpecularShininess, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularMap", "Specular Map", GetSpecularMapPath, SetSpecularMapPath, I_SAVE | I_VIEW | I_EDIT)
+#endif
     );
 };
 

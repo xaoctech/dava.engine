@@ -127,6 +127,11 @@ Landscape::Landscape()
 	
 	tileMaskMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
 	fullTiledMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+	
+#ifdef LANDSCAPE_SPECULAR_LIT
+	tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+	fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
+#endif
 		
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_MIXED);
@@ -177,6 +182,8 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 //            Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
 			
 			
+#ifdef LANDSCAPE_SPECULAR_LIT
+
 			//VI: calculate normal for the point.
 			uint32 xx = 0;
 			uint32 yy = 0;
@@ -201,6 +208,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 			Vector3 normalAverage = normal0 + normal1 + normal2 + normal3;
 			normalAverage.Normalize();
 			landscapeVertices[index].normal = normalAverage;
+#endif
 			
             index++;
         }
@@ -208,8 +216,12 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
     // setup a base RDO
     RenderDataObject * landscapeRDO = new RenderDataObject();
     landscapeRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].position);
-	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
     landscapeRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &landscapeVertices[0].texCoord);
+	
+#ifdef LANDSCAPE_SPECULAR_LIT
+	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
+#endif
+	
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
 //    SafeDeleteArray(landscapeVertices);
     
@@ -1851,6 +1863,8 @@ uint32 Landscape::GetDrawIndices() const
 	return drawIndices;
 }
 	
+#ifdef LANDSCAPE_SPECULAR_LIT
+	
 void Landscape::SetSpecularColor(const Color& color)
 {
 	tileMaskMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &color);
@@ -1917,5 +1931,6 @@ FilePath Landscape::GetSpecularMapPath()
 	
 	return texturePath;
 }
+#endif
 	
 };
