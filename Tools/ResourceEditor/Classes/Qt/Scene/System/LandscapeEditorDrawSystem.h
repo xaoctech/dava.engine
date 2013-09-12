@@ -91,6 +91,10 @@ public:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
+	Rect GetTextureRect();
+	Rect GetHeightmapRect();
+	Rect GetLandscapeRect();
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;
