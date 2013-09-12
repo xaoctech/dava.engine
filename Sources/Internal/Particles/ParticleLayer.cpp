@@ -721,7 +721,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		particle->lifeTime += (lifeVariation->GetValue(layerTime) * randCoeff);
 	
 	// size 
-	particle->size = Vector2(0.0f, 0.0f); 
+	particle->size = Vector2(1.0f, 1.0f); 
 	if (size)
 		particle->size = size->GetValue(layerTime);
 	if (sizeVariation)
@@ -731,10 +731,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	{
 		particle->size.x /= (float32)sprite->GetWidth();
 		particle->size.y /= (float32)sprite->GetHeight();
-	}
-	else
-	{
-		particle->size = Vector2(0, 0);
+	}	
+
+	if (emitter->parentParticle){
+		particle->size.x*=emitter->parentParticle->size.x;
+		particle->size.y*=emitter->parentParticle->size.y;
 	}
 
 	float32 vel = 0.0f;
