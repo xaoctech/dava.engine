@@ -557,30 +557,6 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	}
 }
 
-void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
-{
-    BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushEditorEntities();
-    
-	// Get project path
-//     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-//     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-
-
-    SceneSaver sceneSaver;
-//    sceneSaver.SetInFolder(dataSourcePath);
-	sceneSaver.SetInFolder(sceneData->GetScenePathname().GetDirectory());
-    sceneSaver.SetOutFolder(folder);
-    
-    Set<String> errorsLog;
-    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
-    
-	iBody->bodyControl->PopEditorEntities();
-    
-    ShowErrorDialog(errorsLog);
-}
-
 void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
 {
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();

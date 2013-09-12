@@ -26,29 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIControlMetadata.h"
 
+#ifndef __UIEditor__UIScrollBarMetadata__
+#define __UIEditor__UIScrollBarMetadata__
 
-#ifndef __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
-#define __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
+namespace DAVA {
 
-#include "Command.h"
-#include "DAVAEngine.h"
-#include "../Constants.h"
-#include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
-#include "EditorBodyControlCommands.h"
-
-class CommandToggleSetSwitchIndex: public CommandEntityModification
+// Metadata class for DAVA UIScrollBar control.
+class UIScrollBarMetadata : public UIControlMetadata
 {
-public:
-	DAVA_DEPRECATED(CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state));//DEPRECATED: using SceneDataManager(QOBJECT)
+    Q_OBJECT
 	
-protected:
-	DAVA::uint32	value;
-	DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX	swtichState;
-	DAVA::Map<SwitchComponent *, int32> originalIndexes;
+	// Scrollbar orientation
+    Q_PROPERTY(int ScrollOrientation READ GetScrollOrientation WRITE SetScrollOrientation);
+	
+public:
+    UIScrollBarMetadata(QObject* parent = 0);
 
-    virtual void Execute();
-	virtual void Cancel();
+protected:
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+
+    virtual QString GetUIControlClassName() { return "UIScrollBar"; };
+	
+    // Helper to access active UI ScrollBar.
+    UIScrollBar* GetActiveUIScrollBar() const;
+	
+    // Getters/setters.
+	int GetScrollOrientation();
+	void SetScrollOrientation(int value);
 };
 
-#endif // #ifndef __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
+};
+
+#endif /* defined(__UIEditor__UIScrollBarMetadata__) */

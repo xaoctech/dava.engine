@@ -66,6 +66,9 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "../../Commands2/LandscapeEditorDrawSystemActions.h"
+
+#include "Classes/CommandLine/SceneSaver/SceneSaver.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -299,7 +302,6 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
 	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
-	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
@@ -312,7 +314,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionParticleEditor);
 	ui->menuView->addAction(actionParticleEditorTimeLine);
 	ui->menuView->addAction(actionHangingObjects);
-	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
@@ -731,10 +732,33 @@ void QtMainWindow::OnSceneSaveAs()
 
 void QtMainWindow::OnSceneSaveToFolder()
 {
-	// TODO:
-	// ...
-	// 
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
 
+	FilePath scenePathname = scene->GetScenePath();
+	if(scenePathname.IsEmpty() && scenePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	{
+		ShowErrorDialog("Can't save not saved scene.");
+		return;
+	}
+
+	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
+	if(path.isEmpty())
+		return;
+
+	FilePath folder = PathnameToDAVAStyle(path);
+	folder.MakeDirectoryPathname();
+
+	SceneSaver sceneSaver;
+	sceneSaver.SetInFolder(scene->GetScenePath().GetDirectory());
+	sceneSaver.SetOutFolder(folder);
+
+	Set<String> errorsLog;
+	scene->PopEditorEntities();
+	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
+	scene->PushEditorEntities();
+
+	ShowErrorDialog(errorsLog);
 }
 
 void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)

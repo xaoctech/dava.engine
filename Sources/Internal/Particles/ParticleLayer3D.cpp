@@ -59,6 +59,9 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	material->SetTwoSided(true); //as particles can now be not camera facing
 
 	renderBatch->SetMaterial(material);
+	
+	renderBatch->SetIndices(&indices);
+
 	SafeRelease(material);
 }
 
@@ -298,9 +301,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	{					
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
-		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
-		
-		renderBatch->SetIndices(&indices[0]);
+		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
 		//renderData->SetIndices(EIF_16, (uint8*)(&indices[0]), totalCount*INDICES_PER_PARTICLE);
 
 		if (IsLong())

@@ -26,31 +26,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIScrollBarMetadata.h"
 
+namespace DAVA {
 
-#ifndef __RESOURCEEDITORQT__SET_SWITCH_INDEX_HELPER_H__
-#define __RESOURCEEDITORQT__SET_SWITCH_INDEX_HELPER_H__
-
-#include "Base/BaseTypes.h"
-
-namespace DAVA
+UIScrollBarMetadata::UIScrollBarMetadata(QObject* parent) :
+	UIControlMetadata(parent)
 {
-class Entity;
-class SwitchComponent;
+}
 
-class SetSwitchIndexHelper
+UIScrollBar* UIScrollBarMetadata::GetActiveUIScrollBar() const
 {
-public:
-	enum eSET_SWITCH_INDEX
-	{
-		FOR_SELECTED = 0,
-		FOR_SCENE
-	};
+	return dynamic_cast<UIScrollBar*>(GetActiveUIControl());
+}
 
-	static void ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_INDEX state, Set<Entity*>& affectedEntities, Map<SwitchComponent *, int32>& originalIndexes);
+void UIScrollBarMetadata::InitializeControl(const String& controlName, const Vector2& position)
+{
+	BaseMetadata::InitializeControl(controlName, position);
 	
-	static void RestoreOriginalIndexes(Map<SwitchComponent *, int32>& originalIndexes, Set<Entity*>& affectedEntities);
-};
-};
+	int paramsCount = this->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
+    {
+		// Initialize UIScrollBar
+        UIScrollBar* scroll = dynamic_cast<UIScrollBar*>(this->treeNodeParams[i].GetUIControl());
+		if (scroll)
+		{
+			scroll->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+		}
+    }
+}
 
-#endif /* defined(__RESOURCEEDITORQT__SET_SWITCH_INDEX_HELPER_H__) */
+void UIScrollBarMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
+{
+	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
+}
+
+int UIScrollBarMetadata::GetScrollOrientation()
+{
+    if (!VerifyActiveParamID())
+    {
+        return UIScrollBar::ORIENTATION_VERTICAL;
+    }
+
+    return GetActiveUIScrollBar()->GetOrientation();
+}
+    
+void UIScrollBarMetadata::SetScrollOrientation(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }	
+    
+	GetActiveUIScrollBar()->SetOrientation((UIScrollBar::eScrollOrientation)value);
+}
+
+};
