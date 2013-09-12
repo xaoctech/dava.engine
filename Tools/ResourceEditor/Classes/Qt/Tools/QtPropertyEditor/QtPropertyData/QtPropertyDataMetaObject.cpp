@@ -39,10 +39,7 @@ QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::Me
 
 QtPropertyDataMetaObject::~QtPropertyDataMetaObject()
 {
-	if(NULL != lastCommand)
-	{
-		delete lastCommand;
-	}
+	DAVA::SafeDelete(lastCommand);
 }
 
 QVariant QtPropertyDataMetaObject::GetValueInternal()
@@ -67,11 +64,7 @@ void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
 	QtPropertyDataDavaVariant::SetValueInternal(value);
 	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
 
-	if(NULL != lastCommand)
-	{
-		delete lastCommand;
-	}
-
+	DAVA::SafeDelete(lastCommand);
 	lastCommand = new MetaObjModifyCommand(meta, object, newValue);
 
 	// also save value to meta-object
