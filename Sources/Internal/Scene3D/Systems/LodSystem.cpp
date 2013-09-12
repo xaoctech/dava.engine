@@ -249,7 +249,7 @@ bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 					return true;
 				}
 			}
-            if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->lodLayers.rbegin()->layer))
+            if (dst > lodComponent->GetLodLayerFarSquare(layersCount-1))
             {
                 return false;
             }
