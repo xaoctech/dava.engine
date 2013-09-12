@@ -160,6 +160,30 @@ SceneEditor2* QtMainWindow::GetCurrentScene()
 	return ui->sceneTabWidget->GetCurrentScene();
 }
 
+bool QtMainWindow::SaveScene( SceneEditor2 *scene )
+{
+	bool sceneWasSaved = false;
+
+	DAVA::FilePath scenePath = scene->GetScenePath();
+	if(!scene->IsLoaded() || scenePath.IsEmpty())
+	{
+		sceneWasSaved = SaveSceneAs(scene);
+	} 
+	else
+	{
+		if(scene->IsChanged())
+		{
+			if(!scene->Save(scenePath))
+			{
+				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+			}
+		}
+	}
+
+	return sceneWasSaved;
+}
+
+
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
 	bool ret = false;
@@ -711,27 +735,17 @@ void QtMainWindow::OnSceneSave()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		DAVA::FilePath scenePath = scene->GetScenePath();
-		if(!scene->IsLoaded() || scenePath.IsEmpty())
-		{
-			SaveSceneAs(scene);
-		} 
-		else
-		{
-			if(scene->IsChanged())
-			{
-				if(!scene->Save(scenePath))
-				{
-					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
-				}
-			}
-		}
+		SaveScene(scene);
 	}
 }
 
 void QtMainWindow::OnSceneSaveAs()
 {
-	SaveSceneAs(GetCurrentScene());
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		SaveSceneAs(scene);
+	}
 }
 
 void QtMainWindow::OnSceneSaveToFolder()
@@ -782,24 +796,21 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         closeRequest->Cancel();
         return;
     }
+	else if(answer == QMessageBox::No)
+	{
+		closeRequest->Accept();
+		return;
+	}
 
-    closeRequest->Accept();
-    
-    if(answer == QMessageBox::Yes)
+	bool sceneWasSaved = SaveScene(scene);
+    if(sceneWasSaved)
     {
-        DAVA::FilePath scenePath = scene->GetScenePath();
-		if(!scene->IsLoaded() || scenePath.IsEmpty())
-		{
-			SaveSceneAs(scene);
-		}
-		else
-		{
-            if(!scene->Save(scenePath))
-            {
-                QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
-            }
-		}
+		closeRequest->Accept();
     }
+	else
+	{
+		closeRequest->Cancel();
+	}
 }
 
 
@@ -1477,3 +1488,4 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
+
