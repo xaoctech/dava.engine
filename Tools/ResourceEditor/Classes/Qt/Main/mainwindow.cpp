@@ -1065,6 +1065,7 @@ void QtMainWindow::OnCameraDialog()
 	camera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
 	camera->SetTarget(DAVA::Vector3(1.0f, 0.0f, 0.0f));
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+	camera->SetAspect(1.0f);
 	sceneNode->AddComponent(new CameraComponent(camera));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);

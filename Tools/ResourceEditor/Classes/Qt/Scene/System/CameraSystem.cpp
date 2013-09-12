@@ -375,22 +375,26 @@ void SceneCameraSystem::CreateDebugCameras()
 		DAVA::Camera *mainCamera = NULL;
 		DAVA::Camera *topCamera = NULL;
 
+		/*
 		mainCamera = new DAVA::Camera();
 		mainCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		mainCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
 		mainCamera->SetTarget(DAVA::Vector3(0.0f, 1.0f, 0.0f));
+		mainCamera->SetAspect(1.0f);
 		mainCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *mainCameraEntity = new DAVA::Entity();
 		mainCameraEntity->SetName(ResourceEditor::EDITOR_MAIN_CAMERA);
 		mainCameraEntity->AddComponent(new DAVA::CameraComponent(mainCamera));
 		scene->InsertBeforeNode(mainCameraEntity, scene->GetChild(0));
+		*/
 
 		topCamera = new DAVA::Camera();
 		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
 		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
 		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+		topCamera->SetAspect(1.0f);
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
