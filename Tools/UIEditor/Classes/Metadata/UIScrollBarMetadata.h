@@ -26,50 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIScrollViewMetadata__
-#define __UIEditor__UIScrollViewMetadata__
-
 #include "UIControlMetadata.h"
-#include "UI/UIScrollView.h"
+
+#ifndef __UIEditor__UIScrollBarMetadata__
+#define __UIEditor__UIScrollBarMetadata__
 
 namespace DAVA {
 
-// Metadata class for DAVA UIList control.
-class UIScrollViewMetadata : public UIControlMetadata
+// Metadata class for DAVA UIScrollBar control.
+class UIScrollBarMetadata : public UIControlMetadata
 {
     Q_OBJECT
 	
-    // Horizontal position of scroll
-    Q_PROPERTY(float HorizontalScrollPosition READ GetHorizontalScrollPosition WRITE SetHorizontalScrollPosition);
-    Q_PROPERTY(float VerticalScrollPosition READ GetVerticalScrollPosition WRITE SetVerticalScrollPosition);
-	Q_PROPERTY(float ContentSizeX READ GetContentSizeX WRITE SetContentSizeX);
-	Q_PROPERTY(float ContentSizeY READ GetContentSizeY WRITE SetContentSizeY);
-	
+	// Scrollbar orientation
+    Q_PROPERTY(int ScrollOrientation READ GetScrollOrientation WRITE SetScrollOrientation);
 	
 public:
-    UIScrollViewMetadata(QObject* parent = 0);
+    UIScrollBarMetadata(QObject* parent = 0);
 
 protected:
     // Initialize the appropriate control.
     virtual void InitializeControl(const String& controlName, const Vector2& position);
     virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
-    virtual QString GetUIControlClassName() { return "UIScrollView"; };
+    virtual QString GetUIControlClassName() { return "UIScrollBar"; };
 	
-    // Helper to access active UI ScrollView.
-    UIScrollView* GetActiveUIScrollView() const;
+    // Helper to access active UI ScrollBar.
+    UIScrollBar* GetActiveUIScrollBar() const;
 	
     // Getters/setters.
-    float GetHorizontalScrollPosition() const;
-	void SetHorizontalScrollPosition(float value);
-    float GetVerticalScrollPosition() const;
-	void SetVerticalScrollPosition(float value);
-	float GetContentSizeX() const;
-	void SetContentSizeX(float value);
-	float GetContentSizeY() const;
-	void SetContentSizeY(float value);
+	int GetScrollOrientation();
+	void SetScrollOrientation(int value);
 };
 
 };
 
-#endif /* defined(__UIEditor__UIScrollViewMetadata__) */
+#endif /* defined(__UIEditor__UIScrollBarMetadata__) */

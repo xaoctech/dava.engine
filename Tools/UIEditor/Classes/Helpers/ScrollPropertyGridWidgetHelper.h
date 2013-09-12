@@ -26,50 +26,40 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIScrollViewMetadata__
-#define __UIEditor__UIScrollViewMetadata__
 
-#include "UIControlMetadata.h"
-#include "UI/UIScrollView.h"
+
+#ifndef __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
+#define __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
+
+#include "UI/UIScrollBar.h"
+#include <QString>
 
 namespace DAVA {
 
-// Metadata class for DAVA UIList control.
-class UIScrollViewMetadata : public UIControlMetadata
+class ScrollPropertyGridWidgetHelper
 {
-    Q_OBJECT
-	
-    // Horizontal position of scroll
-    Q_PROPERTY(float HorizontalScrollPosition READ GetHorizontalScrollPosition WRITE SetHorizontalScrollPosition);
-    Q_PROPERTY(float VerticalScrollPosition READ GetVerticalScrollPosition WRITE SetVerticalScrollPosition);
-	Q_PROPERTY(float ContentSizeX READ GetContentSizeX WRITE SetContentSizeX);
-	Q_PROPERTY(float ContentSizeY READ GetContentSizeY WRITE SetContentSizeY);
-	
-	
 public:
-    UIScrollViewMetadata(QObject* parent = 0);
-
+    // Draw Type.
+    static int GetOrientationCount();
+	
+    static UIScrollBar::eScrollOrientation GetOrientation(int index);
+    static QString GetOrientationDesc(int index);
+    static QString GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation);
+    
 protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+    // Validate the indexes.
+    static bool ValidateOrientationIndex(int index);
 
-    virtual QString GetUIControlClassName() { return "UIScrollView"; };
-	
-    // Helper to access active UI ScrollView.
-    UIScrollView* GetActiveUIScrollView() const;
-	
-    // Getters/setters.
-    float GetHorizontalScrollPosition() const;
-	void SetHorizontalScrollPosition(float value);
-    float GetVerticalScrollPosition() const;
-	void SetVerticalScrollPosition(float value);
-	float GetContentSizeX() const;
-	void SetContentSizeX(float value);
-	float GetContentSizeY() const;
-	void SetContentSizeY(float value);
+    // Maps.
+    struct OrientationData
+    {
+      	UIScrollBar::eScrollOrientation orientation;
+        const char* orientationDesc;
+    };
+
+    static const OrientationData orientationData[];
 };
 
 };
 
-#endif /* defined(__UIEditor__UIScrollViewMetadata__) */
+#endif /* defined(__SCROLL_PROPERTY_GRID_WIDGET_HELPER__) */
