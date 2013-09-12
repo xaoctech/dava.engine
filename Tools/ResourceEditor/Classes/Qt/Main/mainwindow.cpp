@@ -68,6 +68,7 @@
 #include "../../Commands2/LandscapeEditorDrawSystemActions.h"
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
+#include "Classes/Qt/Main/Request.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -114,6 +115,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
+    QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
+
+    
 	LoadGPUFormat();
 
     EnableGlobalTimeout(enableGlobalTimeout);
@@ -761,6 +765,44 @@ void QtMainWindow::OnSceneSaveToFolder()
 	ShowErrorDialog(errorsLog);
 }
 
+void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
+{
+    SceneEditor2 *scene = ui->sceneTabWidget->GetTabScene(tabIndex);
+    if(!scene || !scene->IsChanged())
+    {
+        closeRequest->Accept();
+        return;
+    }
+    
+    int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?",
+                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+    
+    if(answer == QMessageBox::Cancel)
+    {
+        closeRequest->Cancel();
+        return;
+    }
+
+    closeRequest->Accept();
+    
+    if(answer == QMessageBox::Yes)
+    {
+        DAVA::FilePath scenePath = scene->GetScenePath();
+		if(!scene->IsLoaded() || scenePath.IsEmpty())
+		{
+			SaveSceneAs(scene);
+		}
+		else
+		{
+            if(!scene->Save(scenePath))
+            {
+                QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+            }
+		}
+    }
+}
+
+
 void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -1085,11 +1127,13 @@ void QtMainWindow::OnCameraDialog()
 {
 	Entity* sceneNode = new Entity();
 	Camera * camera = new Camera();
+
 	camera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 	camera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
 	camera->SetTarget(DAVA::Vector3(1.0f, 0.0f, 0.0f));
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 	camera->SetAspect(1.0f);
+
 	sceneNode->AddComponent(new CameraComponent(camera));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
