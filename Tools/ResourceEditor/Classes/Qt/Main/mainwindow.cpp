@@ -302,7 +302,6 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
 	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
-	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
@@ -315,7 +314,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionParticleEditor);
 	ui->menuView->addAction(actionParticleEditorTimeLine);
 	ui->menuView->addAction(actionHangingObjects);
-	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
