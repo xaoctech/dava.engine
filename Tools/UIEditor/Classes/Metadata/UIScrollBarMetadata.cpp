@@ -26,50 +26,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIScrollViewMetadata__
-#define __UIEditor__UIScrollViewMetadata__
-
-#include "UIControlMetadata.h"
-#include "UI/UIScrollView.h"
+#include "UIScrollBarMetadata.h"
 
 namespace DAVA {
 
-// Metadata class for DAVA UIList control.
-class UIScrollViewMetadata : public UIControlMetadata
+UIScrollBarMetadata::UIScrollBarMetadata(QObject* parent) :
+	UIControlMetadata(parent)
 {
-    Q_OBJECT
-	
-    // Horizontal position of scroll
-    Q_PROPERTY(float HorizontalScrollPosition READ GetHorizontalScrollPosition WRITE SetHorizontalScrollPosition);
-    Q_PROPERTY(float VerticalScrollPosition READ GetVerticalScrollPosition WRITE SetVerticalScrollPosition);
-	Q_PROPERTY(float ContentSizeX READ GetContentSizeX WRITE SetContentSizeX);
-	Q_PROPERTY(float ContentSizeY READ GetContentSizeY WRITE SetContentSizeY);
-	
-	
-public:
-    UIScrollViewMetadata(QObject* parent = 0);
+}
 
-protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+UIScrollBar* UIScrollBarMetadata::GetActiveUIScrollBar() const
+{
+	return dynamic_cast<UIScrollBar*>(GetActiveUIControl());
+}
 
-    virtual QString GetUIControlClassName() { return "UIScrollView"; };
+void UIScrollBarMetadata::InitializeControl(const String& controlName, const Vector2& position)
+{
+	BaseMetadata::InitializeControl(controlName, position);
 	
-    // Helper to access active UI ScrollView.
-    UIScrollView* GetActiveUIScrollView() const;
-	
-    // Getters/setters.
-    float GetHorizontalScrollPosition() const;
-	void SetHorizontalScrollPosition(float value);
-    float GetVerticalScrollPosition() const;
-	void SetVerticalScrollPosition(float value);
-	float GetContentSizeX() const;
-	void SetContentSizeX(float value);
-	float GetContentSizeY() const;
-	void SetContentSizeY(float value);
+	int paramsCount = this->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
+    {
+		// Initialize UIScrollBar
+        UIScrollBar* scroll = dynamic_cast<UIScrollBar*>(this->treeNodeParams[i].GetUIControl());
+		if (scroll)
+		{
+			scroll->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+		}
+    }
+}
+
+void UIScrollBarMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
+{
+	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
+}
+
+int UIScrollBarMetadata::GetScrollOrientation()
+{
+    if (!VerifyActiveParamID())
+    {
+        return UIScrollBar::ORIENTATION_VERTICAL;
+    }
+
+    return GetActiveUIScrollBar()->GetOrientation();
+}
+    
+void UIScrollBarMetadata::SetScrollOrientation(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }	
+    
+	GetActiveUIScrollBar()->SetOrientation((UIScrollBar::eScrollOrientation)value);
+}
+
 };
-
-};
-
-#endif /* defined(__UIEditor__UIScrollViewMetadata__) */
