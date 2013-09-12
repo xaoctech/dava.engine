@@ -545,6 +545,7 @@
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8A1091817944416007FF496 /* EditorLightSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A1091617944416007FF496 /* EditorLightSystem.cpp */; };
+		E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B6213E17E1FD6400C5678E /* Request.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39CD17B4BA8E00C63420 /* LabeledSlider.cpp */; };
 		E8BD39D617B4BB4D00C63420 /* LabeledSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39D517B4BB4D00C63420 /* LabeledSlider_moc.cpp */; };
@@ -1701,6 +1702,8 @@
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8A1091617944416007FF496 /* EditorLightSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightSystem.cpp; sourceTree = "<group>"; };
 		E8A1091717944416007FF496 /* EditorLightSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightSystem.h; sourceTree = "<group>"; };
+		E8B6213E17E1FD6400C5678E /* Request.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Request.cpp; sourceTree = "<group>"; };
+		E8B6213F17E1FD6400C5678E /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
 		E8B836241740FCC800D11EAE /* ImageTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTools.cpp; sourceTree = "<group>"; };
 		E8B836251740FCC800D11EAE /* ImageTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTools.h; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
@@ -3604,6 +3607,8 @@
 		E838D50016AFFED4006F1721 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6213E17E1FD6400C5678E /* Request.cpp */,
+				E8B6213F17E1FD6400C5678E /* Request.h */,
 				E8EBEDFC17CF92B400104156 /* StatusBar.cpp */,
 				E8EBEDFD17CF92B400104156 /* StatusBar.h */,
 				177D1A8D16CB8ACA0021104B /* QTreeViewStateHelper.h */,
@@ -4789,6 +4794,7 @@
 				E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */,
 				A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */,
 				4FFA516417E0DFB2008B6A1E /* CollisionCamera.cpp in Build Sources */,
+				E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
