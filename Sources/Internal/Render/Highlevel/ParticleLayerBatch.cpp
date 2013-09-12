@@ -76,7 +76,7 @@ void ParticleLayerBatch::Draw(Camera * camera)
 	material->PrepareRenderState();
 
 	//RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
-	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, 6*totalCount, EIF_16, indices);
+	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, 6*totalCount, EIF_16, &((*indices)[0]));
 }
 
 void ParticleLayerBatch::SetTotalCount(int32 _totalCount)
@@ -96,7 +96,7 @@ void ParticleLayerBatch::SetParticleLayer(ParticleLayer * _particleLayer)
 	particleLayer = _particleLayer;
 }
 
-void ParticleLayerBatch::SetIndices(void *_indices)
+void ParticleLayerBatch::SetIndices(Vector<uint16> *_indices)
 {
 	indices = _indices;
 }
