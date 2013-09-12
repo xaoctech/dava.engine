@@ -14,7 +14,6 @@ Material:
 RenderPass:
     Name: "Landscape"
     Shader: "~res:/Materials/Shaders/Landscape/tilemask"
-    UniqueDefines: ["SPECULAR_LAND"]
     RenderState:
         alphaFunc: "CMP_ALWAYS"
         alphaFuncCmpValue: 0.0000
