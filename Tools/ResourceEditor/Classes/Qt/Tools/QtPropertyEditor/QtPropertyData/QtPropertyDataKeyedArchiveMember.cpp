@@ -35,10 +35,7 @@ QtPropertyKeyedArchiveMember::QtPropertyKeyedArchiveMember(DAVA::KeyedArchive* _
 
 QtPropertyKeyedArchiveMember::~QtPropertyKeyedArchiveMember()
 {
-	if(NULL != lastCommand)
-	{
-		delete lastCommand;
-	}
+	DAVA::SafeDelete(lastCommand);
 }
 
 QVariant QtPropertyKeyedArchiveMember::GetValueInternal()
@@ -73,11 +70,7 @@ void QtPropertyKeyedArchiveMember::SetValueInternal(const QVariant &value)
 	// also save value to meta-object
 	if(NULL != archive && archive->IsKeyExists(key))
 	{
-		if(NULL != lastCommand)
-		{
-			delete lastCommand;
-		}
-
+		DAVA::SafeDelete(lastCommand);
 		lastCommand = new KeyeadArchiveSetValueCommand(archive, key, newValue);
 
 		archive->SetVariant(key, newValue);
