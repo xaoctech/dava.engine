@@ -209,28 +209,54 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
     
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
+	//do not calculate nearest lights for non-lit objects
+	bool needUpdate = false;
+	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+    for (uint32 k = 0; k < renderBatchCount; ++k)
+    {
+        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        NMaterial * material = batch->GetMaterial();
+        if (material && material->IsDynamicLit())
+        {
+			needUpdate = true;
+			break;
+		}
+	}
+	
+	if(!needUpdate)
+	{
+		return;
+	}
+	
     Light * nearestLight = 0;
     float32 squareMinDistance = 10000000.0f;
     Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
     
     uint32 size = lights.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        Light * light = lights[k];
-        
-        if (!light->IsDynamic())continue;
-        
-        const Vector3 & lightPosition = light->GetPosition();
-        
-        float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-        if (squareDistanceToLight < squareMinDistance)
-        {
-            squareMinDistance = squareDistanceToLight;
-            nearestLight = light;
-        }
-    }
+	
+	if(1 == size)
+	{
+		nearestLight = lights[0];
+	}
+	else
+	{
+		for (uint32 k = 0; k < size; ++k)
+		{
+			Light * light = lights[k];
+			
+			if (!light->IsDynamic())continue;
+			
+			const Vector3 & lightPosition = light->GetPosition();
+			
+			float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+			if (squareDistanceToLight < squareMinDistance)
+			{
+				squareMinDistance = squareDistanceToLight;
+				nearestLight = light;
+			}
+		}
+	}
     
-    uint32 renderBatchCount = renderObject->GetRenderBatchCount();
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
@@ -291,11 +317,6 @@ void RenderSystem::Update(float32 timeElapsed)
     }
     markedObjects.clear();
     
-    //    List<RenderObject*>::iterator endLights = movedLights.end();
-    //    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
-    //    {
-    //        FindNearestLights(*it);
-    //    }
     if (movedLights.size() > 0)
     {
         FindNearestLights();

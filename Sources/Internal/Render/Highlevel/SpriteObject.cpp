@@ -95,15 +95,9 @@ void SpriteObject::SetupRenderBatch()
 //	material->SetName("SpriteObject_material");
 //	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
-    NMaterial * material = 0;
-    
-    material = MaterialSystem::Instance()->GetMaterial(MATERIAL_VERTEX_COLOR_NO_LIT_TRANSLUCENT);
-    
-    DVASSERT(material != 0);
-    
-    
-    
-    
+    NMaterial * material = MaterialSystem::Instance()->GetMaterial("Global.Textured.Alphablend");;
+	material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
+        
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
 	batch->SetMaterial(material);
     batch->SetRenderDataObject(renderDataObject);

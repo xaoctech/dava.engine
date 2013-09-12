@@ -90,6 +90,14 @@ void RenderBatch::SetMaterial(NMaterial * _material)
 {
 	SafeRelease(material);
     material = SafeRetain(_material);
+	
+	//VI: material should be ready after it has been set to render batch
+	//VI: so render system will be able to determine different materials-related renderbatch properties
+	//VI: such as if renderbatch receives dynamic light etc
+	if(material && !material->IsReady())
+	{
+		material->Rebuild();
+	}	
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
@@ -262,11 +270,14 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		{
 			sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial);
 		}
-        
+		
         SafeRelease(oldMaterialInstance);
 		SetPolygonGroup(pg);
         
-		SetMaterial(newMaterial);
+		if(newMaterial)
+		{
+			SetMaterial(newMaterial);
+		}
 	}
 
 	BaseObject::Load(archive);

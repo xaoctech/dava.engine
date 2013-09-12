@@ -41,15 +41,6 @@
 
 namespace DAVA
 {
-
-static const FastName MATERIAL_VERTEX_COLOR_NO_LIT_TRANSLUCENT("~res:/Materials/Default/VertexColor.material");
-static const FastName MATERIAL_VERTEX_COLOR_NO_LIT_OPAQUE("~res:/Materials/VertexColorNoLightingOpaque.material");
-
-    
-//static const FastName MATERIAL_TEXTURE_UN_LIT("Materials/Default/TextureNoLit.material");
-//static const FastName MATERIAL_TEXTURE_VERTEX_LIT("Materials/Default/TextureLit.material");
-//static const FastName MATERIAL_TEXTURE_LIGHTMAP_UN_LIT("Materials/Default/TextureLightmapLit.material");
-//static const FastName MATERIAL_LANDSCAPE_UNLIT("Materials/Default/TextureLightmapLit.material");
     
 class MaterialGraph;
 class MaterialGraphNode;

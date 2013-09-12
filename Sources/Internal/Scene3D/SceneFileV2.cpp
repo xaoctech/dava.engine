@@ -812,8 +812,6 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
 	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
 	{
-		bool litFlag = true;
-		resultMaterial->SetPropertyValue("prop_litMaterial", Shader::UT_BOOL, 1, &litFlag);
 		resultMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
 		
 		resultMaterial->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);

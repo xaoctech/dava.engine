@@ -9,7 +9,6 @@ Material:
         colorTexture: 5
         specularMap: 6
         materialSpecularShininess: 10.0
-        prop_litMaterial: 1
 
 RenderPass:
     Name: "Landscape"
