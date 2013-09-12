@@ -228,34 +228,3 @@ void CommandExport::Execute()
     }
 }
 
-
-//Save to folder with childs
-CommandSaveToFolderWithChilds::CommandSaveToFolderWithChilds()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TO_FOLDER_WITH_CHILDS)
-{
-}
-
-
-void CommandSaveToFolderWithChilds::Execute()
-{
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	if(sceneData->GetScenePathname().IsEmpty())
-	{
-		ShowErrorDialog("Can't save not saved scene.");
-		return;
-	}
-
-	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
-	
-    if(0 < path.size())
-    {
-		FilePath folderPath = PathnameToDAVAStyle(path);
-        folderPath.MakeDirectoryPathname();
-
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->SaveToFolder(folderPath);
-		}
-	}
-}
