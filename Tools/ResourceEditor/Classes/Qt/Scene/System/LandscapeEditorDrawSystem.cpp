@@ -487,22 +487,17 @@ bool LandscapeEditorDrawSystem::Init()
 	return true;
 }
 
-bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscape)
+bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscapeEntity, Landscape* landscape)
 {
 	DeinitLandscape();
 
-	if (!landscape)
+	if (!landscapeEntity || !landscape)
 	{
 		return false;
 	}
 
-	landscapeNode = landscape;
-	baseLandscape = SafeRetain(GetLandscape(landscapeNode));
-	if (!baseLandscape)
-	{
-		DeinitLandscape();
-		return false;
-	}
+	landscapeNode = landscapeEntity;
+	baseLandscape = SafeRetain(landscape);
 	landscapeProxy = new LandscapeProxy(baseLandscape);
 
 	return true;
@@ -531,9 +526,10 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 
 void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 {
-	if (GetLandscape(entity) != NULL)
+	Landscape* landscape = GetLandscape(entity);
+	if (landscape != NULL)
 	{
-		InitLandscape(entity);
+		InitLandscape(entity, landscape);
 	}
 }
 
