@@ -328,7 +328,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 
 				camDirection.Normalize();
 				
-				entityPos = camPosition + camDirection * (bboxSize / 2);
+				entityPos = camPosition + camDirection * bboxSize;
 			}
 
 			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
