@@ -247,6 +247,12 @@
      <addaction name="separator"/>
      <addaction name="actionExportPNG"/>
     </widget>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionImportSpeedTreeXML"/>
+    </widget>
     <addaction name="actionOpenProject"/>
     <addaction name="separator"/>
     <addaction name="actionNewScene"/>
@@ -257,6 +263,7 @@
     <addaction name="actionSaveToFolder"/>
     <addaction name="separator"/>
     <addaction name="menuExport"/>
+    <addaction name="menuImport"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuCreateNode">
@@ -1588,6 +1595,14 @@
    </property>
    <property name="text">
     <string>Reload Textures</string>
+   </property>
+  </action>
+  <action name="actionImportSpeedTreeXML">
+   <property name="text">
+    <string>SpeedTree from XML...</string>
+   </property>
+   <property name="toolTip">
+    <string>Import SpeedTree</string>
    </property>
   </action>
  </widget>

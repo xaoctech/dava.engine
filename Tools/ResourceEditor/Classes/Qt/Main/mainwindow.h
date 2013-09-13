@@ -91,6 +91,8 @@ public slots:
 	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
 
+    void OnImportSpeedTreeXML();
+
 	void OnUndo();
 	void OnRedo();
 
