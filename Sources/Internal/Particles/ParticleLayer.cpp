@@ -729,7 +729,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	if(sprite)
+	if(sprite && (type!=TYPE_SUPEREMITTER_PARTICLES)) //don't update for super emitter particle even if they have old sprite
 	{
 		particle->size.x /= (float32)sprite->GetWidth();
 		particle->size.y /= (float32)sprite->GetHeight();
