@@ -686,28 +686,18 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
-	texture = CreateFromDescriptor(descriptor);
-    if(texture)
-    {
-		AddToMap(texture, descriptorPathname);
-    }
-    
-    SafeRelease(descriptor);
-	return texture;
-}
-    
-Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
-{
-    eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
-	Texture * texture = CreateFromImage(descriptor, gpuForLoading);
+	eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
+	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
 	{
 		texture->loadedAsFile = gpuForLoading;
-		return texture;
+		AddToMap(texture, descriptorPathname);
 	}
 
-	return NULL;
+	descriptor->Release();
+	return texture;
 }
+    
 
 TextureDescriptor * Texture::CreateDescriptor() const
 {
