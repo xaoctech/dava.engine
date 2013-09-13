@@ -49,7 +49,9 @@
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 
+#ifdef __DAVAENGINE_SPEEDTREE__
 #include "SpeedTreeImporter.h"
+#endif
 
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
@@ -410,7 +412,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
     // import
+#ifdef __DAVAENGINE_SPEEDTREE__
     QObject::connect(ui->actionImportSpeedTreeXML, SIGNAL(triggered()), this, SLOT(OnImportSpeedTreeXML()));
+#endif //__DAVAENGINE_SPEEDTREE__
 
 	// reload
 	ui->actionReloadPoverVRIOS->setData(GPU_POWERVR_IOS);
@@ -824,6 +828,7 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 
 void QtMainWindow::OnImportSpeedTreeXML()
 {
+#ifdef __DAVAENGINE_SPEEDTREE__
     QString projectPath = ProjectManager::Instance()->CurProjectPath();
     QString path = QFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
     if (!path.isEmpty())
@@ -831,6 +836,7 @@ void QtMainWindow::OnImportSpeedTreeXML()
         DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
         QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
     }
+#endif //__DAVAENGINE_SPEEDTREE__
 }
 
 void QtMainWindow::OnRecentTriggered(QAction *recentAction)
