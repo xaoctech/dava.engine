@@ -217,8 +217,8 @@
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
-   <addaction name="actionTextureConverter"/>
    <addaction name="actionMaterialEditor"/>
+   <addaction name="actionTextureConverter"/>
    <addaction name="separator"/>
    <addaction name="actionEnableCameraLight"/>
   </widget>
@@ -412,46 +412,6 @@
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QDockWidget" name="dockSetSwitchIndex">
-   <property name="maximumSize">
-    <size>
-     <width>524287</width>
-     <height>70</height>
-    </size>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="windowTitle">
-    <string>Set Switch Index</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_6">
-    <property name="maximumSize">
-     <size>
-      <width>16777215</width>
-      <height>70</height>
-     </size>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_7">
-     <property name="margin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="SetSwitchIndexView" name="setSwitchIndexView" native="true">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>70</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDockWidget" name="dockParticleEditor">
    <property name="sizePolicy">
@@ -1672,11 +1632,6 @@
    <extends>QWidget</extends>
    <header>DockParticleEditor/particletimelinewidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SetSwitchIndexView</class>
-   <extends>QWidget</extends>
-   <header>DockSetSwitchIndex/SetSwitchIndexView.h</header>
   </customwidget>
   <customwidget>
    <class>HangingObjectsView</class>

@@ -29,17 +29,17 @@
 #include "Commands2/KeyedArchiveCommand.h"
 
 
-KeyeadArchiveAddValueCommand::KeyeadArchiveAddValueCommand(DAVA::KeyedArchive* _archive, const DAVA::String &_key, const DAVA::VariantType &_val)
+KeyedArchiveAddValueCommand::KeyedArchiveAddValueCommand(DAVA::KeyedArchive* _archive, const DAVA::String &_key, const DAVA::VariantType &_val)
 	: Command2(CMDID_KEYEDARCHIVE_ADD_KEY, "Add key to archive")
 	, archive(_archive)
 	, key(_key)
 	, val(_val)
 { }
 
-KeyeadArchiveAddValueCommand::~KeyeadArchiveAddValueCommand()
+KeyedArchiveAddValueCommand::~KeyedArchiveAddValueCommand()
 { }
 
-void KeyeadArchiveAddValueCommand::Undo()
+void KeyedArchiveAddValueCommand::Undo()
 {
 	if(NULL != archive)
 	{
@@ -47,7 +47,7 @@ void KeyeadArchiveAddValueCommand::Undo()
 	}
 }
 
-void KeyeadArchiveAddValueCommand::Redo()
+void KeyedArchiveAddValueCommand::Redo()
 {
 	if(NULL != archive)
 	{

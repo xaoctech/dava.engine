@@ -98,6 +98,9 @@ public:
 	bool Save();
 	bool Export(const DAVA::eGPUFamily newGPU);
 
+	void PopEditorEntities();
+	void PushEditorEntities();
+
 	DAVA::FilePath GetScenePath();
 	void SetScenePath(const DAVA::FilePath &newScenePath);
 
@@ -148,6 +151,7 @@ protected:
     
     RenderManager::Stats renderStats;
 
+	DAVA::Vector<DAVA::Entity *> editorEntities;
 
 	virtual void EditorCommandProcess(const Command2 *command, bool redo);
 	virtual void Update(float timeElapsed);

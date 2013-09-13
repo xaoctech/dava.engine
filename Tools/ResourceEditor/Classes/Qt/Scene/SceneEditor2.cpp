@@ -174,33 +174,13 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 bool SceneEditor2::Save(const DAVA::FilePath &path)
 {
-	bool ret = false;
-
-	DAVA::Vector<DAVA::Entity *> allEntities;
-	DAVA::Vector<DAVA::Entity *> editorEntities;
-
-	// remember and remove all nodes, with name editor.*
-	{
-		GetChildNodes(allEntities);
-
-		DAVA::uint32 count = allEntities.size();
-		for(DAVA::uint32 i = 0; i < count; ++i)
-		{
-			if(allEntities[i]->GetName().find("editor.") != String::npos)
-			{
-				allEntities[i]->Retain();
-				editorEntities.push_back(allEntities[i]);
-
-				allEntities[i]->GetParent()->RemoveNode(allEntities[i]);
-			}
-		}
-	}
+	PopEditorEntities();
 
 	DAVA::SceneFileV2 *file = new DAVA::SceneFileV2();
 	file->EnableDebugLog(false);
 
 	DAVA::SceneFileV2::eError err = file->SaveScene(path, this);
-	ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
+	bool ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
 
 	if(ret)
 	{
@@ -213,18 +193,43 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 
 	SafeRelease(file);
 
-	// restore editor nodes
-	{
-		for(DAVA::uint32 i = 0; i < editorEntities.size(); ++i)
-		{
-			AddEditorEntity(editorEntities[i]);
-			editorEntities[i]->Release();
-		}
-	}
+	PushEditorEntities();
 
 	SceneSignals::Instance()->EmitSaved(this);
 	return ret;
 }
+
+void SceneEditor2::PopEditorEntities()
+{
+	DVASSERT(editorEntities.size() == 0);
+
+	DAVA::Vector<DAVA::Entity *> allEntities;
+	GetChildNodes(allEntities);
+
+	DAVA::uint32 count = allEntities.size();
+	for(DAVA::uint32 i = 0; i < count; ++i)
+	{
+		if(allEntities[i]->GetName().find("editor.") != String::npos)
+		{
+			allEntities[i]->Retain();
+			editorEntities.push_back(allEntities[i]);
+
+			allEntities[i]->GetParent()->RemoveNode(allEntities[i]);
+		}
+	}
+}
+
+void SceneEditor2::PushEditorEntities()
+{
+	for(DAVA::uint32 i = 0; i < editorEntities.size(); ++i)
+	{
+		AddEditorEntity(editorEntities[i]);
+		editorEntities[i]->Release();
+	}
+
+	editorEntities.clear();
+}
+
 
 bool SceneEditor2::Save()
 {
@@ -547,3 +552,4 @@ bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
 
 	return res;
 }
+

@@ -68,6 +68,10 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "../../Commands2/LandscapeEditorDrawSystemActions.h"
+
+#include "Classes/CommandLine/SceneSaver/SceneSaver.h"
+#include "Classes/Qt/Main/Request.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -113,6 +117,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
+    QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
+
+    
 	LoadGPUFormat();
 
     EnableGlobalTimeout(enableGlobalTimeout);
@@ -154,6 +161,30 @@ SceneEditor2* QtMainWindow::GetCurrentScene()
 {
 	return ui->sceneTabWidget->GetCurrentScene();
 }
+
+bool QtMainWindow::SaveScene( SceneEditor2 *scene )
+{
+	bool sceneWasSaved = false;
+
+	DAVA::FilePath scenePath = scene->GetScenePath();
+	if(!scene->IsLoaded() || scenePath.IsEmpty())
+	{
+		sceneWasSaved = SaveSceneAs(scene);
+	} 
+	else
+	{
+		if(scene->IsChanged())
+		{
+			if(!scene->Save(scenePath))
+			{
+				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+			}
+		}
+	}
+
+	return sceneWasSaved;
+}
+
 
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
@@ -301,7 +332,6 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
 	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
-	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
@@ -314,7 +344,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionParticleEditor);
 	ui->menuView->addAction(actionParticleEditorTimeLine);
 	ui->menuView->addAction(actionHangingObjects);
-	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
@@ -374,6 +403,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
+
+    QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
@@ -435,6 +466,12 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+    
+#if defined(__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#elif defined(__DAVAENGINE_WIN32__)
+#endif //OS
+    
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -450,37 +487,19 @@ void QtMainWindow::InitRecent()
 		action->setData(QString(path.c_str()));
 		recentScenes.push_back(action);
 	}
-
-	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 }
 
 void QtMainWindow::AddRecent(const QString &path)
 {
-	for(int i = 0; i < recentScenes.size(); ++i)
-	{
-		if(recentScenes[i]->data() == path)
-		{
-			ui->menuFile->removeAction(recentScenes[i]);
-			recentScenes.removeAt(i);
-			i--;
-		}
-	}
+    while(recentScenes.size())
+    {
+        ui->menuFile->removeAction(recentScenes[0]);
+        recentScenes.removeAt(0);
+    }
+    
+    EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
 
-	QAction *action = new QAction(path, NULL);
-	action->setData(path);
-
-	if(recentScenes.size() > 0)
-	{
-		ui->menuFile->insertAction(recentScenes[0], action);
-	}
-	else
-	{
-		ui->menuFile->addAction(action);
-	}
-
-	recentScenes.push_front(action);
-
-	EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
+    InitRecent();
 }
 
 // ###################################################################################################
@@ -711,36 +730,84 @@ void QtMainWindow::OnSceneSave()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		DAVA::FilePath scenePath = scene->GetScenePath();
-		if(!scene->IsLoaded() || scenePath.IsEmpty())
-		{
-			SaveSceneAs(scene);
-		} 
-		else
-		{
-			if(scene->IsChanged())
-			{
-				if(!scene->Save(scenePath))
-				{
-					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
-				}
-			}
-		}
+		SaveScene(scene);
 	}
 }
 
 void QtMainWindow::OnSceneSaveAs()
 {
-	SaveSceneAs(GetCurrentScene());
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		SaveSceneAs(scene);
+	}
 }
 
 void QtMainWindow::OnSceneSaveToFolder()
 {
-	// TODO:
-	// ...
-	// 
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
 
+	FilePath scenePathname = scene->GetScenePath();
+	if(scenePathname.IsEmpty() && scenePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	{
+		ShowErrorDialog("Can't save not saved scene.");
+		return;
+	}
+
+	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
+	if(path.isEmpty())
+		return;
+
+	FilePath folder = PathnameToDAVAStyle(path);
+	folder.MakeDirectoryPathname();
+
+	SceneSaver sceneSaver;
+	sceneSaver.SetInFolder(scene->GetScenePath().GetDirectory());
+	sceneSaver.SetOutFolder(folder);
+
+	Set<String> errorsLog;
+	scene->PopEditorEntities();
+	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
+	scene->PushEditorEntities();
+
+	ShowErrorDialog(errorsLog);
 }
+
+void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
+{
+    SceneEditor2 *scene = ui->sceneTabWidget->GetTabScene(tabIndex);
+    if(!scene || !scene->IsChanged())
+    {
+        closeRequest->Accept();
+        return;
+    }
+    
+    int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?",
+                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+    
+    if(answer == QMessageBox::Cancel)
+    {
+        closeRequest->Cancel();
+        return;
+    }
+	else if(answer == QMessageBox::No)
+	{
+		closeRequest->Accept();
+		return;
+	}
+
+	bool sceneWasSaved = SaveScene(scene);
+    if(sceneWasSaved)
+    {
+		closeRequest->Accept();
+    }
+	else
+	{
+		closeRequest->Cancel();
+	}
+}
+
 
 void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 {
@@ -1077,10 +1144,13 @@ void QtMainWindow::OnCameraDialog()
 {
 	Entity* sceneNode = new Entity();
 	Camera * camera = new Camera();
+
 	camera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 	camera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
 	camera->SetTarget(DAVA::Vector3(1.0f, 0.0f, 0.0f));
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+	camera->SetAspect(1.0f);
+
 	sceneNode->AddComponent(new CameraComponent(camera));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
@@ -1424,3 +1494,4 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
+

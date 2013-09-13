@@ -180,25 +180,24 @@ void UISwitch::AddControl(UIControl *control)
 
 void UISwitch::CopyDataFrom(UIControl *srcControl)
 {
-	UIControl* buttonLeftClone = buttonLeft->Clone();
-	UIControl* buttonRightClone = buttonRight->Clone();
-	UIControl* toggleClone = toggle->Clone();
-
-    //release default buttons - they have to be copied from srcControl
+	//release default buttons - they have to be copied from srcControl
     RemoveControl(buttonLeft);
     RemoveControl(buttonRight);
     RemoveControl(toggle);
     ReleaseControls();
-    UIControl::CopyDataFrom(srcControl);
-	
-	AddControl(buttonLeftClone);
-	SafeRelease(buttonLeftClone);
 
-	AddControl(buttonRightClone);
-	SafeRelease(buttonRightClone);
+	UIControl::CopyDataFrom(srcControl);
 
-	AddControl(toggleClone);
-	SafeRelease(toggleClone);
+	// Copy the specific items.
+	UISwitch* t = static_cast<UISwitch*>(srcControl);
+
+	this->buttonLeft = static_cast<UIButton*>(t->buttonLeft->Clone());
+	this->buttonRight = static_cast<UIButton*>(t->buttonRight->Clone());
+	this->toggle = static_cast<UIButton*>(t->toggle->Clone());
+
+	AddControl(buttonLeft);
+	AddControl(buttonRight);
+	AddControl(toggle);
 
     InitControls();
 }

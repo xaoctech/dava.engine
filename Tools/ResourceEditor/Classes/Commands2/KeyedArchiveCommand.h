@@ -33,11 +33,11 @@
 
 #include "Commands2/Command2.h"
 
-class KeyeadArchiveAddValueCommand : public Command2
+class KeyedArchiveAddValueCommand : public Command2
 {
 public:
-	KeyeadArchiveAddValueCommand(DAVA::KeyedArchive* _archive, const DAVA::String &_key, const DAVA::VariantType &_val);
-	~KeyeadArchiveAddValueCommand();
+	KeyedArchiveAddValueCommand(DAVA::KeyedArchive* _archive, const DAVA::String &_key, const DAVA::VariantType &_val);
+	~KeyedArchiveAddValueCommand();
 
 	virtual void Undo();
 	virtual void Redo();

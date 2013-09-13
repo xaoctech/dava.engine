@@ -28,27 +28,64 @@
 
 
 
-#ifndef __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
-#define __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
+#include "ScrollPropertyGridWidgetHelper.h"
 
-#include "Command.h"
-#include "DAVAEngine.h"
-#include "../Constants.h"
-#include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
-#include "EditorBodyControlCommands.h"
+using namespace DAVA;
 
-class CommandToggleSetSwitchIndex: public CommandEntityModification
+const ScrollPropertyGridWidgetHelper::OrientationData ScrollPropertyGridWidgetHelper::orientationData[] =
 {
-public:
-	DAVA_DEPRECATED(CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state));//DEPRECATED: using SceneDataManager(QOBJECT)
-	
-protected:
-	DAVA::uint32	value;
-	DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX	swtichState;
-	DAVA::Map<SwitchComponent *, int32> originalIndexes;
-
-    virtual void Execute();
-	virtual void Cancel();
+    {UIScrollBar::ORIENTATION_VERTICAL,           "Vertical"},
+    {UIScrollBar::ORIENTATION_HORIZONTAL,   		"Horizontal"}
 };
 
-#endif // #ifndef __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__
+// Get the scroll of UIControlStates supported:
+int ScrollPropertyGridWidgetHelper::GetOrientationCount()
+{
+    return sizeof(orientationData) / sizeof(*orientationData);
+}
+
+UIScrollBar::eScrollOrientation ScrollPropertyGridWidgetHelper::GetOrientation(int index)
+{
+	if (ValidateOrientationIndex(index) == false)
+	{
+		return UIScrollBar::ORIENTATION_VERTICAL;
+	}
+	
+	return orientationData[index].orientation;
+}
+
+QString ScrollPropertyGridWidgetHelper::GetOrientationDesc(int index)
+{
+    if (ValidateOrientationIndex(index) == false)
+    {
+        return orientationData[0].orientationDesc;
+    }
+    
+    return orientationData[index].orientationDesc;
+}
+
+QString ScrollPropertyGridWidgetHelper::GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation)
+{
+	int count = GetOrientationCount();
+	for (int i = 0; i < count; i++)
+	{
+		if (orientation == orientationData[i].orientation)
+		{
+			return orientationData[i].orientationDesc;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
+    return QString();
+}
+
+bool ScrollPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
+{
+    if (index < 0 || index >= GetOrientationCount())
+    {
+        Logger::Error("Orientation index %i is out of bounds!", index);
+        return false;
+    }
+    
+    return true;
+}
