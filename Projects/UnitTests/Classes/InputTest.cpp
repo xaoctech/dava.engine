@@ -106,15 +106,14 @@ void InputTest::LoadResources()
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
-    font->SetColor(Color::White());
 	
 	passwordTextField = new UITextField(Rect(0, 30, 512, 50));
 #ifdef __DAVAENGINE_IPHONE__
-	Color color(1.f, 1.f, 1.f, 1.f);
-	passwordTextField->SetFontColor(color);
 #else
 	passwordTextField->SetFont(font);
 #endif
+    passwordTextField->SetTextColor(Color::White());
+
 	passwordTextField->SetSprite(spr,0);
     passwordTextField->SetSpriteAlign(ALIGN_RIGHT);
 	passwordTextField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
@@ -127,10 +126,11 @@ void InputTest::LoadResources()
 	
 	textField = new UITextField(Rect(600, 10, 100, 100));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
+    textField->SetTextColor(Color::White());
+
 	textField->SetText(L"Traited Field");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
@@ -145,10 +145,12 @@ void InputTest::LoadResources()
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
+    
+    textField->SetTextColor(Color::White());
+
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
@@ -156,6 +158,7 @@ void InputTest::LoadResources()
 
 	testButton = new UIButton(Rect(0, 300, 300, 30));
 	testButton->SetStateFont(0xFF, font);
+	testButton->SetStateFontColor(0xFF, Color::White());
 	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
@@ -163,6 +166,7 @@ void InputTest::LoadResources()
 	staticText = new UIStaticText(Rect(0, 0, 512, 20));
 	font->SetSize(10);
 	staticText->SetFont(font);
+    staticText->SetTextColor(Color::White());
 	staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);// 12 - Rtop
 	staticText->SetText(L"Type password in the field below");
 	staticText->SetDebugDraw(true);

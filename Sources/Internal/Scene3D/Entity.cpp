@@ -143,7 +143,7 @@ void Entity::RemoveComponent(uint32 componentType)
 }
 
     
-Component * Entity::GetComponent(uint32 componentType)
+Component * Entity::GetComponent(uint32 componentType) const
 {
     return components[componentType];
 }

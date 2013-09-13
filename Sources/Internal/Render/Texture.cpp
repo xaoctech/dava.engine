@@ -246,7 +246,6 @@ void Texture::ReleaseTextureData()
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	RenderManager::Instance()->UnlockNonMain();
 
-	isPink = false;
     state = STATE_INVALID;
 }
 
@@ -457,31 +456,11 @@ void Texture::GeneratePixelesation()
 }
     
 
-Texture * Texture::CreateFromImage(const FilePath &pathname, const DAVA::TextureDescriptor *descriptor)
+Texture * Texture::CreateFromImage(const TextureDescriptor *descriptor, eGPUFamily gpu)
 {
-    File *file = NULL;
-	
-	if(!descriptor->IsCubeMap() || descriptor->exportedAsGpuFamily != GPU_UNKNOWN)
-	{
-		//VI: this cube map is split to several PNG files
-		file = File::Create(pathname, File::OPEN | File::READ);
-		if(!file)
-		{
-			Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
-			return NULL;
-		}		
-	}
+	Texture * texture = new Texture();
 
-    Texture *texture = CreateFromImage(file, descriptor);
-    SafeRelease(file);
-	return texture;
-}
-    
-Texture * Texture::CreateFromImage(File *file, const TextureDescriptor *descriptor)
-{
-    Texture * texture = new Texture();
-    
-	bool loaded = texture->LoadImages(file, descriptor);
+	bool loaded = texture->LoadImages(descriptor, gpu);
 	if(!loaded)
 	{
 		Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
@@ -494,42 +473,44 @@ Texture * Texture::CreateFromImage(File *file, const TextureDescriptor *descript
 	texture->FlushDataToRenderer(descriptor);
 	texture->ReleaseImages();
 
-    return texture;
+	return texture;
 }
 
-bool Texture::LoadImages(File *file, const TextureDescriptor *descriptor)
+bool Texture::LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu)
 {
 	DVASSERT(images.size() == 0);
 
+	if(!IsLoadAvailable(gpu, descriptor))
+		return false;
+	
 	if(descriptor->IsCubeMap() && (GPU_UNKNOWN == descriptor->exportedAsGpuFamily))
 	{
-		DVASSERT(NULL == file);
-
 		Vector<String> faceNames;
 		GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
+
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			file = File::Create(faceNames[i], File::OPEN | File::READ);
-			if(!file)
+			Vector<Image *> imageFace = ImageLoader::CreateFromFile(faceNames[i]);
+			if(imageFace.size() == 0)
 			{
-				Logger::Error("[Texture::CreateFromImage] Cannot open file %s", faceNames[i].c_str());
+				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].c_str());
+
+				ReleaseImages();
 				return false;
 			}
 
-			Vector<Image *> imageFace = ImageLoader::CreateFromFile(file);
-			Image* img = imageFace[0];
-			img->cubeFaceID = CUBE_FACE_MAPPING[i];
-			img->mipmapLevel = 0;
+			DVASSERT(imageFace.size() == 1);
 
-			images.push_back(img);
+			imageFace[0]->cubeFaceID = CUBE_FACE_MAPPING[i];
+			imageFace[0]->mipmapLevel = 0;
 
-			SafeRelease(file);
+			images.push_back(imageFace[0]);
 		}
 	}
 	else
 	{
-		DVASSERT(NULL != file);
-		images = ImageLoader::CreateFromFile(file);
+		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
+		images = ImageLoader::CreateFromFile(imagePathname);
 	}
 
 	if(0 == images.size())
@@ -542,9 +523,11 @@ bool Texture::LoadImages(File *file, const TextureDescriptor *descriptor)
 		return false;
 	}
 
+	isPink = false;
 	state = STATE_DATA_LOADED;
 	return true;
 }
+
 
 void Texture::ReleaseImages()
 {
@@ -645,7 +628,7 @@ void Texture::FlushDataToRenderer(const TextureDescriptor *descriptor)
     state = STATE_VALID;
 }
 
-bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet) const
+bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
 {
     for (int32 i = 0; i < (int32)imageSet.size(); ++i)
     {
@@ -677,12 +660,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 	return retValue;
 }
 
-void Texture::LoadMipMapFromFile(int32 level, const FilePath & pathname)
-{
-    DVASSERT(false);
-    return;
-}
-	
+
 Texture * Texture::CreateFromFile(const FilePath & pathName)
 {
 	Texture * texture = PureCreate(pathName);
@@ -719,32 +697,16 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor)
 {
     eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
-
-	return CreateFromDescriptor(descriptor, gpuForLoading);
-}
-
-Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu)
-{
-	if(IsLoadAvailable(gpu, descriptor))
+	Texture * texture = CreateFromImage(descriptor, gpuForLoading);
+	if(texture)
 	{
-		FilePath imagePathname = GetActualFilename(descriptor, gpu);
-		Texture * texture = CreateFromImage(imagePathname, descriptor);
-		if(texture)
-		{
-			texture->loadedAsFile = gpu;
-			return texture;
-		}
+		texture->loadedAsFile = gpuForLoading;
+		return texture;
 	}
-	
+
 	return NULL;
 }
 
-FilePath Texture::GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
-{
-    return GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuFamily);
-}
-
-	
 TextureDescriptor * Texture::CreateDescriptor() const
 {
     if(!isRenderTarget)
@@ -763,8 +725,18 @@ void Texture::Reload()
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
 	TextureDescriptor *descriptor = CreateDescriptor();
-	ReloadAs(gpuFamily, descriptor);
-	SafeRelease(descriptor);
+	if(descriptor)
+	{
+		ReloadAs(gpuFamily, descriptor);
+		descriptor->Release();
+	}
+	else if(!isPink)
+	{
+		Logger::Error("[Texture::ReloadAs] Can't create descriptor for gpu = %d", gpuFamily);
+
+		ReleaseTextureData();
+		MakePink();
+	}
 }
 
 void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
@@ -774,38 +746,19 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor
 	DVASSERT(NULL != descriptor);
     
 	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
-    FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuForLoading);
-    
-    File *file = NULL;
-	
-	if(!descriptor->IsCubeMap())
+	bool loaded = LoadImages(descriptor, gpuForLoading);
+	if(loaded)
 	{
-		file = File::Create(imagePathname, File::OPEN | File::READ);
+		loadedAsFile = gpuForLoading;
+
+		SetParamsFromImages();
+		FlushDataToRenderer(descriptor);
+		ReleaseImages();
 	}
-
-    bool loaded = false;
-    if((file != NULL || descriptor->IsCubeMap()) && IsLoadAvailable(gpuForLoading, descriptor))
+	else
     {
-		loaded = LoadImages(file, descriptor);
-		if(loaded)
-		{
-            loadedAsFile = gpuForLoading;
-
-			SetParamsFromImages();
-			FlushDataToRenderer(descriptor);
-			ReleaseImages();
-		}
-    }
-    
-    SafeRelease(file);
-
-    if(!loaded)
-    {
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.GetAbsolutePathname().c_str());
-
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", relativePathname.GetAbsolutePathname().c_str());
         MakePink();
-
-        GeneratePixelesation();
     }
 }
     
@@ -838,34 +791,9 @@ int32 Texture::Release()
 	
 Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
-	int i;
-	int dx = w;
-	if(dx < 16)
-	{
-		dx = 16;
-	}
-	else if((dx != 1) && (dx & (dx - 1))) 
-	{
-		i = 1;
-		while(i < dx)
-			i *= 2;
-		dx = i;
-	}
-	int dy = h;
-	if(dy < 16)
-	{
-		dy = 16;
-	}
-	else if((dy != 1) && (dy & (dy - 1))) 
-	{
-		i = 1;
-		while(i < dy)
-			i *= 2;
-		dy = i;
-	}
-	
-	RenderManager::Instance()->LockNonMain();
-	
+	uint32 dx = ConvertToPower2FBOValue(w);
+	uint32 dy = ConvertToPower2FBOValue(h);
+
 #if defined(__DAVAENGINE_OPENGL__)
 
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy, false);
@@ -873,44 +801,10 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 	tx->depthFormat = _depthFormat;
 
-    
-	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
-	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
- 
-	RenderManager::Instance()->HWglBindTexture(tx->id, tx->textureType);
-	
-	RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
-	RenderManager::Instance()->HWglBindFBO(tx->fboID);
-    
-    if(DEPTH_RENDERBUFFER == _depthFormat)
-    {
-        glGenRenderbuffers(1, &tx->rboID);
-        glBindRenderbuffer(GL_RENDERBUFFER, tx->rboID);
-        glRenderbufferStorage(GL_RENDERBUFFER, DAVA_GL_DEPTH_COMPONENT, dx, dy);
-    }
-		
-	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
-    
-    if(DEPTH_RENDERBUFFER == _depthFormat)
-    {
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tx->rboID);
-    }
-		
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if(status != GL_FRAMEBUFFER_COMPLETE)
-	{
-		Logger::Error("glCheckFramebufferStatus: %d", status);
-	}
-				
-	RenderManager::Instance()->HWglBindFBO(saveFBO);
-				
-	if(saveTexture)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveTexture, saveType);
-	}
+	tx->HWglCreateFBOBuffers();	
+
 #elif defined(__DAVAENGINE_DIRECTX9__)
-	
+
 	// TODO: Create FBO
 	Texture * tx = new Texture();
 
@@ -918,20 +812,68 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	tx->height = dy;
 	tx->format = format;
 
+	RenderManager::Instance()->LockNonMain();
 	tx->id = CreateTextureNative(Vector2((float32)tx->width, (float32)tx->height), tx->format, true, 0);
-
-#endif 
-
 	RenderManager::Instance()->UnlockNonMain();
 
+	tx->state = STATE_VALID;
+#endif 
+
+
     tx->isRenderTarget = true;
-    
 	AddToMap(tx, Format("FBO texture %d", textureFboCounter));
 	
 	textureFboCounter++;
 	
 	return tx;
 }
+
+#if defined(__DAVAENGINE_OPENGL__)
+void Texture::HWglCreateFBOBuffers()
+{
+	RenderManager::Instance()->LockNonMain();
+	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
+	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
+
+	RenderManager::Instance()->HWglBindTexture(id, textureType);
+
+	RENDER_VERIFY(glGenFramebuffers(1, &fboID));
+	RenderManager::Instance()->HWglBindFBO(fboID);
+
+	if(DEPTH_RENDERBUFFER == depthFormat)
+	{
+		glGenRenderbuffers(1, &rboID);
+		glBindRenderbuffer(GL_RENDERBUFFER, rboID);
+		glRenderbufferStorage(GL_RENDERBUFFER, DAVA_GL_DEPTH_COMPONENT, width, height);
+	}
+
+	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0));
+
+	if(DEPTH_RENDERBUFFER == depthFormat)
+	{
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
+	}
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		Logger::Error("[Texture::HWglCreateFBOBuffers] glCheckFramebufferStatus: %d", status);
+	}
+
+	RenderManager::Instance()->HWglBindFBO(saveFBO);
+
+	if(saveTexture)
+	{
+		RenderManager::Instance()->HWglBindTexture(saveTexture, saveType);
+	}
+
+	RenderManager::Instance()->UnlockNonMain();
+
+	state = STATE_VALID;
+}
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
 
 	
 void Texture::DumpTextures()
@@ -980,7 +922,7 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 void Texture::Lost()
 {
 	RenderResource::Lost();
-	
+
 	RenderManager::Instance()->LockNonMain();
 	
 	if(RenderManager::Instance()->GetTexture() == this)
@@ -988,6 +930,8 @@ void Texture::Lost()
 		RenderManager::Instance()->SetTexture(0);
 	}
 	
+	ReleaseImages();
+
 	if(fboID != (uint32)-1)
 	{
 		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
@@ -1024,41 +968,12 @@ void Texture::Invalidate()
 		if (invalidater)
 			invalidater->InvalidateTexture(this);
 	}
-	else if (this == pinkPlaceholder)
+	else if (isPink)
 	{
-		uint32 width = 16;
-		uint32 height = 16;
-		uint8 * data = new uint8[width*height*4];
-		uint32 pink = 0xffff00ff;
-		uint32 gray = 0xff7f7f7f;
-		bool pinkOrGray = false;
-		
-		uint32 * writeData = (uint32*)data;
-		for(uint32 w = 0; w < width; ++w)
-		{
-			pinkOrGray = !pinkOrGray;
-			for(uint32 h = 0; h < height; ++h)
-			{
-				*writeData++ = pinkOrGray ? pink : gray;
-				pinkOrGray = !pinkOrGray;
-			}
-		}
-		
-		GenerateID();
-		TexImage(0, width, height, data, 0, Texture::CUBE_FACE_INVALID);
-		
-		int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-		RenderManager::Instance()->HWglBindTexture(id);
-		
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		
-		SafeDelete(data);
+		MakePink();
 	}
 }
-#endif
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 Image * Texture::ReadDataToImage()
 {
@@ -1091,6 +1006,7 @@ Image * Texture::ReadDataToImage()
     
     return image; 
 }
+
 
 Image * Texture::CreateImageFromMemory()
 {
@@ -1165,6 +1081,8 @@ void Texture::MakePink()
     SafeRelease(descriptor);
 
     isPink = true;
+
+	GeneratePixelesation();
 }
     
 bool Texture::IsPinkPlaceholder()
@@ -1427,6 +1345,23 @@ void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>
 			
 		faceNames.push_back(faceFilePath.GetAbsolutePathname());
 	}
+}
+
+uint32 Texture::ConvertToPower2FBOValue(uint32 value)
+{
+	if(value < 16)
+	{
+		return 16;
+	}
+
+	if(IsPowerOf2(value))
+		return value;
+
+	uint32 i = 16;
+	while(i < value)
+		i *= 2;
+
+	return i;
 }
 
 };

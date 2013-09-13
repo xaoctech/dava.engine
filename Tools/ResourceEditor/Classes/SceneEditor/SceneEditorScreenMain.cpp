@@ -528,26 +528,7 @@ bool SceneEditorScreenMain::SaveIsAvailable()
     return true;
 }
 
-void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    sceneData->SetScenePathname(pathToFile);
 
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->PushEditorEntities();
-    
-    Scene * scene = iBody->bodyControl->GetScene();
-    
-    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(pathToFile, scene);
-    SafeRelease(file);
-    uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-    Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
-    
-    iBody->bodyControl->PopEditorEntities();			
-}
 
 void SceneEditorScreenMain::UpdateModificationPanel(void)
 {

@@ -50,7 +50,6 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,	color(1.0f, 1.0f, 1.0f, 1.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -61,24 +60,6 @@ Font::~Font()
 	FontManager::Instance()->UnregisterFont(this);
 }
 
-
-void Font::SetColor(float32 r, float32 g, float32 b, float32 a)
-{
-	color.r = r; 
-	color.g = g; 
-	color.b = b; 
-	color.a = a;
-}
-
-void Font::SetColor(const Color & _color)
-{
-	color = _color;
-}
-
-const Color & Font::GetColor() const
-{
-	return color;
-}
 
 bool Font::IsEqual(const Font *font) const
 {
@@ -91,7 +72,7 @@ bool Font::IsEqual(const Font *font) const
 	{
 		return false;
 	}
-	if (size != font->size || color != font->color || verticalSpacing != font->verticalSpacing)
+	if (size != font->size || verticalSpacing != font->verticalSpacing)
 	{
 		return false;
 	}
@@ -357,12 +338,6 @@ YamlNode * Font::SaveToYamlNode() const
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
 
-    Color color = this->GetColor();
-    //Font color
-    Vector4 colorVector4(color.r, color.g, color.b, color.a);
-    nodeValue->SetVector4(colorVector4);
-    node->Set("color", nodeValue);
-    
     SafeDelete(nodeValue);
     
     return node;

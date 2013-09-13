@@ -1202,6 +1202,9 @@
    <property name="text">
     <string>Place On Landscape</string>
    </property>
+   <property name="shortcut">
+    <string>З, P</string>
+   </property>
   </action>
   <action name="actionModifySnapToLandscape">
    <property name="checkable">

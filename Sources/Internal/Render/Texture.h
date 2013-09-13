@@ -188,12 +188,6 @@ public:
 	
 	static Texture * CreatePink(const FilePath &path = FilePath());
 
-    /**
-        \brief Function to load specific mip-map level from file
-        \param[in] level level of mip map you want to replace
-        \param[in] pathName path to file you want to use for texture
-     */
-	void LoadMipMapFromFile(int32 level, const FilePath & pathName);
 
 	/**
         \brief Sets default RGBA format that is used for textures loaded from files. 
@@ -320,22 +314,22 @@ private:
 	static void AddToMap(Texture *tex, const FilePath & pathname);
     
 	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
-
-	static Texture * CreateFromImage(const FilePath & pathname, const TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(File *file, const TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const TextureDescriptor *descriptor, eGPUFamily gpu);
 
 	Vector<Image *> images;
-	bool LoadImages(File *file, const TextureDescriptor *descriptor);
+	bool LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu);
 	void SetParamsFromImages();
 	void FlushDataToRenderer(const TextureDescriptor *descriptor);
 	void ReleaseImages();
 
     void MakePink();
+
+    static bool CheckImageSize(const Vector<Image *> &imageSet);
+    static bool IsCompressedFormat(PixelFormat format);
     
-    bool CheckImageSize(const Vector<Image *> &imageSet) const;
-    bool IsCompressedFormat(PixelFormat format);
-    
+	static uint32 ConvertToPower2FBOValue(uint32 value);
+
+
 	static PixelFormat defaultRGBAFormat;
 	Texture();
 	virtual ~Texture();
@@ -348,6 +342,8 @@ private:
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
 #if defined(__DAVAENGINE_OPENGL__)
+	void HWglCreateFBOBuffers();
+
     static GLint HWglFilterToGLFilter(TextureFilter filter);
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
@@ -357,7 +353,6 @@ private:
     
     static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
-    static FilePath GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
 	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
 
 

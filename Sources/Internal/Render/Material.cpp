@@ -320,85 +320,41 @@ Material::Material()
     SetType(MATERIAL_UNLIT_TEXTURE);
 }
 
-Material * Material::Clone()
+Material * Material::Clone(Material *newMaterial /* = NULL */)
 {
-    Material * newMaterial = new Material();
-
+    if(!newMaterial)
+    {
+		DVASSERT_MSG(IsPointerToExactClass<Material>(this), "Can clone only Material");
+        
+        newMaterial = new Material();
+    }
+    
     newMaterial->pointer = pointer;
     newMaterial->scene = scene;
     newMaterial->name = name;
     newMaterial->children = children;
     newMaterial->index = index;
 
-    newMaterial->type = type;
-    newMaterial->viewOptions = viewOptions;
+	newMaterial->CopySettings(this);
 
-    newMaterial->reflective = reflective;
-    newMaterial->reflectivity =	reflectivity;
 
-    newMaterial->transparent = transparent;
-    newMaterial->transparency =	transparency; 
-    newMaterial->indexOfRefraction = indexOfRefraction;
+	newMaterial->shader = shader;
 
-    for(int i = 0; i < TEXTURE_COUNT; i++)
-    {
-        newMaterial->textures[i] = SafeRetain(textures[i]);
-        newMaterial->textureSlotNames[i] = textureSlotNames[i];
-    }
-
-    newMaterial->names = names;
-
-    newMaterial->textureSlotCount = textureSlotCount;
-
-    newMaterial->blendSrc = blendSrc;
-    newMaterial->blendDst = blendDst;
-
-    newMaterial->isTranslucent = isTranslucent;
-    newMaterial->isTwoSided = isTwoSided;
-
-	newMaterial->isSetupLightmap = isSetupLightmap;
-    
-    newMaterial->shininess = shininess;
-    
-    newMaterial->ambientColor = ambientColor;
-	newMaterial->diffuseColor = diffuseColor;
-	newMaterial->specularColor = specularColor;
-	newMaterial->emissiveColor = emissiveColor;
-    
-    newMaterial->isFogEnabled = isFogEnabled;
-    newMaterial->fogDensity = fogDensity;
-    newMaterial->fogColor = fogColor;
-
-    if(lightingParams)
-    {
-        newMaterial->lightingParams = new StaticLightingParams();
-        newMaterial->lightingParams->transparencyColor = lightingParams->transparencyColor;
-    }
-
-	newMaterial->isAlphablend = isAlphablend;
-    newMaterial->isFlatColorEnabled = isFlatColorEnabled;
-    
-    newMaterial->isTexture0ShiftEnabled = isTexture0ShiftEnabled;
-    
-    newMaterial->isWireframe = isWireframe;
-    
-    newMaterial->shader = shader;
-    
-    newMaterial->uniformTexture0 = uniformTexture0;
-    newMaterial->uniformTexture1 = uniformTexture1;
-    newMaterial->uniformLightPosition0 = uniformLightPosition0;
-    newMaterial->uniformMaterialLightAmbientColor = uniformMaterialLightAmbientColor;
-    newMaterial->uniformMaterialLightDiffuseColor = uniformMaterialLightDiffuseColor;
-    newMaterial->uniformMaterialLightSpecularColor = uniformMaterialLightSpecularColor;
-    newMaterial->uniformMaterialSpecularShininess = uniformMaterialSpecularShininess;
-    newMaterial->uniformLightIntensity0 = uniformLightIntensity0;
-    newMaterial->uniformLightAttenuationQ = uniformLightAttenuationQ;
-    newMaterial->uniformUvOffset = uniformUvOffset;
-    newMaterial->uniformUvScale = uniformUvScale;
-    newMaterial->uniformFogDensity = uniformFogDensity;
-    newMaterial->uniformFogColor = uniformFogColor;
-    newMaterial->uniformFlatColor = uniformFlatColor;
-    newMaterial->uniformTexture0Shift = uniformTexture0Shift;
+	newMaterial->uniformTexture0 = uniformTexture0;
+	newMaterial->uniformTexture1 = uniformTexture1;
+	newMaterial->uniformLightPosition0 = uniformLightPosition0;
+	newMaterial->uniformMaterialLightAmbientColor = uniformMaterialLightAmbientColor;
+	newMaterial->uniformMaterialLightDiffuseColor = uniformMaterialLightDiffuseColor;
+	newMaterial->uniformMaterialLightSpecularColor = uniformMaterialLightSpecularColor;
+	newMaterial->uniformMaterialSpecularShininess = uniformMaterialSpecularShininess;
+	newMaterial->uniformLightIntensity0 = uniformLightIntensity0;
+	newMaterial->uniformLightAttenuationQ = uniformLightAttenuationQ;
+	newMaterial->uniformUvOffset = uniformUvOffset;
+	newMaterial->uniformUvScale = uniformUvScale;
+	newMaterial->uniformFogDensity = uniformFogDensity;
+	newMaterial->uniformFogColor = uniformFogColor;
+	newMaterial->uniformFlatColor = uniformFlatColor;
+	newMaterial->uniformTexture0Shift = uniformTexture0Shift;
 
 	newMaterial->renderStateBlock = renderStateBlock;
     
@@ -407,6 +363,68 @@ Material * Material::Clone()
 
     return newMaterial;
 }
+
+void Material::CopySettings(Material *fromMaterial)
+{
+	DVASSERT(fromMaterial);
+
+	type = fromMaterial->type;
+	viewOptions = fromMaterial->viewOptions;
+
+	reflective = fromMaterial->reflective;
+	reflectivity =	fromMaterial->reflectivity;
+
+	transparent = fromMaterial->transparent;
+	transparency =	fromMaterial->transparency; 
+	indexOfRefraction = fromMaterial->indexOfRefraction;
+
+	for(int i = 0; i < TEXTURE_COUNT; i++)
+	{
+		SafeRelease(textures[i]);
+
+		textures[i] = SafeRetain(fromMaterial->textures[i]);
+		textureSlotNames[i] = fromMaterial->textureSlotNames[i];
+	}
+
+	names = fromMaterial->names;
+
+	textureSlotCount = fromMaterial->textureSlotCount;
+
+	blendSrc = fromMaterial->blendSrc;
+	blendDst = fromMaterial->blendDst;
+
+	isTranslucent = fromMaterial->isTranslucent;
+	isTwoSided = fromMaterial->isTwoSided;
+
+	isSetupLightmap = fromMaterial->isSetupLightmap;
+
+	shininess = fromMaterial->shininess;
+
+	ambientColor = fromMaterial->ambientColor;
+	diffuseColor = fromMaterial->diffuseColor;
+	specularColor = fromMaterial->specularColor;
+	emissiveColor = fromMaterial->emissiveColor;
+
+	isFogEnabled = fromMaterial->isFogEnabled;
+	fogDensity = fromMaterial->fogDensity;
+	fogColor = fromMaterial->fogColor;
+
+	if(fromMaterial->lightingParams)
+	{
+		SafeDelete(lightingParams);
+
+		lightingParams = new StaticLightingParams();
+		lightingParams->transparencyColor = fromMaterial->lightingParams->transparencyColor;
+	}
+
+	isAlphablend = fromMaterial->isAlphablend;
+	isFlatColorEnabled = fromMaterial->isFlatColorEnabled;
+
+	isTexture0ShiftEnabled = fromMaterial->isTexture0ShiftEnabled;
+
+	isWireframe = fromMaterial->isWireframe;
+}
+
 
 void Material::SetScene(Scene * _scene)
 {
