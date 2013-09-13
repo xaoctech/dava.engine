@@ -108,7 +108,8 @@ FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
         "inTexCoord3",
         "inTangent",
         "inBinormal",
-        "inJointWeight"
+        "inJointWeight",
+		"inTime"
     };
     
 Shader::eUniform Shader::GetUniformByName(const FastName & name)
