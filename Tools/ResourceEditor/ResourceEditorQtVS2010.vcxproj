@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Tools;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Tools;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;../../../dava.speedtree/Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -86,7 +86,7 @@
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
-      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Console</SubSystem>
@@ -120,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/Tools;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\mkspecs\default;Classes/Qt;_GeneratedQt;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/Tools;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\mkspecs\default;Classes/Qt;_GeneratedQt;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);../../../dava.speedtree/Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -215,6 +215,7 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -833,6 +834,7 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</ExcludedFromBuild>
