@@ -246,7 +246,7 @@ public:
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
-	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
+	void ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor);
 	void SetInvalidater(TextureInvalidater* invalidater);
 
 	inline TextureState GetState() const;
@@ -313,13 +313,13 @@ private:
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex, const FilePath & pathname);
     
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(const TextureDescriptor *descriptor, eGPUFamily gpu);
+	static Texture * CreateFromDescriptor(TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
 
 	Vector<Image *> images;
-	bool LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu);
+	bool LoadImages(eGPUFamily gpu);
 	void SetParamsFromImages();
-	void FlushDataToRenderer(const TextureDescriptor *descriptor);
+	void FlushDataToRenderer();
 	void ReleaseImages();
 
     void MakePink();
@@ -357,6 +357,7 @@ private:
 
 
 	TextureState state;
+	TextureDescriptor *texDescriptor;
 };
     
 // Implementation of inline functions
