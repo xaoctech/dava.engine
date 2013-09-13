@@ -160,6 +160,30 @@ SceneEditor2* QtMainWindow::GetCurrentScene()
 	return ui->sceneTabWidget->GetCurrentScene();
 }
 
+bool QtMainWindow::SaveScene( SceneEditor2 *scene )
+{
+	bool sceneWasSaved = false;
+
+	DAVA::FilePath scenePath = scene->GetScenePath();
+	if(!scene->IsLoaded() || scenePath.IsEmpty())
+	{
+		sceneWasSaved = SaveSceneAs(scene);
+	} 
+	else
+	{
+		if(scene->IsChanged())
+		{
+			if(!scene->Save(scenePath))
+			{
+				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+			}
+		}
+	}
+
+	return sceneWasSaved;
+}
+
+
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
 	bool ret = false;
@@ -378,6 +402,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
 
+    QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
+
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
@@ -435,6 +461,12 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+    
+#if defined(__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#elif defined(__DAVAENGINE_WIN32__)
+#endif //OS
+    
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -450,37 +482,19 @@ void QtMainWindow::InitRecent()
 		action->setData(QString(path.c_str()));
 		recentScenes.push_back(action);
 	}
-
-	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 }
 
 void QtMainWindow::AddRecent(const QString &path)
 {
-	for(int i = 0; i < recentScenes.size(); ++i)
-	{
-		if(recentScenes[i]->data() == path)
-		{
-			ui->menuFile->removeAction(recentScenes[i]);
-			recentScenes.removeAt(i);
-			i--;
-		}
-	}
+    while(recentScenes.size())
+    {
+        ui->menuFile->removeAction(recentScenes[0]);
+        recentScenes.removeAt(0);
+    }
+    
+    EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
 
-	QAction *action = new QAction(path, NULL);
-	action->setData(path);
-
-	if(recentScenes.size() > 0)
-	{
-		ui->menuFile->insertAction(recentScenes[0], action);
-	}
-	else
-	{
-		ui->menuFile->addAction(action);
-	}
-
-	recentScenes.push_front(action);
-
-	EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
+    InitRecent();
 }
 
 // ###################################################################################################
@@ -711,27 +725,17 @@ void QtMainWindow::OnSceneSave()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		DAVA::FilePath scenePath = scene->GetScenePath();
-		if(!scene->IsLoaded() || scenePath.IsEmpty())
-		{
-			SaveSceneAs(scene);
-		} 
-		else
-		{
-			if(scene->IsChanged())
-			{
-				if(!scene->Save(scenePath))
-				{
-					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
-				}
-			}
-		}
+		SaveScene(scene);
 	}
 }
 
 void QtMainWindow::OnSceneSaveAs()
 {
-	SaveSceneAs(GetCurrentScene());
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		SaveSceneAs(scene);
+	}
 }
 
 void QtMainWindow::OnSceneSaveToFolder()
@@ -782,24 +786,21 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         closeRequest->Cancel();
         return;
     }
+	else if(answer == QMessageBox::No)
+	{
+		closeRequest->Accept();
+		return;
+	}
 
-    closeRequest->Accept();
-    
-    if(answer == QMessageBox::Yes)
+	bool sceneWasSaved = SaveScene(scene);
+    if(sceneWasSaved)
     {
-        DAVA::FilePath scenePath = scene->GetScenePath();
-		if(!scene->IsLoaded() || scenePath.IsEmpty())
-		{
-			SaveSceneAs(scene);
-		}
-		else
-		{
-            if(!scene->Save(scenePath))
-            {
-                QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
-            }
-		}
+		closeRequest->Accept();
     }
+	else
+	{
+		closeRequest->Cancel();
+	}
 }
 
 
@@ -1477,3 +1478,4 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
+
