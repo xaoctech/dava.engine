@@ -148,9 +148,9 @@ YamlNode * UISwitch::SaveToYamlNode(UIYamlLoader * loader)
 	SetPreferredNodeType(node, "UISwitch");
 		
 	// All the buttons have to be saved too.
-	YamlNode* leftButtonNode = buttonLeft->SaveToYamlNode(loader);
-	YamlNode* toggleButtonNode = toggle->SaveToYamlNode(loader);
-	YamlNode* rightButtonNode = buttonRight->SaveToYamlNode(loader);
+	YamlNode* leftButtonNode = SaveToYamlNodeRecursive(loader, buttonLeft);
+	YamlNode* toggleButtonNode = SaveToYamlNodeRecursive(loader, toggle);
+	YamlNode* rightButtonNode = SaveToYamlNodeRecursive(loader, buttonRight);
 
 	node->AddNodeToMap(UISWITCH_BUTTON_LEFT_NAME, leftButtonNode);
 	node->AddNodeToMap(UISWITCH_BUTTON_TOGGLE_NAME, toggleButtonNode);
