@@ -45,10 +45,7 @@ UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientatio
 ,	orientation(requiredOrientation)
 ,   resizeSliderProportionally(true)
 {
-    slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
-	slider->SetName(UISCROLLBAR_SLIDER_NAME);
-    slider->SetInputEnabled(false, false);
-    AddControl(slider);
+	InitControls(rect);
 }
 
 UIScrollBar::~UIScrollBar()
@@ -119,10 +116,21 @@ void UIScrollBar::CopyDataFrom(UIControl *srcControl)
 	AddControl(slider);
 }
 
+void UIScrollBar::InitControls(const Rect &rect)
+{
+	slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
+	slider->SetName(UISCROLLBAR_SLIDER_NAME);
+	slider->SetInputEnabled(false, false);
+   	AddControl(slider);
+}
+
 void UIScrollBar::LoadFromYamlNodeCompleted()
 {
 	slider = SafeRetain(FindByName(UISCROLLBAR_SLIDER_NAME));
-	DVASSERT(slider);
+	if (!slider)
+	{
+		InitControls();
+	}
 }
 
 void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
