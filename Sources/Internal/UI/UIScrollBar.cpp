@@ -105,9 +105,6 @@ UIControl* UIScrollBar::Clone()
 
 void UIScrollBar::CopyDataFrom(UIControl *srcControl)
 {
-	UIControl* sliderClone = slider->Clone();
-	sliderClone->SetInputEnabled(false, false);
-		
     //release default buttons - they have to be copied from srcControl
     RemoveControl(slider);
  	SafeRelease(slider);
@@ -115,11 +112,11 @@ void UIScrollBar::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 	
 	UIScrollBar* t = (UIScrollBar*) srcControl;
-	orientation = t->orientation;
-	resizeSliderProportionally = true;
+	this->orientation = t->orientation;
+	this->resizeSliderProportionally = t->resizeSliderProportionally;
+	this->slider = t->slider->Clone();
 
-	AddControl(sliderClone);
-	SafeRelease(sliderClone);
+	AddControl(slider);
 }
 
 void UIScrollBar::LoadFromYamlNodeCompleted()
