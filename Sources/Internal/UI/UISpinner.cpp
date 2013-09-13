@@ -456,18 +456,4 @@ void UISpinner::OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, boo
     }
 }
 
-void UISpinner::SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
-{
-	List<UIControl*> childslist = parent->GetRealChildren();
-	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
-    {
-       	UIControl *childControl = (UIControl*)(*it);
-		// Save child node
-		YamlNode* childNode = childControl->SaveToYamlNode(loader);		
-		parentNode->AddNodeToMap(childControl->GetName(), childNode);
-		// Save sub-childs
-		SaveChildren(childControl, loader, childNode);
-	}
-}
-
 }
