@@ -312,10 +312,6 @@ void UITextField::SetTextColor(const Color& fontColor)
 #endif
 }
 
-void UITextField::SetFontColor(const Color& fontColor)
-{
-    SetTextColor(fontColor);
-}
 
 void UITextField::SetShadowOffset(const DAVA::Vector2 &offset)
 {

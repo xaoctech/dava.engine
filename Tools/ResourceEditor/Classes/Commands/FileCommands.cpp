@@ -41,6 +41,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+
 #include <QFileDialog>
 #include <QString>
 
@@ -195,14 +197,8 @@ void CommandSaveSpecifiedScene::Execute()
 			sc->AddNode(entityToAdd);
 		}
 
-		SceneFileV2 * outFile = new SceneFileV2();
-		
-		outFile->EnableSaveForGame(true);
-		outFile->EnableDebugLog(false);
+		SceneHelper::SaveScene(sc, normalizedPathname);
 
-		outFile->SaveScene(normalizedPathname, sc);
-		
-		SafeRelease(outFile);
 		SafeRelease(entityToAdd); 
 		SafeRelease(sc);
 	}

@@ -45,6 +45,8 @@
 #include "../SceneEditor/EditorSettings.h"
 #include "../CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+
 #include "DAVAEngine.h"
 
 using namespace DAVA;
@@ -210,11 +212,9 @@ void CommandConvertScene::Execute()
         
         // Export to *.sc2
         path.ReplaceExtension(".sc2");
-        SceneFileV2 * file = new SceneFileV2();
-        file->EnableDebugLog(false);
-        file->SaveScene(path, scene);
-        SafeRelease(file);
-        
+
+		SceneHelper::SaveScene(scene, path);
+
         SafeRelease(scene);
     }
     else if(code == COLLADA_ERROR_OF_ROOT_NODE)

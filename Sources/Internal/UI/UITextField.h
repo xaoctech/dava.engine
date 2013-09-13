@@ -233,7 +233,6 @@ public:
 	 \param[in] fontColor font used for text draw of the states.
 	 */
     void SetTextColor(const Color& fontColor);
-    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
 	/**
 	 \brief Sets the size of the font.
 	 \param[in] size font size to be set.

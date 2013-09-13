@@ -28,20 +28,30 @@
 
 
 
-#ifndef __TOOLS_COMMANDS_H__
-#define __TOOLS_COMMANDS_H__
+#ifndef __CONVERT_TO_SHADOW_COMMAND_H__
+#define __CONVERT_TO_SHADOW_COMMAND_H__
 
-#include "Command.h"
-#include "../Constants.h"
+#include "Commands2/Command2.h"
+#include "DAVAEngine.h"
 
-class CommandBeast: public Command
+class ConvertToShadowCommand : public Command2
 {
 public:
-	DAVA_DEPRECATED(CommandBeast());// DEPRECATED: cancel absent
-    
+	ConvertToShadowCommand(DAVA::Entity * entity);
+    ~ConvertToShadowCommand();
+
+    virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
+
+	static bool IsEntityWithShadowVolume(const DAVA::Entity *entity);
+	static DAVA::RenderBatch * ConvertToShadowVolume(DAVA::Entity *entity);
+
 protected:
-    
-    virtual void Execute();
+
+	DAVA::Entity * affectedEntity;
+    DAVA::RenderBatch * changedRenderBatch;
 };
 
-#endif // #ifndef __TOOLS_COMMANDS_H__
+
+#endif // #ifndef __CONVERT_TO_SHADOW_COMMAND_H__
