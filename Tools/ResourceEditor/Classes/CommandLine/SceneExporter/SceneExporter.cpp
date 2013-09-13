@@ -132,12 +132,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
     
-    SceneFileV2 * outFile = new SceneFileV2();
-    outFile->EnableSaveForGame(true);
-    outFile->EnableDebugLog(false);
-    
-    outFile->SaveScene(tempSceneName, scene);
-    SafeRelease(outFile);
+	SceneHelper::SaveScene(scene, tempSceneName, true);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)

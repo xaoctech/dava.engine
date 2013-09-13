@@ -218,10 +218,6 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	textBg->Draw(geometricData);
 }
 
-void UIStaticText::SetFontColor(const Color& fontColor)
-{
-	SetTextColor(fontColor);
-}
     
 const Vector<WideString> & UIStaticText::GetMultilineStrings()
 {

@@ -102,40 +102,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 #endif
 	texturePathName =  nstring;
     
-    String fileName = nstring;
-    Image * image = CreateTopLevelImage(fileName);
-    if (image)
-    {
-        //VK: create default descriptor for new material textures
-        TextureDescriptorUtils::CreateDescriptorIfNeed(fileName);
-        
-        bool opacityFound = false;
-        
-        int32 height = image->GetHeight();
-        int32 width = image->GetWidth();
-
-        if (image->GetPixelFormat() == FORMAT_RGBA8888)
-        {
-            for (int32 y = 0; y < height; ++y)
-            {
-                for (int32 x = 0; x < width; ++x)
-                {
-                    
-                    if (image->GetData()[(y * width + x) * 4 + 3] != 255)
-                    {
-                        opacityFound = true;
-                        break;
-                    }
-                }
-                if (opacityFound)break;
-            }
-            
-        }
-        Logger::Debug("Image opened: %s - %d x %d - opacity: %s", fileName.c_str(), width, height, (opacityFound) ? ("yes") : ("no"));        
-        
-        SafeRelease(image);
-        hasOpacity = opacityFound;
-    }
+    TextureDescriptorUtils::CreateDescriptorIfNeed(String(texturePathName));
     
  	/*try 
 	{

@@ -34,6 +34,9 @@
 #include "Classes/SceneEditor/SceneValidator.h"
 #include "Classes/Qt/DockLODEditor/EditorLODData.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Commands2/ConvertToShadowCommand.h"
+
 using namespace DAVA;
 
 DAEConvertAction::DAEConvertAction(const DAVA::FilePath &path)
@@ -64,10 +67,8 @@ void DAEConvertAction::Redo()
 void DAEConvertAction::ConvertFromSceToSc2() const
 {
     Scene *scene = CreateSceneFromSce();
-
-    // Export to *.sc2
     FilePath sc2Path = FilePath::CreateWithNewExtension(daePath, ".sc2");
-    SaveScene(sc2Path, scene);
+	SceneHelper::SaveScene(scene, sc2Path);
     scene->Release();
 }
 
@@ -82,15 +83,6 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
     scene->BakeTransforms();
     
     return scene;
-}
-
-void DAEConvertAction::SaveScene(const DAVA::FilePath &scenePathname, DAVA::Scene *scene) const
-{
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(scenePathname, scene);
-    
-    SafeRelease(file);
 }
 
 
@@ -109,7 +101,7 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
         
         FilePath newSc2Path = sc2Path;
         newSc2Path.ReplaceBasename(sc2Path.GetBasename() + "_new");
-        SaveScene(newSc2Path, scene);
+        SceneHelper::SaveScene(scene, newSc2Path);
         SafeRelease(scene);
         
         TryToMergeScenes(sc2Path, newSc2Path);
@@ -123,21 +115,22 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
 }
 
 
-void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath) const
+void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath)
 {
     Scene * oldScene = CreateSceneFromSc2(originalPath);
     Scene * newScene = CreateSceneFromSc2(newPath);
     
     CopyMaterialsSettings(oldScene, newScene);
     CopyLODSettings(oldScene, newScene);
+	CopyShadowSettings(oldScene, newScene);
     
-    SaveScene(originalPath, newScene);
+    SceneHelper::SaveScene(newScene, originalPath);
     
     oldScene->Release();
     newScene->Release();
 }
 
-DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FilePath &scenePathname) const
+DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FilePath &scenePathname)
 {
     Scene * scene = new Scene();
     
@@ -174,78 +167,44 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
 }
 
 
-void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const
+void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene)
 {
-    Vector<Material *> srcMaterials;
-    srcScene->GetDataNodes(srcMaterials);
-    
-    Vector<Material *> dstMaterials;
-    dstScene->GetDataNodes(dstMaterials);
+    Vector<Material *> srcMaterials = CreateMaterialsVector(srcScene);
+    Vector<Material *> dstMaterials = CreateMaterialsVector(dstScene);
     
     if (srcMaterials.size() == dstMaterials.size())
     {
         uint32 count = srcMaterials.size();
         for (uint32 i = 0; i < count; ++i)
         {
-            CopyMaterial(srcMaterials[i], dstMaterials[i]);
+            if(srcMaterials[i]->GetName() == dstMaterials[i]->GetName())
+            {
+				dstMaterials[i]->CopySettings(srcMaterials[i]);
+            }
         }
     }
 }
 
-void DAEConvertWithSettingsAction::CopyMaterial(DAVA::Material *src, DAVA::Material *dst) const
+DAVA::Vector<DAVA::Material *> DAEConvertWithSettingsAction::CreateMaterialsVector(DAVA::Scene *scene)
 {
-    if(src->GetName() != dst->GetName())
-        return;
+    Vector<Material *> materials;
+    SceneHelper::EnumerateMaterials(scene, materials);
     
-    dst->SetType((Material::eType)src->type);
-    dst->SetViewOption(src->GetViewOption());
-    
-    dst->reflective = src->reflective;
-    dst->reflectivity =	src->reflectivity;
-    
-    dst->transparent = src->transparent;
-    dst->transparency =	src->transparency;
-    dst->indexOfRefraction = src->indexOfRefraction;
-    
-    for(uint32 i = 0; i < Material::TEXTURE_COUNT; ++i)
+    if(materials.size())
     {
-        dst->SetTexture((Material::eTextureLevel)i, src->GetTextureName((Material::eTextureLevel)i));
+        std::sort(materials.begin(), materials.end(), DAEConvertWithSettingsAction::CompareMaterials);
     }
-
-    dst->SetBlendSrc(src->GetBlendSrc());
-    dst->SetBlendDest(src->GetBlendDest());
     
-    dst->SetOpaque(src->GetOpaque());
-    dst->SetTwoSided(src->GetTwoSided());
-    
-    dst->SetSetupLightmap(src->GetSetupLightmap());
-    
-    dst->SetShininess(src->GetShininess());
-    
-    dst->SetAmbientColor(src->GetAmbientColor());
-    dst->SetDiffuseColor(src->GetDiffuseColor());
-    dst->SetSpecularColor(src->GetSpecularColor());
-    dst->SetEmissiveColor(src->GetEmissiveColor());
-
-    dst->SetFog(src->IsFogEnabled());
-    dst->SetFogColor(src->GetFogColor());
-    dst->SetFogDensity(src->GetFogDensity());
-
-//    if(lightingParams)
-//    {
-//        dst->lightingParams = new StaticLightingParams();
-//        dst->lightingParams->transparencyColor = lightingParams->transparencyColor;
-//    }
-
-    dst->SetAlphablend(src->GetAlphablend());
-    dst->EnableFlatColor(src->IsFlatColorEnabled());
-    
-    dst->EnableTextureShift(src->IsTextureShiftEnabled());
-
-    dst->SetWireframe(src->GetWireframe());
+    return materials;
 }
 
-void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene) const
+bool DAEConvertWithSettingsAction::CompareMaterials(const DAVA::Material *left, const DAVA::Material *right)
+{
+    return (left->GetName() < right->GetName());
+}
+
+
+void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene)
 {
     Vector<LodComponent *> srcLODs;
     EditorLODData::EnumerateLODsRecursive(srcScene, srcLODs);
@@ -258,24 +217,43 @@ void DAEConvertWithSettingsAction::CopyLODSettings(DAVA::Scene * srcScene, DAVA:
         uint32 count = srcLODs.size();
         for (uint32 i = 0; i < count; ++i)
         {
-            CopyLOD(srcLODs[i], dstLODs[i]);
+            if(srcLODs[i]->GetEntity()->GetName() == dstLODs[i]->GetEntity()->GetName())
+            {
+                dstLODs[i]->CopyLODSettings(srcLODs[i]);
+            }
         }
     }
 }
 
-void DAEConvertWithSettingsAction::CopyLOD(DAVA::LodComponent * src, DAVA::LodComponent * dst) const
+void DAEConvertWithSettingsAction::CopyShadowSettings( DAVA::Scene * srcScene, DAVA::Scene * dstScene )
 {
-    if(src->GetEntity()->GetName() != dst->GetEntity()->GetName())
-        return;
-    
-	//Lod values
-	for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
+	uint32 srcCount = srcScene->GetChildrenCount();
+	uint32 dstCount = dstScene->GetChildrenCount();
+	if(srcCount == dstCount)
 	{
-        dst->SetLodLayerDistance(iLayer, src->GetLodLayerDistance(iLayer));
+		for(uint32 i = 0; i < srcCount; ++i)
+		{
+			CopyShadowSettingsRecursive(srcScene->GetChild(i), dstScene->GetChild(i));
+		}
 	}
-    
-    dst->SetForceDistance(src->GetForceDistance());
-    dst->SetForceLodLayer(src->GetForceLodLayer());
 }
 
 
+void DAEConvertWithSettingsAction::CopyShadowSettingsRecursive(const DAVA::Entity * srcEntity, DAVA::Entity * dstEntity )
+{
+	if((srcEntity->GetName() == dstEntity->GetName()) && ConvertToShadowCommand::IsEntityWithShadowVolume(srcEntity))
+	{
+		DAVA::RenderBatch *oldBatch = ConvertToShadowCommand::ConvertToShadowVolume(dstEntity);
+		SafeRelease(oldBatch);
+	}
+
+	uint32 srcCount = srcEntity->GetChildrenCount();
+	uint32 dstCount = dstEntity->GetChildrenCount();
+	if(srcCount == dstCount)
+	{
+		for(uint32 i = 0; i < srcCount; ++i)
+		{
+			CopyShadowSettingsRecursive(srcEntity->GetChild(i), dstEntity->GetChild(i));
+		}
+	}
+}

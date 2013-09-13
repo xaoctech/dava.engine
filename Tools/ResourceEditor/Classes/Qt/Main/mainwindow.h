@@ -140,13 +140,15 @@ public slots:
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
     
-    void OnSaveHeightmapToPNG();
-    void OnSaveTiledTexture();
+	void OnSaveHeightmapToPNG();
+	void OnSaveTiledTexture();
     
     
-    void OnCloseTabRequest(int tabIndex, Request *closeRequest);
+	void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 
 	void OnBeast();
+
+	void OnConvertToShadow();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -184,7 +186,6 @@ protected slots:
 	void NotPassableToggled(SceneEditor2* scene);
 
 	void EditorLightEnabled(bool enabled);
-
 
 private:
 	Ui::MainWindow *ui;

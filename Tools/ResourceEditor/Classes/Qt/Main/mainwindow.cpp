@@ -58,7 +58,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../Tools/AddLandscapeEntityDialog/AddLandscapeEntityDialog.h"
 
-#include "../../Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
 #include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
@@ -68,11 +68,13 @@
 #include "Classes/CommandLine/CommandLineManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
-#include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
-#include "../../Commands2/LandscapeEditorDrawSystemActions.h"
+
+#include "Classes/Commands2/LandscapeEditorDrawSystemActions.h"
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
 #include "Classes/Qt/Main/Request.h"
+#include "Classes/Commands2/GroupEntitiesForMultiselectCommand.h"
+#include "Classes/Commands2/ConvertToShadowCommand.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -120,6 +122,14 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
+
+
+
+	LoadGPUFormat();
 
     
 	LoadGPUFormat();
@@ -406,12 +416,15 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
 
-    QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
+	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
+	//edit
+	QObject::connect(ui->actionConvertToShadow, SIGNAL(triggered()), this, SLOT(OnConvertToShadow()));
+    
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
-    // import
+	// import
 #ifdef __DAVAENGINE_SPEEDTREE__
     QObject::connect(ui->actionImportSpeedTreeXML, SIGNAL(triggered()), this, SLOT(OnImportSpeedTreeXML()));
 #endif //__DAVAENGINE_SPEEDTREE__
@@ -425,7 +438,7 @@ void QtMainWindow::SetupActions()
 	ui->actionReloadPNG->setData(GPU_UNKNOWN);
 	QObject::connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), this, SLOT(OnReloadTexturesTriggered(QAction *)));
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
-    QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
+	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
 
 	
 	// scene undo/redo
@@ -468,7 +481,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
 
-    QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
+	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1492,6 +1505,26 @@ void QtMainWindow::HideLandscapeEditorDocks()
 	ui->dockRulerTool->hide();
 }
 
+void QtMainWindow::OnConvertToShadow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+    
+    const EntityGroup *selection = scene->selectionSystem->GetSelection();
+    if(selection->Size())
+    {
+        scene->BeginBatch("Convert To Shadow");
+        
+        size_t count = selection->Size();
+        for(size_t i = 0; i < count; ++i)
+        {
+            scene->Exec(new ConvertToShadowCommand(selection->GetEntity(i)));
+        }
+        
+        scene->EndBatch();
+    }
+}
+
 void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
 {
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
@@ -1501,6 +1534,7 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
+
 
 void QtMainWindow::OnBeast()
 {
