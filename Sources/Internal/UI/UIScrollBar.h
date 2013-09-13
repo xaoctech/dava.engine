@@ -88,6 +88,7 @@ public:
 protected:
 	// Calculate the start offset based on the initial click point.
 	void CalculateStartOffset(const Vector2& inputPoint);
+	void InitControls(const Rect &rect = Rect());
 
 private:
     int32 orientation;
