@@ -232,6 +232,9 @@
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\SpeedTree">
+      <UniqueIdentifier>{e22291cd-1e6a-41a0-909a-dc1b06a4a034}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2157,6 +2160,12 @@
     <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp">
       <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp">
+      <Filter>Classes\SpeedTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\Request.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\Request.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
@@ -3757,6 +3766,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h">
       <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
+      <Filter>Classes\SpeedTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\Request.h">
+      <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\Request.h">
       <Filter>Classes\Qt\Main</Filter>
