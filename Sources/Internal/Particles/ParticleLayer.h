@@ -243,6 +243,9 @@ public:
 	virtual void SetFog(bool enable);
 	bool IsFogEnabled();
 
+	virtual void SetFrameBlend(bool enable);
+	bool IsFrameBlendEnabled();
+
 	void SetInheritPosition(bool inherit);
 	bool GetInheritPosition() const {return inheritPosition;}
 
@@ -346,6 +349,8 @@ protected:
 	eBlendMode srcBlendFactor, dstBlendFactor;
 
 	bool enableFog;
+
+	bool enableFrameBlend;
 
 	bool inheritPosition;  //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
