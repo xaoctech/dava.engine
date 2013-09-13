@@ -192,6 +192,7 @@ Texture::Texture()
 ,	textureType(Texture::TEXTURE_2D)
 ,	isPink(false)
 ,	state(STATE_INVALID)
+,	texDescriptor(NULL)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -211,6 +212,7 @@ Texture::Texture()
 Texture::~Texture()
 {
     ReleaseTextureData();
+	SafeRelease(texDescriptor);
 }
     
 void Texture::ReleaseTextureData()
@@ -357,16 +359,14 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	Image *image = Image::CreateFromData(_width, _height, _format, _data);
 	if(!image) return NULL;
 
-	TextureDescriptor *descriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
-
 	Texture * texture = new Texture();
+	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
 	texture->images.push_back(image);
 	
     texture->SetParamsFromImages();
-	texture->FlushDataToRenderer(descriptor);
+	texture->FlushDataToRenderer();
 	texture->ReleaseImages();
 
-	SafeRelease(descriptor);
 	return texture;
 }		
 	
@@ -456,11 +456,12 @@ void Texture::GeneratePixelesation()
 }
     
 
-Texture * Texture::CreateFromImage(const TextureDescriptor *descriptor, eGPUFamily gpu)
+Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu)
 {
 	Texture * texture = new Texture();
+	texture->texDescriptor = SafeRetain(descriptor);
 
-	bool loaded = texture->LoadImages(descriptor, gpu);
+	bool loaded = texture->LoadImages(gpu);
 	if(!loaded)
 	{
 		Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
@@ -470,23 +471,23 @@ Texture * Texture::CreateFromImage(const TextureDescriptor *descriptor, eGPUFami
 	}
 
 	texture->SetParamsFromImages();
-	texture->FlushDataToRenderer(descriptor);
+	texture->FlushDataToRenderer();
 	texture->ReleaseImages();
 
 	return texture;
 }
 
-bool Texture::LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu)
+bool Texture::LoadImages(eGPUFamily gpu)
 {
 	DVASSERT(images.size() == 0);
 
-	if(!IsLoadAvailable(gpu, descriptor))
+	if(!IsLoadAvailable(gpu, texDescriptor))
 		return false;
 	
-	if(descriptor->IsCubeMap() && (GPU_UNKNOWN == descriptor->exportedAsGpuFamily))
+	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == texDescriptor->exportedAsGpuFamily))
 	{
 		Vector<String> faceNames;
-		GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
+		GenerateCubeFaceNames(texDescriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
@@ -509,7 +510,7 @@ bool Texture::LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu)
 	}
 	else
 	{
-		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
+		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 		images = ImageLoader::CreateFromFile(imagePathname);
 	}
 
@@ -549,11 +550,12 @@ void Texture::SetParamsFromImages()
 }
 
 
-void Texture::FlushDataToRenderer(const TextureDescriptor *descriptor)
+void Texture::FlushDataToRenderer()
 {
 	DVASSERT(images.size() != 0);
+	DVASSERT(texDescriptor);
 
-	bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && ((1 == images.size()) || descriptor->IsCubeMap());
+	bool needGenerateMipMaps = texDescriptor->GetGenerateMipMaps() && ((1 == images.size()) || texDescriptor->IsCubeMap());
 
 
 	RenderManager::Instance()->LockNonMain();
@@ -577,16 +579,16 @@ void Texture::FlushDataToRenderer(const TextureDescriptor *descriptor)
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeT)));
+	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeS)));
+	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeT)));
 
 	if(needGenerateMipMaps)
 	{
 		RENDER_VERIFY(glGenerateMipmap(nativeTextureType));
 	}
 
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.minFilter)));
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.magFilter)));
+	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
+	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, saveType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -684,28 +686,18 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
-	texture = CreateFromDescriptor(descriptor);
-    if(texture)
-    {
-		AddToMap(texture, descriptorPathname);
-    }
-    
-    SafeRelease(descriptor);
-	return texture;
-}
-    
-Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor)
-{
-    eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
-	Texture * texture = CreateFromImage(descriptor, gpuForLoading);
+	eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
+	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
 	{
 		texture->loadedAsFile = gpuForLoading;
-		return texture;
+		AddToMap(texture, descriptorPathname);
 	}
 
-	return NULL;
+	descriptor->Release();
+	return texture;
 }
+    
 
 TextureDescriptor * Texture::CreateDescriptor() const
 {
@@ -739,20 +731,23 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 	}
 }
 
-void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
+void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
+
+	SafeRelease(texDescriptor);
+	texDescriptor = SafeRetain(descriptor);
     
 	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
-	bool loaded = LoadImages(descriptor, gpuForLoading);
+	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
 
 		SetParamsFromImages();
-		FlushDataToRenderer(descriptor);
+		FlushDataToRenderer();
 		ReleaseImages();
 	}
 	else
@@ -1072,13 +1067,12 @@ void Texture::MakePink()
     
 	images.push_back(Image::CreatePinkPlaceholder());
 
-    TextureDescriptor *descriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
+	SafeRelease(texDescriptor);
+    texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
     
 	SetParamsFromImages();
-    FlushDataToRenderer(descriptor);
+    FlushDataToRenderer();
 	ReleaseImages();
-
-    SafeRelease(descriptor);
 
     isPink = true;
 

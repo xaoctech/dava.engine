@@ -121,7 +121,7 @@ public:
 	static const int MIN_HEIGHT = 8;
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
-	// Main constructurs
+	// Main constructors
 	
     static void InitializePixelFormatDescriptors();
 
@@ -246,7 +246,6 @@ public:
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
-	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
 	void SetInvalidater(TextureInvalidater* invalidater);
 
 	inline TextureState GetState() const;
@@ -313,13 +312,15 @@ private:
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex, const FilePath & pathname);
     
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(const TextureDescriptor *descriptor, eGPUFamily gpu);
+	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
+
+	void ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor);
+
 
 	Vector<Image *> images;
-	bool LoadImages(const TextureDescriptor *descriptor, eGPUFamily gpu);
+	bool LoadImages(eGPUFamily gpu);
 	void SetParamsFromImages();
-	void FlushDataToRenderer(const TextureDescriptor *descriptor);
+	void FlushDataToRenderer();
 	void ReleaseImages();
 
     void MakePink();
@@ -357,6 +358,7 @@ private:
 
 
 	TextureState state;
+	TextureDescriptor *texDescriptor;
 };
     
 // Implementation of inline functions
