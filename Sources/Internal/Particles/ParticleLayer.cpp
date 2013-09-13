@@ -98,6 +98,7 @@ ParticleLayer::ParticleLayer()
 	srcBlendFactor = BLEND_SRC_ALPHA;
 	dstBlendFactor = BLEND_ONE;
 	enableFog = true;
+	enableFrameBlend = false;
 	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
@@ -231,6 +232,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->SetBlendMode(srcBlendFactor, dstBlendFactor);
 	dstLayer->SetFog(enableFog);
+	dstLayer->SetFrameBlend(enableFrameBlend);
 	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
@@ -727,7 +729,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	if(sprite)
+	if(sprite && (type!=TYPE_SUPEREMITTER_PARTICLES)) //don't update for super emitter particle even if they have old sprite
 	{
 		particle->size.x /= (float32)sprite->GetWidth();
 		particle->size.y /= (float32)sprite->GetHeight();
@@ -877,8 +879,9 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 	// This property is cycled - if we reached the last frame, we'll update to the new one.
 	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
 	{
-		float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
-		if (timeElapsed > (1 / frameOverLifeFPS))
+		//float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
+		float32 frameTime = 1.0f / frameOverLifeFPS;
+		while ((particle->life - particle->frameLastUpdateTime) > frameTime)
 		{
 			particle->frame ++;
 			// Spright might not be loaded (see please DF-1661).
@@ -887,7 +890,7 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 				particle->frame = 0;
 			}
 
-			particle->frameLastUpdateTime = particle->life;
+			particle->frameLastUpdateTime += frameTime;
 		}
 	}
     
@@ -1130,6 +1133,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	{
 		SetFog(fogNode->AsBool());
 	}
+
+	const YamlNode * frameBlendNode = node->Get("enableFrameBlend");	
+	if (frameBlendNode)
+	{
+		SetFrameBlend(frameBlendNode->AsBool());
+	}
 	
 
 	const YamlNode * alignToMotionNode = node->Get("alignToMotion");
@@ -1240,6 +1249,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	layerNode->Add("dstBlendFactor", BLEND_MODE_NAMES[(int32)dstBlendFactor]);
 
 	layerNode->Add("enableFog", enableFog);	
+	layerNode->Add("enableFrameBlend", enableFrameBlend);	
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
@@ -1394,6 +1404,15 @@ void ParticleLayer::SetFog(bool enable)
 bool ParticleLayer::IsFogEnabled()
 {
 	return enableFog;
+}
+
+void ParticleLayer::SetFrameBlend(bool enable)
+{
+	enableFrameBlend = enable;
+}
+bool ParticleLayer::IsFrameBlendEnabled()
+{
+	return enableFrameBlend;
 }
 
 void ParticleLayer::SetInheritPosition(bool inherit)
