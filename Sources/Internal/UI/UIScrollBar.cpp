@@ -45,10 +45,7 @@ UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientatio
 ,	orientation(requiredOrientation)
 ,   resizeSliderProportionally(true)
 {
-    slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
-	slider->SetName(UISCROLLBAR_SLIDER_NAME);
-    slider->SetInputEnabled(false, false);
-    AddControl(slider);
+	InitControls(rect);
 }
 
 UIScrollBar::~UIScrollBar()
@@ -105,9 +102,6 @@ UIControl* UIScrollBar::Clone()
 
 void UIScrollBar::CopyDataFrom(UIControl *srcControl)
 {
-	UIControl* sliderClone = slider->Clone();
-	sliderClone->SetInputEnabled(false, false);
-		
     //release default buttons - they have to be copied from srcControl
     RemoveControl(slider);
  	SafeRelease(slider);
@@ -115,17 +109,28 @@ void UIScrollBar::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 	
 	UIScrollBar* t = (UIScrollBar*) srcControl;
-	orientation = t->orientation;
-	resizeSliderProportionally = true;
+	this->orientation = t->orientation;
+	this->resizeSliderProportionally = t->resizeSliderProportionally;
+	this->slider = t->slider->Clone();
 
-	AddControl(sliderClone);
-	SafeRelease(sliderClone);
+	AddControl(slider);
+}
+
+void UIScrollBar::InitControls(const Rect &rect)
+{
+	slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
+	slider->SetName(UISCROLLBAR_SLIDER_NAME);
+	slider->SetInputEnabled(false, false);
+   	AddControl(slider);
 }
 
 void UIScrollBar::LoadFromYamlNodeCompleted()
 {
 	slider = SafeRetain(FindByName(UISCROLLBAR_SLIDER_NAME));
-	DVASSERT(slider);
+	if (!slider)
+	{
+		InitControls();
+	}
 }
 
 void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
