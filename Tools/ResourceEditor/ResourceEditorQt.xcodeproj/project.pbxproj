@@ -17,6 +17,7 @@
 		02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E440173965B800C501BC /* SceneTreeModel.cpp */; };
 		02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
 		02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
+		02F8B06217E32B9400D5A334 /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F8B06017E32B9400D5A334 /* SpeedTreeImporter.cpp */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		172E7E0C17840BA000B20FFA /* ParticleTimeLineColumns.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 172E7E0A17840BA000B20FFA /* ParticleTimeLineColumns.cpp */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
@@ -671,6 +672,8 @@
 		02E9E43F173965B800C501BC /* SceneTreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeItem.h; sourceTree = "<group>"; };
 		02E9E440173965B800C501BC /* SceneTreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel.cpp; sourceTree = "<group>"; };
 		02E9E441173965B800C501BC /* SceneTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeModel.h; sourceTree = "<group>"; };
+		02F8B06017E32B9400D5A334 /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
+		02F8B06117E32B9400D5A334 /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
 		172E7E0A17840BA000B20FFA /* ParticleTimeLineColumns.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleTimeLineColumns.cpp; sourceTree = "<group>"; };
 		172E7E0B17840BA000B20FFA /* ParticleTimeLineColumns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleTimeLineColumns.h; sourceTree = "<group>"; };
 		1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneDataHelper.cpp; sourceTree = "<group>"; };
@@ -1839,6 +1842,15 @@
 			);
 			name = DockSceneTree;
 			path = Classes/Qt/DockSceneTree;
+			sourceTree = "<group>";
+		};
+		02F8B05817E32B7300D5A334 /* SpeedTree */ = {
+			isa = PBXGroup;
+			children = (
+				02F8B06017E32B9400D5A334 /* SpeedTreeImporter.cpp */,
+				02F8B06117E32B9400D5A334 /* SpeedTreeImporter.h */,
+			);
+			name = SpeedTree;
 			sourceTree = "<group>";
 		};
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
@@ -4022,6 +4034,7 @@
 		FB61758D0F0FDA4BA867C3D5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				02F8B05817E32B7300D5A334 /* SpeedTree */,
 				4FFE5C76176B37B600728624 /* Commands2 */,
 				E8B836231740FCC700D11EAE /* ImageTools */,
 				E83AB8F31779AF130037561B /* Deprecated */,
@@ -4795,6 +4808,7 @@
 				A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */,
 				4FFA516417E0DFB2008B6A1E /* CollisionCamera.cpp in Build Sources */,
 				E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */,
+				02F8B06217E32B9400D5A334 /* SpeedTreeImporter.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4814,6 +4828,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DAVA_DEBUG,
 					DAVA_QT,
+					__DAVAENGINE_SPEEDTREE__,
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
@@ -4904,6 +4919,11 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DAVA_DEBUG,
+					DAVA_QT,
+					__DAVAENGINE_SPEEDTREE__,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
@@ -4919,7 +4939,10 @@
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = DAVA_QT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DAVA_QT,
+					__DAVAENGINE_SPEEDTREE__,
+				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
