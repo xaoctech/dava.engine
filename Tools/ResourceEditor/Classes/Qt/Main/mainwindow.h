@@ -45,7 +45,7 @@
 #include "Classes/SceneEditor/MaterialEditor.h"
 // <---
 class AddSwitchEntityDialog;
-
+class Request;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -62,6 +62,7 @@ public:
 	SceneTabWidget* GetSceneWidget();
 	SceneEditor2* GetCurrentScene();
 
+	bool SaveScene(SceneEditor2 *scene);
 	bool SaveSceneAs(SceneEditor2 *scene);
 
 	void SetGPUFormat(DAVA::eGPUFamily gpu);
@@ -141,6 +142,9 @@ public slots:
     
     void OnSaveHeightmapToPNG();
     void OnSaveTiledTexture();
+    
+    
+    void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

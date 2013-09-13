@@ -121,12 +121,6 @@ class CommandChangeMaterialViewOption;
 
 
 /*
- * SetSwitchIndexCommands.h
- */
-class CommandToggleSetSwitchIndex;
-
-
-/*
  * VisibilityCheckToolCommands.h
  */
 class CommandSaveTextureVisibilityTool;

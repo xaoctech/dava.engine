@@ -28,27 +28,38 @@
 
 
 
-#include "SetSwitchIndexCommands.h"
+#ifndef __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
+#define __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
 
-#include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/Main/QtUtils.h"
-#include "../SceneEditor/EditorBodyControl.h"
-#include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
+#include "UI/UIScrollBar.h"
+#include <QString>
 
+namespace DAVA {
 
-CommandToggleSetSwitchIndex::CommandToggleSetSwitchIndex(uint32 value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
-:   CommandEntityModification(Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_TOGGLE_SET_SWITCH_INDEX)
+class ScrollPropertyGridWidgetHelper
 {
-    this->value = value;
-	this->swtichState = state;
-}
+public:
+    // Draw Type.
+    static int GetOrientationCount();
+	
+    static UIScrollBar::eScrollOrientation GetOrientation(int index);
+    static QString GetOrientationDesc(int index);
+    static QString GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation);
+    
+protected:
+    // Validate the indexes.
+    static bool ValidateOrientationIndex(int index);
 
-void CommandToggleSetSwitchIndex::Execute()
-{
-	SetSwitchIndexHelper::ProcessSwitchIndexUpdate(value, swtichState, entities, originalIndexes);
-}
+    // Maps.
+    struct OrientationData
+    {
+      	UIScrollBar::eScrollOrientation orientation;
+        const char* orientationDesc;
+    };
 
-void CommandToggleSetSwitchIndex::Cancel()
-{
-	SetSwitchIndexHelper::RestoreOriginalIndexes(originalIndexes, entities);
-}
+    static const OrientationData orientationData[];
+};
+
+};
+
+#endif /* defined(__SCROLL_PROPERTY_GRID_WIDGET_HELPER__) */

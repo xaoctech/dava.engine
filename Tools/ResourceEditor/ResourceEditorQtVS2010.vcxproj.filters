@@ -82,9 +82,6 @@
     <Filter Include="Classes\Qt\DockSceneGraph">
       <UniqueIdentifier>{39430818-6e4e-42bf-bbd9-946b83c94b54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\DockSetSwitchIndex">
-      <UniqueIdentifier>{1060010d-a6c2-4da3-9613-72895b684bf2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\DockHangingObjects">
       <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
     </Filter>
@@ -1170,12 +1167,6 @@
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
       <Filter>Classes\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp">
-      <Filter>Classes\Qt\DockSetSwitchIndex</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp">
-      <Filter>Classes\Qt\DockSetSwitchIndex</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Classes\LandscapeEditor</Filter>
     </ClCompile>
@@ -1575,9 +1566,6 @@
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
@@ -1708,12 +1696,6 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockTilemaskEditor\TilemaskEditorPropertiesView_moc.cpp">
@@ -2180,6 +2162,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp">
       <Filter>Classes\SpeedTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\Request.cpp">
+      <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3170,12 +3155,6 @@
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
       <Filter>Classes\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h">
-      <Filter>Classes\Qt\DockSetSwitchIndex</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h">
-      <Filter>Classes\Qt\DockSetSwitchIndex</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
       <Filter>Classes\Collada</Filter>
     </ClInclude>
@@ -3557,9 +3536,6 @@
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h">
-      <Filter>Classes\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
@@ -3790,6 +3766,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
       <Filter>Classes\SpeedTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\Request.h">
+      <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

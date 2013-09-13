@@ -57,6 +57,7 @@ class ScenePreviewDialog;
 
 Q_DECLARE_METATYPE(SceneEditor2 *);
 
+class Request;
 class SceneTabWidget : public QWidget
 {
 	Q_OBJECT
@@ -78,6 +79,10 @@ public:
 
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
 
+signals:
+    
+    void CloseTabRequest(int index, Request *closeRequest);
+    
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);

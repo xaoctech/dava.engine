@@ -127,8 +127,6 @@
 		4FAD0CFB1785EC6E00B05A35 /* SceneTreeItemForce_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C6C1785EC6E00B05A35 /* SceneTreeItemForce_moc.cpp */; };
 		4FAD0CFC1785EC6E00B05A35 /* SceneTreeItemLayer_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C6D1785EC6E00B05A35 /* SceneTreeItemLayer_moc.cpp */; };
 		4FAD0CFD1785EC6E00B05A35 /* SceneTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C6E1785EC6E00B05A35 /* SceneTreeModel_moc.cpp */; };
-		4FAD0CFE1785EC6E00B05A35 /* SetSwitchIndexHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C701785EC6E00B05A35 /* SetSwitchIndexHelper_moc.cpp */; };
-		4FAD0CFF1785EC6E00B05A35 /* SetSwitchIndexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C711785EC6E00B05A35 /* SetSwitchIndexView_moc.cpp */; };
 		4FAD0D011785EC6E00B05A35 /* davaglwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C751785EC6E00B05A35 /* davaglwidget_moc.cpp */; };
 		4FAD0D021785EC6E00B05A35 /* mainwindow_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C761785EC6E00B05A35 /* mainwindow_moc.cpp */; };
 		4FAD0D031785EC6E00B05A35 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C771785EC6E00B05A35 /* ModificationWidget_moc.cpp */; };
@@ -450,9 +448,6 @@
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
-		84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */; };
-		84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */; };
-		84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */; };
 		84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */; };
 		84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */; };
 		8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8463A51D1745309E00F2398F /* EntityOwnerPropertyHelper.cpp */; };
@@ -550,6 +545,7 @@
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8A1091817944416007FF496 /* EditorLightSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A1091617944416007FF496 /* EditorLightSystem.cpp */; };
+		E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B6213E17E1FD6400C5678E /* Request.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39CD17B4BA8E00C63420 /* LabeledSlider.cpp */; };
 		E8BD39D617B4BB4D00C63420 /* LabeledSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39D517B4BB4D00C63420 /* LabeledSlider_moc.cpp */; };
@@ -862,8 +858,6 @@
 		4FAD0C6C1785EC6E00B05A35 /* SceneTreeItemForce_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeItemForce_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C6D1785EC6E00B05A35 /* SceneTreeItemLayer_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeItemLayer_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C6E1785EC6E00B05A35 /* SceneTreeModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C701785EC6E00B05A35 /* SetSwitchIndexHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SetSwitchIndexHelper_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C711785EC6E00B05A35 /* SetSwitchIndexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SetSwitchIndexView_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C751785EC6E00B05A35 /* davaglwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = davaglwidget_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C761785EC6E00B05A35 /* mainwindow_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C771785EC6E00B05A35 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -931,7 +925,6 @@
 		4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_MaterialViewOptions.h; path = _GeneratedQt/ui_MaterialViewOptions.h; sourceTree = "<group>"; };
 		4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ModificationWidget.h; path = _GeneratedQt/ui_ModificationWidget.h; sourceTree = "<group>"; };
 		4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ParticleProperty.h; path = _GeneratedQt/ui_ParticleProperty.h; sourceTree = "<group>"; };
-		4FAD0CD41785EC6E00B05A35 /* ui_SetSwitchIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_SetSwitchIndexView.h; path = _GeneratedQt/ui_SetSwitchIndexView.h; sourceTree = "<group>"; };
 		4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_texturebrowser.h; path = _GeneratedQt/ui_texturebrowser.h; sourceTree = "<group>"; };
 		4FAD0CD61785EC6E00B05A35 /* ui_VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_VisibilityToolView.h; path = _GeneratedQt/ui_VisibilityToolView.h; sourceTree = "<group>"; };
 		4FB96A211705C90500EB205E /* SceneTabWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTabWidget.cpp; sourceTree = "<group>"; };
@@ -1534,12 +1527,6 @@
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
 		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
-		84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexCommands.cpp; path = Classes/Commands/SetSwitchIndexCommands.cpp; sourceTree = "<group>"; };
-		84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexCommands.h; path = Classes/Commands/SetSwitchIndexCommands.h; sourceTree = "<group>"; };
-		84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexHelper.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.cpp; sourceTree = "<group>"; };
-		84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexHelper.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h; sourceTree = "<group>"; };
-		84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexView.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.cpp; sourceTree = "<group>"; };
-		84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexView.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.h; sourceTree = "<group>"; };
 		84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsHelper.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.cpp; sourceTree = "<group>"; };
 		84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsHelper.h; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.h; sourceTree = "<group>"; };
 		84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsView.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsView.cpp; sourceTree = "<group>"; };
@@ -1715,6 +1702,8 @@
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8A1091617944416007FF496 /* EditorLightSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightSystem.cpp; sourceTree = "<group>"; };
 		E8A1091717944416007FF496 /* EditorLightSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightSystem.h; sourceTree = "<group>"; };
+		E8B6213E17E1FD6400C5678E /* Request.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Request.cpp; sourceTree = "<group>"; };
+		E8B6213F17E1FD6400C5678E /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
 		E8B836241740FCC800D11EAE /* ImageTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTools.cpp; sourceTree = "<group>"; };
 		E8B836251740FCC800D11EAE /* ImageTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTools.h; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
@@ -2237,16 +2226,6 @@
 			path = _GeneratedQt/DockSceneTree;
 			sourceTree = "<group>";
 		};
-		4FAD0C6F1785EC6E00B05A35 /* DockSetSwitchIndex */ = {
-			isa = PBXGroup;
-			children = (
-				4FAD0C701785EC6E00B05A35 /* SetSwitchIndexHelper_moc.cpp */,
-				4FAD0C711785EC6E00B05A35 /* SetSwitchIndexView_moc.cpp */,
-			);
-			name = DockSetSwitchIndex;
-			path = _GeneratedQt/DockSetSwitchIndex;
-			sourceTree = "<group>";
-		};
 		4FAD0C741785EC6E00B05A35 /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -2604,7 +2583,6 @@
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
 				0297F30E170B403100627F78 /* DockMaterialViewOptions */,
 				84221F0716F8AF77000E7D74 /* DockHangingObjects */,
-				84221ED716E62E22000E7D74 /* DockSetSwitchIndex */,
 				841703FF16CBCE9700F1023D /* SpritesPacker */,
 				E838D4D916AFFED4006F1721 /* DockLibrary */,
 				E838D4DE16AFFED4006F1721 /* DockParticleEditor */,
@@ -3265,8 +3243,6 @@
 				49EF1C7A1726A68800B899E6 /* CommandList.h */,
 				0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */,
 				0297F316170B404100627F78 /* MaterialViewOptionsCommands.h */,
-				84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */,
-				84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */,
 				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
 				498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */,
 				E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */,
@@ -3433,17 +3409,6 @@
 				8417040116CBCEAD00F1023D /* SpritePackerHelper.h */,
 			);
 			name = SpritesPacker;
-			sourceTree = "<group>";
-		};
-		84221ED716E62E22000E7D74 /* DockSetSwitchIndex */ = {
-			isa = PBXGroup;
-			children = (
-				84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */,
-				84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */,
-				84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */,
-				84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */,
-			);
-			name = DockSetSwitchIndex;
 			sourceTree = "<group>";
 		};
 		84221F0716F8AF77000E7D74 /* DockHangingObjects */ = {
@@ -3642,6 +3607,8 @@
 		E838D50016AFFED4006F1721 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6213E17E1FD6400C5678E /* Request.cpp */,
+				E8B6213F17E1FD6400C5678E /* Request.h */,
 				E8EBEDFC17CF92B400104156 /* StatusBar.cpp */,
 				E8EBEDFD17CF92B400104156 /* StatusBar.h */,
 				177D1A8D16CB8ACA0021104B /* QTreeViewStateHelper.h */,
@@ -3825,7 +3792,6 @@
 				4FAD0C5C1785EC6E00B05A35 /* DockSceneGraph */,
 				4FAD0C651785EC6E00B05A35 /* DockSceneInfo */,
 				4FAD0C671785EC6E00B05A35 /* DockSceneTree */,
-				4FAD0C6F1785EC6E00B05A35 /* DockSetSwitchIndex */,
 				4FAD0C741785EC6E00B05A35 /* Main */,
 				4FAD0C7B1785EC6E00B05A35 /* MaterialBrowser */,
 				4FAD0C821785EC6E00B05A35 /* MaterialEditor */,
@@ -3846,7 +3812,6 @@
 				4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */,
 				4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */,
 				4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */,
-				4FAD0CD41785EC6E00B05A35 /* ui_SetSwitchIndexView.h */,
 				4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */,
 				4FAD0CD61785EC6E00B05A35 /* ui_VisibilityToolView.h */,
 			);
@@ -4548,9 +4513,6 @@
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
-				84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */,
-				84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */,
-				84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */,
 				CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */,
 				84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */,
 				84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */,
@@ -4668,8 +4630,6 @@
 				4FAD0CFB1785EC6E00B05A35 /* SceneTreeItemForce_moc.cpp in Build Sources */,
 				4FAD0CFC1785EC6E00B05A35 /* SceneTreeItemLayer_moc.cpp in Build Sources */,
 				4FAD0CFD1785EC6E00B05A35 /* SceneTreeModel_moc.cpp in Build Sources */,
-				4FAD0CFE1785EC6E00B05A35 /* SetSwitchIndexHelper_moc.cpp in Build Sources */,
-				4FAD0CFF1785EC6E00B05A35 /* SetSwitchIndexView_moc.cpp in Build Sources */,
 				4FAD0D011785EC6E00B05A35 /* davaglwidget_moc.cpp in Build Sources */,
 				4FAD0D021785EC6E00B05A35 /* mainwindow_moc.cpp in Build Sources */,
 				4FAD0D031785EC6E00B05A35 /* ModificationWidget_moc.cpp in Build Sources */,
@@ -4834,6 +4794,7 @@
 				E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */,
 				A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */,
 				4FFA516417E0DFB2008B6A1E /* CollisionCamera.cpp in Build Sources */,
+				E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

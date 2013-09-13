@@ -28,36 +28,25 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SET_SWITCH_INDEX_VIEW_H__
-#define __RESOURCEEDITORQT__SET_SWITCH_INDEX_VIEW_H__
+#include "Request.h"
 
-#include <QWidget>
-#include "Base/BaseTypes.h"
-#include "Classes/Commands/SetSwitchIndexCommands.h"
-
-namespace Ui
+Request::Request()
+    :   isAccepted(true)
 {
-	class SetSwitchIndexView;
 }
 
-class SetSwitchIndexView: public QWidget
+
+void Request::Accept()
 {
-	Q_OBJECT
+    isAccepted = true;
+}
 
-public:
-	explicit SetSwitchIndexView(QWidget* parent = 0);
-	~SetSwitchIndexView();
+void Request::Cancel()
+{
+    isAccepted = false;
+}
 
-	void Init();
-
-signals:
-	void Clicked(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX selectionState);
-
-private slots:
-	void Clicked();
-
-private:
-	Ui::SetSwitchIndexView *ui;
-};
-
-#endif /* defined(__RESOURCEEDITORQT__SET_SWITCH_INDEX_VIEW_H__) */
+bool Request::IsAccepted() const
+{
+    return isAccepted;
+}

@@ -26,50 +26,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIScrollViewMetadata__
-#define __UIEditor__UIScrollViewMetadata__
 
-#include "UIControlMetadata.h"
-#include "UI/UIScrollView.h"
+#ifndef SCROLLCONTROLPROPERTYGRIDWIDGET_H
+#define SCROLLCONTROLPROPERTYGRIDWIDGET_H
 
-namespace DAVA {
+#include <QWidget>
+#include "basepropertygridwidget.h"
 
-// Metadata class for DAVA UIList control.
-class UIScrollViewMetadata : public UIControlMetadata
+namespace Ui {
+class ScrollControlPropertyGridWidget;
+}
+
+class ScrollControlPropertyGridWidget : public BasePropertyGridWidget
 {
     Q_OBJECT
-	
-    // Horizontal position of scroll
-    Q_PROPERTY(float HorizontalScrollPosition READ GetHorizontalScrollPosition WRITE SetHorizontalScrollPosition);
-    Q_PROPERTY(float VerticalScrollPosition READ GetVerticalScrollPosition WRITE SetVerticalScrollPosition);
-	Q_PROPERTY(float ContentSizeX READ GetContentSizeX WRITE SetContentSizeX);
-	Q_PROPERTY(float ContentSizeY READ GetContentSizeY WRITE SetContentSizeY);
-	
-	
+
 public:
-    UIScrollViewMetadata(QObject* parent = 0);
+    explicit ScrollControlPropertyGridWidget(QWidget *parent = 0);
+    ~ScrollControlPropertyGridWidget();
 
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
+private:   
+	
+	// Fill the combo with appropriate values.
+    void FillComboboxes();
+	
 protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+	Ui::ScrollControlPropertyGridWidget *ui;
+    // Background Control contains Comboboxes which should be processed in the specific way.
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
 
-    virtual QString GetUIControlClassName() { return "UIScrollView"; };
-	
-    // Helper to access active UI ScrollView.
-    UIScrollView* GetActiveUIScrollView() const;
-	
-    // Getters/setters.
-    float GetHorizontalScrollPosition() const;
-	void SetHorizontalScrollPosition(float value);
-    float GetVerticalScrollPosition() const;
-	void SetVerticalScrollPosition(float value);
-	float GetContentSizeX() const;
-	void SetContentSizeX(float value);
-	float GetContentSizeY() const;
-	void SetContentSizeY(float value);
+    // Handler for the custom combobox values.
+    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
 };
 
-};
-
-#endif /* defined(__UIEditor__UIScrollViewMetadata__) */
+#endif // SCROLLCONTROLPROPERTYGRIDWIDGET_H
