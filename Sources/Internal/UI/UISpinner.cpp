@@ -367,17 +367,15 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 
 	//Control Type
 	SetPreferredNodeType(node, "UISpinner");
-	
+
 	// "Prev/Next" buttons have to be saved too.
-	YamlNode* prevButtonNode = buttonPrevious->SaveToYamlNode(loader);
-	YamlNode* nextButtonNode = buttonNext->SaveToYamlNode(loader);
-	YamlNode* contentNode = content->SaveToYamlNode(loader);
-	
+	YamlNode* prevButtonNode = SaveToYamlNodeRecursive(loader, buttonPrevious);
+	YamlNode* nextButtonNode = SaveToYamlNodeRecursive(loader, buttonNext);
+	YamlNode* contentNode = SaveToYamlNodeRecursive(loader, content);
+
 	node->AddNodeToMap(UISPINNER_BUTTON_PREVIOUS_NAME, prevButtonNode);
 	node->AddNodeToMap(UISPINNER_BUTTON_NEXT_NAME, nextButtonNode);
 	node->AddNodeToMap(UISPINNER_CONTENT_NAME, contentNode);
-	
-	SaveChildren(content, loader, contentNode);
 
 	return node;
 }
@@ -400,7 +398,7 @@ List<UIControl* > UISpinner::GetSubcontrols()
 	AddControlToList(subControls, UISPINNER_BUTTON_PREVIOUS_NAME);
 	AddControlToList(subControls, UISPINNER_BUTTON_NEXT_NAME);
 	AddControlToList(subControls, UISPINNER_CONTENT_NAME);
-    
+
 	return subControls;
 }
 
