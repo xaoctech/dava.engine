@@ -465,6 +465,7 @@ void QtMainWindow::SetupActions()
 #if defined(__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
 #elif defined(__DAVAENGINE_WIN32__)
+	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
 #endif //OS
     
 
@@ -1477,5 +1478,19 @@ void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
 void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
+}
+
+void QtMainWindow::OnBeast()
+{
+#if defined (__DAVAENGINE_WIN32__)
+
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
+	if(ret == MB_FLAG_NO) return;
+
+
+#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
