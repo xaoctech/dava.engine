@@ -36,7 +36,7 @@
 #include "ModificationWidget.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
 
-#include "Base/Singleton.h"
+#include "DAVAEngine.h"
 
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
@@ -145,6 +145,8 @@ public slots:
     
     
     void OnCloseTabRequest(int tabIndex, Request *closeRequest);
+
+	void OnBeast();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
