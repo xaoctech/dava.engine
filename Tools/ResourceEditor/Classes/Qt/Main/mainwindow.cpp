@@ -49,6 +49,8 @@
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 
+#include "SpeedTreeImporter.h"
+
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
@@ -376,6 +378,9 @@ void QtMainWindow::SetupActions()
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
+    // import
+    QObject::connect(ui->actionImportSpeedTreeXML, SIGNAL(triggered()), this, SLOT(OnImportSpeedTreeXML()));
+
 	// reload
 	ui->actionReloadPoverVRIOS->setData(GPU_POWERVR_IOS);
 	ui->actionReloadPoverVRAndroid->setData(GPU_POWERVR_ANDROID);
@@ -748,6 +753,17 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 			QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
 		}
 	}
+}
+
+void QtMainWindow::OnImportSpeedTreeXML()
+{
+    QString projectPath = ProjectManager::Instance()->CurProjectPath();
+    QString path = QFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
+    if (!path.isEmpty())
+    {
+        DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
+        QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
+    }
 }
 
 void QtMainWindow::OnRecentTriggered(QAction *recentAction)
