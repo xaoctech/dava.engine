@@ -2166,6 +2166,9 @@
     <ClCompile Include="Classes\Qt\Main\Request.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\Request.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3766,6 +3769,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
       <Filter>Classes\SpeedTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\Request.h">
+      <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\Request.h">
       <Filter>Classes\Qt\Main</Filter>
