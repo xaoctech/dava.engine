@@ -193,7 +193,8 @@ public:
     Material();
     virtual ~Material();
     
-    Material * Clone();
+    Material * Clone(Material *newMaterial = NULL);
+	void CopySettings(Material *fromMaterial);
     
     enum eValidationResult
     {

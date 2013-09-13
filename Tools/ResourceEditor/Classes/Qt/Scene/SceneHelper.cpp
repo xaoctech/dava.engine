@@ -173,3 +173,11 @@ void SceneHelper::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &
 		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
+
+DAVA::SceneFileV2::eError  SceneHelper::SaveScene( DAVA::Scene *scene, const DAVA::FilePath & pathname, bool saveForGame/* = false */ )
+{
+	SceneFileV2 file;
+	file.EnableDebugLog(false);
+	file.EnableSaveForGame(saveForGame);
+	return file.SaveScene(pathname, scene);
+}

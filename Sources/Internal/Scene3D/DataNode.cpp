@@ -68,7 +68,7 @@ void DataNode::SetName(const String & _name)
     name = _name;
 }
     
-const String & DataNode::GetName()
+const String & DataNode::GetName() const
 {
     return name;
 }
