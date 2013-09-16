@@ -32,6 +32,11 @@
 
 #include "TexturePacker/CommandLineParser.h"
 
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Commands2/BeastAction.h"
+#include "Classes/SceneEditor/EditorSettings.h"
+
 using namespace DAVA;
 
 BeastCommandLineTool::BeastCommandLineTool()
@@ -46,7 +51,6 @@ void BeastCommandLineTool::PrintUsage()
     printf("-beast [-file [file]]\n");
     printf("\twill beast scene file\n");
     printf("\t-file - full pathname of scene for beasting \n");
-    printf("\t-format - png, pvr, dxt\n");
     
     printf("\n");
     printf("Samples:\n");
@@ -87,6 +91,8 @@ void BeastCommandLineTool::Process()
 		scene->Update(0.1f);
 
 		scene->Exec(new BeastAction(scene));
+
+		SceneHelper::SaveScene(scene, scenePathname);
 	}
 	SafeRelease(scene);
 }

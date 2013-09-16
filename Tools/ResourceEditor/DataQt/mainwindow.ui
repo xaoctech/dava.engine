@@ -292,13 +292,6 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menuBeast">
-     <property name="title">
-      <string>Beast</string>
-     </property>
-     <addaction name="actionBeast"/>
-     <addaction name="actionBeastAndSave"/>
-    </widget>
     <addaction name="actionTextureConverter"/>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
@@ -307,8 +300,6 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
-    <addaction name="separator"/>
-    <addaction name="menuBeast"/>
     <addaction name="separator"/>
     <addaction name="actionSquareTextures"/>
     <addaction name="separator"/>
@@ -400,6 +391,13 @@
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
     </widget>
+    <widget class="QMenu" name="menuBeast">
+     <property name="title">
+      <string>Beast</string>
+     </property>
+     <addaction name="actionBeast"/>
+     <addaction name="actionBeastAndSave"/>
+    </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
@@ -410,6 +408,8 @@
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
+    <addaction name="separator"/>
+    <addaction name="menuBeast"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>

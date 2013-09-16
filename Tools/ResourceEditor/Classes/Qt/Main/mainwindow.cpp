@@ -496,7 +496,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
 	QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
 #else
-	ui->menuTools->removeAction(ui->menuBeast->menuAction());
+	ui->menuScene->removeAction(ui->menuBeast->menuAction());
 #endif //#if defined(__DAVAENGINE_BEAST__)
 
 	//Help
@@ -628,6 +628,17 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionEnableCameraLight->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->actionReloadSprites->setEnabled(enable);
+
+	ui->actionLandscape->setEnabled(enable);
+	ui->actionSaveHeightmapToPNG->setEnabled(enable);
+	ui->actionSaveTiledTexture->setEnabled(enable);
+
+	ui->actionBeast->setEnabled(enable);
+	ui->actionBeastAndSave->setEnabled(enable);
+
+	ui->actionDynamicBlendModeAlpha->setEnabled(enable);
+	ui->actionDynamicBlendModeMultiply->setEnabled(enable);
+	ui->actionSetShadowColor->setEnabled(enable);
 
 	//ui->menuExport->setEnabled(enable);
 	//ui->menuEdit->setEnabled(enable);

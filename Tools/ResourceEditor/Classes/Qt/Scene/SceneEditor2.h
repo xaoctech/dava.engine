@@ -143,6 +143,8 @@ public:
 	void DisableTools(int32 toolFlags);
 	bool IsToolsEnabled(int32 toolFlags);
 
+	virtual void Update(float timeElapsed);
+
 protected:
 	bool isLoaded;
 
@@ -154,7 +156,6 @@ protected:
 	DAVA::Vector<DAVA::Entity *> editorEntities;
 
 	virtual void EditorCommandProcess(const Command2 *command, bool redo);
-	virtual void Update(float timeElapsed);
 	virtual void Draw();
 
 private:
