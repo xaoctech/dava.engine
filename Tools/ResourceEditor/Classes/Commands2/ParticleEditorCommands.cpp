@@ -138,6 +138,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  eBlendMode srcFactor,
 									  eBlendMode dstFactor,
 									  bool enableFog,
+									  bool enableFrameBlending,
 									  int32 particleOrientation,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -183,6 +184,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->srcFactor = srcFactor;
 	this->dstFactor = dstFactor;
 	this->enableFog = enableFog;
+	this->enableFrameBlending = enableFrameBlending;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
 	this->number = number;
@@ -230,6 +232,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->SetLooped(isLooped);
 	layer->SetBlendMode(srcFactor, dstFactor);
 	layer->SetFog(enableFog);
+	layer->SetFrameBlend(enableFrameBlending);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;

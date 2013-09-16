@@ -122,6 +122,8 @@ private:
 	QLabel* pivotPointYSpinBoxLabel;
 	QPushButton* pivotPointResetButton;
 
+	QCheckBox *frameBlendingCheckBox;
+
 	QLabel *particleOrientationLabel;
 	QCheckBox *cameraFacingCheckBox;
 	QCheckBox *xFacingCheckBox;
