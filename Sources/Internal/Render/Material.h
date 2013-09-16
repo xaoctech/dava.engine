@@ -150,6 +150,8 @@ public:
         MATERIAL_FLAT_COLOR,
 		
 		MATERIAL_SKYBOX,
+
+		MATERIAL_VERTEX_COLOR_ALPHABLENDED_FRAME_BLEND,
         
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
@@ -191,7 +193,8 @@ public:
     Material();
     virtual ~Material();
     
-    Material * Clone();
+    Material * Clone(Material *newMaterial = NULL);
+	void CopySettings(Material *fromMaterial);
     
     enum eValidationResult
     {

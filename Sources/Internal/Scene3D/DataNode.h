@@ -66,7 +66,7 @@ public:
         \brief Get name of this particular node.
         \returns name of this node
      */
-    const String & GetName();
+    const String & GetName() const;
     
     DataNode *	FindByName(const String & searchName);
     virtual void	AddNode(DataNode * node);

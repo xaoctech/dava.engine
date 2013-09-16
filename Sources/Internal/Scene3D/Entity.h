@@ -76,7 +76,7 @@ public:
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType);
-    Component * GetComponent(uint32 componentType);
+    Component * GetComponent(uint32 componentType) const;
 	Component * GetOrCreateComponent(uint32 componentType);
     uint32 GetComponentCount();
     
@@ -125,7 +125,7 @@ public:
         \brief Get name of this particular node.
         \returns name of this node
      */
-    inline const String & GetName();
+    inline const String & GetName() const;
 
     /**
         \brief Get full name of this node from root. This function is slow because it go up by hierarchy and make full node name.
@@ -420,7 +420,7 @@ inline Entity * Entity::GetParent()
 	return parent;
 }
     
-inline const String & Entity::GetName()
+inline const String & Entity::GetName() const
 {
     return name;
 }

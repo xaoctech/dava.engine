@@ -2160,14 +2160,17 @@
     <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp">
       <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\Request.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\Request.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp">
       <Filter>Classes\SpeedTree</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\Request.cpp">
-      <Filter>Classes\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\Request.cpp">
-      <Filter>Classes\Qt\Main</Filter>
+    <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3767,14 +3770,17 @@
     <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h">
       <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\Request.h">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\Request.h">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
       <Filter>Classes\SpeedTree</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\Request.h">
-      <Filter>Classes\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\Request.h">
-      <Filter>Classes\Qt\Main</Filter>
+    <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
