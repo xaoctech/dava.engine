@@ -430,18 +430,19 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	}
 
 	Vector3 vecShort = currDirection.CrossProduct(direction);
-	vecShort /= 2.f;
-		
+	vecShort.Normalize();			
+	//Vector3 vecLong = vecShort.CrossProduct(direction);
 	Vector3 vecLong = -currDirection;
+	vecShort /= 2.f;	
 
-	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
-	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
+	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x/2;
+	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y/2;
 
 	// Apply offset to the current position according to the emitter position.
 	UpdateCurrentParticlePosition(current);
 
-	topRight = currentParticlePosition + widthDiv2*vecShort;
-	topLeft = currentParticlePosition - widthDiv2*vecShort;
+	topRight = currentParticlePosition + widthDiv2*vecShort - heightDiv2/2*vecLong;
+	topLeft = currentParticlePosition - widthDiv2*vecShort - heightDiv2/2*vecLong;
 	botRight = topRight + heightDiv2*vecLong;
 	botLeft = topLeft + heightDiv2*vecLong;
 }
