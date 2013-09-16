@@ -494,4 +494,3 @@ void MainTabBar::dropEvent(QDropEvent *event)
 		emit OnDrop(mimeData);
 	}
 }
-

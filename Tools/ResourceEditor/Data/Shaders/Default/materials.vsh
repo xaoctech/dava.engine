@@ -22,7 +22,7 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -35,6 +35,10 @@ attribute vec4 inColor;
 
 #if defined(PIXEL_LIT)
 attribute vec3 inTangent;
+#endif
+
+#if defined(FRAME_BLEND)
+attribute float inTime;
 #endif
 
 // UNIFORMS
@@ -68,7 +72,7 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 varying vec2 varTexCoord1;
 #endif
 
@@ -95,6 +99,10 @@ varying lowp float varLightmapSize;
 
 #if defined(VERTEX_COLOR)
 varying lowp vec4 varVertexColor;
+#endif
+
+#if defined(FRAME_BLEND)
+varying lowp float varTime;
 #endif
 
 #if defined(TEXTURE0_SHIFT_ENABLED)
@@ -206,7 +214,7 @@ void main()
 	varTexCoord0 += texture0Shift;
 #endif
 		
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 	
 	#if defined(SETUP_LIGHTMAP)
 		varLightmapSize = lightmapSize;
@@ -216,6 +224,10 @@ void main()
     #else
 		varTexCoord1 = inTexCoord1;
 	#endif
+#endif
+
+#if defined(FRAME_BLEND)
+	varTime = inTime;
 #endif
 
 

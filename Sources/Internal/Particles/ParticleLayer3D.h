@@ -60,6 +60,8 @@ public:
 
 	virtual void SetFog(bool enable);
 
+	virtual void SetFrameBlend(bool enable);
+
 	// Whether this layer should be drawn as "long" one?
 	virtual bool IsLong();
 	virtual void SetLong(bool value);
@@ -93,6 +95,8 @@ protected:
 	RenderDataObject * renderData;
 	Vector<float32> verts;
 	Vector<float32> textures;
+	Vector<float32> textures2;
+	Vector<float32> times;
 	Vector<uint32> colors;
 	static Vector<uint16> indices;
 

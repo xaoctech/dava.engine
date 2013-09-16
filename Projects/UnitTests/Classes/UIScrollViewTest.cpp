@@ -54,7 +54,6 @@ void UIScrollViewTest::LoadResources()
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(14);
-    font->SetColor(Color::White());
 
     UIYamlLoader::Load( this, "~res:/UI/Test/ScrollScreen.yaml" );
 	scrollView = DynamicTypeCheck<UIScrollView *>( FindByName( "Scrollview" ) );
@@ -106,6 +105,7 @@ void UIScrollViewTest::LoadResources()
 	UIButton *testButton = new UIButton(Rect(10, 50, 250, 100));
 	testButton->SetDebugDraw(true);
 	testButton->SetStateFont(STATE_NORMAL, font);
+	testButton->SetStateFontColor(STATE_NORMAL, Color::White());
 	testButton->SetStateText(STATE_NORMAL, L"First button");
 	testButton->GetBackground()->SetColor(Color(0.6667, 0.6667, 0.4980, 1.0000));
 	testButton->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -121,6 +121,7 @@ void UIScrollViewTest::LoadResources()
 	
 	finishTestBtn = new UIButton(Rect(10, 260, 300, 30));
 	finishTestBtn->SetStateFont(0xFF, font);
+	finishTestBtn->SetStateFontColor(0xFF, Color::White());
 	finishTestBtn->SetStateText(0xFF, L"Finish test");
 
 	finishTestBtn->SetDebugDraw(true);

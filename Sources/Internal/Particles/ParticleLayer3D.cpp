@@ -172,15 +172,28 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	verts.clear();
 	textures.clear();
 	colors.clear();
+
+	if (enableFrameBlend)
+	{
+		textures2.clear();
+		times.clear();
+	}
 	int32 totalCount = 0;
 
 	// Reserve the memory for vectors to avoid the resize operations. Actually there can be less than count
 	// particles (for Single Particle or Superemitter one), but never more than count.
 	static const int32 POINTS_PER_PARTICLE = 4;
 	static const int32 INDICES_PER_PARTICLE = 6;
-	verts.resize(count * POINTS_PER_PARTICLE * 3*planesCount); // 6 vertices per each particle, 3 coords per vertex.
-	textures.resize(count * POINTS_PER_PARTICLE * 2*planesCount); // 6 texture coords per particle, 2 values per texture coord.
+	verts.resize(count * POINTS_PER_PARTICLE * 3 * planesCount); // 4 vertices per each particle, 3 coords per vertex.
+	textures.resize(count * POINTS_PER_PARTICLE * 2 * planesCount); // 4 texture coords per particle, 2 values per texture coord.
 	colors.resize(count * POINTS_PER_PARTICLE*planesCount);	
+	
+	//frame blending
+	if (enableFrameBlend)
+	{
+		textures2.resize(count * POINTS_PER_PARTICLE * 2 * planesCount);
+		times.resize(count * POINTS_PER_PARTICLE * planesCount); //single time value per vertex
+	}
 
 	Particle * current = head;
 	if(current)
@@ -190,6 +203,8 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 
 	int32 verticesCount = 0;
 	int32 texturesCount = 0;
+	int32 texturesCount2 = 0;
+	int32 timesCount = 0;
 	int32 colorsCount = 0;	
 	while(current != 0)
 	{		
@@ -266,6 +281,49 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			textures[texturesCount] = pT[7];
 			texturesCount ++;
 
+			//frame blending
+			if (enableFrameBlend)
+			{
+				int nextFrame = current->frame+1;
+				if (nextFrame >= sprite->GetFrameCount())
+				{
+					nextFrame = 0;
+				}
+				pT = sprite->GetTextureVerts(nextFrame);
+				textures2[texturesCount2] = pT[0];
+				texturesCount2 ++;
+				textures2[texturesCount2] = pT[1];
+				texturesCount2 ++;
+
+				textures2[texturesCount2] = pT[2];
+				texturesCount2 ++;
+				textures2[texturesCount2] = pT[3];
+				texturesCount2 ++;
+
+				textures2[texturesCount2] = pT[4];
+				texturesCount2 ++;
+				textures2[texturesCount2] = pT[5];
+				texturesCount2 ++;
+
+				textures2[texturesCount2] = pT[6];
+				texturesCount2 ++;
+				textures2[texturesCount2] = pT[7];
+				texturesCount2 ++;
+
+
+				float32 time = (current->life - current->frameLastUpdateTime) * frameOverLifeFPS;
+
+				times[timesCount] = time;
+				timesCount++;
+				times[timesCount] = time;
+				timesCount++;
+				times[timesCount] = time;
+				timesCount++;
+				times[timesCount] = time;
+				timesCount++;
+			}
+			
+
 			// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
 			// to take colorOverlife property into account.
 			uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
@@ -279,7 +337,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			totalCount++;
 		}
 		current = TYPE_PARTICLES == type ? current->next : 0;
-	}
+	}	
 	int indexCount = indices.size()/INDICES_PER_PARTICLE;
 	if (totalCount>indexCount)
 	{
@@ -302,7 +360,11 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
-		//renderData->SetIndices(EIF_16, (uint8*)(&indices[0]), totalCount*INDICES_PER_PARTICLE);
+		if (enableFrameBlend)
+		{
+			renderData->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &textures2.front());
+			renderData->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
+		}
 
 		if (IsLong())
 		{
@@ -422,6 +484,23 @@ void ParticleLayer3D::SetFog(bool enable)
 {
 	ParticleLayer::SetFog(enable);
 	renderBatch->GetMaterial()->SetFog(enableFog);
+}
+
+void ParticleLayer3D::SetFrameBlend(bool enable)
+{
+	ParticleLayer::SetFrameBlend(enable);
+	if (enableFrameBlend)
+	{
+		renderBatch->GetMaterial()->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED_FRAME_BLEND);			
+	}
+	else
+	{
+		renderBatch->GetMaterial()->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);	
+		SafeRelease(renderData); //to remove unnecessary vertex streams
+		renderData = new RenderDataObject();
+		textures2.resize(0);
+		times.resize(0);		
+	}
 }
 
 
