@@ -572,8 +572,8 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
-<		const YamlNode * shadowColorNode = node->Get("shadowcolor");
-		const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+		YamlNode * shadowColorNode = node->Get("shadowcolor");
+		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
 		if(shadowColorNode)
 		{
 			Vector4 c = shadowColorNode->AsVector4();
@@ -586,8 +586,8 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 
-	const YamlNode * textColorNode = node->Get("textcolor");
-	const YamlNode * textAlignNode = node->Get("textalign");
+	YamlNode * textColorNode = node->Get("textcolor");
+	YamlNode * textAlignNode = node->Get("textalign");
 
 	if(textColorNode)
 	{
