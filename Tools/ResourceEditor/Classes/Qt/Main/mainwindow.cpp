@@ -75,6 +75,7 @@
 #include "Classes/Qt/Main/Request.h"
 #include "Classes/Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "Classes/Commands2/ConvertToShadowCommand.h"
+#include "Classes/Commands2/BeastAction.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -484,12 +485,12 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
     
-#if defined(__DAVAENGINE_MACOS__)
-    ui->menuTools->removeAction(ui->actionBeast);
-#elif defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_BEAST__)
 	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
-#endif //OS
-    
+	QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
+#else
+	ui->menuTools->removeAction(ui->menuBeast->menuAction());
+#endif //#if defined(__DAVAENGINE_BEAST__)
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -1538,7 +1539,21 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 
 void QtMainWindow::OnBeast()
 {
-#if defined (__DAVAENGINE_WIN32__)
+	RunBeast();
+}
+ 
+void QtMainWindow::OnBeastAndSave()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	RunBeast();
+	SaveScene(scene);
+}
+
+void QtMainWindow::RunBeast()
+{
+#if defined (__DAVAENGINE_BEAST__)
 
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
@@ -1546,7 +1561,12 @@ void QtMainWindow::OnBeast()
 	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
 	if(ret == MB_FLAG_NO) return;
 
+	WaitStart("Beasting...", "Please wait");
 
-#endif //#if defined (__DAVAENGINE_WIN32__)
+	scene->Exec(new BeastAction(scene));
+
+	WaitStop();
+
+#endif //#if defined (__DAVAENGINE_BEAST__)
 }
- 
+

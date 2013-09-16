@@ -292,6 +292,13 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuBeast">
+     <property name="title">
+      <string>Beast</string>
+     </property>
+     <addaction name="actionBeast"/>
+     <addaction name="actionBeastAndSave"/>
+    </widget>
     <addaction name="actionTextureConverter"/>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
@@ -301,7 +308,7 @@
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
-    <addaction name="actionBeast"/>
+    <addaction name="menuBeast"/>
     <addaction name="separator"/>
     <addaction name="actionSquareTextures"/>
     <addaction name="separator"/>
@@ -1066,11 +1073,6 @@
     <string>Settings...</string>
    </property>
   </action>
-  <action name="actionBeast">
-   <property name="text">
-    <string>Beast</string>
-   </property>
-  </action>
   <action name="actionSwitchNode">
    <property name="text">
     <string>Switch</string>
@@ -1606,6 +1608,16 @@
    </property>
    <property name="toolTip">
     <string>Import SpeedTree</string>
+   </property>
+  </action>
+  <action name="actionBeast">
+   <property name="text">
+    <string>Beast</string>
+   </property>
+  </action>
+  <action name="actionBeastAndSave">
+   <property name="text">
+    <string>Beast And Save</string>
    </property>
   </action>
  </widget>
