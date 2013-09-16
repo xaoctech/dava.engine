@@ -50,11 +50,11 @@ namespace DAVA
 		DVASSERT(cellsCount > 0);
 		if (orientation == UIList::ORIENTATION_VERTICAL)
 		{
-			cellSize = Vector2(rect.dx, (rect.dy / cellsCount));
+			cellSize = Vector2(rect.dx, (rect.dy <= DEFAULT_CELL_HEIGHT) ? rect.dy : (rect.dy / cellsCount));
 		}
 		else
 		{
-			cellSize = Vector2((rect.dx / cellsCount), rect.dy);
+			cellSize = Vector2((rect.dx <= DEFAULT_CELL_WIDTH) ? rect.dx : (rect.dx / cellsCount), rect.dy);
 		}
 	}
 	

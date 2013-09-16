@@ -1155,9 +1155,6 @@
     <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
@@ -2170,6 +2167,9 @@
       <Filter>Classes\SpeedTree</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\BeastAction.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3548,9 +3548,6 @@
     <ClInclude Include="Classes\Commands\TilemapEditorCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\ToolsCommands.h">
-      <Filter>Classes\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
@@ -3780,6 +3777,9 @@
       <Filter>Classes\SpeedTree</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\BeastAction.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>

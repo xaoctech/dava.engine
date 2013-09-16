@@ -102,6 +102,8 @@ enum CommandID
 
 	CMDID_CHANGE_LOD_DISTANCE,
 
+	CMDID_BEAST,
+
 	CMDID_USER		= 0xF000
 };
 

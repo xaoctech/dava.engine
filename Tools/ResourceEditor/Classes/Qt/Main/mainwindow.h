@@ -148,6 +148,7 @@ public slots:
 	void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 
 	void OnBeast();
+	void OnBeastAndSave();
 
 	void OnConvertToShadow();
 
@@ -167,6 +168,9 @@ protected:
     
     void UpdateStatusBar();
     void StartGlobalInvalidateTimer();
+
+	void RunBeast();
+
 
 protected slots:
 	void ProjectOpened(const QString &path);
