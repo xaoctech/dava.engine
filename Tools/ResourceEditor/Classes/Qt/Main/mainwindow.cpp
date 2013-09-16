@@ -455,6 +455,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
 	QObject::connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), this, SLOT(OnPlaceOnLandscape()));
 	QObject::connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), this, SLOT(OnSnapToLandscape()));
+	QObject::connect(ui->actionModifyReset, SIGNAL(triggered()), this, SLOT(OnResetTransform()));
 
 	// tools
 	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
@@ -995,6 +996,15 @@ void QtMainWindow::OnSnapToLandscape()
 	{
 		scene->modifSystem->SetLandscapeSnap(ui->actionModifySnapToLandscape->isChecked());
 		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnResetTransform()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->ResetTransform(scene->selectionSystem->GetSelection());
 	}
 }
 

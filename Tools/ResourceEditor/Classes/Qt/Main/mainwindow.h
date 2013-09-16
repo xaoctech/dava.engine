@@ -110,6 +110,7 @@ public slots:
 	void OnManualModifMode();
 	void OnPlaceOnLandscape();
 	void OnSnapToLandscape();
+	void OnResetTransform();
 
 	void OnMaterialEditor();
 	void OnTextureBrowser();
