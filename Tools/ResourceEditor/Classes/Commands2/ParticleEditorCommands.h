@@ -211,6 +211,7 @@ public:
 			  eBlendMode srcFactor,
 			  eBlendMode dstFactor,
 			  bool enableFog,
+			  bool enableFrameBlending,
 			  int32 particleOrientation,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -260,6 +261,7 @@ protected:
 	Sprite* sprite;
 	eBlendMode srcFactor, dstFactor;
 	bool enableFog;
+	bool enableFrameBlending;
 	int32 particleOrientation;
 	RefPtr< PropertyLine<float32> > life;
 	RefPtr< PropertyLine<float32> > lifeVariation;
