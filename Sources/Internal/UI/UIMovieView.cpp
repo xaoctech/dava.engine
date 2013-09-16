@@ -32,6 +32,8 @@
 #include "../Platform/TemplateIOS/MovieViewControliOS.h"
 #elif defined(__DAVAENGINE_MACOS__)
 #include "../Platform/TemplateMacOS/MovieViewControlMacOS.h"
+#elif defined(__DAVAENGINE_ANDROID__)
+#include "../Platform/TemplateAndroid/MovieViewControlAndroid.h"
 #else
 // UIMovieView is not implemented for this platform yet, using stub one.
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
