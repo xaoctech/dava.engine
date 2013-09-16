@@ -30,12 +30,13 @@
 #ifndef __DAVAENGINE_MOVIEVIEWCONTROL_STUB_H__
 #define __DAVAENGINE_MOVIEVIEWCONTROL_STUB_H__
 
-#include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
 #include "../UI/IMovieViewControl.h"
 
 namespace DAVA {
 
-// Movie View Control - MacOS implementation.
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)
+
 class MovieViewControl : public IMovieViewControl
 {
 public:
@@ -63,6 +64,8 @@ public:
 	// Whether the movie is being played?
 	virtual bool IsPlaying();
 };
+
+#endif //!defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)
 	
 };
 
