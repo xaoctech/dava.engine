@@ -33,6 +33,8 @@
 
 #include "../CommandLineTool.h"
 
+#if defined (__DAVAENGINE_BEAST__)
+
 class BeastCommandLineTool: public CommandLineTool
 {
 public:
@@ -54,5 +56,6 @@ protected:
     
 };
 
+#endif //#if defined (__DAVAENGINE_BEAST__)
 
 #endif // __BEAST_COMMAND_LINE_TOOL_H__
