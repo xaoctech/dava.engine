@@ -133,6 +133,18 @@ function SaveArchiveToDB(name, archive, document)
 	autotestingSystem:SaveKeyedArchiveToDB(name, archive, document)
 end
 
+function GetParameter(name)
+	local var = autotestingSystem:GetTestParameter(name)
+	if var == "not_found" then
+		var = testData[name]
+		if not var then
+			OnError("Couldn't find value for variable "..name)
+		end
+	end
+	
+	return var
+end
+
 function ReadString(name)
 	return autotestingSystem:ReadString(name)
 end
@@ -706,9 +718,9 @@ function ScrollDown(list, invert)
 		Wait(0.5)
 		
 		if invert then
-			position.y = position.y + rect.dy/3
+			position.y = position.y + rect.dy/2
 		else
-        	position.y = position.y - rect.dy/3
+        	position.y = position.y - rect.dy/2
         end
         
 		TouchMovePosition(position)
@@ -733,9 +745,9 @@ function ScrollLeft(list, invert)
 		TouchDownPosition(position)
 		Wait(0.5)
         if invert then
-			position.x = position.x + rect.dx/3
+			position.x = position.x + rect.dx/2
 		else
-        	position.x = position.x - rect.dx/3
+        	position.x = position.x - rect.dx/2
         end
 		TouchMovePosition(position)
 		TouchUp()
