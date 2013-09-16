@@ -28,6 +28,8 @@
 
 #include "MovieViewControlStub.h"
 
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA
 {
 MovieViewControl::MovieViewControl()
@@ -76,3 +78,5 @@ bool MovieViewControl::IsPlaying()
 }
 
 }
+
+#endif //!defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)

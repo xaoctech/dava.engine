@@ -424,6 +424,13 @@ void QtMainWindow::SetupActions()
     
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
+    ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
+	ui->actionExportPVRAndroid->setData(GPU_POWERVR_ANDROID);
+	ui->actionExportTegra->setData(GPU_TEGRA);
+	ui->actionExportMali->setData(GPU_MALI);
+	ui->actionExportAdreno->setData(GPU_ADRENO);
+	ui->actionExportPNG->setData(GPU_UNKNOWN);
+
 	
 	// import
 #ifdef __DAVAENGINE_SPEEDTREE__
@@ -831,14 +838,13 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 {
 	SceneEditor2* scene = GetCurrentScene();
-	if (scene)
-	{
-		eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
-		if (!scene->Export(gpuFamily))
-		{
-			QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
-		}
-	}
+    if(!scene) return;
+    
+    eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
+    if (!scene->Export(gpuFamily))
+    {
+        QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
+    }
 }
 
 void QtMainWindow::OnImportSpeedTreeXML()
