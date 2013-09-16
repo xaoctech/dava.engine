@@ -115,6 +115,38 @@ void EntityModificationSystem::PlaceOnLandscape(const EntityGroup *entities)
 	}
 }
 
+void EntityModificationSystem::ResetTransform(const EntityGroup *entities)
+{
+	SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
+
+	if(NULL != sceneEditor)
+	{
+		bool isMultiple = (entities->Size() > 1);
+		
+		DAVA::Matrix4 zeroTransform;
+		zeroTransform.Identity();
+
+		if(isMultiple)
+		{
+			sceneEditor->BeginBatch("Multiple transform");
+		}
+
+		for (size_t i = 0; i < entities->Size(); ++i)
+		{
+			DAVA::Entity *entity = entities->GetEntity(i);
+			if(NULL != entity)
+			{
+				sceneEditor->Exec(new TransformCommand(entity,	entity->GetLocalTransform(), zeroTransform));
+			}
+		}
+
+		if(isMultiple)
+		{
+			sceneEditor->EndBatch();
+		}
+	}
+}
+
 bool EntityModificationSystem::InModifState() const
 {
 	return inModifState;
