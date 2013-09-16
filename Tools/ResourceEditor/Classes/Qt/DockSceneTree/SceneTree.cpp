@@ -374,20 +374,21 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 
 		// custom properties
+        contextMenu.addSeparator();
+        
 		DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
 		if(NULL != customProp)
 		{
 			DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 			if(!ownerRef.IsEmpty())
 			{
-				contextMenu.addSeparator();
-
 				QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
 				QAction *reloadModelAction = contextMenu.addAction("Reload Model", this, SLOT(ReloadModel()));
-				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
 				QAction *reloadModelLightmapsAction = contextMenu.addAction("Reload Model without Lightmaps", this, SLOT(ReloadModelWithoutLightmaps()));
 			}
 		}
+        //DF-2004: Reload for every entity at scene
+        QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
 
 		// particle effect
 		DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
