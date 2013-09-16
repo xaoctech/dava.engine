@@ -301,8 +301,6 @@
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
-    <addaction name="actionBeast"/>
-    <addaction name="separator"/>
     <addaction name="actionSquareTextures"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
@@ -393,6 +391,13 @@
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
     </widget>
+    <widget class="QMenu" name="menuBeast">
+     <property name="title">
+      <string>Beast</string>
+     </property>
+     <addaction name="actionBeast"/>
+     <addaction name="actionBeastAndSave"/>
+    </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
@@ -403,6 +408,8 @@
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
+    <addaction name="separator"/>
+    <addaction name="menuBeast"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1066,11 +1073,6 @@
     <string>Settings...</string>
    </property>
   </action>
-  <action name="actionBeast">
-   <property name="text">
-    <string>Beast</string>
-   </property>
-  </action>
   <action name="actionSwitchNode">
    <property name="text">
     <string>Switch</string>
@@ -1606,6 +1608,16 @@
    </property>
    <property name="toolTip">
     <string>Import SpeedTree</string>
+   </property>
+  </action>
+  <action name="actionBeast">
+   <property name="text">
+    <string>Beast</string>
+   </property>
+  </action>
+  <action name="actionBeastAndSave">
+   <property name="text">
+    <string>Beast And Save</string>
    </property>
   </action>
  </widget>

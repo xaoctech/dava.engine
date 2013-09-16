@@ -66,7 +66,6 @@
 #include "../Commands/FileCommands.h"
 
 #include "../CommandLine/CommandLineManager.h"
-#include "../CommandLine/Beast/BeastCommandLineTool.h"
 #include "TexturePacker/CommandLineParser.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
@@ -749,38 +748,6 @@ void EditorBodyControl::Update(float32 timeElapsed)
     
     
     UIControl::Update(timeElapsed);
-
-	BeastProxy::Instance()->Update(beastManager);
-	if(BeastProxy::Instance()->IsJobDone(beastManager))
-	{
-		PackLightmaps();
-		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
-
-		Landscape *land = FindLandscape(scene);
-		if(land)
-		{
-			FilePath textureName = land->GetTextureName(DAVA::Landscape::TEXTURE_COLOR);
-			textureName.ReplaceFilename("temp_beast.png");
-
-			FileSystem::Instance()->DeleteFile(textureName);
-		}
-
-#if defined (__DAVAENGINE_WIN32__)
-		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-        if(beastTool)
-        {
-			// TODO: mainwindow
-            // QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
-
-			bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
-							||  CommandLineParser::CommandIsFound(String("-forceclose"));
-			if(forceClose)
-	            Core::Instance()->Quit();
-        }
-#endif //#if defined (__DAVAENGINE_WIN32__)
-		// TODO: mainwindow
-		// QtMainWindowHandler::Instance()->ReloadSceneTextures();
-	}
 }
 
 void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)

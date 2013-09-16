@@ -186,7 +186,6 @@ class CommandDebugFlags;
 /*
  * ToolsCommands.h
  */
-class CommandBeast;
 class CommandConvertToShadow;
 
 

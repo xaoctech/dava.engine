@@ -367,6 +367,7 @@
     <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp" />
+    <ClCompile Include="Classes\Commands2\BeastAction.cpp" />
     <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp" />
     <ClCompile Include="Classes\Commands2\Command2.cpp" />
     <ClCompile Include="Classes\Commands2\CommandAction.cpp" />
@@ -407,7 +408,6 @@
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp" />
-    <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp" />
     <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp" />
@@ -1063,6 +1063,7 @@
     <ClInclude Include="Classes\Commands2\AddEntityCommand.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h" />
+    <ClInclude Include="Classes\Commands2\BeastAction.h" />
     <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h" />
     <ClInclude Include="Classes\Commands2\Command2.h" />
     <ClInclude Include="Classes\Commands2\CommandAction.h" />
@@ -1106,7 +1107,6 @@
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\TilemapEditorCommands.h" />
-    <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />

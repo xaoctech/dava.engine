@@ -86,9 +86,9 @@ CommandLineManager::CommandLineManager()
     AddCommandLineTool(new SceneExporterTool());
     AddCommandLineTool(new SceneSaverTool());
 
-#if defined (__DAVAENGINE_WIN32__)
+#if defined (__DAVAENGINE_BEAST__)
 	AddCommandLineTool(new BeastCommandLineTool());
-#endif //#if defined (__DAVAENGINE_WIN32__)
+#endif //#if defined (__DAVAENGINE_BEAST__)
     
     AddCommandLineTool(new TextureDescriptorTool());
     

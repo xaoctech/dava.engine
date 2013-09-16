@@ -48,7 +48,6 @@
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/SceneSaver/SceneSaver.h"
 #include "CommandLine/CommandLineManager.h"
-#include "CommandLine/Beast/BeastCommandLineTool.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -59,7 +58,7 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
-#include "../Commands/ToolsCommands.h"
+
 
 #include "../Deprecated/ScenePreviewDialog.h"
 
@@ -129,43 +128,10 @@ void SceneEditorScreenMain::UnloadResources()
 
 void SceneEditorScreenMain::WillAppear()
 {
-#if defined (__DAVAENGINE_WIN32__)
-    BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-    if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
-    {
-		FilePath scenePathname = beastTool->GetScenePathname();
-
-		String path = scenePathname.GetAbsolutePathname();
-		String dataSourceFolder = "/DataSource/3d/";
-		String::size_type pos = path.find(dataSourceFolder);
-		if(pos != String::npos)
-		{
-			EditorSettings::Instance()->SetProjectPath(path.substr(0, pos + 1));
-			EditorSettings::Instance()->SetDataSourcePath(path.substr(0, pos + dataSourceFolder.length()));
-		}
-
-		SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-		DVASSERT(levelScene);
-
-        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(scenePathname), levelScene->GetScene());
-    }
-#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 void SceneEditorScreenMain::DidAppear()
 {
-#if defined (__DAVAENGINE_WIN32__)
-	BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-	if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
-    {
-        Update(0.1f);
-
-		SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-		DVASSERT(levelScene);
-
-        CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast(), levelScene->GetScene());
-    }
-#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 

@@ -28,20 +28,39 @@
 
 
 
-#ifndef __TOOLS_COMMANDS_H__
-#define __TOOLS_COMMANDS_H__
+#ifndef __BEAST_ACTION_H__
+#define __BEAST_ACTION_H__
 
-#include "Command.h"
-#include "../Constants.h"
+#include "CommandAction.h"
 
-class CommandBeast: public Command
+#if defined (__DAVAENGINE_BEAST__)
+
+class SceneEditor2;
+class BeastManager;
+class BeastAction: public CommandAction
 {
 public:
-	DAVA_DEPRECATED(CommandBeast());// DEPRECATED: cancel absent
-    
-protected:
-    
-    virtual void Execute();
+	BeastAction(SceneEditor2 *scene);
+	~BeastAction();
+
+	virtual void Redo();
+
+private:
+
+	void Start();
+	bool Process();
+	void Finish();
+
+	void PackLightmaps();
+	DAVA::FilePath GetLightmapDirectoryPath();
+
+	BeastManager * beastManager;
+
+	SceneEditor2 *workingScene;
+
+	DAVA::uint64 startTime;
 };
 
-#endif // #ifndef __TOOLS_COMMANDS_H__
+#endif //#if defined (__DAVAENGINE_BEAST__)
+
+#endif // #ifndef __BEAST_ACTION_H__
