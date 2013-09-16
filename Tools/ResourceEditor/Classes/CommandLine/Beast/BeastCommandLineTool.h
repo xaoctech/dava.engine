@@ -48,6 +48,8 @@ public:
     
 protected:
 
+	void PrepareEditorSettings();
+
     DAVA::FilePath scenePathname;
     
 };
