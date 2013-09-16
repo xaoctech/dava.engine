@@ -187,6 +187,10 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	mainBox->addLayout(pivotPointLayout);
 	
 
+	frameBlendingCheckBox = new QCheckBox("Enable frame blending");	
+	connect(frameBlendingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	mainBox->addWidget(frameBlendingCheckBox);
+
 	//particle orieantation
 	QVBoxLayout* orientationLayout = new QVBoxLayout();	
 	particleOrientationLabel = new QLabel("Particle Orientation");
@@ -512,6 +516,7 @@ EmitterLayerWidget::~EmitterLayerWidget()
 	disconnect(srcFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
 	disconnect(dstFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
 	disconnect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	disconnect(frameBlendingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -597,6 +602,8 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	presetComboBox->setCurrentIndex(presetId);
 
 	fogCheckBox->setChecked(layer->IsFogEnabled());
+
+	frameBlendingCheckBox->setChecked(layer->IsFrameBlendEnabled());
 	
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
@@ -931,6 +938,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 srcFactor,
 						 dstFactor,
 						 fogCheckBox->isChecked(),
+						 frameBlendingCheckBox->isChecked(),
 						 particleOrientation,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
@@ -1109,6 +1117,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	dstFactorLabel->setVisible(!isSuperemitter);
 	dstFactorComboBox->setVisible(!isSuperemitter);
 	fogCheckBox->setVisible(!isSuperemitter);
+	frameBlendingCheckBox->setVisible(!isSuperemitter);
 
 	// Some controls are however specific for this mode only - display and update them.
 	innerEmitterLabel->setVisible(isSuperemitter);
