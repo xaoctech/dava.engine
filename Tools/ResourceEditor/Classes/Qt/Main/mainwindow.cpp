@@ -86,6 +86,10 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
 	, waitDialog(NULL)
+#if defined (__DAVAENGINE_BEAST__)
+	, beastWaitDialog(NULL)
+#endif //#if defined (__DAVAENGINE_BEAST__)
+
 	, materialEditor(NULL)
 	, addSwitchEntityDialog(NULL)
 	, globalInvalidateTimeoutEnabled(false)
@@ -106,6 +110,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	// create tool windows
 	new TextureBrowser(this);
 	waitDialog = new QtWaitDialog(this);
+#if defined (__DAVAENGINE_BEAST__)
+	beastWaitDialog = new QtWaitDialog(this);
+#endif //#if defined (__DAVAENGINE_BEAST__)
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
@@ -1589,12 +1596,26 @@ void QtMainWindow::RunBeast()
 	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
 	if(ret == MB_FLAG_NO) return;
 
-	WaitStart("Beasting...", "Please wait");
+	beastWaitDialog->Show("Beasting...", "Please wait", false, true);
 
 	scene->Exec(new BeastAction(scene));
 
-	WaitStop();
+	beastWaitDialog->Reset();
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
+
+#if defined (__DAVAENGINE_BEAST__)
+
+void QtMainWindow::BeastWaitSetMessage(const QString &messsage)
+{
+	beastWaitDialog->SetMessage(messsage);
+
+}
+bool QtMainWindow::BeastWaitCanceled()
+{
+	return beastWaitDialog->WasCanceled();
+}
+
+#endif //#if defined (__DAVAENGINE_BEAST__)
 
