@@ -133,6 +133,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  bool isDisabled,									  
 									  bool inheritPosition,
 									  bool isLong,
+									  float32 scaleVelocityBase,
+									  float32 scaleVelocityFactor,
 									  bool isLooped,
 									  Sprite* sprite,
 									  eBlendMode srcFactor,
@@ -180,6 +182,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->inheritPosition = inheritPosition;
 	this->isLooped = isLooped;
 	this->isLong = isLong;
+	this->scaleVelocityBase = scaleVelocityBase;
+	this->scaleVelocityFactor = scaleVelocityFactor;
 	this->sprite = sprite;
 	this->srcFactor = srcFactor;
 	this->dstFactor = dstFactor;
@@ -229,6 +233,8 @@ void CommandUpdateParticleLayer::Redo()
 	layer->SetDisabled(isDisabled);	
 	layer->SetInheritPosition(inheritPosition);
 	layer->SetLong(isLong);
+	layer->scaleVelocityBase = scaleVelocityBase;
+	layer->scaleVelocityFactor = scaleVelocityFactor;
 	layer->SetLooped(isLooped);
 	layer->SetBlendMode(srcFactor, dstFactor);
 	layer->SetFog(enableFog);

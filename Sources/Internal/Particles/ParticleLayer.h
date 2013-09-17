@@ -414,9 +414,7 @@ public:
 	float32 	loopEndTime;
 	
 	void		UpdateLayerTime(float32 startTime, float32 endTime);
-
-	int32		frameStart;
-	int32		frameEnd;
+	
 
 	eType		type;
 
@@ -425,6 +423,10 @@ public:
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 	bool		randomFrameOnStart;
+
+	//for long particles
+	float32 scaleVelocityBase;
+	float32 scaleVelocityFactor;
 
 	ParticleEmitter* innerEmitter;
 	FilePath	innerEmitterPath;

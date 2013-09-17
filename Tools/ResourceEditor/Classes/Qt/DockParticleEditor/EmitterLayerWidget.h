@@ -97,9 +97,15 @@ private:
 	
 	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;	
+	
 	QCheckBox* isLongCheckBox;
+	EventFilterDoubleSpinBox *scaleVelocityBaseSpinBox;
+	EventFilterDoubleSpinBox *scaleVelocityFactorSpinBox;
+	QLabel *scaleVelocityBaseLabel, *scaleVelocityFactorLabel;
+
 	QCheckBox* isLoopedCheckBox;
 	QCheckBox* inheritPostionCheckBox;
+
 
 	QCheckBox* layerLodsCheckBox[LodComponent::MAX_LOD_LAYERS];
 

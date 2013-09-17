@@ -432,7 +432,7 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	Vector3 vecShort = currDirection.CrossProduct(direction);
 	vecShort.Normalize();			
 	//Vector3 vecLong = vecShort.CrossProduct(direction);
-	Vector3 vecLong = -currDirection;
+	Vector3 vecLong = -currDirection*(scaleVelocityBase+scaleVelocityFactor*current->speed);
 	vecShort /= 2.f;	
 
 	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x/2;

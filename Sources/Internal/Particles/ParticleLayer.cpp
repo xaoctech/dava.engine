@@ -114,6 +114,9 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 	randomFrameOnStart = false;
 
+	scaleVelocityBase = 1;
+	scaleVelocityFactor = 0;
+
 	particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
 
     isDisabled = false;
@@ -252,6 +255,9 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 	dstLayer->randomFrameOnStart = randomFrameOnStart;
 	dstLayer->particleOrientation = particleOrientation;
+
+	dstLayer->scaleVelocityBase = scaleVelocityFactor;
+	dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
@@ -1042,6 +1048,18 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
 	}
 
+	const YamlNode* scaleVelocityBaseNode = node->Get("scaleVelocityBase");
+	if (scaleVelocityBaseNode)
+	{
+		scaleVelocityBase = scaleVelocityBaseNode->AsFloat();
+	}
+
+	const YamlNode* scaleVelocityFactorNode = node->Get("scaleVelocityFactor");
+	if (scaleVelocityFactorNode)
+	{
+		scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
+	}
+
 	life = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "life");	
 	lifeVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "lifeVariation");	
 
@@ -1250,6 +1268,9 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
 	layerNode->Add("enableFog", enableFog);	
 	layerNode->Add("enableFrameBlend", enableFrameBlend);	
+
+	layerNode->Add("scaleVelocityBase", scaleVelocityBase);
+	layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
