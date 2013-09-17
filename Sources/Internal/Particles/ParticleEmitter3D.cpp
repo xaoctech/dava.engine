@@ -82,7 +82,7 @@ void ParticleEmitter3D::RecalcBoundingBox()
 	if (GetWorldTransformPtr()) //add emmiter anyway
 	{
 		Vector3 emmiterPos = GetWorldTransformPtr()->GetTranslationVector();
-		bbox = AABBox3(emmiterPos, emmiterPos);
+		bbox.AddPoint(emmiterPos);
 	}	
 }
 
