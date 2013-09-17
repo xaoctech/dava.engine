@@ -34,6 +34,7 @@
 QtWaitDialog::QtWaitDialog(QWidget *parent /*= 0*/)
 	: QDialog(parent, Qt::Dialog | Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 	, ui(new Ui::QtWaitDialog)
+	, wasCanceled(false)
 {
 	ui->setupUi(this);
 
@@ -70,6 +71,7 @@ void QtWaitDialog::Show(const QString &title, const QString &message, bool hasWa
 
 void QtWaitDialog::Reset()
 {
+	wasCanceled = false;
 	emit canceled();
 	close();
 
@@ -109,6 +111,7 @@ void QtWaitDialog::SetValue(int value)
 
 void QtWaitDialog::CancelPressed()
 {
+	wasCanceled = true;
 	emit canceled();
 }
 
@@ -134,4 +137,11 @@ void QtWaitDialog::Setup(const QString &title, const QString &message, bool hasW
 	{
 		setWindowFlags(Qt::Dialog | Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	}
+
+	wasCanceled = false;
+}
+
+bool QtWaitDialog::WasCanceled() const
+{
+	return wasCanceled;
 }
