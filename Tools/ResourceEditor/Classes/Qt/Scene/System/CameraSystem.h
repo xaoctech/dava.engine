@@ -59,8 +59,9 @@ public:
 	void LookAt(const DAVA::AABBox3 &box);
 	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
 
-	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);
-	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z);
+	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3) const;
+	DAVA::Vector3 GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const;
+	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z) const;
 
 protected:
 	void Update(DAVA::float32 timeElapsed);

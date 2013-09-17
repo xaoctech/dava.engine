@@ -49,7 +49,6 @@ public:
 
 	void DrawText(int x, int y, const DAVA::String &text, const DAVA::Color &color);
 	void DrawText(DAVA::Vector2 pos2d, const DAVA::String &text, const DAVA::Color &color);
-	void DrawText(DAVA::Vector3 pos3d, const DAVA::String &text, const DAVA::Color &color);
 
 protected:
 	struct TextToDraw

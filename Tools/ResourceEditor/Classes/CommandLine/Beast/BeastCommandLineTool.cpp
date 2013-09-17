@@ -39,6 +39,8 @@
 
 using namespace DAVA;
 
+#if defined (__DAVAENGINE_BEAST__)
+
 BeastCommandLineTool::BeastCommandLineTool()
 	:	CommandLineTool()
 {
@@ -113,4 +115,5 @@ void BeastCommandLineTool::PrepareEditorSettings()
 	}
 }
 
+#endif //#if defined (__DAVAENGINE_BEAST__)
 

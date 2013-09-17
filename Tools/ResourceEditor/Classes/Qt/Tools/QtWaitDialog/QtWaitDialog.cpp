@@ -56,23 +56,13 @@ QtWaitDialog::~QtWaitDialog()
 
 void QtWaitDialog::Exec(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
-	setWindowTitle(title);
-	SetMessage(message);
-
-	ui->waitButton->setEnabled(hasCancel);
-	ui->waitBar->setVisible(hasWaitbar);
-
+	Setup(title, message, hasWaitbar, hasCancel);
 	exec();
 }
 
 void QtWaitDialog::Show(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
-	setWindowTitle(title);
-	SetMessage(message);
-
-	ui->waitButton->setEnabled(hasCancel);
-	ui->waitBar->setVisible(hasWaitbar);
-
+	Setup(title, message, hasWaitbar, hasCancel);
 	show();
 
 	QApplication::processEvents();
@@ -126,4 +116,22 @@ void QtWaitDialog::WaitCanceled()
 {
 	ui->waitButton->setEnabled(false);
 	QApplication::processEvents();
+}
+
+void QtWaitDialog::Setup(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
+{
+	setWindowTitle(title);
+	SetMessage(message);
+
+	ui->waitButton->setEnabled(hasCancel);
+	ui->waitBar->setVisible(hasWaitbar);
+
+	if(hasCancel)
+	{
+		setWindowFlags(Qt::Dialog | Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
+	}
+	else
+	{
+		setWindowFlags(Qt::Dialog | Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+	}
 }

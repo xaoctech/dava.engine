@@ -55,7 +55,13 @@ void TextDrawSystem::Update(float timeElapsed)
 
 DAVA::Vector2 TextDrawSystem::ToPos2d(const DAVA::Vector3 &pos3d) const
 {
-	return cameraSystem->GetScreenPos(pos3d);
+	DAVA::Vector3 pos2ddepth = cameraSystem->GetScreenPosAndDepth(pos3d);
+	if(pos2ddepth.z >= 0)
+	{
+		return DAVA::Vector2(pos2ddepth.x, pos2ddepth.y);
+	}
+
+	return DAVA::Vector2(-1, -1);
 }
 
 void TextDrawSystem::Draw()
@@ -93,14 +99,9 @@ void TextDrawSystem::DrawText(int x, int y, const DAVA::String &text, const DAVA
 
 void TextDrawSystem::DrawText(DAVA::Vector2 pos2d, const DAVA::String &text, const DAVA::Color &color)
 {
-	TextToDraw ttd(pos2d, text, color);
-	listToDraw.push_back(ttd);
-}
-
-void TextDrawSystem::DrawText(DAVA::Vector3 pos3d, const DAVA::String &text, const DAVA::Color &color)
-{
-	if(NULL != cameraSystem)
+	if(pos2d.x >= 0 && pos2d.y >= 0)
 	{
-		DrawText(ToPos2d(pos3d), text, color);
+		TextToDraw ttd(pos2d, text, color);
+		listToDraw.push_back(ttd);
 	}
 }

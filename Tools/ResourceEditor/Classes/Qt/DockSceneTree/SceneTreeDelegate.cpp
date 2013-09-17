@@ -80,6 +80,15 @@ void SceneTreeDelegate::customDraw(QPainter *painter, QStyleOptionViewItem *opti
 
 				option->rect.setRight(owRect.left());
 			}
+
+			int flags = model->GetCustomFlags(realIndex);
+			if(SceneTreeModel::None != flags)
+			{
+				QColor c = option->palette.text().color();
+				c.setAlpha(100);
+
+				option->palette.setColor(QPalette::Text, c);
+			}
 		}
 	}
 }

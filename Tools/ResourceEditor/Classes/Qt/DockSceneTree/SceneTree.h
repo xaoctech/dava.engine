@@ -34,6 +34,7 @@
 #include <QWidget>
 #include <QTreeView>
 #include <QTableView>
+#include <QTimer>
 
 #include "Scene/SceneSignals.h"
 #include "DockSceneTree/SceneTreeModel.h"
@@ -58,6 +59,7 @@ protected:
 	SceneTreeModel * treeModel;
 	SceneTreeFilteringModel *filteringProxyModel;
 	SceneTreeDelegate *treeDelegate;
+	QTimer refreshTimer;
 
 	bool skipTreeSelectionProcessing;
 
@@ -123,8 +125,9 @@ protected slots:
 	void ReloadModel();
 	void ReloadModelAs();
     void ReloadModelWithoutLightmaps();
-
 	void SaveEntityAs();
+
+	void OnRefreshTimeout();
 	
 protected:
 	// Helpers for Particles.
