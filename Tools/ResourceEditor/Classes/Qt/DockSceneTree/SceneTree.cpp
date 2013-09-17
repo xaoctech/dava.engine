@@ -84,8 +84,11 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	QObject::connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(TreeItemDoubleClicked(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), this, SLOT(TreeItemCollapsed(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), this, SLOT(TreeItemExpanded(const QModelIndex &)));
+	QObject::connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(OnRefreshTimeout()));
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
+
+	refreshTimer.start(1500);
 }
 
 SceneTree::~SceneTree()
@@ -1189,4 +1192,9 @@ void SceneTree::CleanupParticleEditorSelectedItems()
 	this->selectedForce = NULL;
 	this->selectedInnerEmmiter = NULL;
 	this->selectedInnerEmmiterParentLayer = NULL;
+}
+
+void SceneTree::OnRefreshTimeout()
+{
+	dataChanged(QModelIndex(), QModelIndex());
 }

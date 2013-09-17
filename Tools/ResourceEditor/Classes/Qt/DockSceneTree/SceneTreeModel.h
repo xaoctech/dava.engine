@@ -57,6 +57,12 @@ public:
 		DropingForce
 	};
 
+	enum CustomFlags
+	{
+		None			= 0x0000,
+		InvisibleLOD	= 0x0001,
+	};
+
 	static const char* mimeFormatEntity;
 	static const char* mimeFormatLayer;
 	static const char* mimeFormatForce;
@@ -80,6 +86,7 @@ public:
 	bool GetLocked(const QModelIndex &index) const;
 
 	QVector<QIcon> GetCustomIcons(const QModelIndex &index) const;
+	int GetCustomFlags(const QModelIndex &index) const;
 
 	// drag and drop support
 	Qt::DropActions supportedDropActions() const;

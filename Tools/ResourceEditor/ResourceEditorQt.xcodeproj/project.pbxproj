@@ -412,7 +412,6 @@
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
-		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
 		5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */; };
 		5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
@@ -535,8 +534,8 @@
 		E838D84F16B0059F006F1721 /* PropertyEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D84D16B0059F006F1721 /* PropertyEditor.cpp */; };
 		E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */; };
 		E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */; };
-		E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */; };
 		E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */; };
+		E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */; };
 		E862903C17BBD20100C88FC0 /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */; };
@@ -572,6 +571,7 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
 		E8EBEDFE17CF92B400104156 /* StatusBar.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEDFC17CF92B400104156 /* StatusBar.cpp */; };
 		E8EBEE0417CF943300104156 /* StatusBar_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEE0317CF943300104156 /* StatusBar_moc.cpp */; };
@@ -1464,8 +1464,6 @@
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
 		5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandCreateNode.cpp; path = Classes/Commands/CommandCreateNode.cpp; sourceTree = "<group>"; };
 		5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandCreateNode.h; path = Classes/Commands/CommandCreateNode.h; sourceTree = "<group>"; };
-		5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToolsCommands.cpp; path = Classes/Commands/ToolsCommands.cpp; sourceTree = "<group>"; };
-		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
 		5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotPassableTerrain.cpp; path = Classes/LandscapeEditor/NotPassableTerrain.cpp; sourceTree = "<group>"; };
 		5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotPassableTerrain.h; path = Classes/LandscapeEditor/NotPassableTerrain.h; sourceTree = "<group>"; };
 		5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritesPacker.cpp; path = Classes/SpritesPacker.cpp; sourceTree = "<group>"; };
@@ -1687,10 +1685,10 @@
 		E83AB8F91779AF1E0037561B /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewControl.h; path = Classes/Deprecated/ScenePreviewControl.h; sourceTree = "<group>"; };
 		E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScenePreviewDialog.cpp; path = Classes/Deprecated/ScenePreviewDialog.cpp; sourceTree = "<group>"; };
 		E83AB8FC1779B6CF0037561B /* ScenePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewDialog.h; path = Classes/Deprecated/ScenePreviewDialog.h; sourceTree = "<group>"; };
-		E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChangeLODDistanceCommand.cpp; sourceTree = "<group>"; };
-		E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeLODDistanceCommand.h; sourceTree = "<group>"; };
 		E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertToShadowCommand.cpp; sourceTree = "<group>"; };
 		E84551EA17DF48A70041F0B1 /* ConvertToShadowCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertToShadowCommand.h; sourceTree = "<group>"; };
+		E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChangeLODDistanceCommand.cpp; sourceTree = "<group>"; };
+		E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeLODDistanceCommand.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
 		E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveEntityAsAction.cpp; sourceTree = "<group>"; };
@@ -1757,6 +1755,8 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
+		E8DADC0517E75A0B00561D52 /* BeastAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastAction.h; sourceTree = "<group>"; };
 		E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorContentWidget.cpp; sourceTree = "<group>"; };
 		E8DD07BE16B054210013F115 /* BaseParticleEditorContentWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorContentWidget.h; sourceTree = "<group>"; };
 		E8EBEDFC17CF92B400104156 /* StatusBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatusBar.cpp; sourceTree = "<group>"; };
@@ -2512,6 +2512,8 @@
 			isa = PBXGroup;
 			children = (
 				E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */,
+				E8DADC0417E75A0B00561D52 /* BeastAction.cpp */,
+				E8DADC0517E75A0B00561D52 /* BeastAction.h */,
 				E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */,
 				4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */,
 				4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */,
@@ -3270,8 +3272,6 @@
 				5C6549C715D3CE2900C3AC3F /* LibraryCommands.h */,
 				5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */,
 				5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */,
-				5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */,
-				5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */,
 				5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */,
 				5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */,
 				5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */,
@@ -4337,7 +4337,6 @@
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
 				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
 				5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */,
-				5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */,
 				5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */,
 				5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */,
 				5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */,
@@ -4815,6 +4814,7 @@
 				E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */,
 				02F8B06217E32B9400D5A334 /* SpeedTreeImporter.cpp in Build Sources */,
 				E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */,
+				E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

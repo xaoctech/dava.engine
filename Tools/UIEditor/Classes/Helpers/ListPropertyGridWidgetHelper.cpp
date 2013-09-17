@@ -48,7 +48,7 @@ UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
 {
 	if (ValidateOrientationIndex(index) == false)
 	{
-		return UIList::ORIENTATION_VERTICAL;
+		return  orientationData[0].orientation;
 	}
 	
 	return orientationData[index].orientation;

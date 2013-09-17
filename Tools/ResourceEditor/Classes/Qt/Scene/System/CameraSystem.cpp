@@ -48,7 +48,7 @@
 SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	: SceneSystem(scene)
 	, curSceneCamera(NULL)
-	, curSpeed(35.0f)
+	, curSpeed(15.0f)
 	, curViewAngleZ(0)
 	, curViewAngleY(0)
 	, maxViewAngle(89.0f)
@@ -120,19 +120,33 @@ const DAVA::Rect SceneCameraSystem::GetViewportRect()
 	return viewportRect;
 }
 
-DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3)
+DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3) const
 {
 	DAVA::Vector2 ret;
 
 	if(NULL != curSceneCamera)
 	{
+		if(curSceneCamera)
 		ret = curSceneCamera->GetOnScreenPosition(pos3, viewportRect);
 	}
 
 	return ret;
 }
 
-DAVA::Vector3 SceneCameraSystem::GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z)
+DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const
+{
+	DAVA::Vector3 ret;
+
+	if(NULL != curSceneCamera)
+	{
+		if(curSceneCamera)
+			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, viewportRect);
+	}
+
+	return ret;
+}
+
+DAVA::Vector3 SceneCameraSystem::GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z) const
 {
 	DAVA::Vector3 ret;
 
