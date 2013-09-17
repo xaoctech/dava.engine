@@ -67,6 +67,7 @@ protected slots:
 	void WaitCanceled();
 
 private:
+	void Setup(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel);
 	Ui::QtWaitDialog *ui;
 };
 

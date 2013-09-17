@@ -303,8 +303,9 @@ public:
         \returns 2D point on screen.
      */
     Vector2 GetOnScreenPosition(const Vector3 & forPoint, const Rect & viewport);
-    
-    /**
+	Vector3 GetOnScreenPositionAndDepth(const Vector3 & forPoint, const Rect & viewport);
+
+	/**
         \brief Function to return 3D position of 2D point that was transformed before. 
         \param[in] win windows coords of the point
         \param[in] viewport viewport coords
