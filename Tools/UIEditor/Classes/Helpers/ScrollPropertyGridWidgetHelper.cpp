@@ -48,7 +48,7 @@ UIScrollBar::eScrollOrientation ScrollPropertyGridWidgetHelper::GetOrientation(i
 {
 	if (ValidateOrientationIndex(index) == false)
 	{
-		return UIScrollBar::ORIENTATION_VERTICAL;
+		return orientationData[0].orientation;
 	}
 	
 	return orientationData[index].orientation;
