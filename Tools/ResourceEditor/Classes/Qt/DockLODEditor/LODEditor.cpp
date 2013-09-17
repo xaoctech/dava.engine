@@ -298,6 +298,12 @@ void LODEditor::SetForceLayerValues(int layersCount)
     {
         ui->forceLayer->addItem(Format("%d", i), QVariant(i));
     }
+    
+    int requestedIndex = editedLODData->GetForceLayer() + 1;
+    if(requestedIndex < layersCount)
+    {
+        ui->forceLayer->setCurrentIndex(requestedIndex);
+    }
 }
 
 void LODEditor::GlobalSettingsButtonReleased()
