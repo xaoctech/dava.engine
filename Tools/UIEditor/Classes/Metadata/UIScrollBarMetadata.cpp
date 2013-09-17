@@ -26,83 +26,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIScrollBarMetadata.h"
 
-#include "IconHelper.h"
+namespace DAVA {
 
-QString IconHelper::GetIconPathForClassName(const QString &className)
+UIScrollBarMetadata::UIScrollBarMetadata(QObject* parent) :
+	UIControlMetadata(parent)
 {
-	QString s = ":/Icons/" + className.toLower() + ".png";
-
-	return s;
 }
 
-QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
+UIScrollBar* UIScrollBarMetadata::GetActiveUIScrollBar() const
 {
-	QString className = "UIControl";
-	if (!uiControl->GetCustomControlType().empty())
-	{
-		className = "UICustomControl";
-	}
-	else if (dynamic_cast<UIButton*>(uiControl))
-	{
-		className = "UIButton";
-	}
-	else if (dynamic_cast<UIList*>(uiControl))
-	{
-		className = "UIList";
-	}
-	else if (dynamic_cast<UIScrollBar*>(uiControl))
-	{
-		className = "UIScrollBar";
-	}
-	else if (dynamic_cast<UIScrollView*>(uiControl))
-	{
-		className = "UIScrollView";
-	}
-	else if (dynamic_cast<UISlider*>(uiControl))
-	{
-		className = "UISlider";
-	}
-	else if (dynamic_cast<UISpinner*>(uiControl))
-	{
-		className = "UISpinner";
-	}
-	else if (dynamic_cast<UIStaticText*>(uiControl))
-	{
-		className = "UIStaticText";
-	}
-	else if (dynamic_cast<UISwitch*>(uiControl))
-	{
-		className = "UISwitch";
-	}
-	else if (dynamic_cast<UITextField*>(uiControl))
-	{
-		className = "UITextField";
-	}
-	else if (dynamic_cast<UIAggregatorControl*>(uiControl))
-	{
-		className = "UIAggregatorControl";
-	}
-
-	return GetIconPathForClassName(className);
+	return dynamic_cast<UIScrollBar*>(GetActiveUIControl());
 }
 
-QString IconHelper::GetPlatformIconPath()
+void UIScrollBarMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
-	return ":/Icons/079i.png";
+	BaseMetadata::InitializeControl(controlName, position);
+	
+	int paramsCount = this->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
+    {
+		// Initialize UIScrollBar
+        UIScrollBar* scroll = dynamic_cast<UIScrollBar*>(this->treeNodeParams[i].GetUIControl());
+		if (scroll)
+		{
+			scroll->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+		}
+    }
 }
 
-QString IconHelper::GetScreenIconPath()
+void UIScrollBarMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
 {
-	return ":/Icons/068i.png";
+	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
 }
 
-QString IconHelper::GetAggregatorIconPath()
+int UIScrollBarMetadata::GetScrollOrientation()
 {
-	return ":/Icons/170.png";
+    if (!VerifyActiveParamID())
+    {
+        return UIScrollBar::ORIENTATION_VERTICAL;
+    }
+
+    return GetActiveUIScrollBar()->GetOrientation();
+}
+    
+void UIScrollBarMetadata::SetScrollOrientation(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }	
+    
+	GetActiveUIScrollBar()->SetOrientation((UIScrollBar::eScrollOrientation)value);
 }
 
-QString IconHelper::GetIgnoreIconPath()
-{
-	return ":/Icons/101.png";
-}
+};

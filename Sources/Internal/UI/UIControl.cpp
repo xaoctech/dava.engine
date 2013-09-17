@@ -2796,4 +2796,23 @@ namespace DAVA
 	{
 		initialState = newState;
 	}
+
+	YamlNode * UIControl::SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control,  YamlNode* rootNode)
+	{
+		YamlNode* controlNode = control->SaveToYamlNode(loader);
+		
+		if (rootNode)
+		{
+			rootNode->AddNodeToMap(control->GetName(), controlNode);
+		}
+		
+		const List<UIControl*>& children = control->GetRealChildren();
+		for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
+		{
+			UIControl* childControl = (*childIter);
+			SaveToYamlNodeRecursive(loader, childControl, controlNode);
+		}
+		
+		return controlNode;
+	}
 }

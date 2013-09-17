@@ -50,7 +50,7 @@ UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	
 	scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
 	// Scroll container is a child of ScrollView
-	UIControl::AddControl(scrollContainer);
+	AddControl(scrollContainer);
 }
 
 UIScrollView::~UIScrollView()
@@ -74,14 +74,10 @@ void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 
 void UIScrollView::AddControl(UIControl *control)
 {
-	// Put new control into scroll container instead adding it as ScrollView child
-	if (scrollContainer)
+	UIControl::AddControl(control);
+	if (control->GetName() == UISCROLL_VIEW_CONTAINER_NAME)
 	{
- 		scrollContainer->AddControl(control);
-	}
-	else
-	{
-		UIControl::AddControl(control);
+		scrollContainer = (UIScrollViewContainer*)control;
 	}
 	
 	RecalculateContentSize();
@@ -141,11 +137,9 @@ List<UIControl* >& UIScrollView::GetRealChildren()
 List<UIControl* > UIScrollView::GetSubcontrols()
 {
 	List<UIControl* > subControls;
-	if (scrollContainer)
-	{
-		subControls = scrollContainer->GetRealChildren();
-	}
-
+	
+	AddControlToList(subControls, UISCROLL_VIEW_CONTAINER_NAME);
+	
 	return subControls;
 }
 
@@ -160,24 +154,14 @@ void UIScrollView::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
 	
-	if (scrollContainer)
-	{
-		UIControl* scrollContainerClone = scrollContainer->Clone();
+	RemoveControl(scrollContainer);
+  	SafeRelease(scrollContainer);
 	
-		// Get rect value from original scroll container
-		UIScrollView* scrScrollView = (UIScrollView*) srcControl;
-		Rect srcContentRect = scrScrollView->scrollContainer->GetRect();
-		scrollContainerClone->SetRect(srcContentRect);
-	
-		// Release and delete default scroll container - it has to be copied from srcControl
-  	  	RemoveControl(scrollContainer);
-  	  	SafeRelease(scrollContainer);	
-	
-		AddControl(scrollContainerClone);
-		SafeRelease(scrollContainerClone);
-	
-		FindRequiredControls();
-	}
+	UIScrollView* t = (UIScrollView*) srcControl;
+		
+	this->scrollContainer = static_cast<UIScrollViewContainer*>(t->scrollContainer->Clone());
+		
+	AddControl(scrollContainer);
 }
 
 void UIScrollView::FindRequiredControls()
@@ -346,5 +330,6 @@ float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const 
 	DVASSERT_MSG(false, "Unknown orientation!")
 	return 0.0f;
 }
+
 
 };

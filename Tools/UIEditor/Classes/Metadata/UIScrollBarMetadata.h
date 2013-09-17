@@ -26,83 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIControlMetadata.h"
 
-#include "IconHelper.h"
+#ifndef __UIEditor__UIScrollBarMetadata__
+#define __UIEditor__UIScrollBarMetadata__
 
-QString IconHelper::GetIconPathForClassName(const QString &className)
+namespace DAVA {
+
+// Metadata class for DAVA UIScrollBar control.
+class UIScrollBarMetadata : public UIControlMetadata
 {
-	QString s = ":/Icons/" + className.toLower() + ".png";
+    Q_OBJECT
+	
+	// Scrollbar orientation
+    Q_PROPERTY(int ScrollOrientation READ GetScrollOrientation WRITE SetScrollOrientation);
+	
+public:
+    UIScrollBarMetadata(QObject* parent = 0);
 
-	return s;
-}
+protected:
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
-QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
-{
-	QString className = "UIControl";
-	if (!uiControl->GetCustomControlType().empty())
-	{
-		className = "UICustomControl";
-	}
-	else if (dynamic_cast<UIButton*>(uiControl))
-	{
-		className = "UIButton";
-	}
-	else if (dynamic_cast<UIList*>(uiControl))
-	{
-		className = "UIList";
-	}
-	else if (dynamic_cast<UIScrollBar*>(uiControl))
-	{
-		className = "UIScrollBar";
-	}
-	else if (dynamic_cast<UIScrollView*>(uiControl))
-	{
-		className = "UIScrollView";
-	}
-	else if (dynamic_cast<UISlider*>(uiControl))
-	{
-		className = "UISlider";
-	}
-	else if (dynamic_cast<UISpinner*>(uiControl))
-	{
-		className = "UISpinner";
-	}
-	else if (dynamic_cast<UIStaticText*>(uiControl))
-	{
-		className = "UIStaticText";
-	}
-	else if (dynamic_cast<UISwitch*>(uiControl))
-	{
-		className = "UISwitch";
-	}
-	else if (dynamic_cast<UITextField*>(uiControl))
-	{
-		className = "UITextField";
-	}
-	else if (dynamic_cast<UIAggregatorControl*>(uiControl))
-	{
-		className = "UIAggregatorControl";
-	}
+    virtual QString GetUIControlClassName() { return "UIScrollBar"; };
+	
+    // Helper to access active UI ScrollBar.
+    UIScrollBar* GetActiveUIScrollBar() const;
+	
+    // Getters/setters.
+	int GetScrollOrientation();
+	void SetScrollOrientation(int value);
+};
 
-	return GetIconPathForClassName(className);
-}
+};
 
-QString IconHelper::GetPlatformIconPath()
-{
-	return ":/Icons/079i.png";
-}
-
-QString IconHelper::GetScreenIconPath()
-{
-	return ":/Icons/068i.png";
-}
-
-QString IconHelper::GetAggregatorIconPath()
-{
-	return ":/Icons/170.png";
-}
-
-QString IconHelper::GetIgnoreIconPath()
-{
-	return ":/Icons/101.png";
-}
+#endif /* defined(__UIEditor__UIScrollBarMetadata__) */

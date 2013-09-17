@@ -27,82 +27,65 @@
 =====================================================================================*/
 
 
-#include "IconHelper.h"
 
-QString IconHelper::GetIconPathForClassName(const QString &className)
+#include "ScrollPropertyGridWidgetHelper.h"
+
+using namespace DAVA;
+
+const ScrollPropertyGridWidgetHelper::OrientationData ScrollPropertyGridWidgetHelper::orientationData[] =
 {
-	QString s = ":/Icons/" + className.toLower() + ".png";
+    {UIScrollBar::ORIENTATION_VERTICAL,           "Vertical"},
+    {UIScrollBar::ORIENTATION_HORIZONTAL,   		"Horizontal"}
+};
 
-	return s;
+// Get the scroll of UIControlStates supported:
+int ScrollPropertyGridWidgetHelper::GetOrientationCount()
+{
+    return sizeof(orientationData) / sizeof(*orientationData);
 }
 
-QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
+UIScrollBar::eScrollOrientation ScrollPropertyGridWidgetHelper::GetOrientation(int index)
 {
-	QString className = "UIControl";
-	if (!uiControl->GetCustomControlType().empty())
+	if (ValidateOrientationIndex(index) == false)
 	{
-		className = "UICustomControl";
+		return orientationData[0].orientation;
 	}
-	else if (dynamic_cast<UIButton*>(uiControl))
-	{
-		className = "UIButton";
-	}
-	else if (dynamic_cast<UIList*>(uiControl))
-	{
-		className = "UIList";
-	}
-	else if (dynamic_cast<UIScrollBar*>(uiControl))
-	{
-		className = "UIScrollBar";
-	}
-	else if (dynamic_cast<UIScrollView*>(uiControl))
-	{
-		className = "UIScrollView";
-	}
-	else if (dynamic_cast<UISlider*>(uiControl))
-	{
-		className = "UISlider";
-	}
-	else if (dynamic_cast<UISpinner*>(uiControl))
-	{
-		className = "UISpinner";
-	}
-	else if (dynamic_cast<UIStaticText*>(uiControl))
-	{
-		className = "UIStaticText";
-	}
-	else if (dynamic_cast<UISwitch*>(uiControl))
-	{
-		className = "UISwitch";
-	}
-	else if (dynamic_cast<UITextField*>(uiControl))
-	{
-		className = "UITextField";
-	}
-	else if (dynamic_cast<UIAggregatorControl*>(uiControl))
-	{
-		className = "UIAggregatorControl";
-	}
-
-	return GetIconPathForClassName(className);
+	
+	return orientationData[index].orientation;
 }
 
-QString IconHelper::GetPlatformIconPath()
+QString ScrollPropertyGridWidgetHelper::GetOrientationDesc(int index)
 {
-	return ":/Icons/079i.png";
+    if (ValidateOrientationIndex(index) == false)
+    {
+        return orientationData[0].orientationDesc;
+    }
+    
+    return orientationData[index].orientationDesc;
 }
 
-QString IconHelper::GetScreenIconPath()
+QString ScrollPropertyGridWidgetHelper::GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation)
 {
-	return ":/Icons/068i.png";
+	int count = GetOrientationCount();
+	for (int i = 0; i < count; i++)
+	{
+		if (orientation == orientationData[i].orientation)
+		{
+			return orientationData[i].orientationDesc;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
+    return QString();
 }
 
-QString IconHelper::GetAggregatorIconPath()
+bool ScrollPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
 {
-	return ":/Icons/170.png";
-}
-
-QString IconHelper::GetIgnoreIconPath()
-{
-	return ":/Icons/101.png";
+    if (index < 0 || index >= GetOrientationCount())
+    {
+        Logger::Error("Orientation index %i is out of bounds!", index);
+        return false;
+    }
+    
+    return true;
 }

@@ -35,6 +35,9 @@ namespace DAVA
 {
 
 REGISTER_CLASS(UIScrollBar);
+
+//use these names for children controls to define UIScrollBar in .yaml
+static const String UISCROLLBAR_SLIDER_NAME = "slider";
 	
 UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientation, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -42,9 +45,7 @@ UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientatio
 ,	orientation(requiredOrientation)
 ,   resizeSliderProportionally(true)
 {
-    slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
-    slider->SetInputEnabled(false, false);
-    AddControl(slider);
+	InitControls(rect);
 }
 
 UIScrollBar::~UIScrollBar()
@@ -61,6 +62,130 @@ UIControl *UIScrollBar::GetSlider()
 {
     return slider;
 }
+
+void UIScrollBar::AddControl(UIControl *control)
+{
+	// Synchronize the pointers to the buttons each time new control is added.
+	UIControl::AddControl(control);
+
+	if (control->GetName() == UISCROLLBAR_SLIDER_NAME)
+	{
+		slider = control;
+	}
+}
+
+List<UIControl* >& UIScrollBar::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	
+	realChildren.remove(FindByName(UISCROLLBAR_SLIDER_NAME));
+
+	return realChildren;
+}
+
+List<UIControl* > UIScrollBar::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+
+	// Lookup for the contols by their names.
+	AddControlToList(subControls, UISCROLLBAR_SLIDER_NAME);
+
+	return subControls;
+}
+
+UIControl* UIScrollBar::Clone()
+{
+	UIScrollBar *t = new UIScrollBar(GetRect());
+	t->CopyDataFrom(this);
+	return t;
+}
+
+void UIScrollBar::CopyDataFrom(UIControl *srcControl)
+{
+    //release default buttons - they have to be copied from srcControl
+    RemoveControl(slider);
+ 	SafeRelease(slider);
+
+    UIControl::CopyDataFrom(srcControl);
+	
+	UIScrollBar* t = (UIScrollBar*) srcControl;
+	this->orientation = t->orientation;
+	this->resizeSliderProportionally = t->resizeSliderProportionally;
+	this->slider = t->slider->Clone();
+
+	AddControl(slider);
+}
+
+void UIScrollBar::InitControls(const Rect &rect)
+{
+	slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
+	slider->SetName(UISCROLLBAR_SLIDER_NAME);
+	slider->SetInputEnabled(false, false);
+   	AddControl(slider);
+}
+
+void UIScrollBar::LoadFromYamlNodeCompleted()
+{
+	slider = SafeRetain(FindByName(UISCROLLBAR_SLIDER_NAME));
+	if (!slider)
+	{
+		InitControls();
+	}
+}
+
+void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+{
+	RemoveControl(slider);
+	SafeRelease(slider);
+
+	UIControl::LoadFromYamlNode(node, loader);
+		
+	const YamlNode * orientNode = node->Get("orientation");
+	if (orientNode)
+	{
+		if (orientNode->AsString() == "ORIENTATION_VERTICAL")
+			orientation = ORIENTATION_VERTICAL;
+		else if (orientNode->AsString() == "ORIENTATION_HORIZONTAL")
+			orientation = ORIENTATION_HORIZONTAL;
+		else 
+		{
+			DVASSERT(0 && "Orientation constant is wrong");
+		}
+	}
+}
+
+YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+	//Temp variables
+	String stringValue;
+    
+	//Control Type
+	SetPreferredNodeType(node, "UIScrollBar");
+
+	//Orientation
+	eScrollOrientation orient = this->GetOrientation();
+	switch(orient)
+	{
+		case ORIENTATION_VERTICAL:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+		case ORIENTATION_HORIZONTAL:
+			stringValue = "ORIENTATION_HORIZONTAL";
+			break;
+		default:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+	}
+	node->Set("orientation", stringValue);
+	
+	// Slider have to be saved too.
+	YamlNode* sliderNode = slider->SaveToYamlNode(loader);
+	node->AddNodeToMap(UISCROLLBAR_SLIDER_NAME, sliderNode);
+    
+	return node;
+}
+
 
     
 void UIScrollBar::Input(UIEvent *currentInput)

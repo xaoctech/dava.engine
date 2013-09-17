@@ -49,6 +49,34 @@ class UIWebViewDelegate: public IUIWebViewDelegate
 	virtual void PageLoaded(UIWebView* webview);
 };
 
+class UIMoveableTextFieldDelegate : public UITextFieldDelegate
+{
+public:
+	UIMoveableTextFieldDelegate(UITextField* textField)
+	{
+		this->moveableTextField = textField;
+	}
+	
+	virtual void OnKeyboardShown(const Rect& keyboardRect)
+	{
+		this->initialTextFieldRect = this->moveableTextField->GetRect();
+		Rect newRect = this->initialTextFieldRect;
+		
+		newRect.y = keyboardRect.y - newRect.dy;
+
+		this->moveableTextField->SetRect(newRect);
+	}
+
+	virtual void OnKeyboardHidden()
+	{
+		this->moveableTextField->SetRect(initialTextFieldRect);
+	}
+
+protected:
+	UITextField* moveableTextField;
+	Rect initialTextFieldRect;
+};
+
 IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isInitiatedByUser)
 {
 	if(isInitiatedByUser)
@@ -124,16 +152,16 @@ void InputTest::LoadResources()
 	passwordTextField->SetDelegate(this);
 	AddControl(passwordTextField);
 	
-	textField = new UITextField(Rect(600, 10, 100, 100));
+	textField = new UITextField(Rect(0, 600, 950, 40));
 #ifdef __DAVAENGINE_IPHONE__
 #else
 	textField->SetFont(font);
 #endif
     textField->SetTextColor(Color::White());
 
-	textField->SetText(L"Traited Field");
+	textField->SetText(L"This field will auto-move over the keyboard.");
 	textField->SetDebugDraw(true);
-	textField->SetDelegate(new UITextFieldDelegate());
+	textField->SetDelegate(new UIMoveableTextFieldDelegate(textField));
 
 	textField->SetAutoCapitalizationType(DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_NONE);
 	textField->SetAutoCorrectionType(DAVA::UITextField::AUTO_CORRECTION_TYPE_NO);
