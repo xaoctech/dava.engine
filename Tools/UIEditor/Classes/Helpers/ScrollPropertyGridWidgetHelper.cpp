@@ -28,33 +28,33 @@
 
 
 
-#include "ListPropertyGridWidgetHelper.h"
+#include "ScrollPropertyGridWidgetHelper.h"
 
 using namespace DAVA;
 
-const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
+const ScrollPropertyGridWidgetHelper::OrientationData ScrollPropertyGridWidgetHelper::orientationData[] =
 {
-    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
-    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
+    {UIScrollBar::ORIENTATION_VERTICAL,           "Vertical"},
+    {UIScrollBar::ORIENTATION_HORIZONTAL,   		"Horizontal"}
 };
 
-// Get the list of UIControlStates supported:
-int ListPropertyGridWidgetHelper::GetOrientationCount()
+// Get the scroll of UIControlStates supported:
+int ScrollPropertyGridWidgetHelper::GetOrientationCount()
 {
     return sizeof(orientationData) / sizeof(*orientationData);
 }
 
-UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
+UIScrollBar::eScrollOrientation ScrollPropertyGridWidgetHelper::GetOrientation(int index)
 {
 	if (ValidateOrientationIndex(index) == false)
 	{
-		return  orientationData[0].orientation;
+		return orientationData[0].orientation;
 	}
 	
 	return orientationData[index].orientation;
 }
 
-QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
+QString ScrollPropertyGridWidgetHelper::GetOrientationDesc(int index)
 {
     if (ValidateOrientationIndex(index) == false)
     {
@@ -64,7 +64,7 @@ QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
     return orientationData[index].orientationDesc;
 }
 
-QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
+QString ScrollPropertyGridWidgetHelper::GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation)
 {
 	int count = GetOrientationCount();
 	for (int i = 0; i < count; i++)
@@ -79,7 +79,7 @@ QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrie
     return QString();
 }
 
-bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
+bool ScrollPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
 {
     if (index < 0 || index >= GetOrientationCount())
     {

@@ -26,15 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-//
-//  UIScrollViewMetadata.h
-//  UIEditor
-//
-//  Created by Denis Bespalov on 4/23/13.
-//
-//
-
 #ifndef __UIEditor__UIScrollViewMetadata__
 #define __UIEditor__UIScrollViewMetadata__
 

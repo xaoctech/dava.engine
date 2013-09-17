@@ -75,6 +75,14 @@ bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
 {
 	return true;
 }
+	
+void UITextFieldDelegate::OnKeyboardShown(const Rect& /*keyboardRect*/)
+{
+}
+
+void UITextFieldDelegate::OnKeyboardHidden()
+{
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -578,20 +586,12 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
 	}
 
-    if(staticText)
-    {
-        staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
+	if(staticText)
+	{
+		staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
-		const YamlNode * textColorNode = node->Get("textcolor");
 		const YamlNode * shadowColorNode = node->Get("shadowcolor");
 		const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
-		const YamlNode * textAlignNode = node->Get("textalign");
-		
-		if(textColorNode)
-		{
-			Vector4 c = textColorNode->AsVector4();
-			SetTextColor(Color(c.x, c.y, c.z, c.w));
-		}
 
 		if(shadowColorNode)
 		{
@@ -603,12 +603,22 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
 		}
+	}
 
-		if(textAlignNode)
-		{
-			SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
-		}
-    }
+
+	const YamlNode * textColorNode = node->Get("textcolor");
+	const YamlNode * textAlignNode = node->Get("textalign");
+
+	if(textColorNode)
+	{
+		Vector4 c = textColorNode->AsVector4();
+		SetTextColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(textAlignNode)
+	{
+		SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
+	}
     //InitAfterYaml();
 
 #if 0

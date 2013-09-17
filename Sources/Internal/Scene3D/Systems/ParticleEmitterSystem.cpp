@@ -91,7 +91,7 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
         if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
         {
             emitters[i]->Update(effectTime);
-			requireUpdate = true;
+			requireUpdate = !emitters[i]->IsPaused();
         }
 		else
 		{
@@ -104,10 +104,10 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 		}
 		else if (requireUpdate)
 		{
-			emitters[i]->PrepareRenderData(camera);
-			emitters[i]->RecalcBoundingBox();
+			emitters[i]->PrepareRenderData(camera);			
 			emitters[i]->GetRenderSystem()->MarkForUpdate(emitters[i]);
 		}				
+		emitters[i]->RecalcBoundingBox(); //recalculate it anyway just in case
 	}
 
 	for(Vector<ParticleEmitter*>::iterator it = emittersToBeDeleted.begin(); it != emittersToBeDeleted.end(); ++it)

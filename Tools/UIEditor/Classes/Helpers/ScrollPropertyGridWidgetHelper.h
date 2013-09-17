@@ -28,64 +28,38 @@
 
 
 
-#include "ListPropertyGridWidgetHelper.h"
+#ifndef __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
+#define __SCROLL_PROPERTY_GRID_WIDGET_HELPER__
 
-using namespace DAVA;
+#include "UI/UIScrollBar.h"
+#include <QString>
 
-const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
+namespace DAVA {
+
+class ScrollPropertyGridWidgetHelper
 {
-    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
-    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
+public:
+    // Draw Type.
+    static int GetOrientationCount();
+	
+    static UIScrollBar::eScrollOrientation GetOrientation(int index);
+    static QString GetOrientationDesc(int index);
+    static QString GetOrientationDescByType(UIScrollBar::eScrollOrientation orientation);
+    
+protected:
+    // Validate the indexes.
+    static bool ValidateOrientationIndex(int index);
+
+    // Maps.
+    struct OrientationData
+    {
+      	UIScrollBar::eScrollOrientation orientation;
+        const char* orientationDesc;
+    };
+
+    static const OrientationData orientationData[];
 };
 
-// Get the list of UIControlStates supported:
-int ListPropertyGridWidgetHelper::GetOrientationCount()
-{
-    return sizeof(orientationData) / sizeof(*orientationData);
-}
+};
 
-UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
-{
-	if (ValidateOrientationIndex(index) == false)
-	{
-		return  orientationData[0].orientation;
-	}
-	
-	return orientationData[index].orientation;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
-{
-    if (ValidateOrientationIndex(index) == false)
-    {
-        return orientationData[0].orientationDesc;
-    }
-    
-    return orientationData[index].orientationDesc;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
-{
-	int count = GetOrientationCount();
-	for (int i = 0; i < count; i++)
-	{
-		if (orientation == orientationData[i].orientation)
-		{
-			return orientationData[i].orientationDesc;
-		}
-	}
-	
-	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
-    return QString();
-}
-
-bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
-{
-    if (index < 0 || index >= GetOrientationCount())
-    {
-        Logger::Error("Orientation index %i is out of bounds!", index);
-        return false;
-    }
-    
-    return true;
-}
+#endif /* defined(__SCROLL_PROPERTY_GRID_WIDGET_HELPER__) */

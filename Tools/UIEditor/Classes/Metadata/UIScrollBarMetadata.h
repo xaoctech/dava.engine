@@ -26,66 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIControlMetadata.h"
 
+#ifndef __UIEditor__UIScrollBarMetadata__
+#define __UIEditor__UIScrollBarMetadata__
 
-#include "ListPropertyGridWidgetHelper.h"
+namespace DAVA {
 
-using namespace DAVA;
-
-const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
+// Metadata class for DAVA UIScrollBar control.
+class UIScrollBarMetadata : public UIControlMetadata
 {
-    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
-    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
+    Q_OBJECT
+	
+	// Scrollbar orientation
+    Q_PROPERTY(int ScrollOrientation READ GetScrollOrientation WRITE SetScrollOrientation);
+	
+public:
+    UIScrollBarMetadata(QObject* parent = 0);
+
+protected:
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+
+    virtual QString GetUIControlClassName() { return "UIScrollBar"; };
+	
+    // Helper to access active UI ScrollBar.
+    UIScrollBar* GetActiveUIScrollBar() const;
+	
+    // Getters/setters.
+	int GetScrollOrientation();
+	void SetScrollOrientation(int value);
 };
 
-// Get the list of UIControlStates supported:
-int ListPropertyGridWidgetHelper::GetOrientationCount()
-{
-    return sizeof(orientationData) / sizeof(*orientationData);
-}
+};
 
-UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
-{
-	if (ValidateOrientationIndex(index) == false)
-	{
-		return  orientationData[0].orientation;
-	}
-	
-	return orientationData[index].orientation;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
-{
-    if (ValidateOrientationIndex(index) == false)
-    {
-        return orientationData[0].orientationDesc;
-    }
-    
-    return orientationData[index].orientationDesc;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
-{
-	int count = GetOrientationCount();
-	for (int i = 0; i < count; i++)
-	{
-		if (orientation == orientationData[i].orientation)
-		{
-			return orientationData[i].orientationDesc;
-		}
-	}
-	
-	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
-    return QString();
-}
-
-bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
-{
-    if (index < 0 || index >= GetOrientationCount())
-    {
-        Logger::Error("Orientation index %i is out of bounds!", index);
-        return false;
-    }
-    
-    return true;
-}
+#endif /* defined(__UIEditor__UIScrollBarMetadata__) */

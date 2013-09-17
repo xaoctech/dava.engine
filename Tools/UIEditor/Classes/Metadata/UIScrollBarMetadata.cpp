@@ -26,66 +26,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "UIScrollBarMetadata.h"
 
+namespace DAVA {
 
-#include "ListPropertyGridWidgetHelper.h"
-
-using namespace DAVA;
-
-const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
+UIScrollBarMetadata::UIScrollBarMetadata(QObject* parent) :
+	UIControlMetadata(parent)
 {
-    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
-    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
-};
-
-// Get the list of UIControlStates supported:
-int ListPropertyGridWidgetHelper::GetOrientationCount()
-{
-    return sizeof(orientationData) / sizeof(*orientationData);
 }
 
-UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
+UIScrollBar* UIScrollBarMetadata::GetActiveUIScrollBar() const
 {
-	if (ValidateOrientationIndex(index) == false)
-	{
-		return  orientationData[0].orientation;
-	}
+	return dynamic_cast<UIScrollBar*>(GetActiveUIControl());
+}
+
+void UIScrollBarMetadata::InitializeControl(const String& controlName, const Vector2& position)
+{
+	BaseMetadata::InitializeControl(controlName, position);
 	
-	return orientationData[index].orientation;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
-{
-    if (ValidateOrientationIndex(index) == false)
+	int paramsCount = this->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
     {
-        return orientationData[0].orientationDesc;
-    }
-    
-    return orientationData[index].orientationDesc;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
-{
-	int count = GetOrientationCount();
-	for (int i = 0; i < count; i++)
-	{
-		if (orientation == orientationData[i].orientation)
+		// Initialize UIScrollBar
+        UIScrollBar* scroll = dynamic_cast<UIScrollBar*>(this->treeNodeParams[i].GetUIControl());
+		if (scroll)
 		{
-			return orientationData[i].orientationDesc;
+			scroll->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
 		}
-	}
-	
-	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
-    return QString();
+    }
 }
 
-bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
+void UIScrollBarMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
 {
-    if (index < 0 || index >= GetOrientationCount())
-    {
-        Logger::Error("Orientation index %i is out of bounds!", index);
-        return false;
-    }
-    
-    return true;
+	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
 }
+
+int UIScrollBarMetadata::GetScrollOrientation()
+{
+    if (!VerifyActiveParamID())
+    {
+        return UIScrollBar::ORIENTATION_VERTICAL;
+    }
+
+    return GetActiveUIScrollBar()->GetOrientation();
+}
+    
+void UIScrollBarMetadata::SetScrollOrientation(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }	
+    
+	GetActiveUIScrollBar()->SetOrientation((UIScrollBar::eScrollOrientation)value);
+}
+
+};

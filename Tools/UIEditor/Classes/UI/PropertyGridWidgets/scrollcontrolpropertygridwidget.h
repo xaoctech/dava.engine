@@ -27,65 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef SCROLLCONTROLPROPERTYGRIDWIDGET_H
+#define SCROLLCONTROLPROPERTYGRIDWIDGET_H
 
-#include "ListPropertyGridWidgetHelper.h"
+#include <QWidget>
+#include "basepropertygridwidget.h"
 
-using namespace DAVA;
+namespace Ui {
+class ScrollControlPropertyGridWidget;
+}
 
-const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
+class ScrollControlPropertyGridWidget : public BasePropertyGridWidget
 {
-    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
-    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
+    Q_OBJECT
+
+public:
+    explicit ScrollControlPropertyGridWidget(QWidget *parent = 0);
+    ~ScrollControlPropertyGridWidget();
+
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
+private:   
+	
+	// Fill the combo with appropriate values.
+    void FillComboboxes();
+	
+protected:
+	Ui::ScrollControlPropertyGridWidget *ui;
+    // Background Control contains Comboboxes which should be processed in the specific way.
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
+
+    // Handler for the custom combobox values.
+    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
 };
 
-// Get the list of UIControlStates supported:
-int ListPropertyGridWidgetHelper::GetOrientationCount()
-{
-    return sizeof(orientationData) / sizeof(*orientationData);
-}
-
-UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
-{
-	if (ValidateOrientationIndex(index) == false)
-	{
-		return  orientationData[0].orientation;
-	}
-	
-	return orientationData[index].orientation;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
-{
-    if (ValidateOrientationIndex(index) == false)
-    {
-        return orientationData[0].orientationDesc;
-    }
-    
-    return orientationData[index].orientationDesc;
-}
-
-QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
-{
-	int count = GetOrientationCount();
-	for (int i = 0; i < count; i++)
-	{
-		if (orientation == orientationData[i].orientation)
-		{
-			return orientationData[i].orientationDesc;
-		}
-	}
-	
-	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
-    return QString();
-}
-
-bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
-{
-    if (index < 0 || index >= GetOrientationCount())
-    {
-        Logger::Error("Orientation index %i is out of bounds!", index);
-        return false;
-    }
-    
-    return true;
-}
+#endif // SCROLLCONTROLPROPERTYGRIDWIDGET_H
