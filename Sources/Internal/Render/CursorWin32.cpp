@@ -18,6 +18,11 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/RenderManager.h"
 
+void DAVA::Cursor::ShowSystemCursor(bool show)
+{
+    ShowCursor(show);
+}
+
 #if defined(__DAVAENGINE_WIN32__) && defined (__DAVAENGINE_DIRECTX9__)
 
 #include "Render/D3D9Helpers.h"
