@@ -586,9 +586,9 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
 	}
 
-    if(staticText)
-    {
-        staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
+	if(staticText)
+	{
+		staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
 		const YamlNode * shadowColorNode = node->Get("shadowcolor");
 		const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
@@ -603,8 +603,8 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
 		}
-
 	}
+
 
 	const YamlNode * textColorNode = node->Get("textcolor");
 	const YamlNode * textAlignNode = node->Get("textalign");
