@@ -32,7 +32,6 @@
 
 static const PixelFormat formats[] =
 {
-	FORMAT_RGBA8888,
 	FORMAT_DXT1,
 	FORMAT_DXT1NM,
 	FORMAT_DXT1A,
