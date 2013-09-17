@@ -60,13 +60,10 @@ EditorLODData::~EditorLODData()
 }
 
 
-void EditorLODData::Clear()
+void EditorLODData::ClearLODData()
 {
     lodLayersCount = 0;
     
-    forceDistance = 0.f;
-    forceLayer = DAVA::LodComponent::INVALID_LOD_LAYER;
-
     for(DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
         lodDistances[i] = 0;
@@ -78,6 +75,11 @@ void EditorLODData::Clear()
     emit DataChanged();
 }
 
+void EditorLODData::ClearForceData()
+{
+    forceDistance = 0.f;
+    forceLayer = DAVA::LodComponent::INVALID_LOD_LAYER;
+}
 
 DAVA::int32 EditorLODData::GetLayersCount() const
 {
@@ -153,7 +155,10 @@ DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::int32 layerNum) const
 void EditorLODData::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
     if(activeScene == scene)
+    {
         GetDataFromSelection();
+        UpdateForceData();
+    }
 }
 
 void EditorLODData::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
@@ -212,7 +217,7 @@ bool EditorLODData::GetForceDistanceEnabled() const
 
 void EditorLODData::GetDataFromSelection()
 {
-    Clear();
+    ClearLODData();
     EnumerateSelectionLODs(activeScene);
 
     DAVA::int32 lodComponentsSize = lodData.size();
@@ -357,6 +362,7 @@ void EditorLODData::SceneActivated(SceneEditor2 *scene)
 {
     activeScene = scene;
     GetDataFromSelection();
+    ClearForceData();
 }
 
 void EditorLODData::SceneDeactivated(SceneEditor2 *scene)
@@ -367,7 +373,8 @@ void EditorLODData::SceneDeactivated(SceneEditor2 *scene)
         activeScene = NULL;
     }
 
-    Clear();
+    ClearLODData();
+    ClearForceData();
 }
 
 void EditorLODData::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
@@ -378,12 +385,22 @@ void EditorLODData::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *par
     {
         GetDataFromSelection();
     }
-    
+
+    UpdateForceData();
+}
+
+void EditorLODData::UpdateForceData()
+{
     if(forceDistanceEnabled)
     {
         SetForceDistance(forceDistance);
     }
+    else if(forceLayer != DAVA::LodComponent::INVALID_LOD_LAYER)
+    {
+        SetForceLayer(forceLayer);
+    }
 }
+
 
 DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
 {

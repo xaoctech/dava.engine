@@ -44,7 +44,6 @@ using namespace DAVA;
 BeastCommandLineTool::BeastCommandLineTool()
 	:	CommandLineTool()
 {
-	oneFrameCommand = false;
 }
 
 void BeastCommandLineTool::PrintUsage()
@@ -94,7 +93,7 @@ void BeastCommandLineTool::Process()
 
 		scene->Exec(new BeastAction(scene));
 
-		SceneHelper::SaveScene(scene, scenePathname);
+		scene->Save();
 	}
 	SafeRelease(scene);
 }
