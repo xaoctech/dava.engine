@@ -64,6 +64,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	toolImageIndex(0)
 ,	copyPasteHeightmap(false)
 ,	copyPasteTilemask(false)
+,	curHeight(0.f)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);

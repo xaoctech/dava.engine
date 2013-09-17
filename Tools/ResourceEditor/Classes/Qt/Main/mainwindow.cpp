@@ -77,6 +77,19 @@
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
+#include "../DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
+#include "../DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
+#include "../DockLandscapeEditorControls/LandscapeEditorPanels/VisibilityToolPanel.h"
+#include "../DockLandscapeEditorControls/LandscapeEditorPanels/TilemaskEditorPanel.h"
+#include "../DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
+
+#include "Classes/Commands2/CustomColorsCommands2.h"
+#include "Classes/Commands2/HeightmapEditorCommands2.h"
+#include "Classes/Commands2/LandscapeEditorDrawSystemActions.h"
+#include "Classes/Commands2/RulerToolActions.h"
+#include "Classes/Commands2/TilemaskEditorCommands.h"
+#include "Classes/Commands2/VisibilityToolActions.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -128,7 +141,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
@@ -146,14 +158,25 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	LoadGPUFormat();
 
     EnableGlobalTimeout(enableGlobalTimeout);
-	HideLandscapeEditorDocks();
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
+
+	customColorsPanel = new CustomColorsPanel();
+	rulerToolPanel = new RulerToolPanel();
+	visibilityToolPanel = new VisibilityToolPanel();
+	tilemaskEditorPanel = new TilemaskEditorPanel();
+	heightmapEditorPanel = new HeightmapEditorPanel();
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	SafeDelete(customColorsPanel);
+	SafeDelete(rulerToolPanel);
+	SafeDelete(visibilityToolPanel);
+	SafeDelete(tilemaskEditorPanel);
+	SafeDelete(heightmapEditorPanel);
+
 	SafeRelease(materialEditor);
     
     if(HintManager::Instance())
@@ -360,6 +383,7 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
 	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
 	QAction *actionConsole = ui->dockConsole->toggleViewAction();
+	QAction *actionLandscapeEditorControls = ui->dockLandscapeEditorControls->toggleViewAction();
 
 	ui->menuView->addAction(actionSceneInfo);
 	ui->menuView->addAction(actionLibrary);
@@ -370,6 +394,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
+	ui->menuView->addAction(actionLandscapeEditorControls);
 
 	InitRecent();
 }
@@ -480,7 +505,13 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
+
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
+	QObject::connect(ui->actionCustomColorsEditor, SIGNAL(triggered()), this, SLOT(OnCustomColorsEditor()));
+	QObject::connect(ui->actionHeightMapEditor, SIGNAL(triggered()), this, SLOT(OnHeightmapEditor()));
+	QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
+	QObject::connect(ui->actionVisibilityCheckTool, SIGNAL(triggered()), this, SLOT(OnVisibilityTool()));
+	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
 	QObject::connect(ui->actionSkyboxEditor, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
 
@@ -514,6 +545,14 @@ void QtMainWindow::SetupActions()
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
+
+	//Landscape editors toggled
+	QObject::connect(SceneSignals::Instance(), SIGNAL(VisibilityToolToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CustomColorsToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(HeightmapEditorToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(TilemaskEditorToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -584,8 +623,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
-	LoadNotPassableState(scene);
 	LoadShadowBlendModeState(scene);
+	OnLandscapeEditorToggled(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -738,24 +777,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	{
 		LoadUndoRedoState(scene);
 	}
-}
-
-void QtMainWindow::UpdateRulerToolLength(SceneEditor2 *scene, double length, double previewLength)
-{
-	QString l = QString("Current length: %1").arg(length);
-	QString pL = QString("Preview length: %1").arg(previewLength);
-
-	QString msg;
-	if (length >= 0.0)
-	{
-		msg = l;
-	}
-	if (previewLength >= 0.0)
-	{
-		msg += ";    " + pL;
-	}
-
-	ui->statusBar->showMessage(msg);
 }
 
 // ###################################################################################################
@@ -1121,24 +1142,6 @@ void QtMainWindow::OnCubemapEditor()
 	dlg.exec();
 }
 
-void QtMainWindow::OnNotPassableTerrain()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
-	{
-		return;
-	}
-
-	if (scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
-	{
-		scene->Exec(new ActionDisableNotPassable(scene));
-	}
-	else
-	{
-		scene->Exec(new ActionEnableNotPassable(scene));
-	}
-}
-
 void QtMainWindow::OnSetSkyboxNode()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -1395,16 +1398,6 @@ void QtMainWindow::LoadEditorLightState(SceneEditor2 *scene)
 	}
 }
 
-void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
-{
-	if (!scene)
-	{
-		return;
-	}
-
-	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-}
-
 void QtMainWindow::LoadShadowBlendModeState(SceneEditor2* scene)
 {
 	if(NULL != scene)
@@ -1562,15 +1555,6 @@ void QtMainWindow::StartGlobalInvalidateTimer()
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
 }
 
-void QtMainWindow::HideLandscapeEditorDocks()
-{
-	ui->dockCustomColorsEditor->hide();
-	ui->dockVisibilityToolEditor->hide();
-	ui->dockHeightmapEditor->hide();
-	ui->dockTilemaskEditor->hide();
-	ui->dockRulerTool->hide();
-}
-
 void QtMainWindow::OnConvertToShadow()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -1694,3 +1678,157 @@ bool QtMainWindow::BeastWaitCanceled()
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 
+void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
+{
+	if (scene != GetCurrentScene())
+	{
+		return;
+	}
+	
+	ui->landscapeEditorControlsPlaceholder->RemovePanel();
+	ui->actionCustomColorsEditor->setChecked(false);
+	ui->actionHeightMapEditor->setChecked(false);
+	ui->actionRulerTool->setChecked(false);
+	ui->actionTileMapEditor->setChecked(false);
+	ui->actionVisibilityCheckTool->setChecked(false);
+	ui->actionShowNotPassableLandscape->setChecked(false);
+	
+	int32 tools = scene->GetEnabledTools();
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
+	{
+		ui->landscapeEditorControlsPlaceholder->SetPanel(customColorsPanel);
+		ui->actionCustomColorsEditor->setChecked(true);
+	}
+	else if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+	{
+		ui->landscapeEditorControlsPlaceholder->SetPanel(heightmapEditorPanel);
+		ui->actionHeightMapEditor->setChecked(true);
+	}
+	else if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
+	{
+		ui->landscapeEditorControlsPlaceholder->SetPanel(rulerToolPanel);
+		ui->actionRulerTool->setChecked(true);
+	}
+	else if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
+	{
+		ui->landscapeEditorControlsPlaceholder->SetPanel(tilemaskEditorPanel);
+		ui->actionTileMapEditor->setChecked(true);
+	}
+	else if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
+	{
+		ui->landscapeEditorControlsPlaceholder->SetPanel(visibilityToolPanel);
+		ui->actionVisibilityCheckTool->setChecked(true);
+	}
+	else if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
+	{
+		ui->actionShowNotPassableLandscape->setChecked(true);
+	}
+}
+
+void QtMainWindow::OnCustomColorsEditor()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return;
+	}
+	
+	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
+	{
+		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor));
+	}
+	else
+	{
+		sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
+	}
+}
+
+void QtMainWindow::OnHeightmapEditor()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return;
+	}
+	
+	if (sceneEditor->heightmapEditorSystem->IsLandscapeEditingEnabled())
+	{
+		sceneEditor->Exec(new ActionDisableHeightmapEditor(sceneEditor));
+	}
+	else
+	{
+		sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
+	}
+}
+
+void QtMainWindow::OnRulerTool()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return;
+	}
+	
+	if (sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled())
+	{
+		sceneEditor->Exec(new ActionDisableRulerTool(sceneEditor));
+	}
+	else
+	{
+		sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
+	}
+}
+
+void QtMainWindow::OnTilemaskEditor()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return;
+	}
+	
+	if (sceneEditor->tilemaskEditorSystem->IsLandscapeEditingEnabled())
+	{
+		sceneEditor->Exec(new ActionDisableTilemaskEditor(sceneEditor));
+	}
+	else
+	{
+		sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
+	}
+}
+
+void QtMainWindow::OnVisibilityTool()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return;
+	}
+	
+	if (sceneEditor->visibilityToolSystem->IsLandscapeEditingEnabled())
+	{
+		sceneEditor->Exec(new ActionDisableVisibilityTool(sceneEditor));
+	}
+	else
+	{
+		sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
+	}
+}
+
+void QtMainWindow::OnNotPassableTerrain()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+	
+	if (scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+	{
+		scene->Exec(new ActionDisableNotPassable(scene));
+	}
+	else
+	{
+		scene->Exec(new ActionEnableNotPassable(scene));
+	}
+}

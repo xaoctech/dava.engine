@@ -550,3 +550,39 @@ bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
 	return res;
 }
 
+int32 SceneEditor2::GetEnabledTools()
+{
+	int32 toolFlags = 0;
+	
+	if (customColorsSystem->IsLandscapeEditingEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_CUSTOM_COLOR;
+	}
+	
+	if (visibilityToolSystem->IsLandscapeEditingEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_VISIBILITY;
+	}
+	
+	if (heightmapEditorSystem->IsLandscapeEditingEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_HEIGHTMAP_EDITOR;
+	}
+	
+	if (tilemaskEditorSystem->IsLandscapeEditingEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_TILEMAP_EDITOR;
+	}
+	
+	if (rulerToolSystem->IsLandscapeEditingEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_RULER;
+	}
+	
+	if (landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+	{
+		toolFlags |= LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN;
+	}
+	
+	return toolFlags;
+}

@@ -44,6 +44,12 @@
 // TODO: remove old screen -->
 #include "Classes/SceneEditor/MaterialEditor.h"
 // <---
+class CustomColorsPanel;
+class RulerToolPanel;
+class VisibilityToolPanel;
+class TilemaskEditorPanel;
+class HeightmapEditorPanel;
+
 class AddSwitchEntityDialog;
 class Request;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
@@ -137,8 +143,6 @@ public slots:
 	void OnAddEntityMenuAboutToShow();
 	void OnAddEntityFromSceneTree();
 	
-	void OnNotPassableTerrain();
-	
 	void OnSetSkyboxNode();
 	
 	void OnShowSettings();
@@ -163,6 +167,14 @@ public slots:
 	void OnCameraSpeed2();
 	void OnCameraSpeed3();
 	void OnCameraLookFromTop();
+
+	void OnLandscapeEditorToggled(SceneEditor2* scene);
+	void OnCustomColorsEditor();
+	void OnHeightmapEditor();
+	void OnRulerTool();
+	void OnTilemaskEditor();
+	void OnVisibilityTool();
+	void OnNotPassableTerrain();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -197,11 +209,7 @@ protected slots:
     
 	void AddSwitchDialogFinished(int result);
 
-	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
-
     void OnGlobalInvalidateTimeout();
-
-	void NotPassableToggled(SceneEditor2* scene);
 
 	void EditorLightEnabled(bool enabled);
 
@@ -223,19 +231,22 @@ private:
 	MaterialEditor *materialEditor;
 	// <--
 
+	CustomColorsPanel* customColorsPanel;
+	RulerToolPanel* rulerToolPanel;
+	VisibilityToolPanel* visibilityToolPanel;
+	TilemaskEditorPanel* tilemaskEditorPanel;
+	HeightmapEditorPanel* heightmapEditorPanel;
+
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
-	void LoadNotPassableState(SceneEditor2* scene);
 	void LoadShadowBlendModeState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 
-	void HideLandscapeEditorDocks();
-    
     bool globalInvalidateTimeoutEnabled;
 };
 
