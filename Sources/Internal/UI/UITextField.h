@@ -85,6 +85,12 @@ public:
     
     virtual bool IsTextFieldShouldSetFocusedOnAppear(UITextField * textField);
     virtual bool IsTextFieldCanLostFocus(UITextField * textField);
+	
+	/*
+	 \brief Called when device keyboard is displayed/hidden.
+	 */
+	virtual void OnKeyboardShown(const Rect& keyboardRect);
+	virtual void OnKeyboardHidden();
 };
     
 /**
