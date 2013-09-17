@@ -83,6 +83,11 @@ void SoundSystem::Update()
         animatedObjects[i]->Update();
 
 	fmodEventSystem->update();
+
+    size = soundsToReleaseOnUpdate.size();
+    for(int32 i = 0; i < size; i++)
+        SafeRelease(soundsToReleaseOnUpdate[i]);
+    soundsToReleaseOnUpdate.clear();
 }
 
 void SoundSystem::Suspend()
@@ -154,6 +159,11 @@ ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & 
 		return ScopedPtr<SoundEventCategory>(new SoundEventCategory(fmodCategory));
 	else
 		return ScopedPtr<SoundEventCategory>(0);
+}
+
+void SoundSystem::ReleaseOnUpdate(Sound * sound)
+{
+    soundsToReleaseOnUpdate.push_back(sound);
 }
 
 void SoundSystem::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
