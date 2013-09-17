@@ -545,6 +545,24 @@ void SceneTree::SetCurrentCamera()
 	}
 }
 
+void SceneTree::CollapseSwitch()
+{
+	QModelIndexList indexList = selectionModel()->selection().indexes();
+	for (int i = 0; i < indexList.size(); ++i)
+	{
+		QModelIndex index = indexList.at(i);
+
+		if(isExpanded(index))
+		{
+			collapse(index);
+		}
+		else
+		{
+			expand(index);
+		}
+	}
+}
+
 void SceneTree::EditModel()
 {
 	SceneEditor2 *sceneEditor = treeModel->GetScene();

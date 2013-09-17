@@ -81,6 +81,8 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QColorDialog>
+#include <QShortcut>
+#include <QKeySequence>
 
 QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
@@ -102,6 +104,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	SetupToolBars();
 	SetupDocks();
 	SetupActions();
+	SetupShortCuts();
 
 	// create tool windows
 	new TextureBrowser(this);
@@ -483,6 +486,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
 	QObject::connect(ui->actionUniteEntitiesWithLODs, SIGNAL(triggered()), this, SLOT(OnUniteEntitiesWithLODs()));
 	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
+	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
+	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
@@ -502,6 +507,26 @@ void QtMainWindow::SetupActions()
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
+}
+
+void QtMainWindow::SetupShortCuts()
+{
+	// look at
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_Z), this), SIGNAL(activated()), ui->sceneTree, SLOT(LookAtSelection()));
+	
+	// delete
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_Delete), this), SIGNAL(activated()), ui->sceneTree, SLOT(RemoveSelection()));
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace), this), SIGNAL(activated()), ui->sceneTree, SLOT(RemoveSelection()));
+
+	// camera speed
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_1), ui->sceneTabWidget), SIGNAL(activated()), this, SLOT(OnCameraSpeed0()));
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_2), ui->sceneTabWidget), SIGNAL(activated()), this, SLOT(OnCameraSpeed1()));
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_3), ui->sceneTabWidget), SIGNAL(activated()), this, SLOT(OnCameraSpeed2()));
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_4), ui->sceneTabWidget), SIGNAL(activated()), this, SLOT(OnCameraSpeed3()));
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_T), ui->sceneTabWidget), SIGNAL(activated()), this, SLOT(OnCameraLookFromTop()));
+
+	// scene tree collapse/expand
+	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
 }
 
 void QtMainWindow::InitRecent()
@@ -1256,6 +1281,11 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
 }
 
+void QtMainWindow::OnAddEntityFromSceneTree()
+{
+	ui->menuAdd->exec(QCursor::pos());
+}
+
 void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
@@ -1577,6 +1607,51 @@ void QtMainWindow::OnBeastAndSave()
 
 	RunBeast();
 	SaveScene(scene);
+}
+
+void QtMainWindow::OnCameraSpeed0()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(0));
+	}
+}
+
+void QtMainWindow::OnCameraSpeed1()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(1));
+	}
+}
+
+void QtMainWindow::OnCameraSpeed2()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(2));
+	}
+}
+
+void QtMainWindow::OnCameraSpeed3()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(3));
+	}
+}
+
+void QtMainWindow::OnCameraLookFromTop()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->cameraSystem->MoveTo(DAVA::Vector3(0, 0, 200), DAVA::Vector3(1, 0, 0));
+	}
 }
 
 void QtMainWindow::RunBeast()

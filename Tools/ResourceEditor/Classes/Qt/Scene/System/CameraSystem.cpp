@@ -48,7 +48,7 @@
 SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	: SceneSystem(scene)
 	, curSceneCamera(NULL)
-	, curSpeed(15.0f)
+	, curSpeed(35.0f)
 	, curViewAngleZ(0)
 	, curViewAngleY(0)
 	, maxViewAngle(89.0f)
@@ -177,13 +177,21 @@ void SceneCameraSystem::LookAt(const DAVA::AABBox3 &box)
 	}
 }
 
-void SceneCameraSystem::MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction /* = DAVA::Vector3 */)
+void SceneCameraSystem::MoveTo(const DAVA::Vector3 &pos)
+{
+	if(NULL != curSceneCamera)
+	{
+		MoveTo(pos, curSceneCamera->GetTarget());
+	}
+}
+
+void SceneCameraSystem::MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &target)
 {
 	animateToNewPos = true;
 	animateToNewPosTime = 0;
 
 	newPos = pos;
-	newDir = direction;
+	newTar = target;
 }
 
 void SceneCameraSystem::Update(float timeElapsed)
@@ -238,14 +246,10 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		{
 			if(Qt::AltModifier & QApplication::keyboardModifiers())
 			{
-				SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-				if(NULL != selectionSystem)
+				HoodSystem *hoodSystem = ((SceneEditor2 *) GetScene())->hoodSystem;
+				if(NULL != hoodSystem)
 				{
-					const EntityGroup* selection = selectionSystem->GetSelection();
-					if(NULL != selection)
-					{
-						MouseMoveCameraPosAroundPoint(selection->GetCommonBbox().GetCenter());
-					}
+					MouseMoveCameraPosAroundPoint(hoodSystem->GetPosition());
 				}
 			}
 			else
@@ -534,8 +538,8 @@ void SceneCameraSystem::MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point
 		DAVA::float32 radius = (point - curPos).Length();
 		DAVA::Vector3 newPos = point - DAVA::Vector3(0, radius, 0) * mt2;
 
-		curSceneCamera->SetTarget(point);
 		curSceneCamera->SetPosition(newPos);
+		curSceneCamera->SetTarget(point);
 	}
 }
 
@@ -546,9 +550,9 @@ void SceneCameraSystem::MoveAnimate(DAVA::float32 timeElapsed)
 	if(NULL != curSceneCamera && animateToNewPos)
 	{
 		DAVA::Vector3 pos = curSceneCamera->GetPosition();
-		DAVA::Vector3 targ = curSceneCamera->GetTarget();
+		DAVA::Vector3 tar = curSceneCamera->GetTarget();
 
-		if(pos != newPos)
+		if((pos != newPos || tar != newTar) && animateToNewPosTime < animationTime)
 		{
 			animateToNewPosTime += timeElapsed;
 
@@ -556,21 +560,26 @@ void SceneCameraSystem::MoveAnimate(DAVA::float32 timeElapsed)
 			DAVA::float32 fnY = sin(1.57 * fnX);
 			
 			DAVA::Vector3 dPos = newPos - pos;
-			DAVA::Vector3 dTarg = newDir - targ;
+			DAVA::Vector3 dTar = newTar - tar;
 
 			//dPos = dPos * fnY;
 			//dTarg = dTarg * fnY;
 
 			if(dPos.Length() > 0.01f) dPos = dPos * fnY;
-			if(dTarg.Length() > 0.01f) dTarg = dTarg * fnY;
+			if(dTar.Length() > 0.01f) dTar = dTar * fnY;
 
 			curSceneCamera->SetPosition(pos + dPos);
-			curSceneCamera->SetTarget(targ + dTarg);
+			curSceneCamera->SetTarget(tar + dTar);
 		}
 		else
 		{
 			animateToNewPos = false;
 			animateToNewPosTime = 0;
+
+			curSceneCamera->SetTarget(newTar);
+			curSceneCamera->SetPosition(newPos);
+
+			RecalcCameraViewAngles();
 		}
 	}
 }
