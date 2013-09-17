@@ -34,7 +34,7 @@ namespace DAVA
 
 #if defined(__DAVAENGINE_WIN32__)
 
-DWORD Thread::mainThreadId = 0;
+Thread::ThreadId Thread::mainThreadId;
 HDC Thread::currentDC = 0;
 HGLRC Thread::secondaryContext = 0;
 
@@ -45,7 +45,7 @@ void Thread::InitMainThread()
 
 bool Thread::IsMainThread()
 {
-	if (mainThreadId == 0)
+	if (mainThreadId.internalTid == 0)
 	{
 		Logger::Error("Main thread not initialized");
 	}
@@ -109,6 +109,7 @@ DWORD WINAPI ThreadFunc(void* param)
 
 void Thread::StartWin32()
 {
+	HANDLE handle;
 	handle = CreateThread 
 		(
 		0, // Security attributes
@@ -116,7 +117,7 @@ void Thread::StartWin32()
 		ThreadFunc,
 		this,
 		CREATE_SUSPENDED,
-		&tid);
+		0);
 	
 	if(!SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL))
 	{
@@ -128,6 +129,14 @@ void Thread::StartWin32()
 void Thread::YieldThread()
 {
     SwitchToThread();
+}
+
+Thread::ThreadId Thread::GetCurrentThreadId()
+{
+	ThreadId ret;
+	ret.internalTid = ::GetCurrentThreadId();
+
+	return ret;
 }
 
 #endif 

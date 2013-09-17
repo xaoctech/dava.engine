@@ -76,10 +76,6 @@ Thread::Thread(const Thread& t)
 Thread::Thread(const Message& _msg)
 :	needCopyContext(false)
 {
-#if defined (__DAVAENGINE_WIN32__)
-	handle = 0;
-	tid = 0;
-#endif //#if defined (__DAVAENGINE_WIN32__)
 	msg = _msg;
 }
 

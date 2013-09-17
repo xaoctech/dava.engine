@@ -78,6 +78,31 @@ public:
 		STATE_RUNNING,
 		STATE_ENDED
 	};
+
+	class ThreadId
+	{
+#if defined (__DAVAENGINE_WIN32__)
+	public:
+		bool operator<(const ThreadId & otherThread) const 
+		{ 
+			return internalTid < otherThread.internalTid; 
+		}
+
+	private:
+		ThreadId(DWORD _internalTid = 0) 
+		{ 
+			internalTid = _internalTid; 
+		}
+		bool operator==(const ThreadId & otherThread) const
+		{ 
+			return internalTid == otherThread.internalTid; 
+		}
+		DWORD internalTid;
+#else
+		Not implemented
+#endif
+		friend class Thread;
+	};
 	
 	/**
 		\brief static function to detect if current thread is main thread of application
@@ -131,14 +156,18 @@ public:
      */
     static void SleepThread(uint32 timeMS);
 
+	static ThreadId GetCurrentThreadId();
+
 private:
 	Thread() {};
 	Thread(const Thread& t);
 	Thread(const Message& msg);
 	
-	Message			msg;
-	eThreadState		state;
-	bool				needCopyContext;
+	Message	msg;
+	eThreadState state;
+	bool needCopyContext;
+
+	static ThreadId mainThreadId;
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	void		* glContext;
@@ -151,17 +180,12 @@ private:
 	void		StartMacOS();
 	static void	InitMacOS();
 #elif defined (__DAVAENGINE_WIN32__)
-
-	static DWORD	mainThreadId;
-
 public:
 	static HDC		currentDC;
 	static HGLRC	secondaryContext;
 
 private:
 	void		StartWin32();
-	HANDLE		handle;
-	DWORD		tid;
 	friend DWORD WINAPI ThreadFunc(void* param);
 public:
 	/* 

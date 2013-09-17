@@ -46,6 +46,7 @@
 #include "Input/InputSystem.h"
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"
+#include "Job/JobManager.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -135,6 +136,7 @@ void Core::CreateSingletons()
 	new SoundSystem(64);
 	new InputSystem();
 	new PerformanceSettings();
+	new JobManager();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
@@ -166,6 +168,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
+	JobManager::Instance()->Release();
 	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
@@ -690,6 +693,7 @@ void Core::SystemProcessFrame()
 			}
 		}
 		
+		JobManager::Instance()->Update();
 		core->Update(frameDelta);
         InputSystem::Instance()->OnAfterUpdate();
 		core->Draw();
