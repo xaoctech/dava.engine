@@ -705,7 +705,6 @@
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
