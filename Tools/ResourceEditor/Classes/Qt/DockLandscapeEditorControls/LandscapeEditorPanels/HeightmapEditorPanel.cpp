@@ -93,13 +93,13 @@ void HeightmapEditorPanel::InitUI()
 	checkboxTilemask = new QCheckBox(this);
 	editHeight = new QLineEdit(this);
 
-	QHBoxLayout* layoutBrushSize = new QHBoxLayout(this);
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
 	QLabel* labelBrushSizeDesc = new QLabel(this);
 	layoutBrushSize->addWidget(labelBrushSizeDesc);
 	layoutBrushSize->addWidget(comboBrushImage);
 
-	QVBoxLayout* layoutCopyPaste = new QVBoxLayout(this);
-	QHBoxLayout* layoutCopyPasteType = new QHBoxLayout(this);
+	QVBoxLayout* layoutCopyPaste = new QVBoxLayout();
+	QHBoxLayout* layoutCopyPasteType = new QHBoxLayout();
 	QSpacerItem* spacerCopyPaste = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Fixed);
 	layoutCopyPasteType->addSpacerItem(spacerCopyPaste);
 	layoutCopyPasteType->addWidget(checkboxHeightmap);
@@ -107,14 +107,14 @@ void HeightmapEditorPanel::InitUI()
 	layoutCopyPaste->addWidget(radioCopyPaste);
 	layoutCopyPaste->addLayout(layoutCopyPasteType);
 
-	QGridLayout* layoutDrawTypes = new QGridLayout(this);
+	QGridLayout* layoutDrawTypes = new QGridLayout();
 	layoutDrawTypes->addWidget(radioAbsolute, 0, 0);
 	layoutDrawTypes->addWidget(radioRelative, 0, 1);
 	layoutDrawTypes->addWidget(radioAverage, 1, 0);
 	layoutDrawTypes->addWidget(radioAbsDrop, 1, 1);
 	layoutDrawTypes->addWidget(radioDropper, 2, 0);
 
-	QHBoxLayout* layoutHeight = new QHBoxLayout(this);
+	QHBoxLayout* layoutHeight = new QHBoxLayout();
 	QLabel* labelHeightDesc = new QLabel(this);
 	QSpacerItem* spacerHeight = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Maximum);
 	layoutHeight->addWidget(labelHeightDesc);
