@@ -238,9 +238,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 	}
 
 	particle->direction = directionVector;
-	float dirLength = particle->direction.Length();
-	particle->direction*=(1.0f/dirLength);
-	particle->speed*=dirLength;
+	particle->direction.Normalize();
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
