@@ -1575,11 +1575,6 @@ void QtMainWindow::OnConvertToShadow()
     }
 }
 
-void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
-{
-	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-}
-
 void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
