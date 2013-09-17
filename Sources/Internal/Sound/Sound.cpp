@@ -96,10 +96,10 @@ Sound::Sound(const FilePath & _fileName, eType _type, int32 _priority)
 
 Sound::~Sound()
 {
-    SafeDeleteArray(soundData);
-
 	FMOD_VERIFY(fmodInstanceGroup->release());
 	FMOD_VERIFY(fmodSound->release());
+
+    SafeDeleteArray(soundData);
 }
 
 void Sound::SetSoundGroup(const FastName & groupName)
@@ -208,7 +208,7 @@ void Sound::PerformCallback(FMOD::Channel * instance)
         callbacks.erase(it);
     }
 
-    Release();
+    SoundSystem::Instance()->ReleaseOnUpdate(this);
 }
 
 FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2)
