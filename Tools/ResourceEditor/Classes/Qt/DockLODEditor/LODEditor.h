@@ -79,7 +79,6 @@ protected:
     void SetupInternalUI();
     void InitCorrectionSpinBox(QDoubleSpinBox *spinbox, int index);
     void InitDistanceSpinBox(QLabel *name, QDoubleSpinBox *spinbox, int index);
-    void InitTriangles(QLabel *name, QLineEdit *lineedit, int index);
     
     void SetupSceneSignals();
     

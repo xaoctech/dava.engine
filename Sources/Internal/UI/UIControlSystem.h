@@ -284,7 +284,13 @@ public:
 	 \brief Calculates virtual point for given physical point
 	 */
     void RecalculatePointToVirtual(const Vector2 &physicalPoint, Vector2 &virtualPoint);
-    
+
+	/**
+	 \brief Access to the scale factor and input offset.
+	 */
+	Vector2 GetInputOffset() const { return inputOffset; };
+	float32 GetScaleFactor() const { return scaleFactor; };
+	
 private:
 
 	void ProcessScreenLogic();
