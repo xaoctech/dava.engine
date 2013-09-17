@@ -104,6 +104,8 @@ namespace ResourceEditor
 	static const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush size:";
+	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
+	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile\ntexture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MIN		= "tilemask-editor.brush-size.min";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MAX		= "tilemask-editor.brush-size.max";
@@ -131,8 +133,13 @@ namespace ResourceEditor
 	static const String VISIBILITY_TOOL_ERROR_MESSAGE		= "Error enabling Visibility Check Tool. Make sure there is landscape in scene.";
 	static const String VISIBILITY_TOOL_SAVE_CAPTION		= "Save visibility tool texture";
 	static const String VISIBILITY_TOOL_FILE_FILTER			= "PNG image (*.png)";
+	static const String VISIBILITY_TOOL_SET_AREA_CAPTION	= "Set Visibility Area";
+	static const String VISIBILITY_TOOL_SET_POINT_CAPTION	= "Set Visibility Point";
+	static const String VISIBILITY_TOOL_SAVE_TEXTURE_CAPTION= "Save Texture";
 
 	static const String RULER_TOOL_LINE_WIDTH_CAPTION		= "Line width:";
+	static const String RULER_TOOL_LENGTH_CAPTION			= "Length:";
+	static const String RULER_TOOL_PREVIEW_LENGTH_CAPTION	= "Preview length:";
 	static const String RULER_TOOL_ERROR_CAPTION			= "Error enabling Ruler Tool";
 	static const String RULER_TOOL_ERROR_MESSAGE			= "Error enabling Ruler Tool. Make sure there is landscape in scene.";
 
@@ -147,6 +154,16 @@ namespace ResourceEditor
 	static const String HEIGHTMAP_EDITOR_TOOLS_PATH					= "~res:/LandscapeEditor/Tools/";
 	static const String HEIGHTMAP_EDITOR_ERROR_CAPTION				= "Error enabling Height Map editor";
 	static const String HEIGHTMAP_EDITOR_ERROR_MESSAGE				= "Error enabling Height Map editor. Make sure there is landscape in scene.";
+	static const String HEIGHTMAP_EDITOR_RADIO_COPY_PASTE			= "Copy/paste";
+	static const String HEIGHTMAP_EDITOR_RADIO_ABS_DROP				= "Abs & Drop";
+	static const String HEIGHTMAP_EDITOR_RADIO_ABSOLUTE				= "Absolute";
+	static const String HEIGHTMAP_EDITOR_RADIO_AVERAGE				= "Average";
+	static const String HEIGHTMAP_EDITOR_RADIO_DROPPER				= "Dropper";
+	static const String HEIGHTMAP_EDITOR_RADIO_RELATIVE				= "Relative";
+	static const String HEIGHTMAP_EDITOR_CHECKBOX_HEIGHTMAP			= "Height Map";
+	static const String HEIGHTMAP_EDITOR_CHECKBOX_TILEMASK			= "Tile Mask";
+	static const String HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE			= "Brush\nimage:";
+	static const String HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT		= "Height:";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

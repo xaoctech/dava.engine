@@ -142,6 +142,7 @@ public:
 
 	void DisableTools(int32 toolFlags);
 	bool IsToolsEnabled(int32 toolFlags);
+	int32 GetEnabledTools();
 
 	virtual void Update(float timeElapsed);
 

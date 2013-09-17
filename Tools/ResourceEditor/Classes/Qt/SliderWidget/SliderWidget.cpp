@@ -21,6 +21,11 @@ SliderWidget::SliderWidget(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::SliderWidget)
 ,	isRangeChangingBlocked(false)
+,	isSymmetric(true)
+,	minValue(0)
+,	maxValue(10)
+,	currentValue(0)
+,	caption("")
 {
 	ui->setupUi(this);
 
