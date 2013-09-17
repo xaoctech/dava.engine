@@ -71,12 +71,16 @@ public:
 
 	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
 	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-    
+
 private:
 	SoundGroup * CreateSoundGroup(const FastName & groupName);
 
+    void ReleaseOnUpdate(Sound * sound);
+
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
+
+    Vector<Sound *> soundsToReleaseOnUpdate;
 
 	FastNameMap<SoundGroup*> soundGroups;
 	Vector<VolumeAnimatedObject*> animatedObjects;
