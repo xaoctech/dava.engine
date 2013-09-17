@@ -45,7 +45,6 @@ public:
     EditorLODData();
     virtual ~EditorLODData();
 
-    void Clear();
     
     DAVA::int32 GetLayersCount() const;
     DAVA::float32 GetLayerDistance(DAVA::int32 layerNum) const;
@@ -87,6 +86,12 @@ protected slots:
 
     
 protected:
+    
+    void ClearLODData();
+    void ClearForceData();
+    
+    void UpdateForceData();
+
     
     void EnumerateSelectionLODs(SceneEditor2 * scene);
 
