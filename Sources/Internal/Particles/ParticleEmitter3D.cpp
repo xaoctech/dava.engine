@@ -79,6 +79,11 @@ void ParticleEmitter3D::Draw(Camera * camera)
 void ParticleEmitter3D::RecalcBoundingBox()
 {
 	RenderObject::RecalcBoundingBox(); //transpass ParticleEmitter::RecalcBoundingBox()
+	if (GetWorldTransformPtr()) //add emmiter anyway
+	{
+		Vector3 emmiterPos = GetWorldTransformPtr()->GetTranslationVector();
+		bbox = AABBox3(emmiterPos, emmiterPos);
+	}	
 }
 
 

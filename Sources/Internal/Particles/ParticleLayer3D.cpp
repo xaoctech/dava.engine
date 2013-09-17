@@ -72,8 +72,12 @@ void ParticleLayer3D::Draw(Camera * camera)
 
 void ParticleLayer3D::PrepareRenderData(Camera* camera)
 {
-	Vector3 emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();
-	AABBox3 bbox = AABBox3(emmiterPos, emmiterPos);
+	AABBox3 bbox;
+	if (emitter->GetWorldTransformPtr())
+	{
+		Vector3 emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();
+		bbox = AABBox3(emmiterPos, emmiterPos);
+	}	
 	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
 	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
 	{		
