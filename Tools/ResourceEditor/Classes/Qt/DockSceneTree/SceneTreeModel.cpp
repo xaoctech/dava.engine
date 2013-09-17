@@ -29,6 +29,8 @@
 
 
 #include <QMimeData>
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleLayer.h"
 
 #include "DockSceneTree/SceneTreeModel.h"
 #include "Scene/SceneSignals.h"
@@ -146,8 +148,9 @@ QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex &index) const
 	static QIcon eyeIcon = QIcon(":/QtIcons/eye.png");
 
 	QVector<QIcon> ret;
+	SceneTreeItem *item = GetItem(index);
 
-	DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(GetItem(index));
+	DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
 	if(NULL != entity)
 	{
 		if(entity->GetLocked())
@@ -160,6 +163,41 @@ QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex &index) const
 			if(curScene->GetCurrentCamera() == GetCamera(entity))
 			{
 				ret.push_back(eyeIcon);
+			}
+		}
+	}
+
+	return ret;
+}
+
+int SceneTreeModel::GetCustomFlags(const QModelIndex &index) const
+{
+	int ret = None;
+
+	SceneTreeItem *item = GetItem(index);
+
+	DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
+	if(NULL != entity)
+	{
+		// TODO:
+		// ...
+	}
+	else
+	{
+		DAVA::ParticleLayer *layer = SceneTreeItemParticleLayer::GetLayer(item);
+		if(NULL != layer)
+		{
+			DAVA::Entity *emitter = SceneTreeItemEntity::GetEntity(GetItem(index.parent()));
+			if(NULL != emitter)
+			{
+				DAVA::LodComponent *lodComp = GetLodComponent(emitter);
+				if(NULL != lodComp)
+				{
+					if(!layer->IsLodActive(lodComp->currentLod))
+					{
+						ret |= InvisibleLOD;
+					}
+				}
 			}
 		}
 	}

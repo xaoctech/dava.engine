@@ -62,6 +62,7 @@ public:
 	void SetLandscapeSnap(bool snap);
 
 	void PlaceOnLandscape(const EntityGroup *entities);
+	void ResetTransform(const EntityGroup *entities);
 
 	bool InModifState() const;
 
