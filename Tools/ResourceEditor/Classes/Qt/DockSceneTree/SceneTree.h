@@ -71,35 +71,15 @@ protected:
 
 	void EmitParticleSignals(const QItemSelection & selected);
 
-protected slots:
-	void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
-	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
-
-	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
-
-	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
-	void TreeItemClicked(const QModelIndex & index);
-	void TreeItemDoubleClicked(const QModelIndex & index);
-	void TreeItemCollapsed(const QModelIndex &index);
-	void TreeItemExpanded(const QModelIndex &index);
-
-	void SyncSelectionToTree();
-	void SyncSelectionFromTree();
-
-	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
-	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
-	void ShowContextMenuForce(DAVA::ParticleLayer *layer, DAVA::ParticleForce *force, const QPoint &pos);
-	void ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer *parentLayer, const QPoint &pos);
-
+public slots:
 	void LookAtSelection();
 	void RemoveSelection();
 	void LockEntities();
 	void UnlockEntities();
 
 	void SetCurrentCamera();
-	
+	void CollapseSwitch();
+
 	// Particle Emitter handlers.
 	void AddEmitter();
 	void StartEmitter();
@@ -127,8 +107,30 @@ protected slots:
     void ReloadModelWithoutLightmaps();
 	void SaveEntityAs();
 
+protected slots:
+	void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+
+	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+
+	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void TreeItemClicked(const QModelIndex & index);
+	void TreeItemDoubleClicked(const QModelIndex & index);
+	void TreeItemCollapsed(const QModelIndex &index);
+	void TreeItemExpanded(const QModelIndex &index);
+
+	void SyncSelectionToTree();
+	void SyncSelectionFromTree();
+
+	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
+	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
+	void ShowContextMenuForce(DAVA::ParticleLayer *layer, DAVA::ParticleForce *force, const QPoint &pos);
+	void ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer *parentLayer, const QPoint &pos);
+
 	void OnRefreshTimeout();
-	
+
 protected:
 	// Helpers for Particles.
 	// Get the default path to Particles Config.

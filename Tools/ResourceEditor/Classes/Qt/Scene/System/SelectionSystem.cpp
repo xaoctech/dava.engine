@@ -343,7 +343,6 @@ void SceneSelectionSystem::UpdateHoodPos() const
 	}
 	else
 	{
-		hoodSystem->SetPosition(DAVA::Vector3(0, 0, 0));
 		hoodSystem->LockModif(false);
 		hoodSystem->Show(false);
 	}

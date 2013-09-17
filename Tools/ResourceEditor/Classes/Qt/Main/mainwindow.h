@@ -128,22 +128,21 @@ public slots:
 	void OnParticleEffectDialog();
 	void OnUniteEntitiesWithLODs();
 	void OnAddEntityMenuAboutToShow();
+	void OnAddEntityFromSceneTree();
 	
 	void OnNotPassableTerrain();
 	
 	void OnSetSkyboxNode();
 	
 	void OnShowSettings();
-
 	void OnOpenHelp();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
-    
+
 	void OnSaveHeightmapToPNG();
 	void OnSaveTiledTexture();
-    
     
 	void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 
@@ -151,6 +150,12 @@ public slots:
 	void OnBeastAndSave();
 
 	void OnConvertToShadow();
+
+	void OnCameraSpeed0();
+	void OnCameraSpeed1();
+	void OnCameraSpeed2();
+	void OnCameraSpeed3();
+	void OnCameraLookFromTop();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -160,6 +165,7 @@ protected:
 	void SetupDocks();
 	void SetupActions();
 	void SetupTitle();
+	void SetupShortCuts();
 
 	void InitRecent();
 	void AddRecent(const QString &path);

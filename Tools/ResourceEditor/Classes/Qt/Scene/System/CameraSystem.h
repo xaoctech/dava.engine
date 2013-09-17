@@ -57,7 +57,8 @@ public:
 	const DAVA::Rect GetViewportRect();
 
 	void LookAt(const DAVA::AABBox3 &box);
-	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
+	void MoveTo(const DAVA::Vector3 &pos);
+	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &target);
 
 	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3) const;
 	DAVA::Vector3 GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const;
@@ -86,7 +87,7 @@ protected:
 	bool animateToNewPos;
 	DAVA::float32 animateToNewPosTime;
 	DAVA::Vector3 newPos;
-	DAVA::Vector3 newDir;
+	DAVA::Vector3 newTar;
 
 	DAVA::float32 curViewAngleZ, curViewAngleY;
 	const DAVA::float32 maxViewAngle;

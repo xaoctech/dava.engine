@@ -1205,7 +1205,7 @@
     <string>Place On Landscape</string>
    </property>
    <property name="shortcut">
-    <string>З, P</string>
+    <string>P</string>
    </property>
   </action>
   <action name="actionModifySnapToLandscape">
