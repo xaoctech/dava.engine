@@ -62,9 +62,16 @@ void BeastAction::Redo()
 
 	while( Process() == false )
 	{
+		bool canceled = QtMainWindow::Instance()->BeastWaitCanceled();
+		if(canceled) 
+		{
+			BeastProxy::Instance()->Cancel(beastManager);
+			break;
+		}
+
 		uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
 
-		QtMainWindow::Instance()->WaitSetMessage(Format("Beasting %d sec", deltaTime/1000));
+		QtMainWindow::Instance()->BeastWaitSetMessage(Format("Beasting %d sec", deltaTime/1000));
 		Sleep(1000);
 	}
 

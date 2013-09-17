@@ -48,6 +48,7 @@ public:
 	virtual void SetMode(BeastManager * manager, DAVA::int32 mode) {};
 
 	virtual void UpdateAtlas(BeastManager * manager, DAVA::Vector<LightmapAtlasingData> * atlasData) {};
+	virtual void Cancel(BeastManager * beastManager) {};
 };
 
 #endif //__BEAST_PROXY__

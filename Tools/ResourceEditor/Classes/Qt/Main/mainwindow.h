@@ -74,6 +74,13 @@ public:
 	void WaitStop();
 
     void EnableGlobalTimeout(bool enable);
+
+#if defined (__DAVAENGINE_BEAST__)
+	void BeastWaitSetMessage(const QString &messsage);
+	bool BeastWaitCanceled();
+#endif //#if defined (__DAVAENGINE_BEAST__)
+
+
     
 signals:
     void GlobalInvalidateTimeout();
@@ -195,6 +202,11 @@ protected slots:
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
+
+#if defined (__DAVAENGINE_BEAST__)
+	QtWaitDialog *beastWaitDialog;
+#endif //#if defined (__DAVAENGINE_BEAST__)
+
 	QtPosSaver posSaver;
 
 	QList<QAction *> recentScenes;
