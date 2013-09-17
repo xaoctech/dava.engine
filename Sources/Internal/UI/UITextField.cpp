@@ -75,6 +75,14 @@ bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
 {
 	return true;
 }
+	
+void UITextFieldDelegate::OnKeyboardShown(const Rect& /*keyboardRect*/)
+{
+}
+
+void UITextFieldDelegate::OnKeyboardHidden()
+{
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
