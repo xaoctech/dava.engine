@@ -307,6 +307,10 @@
     <ClInclude Include="..\..\Sources\Internal\Input\InputCallback.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\InputSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h" />
+    <ClInclude Include="..\..\Sources\Internal\Job\Job.h" />
+    <ClInclude Include="..\..\Sources\Internal\Job\JobManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h" />
+    <ClInclude Include="..\..\Sources\Internal\Job\JobWaiter.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h" />
@@ -695,6 +699,10 @@
     <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\InputSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Job\Job.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Job\JobManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Job\JobQueue.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\AABBox2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\BezierSpline.cpp" />
