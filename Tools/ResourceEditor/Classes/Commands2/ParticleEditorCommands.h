@@ -206,6 +206,8 @@ public:
 			  bool isDisabled,			  
 			  bool inheritPosition,
   			  bool isLong,
+			  float32 scaleVelocityBase,
+			  float32 scaleVelocityFactor,
 			  bool isLooped,
 			  Sprite* sprite,
 			  eBlendMode srcFactor,
@@ -256,6 +258,8 @@ protected:
 	ParticleLayer::eType layerType;
 	bool isDisabled;
 	bool isLong;	
+	float32 scaleVelocityBase;
+	float32 scaleVelocityFactor;
 	bool inheritPosition;
 	bool isLooped;
 	Sprite* sprite;

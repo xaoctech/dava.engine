@@ -122,13 +122,34 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 		this,
 		SLOT(OnValueChanged()));
 
+	QHBoxLayout *longLayout = new QHBoxLayout();
 	isLongCheckBox = new QCheckBox("Long");
-	mainBox->addWidget(isLongCheckBox);
+	longLayout->addWidget(isLongCheckBox);
 	connect(isLongCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
-
+	
+	scaleVelocityBaseSpinBox = new EventFilterDoubleSpinBox();
+	scaleVelocityBaseSpinBox->setMinimum(-100);
+	scaleVelocityBaseSpinBox->setMaximum(100);	
+	scaleVelocityBaseSpinBox->setSingleStep(0.1);
+	scaleVelocityBaseSpinBox->setDecimals(3);
+	
+	scaleVelocityFactorSpinBox = new EventFilterDoubleSpinBox();
+	scaleVelocityFactorSpinBox->setMinimum(-100);
+	scaleVelocityFactorSpinBox->setMaximum(100);	
+	scaleVelocityFactorSpinBox->setSingleStep(0.1);
+	scaleVelocityFactorSpinBox->setDecimals(3);
+	scaleVelocityBaseLabel = new QLabel("Velocity scale base: ");
+	scaleVelocityFactorLabel = new QLabel("Velocity scale factor: ");
+	longLayout->addWidget(scaleVelocityBaseLabel);
+	longLayout->addWidget(scaleVelocityBaseSpinBox);
+	longLayout->addWidget(scaleVelocityFactorLabel);
+	longLayout->addWidget(scaleVelocityFactorSpinBox);
+	connect(scaleVelocityBaseSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	connect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	mainBox->addLayout(longLayout);	
 	
 	QHBoxLayout* spriteHBox = new QHBoxLayout;
 	spriteLabel = new QLabel(this);
@@ -517,6 +538,9 @@ EmitterLayerWidget::~EmitterLayerWidget()
 	disconnect(dstFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
 	disconnect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 	disconnect(frameBlendingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+	disconnect(scaleVelocityBaseSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	disconnect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -547,7 +571,17 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 
 	enableCheckBox->setChecked(!layer->GetDisabled());	
 	inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+	
 	isLongCheckBox->setChecked(layer->IsLong());
+	scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
+	scaleVelocityFactorSpinBox->setValue((double)layer->scaleVelocityFactor);
+
+	bool scaleVelocityVisible = layer->IsLong();
+	scaleVelocityBaseLabel->setVisible(scaleVelocityVisible);
+	scaleVelocityBaseSpinBox->setVisible(scaleVelocityVisible);
+	scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
+	scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
+
 	isLoopedCheckBox->setChecked(layer->GetLooped());
 
 	for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
@@ -933,6 +967,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 !enableCheckBox->isChecked(),						 
 						 inheritPostionCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
+						 scaleVelocityBaseSpinBox->value(),
+						 scaleVelocityFactorSpinBox->value(),
 						 isLoopedCheckBox->isChecked(),
 						 sprite,
 						 srcFactor,
