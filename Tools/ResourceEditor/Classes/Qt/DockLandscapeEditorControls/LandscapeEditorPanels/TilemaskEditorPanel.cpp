@@ -58,8 +58,8 @@ void TilemaskEditorPanel::InitUI()
 	QFrame* frameBrushImage = new QFrame(this);
 	QFrame* frameTileTexture = new QFrame(this);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	QHBoxLayout* layoutBrushImage = new QHBoxLayout(this);
-	QHBoxLayout* layoutTileTexture = new QHBoxLayout(this);
+	QHBoxLayout* layoutBrushImage = new QHBoxLayout();
+	QHBoxLayout* layoutTileTexture = new QHBoxLayout();
 
 	layoutBrushImage->addWidget(labelBrushImageDesc);
 	layoutBrushImage->addWidget(comboBrushImage);

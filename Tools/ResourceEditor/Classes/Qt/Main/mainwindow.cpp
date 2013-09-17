@@ -146,12 +146,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
-
-	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
-
-
-
 	LoadGPUFormat();
 
     

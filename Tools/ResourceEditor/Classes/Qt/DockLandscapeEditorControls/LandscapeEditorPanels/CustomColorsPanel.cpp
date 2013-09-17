@@ -119,7 +119,7 @@ void CustomColorsPanel::ConnectToSignals()
 	connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
-			this, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
+			this, SLOT(NeedSaveTexture(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsToggled(SceneEditor2*)),
 			this, SLOT(EditorToggled(SceneEditor2*)));
 
