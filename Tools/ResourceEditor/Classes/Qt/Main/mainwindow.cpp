@@ -1170,7 +1170,7 @@ void QtMainWindow::OnSwitchEntityDialog()
 	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(new SwitchComponent());
+	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
 	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	addSwitchEntityDialog->SetEntity(entityToAdd);
@@ -1194,7 +1194,7 @@ void QtMainWindow::OnLandscapeDialog()
 	if(!landscapeEntity)
 	{
 		entityToProcess = new Entity();
-		entityToProcess->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
+		entityToProcess->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(ScopedPtr<Landscape>(new Landscape()))));
 		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
 	}
 	else
@@ -1226,7 +1226,7 @@ void QtMainWindow::OnLandscapeDialog()
 void QtMainWindow::OnLightDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
+	sceneNode->AddComponent(ScopedPtr<LightComponent> (new LightComponent(ScopedPtr<Light>(new Light))));
 	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1242,7 +1242,7 @@ void QtMainWindow::OnCameraDialog()
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 	camera->SetAspect(1.0f);
 
-	sceneNode->AddComponent(new CameraComponent(camera));
+	sceneNode->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(camera)));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 	SafeRelease(camera);
@@ -1258,7 +1258,7 @@ void QtMainWindow::OnImposterDialog()
 void QtMainWindow::OnUserNodeDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new UserComponent());
+	sceneNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
 	sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1266,7 +1266,7 @@ void QtMainWindow::OnUserNodeDialog()
 void QtMainWindow::OnParticleEffectDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new ParticleEffectComponent());
+	sceneNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1849,6 +1849,7 @@ void QtMainWindow::OnAddActionComponent()
 		
 		ActionComponent* actionComponent = new ActionComponent();
 		selectedEntity->AddComponent(actionComponent);
+		actionComponent->Release();
 		
 		scene->selectionSystem->SetSelection(NULL);
 		scene->selectionSystem->SetSelection(selectedEntity);
@@ -1870,6 +1871,5 @@ void QtMainWindow::OnRemoveActionComponent()
 		scene->selectionSystem->SetSelection(NULL);
 		scene->selectionSystem->SetSelection(selectedEntity);
 	}
-
 }
 

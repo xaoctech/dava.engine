@@ -167,6 +167,7 @@ void EditorScene::CheckNodes(Entity * curr)
 			dbgComp = new DebugRenderComponent();
 			newDebugComp = true;
 			curr->AddComponent(dbgComp);
+			dbgComp->Release();
 		}
 
 		// check other debug settings
