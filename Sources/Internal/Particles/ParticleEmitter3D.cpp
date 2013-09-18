@@ -392,6 +392,7 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		}
 
 		clonedEmitter->AddLayer(clonedLayer);
+		SafeRelease(clonedLayer);
 	}
 
 	return newObject;
