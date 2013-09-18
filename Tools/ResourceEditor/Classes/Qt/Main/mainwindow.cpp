@@ -56,7 +56,7 @@
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../Tools/AddLandscapeEntityDialog/AddLandscapeEntityDialog.h"
+#include "../Tools/LandscapeDialog/LandscapeDialog.h"
 
 #include "Classes/Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
@@ -145,6 +145,12 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
+
+
 
 	LoadGPUFormat();
 
@@ -1190,9 +1196,10 @@ void QtMainWindow::OnLandscapeDialog()
 		entityToProcess = landscapeEntity;
 	}
 	
-	AddLandscapeEntityDialog * dlg = new AddLandscapeEntityDialog(entityToProcess, this);
 	
-	dlg->SetEntity(entityToProcess);
+	LandscapeDialog * dlg = new LandscapeDialog(entityToProcess, this);
+
+	//dlg->SetEntity(entityToProcess);
 	dlg->exec();
 	
 	if(dlg->result() == QDialog::Accepted && !landscapeEntity)

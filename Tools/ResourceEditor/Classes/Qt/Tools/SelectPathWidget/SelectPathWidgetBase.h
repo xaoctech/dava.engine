@@ -45,7 +45,7 @@ class SelectPathWidgetBase: public QLineEdit
 
 public:
 	explicit SelectPathWidgetBase( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "",
-								  DAVA::String openFileDialogTitle = "OpenFile", DAVA::String fileFormatDescriotion = "*.*");
+								  DAVA::String openFileDialogTitle = "Open File", DAVA::String fileFormatDescriotion = "*.*");
 	
 	virtual ~SelectPathWidgetBase();
 	
@@ -70,6 +70,26 @@ public:
 	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
 	{
 		openDialogDefaultPath = newPath;
+	}
+	
+	void SetOpenFileDialogTitle(const DAVA::String& value)
+	{
+		openFileDialogTitle = value;
+	}
+	
+	DAVA::String GetOpenFileDialogTitle()
+	{
+		return openFileDialogTitle;
+	}
+	
+	void SetFileFormatFilter(const DAVA::String& value)
+	{
+		fileFormatFilter = value;
+	}
+	
+	DAVA::String GetFileFormatFilter()
+	{
+		return fileFormatFilter;
 	}
 	
 public slots:

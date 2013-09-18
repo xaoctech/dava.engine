@@ -211,9 +211,6 @@
     <Filter Include="Classes\Qt\SliderWidget">
       <UniqueIdentifier>{d95815db-d6ea-44d1-82b0-73a7f1f5a5d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\Tools\AddLandscapeEntityDialog">
-      <UniqueIdentifier>{169dd272-c85b-4165-ac44-7a69cbd76d41}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
@@ -225,6 +222,9 @@
     </Filter>
     <Filter Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels">
       <UniqueIdentifier>{92112a20-3635-4fde-8e68-3e6ff366542f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\LandscapeDialog">
+      <UniqueIdentifier>{fe13beb5-ca0a-4281-bd6f-ffa62e960101}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2094,16 +2094,10 @@
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.cpp">
-      <Filter>Classes\Qt\Tools\AddLandscapeEntityDialog</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp">
@@ -2167,6 +2161,18 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
+      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp">
+      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3719,9 +3725,6 @@
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\AddLandscapeEntityDialog\AddLandscapeEntityDialog.h">
-      <Filter>Classes\Qt\Tools\AddLandscapeEntityDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3763,6 +3766,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.h">
       <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
+      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h">
+      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

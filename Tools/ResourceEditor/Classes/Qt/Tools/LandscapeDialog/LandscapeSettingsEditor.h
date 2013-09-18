@@ -28,56 +28,86 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__
-#define __RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__
+#ifndef __RESOURCEEDITORQT__LANDSCAPE_SETTINGS_EDITOR__
+#define __RESOURCEEDITORQT__LANDSCAPE_SETTINGS_EDITOR__
 
-#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
-#include "Qt/Scene/SceneEditor2.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectPathWidgetBase.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include <QPushButton>
 
-class SelectEntityPathWidget;
-
-class AddLandscapeEntityDialog: public BaseAddEntityDialog
+class LandscapeSettingsEditor: public QtPropertyEditor
 {
 	Q_OBJECT
 	
 public:
-	AddLandscapeEntityDialog(Entity* landscapeEntity, QWidget* parent = 0);
+	explicit LandscapeSettingsEditor(DAVA::Entity* landscapeEntity, QWidget* parent = 0);
 	
-	~AddLandscapeEntityDialog();
+	~LandscapeSettingsEditor();
 	
-	void CleanupPathWidgets();
-
-	void reject();
+	void InitializeProperties();
+	
+	void RestoreInitialSettings();
+	
+signals:
+	
+	void TileModeChanged(int newValue);
 	
 protected slots:
 	
-	void ValueChanged(DAVA::String fileName);
+	void HandleStaticLightEnabled();
 	
+	void HandleCastShadows();
+	
+	void HandleReceiveShadows();
+	
+	void HandleFogEnabled();
+	
+	void HandleFogDensity();
+	
+	void HandleFogColor();
+	
+	void HandleLandSize();
+	
+	void HandleLandHeight();
+	
+	void HandleTileColor0();
+	
+	void HandleTileColor1();
+	
+	void HandleTileColor2();
+
+	void HandleTileColor3();
+	
+	void HandleTileMode();
+
 protected:
-		
+
+	void AppleNewLandscapeSize();
 	
-	DAVA::Vector<QWidget*>			additionalWidgets;
-	
-	Landscape*						landscape;
-	
-	struct DefaultInfo
+	struct PropertyInfo
 	{
-		int32 specificInfo;
-		FilePath path;
-		DefaultInfo()
-		{}
-		
-		DefaultInfo(int32 _specificInfo, FilePath _path)
+		QtPropertyDataDavaVariant*	property;
+		QVariant					defaultValue;
+		PropertyInfo()
 		{
-			specificInfo = _specificInfo;
-			path  = _path;
+			property = NULL;
+		}
+		PropertyInfo(QtPropertyDataDavaVariant* _property, QVariant _defaultValue)
+		{
+			property = _property;
+			defaultValue = _defaultValue;
 		}
 	};
-	
-	DAVA::Map<SelectPathWidgetBase*,DefaultInfo>  widgetMap;
-};
 
-#endif /* defined(__RESOURCEEDITORQT__ADDLANDSCAPEENTITYDIALOG__) */
+	DAVA::List<PropertyInfo> propertiesMap;
+	
+	DAVA::KeyedArchive* propertyList;
+	DAVA::Landscape*	landscape;
+	DAVA::Vector3		size;
+	DAVA::Entity*		landscapeEntity;
+	
+	DAVA::Vector<DAVA::String> tiledModes;
+	
+};
+#endif /* defined(__RESOURCEEDITORQT__LANDSCAPE_SETTINGS_EDITOR__) */
