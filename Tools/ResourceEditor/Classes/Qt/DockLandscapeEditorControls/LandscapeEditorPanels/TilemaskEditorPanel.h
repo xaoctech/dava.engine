@@ -28,6 +28,22 @@ private slots:
 	void SetStrength(int strength);
 	void SetDrawTexture(int textureIndex);
 
+	void IncreaseBrushSize();
+	void DecreaseBrushSize();
+	void IncreaseBrushSizeLarge();
+	void DecreaseBrushSizeLarge();
+
+	void IncreaseStrength();
+	void DecreaseStrength();
+	void IncreaseStrengthLarge();
+	void DecreaseStrengthLarge();
+
+	void PrevTexture();
+	void NextTexture();
+
+	void PrevTool();
+	void NextTool();
+
 protected:
 	virtual bool GetEditorEnabled();
 
@@ -41,6 +57,9 @@ protected:
 
 	virtual void StoreState();
 	virtual void RestoreState();
+
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
 
 private:
 	SliderWidget* sliderWidgetBrushSize;

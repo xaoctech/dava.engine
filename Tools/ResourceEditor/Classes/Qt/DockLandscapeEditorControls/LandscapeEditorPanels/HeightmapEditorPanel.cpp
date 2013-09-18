@@ -4,6 +4,7 @@
 #include "../../SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
+#include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -491,4 +492,222 @@ void HeightmapEditorPanel::HeightUpdatedManually()
 void HeightmapEditorPanel::OnEditorEnabled()
 {
 	SetToolImage(comboBrushImage->currentIndex());
+}
+
+void HeightmapEditorPanel::ConnectToShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseStrengthLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseStrengthLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseAvgStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseAvgStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseAvgStrengthLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseAvgStrengthLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+			this, SLOT(NextTool()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+			this, SLOT(PrevTool()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
+			this, SLOT(SetHeightmapCopyPaste()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
+			this, SLOT(SetAbsoluteDrawing()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
+			this, SLOT(SetRelativeDrawing()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
+			this, SLOT(SetAverageDrawing()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
+			this, SLOT(SetAbsDropDrawing()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
+			this, SLOT(SetDropper()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
+			this, SLOT(ShortcutSetCopyPasteHeightmap()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
+			this, SLOT(ShortcutSetCopyPasteTilemask()));
+}
+
+void HeightmapEditorPanel::DisconnectFromShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSizeLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSizeLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseStrengthLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseStrengthLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseAvgStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseAvgStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseAvgStrengthLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseAvgStrengthLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+			   this, SLOT(NextTool()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+			   this, SLOT(PrevTool()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
+			   this, SLOT(SetHeightmapCopyPaste()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
+			   this, SLOT(SetAbsoluteDrawing()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
+			   this, SLOT(SetRelativeDrawing()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
+			   this, SLOT(SetAverageDrawing()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
+			   this, SLOT(SetAbsDropDrawing()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
+			   this, SLOT(SetDropper()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
+			   this, SLOT(ShortcutSetCopyPasteHeightmap()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
+			   this, SLOT(ShortcutSetCopyPasteTilemask()));
+}
+
+void HeightmapEditorPanel::IncreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::DecreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::IncreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::DecreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::IncreaseStrength()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::DecreaseStrength()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::IncreaseStrengthLarge()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::DecreaseStrengthLarge()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::IncreaseAvgStrength()
+{
+	sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::DecreaseAvgStrength()
+{
+	sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void HeightmapEditorPanel::IncreaseAvgStrengthLarge()
+{
+	sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::DecreaseAvgStrengthLarge()
+{
+	sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void HeightmapEditorPanel::PrevTool()
+{
+	int32 curIndex = comboBrushImage->currentIndex();
+	if (curIndex)
+	{
+		comboBrushImage->setCurrentIndex(curIndex - 1);
+	}
+}
+
+void HeightmapEditorPanel::NextTool()
+{
+	int32 curIndex = comboBrushImage->currentIndex();
+	if (curIndex < comboBrushImage->count() - 1)
+	{
+		comboBrushImage->setCurrentIndex(curIndex + 1);
+	}
+}
+
+void HeightmapEditorPanel::ShortcutSetCopyPasteHeightmap()
+{
+	SceneEditor2* sceneEditor = GetActiveScene();
+
+	bool copyPasteHeightmap = !sceneEditor->heightmapEditorSystem->GetCopyPasteHeightmap();
+	sceneEditor->heightmapEditorSystem->SetCopyPasteHeightmap(copyPasteHeightmap);
+	checkboxHeightmap->setChecked(copyPasteHeightmap);
+}
+
+void HeightmapEditorPanel::ShortcutSetCopyPasteTilemask()
+{
+	SceneEditor2* sceneEditor = GetActiveScene();
+
+	bool copyPasteTilemask = !sceneEditor->heightmapEditorSystem->GetCopyPasteTilemask();
+	sceneEditor->heightmapEditorSystem->SetCopyPasteTilemask(copyPasteTilemask);
+	checkboxTilemask->setChecked(copyPasteTilemask);
 }
