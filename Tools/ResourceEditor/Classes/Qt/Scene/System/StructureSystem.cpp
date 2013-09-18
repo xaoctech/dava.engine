@@ -41,11 +41,16 @@
 
 #include "Classes/SceneEditor/SceneValidator.h"
 
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, lockedSignals(false)
 {
-
+    new DAVA::SwitchComponent();
+    new DAVA::ActionComponent();
+    
 }
 
 StructureSystem::~StructureSystem()
@@ -456,17 +461,8 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 		if(NULL != loadedEntity)
 		{
-			DAVA::SceneFileV2 *sceneFile = new DAVA::SceneFileV2();
-			DAVA::Entity *rootEntity = new DAVA::Entity();
-
-			rootEntity->AddNode(loadedEntity);
-			loadedEntity = rootEntity->GetChild(0);
-
+            loadedEntity->SetSolid(true);
 			loadedEntity->Retain();
-			loadedEntity->SetSolid(true);
-
-			sceneFile->Release();
-			rootEntity->Release();
 		}
 
 		sceneEditor->ReleaseRootNode(sc2path);
