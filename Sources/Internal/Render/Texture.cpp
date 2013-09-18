@@ -840,7 +840,7 @@ void Texture::HWglCreateFBOBuffers()
 	{
 		glGenRenderbuffers(1, &rboID);
 		glBindRenderbuffer(GL_RENDERBUFFER, rboID);
-		glRenderbufferStorage(GL_RENDERBUFFER, DAVA_GL_DEPTH_COMPONENT, width, height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	}
 
 	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0));
@@ -848,6 +848,7 @@ void Texture::HWglCreateFBOBuffers()
 	if(DEPTH_RENDERBUFFER == depthFormat)
 	{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboID);
 	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);

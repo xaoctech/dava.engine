@@ -79,6 +79,11 @@ void ParticleEmitter3D::Draw(Camera * camera)
 void ParticleEmitter3D::RecalcBoundingBox()
 {
 	RenderObject::RecalcBoundingBox(); //transpass ParticleEmitter::RecalcBoundingBox()
+	if (GetWorldTransformPtr()) //add emmiter anyway
+	{
+		Vector3 emmiterPos = GetWorldTransformPtr()->GetTranslationVector();
+		bbox.AddPoint(emmiterPos);
+	}	
 }
 
 
@@ -233,9 +238,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 	}
 
 	particle->direction = directionVector;
-	float dirLength = particle->direction.Length();
-	particle->direction*=(1.0f/dirLength);
-	particle->speed*=dirLength;
+	particle->direction.Normalize();
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
