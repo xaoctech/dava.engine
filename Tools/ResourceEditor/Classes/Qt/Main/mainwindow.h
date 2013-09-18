@@ -176,6 +176,11 @@ public slots:
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
 
+    
+	
+	void OnAddActionComponent();
+	void OnRemoveActionComponent();
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 

@@ -360,6 +360,7 @@ Material * Material::Clone(Material *newMaterial /* = NULL */)
 
 	newMaterial->renderStateBlock = renderStateBlock;
     
+
     newMaterial->isExportOwnerLayerEnabled = isExportOwnerLayerEnabled;
     newMaterial->ownerLayerName = ownerLayerName;
 

@@ -368,6 +368,8 @@
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
+    <addaction name="actionAddActionComponent"/>
+    <addaction name="actionRemoveActionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1400,24 +1402,6 @@
     <string>Skybox Node</string>
    </property>
   </action>
-  <action name="actionAddActionComponent">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/addcomponent.png</normaloff>:/QtIcons/addcomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add ActionComponent</string>
-   </property>
-  </action>
-  <action name="actionRemoveActionComponent">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove ActionComponent</string>
-   </property>
-  </action>
   <action name="actionSetupSkybox">
    <property name="text">
     <string>Setup Skybox</string>
@@ -1524,6 +1508,16 @@
   <action name="actionBeastAndSave">
    <property name="text">
     <string>Beast And Save</string>
+   </property>
+  </action>
+  <action name="actionAddActionComponent">
+   <property name="text">
+    <string>Add Action Component</string>
+   </property>
+  </action>
+  <action name="actionRemoveActionComponent">
+   <property name="text">
+    <string>Remove Action Component</string>
    </property>
   </action>
  </widget>
