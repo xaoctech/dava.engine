@@ -74,6 +74,7 @@
 		49CAAF7A17A65FA400C91496 /* RulerToolSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7817A65FA400C91496 /* RulerToolSystem.cpp */; };
 		49CAAF8117A65FB200C91496 /* RulerToolProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7F17A65FB200C91496 /* RulerToolProxy.cpp */; };
 		49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F26F1C1771D67D008012B5 /* CommandAction.cpp */; };
+		49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */; };
 		49FE771C17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */; };
 		49FE772017E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */; };
 		4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2561174CD38E000D1187 /* Console.cpp */; };
@@ -793,6 +794,8 @@
 		49EF1C7A1726A68800B899E6 /* CommandList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandList.h; path = Classes/Commands/CommandList.h; sourceTree = "<group>"; };
 		49F26F1C1771D67D008012B5 /* CommandAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAction.cpp; sourceTree = "<group>"; };
 		49F26F1D1771D67D008012B5 /* CommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandAction.h; sourceTree = "<group>"; };
+		49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorShortcutManager.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.cpp; sourceTree = "<group>"; };
+		49F546F817E89B5E0084015D /* LandscapeEditorShortcutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorShortcutManager.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h; sourceTree = "<group>"; };
 		49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorControlsPlaceholder.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.cpp; sourceTree = "<group>"; };
 		49FE771B17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorControlsPlaceholder.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.h; sourceTree = "<group>"; };
 		49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorBasePanel.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/LandscapeEditorBasePanel.cpp; sourceTree = "<group>"; };
@@ -1971,6 +1974,8 @@
 				49FE771D17E34B720010B8E1 /* LandscapeEditorPanels */,
 				49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */,
 				49FE771B17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.h */,
+				49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */,
+				49F546F817E89B5E0084015D /* LandscapeEditorShortcutManager.h */,
 			);
 			name = DockLandscapeEditorControls;
 			sourceTree = "<group>";
@@ -4801,6 +4806,7 @@
 				A6B0519317E8B763000EED68 /* ActionComponentEditor_moc.cpp in Build Sources */,
 				E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */,
 				E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */,
+				49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

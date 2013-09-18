@@ -31,6 +31,14 @@ private slots:
 
 	void NeedSaveTexture(SceneEditor2* scene);
 
+	void IncreaseBrushSize();
+	void DecreaseBrushSize();
+	void IncreaseBrushSizeLarge();
+	void DecreaseBrushSizeLarge();
+
+	void PrevTexture();
+	void NextTexture();
+
 protected:
 	virtual bool GetEditorEnabled();
 	
@@ -42,6 +50,9 @@ protected:
 	
 	virtual void StoreState();
 	virtual void RestoreState();
+
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
 
 private:
 	QComboBox* comboColor;
