@@ -48,7 +48,7 @@ AddComponentCommand::~AddComponentCommand()
 	SafeRelease(newComponent);
 }
 
-void AddComponentCommand::Undo()
+void AddComponentCommand::Redo()
 {
 	if(oldComponent)
 	{
@@ -58,7 +58,7 @@ void AddComponentCommand::Undo()
 	entityToAdd->AddComponent(newComponent);
 }
 
-void AddComponentCommand::Redo()
+void AddComponentCommand::Undo()
 {
 	entityToAdd->RemoveComponent(newComponent);
 	if(oldComponent)

@@ -45,7 +45,7 @@ RemoveComponentCommand::~RemoveComponentCommand()
 	SafeRelease(oldComponent);
 }
 
-void RemoveComponentCommand::Undo()
+void RemoveComponentCommand::Redo()
 {
 	if(oldComponent)
 	{
@@ -53,7 +53,7 @@ void RemoveComponentCommand::Undo()
 	}
 }
 
-void RemoveComponentCommand::Redo()
+void RemoveComponentCommand::Undo()
 {
 	if(oldComponent)
 	{
