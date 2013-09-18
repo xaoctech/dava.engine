@@ -163,7 +163,9 @@ void SystemsSettingsEditor::RestoreInitialSettings()
 		{
 			InitMapWithFlag(map, it->defaultValue.toInt());
 		}
+		this->model()->blockSignals(true);
 		property->SetValue(it->defaultValue);
+		this->model()->blockSignals(false);
 	}
 }
 
