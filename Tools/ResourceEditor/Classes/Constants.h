@@ -108,7 +108,10 @@ const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
 // default coefficient for converting brush size from UI value to system value for heightmap editors
 // heightmap size in heightmap editor is almost 4 times smaller than landscape texture size
 const DAVA::float32 HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
-    
+
+const DAVA::int32 SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL = 1;
+const DAVA::int32 SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE = 10;
+
 };
 
 

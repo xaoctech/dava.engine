@@ -79,7 +79,7 @@ Entity::Entity()
     //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
     
-	AddComponent(new TransformComponent());
+	AddComponent(ScopedPtr<TransformComponent> (new TransformComponent()));
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.Entity.Update", "Entity update time");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.Entity.Draw", "Entity draw time");
@@ -112,32 +112,35 @@ Entity::~Entity()
     
 void Entity::AddComponent(Component * component)
 {
+	DVASSERT(NULL == components[component->GetType()]);
+	
 	component->SetEntity(this);
 
-	//<--THIS WILL CAUSE CRASH IN SYSTEMS!!!!
-    SafeDelete(components[component->GetType()]);
-	//-->
-    components[component->GetType()] = component;
+	components[component->GetType()] = component;
+	component->Retain();
+
     if (scene)
         scene->AddComponent(this, component);
+
     // SHOULD BE DONE AFTER scene->AddComponent
     componentFlags |= 1 << component->GetType();
 }
 
-	void Entity::RemoveComponent(Component * component)
+void Entity::RemoveComponent(Component * component)
+{
+	if (scene)
 	{
-		if (scene)
-		{
-			scene->RemoveComponent(this, component);
-		}
-		
-		component->SetEntity(0);
-		components[component->GetType()] = 0;
-		
-		// SHOULD BE DONE AFTER scene->RemoveComponent
-		componentFlags &= ~(1 << component->GetType());
-		delete(component);
+		scene->RemoveComponent(this, component);
 	}
+		
+	component->SetEntity(0);
+	components[component->GetType()] = 0;
+		
+	// SHOULD BE DONE AFTER scene->RemoveComponent
+	componentFlags &= ~(1 << component->GetType());
+	component->Release();
+}
+
 void Entity::RemoveComponent(uint32 componentType)
 {
     if (components[componentType])
@@ -157,6 +160,7 @@ Component * Entity::GetOrCreateComponent(uint32 componentType)
 	{
 		ret = Component::CreateByType(componentType);
 		AddComponent(ret);
+		ret->Release();
 	}
 
 	return ret;
@@ -610,8 +614,14 @@ Entity* Entity::Clone(Entity *dstNode)
 	{
 		if(components[k])
 		{
-			SafeDelete(dstNode->components[k]);
-			dstNode->AddComponent(components[k]->Clone(dstNode));
+			if(dstNode->components[k])
+			{
+				dstNode->RemoveComponent(dstNode->components[k]);
+			}
+
+			Component * clonedComponent = components[k]->Clone(dstNode);
+			dstNode->AddComponent(clonedComponent);
+			clonedComponent->Release();
 		}
 	}
     
@@ -639,7 +649,7 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 
 	if(!debugComponent)
 	{
-		AddComponent(new DebugRenderComponent());
+		AddComponent(ScopedPtr<DebugRenderComponent> (new DebugRenderComponent()));
 		debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
 		debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
 	}
@@ -830,6 +840,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 					{
 						comp->Deserialize(compArch, sceneFileV2);
 						AddComponent(comp);
+						comp->Release();
 					}
 				}
 			}
@@ -856,8 +867,9 @@ CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 	
 	if(NULL == component)
 	{
-		component = new CustomPropertiesComponent();
+		component = (CustomPropertiesComponent *) Component::CreateByType(Component::CUSTOM_PROPERTIES_COMPONENT);
 		AddComponent(component);
+		component->Release();
 	}
 	
     return component;
@@ -872,13 +884,11 @@ KeyedArchive* Entity::GetCustomProperties()
     
 void Entity::SetSolid(bool isSolid)
 {
-//    isSolidNode = isSolid;
     GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
 bool Entity::GetSolid()
 {
-//    return isSolidNode;
     return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 }
 

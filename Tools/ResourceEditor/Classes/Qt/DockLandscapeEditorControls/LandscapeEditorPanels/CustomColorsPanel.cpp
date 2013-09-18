@@ -6,6 +6,7 @@
 #include "Project/ProjectManager.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
+#include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QComboBox>
@@ -240,5 +241,85 @@ void CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
 	else
 	{
 		SaveTexture();
+	}
+}
+
+void CustomColorsPanel::ConnectToShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+			this, SLOT(NextTexture()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+			this, SLOT(PrevTexture()));
+}
+
+void CustomColorsPanel::DisconnectFromShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSizeLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSizeLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+			   this, SLOT(NextTexture()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+			   this, SLOT(PrevTexture()));
+}
+
+void CustomColorsPanel::IncreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void CustomColorsPanel::DecreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void CustomColorsPanel::IncreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void CustomColorsPanel::DecreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void CustomColorsPanel::PrevTexture()
+{
+	int32 curIndex = comboColor->currentIndex();
+	if (curIndex)
+	{
+		comboColor->setCurrentIndex(curIndex - 1);
+	}
+}
+
+void CustomColorsPanel::NextTexture()
+{
+	int32 curIndex = comboColor->currentIndex();
+	if (curIndex < comboColor->count() - 1)
+	{
+		comboColor->setCurrentIndex(curIndex + 1);
 	}
 }
