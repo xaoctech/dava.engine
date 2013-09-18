@@ -89,6 +89,9 @@
 #include "Classes/Commands2/RulerToolActions.h"
 #include "Classes/Commands2/TilemaskEditorCommands.h"
 #include "Classes/Commands2/VisibilityToolActions.h"
+#include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/RemoveComponentCommand.h"
+
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -1840,36 +1843,67 @@ void QtMainWindow::OnAddActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 	
-	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
-	
-	if(selectedEntity)
+	const EntityGroup *selection = scene->selectionSystem->GetSelection();
+	size_t count = selection->Size();
+	if(count)
 	{
-		//need to remove component at first in order to clean ActionUpdateSystem
-		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-		
-		ActionComponent* actionComponent = new ActionComponent();
-		selectedEntity->AddComponent(actionComponent);
-		actionComponent->Release();
-		
-		scene->selectionSystem->SetSelection(NULL);
-		scene->selectionSystem->SetSelection(selectedEntity);
+		scene->BeginBatch("Add Action Component");
+
+		for(size_t i = 0; i < count; ++i)
+		{
+			scene->Exec(new AddComponentCommand(selection->GetEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
+		}
+
+		scene->EndBatch();
 	}
+
+//  VI:
+// 	if(selectedEntity)
+// 	{
+// 		//need to remove component at first in order to clean ActionUpdateSystem
+// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+// 		
+// 		ActionComponent* actionComponent = new ActionComponent();
+// 		selectedEntity->AddComponent(actionComponent);
+// 		actionComponent->Release();
+// 		
+// 		scene->selectionSystem->SetSelection(NULL);
+// 		scene->selectionSystem->SetSelection(selectedEntity);
+// 	}
 }
 
 void QtMainWindow::OnRemoveActionComponent()
 {
 	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
-	
-	if(selectedEntity)
+	if(!scene) return;
+
+	const EntityGroup *selection = scene->selectionSystem->GetSelection();
+	size_t count = selection->Size();
+	if(count)
 	{
-		//need to remove component at first in order to clean ActionUpdateSystem
-		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-				
-		scene->selectionSystem->SetSelection(NULL);
-		scene->selectionSystem->SetSelection(selectedEntity);
+		scene->BeginBatch("Remove Action Component");
+
+		for(size_t i = 0; i < count; ++i)
+		{
+			scene->Exec(new RemoveComponentCommand(selection->GetEntity(i), Component::ACTION_COMPONENT));
+		}
+
+		scene->EndBatch();
 	}
+
+//	VI:
+// 	SceneEditor2* scene = GetCurrentScene();
+//     if(!scene) return;
+// 	
+// 	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
+// 	
+// 	if(selectedEntity)
+// 	{
+// 		//need to remove component at first in order to clean ActionUpdateSystem
+// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+// 				
+// 		scene->selectionSystem->SetSelection(NULL);
+// 		scene->selectionSystem->SetSelection(selectedEntity);
+// 	}
 }
 
