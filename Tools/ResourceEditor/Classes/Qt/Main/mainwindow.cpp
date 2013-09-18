@@ -89,6 +89,9 @@
 #include "Classes/Commands2/RulerToolActions.h"
 #include "Classes/Commands2/TilemaskEditorCommands.h"
 #include "Classes/Commands2/VisibilityToolActions.h"
+#include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/RemoveComponentCommand.h"
+
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -147,12 +150,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
-
-	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
-
-	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(NotPassableToggled(SceneEditor2*)));
-
-
 
 	LoadGPUFormat();
 
@@ -1170,7 +1167,7 @@ void QtMainWindow::OnSwitchEntityDialog()
 	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(new SwitchComponent());
+	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
 	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	addSwitchEntityDialog->SetEntity(entityToAdd);
@@ -1194,7 +1191,7 @@ void QtMainWindow::OnLandscapeDialog()
 	if(!landscapeEntity)
 	{
 		entityToProcess = new Entity();
-		entityToProcess->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
+		entityToProcess->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(ScopedPtr<Landscape>(new Landscape()))));
 		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
 	}
 	else
@@ -1226,7 +1223,7 @@ void QtMainWindow::OnLandscapeDialog()
 void QtMainWindow::OnLightDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
+	sceneNode->AddComponent(ScopedPtr<LightComponent> (new LightComponent(ScopedPtr<Light>(new Light))));
 	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1242,7 +1239,7 @@ void QtMainWindow::OnCameraDialog()
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 	camera->SetAspect(1.0f);
 
-	sceneNode->AddComponent(new CameraComponent(camera));
+	sceneNode->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(camera)));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 	SafeRelease(camera);
@@ -1258,7 +1255,7 @@ void QtMainWindow::OnImposterDialog()
 void QtMainWindow::OnUserNodeDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new UserComponent());
+	sceneNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
 	sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1266,7 +1263,7 @@ void QtMainWindow::OnUserNodeDialog()
 void QtMainWindow::OnParticleEffectDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(new ParticleEffectComponent());
+	sceneNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
@@ -1840,36 +1837,67 @@ void QtMainWindow::OnAddActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 	
-	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
-	
-	if(selectedEntity)
+	const EntityGroup *selection = scene->selectionSystem->GetSelection();
+	size_t count = selection->Size();
+	if(count)
 	{
-		//need to remove component at first in order to clean ActionUpdateSystem
-		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-		
-		ActionComponent* actionComponent = new ActionComponent();
-		selectedEntity->AddComponent(actionComponent);
-		
-		scene->selectionSystem->SetSelection(NULL);
-		scene->selectionSystem->SetSelection(selectedEntity);
+		scene->BeginBatch("Add Action Component");
+
+		for(size_t i = 0; i < count; ++i)
+		{
+			scene->Exec(new AddComponentCommand(selection->GetEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
+		}
+
+		scene->EndBatch();
 	}
+
+//  VI:
+// 	if(selectedEntity)
+// 	{
+// 		//need to remove component at first in order to clean ActionUpdateSystem
+// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+// 		
+// 		ActionComponent* actionComponent = new ActionComponent();
+// 		selectedEntity->AddComponent(actionComponent);
+// 		actionComponent->Release();
+// 		
+// 		scene->selectionSystem->SetSelection(NULL);
+// 		scene->selectionSystem->SetSelection(selectedEntity);
+// 	}
 }
 
 void QtMainWindow::OnRemoveActionComponent()
 {
 	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
-	
-	if(selectedEntity)
+	if(!scene) return;
+
+	const EntityGroup *selection = scene->selectionSystem->GetSelection();
+	size_t count = selection->Size();
+	if(count)
 	{
-		//need to remove component at first in order to clean ActionUpdateSystem
-		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-				
-		scene->selectionSystem->SetSelection(NULL);
-		scene->selectionSystem->SetSelection(selectedEntity);
+		scene->BeginBatch("Remove Action Component");
+
+		for(size_t i = 0; i < count; ++i)
+		{
+			scene->Exec(new RemoveComponentCommand(selection->GetEntity(i), Component::ACTION_COMPONENT));
+		}
+
+		scene->EndBatch();
 	}
 
+//	VI:
+// 	SceneEditor2* scene = GetCurrentScene();
+//     if(!scene) return;
+// 	
+// 	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
+// 	
+// 	if(selectedEntity)
+// 	{
+// 		//need to remove component at first in order to clean ActionUpdateSystem
+// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+// 				
+// 		scene->selectionSystem->SetSelection(NULL);
+// 		scene->selectionSystem->SetSelection(selectedEntity);
+// 	}
 }
 

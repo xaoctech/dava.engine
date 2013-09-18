@@ -65,12 +65,14 @@ void LandscapeEditorBasePanel::InitPanel()
 	bool enabled = GetEditorEnabled();
 	SetWidgetsState(enabled);
 	BlockAllSignals(!enabled);
+	ConnectToShortcuts();
 }
 
 void LandscapeEditorBasePanel::DeinitPanel()
 {
 	SetWidgetsState(false);
 	BlockAllSignals(true);
+	DisconnectFromShortcuts();
 }
 
 void LandscapeEditorBasePanel::EditorToggled(SceneEditor2 *scene)
@@ -90,4 +92,12 @@ void LandscapeEditorBasePanel::EditorToggled(SceneEditor2 *scene)
 		StoreState();
 		OnEditorDisabled();
 	}
+}
+
+void LandscapeEditorBasePanel::ConnectToShortcuts()
+{
+}
+
+void LandscapeEditorBasePanel::DisconnectFromShortcuts()
+{
 }

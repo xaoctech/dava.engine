@@ -104,7 +104,11 @@ namespace DAVA
 			
 			result = new Entity();
 			result->SetName("Skybox");
+
+			result->RemoveComponent(Component::RENDER_COMPONENT);
 			result->AddComponent(renderComponent);
+			renderComponent->Release();
+
 			GetScene()->AddNode(result);
 			
 			DVASSERT(skyboxEntity);

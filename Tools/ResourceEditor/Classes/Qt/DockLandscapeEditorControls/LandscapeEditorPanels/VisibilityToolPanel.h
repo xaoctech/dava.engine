@@ -30,6 +30,11 @@ private slots:
 	void SetVisibilityArea();
 	void SetVisibilityAreaSize(int areaSize);
 
+	void IncreaseBrushSize();
+	void DecreaseBrushSize();
+	void IncreaseBrushSizeLarge();
+	void DecreaseBrushSizeLarge();
+
 protected:
 	virtual bool GetEditorEnabled();
 
@@ -41,6 +46,9 @@ protected:
 
 	virtual void StoreState();
 	virtual void RestoreState();
+
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
 
 private:
 	QPushButton* buttonSetVisibilityPoint;
