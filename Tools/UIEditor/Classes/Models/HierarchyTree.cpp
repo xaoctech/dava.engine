@@ -208,9 +208,35 @@ HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, Hierarchy
 	}
 	
 	HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(platformNode, name);
-	platformNode->AddTreeNode(screenNode);
+	InsertScreenNode(platformNode, screenNode);
 
 	return screenNode;
+}
+
+void HierarchyTree::InsertScreenNode(HierarchyTreePlatformNode* platformNode, HierarchyTreeScreenNode* screenNode)
+{
+	// Insert the new Screen Node right at the end of the screens list,
+	// but before the Aggregators. See pls DF-2011 for details.
+	HierarchyTreeNode* nodeToInsertAfter = NULL;
+
+	HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter;
+	for (iter = platformNode->GetChildNodes().begin(); iter != platformNode->GetChildNodes().end(); ++iter)
+    {
+		HierarchyTreeNode* node = (*iter);
+		if (dynamic_cast<HierarchyTreeAggregatorNode*>(node))
+		{
+			// Stop here.
+			break;
+		}
+
+		if (dynamic_cast<HierarchyTreeScreenNode*>(node))
+		{
+			nodeToInsertAfter = node;
+			continue;
+		}
+	}
+
+	platformNode->AddTreeNode(screenNode, nodeToInsertAfter);
 }
 
 HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect)

@@ -839,6 +839,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 					if(NULL != comp)
 					{
 						comp->Deserialize(compArch, sceneFileV2);
+                        RemoveComponent(comp->GetType());
 						AddComponent(comp);
 						comp->Release();
 					}

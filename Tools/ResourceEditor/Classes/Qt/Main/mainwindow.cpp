@@ -1850,20 +1850,6 @@ void QtMainWindow::OnAddActionComponent()
 
 		scene->EndBatch();
 	}
-
-//  VI:
-// 	if(selectedEntity)
-// 	{
-// 		//need to remove component at first in order to clean ActionUpdateSystem
-// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-// 		
-// 		ActionComponent* actionComponent = new ActionComponent();
-// 		selectedEntity->AddComponent(actionComponent);
-// 		actionComponent->Release();
-// 		
-// 		scene->selectionSystem->SetSelection(NULL);
-// 		scene->selectionSystem->SetSelection(selectedEntity);
-// 	}
 }
 
 void QtMainWindow::OnRemoveActionComponent()
@@ -1884,20 +1870,5 @@ void QtMainWindow::OnRemoveActionComponent()
 
 		scene->EndBatch();
 	}
-
-//	VI:
-// 	SceneEditor2* scene = GetCurrentScene();
-//     if(!scene) return;
-// 	
-// 	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
-// 	
-// 	if(selectedEntity)
-// 	{
-// 		//need to remove component at first in order to clean ActionUpdateSystem
-// 		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
-// 				
-// 		scene->selectionSystem->SetSelection(NULL);
-// 		scene->selectionSystem->SetSelection(selectedEntity);
-// 	}
 }
 
