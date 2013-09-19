@@ -40,9 +40,10 @@ TextDrawSystem::TextDrawSystem(DAVA::Scene * scene, SceneCameraSystem *_cameraSy
 	, cameraSystem(_cameraSystem)
 	, font(NULL)
 {
-	font = DAVA::GraphicsFont::Create("d:/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/terminus.def", "d:/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/terminus.txt");
-	//font = DAVA::GraphicsFont::Create("/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/terminus.def", "/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/terminus.txt");
-	//font = DAVA::GraphicsFont::Create("d:/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/arial_mono_11.def", "d:/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/arial_mono_11.txt");
+	DAVA::FilePath defPath = DAVA::FilePath("~res:/Fonts/terminus.def");
+	DAVA::FilePath txtPath = DAVA::FilePath("~res:/Gfx/Fonts/terminus.txt");
+
+	font = DAVA::GraphicsFont::Create(defPath.GetAbsolutePathname(), txtPath.GetAbsolutePathname());
 }
 
 TextDrawSystem::~TextDrawSystem()
@@ -71,8 +72,7 @@ void TextDrawSystem::Draw()
 		if(NULL != font)
 		{
 			DAVA::RenderManager::Instance()->SetRenderOrientation(DAVA::Core::SCREEN_ORIENTATION_PORTRAIT);
-			DAVA::RenderManager::Instance()->SetRenderEffect(NULL);
-			DAVA::RenderManager::Instance()->SetColor(255, 0, 0, 255);
+			DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::DEFAULT_2D_STATE_BLEND);
 
 			DAVA::List<TextToDraw>::iterator i  = listToDraw.begin();
 			DAVA::List<TextToDraw>::iterator end  = listToDraw.end();
@@ -82,10 +82,9 @@ void TextDrawSystem::Draw()
 				DAVA::WideString wStr = DAVA::StringToWString(i->text);
 				DAVA::Size2i sSize = font->GetStringSize(wStr);
 
-//				font->SetColor(i->color);
+				DAVA::RenderManager::Instance()->SetColor(i->color);
 				font->DrawString(i->pos.x - sSize.dx / 2, i->pos.y - sSize.dy, wStr);
 			}
-
 		}
 
 		listToDraw.clear();

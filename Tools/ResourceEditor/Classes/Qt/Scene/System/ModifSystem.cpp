@@ -33,6 +33,7 @@
 #include "Qt/Scene/System/CameraSystem.h"
 #include "Qt/Scene/System/CollisionSystem.h"
 #include "Qt/Scene/System/SelectionSystem.h"
+#include "Qt/Scene/System/TextDrawSystem.h"
 #include "Qt/Scene/SceneSignals.h"
 
 #include "Scene/EntityGroup.h"
@@ -200,6 +201,8 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						// init some values, needed for modifications
 						modifStartPos3d = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
 						modifStartPos2d = event->point;
+
+						modifCurPos3d = modifStartPos3d;
 					}
 				}
 			}
@@ -279,7 +282,44 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 }
 
 void EntityModificationSystem::Draw()
-{ }
+{
+	if(inModifState)
+	{
+		TextDrawSystem *td = ((SceneEditor2 *) GetScene())->textDrawSystem;
+
+		if(NULL != td)
+		{
+			char tmp[255];
+			tmp[0] = 0;
+
+			DAVA::Vector3 pos = hoodSystem->GetPosition();
+			DAVA::Vector2 pos2d = td->ToPos2d(pos);
+			pos2d.y -= 125;
+
+			switch (curMode)
+			{
+			case ST_MODIF_MOVE:
+				if(modifStartPos3d != modifCurPos3d)
+				{
+					DAVA::Vector3 offset = modifCurPos3d -modifStartPos3d;
+					sprintf(tmp, "[x: %8.2f, y: %8.2f, z: %8.2f]", offset.x, offset.y, offset.z);
+				}
+				break;
+			case ST_MODIF_ROTATE:
+				break;
+			case ST_MODIF_SCALE:
+				break;
+			default:
+				break;
+			}
+
+			if(0 != tmp[0])
+			{
+				td->DrawText(pos2d, tmp, DAVA::Color(255, 255, 0, 255));
+			}
+		}
+	}
+}
 
 void EntityModificationSystem::ProcessCommand(const Command2 *command, bool redo)
 {
@@ -568,7 +608,8 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		break;
 	}
 
-	moveOffset = modifPosWithLocedAxis - modifStartPos3d;
+	modifCurPos3d = modifPosWithLocedAxis;
+	moveOffset = modifCurPos3d - modifStartPos3d;
 
 	for (size_t i = 0; i < modifEntities.size(); ++i)
 	{
