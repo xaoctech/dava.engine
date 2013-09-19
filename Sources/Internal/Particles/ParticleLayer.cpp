@@ -268,7 +268,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 bool ParticleLayer::IsLodActive(int32 lod)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		return activeLODS[lod];
 	
 	return false;
@@ -276,7 +276,7 @@ bool ParticleLayer::IsLodActive(int32 lod)
 
 void ParticleLayer::SetLodActive(int32 lod, bool active)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		activeLODS[lod] = active;
 }
 
