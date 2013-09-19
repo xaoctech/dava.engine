@@ -1092,6 +1092,16 @@ namespace DAVA
 			}
 		}
 	}
+	
+	void UIControl::RemoveFromParent()
+	{
+		UIControl* parentControl = this->GetParent();
+		if (parentControl)
+		{
+			parentControl->RemoveControl(this);
+		}
+	}
+
 	void UIControl::RemoveAllControls()
 	{
 		while(!childs.empty())

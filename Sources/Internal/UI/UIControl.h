@@ -708,6 +708,10 @@ public:
 	 */
 	virtual void RemoveControl(UIControl *control);
 	/**
+	 \brief Remove this control from its parent, if any.
+	 */
+	virtual void RemoveFromParent();
+	/**
 	 \brief Removes all children from the control.
 	 */
 	virtual void RemoveAllControls();
