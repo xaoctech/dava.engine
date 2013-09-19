@@ -56,7 +56,7 @@ private:
     Texture * texture;
 
 public:
-    INTROSPECTION_EXTEND(RenderBatch, BaseObject, NULL);
+    INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);
 
 };
 
