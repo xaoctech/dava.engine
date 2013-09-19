@@ -196,6 +196,14 @@ void EditorLODData::SetForceDistance(DAVA::float32 distance)
             lodData[i]->SetForceLodLayer(DAVA::LodComponent::INVALID_LOD_LAYER);
         }
     }
+	else
+	{
+		DAVA::uint32 count = lodData.size();
+		for(DAVA::uint32 i = 0; i < count; ++i)
+		{
+			lodData[i]->SetForceDistance(DAVA::LodComponent::INVALID_DISTANCE);
+		}
+	}
 }
 
 DAVA::float32 EditorLODData::GetForceDistance() const
@@ -206,7 +214,7 @@ DAVA::float32 EditorLODData::GetForceDistance() const
 void EditorLODData::EnableForceDistance(bool enable)
 {
     forceDistanceEnabled = enable;
-    SetForceDistance(forceDistance);
+	SetForceDistance(forceDistance);
 }
 
 bool EditorLODData::GetForceDistanceEnabled() const
