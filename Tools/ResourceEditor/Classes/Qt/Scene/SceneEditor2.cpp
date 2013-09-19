@@ -127,7 +127,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
-	structureSystem->LockSignals();
+	structureSystem->LockSignals(true);
 
 	Entity * rootNode = GetRootNode(path);
 	if(rootNode)
@@ -163,7 +163,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	}
 
 	structureSystem->Init();
-	structureSystem->UnlockSignals();
+	structureSystem->LockSignals(false);
 
 	UpdateShadowColorFromLandscape();
 

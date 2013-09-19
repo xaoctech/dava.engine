@@ -336,7 +336,7 @@ void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const Entity
 		switch(scene->modifSystem->GetModifMode())
 		{
 		case ST_MODIF_MOVE:
-			setCursor(Qt::OpenHandCursor);
+			setCursor(Qt::SizeAllCursor);
 			break;
 		case ST_MODIF_ROTATE:
 			break;
