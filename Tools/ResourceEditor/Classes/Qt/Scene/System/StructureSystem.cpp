@@ -461,8 +461,25 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 		if(NULL != loadedEntity)
 		{
-            loadedEntity->SetSolid(true);
-			loadedEntity->Retain();
+			Entity *parentForOptimize = new Entity();
+			parentForOptimize->AddNode(loadedEntity);
+
+			SceneFileV2 sceneFile;
+			sceneFile.OptimizeScene(parentForOptimize);
+
+			if(parentForOptimize->GetChildrenCount())
+			{
+				loadedEntity = parentForOptimize->GetChild(0);
+				loadedEntity->SetSolid(true);
+				loadedEntity->Retain();
+			}
+			else
+			{
+				loadedEntity->Release();
+				loadedEntity = NULL;
+			}
+
+			parentForOptimize->Release();
 		}
 
 		sceneEditor->ReleaseRootNode(sc2path);
