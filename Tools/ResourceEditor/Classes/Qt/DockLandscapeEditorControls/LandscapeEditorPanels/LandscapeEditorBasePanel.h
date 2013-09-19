@@ -43,6 +43,9 @@ protected:
 	virtual void StoreState() = 0;
 	virtual void RestoreState() = 0;
 
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
+
 private:
 	SceneEditor2* activeScene;
 	

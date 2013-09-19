@@ -4,6 +4,7 @@
 #include "../../SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "TextureBrowser/TextureConvertor.h"
+#include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QComboBox>
@@ -281,3 +282,153 @@ int32 TilemaskEditorPanel::StrengthSystemToUI(float32 systemValue)
 	return uiValue;
 }
 // end of convert functions ==========================
+
+void TilemaskEditorPanel::ConnectToShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseStrength()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseStrengthLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseStrengthLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+			this, SLOT(NextTexture()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+			this, SLOT(PrevTexture()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+			this, SLOT(NextTool()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+			this, SLOT(PrevTool()));
+}
+
+void TilemaskEditorPanel::DisconnectFromShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSizeLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSizeLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseStrength()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseStrengthLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseStrengthLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+			   this, SLOT(NextTexture()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+			   this, SLOT(PrevTexture()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+			   this, SLOT(NextTool()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+			   this, SLOT(PrevTool()));
+}
+
+void TilemaskEditorPanel::IncreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void TilemaskEditorPanel::DecreaseBrushSize()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void TilemaskEditorPanel::IncreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void TilemaskEditorPanel::DecreaseBrushSizeLarge()
+{
+	sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void TilemaskEditorPanel::IncreaseStrength()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void TilemaskEditorPanel::DecreaseStrength()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void TilemaskEditorPanel::IncreaseStrengthLarge()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void TilemaskEditorPanel::DecreaseStrengthLarge()
+{
+	sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void TilemaskEditorPanel::PrevTexture()
+{
+	int32 curIndex = comboTileTexture->currentIndex();
+	if (curIndex)
+	{
+		comboTileTexture->setCurrentIndex(curIndex - 1);
+	}
+}
+
+void TilemaskEditorPanel::NextTexture()
+{
+	int32 curIndex = comboTileTexture->currentIndex();
+	if (curIndex < comboTileTexture->count() - 1)
+	{
+		comboTileTexture->setCurrentIndex(curIndex + 1);
+	}
+}
+
+void TilemaskEditorPanel::PrevTool()
+{
+	int32 curIndex = comboBrushImage->currentIndex();
+	if (curIndex)
+	{
+		comboBrushImage->setCurrentIndex(curIndex - 1);
+	}
+}
+
+void TilemaskEditorPanel::NextTool()
+{
+	int32 curIndex = comboBrushImage->currentIndex();
+	if (curIndex < comboBrushImage->count() - 1)
+	{
+		comboBrushImage->setCurrentIndex(curIndex + 1);
+	}
+}

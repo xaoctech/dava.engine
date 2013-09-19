@@ -74,6 +74,7 @@
 		49CAAF7A17A65FA400C91496 /* RulerToolSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7817A65FA400C91496 /* RulerToolSystem.cpp */; };
 		49CAAF8117A65FB200C91496 /* RulerToolProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7F17A65FB200C91496 /* RulerToolProxy.cpp */; };
 		49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F26F1C1771D67D008012B5 /* CommandAction.cpp */; };
+		49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */; };
 		49FE771C17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */; };
 		49FE772017E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */; };
 		4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2561174CD38E000D1187 /* Console.cpp */; };
@@ -580,6 +581,8 @@
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
+		E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */; };
+		E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
 		E8EBEDFE17CF92B400104156 /* StatusBar.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEDFC17CF92B400104156 /* StatusBar.cpp */; };
 		E8EBEE0417CF943300104156 /* StatusBar_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEE0317CF943300104156 /* StatusBar_moc.cpp */; };
@@ -791,6 +794,8 @@
 		49EF1C7A1726A68800B899E6 /* CommandList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandList.h; path = Classes/Commands/CommandList.h; sourceTree = "<group>"; };
 		49F26F1C1771D67D008012B5 /* CommandAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAction.cpp; sourceTree = "<group>"; };
 		49F26F1D1771D67D008012B5 /* CommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandAction.h; sourceTree = "<group>"; };
+		49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorShortcutManager.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.cpp; sourceTree = "<group>"; };
+		49F546F817E89B5E0084015D /* LandscapeEditorShortcutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorShortcutManager.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h; sourceTree = "<group>"; };
 		49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorControlsPlaceholder.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.cpp; sourceTree = "<group>"; };
 		49FE771B17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorControlsPlaceholder.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.h; sourceTree = "<group>"; };
 		49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorBasePanel.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/LandscapeEditorBasePanel.cpp; sourceTree = "<group>"; };
@@ -1548,8 +1553,6 @@
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
-		A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor.cpp; sourceTree = "<group>"; };
-		A607F45917A1237B00AB5D98 /* ActionComponentEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponentEditor.h; sourceTree = "<group>"; };
 		A662EDCC17E0D37800AF2135 /* AddSkyboxDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSkyboxDialog.cpp; sourceTree = "<group>"; };
 		A662EDCD17E0D37800AF2135 /* AddSkyboxDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSkyboxDialog.h; sourceTree = "<group>"; };
 		A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClickableQLabel.cpp; sourceTree = "<group>"; };
@@ -1770,6 +1773,10 @@
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
 		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
 		E8DADC0517E75A0B00561D52 /* BeastAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastAction.h; sourceTree = "<group>"; };
+		E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
+		E8DADC2C17E9ED3C00561D52 /* AddComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddComponentCommand.h; sourceTree = "<group>"; };
+		E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveComponentCommand.cpp; sourceTree = "<group>"; };
+		E8DADC2E17E9ED3C00561D52 /* RemoveComponentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoveComponentCommand.h; sourceTree = "<group>"; };
 		E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorContentWidget.cpp; sourceTree = "<group>"; };
 		E8DD07BE16B054210013F115 /* BaseParticleEditorContentWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorContentWidget.h; sourceTree = "<group>"; };
 		E8EBEDFC17CF92B400104156 /* StatusBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatusBar.cpp; sourceTree = "<group>"; };
@@ -1967,6 +1974,8 @@
 				49FE771D17E34B720010B8E1 /* LandscapeEditorPanels */,
 				49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */,
 				49FE771B17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.h */,
+				49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */,
+				49F546F817E89B5E0084015D /* LandscapeEditorShortcutManager.h */,
 			);
 			name = DockLandscapeEditorControls;
 			sourceTree = "<group>";
@@ -2491,6 +2500,10 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */,
+				E8DADC2C17E9ED3C00561D52 /* AddComponentCommand.h */,
+				E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */,
+				E8DADC2E17E9ED3C00561D52 /* RemoveComponentCommand.h */,
 				E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */,
 				E8DADC0417E75A0B00561D52 /* BeastAction.cpp */,
 				E8DADC0517E75A0B00561D52 /* BeastAction.h */,
@@ -4791,6 +4804,9 @@
 				622ABE8B17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp in Build Sources */,
 				A6B0519117E8B600000EED68 /* ActionComponentEditor.cpp in Build Sources */,
 				A6B0519317E8B763000EED68 /* ActionComponentEditor_moc.cpp in Build Sources */,
+				E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */,
+				E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */,
+				49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

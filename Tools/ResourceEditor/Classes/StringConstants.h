@@ -164,6 +164,33 @@ namespace ResourceEditor
 	static const String HEIGHTMAP_EDITOR_CHECKBOX_TILEMASK			= "Tile Mask";
 	static const String HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE			= "Brush\nimage:";
 	static const String HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT		= "Height:";
+
+	static const String SHORTCUT_BRUSH_SIZE_INCREASE_SMALL			= "landscape-editor.brush-size.increase.small";
+	static const String SHORTCUT_BRUSH_SIZE_DECREASE_SMALL			= "landscape-editor.brush-size.decrease.small";
+	static const String SHORTCUT_BRUSH_SIZE_INCREASE_LARGE			= "landscape-editor.brush-size.increase.large";
+	static const String SHORTCUT_BRUSH_SIZE_DECREASE_LARGE			= "landscape-editor.brush-size.decrease.large";
+	static const String SHORTCUT_BRUSH_IMAGE_NEXT					= "landscape-editor.brush-image.next";
+	static const String SHORTCUT_BRUSH_IMAGE_PREV					= "landscape-editor.brush-image.prev";
+	static const String SHORTCUT_TEXTURE_NEXT						= "landscape-editor.texture.next";
+	static const String SHORTCUT_TEXTURE_PREV						= "landscape-editor.texture.prev";
+	static const String SHORTCUT_STRENGTH_INCREASE_SMALL			= "landscape-editor.strength.increase.small";
+	static const String SHORTCUT_STRENGTH_DECREASE_SMALL			= "landscape-editor.strength.decrease.small";
+	static const String SHORTCUT_STRENGTH_INCREASE_LARGE			= "landscape-editor.strength.increase.large";
+	static const String SHORTCUT_STRENGTH_DECREASE_LARGE			= "landscape-editor.strength.decrease.large";
+	static const String SHORTCUT_AVG_STRENGTH_INCREASE_SMALL		= "landscape-editor.average-strength.increase.small";
+	static const String SHORTCUT_AVG_STRENGTH_DECREASE_SMALL		= "landscape-editor.average-strength.decrease.small";
+	static const String SHORTCUT_AVG_STRENGTH_INCREASE_LARGE		= "landscape-editor.average-strength.increase.large";
+	static const String SHORTCUT_AVG_STRENGTH_DECREASE_LARGE		= "landscape-editor.average-strength.decrease.large";
+	static const String SHORTCUT_VISIBILITY_TOOL_SET_POINT			= "visibility-tool.set-point";
+	static const String SHORTCUT_VISIBILITY_TOOL_SET_AREA			= "visibility-tool.set-area";
+	static const String SHORTCUT_SET_COPY_PASTE						= "heightmap-editor.set-copy-paste";
+	static const String SHORTCUT_SET_ABSOLUTE						= "heightmap-editor.set-absolute";
+	static const String SHORTCUT_SET_RELATIVE						= "heightmap-editor.set-relative";
+	static const String SHORTCUT_SET_AVERAGE						= "heightmap-editor.set-average";
+	static const String SHORTCUT_SET_ABS_DROP						= "heightmap-editor.set-abs-drop";
+	static const String SHORTCUT_SET_DROPPER						= "heightmap-editor.set-dropper";
+	static const String SHORTCUT_COPY_PASTE_HEIGHTMAP				= "heightmap-editor.copy-paste.heightmap";
+	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "heightmap-editor.copy-paste.tilemask";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__
