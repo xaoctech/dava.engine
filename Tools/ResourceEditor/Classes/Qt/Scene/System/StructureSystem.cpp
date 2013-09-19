@@ -335,7 +335,10 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
+			LockSignals();
 			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
+			UnlockSignals();
+
 			loadedEntity->Release();
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)

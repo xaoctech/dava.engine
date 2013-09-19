@@ -33,6 +33,7 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyDataKeyedArchiveMember.h"
+#include "SceneEditor/EditorConfig.h"
 
 #include <QSet>
 #include <QMenu>
@@ -154,6 +155,19 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	else
 	{
 		childData = new QtPropertyKeyedArchiveMember(curArchive, key.toStdString());
+
+		int presetValueType = EditorConfig::Instance()->GetPropertyValueType(key.toStdString());
+		if(presetValueType != DAVA::VariantType::TYPE_NONE)
+		{
+			if(value->type == presetValueType)
+			{
+				const DAVA::Vector<DAVA::String>& allowedValues = EditorConfig::Instance()->GetComboPropertyValues(key.toStdString());
+				for(int i = 0; i < allowedValues.size(); ++i)
+				{
+					((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType(i), allowedValues[i].c_str());
+				}
+			}
+		}
 	}
 
 	ChildAdd(key, childData);
@@ -268,6 +282,7 @@ void* QtPropertyDataDavaKeyedArcive::CreateLastCommand() const
 KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int defaultType, QWidget *parent /* = NULL */) 
 	: QWidget(parent)
 	, arch(_arch)
+	, presetWidget(NULL)
 {
 	QGridLayout *grLayout = new QGridLayout();
 	int delautTypeIndex = 0;
@@ -280,7 +295,6 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	defaultBtn = new QPushButton("Ok", this);
 	keyWidget = new QLineEdit(this);
 	valueWidget = new QComboBox(this);
-	presetWidget = new QComboBox(this);
 
 	int j = 0;
 	for (int type = (DAVA::VariantType::TYPE_NONE + 1); type < DAVA::VariantType::TYPES_COUNT; type++)
@@ -300,13 +314,30 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	}
 	valueWidget->setCurrentIndex(delautTypeIndex);
 
-	grLayout->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
-	grLayout->addWidget(keyWidget, 0, 1, 1, 2);
-	grLayout->addWidget(new QLabel("Value type:", this), 1, 0, 1, 1);
-	grLayout->addWidget(valueWidget, 1, 1, 1, 2);
-	grLayout->addWidget(new QLabel("Preset:", this), 2, 0, 1, 1);
-	grLayout->addWidget(presetWidget, 2, 1, 1, 2);
-	grLayout->addWidget(defaultBtn, 3, 2, 1, 1);
+	int row = 0;
+	grLayout->addWidget(new QLabel("Key:", this), row, 0, 1, 1);
+	grLayout->addWidget(keyWidget, row, 1, 1, 2);
+	grLayout->addWidget(new QLabel("Value type:", this), ++row, 0, 1, 1);
+	grLayout->addWidget(valueWidget, row, 1, 1, 2);
+
+	const Vector<String> &presetValues = EditorConfig::Instance()->GetProjectPropertyNames();
+	if(presetValues.size() > 0)
+	{
+		presetWidget = new QComboBox(this);
+		
+		presetWidget->addItem("None", DAVA::VariantType::TYPE_NONE);
+		for(size_t i = 0; i < presetValues.size(); ++i)
+		{
+			presetWidget->addItem(presetValues[i].c_str(), EditorConfig::Instance()->GetPropertyValueType(presetValues[i]));
+		}
+
+		grLayout->addWidget(new QLabel("Preset:", this), ++row, 0, 1, 1);
+		grLayout->addWidget(presetWidget, row, 1, 1, 2);
+
+		QObject::connect(presetWidget, SIGNAL(activated(int)), this, SLOT(PreSetSelected(int)));
+	}
+
+	grLayout->addWidget(defaultBtn, ++row, 2, 1, 1);
 
 	grLayout->setMargin(5);
 	grLayout->setSpacing(3);
@@ -383,7 +414,23 @@ void KeyedArchiveItemWidget::OkKeyPressed()
 		}
 		else
 		{
-			emit ValueReady(key, DAVA::VariantType::FromType(valueWidget->itemData(valueWidget->currentIndex()).toInt()));
+			// preset?
+			int presetType = DAVA::VariantType::TYPE_NONE;
+			if(NULL != presetWidget)
+			{
+				presetType = presetWidget->itemData(presetWidget->currentIndex()).toInt();
+			}
+			
+			if(DAVA::VariantType::TYPE_NONE != presetType)
+			{
+				DAVA::VariantType presetValue = *(EditorConfig::Instance()->GetPropertyDefaultValue(key));
+				emit ValueReady(key, presetValue);
+			}
+			else
+			{
+				emit ValueReady(key, DAVA::VariantType::FromType(valueWidget->itemData(valueWidget->currentIndex()).toInt()));
+			}
+
 			this->deleteLater();
 		}
 	}
@@ -393,3 +440,18 @@ void KeyedArchiveItemWidget::OkKeyPressed()
 	}
 }
 
+void KeyedArchiveItemWidget::PreSetSelected(int index)
+{
+	if(presetWidget->itemData(index).toInt() != DAVA::VariantType::TYPE_NONE)
+	{
+		keyWidget->setText(presetWidget->itemText(index));
+		keyWidget->setEnabled(false);
+		valueWidget->setEnabled(false);
+	}
+	else
+	{
+		keyWidget->setText("");
+		keyWidget->setEnabled(true);
+		valueWidget->setEnabled(true);
+	}
+}

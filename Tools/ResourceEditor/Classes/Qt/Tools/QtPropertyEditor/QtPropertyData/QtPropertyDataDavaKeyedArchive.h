@@ -92,6 +92,7 @@ protected:
 
 protected slots:
 	void OkKeyPressed();
+	void PreSetSelected(int index);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
