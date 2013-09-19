@@ -272,7 +272,7 @@ void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
         
         if(GetLodLayersCount() - 1 == layerNum)
         {
-            lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * 2);
+            lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * 1.05f);
         }
         if(layerNum)
         {
@@ -332,6 +332,25 @@ void LodComponent::CopyLODSettings(const LodComponent * fromLOD)
     forceDistance = fromLOD->forceDistance;
     forceDistanceSq = fromLOD->forceDistanceSq;
     forceLodLayer = fromLOD->forceLodLayer;
+}
+
+void LodComponent::SetForceLayerAsCurrent()
+{
+	if(lodLayers.size())
+	{
+		if((int32)lodLayers.size() <= forceLodLayer)
+		{
+			currentLod = lodLayers.size() - 1;
+		}
+		else
+		{
+			currentLod = forceLodLayer;
+		}
+	}
+	else
+	{
+		currentLod = INVALID_LOD_LAYER;
+	}
 }
 
 

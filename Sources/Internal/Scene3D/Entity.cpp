@@ -1031,7 +1031,7 @@ const Matrix4 & Entity::GetLocalTransform()
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform();
 }
 
-const Matrix4 & Entity::GetWorldTransform()
+const Matrix4 & Entity::GetWorldTransform() const
 {
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }

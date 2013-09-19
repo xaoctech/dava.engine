@@ -142,6 +142,8 @@ public:
 
     void CopyLODSettings(const LodComponent * fromLOD);
     
+	void SetForceLayerAsCurrent();
+
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
@@ -150,34 +152,6 @@ public:
         PROPERTY("forceDistance", "Force Distance", GetForceDistance, SetForceDistance, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
     );
-    
-//    Entity::Save(archive, sceneFile);
-//    archive->SetInt32("lodCount", (int32)lodLayers.size());
-//    
-//    int32 lodIdx = 0;
-//    const List<LodData>::const_iterator &end = lodLayers.end();
-//    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
-//    {
-//        LodData & ld = *it;
-//        archive->SetInt32(Format("lod%d_layer", lodIdx), (int32)ld.layer);
-//        size_t size = ld.nodes.size();
-//        archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
-//        for (size_t idx = 0; idx < size; ++idx)
-//        {
-//            for (int32 i = 0; i < (int32)children.size(); i++)
-//            {
-//                if(children[i] == ld.nodes[idx])
-//                {
-//                    archive->SetInt32(Format("l%d_%d_ni", lodIdx, idx), i);
-//                    break;
-//                }
-//            }
-//        }
-//        
-//        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
-//        lodIdx++;
-//    }
-
 };
 
 int32 LodComponent::GetLodLayersCount() const
