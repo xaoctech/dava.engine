@@ -59,7 +59,7 @@ public:
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
-	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
+	void Reload(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
 	void Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos = DAVA::Vector3());
 
 	void LockSignals(bool locked);
