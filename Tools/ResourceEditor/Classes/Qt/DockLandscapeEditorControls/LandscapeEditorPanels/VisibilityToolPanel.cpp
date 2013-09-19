@@ -4,6 +4,7 @@
 #include "../../SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
+#include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QPushButton>
@@ -75,7 +76,9 @@ void VisibilityToolPanel::InitUI()
 	sliderWidgetAreaSize->Init(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_CAPTION.c_str(),
 							   false, DEF_AREA_MAX_SIZE, DEF_AREA_MIN_SIZE, DEF_AREA_MIN_SIZE);
 	buttonSetVisibilityPoint->setText(ResourceEditor::VISIBILITY_TOOL_SET_POINT_CAPTION.c_str());
+	buttonSetVisibilityPoint->setCheckable(true);
 	buttonSetVisibilityArea->setText(ResourceEditor::VISIBILITY_TOOL_SET_AREA_CAPTION.c_str());
+	buttonSetVisibilityArea->setCheckable(true);
 	buttonSaveTexture->setText(ResourceEditor::VISIBILITY_TOOL_SAVE_TEXTURE_CAPTION.c_str());
 }
 
@@ -216,4 +219,66 @@ void VisibilityToolPanel::SetVisibilityArea()
 void VisibilityToolPanel::SetVisibilityAreaSize(int areaSize)
 {
 	GetActiveScene()->visibilityToolSystem->SetBrushSize(AreaSizeUIToSystem(areaSize));
+}
+
+void VisibilityToolPanel::ConnectToShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_POINT), SIGNAL(activated()),
+			this, SLOT(SetVisibilityPoint()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_AREA), SIGNAL(activated()),
+			this, SLOT(SetVisibilityArea()));
+}
+
+void VisibilityToolPanel::DisconnectFromShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(IncreaseBrushSizeLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			   this, SLOT(DecreaseBrushSizeLarge()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_POINT), SIGNAL(activated()),
+			   this, SLOT(SetVisibilityPoint()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_AREA), SIGNAL(activated()),
+			   this, SLOT(SetVisibilityArea()));
+}
+
+void VisibilityToolPanel::IncreaseBrushSize()
+{
+	sliderWidgetAreaSize->SetValue(sliderWidgetAreaSize->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void VisibilityToolPanel::DecreaseBrushSize()
+{
+	sliderWidgetAreaSize->SetValue(sliderWidgetAreaSize->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void VisibilityToolPanel::IncreaseBrushSizeLarge()
+{
+	sliderWidgetAreaSize->SetValue(sliderWidgetAreaSize->GetValue()
+								   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void VisibilityToolPanel::DecreaseBrushSizeLarge()
+{
+	sliderWidgetAreaSize->SetValue(sliderWidgetAreaSize->GetValue()
+								   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }

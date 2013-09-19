@@ -190,8 +190,7 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscape *displayingLandsc
 	Entity* lanscapeNode = FindLandscapeEntity(scene);
 	
 	lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	RenderComponent* component = new RenderComponent(displayingLandscape);
-	lanscapeNode->AddComponent(component);
+	lanscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(displayingLandscape)));
 
     currentLandscape = displayingLandscape;
     return true;
@@ -223,7 +222,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscape *hiddingLandscape
 		
 		Entity* lanscapeNode = FindLandscapeEntity(scene);
 		lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-		lanscapeNode->AddComponent(new RenderComponent(nestedLandscape));
+		lanscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(nestedLandscape)));
         
         if(NeedToKillRenderer(nestedLandscape))
         {

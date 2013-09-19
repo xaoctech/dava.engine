@@ -364,6 +364,7 @@
     <ClCompile Include="Classes\CommandLine\SceneSaver\SceneSaverTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
+    <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp" />
     <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp" />
@@ -390,6 +391,7 @@
     <ClCompile Include="Classes\Commands2\ParticleForceRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleLayerMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleLayerRemoveCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\RemoveComponentCommand.cpp" />
     <ClCompile Include="Classes\Commands2\RulerToolActions.cpp" />
     <ClCompile Include="Classes\Commands2\SaveEntityAsAction.cpp" />
     <ClCompile Include="Classes\Commands2\TilemaskEditorCommands.cpp" />
@@ -450,6 +452,7 @@
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.cpp" />
+    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp" />
@@ -1065,6 +1068,7 @@
     <ClInclude Include="Classes\CommandLine\SceneSaver\SceneSaverTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
+    <ClInclude Include="Classes\Commands2\AddComponentCommand.h" />
     <ClInclude Include="Classes\Commands2\AddEntityCommand.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h" />
@@ -1092,6 +1096,7 @@
     <ClInclude Include="Classes\Commands2\ParticleForceRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleLayerMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleLayerRemoveCommand.h" />
+    <ClInclude Include="Classes\Commands2\RemoveComponentCommand.h" />
     <ClInclude Include="Classes\Commands2\RulerToolActions.h" />
     <ClInclude Include="Classes\Commands2\SaveEntityAsAction.h" />
     <ClInclude Include="Classes\Commands2\TilemaskEditorCommands.h" />
@@ -1159,6 +1164,7 @@
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.h" />
+    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h" />
