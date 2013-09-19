@@ -71,6 +71,7 @@ private:
 
 	UIStaticText* staticText;
 	UIButton* testButton;
+	UIButton* removeFromParentButton;
 	
 	UIWebView* webView1;
 	UIWebView* webView2;

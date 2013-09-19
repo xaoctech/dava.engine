@@ -77,10 +77,22 @@ void SpeedTreeLeafBatch::Draw(Camera * camera)
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->AttachRenderData();
 
+    int32 uniformWorldTranslate = shader->FindUniformIndexByName("worldTranslate");
+    if(uniformWorldTranslate != -1)
+    {
+        shader->SetUniformValueByIndex(uniformWorldTranslate, finalMatrix.GetTranslationVector());
+    }
+
     int32 uniformTexture0 = shader->FindUniformIndexByName("texture0");
     if(uniformTexture0 != -1)
     {
         shader->SetUniformValueByIndex(uniformTexture0, 0);
+    }
+    
+    int32 uniformWorldScale = shader->FindUniformIndexByName("worldScale");
+    if(uniformWorldScale != -1)
+    {
+        shader->SetUniformValueByIndex(uniformWorldScale, worldTransformPtr->GetScaleVector());
     }
 
     if (dataSource->renderDataObject->GetIndexBufferID() != 0)
