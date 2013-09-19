@@ -3707,9 +3707,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_SliderWidget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h">
       <Filter>Classes\Qt\SliderWidget</Filter>
     </ClInclude>
