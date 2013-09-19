@@ -72,6 +72,7 @@ public:
 	DAVA::Landscape* GetLandscape() const;
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
+	void LockCollisionObjects(bool lock);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -85,6 +86,7 @@ protected:
 
 protected:
 	int drawMode;
+	bool lockedCollisionObjects;
 
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;

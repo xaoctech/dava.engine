@@ -285,6 +285,23 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 	}
 }
 
+void SceneSelectionSystem::Clear()
+{
+	if(!selectionLocked)
+	{
+		if(curSelections.Size() > 0)
+		{
+			while(curSelections.Size() > 0)
+			{
+				DAVA::Entity *entity = curSelections.GetEntity(0);
+				curSelections.Rem(entity);
+
+				SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+			}
+		}
+	}
+}
+
 const EntityGroup* SceneSelectionSystem::GetSelection() const
 {
 	return &curSelections;

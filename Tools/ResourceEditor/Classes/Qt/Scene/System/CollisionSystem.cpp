@@ -50,6 +50,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	, rayIntersectCached(false)
 	, drawMode(ST_COLL_DRAW_NOTHING)
 	, curLandscape(NULL)
+	, lockedCollisionObjects(false)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -241,17 +242,25 @@ DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
-	if(NULL != entity)
+	if(!lockedCollisionObjects)
 	{
-		// make sure that WorldTransform is up to date
-		if(NULL != entity->GetScene())
+		if(NULL != entity)
 		{
-			entity->GetScene()->transformSystem->Process();
+			// make sure that WorldTransform is up to date
+			if(NULL != entity->GetScene())
+			{
+				entity->GetScene()->transformSystem->Process();
+			}
 		}
-	}
 
-	RemoveEntity(entity);
-	AddEntity(entity);
+		RemoveEntity(entity);
+		AddEntity(entity);
+	}
+}
+
+void SceneCollisionSystem::LockCollisionObjects(bool lock)
+{
+	lockedCollisionObjects = lock;
 }
 
 DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(DAVA::Entity *entity)
@@ -424,42 +433,45 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 {
 	CollisionBaseObject *collObj = NULL;
 
-	// check if this entity is landscape
-	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
-	if( NULL == collObj &&
-		NULL != landscape)
+	if(!lockedCollisionObjects)
 	{
-		collObj = new CollisionLandscape(entity, landCollWorld, landscape);
-		curLandscape = landscape;
+		// check if this entity is landscape
+		DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
+		if( NULL == collObj &&
+			NULL != landscape)
+		{
+			collObj = new CollisionLandscape(entity, landCollWorld, landscape);
+			curLandscape = landscape;
 
-		return collObj;
-	}
+			return collObj;
+		}
 
-	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
-	if( NULL == collObj &&
-		NULL != particleEmitter)
-	{
-		collObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
-	}
+		DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
+		if( NULL == collObj &&
+			NULL != particleEmitter)
+		{
+			collObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
+		}
 
-	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
-	if( NULL == collObj &&
-		NULL != renderObject && entity->IsLodMain(0))
-	{
-		collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
-	}
+		DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
+		if( NULL == collObj &&
+			NULL != renderObject && entity->IsLodMain(0))
+		{
+			collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+		}
 
-	DAVA::Camera *camera = DAVA::GetCamera(entity);
-	if( NULL == collObj && 
-		NULL != camera)
-	{
-		collObj = new CollisionCamera(entity, objectsCollWorld, camera);
-	}
+		DAVA::Camera *camera = DAVA::GetCamera(entity);
+		if( NULL == collObj && 
+			NULL != camera)
+		{
+			collObj = new CollisionCamera(entity, objectsCollWorld, camera);
+		}
 
-	if(NULL != collObj)
-	{
-		entityToCollision[entity] = collObj;
-		collisionToEntity[collObj->btObject] = entity;
+		if(NULL != collObj)
+		{
+			entityToCollision[entity] = collObj;
+			collisionToEntity[collObj->btObject] = entity;
+		}
 	}
 
 	return collObj;

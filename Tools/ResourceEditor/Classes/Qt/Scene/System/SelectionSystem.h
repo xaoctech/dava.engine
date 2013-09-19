@@ -55,6 +55,7 @@ public:
 	void SetSelection(DAVA::Entity *entity);
 	void AddSelection(DAVA::Entity *entity);
 	void RemSelection(DAVA::Entity *entity);
+	void Clear();
 
 	const EntityGroup* GetSelection() const;
 
