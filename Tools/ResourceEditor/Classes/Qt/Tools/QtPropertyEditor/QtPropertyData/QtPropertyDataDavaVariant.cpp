@@ -724,7 +724,7 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 			}
 
 			comboBox->setCurrentIndex(index);
-			comboBox->showPopup();
+			//comboBox->showPopup(); // Qt BUG: showing popup whis will cause artifacts on combobox destoy
 
 			ret = true;
 		}
