@@ -595,7 +595,7 @@ void SceneTree::ReloadModel()
 	if(NULL != sceneEditor)
 	{
 		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Reload(selection);
+		sceneEditor->structureSystem->Reload(*selection);
 	}
 }
 
@@ -613,7 +613,7 @@ void SceneTree::ReloadModelAs()
 
 			if(!filePath.isEmpty())
 			{
-				sceneEditor->structureSystem->Reload(selection, filePath.toStdString());
+				sceneEditor->structureSystem->Reload(*selection, filePath.toStdString());
 			}
 		}
 	}
@@ -625,7 +625,7 @@ void SceneTree::ReloadModelWithoutLightmaps()
 	if(NULL != sceneEditor)
 	{
 		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Reload(selection, "", true);
+		sceneEditor->structureSystem->Reload(*selection, "", true);
 	}
 }
 

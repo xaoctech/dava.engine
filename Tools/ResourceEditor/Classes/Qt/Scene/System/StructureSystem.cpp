@@ -229,19 +229,19 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 	}
 }
 
-void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
+void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && entityGroup->Size() > 0)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
 		DAVA::Vector<DAVA::Entity*> newEntities;
 		bool loadSuccess = false;
 
 		// load new models
-		for(size_t i = 0; i < entityGroup->Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
 			DAVA::FilePath loadModelPath = newModelPath;
-			DAVA::Entity *entity = entityGroup->GetEntity(i);
+			DAVA::Entity *entity = entityGroup.GetEntity(i);
 
 			newEntities.push_back(NULL);
 
@@ -270,9 +270,9 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 			LockSignals(true);
 			sceneEditor->BeginBatch("Reload model");
 
-			for(size_t i = 0; i < entityGroup->Size(); ++i)
+			for(size_t i = 0; i < entityGroup.Size(); ++i)
 			{
-				DAVA::Entity *origEntity = entityGroup->GetEntity(i);
+				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
 				DAVA::Entity *newEntity = newEntities[i];
 
 				if(NULL != origEntity && NULL != newEntity && NULL != origEntity->GetParent())
