@@ -160,22 +160,10 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
-
-	customColorsPanel = new CustomColorsPanel();
-	rulerToolPanel = new RulerToolPanel();
-	visibilityToolPanel = new VisibilityToolPanel();
-	tilemaskEditorPanel = new TilemaskEditorPanel();
-	heightmapEditorPanel = new HeightmapEditorPanel();
 }
 
 QtMainWindow::~QtMainWindow()
 {
-	SafeDelete(customColorsPanel);
-	SafeDelete(rulerToolPanel);
-	SafeDelete(visibilityToolPanel);
-	SafeDelete(tilemaskEditorPanel);
-	SafeDelete(heightmapEditorPanel);
-
 	SafeRelease(materialEditor);
     
     if(HintManager::Instance())
@@ -627,7 +615,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
 	LoadShadowBlendModeState(scene);
-	OnLandscapeEditorToggled(scene);
+	LoadLandscapeEditorState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -872,12 +860,22 @@ void QtMainWindow::OnSceneSaveToFolder()
 void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 {
     SceneEditor2 *scene = ui->sceneTabWidget->GetTabScene(tabIndex);
-    if(!scene || !scene->IsChanged())
+    if(!scene)
     {
         closeRequest->Accept();
         return;
     }
-    
+
+	if (!scene->IsChanged())
+	{
+		if (scene->GetEnabledTools() != 0)
+		{
+			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+		}
+		closeRequest->Accept();
+        return;
+	}
+
     int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?",
                                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
     
@@ -886,7 +884,13 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         closeRequest->Cancel();
         return;
     }
-	else if(answer == QMessageBox::No)
+
+	if (scene->GetEnabledTools() != 0)
+	{
+		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	}
+
+	if(answer == QMessageBox::No)
 	{
 		closeRequest->Accept();
 		return;
@@ -1436,6 +1440,11 @@ void QtMainWindow::LoadGPUFormat()
 	}
 }
 
+void QtMainWindow::LoadLandscapeEditorState(SceneEditor2* scene)
+{
+	OnLandscapeEditorToggled(scene);
+}
+
 void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -1683,8 +1692,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	{
 		return;
 	}
-	
-	ui->landscapeEditorControlsPlaceholder->RemovePanel();
+
 	ui->actionCustomColorsEditor->setChecked(false);
 	ui->actionHeightMapEditor->setChecked(false);
 	ui->actionRulerTool->setChecked(false);
@@ -1695,27 +1703,22 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	int32 tools = scene->GetEnabledTools();
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
-		ui->landscapeEditorControlsPlaceholder->SetPanel(customColorsPanel);
 		ui->actionCustomColorsEditor->setChecked(true);
 	}
 	else if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
 	{
-		ui->landscapeEditorControlsPlaceholder->SetPanel(heightmapEditorPanel);
 		ui->actionHeightMapEditor->setChecked(true);
 	}
 	else if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
 	{
-		ui->landscapeEditorControlsPlaceholder->SetPanel(rulerToolPanel);
 		ui->actionRulerTool->setChecked(true);
 	}
 	else if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
 	{
-		ui->landscapeEditorControlsPlaceholder->SetPanel(tilemaskEditorPanel);
 		ui->actionTileMapEditor->setChecked(true);
 	}
 	else if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
 	{
-		ui->landscapeEditorControlsPlaceholder->SetPanel(visibilityToolPanel);
 		ui->actionVisibilityCheckTool->setChecked(true);
 	}
 	else if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
