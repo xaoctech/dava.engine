@@ -227,6 +227,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	
 	RenderManager::Instance()->UnlockNonMain();
 
+	displayingTexture->GenerateMipmaps();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, displayingTexture);
 }
 
