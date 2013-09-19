@@ -100,6 +100,7 @@ protected:
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
 	DAVA::Vector2 modifStartPos2d;
+	DAVA::Vector3 modifCurPos3d;
 
 	// entities to modify
 	DAVA::Vector<EntityToModify> modifEntities;
@@ -129,11 +130,6 @@ protected:
 	DAVA::float32 Scale(const DAVA::Vector2 &newPos2d);
 
 	DAVA::Matrix4 SnapToLandscape(const DAVA::Vector3 &point, const DAVA::Matrix4 &originalParentTransform) const;
-
-	void MoveDone(const DAVA::Vector2 &newPos3d);
-	void RotateDone(const DAVA::Vector2 &newPos2d);
-	void ScaleDone(const DAVA::Vector2 &newPos2d);
-
 	bool IsEntityContainRecursive(const DAVA::Entity *entity, const DAVA::Entity *child) const;
 };
 
