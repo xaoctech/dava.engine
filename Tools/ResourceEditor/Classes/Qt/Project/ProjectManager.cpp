@@ -94,8 +94,6 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             
             SpritePackerHelper::Instance()->UpdateParticleSprites();
-
-			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
@@ -104,10 +102,11 @@ void ProjectManager::ProjectOpen(const QString &path)
 			screen->UpdateModificationPanel();
 		}
 
+		LoadProjectSettings();
+
 		emit ProjectOpened(curProjectPath);
 
-		// TODO: 
-		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
+		DAVA::FilePath::AddResourcesFolder(curProjectPath.toStdString());
 	}
 }
 
@@ -128,7 +127,14 @@ void ProjectManager::ProjectClose()
 		curProjectPath = "";
 		emit ProjectClosed();
 		
-		// TODO:
-		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
+		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.toStdString());
 	}
+}
+
+void ProjectManager::LoadProjectSettings()
+{
+	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
+	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
+
+
 }
