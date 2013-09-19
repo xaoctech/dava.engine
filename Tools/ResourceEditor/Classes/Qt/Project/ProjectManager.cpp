@@ -124,10 +124,10 @@ void ProjectManager::ProjectClose()
 {
 	if("" != curProjectPath)
 	{
+		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.toStdString());
+
 		curProjectPath = "";
 		emit ProjectClosed();
-		
-		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.toStdString());
 	}
 }
 
