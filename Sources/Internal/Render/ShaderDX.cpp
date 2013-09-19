@@ -98,7 +98,7 @@ void Shader::SetDefineList(const String & enableDefinesList)
 
 }
 
-bool Shader::Recompile()
+bool Shader::RecompileAsync()
 {
 	return false;
 }

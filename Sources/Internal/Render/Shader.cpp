@@ -386,7 +386,12 @@ Shader::~Shader()
     DeleteShaders();
 }
     
-bool Shader::Recompile()
+Job * Shader::RecompileAsync()
+{
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::RecompileInternal));
+}
+
+void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerData)
 {
     DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
     
@@ -394,13 +399,13 @@ bool Shader::Recompile()
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
     {
         Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
-        return false;
+        return;
     }
     
     if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr(), fragmentShaderDefines))
     {
         Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
-        return false;
+        return;
     }
     
     program = glCreateProgram();
@@ -412,7 +417,7 @@ bool Shader::Recompile()
         Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
 
         DeleteShaders();
-        return false;
+        return;
     }
     
     RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes));
@@ -594,7 +599,6 @@ bool Shader::Recompile()
     }
     
     RenderManager::Instance()->UnlockNonMain();
-    return true;
 }
     	
 void Shader::SetUniformValueByIndex(int32 uniformIndex, int32 value)
@@ -720,8 +724,6 @@ void Shader::DeleteShaders()
 /* Link a program with all currently attached shaders */
 GLint Shader::LinkProgram(GLuint prog)
 {
-    RenderManager::Instance()->LockNonMain();
-
     GLint status;
     
     RENDER_VERIFY(glLinkProgram(prog));
@@ -742,8 +744,6 @@ GLint Shader::LinkProgram(GLuint prog)
     RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
     if (status == GL_FALSE)
         Logger::Error("Failed to link program %d", prog);
-    
-    RenderManager::Instance()->UnlockNonMain();
 
     return status;
 }
@@ -751,8 +751,6 @@ GLint Shader::LinkProgram(GLuint prog)
 /* Create and compile a shader from the provided source(s) */
 GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines)
 {
-    RenderManager::Instance()->LockNonMain();
-
     GLint status;
     //const GLchar *sources;
         
@@ -795,8 +793,6 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     {
         Logger::Error("Failed to compile shader: status == GL_FALSE\n");
     }
-    RenderManager::Instance()->UnlockNonMain();
-
     return status;
 }
     
@@ -901,11 +897,14 @@ Shader * Shader::RecompileNewInstance(const String & combination)
     shader->vertexShaderData = SafeRetain(vertexShaderData);
     shader->fragmentShaderData = SafeRetain(fragmentShaderData);
     shader->SetDefineList(combination);
-    if (!shader->Recompile())
+    
+	//TODO: return "invalid shader" on error;
+	shader->RecompileAsync();
+	/*if (!shader->Recompile())
     {
         SafeRelease(shader);
         return 0;
-    }
+    }*/
     return shader;
 }
 
@@ -929,7 +928,7 @@ void Shader::Lost()
 void Shader::Invalidate()
 {
 	RenderResource::Invalidate();
-	Recompile();
+	RecompileAsync();
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

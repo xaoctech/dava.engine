@@ -41,7 +41,6 @@ ThreadIdJobWaiter::ThreadIdJobWaiter()
 
 void ThreadIdJobWaiter::Wait()
 {
-	
 	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForCreatorThread(this))
 	{
 		Thread::Wait(&cv);
@@ -56,6 +55,17 @@ const Thread::ThreadId & ThreadIdJobWaiter::GetThreadId()
 ConditionalVariable * ThreadIdJobWaiter::GetConditionalVariable()
 {
 	return &cv;
+}
+
+JobInstanceWaiter::JobInstanceWaiter(Job * _job)
+:	job(_job)
+{
+
+}
+
+void JobInstanceWaiter::Wait()
+{
+
 }
 
 }

@@ -35,6 +35,8 @@
 namespace DAVA
 {
 
+class Job;
+
 class ThreadIdJobWaiter
 {
 public:
@@ -46,6 +48,19 @@ public:
 
 private:
 	Thread::ThreadId threadId;
+	ConditionalVariable cv;
+};
+
+class JobInstanceWaiter
+{
+public:
+	JobInstanceWaiter(Job * job);
+	void Wait();
+
+	ConditionalVariable * GetConditionalVariable();
+
+private:
+	Job * job;
 	ConditionalVariable cv;
 };
 

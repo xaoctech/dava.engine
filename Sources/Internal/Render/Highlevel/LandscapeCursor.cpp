@@ -41,7 +41,7 @@ LandscapeCursor::LandscapeCursor()
 
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
-	shader->Recompile();
+	shader->RecompileAsync();
 
 	uniformTexture = shader->FindUniformIndexByName("texture0");
 	uniformPosition = shader->FindUniformIndexByName("position");
