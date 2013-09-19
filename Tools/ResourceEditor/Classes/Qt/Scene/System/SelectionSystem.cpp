@@ -120,7 +120,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					// if new selection is NULL or is one of already selected items
 					// we should change current selection only on phase end
-					if(nextEntity == NULL || NULL != curSelections.IntersectedEntity(collisionEntities))
+					if(nextEntity == NULL || NULL != curSelections.IntersectedEntity(&selectableItems))
 					{
 						applyOnPhaseEnd = true;
 						lastSelection = nextEntity;
