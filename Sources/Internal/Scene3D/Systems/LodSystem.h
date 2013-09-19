@@ -81,6 +81,9 @@ private:
 	void UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq);
 	bool RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq);
 
+	float32 CalculateDistanceToCamera(const Entity * entity, const LodComponent *lodComponent) const;
+	int32 FindProperLayer(float32 distance, const LodComponent *lodComponent, int32 requestedLayersCount);
+
 	Camera * camera;
 };
 

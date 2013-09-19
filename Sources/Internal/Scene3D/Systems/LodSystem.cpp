@@ -157,7 +157,7 @@ void LodSystem::UpdatePartialUpdateIndices()
 
 void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
+	LodComponent * lodComponent = GetLodComponent(entity);
 	int32 oldLod = lodComponent->currentLod;
 	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
 	{
@@ -172,7 +172,6 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 
 	if (oldLod != lodComponent->currentLod) 
 	{
-
 		ParticleEmitter * emmiter = GetEmitter(entity);
 		if (emmiter)
 		{
@@ -191,72 +190,70 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 
 bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return false;
-
-	int32 layersCount = lodComponent->lodLayers.size();	
-	RenderObject *renderObject = GetRenderObject(entity);
-	bool usePsSettings = false;
-	if (renderObject&&renderObject->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-	{
-		layersCount = LodComponent::MAX_LOD_LAYERS;
-		usePsSettings = true;
-	}
-
+	LodComponent * lodComponent = GetLodComponent(entity);
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
-		for (int32 i = 0; i < layersCount; i++)
-		{
-			if (i >= lodComponent->forceLodLayer)
-			{
-				lodComponent->currentLod = i;
-				return true;
-			}
-		}
-		return false;
+		lodComponent->SetForceLayerAsCurrent();
+		return true;
 	}
 
+	int32 layersCount = lodComponent->GetLodLayersCount();	
+	float32 dst = CalculateDistanceToCamera(entity, lodComponent);
+
+	bool usePsSettings = (GetEmitter(entity) != NULL);
+	if (usePsSettings)
 	{
-		float32 dst = 0.f;
-		if (lodComponent->forceDistance < 0) //LodComponent::INVALID_DISTANCE
-		{
-			if(camera)
-			{
-				dst = (camera->GetPosition() - entity->GetWorldTransform().GetTranslationVector()).SquareLength();
-				dst *= camera->GetZoomFactor() * camera->GetZoomFactor();
-			}
-		}
-		else 
-		{
-			dst = lodComponent->forceDistanceSq;
-		}
+		layersCount = LodComponent::MAX_LOD_LAYERS;
+		dst = dst*psLodMultSq+psLodOffsetSq;
+	}
 
-		if (usePsSettings)
-		{
-			dst = dst*psLodMultSq+psLodOffsetSq;
-		}
+	int32 layer = FindProperLayer(dst, lodComponent, layersCount);
+	if(layer != lodComponent->currentLod)
+	{
+		lodComponent->currentLod = layer;
+	}
 
-		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod))
+	return (lodComponent->currentLod != LodComponent::INVALID_LOD_LAYER);
+}
+
+DAVA::float32 LodSystem::CalculateDistanceToCamera(const Entity * entity, const LodComponent *lodComponent) const
+{
+	if (lodComponent->forceDistance != LodComponent::INVALID_DISTANCE) //LodComponent::INVALID_DISTANCE
+	{
+		return lodComponent->forceDistanceSq;
+	}
+
+	if(camera)
+	{
+		float32 dst = (camera->GetPosition() - entity->GetWorldTransform().GetTranslationVector()).SquareLength();
+		dst *= camera->GetZoomFactor() * camera->GetZoomFactor();
+
+		return dst;
+	}
+
+	return 0.f;
+}
+
+int32 LodSystem::FindProperLayer( float32 distance, const LodComponent *lodComponent, int32 requestedLayersCount)
+{
+	if(lodComponent->currentLod != LodComponent::INVALID_LOD_LAYER)
+	{
+		if ((distance >= lodComponent->GetLodLayerNearSquare(lodComponent->currentLod)) && (distance <= lodComponent->GetLodLayerFarSquare(lodComponent->currentLod)))
 		{
-			for (int32 i=0; i<layersCount; ++i)
-			{
-				if (dst >= lodComponent->GetLodLayerNearSquare(i))
-				{
-					lodComponent->currentLod = i;
-				}
-				else 
-				{
-					return true;
-				}
-			}
-            if (dst > lodComponent->GetLodLayerFarSquare(layersCount-1))
-            {
-                return false;
-            }
+			return lodComponent->currentLod;
 		}
 	}
 
-return true;
+	int32 layer = LodComponent::INVALID_LOD_LAYER;
+	for (int32 i = requestedLayersCount - 1; i >= 0; --i)
+	{
+		if (distance < lodComponent->GetLodLayerFarSquare(i))
+		{
+			layer = i;
+		}
+	}
+
+	return layer;
 }
 
 void LodSystem::SetCamera(Camera * _camera)
