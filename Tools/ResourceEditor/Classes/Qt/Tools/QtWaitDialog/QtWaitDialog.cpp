@@ -51,20 +51,23 @@ QtWaitDialog::QtWaitDialog(QWidget *parent /*= 0*/)
 }
 
 QtWaitDialog::~QtWaitDialog()
-{
-
-}
+{ }
 
 void QtWaitDialog::Exec(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
 	Setup(title, message, hasWaitbar, hasCancel);
+
+	setCursor(Qt::BusyCursor);
 	exec();
 }
 
 void QtWaitDialog::Show(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
 	Setup(title, message, hasWaitbar, hasCancel);
+	
+	setCursor(Qt::BusyCursor);
 	show();
+
 
 	QApplication::processEvents();
 }
@@ -73,7 +76,9 @@ void QtWaitDialog::Reset()
 {
 	wasCanceled = false;
 	emit canceled();
+
 	close();
+	setCursor(Qt::ArrowCursor);
 
 	QApplication::processEvents();
 }

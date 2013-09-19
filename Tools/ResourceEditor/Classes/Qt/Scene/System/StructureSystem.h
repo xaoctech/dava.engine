@@ -62,8 +62,8 @@ public:
 	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
 	void Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos = DAVA::Vector3());
 
-	void LockSignals();
-	void UnlockSignals();
+	void LockSignals(bool locked);
+	void EmitChanged();
 
 protected:
 	bool lockedSignals;
