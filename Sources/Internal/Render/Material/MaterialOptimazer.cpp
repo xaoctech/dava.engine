@@ -82,6 +82,11 @@ uint32 MaterialOptimizer::GetOptimizedVertexFormat(Material::eType type)
 			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0;
 		}break;
 
+        case Material::MATERIAL_SPEED_TREE_LEAF:
+        {
+            optimazedFormat = EVF_VERTEX | EVF_TANGENT | EVF_TEXCOORD0;
+        }break;
+
 		default:
 			DVASSERT(false);
 			Logger::Error("Unknown material format");

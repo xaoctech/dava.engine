@@ -19,10 +19,10 @@
 
 #include <QWidget>
 
-namespace Ui
-{
-	class SliderWidget;
-}
+class QSlider;
+class QLineEdit;
+class QSpinBox;
+class QLabel;
 
 class SliderWidget: public QWidget
 {
@@ -61,7 +61,12 @@ private slots:
 	void EditValueChanged();
 
 private:
-	Ui::SliderWidget* ui;
+	QSlider* sliderValue;
+	QLineEdit* editValue;
+	QLineEdit* editMinValue;
+	QSpinBox* spinMaxValue;
+	QLabel* labelCaption;
+
 	QString caption;
 
 	bool isSymmetric;
@@ -74,6 +79,8 @@ private:
 	void EmitValueChanged();
 	void ConnectToSignals();
 	void UpdateControls();
+
+	void InitUI();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SLIDERWIDGET__) */

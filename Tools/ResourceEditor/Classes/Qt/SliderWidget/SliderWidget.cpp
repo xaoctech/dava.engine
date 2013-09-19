@@ -15,42 +15,86 @@
 =====================================================================================*/
 
 #include "SliderWidget.h"
-#include "ui_SliderWidget.h"
+
+#include <QLayout>
+#include <QSlider>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QLabel>
 
 SliderWidget::SliderWidget(QWidget* parent)
 :	QWidget(parent)
-,	ui(new Ui::SliderWidget)
 ,	isRangeChangingBlocked(false)
-,	isSymmetric(true)
-,	minValue(0)
-,	maxValue(10)
-,	currentValue(0)
-,	caption("")
 {
-	ui->setupUi(this);
+	InitUI();
+	Init("", true, 10, 0, 0);
 
 	ConnectToSignals();
 }
 
 SliderWidget::~SliderWidget()
 {
-	delete ui;
+}
+
+void SliderWidget::InitUI()
+{
+	QVBoxLayout* layout = new QVBoxLayout();
+
+	sliderValue = new QSlider();
+	editValue = new QLineEdit();
+	editMinValue = new QLineEdit();
+	spinMaxValue = new QSpinBox();
+	labelCaption = new QLabel();
+
+	QHBoxLayout* captionLayout = new QHBoxLayout();
+	QSpacerItem* captionSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Maximum);
+	captionLayout->addWidget(labelCaption);
+	captionLayout->addWidget(editValue);
+	captionLayout->addSpacerItem(captionSpacer);
+
+	QHBoxLayout* sliderLayout = new QHBoxLayout();
+	sliderLayout->addWidget(editMinValue);
+	sliderLayout->addWidget(sliderValue);
+	sliderLayout->addWidget(spinMaxValue);
+
+	layout->addLayout(captionLayout);
+	layout->addLayout(sliderLayout);
+
+	setLayout(layout);
+
+	layout->setContentsMargins(0, 0, 0, 0);
+	captionLayout->setContentsMargins(0, 0, 0, 0);
+	sliderLayout->setContentsMargins(0, 0, 0, 0);
+	sliderValue->setOrientation(Qt::Horizontal);
+	sliderValue->setTickPosition(QSlider::TicksBothSides);
+	editValue->setMaximumWidth(60);
+	editValue->setInputMethodHints(Qt::ImhDigitsOnly);
+	editValue->setMaxLength(3);
+	editMinValue->setMaximumWidth(40);
+	editMinValue->setInputMethodHints(Qt::ImhDigitsOnly);
+	editMinValue->setMaxLength(4);
+	spinMaxValue->setMaximumWidth(55);
+	spinMaxValue->setInputMethodHints(Qt::ImhDigitsOnly);
+	spinMaxValue->setRange(1, 999);
+	spinMaxValue->setValue(1);
 }
 
 void SliderWidget::ConnectToSignals()
 {
-	connect(ui->sliderValue, SIGNAL(valueChanged(int)), this, SLOT(SliderValueChanged(int)));
-	connect(ui->spinMaxValue, SIGNAL(valueChanged(int)), this, SLOT(RangeChanged(int)));
-	connect(ui->editValue, SIGNAL(editingFinished()), this, SLOT(EditValueChanged()));
+	connect(sliderValue, SIGNAL(valueChanged(int)), this, SLOT(SliderValueChanged(int)));
+	connect(spinMaxValue, SIGNAL(valueChanged(int)), this, SLOT(RangeChanged(int)));
+	connect(editValue, SIGNAL(editingFinished()), this, SLOT(EditValueChanged()));
 }
 
 void SliderWidget::Init(const QString caption, bool symmetric, int max, int min, int value)
 {
-	SetCaption(caption);
-	SetSymmetric(symmetric);
-	SetRangeMin(min);
-	SetRangeMax(max);
-	SetValue(value);
+	this->caption = caption;
+	isSymmetric = symmetric;
+	minValue = min;
+	maxValue = max;
+	currentValue = value;
+
+	UpdateControls();
 }
 
 void SliderWidget::SetRangeMax(int max)
@@ -169,15 +213,17 @@ void SliderWidget::UpdateControls()
 	bool blocked = signalsBlocked();
 	blockSignals(true);
 
-	ui->editMinValue->setText(QString::number(GetRangeMin()));
+	editMinValue->setText(QString::number(GetRangeMin()));
 	if (GetRangeMin() > 0)
 	{
-		ui->spinMaxValue->setMinimum(GetRangeMin() + 1);
+		spinMaxValue->setMinimum(GetRangeMin());
 	}
-	ui->spinMaxValue->setValue(GetRangeMax());
-	ui->sliderValue->setRange(GetRangeMin(), GetRangeMax());
-	ui->sliderValue->setValue(GetValue());
-	ui->editValue->setText(QString::number(GetValue()));
+	spinMaxValue->setValue(GetRangeMax());
+	sliderValue->setRange(GetRangeMin(), GetRangeMax());
+	sliderValue->setValue(GetValue());
+	editValue->setText(QString::number(GetValue()));
+
+	labelCaption->setText(caption);
 
 	blockSignals(blocked);
 }
@@ -189,8 +235,8 @@ void SliderWidget::SetRangeChangingBlocked(bool blocked)
 		return;
 	}
 
-	ui->spinMaxValue->setReadOnly(blocked);
-	ui->spinMaxValue->setButtonSymbols(blocked ? QAbstractSpinBox::NoButtons : QAbstractSpinBox::UpDownArrows);
+	spinMaxValue->setReadOnly(blocked);
+	spinMaxValue->setButtonSymbols(blocked ? QAbstractSpinBox::NoButtons : QAbstractSpinBox::UpDownArrows);
 
 	isRangeChangingBlocked = blocked;
 }
@@ -203,7 +249,7 @@ bool SliderWidget::IsRangeChangingBlocked()
 void SliderWidget::SetCaption(const QString &caption)
 {
 	this->caption = caption;
-	ui->labelCaption->setText(caption);
+	labelCaption->setText(caption);
 }
 
 QString SliderWidget::GetCaption()
@@ -213,7 +259,7 @@ QString SliderWidget::GetCaption()
 
 void SliderWidget::EditValueChanged()
 {
-	int newValue = ui->editValue->text().toInt();
+	int newValue = editValue->text().toInt();
 
 	SetValue(newValue);
 }

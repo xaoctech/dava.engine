@@ -750,7 +750,6 @@
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
 		499BD23F17D8B2980035CF5F /* SliderWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SliderWidget_moc.cpp; path = _GeneratedQt/SliderWidget/SliderWidget_moc.cpp; sourceTree = "<group>"; };
-		499BD24217D8B2A80035CF5F /* ui_SliderWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_SliderWidget.h; path = _GeneratedQt/ui_SliderWidget.h; sourceTree = "<group>"; };
 		499BD24517D8C35E0035CF5F /* SliderWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SliderWidget.cpp; path = Classes/Qt/SliderWidget/SliderWidget.cpp; sourceTree = "<group>"; };
 		499BD24617D8C35E0035CF5F /* SliderWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SliderWidget.h; path = Classes/Qt/SliderWidget/SliderWidget.h; sourceTree = "<group>"; };
 		499E4A6F178ABDD10067FA56 /* CustomColorsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsSystem.cpp; sourceTree = "<group>"; };
@@ -3802,7 +3801,6 @@
 				4FAD0CA31785EC6E00B05A35 /* SpritesPacker */,
 				4FAD0CA51785EC6E00B05A35 /* TextureBrowser */,
 				4FAD0CAF1785EC6E00B05A35 /* Tools */,
-				499BD24217D8B2A80035CF5F /* ui_SliderWidget.h */,
 				E8BD39D817B4BB5900C63420 /* ui_LODEditor.h */,
 				4FAD0CCC1785EC6E00B05A35 /* ui_davaglwidget.h */,
 				4FAD0CCD1785EC6E00B05A35 /* ui_HangingObjectsView.h */,

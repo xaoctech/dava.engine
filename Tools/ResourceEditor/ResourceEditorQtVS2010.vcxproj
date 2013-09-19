@@ -1384,7 +1384,6 @@
     <ClInclude Include="_GeneratedQt\ui_ModificationWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
-    <ClInclude Include="_GeneratedQt\ui_SliderWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_waitdialog.h" />
   </ItemGroup>
