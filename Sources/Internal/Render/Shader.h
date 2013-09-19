@@ -36,8 +36,8 @@
 #include "Base/BaseMath.h"
 #include "Base/Data.h"
 #include "Base/FastName.h"
-
 #include "FileSystem/FilePath.h"
+#include "Job/JobManager.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -106,7 +106,9 @@ public:
     bool LoadFromYaml(const FilePath & pathname);
     bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
     
-    bool Recompile();
+	Job * RecompileAsync();
+	void RecompileInternal(BaseObject * caller, void * param, void *callerData);
+
     Shader * RecompileNewInstance(const String & combination);
     
     void Bind();

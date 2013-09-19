@@ -139,7 +139,7 @@ void Landscape::InitShaders()
     }
     tileMaskShader->SetDefineList(defines);
     
-    tileMaskShader->Recompile();
+    tileMaskShader->RecompileAsync();
     
     uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("tileTexture0");
     uniformTextures[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("tileTexture1");
@@ -174,7 +174,7 @@ void Landscape::InitShaders()
         fullTiledShader->SetDefineList("VERTEX_FOG");   
     }
     
-    fullTiledShader->Recompile();
+    fullTiledShader->RecompileAsync();
     
     if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
@@ -618,9 +618,12 @@ const Color & Landscape::GetTileColor(eTextureLevel level)
     
 void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
-    SafeRelease(textures[level]);
-    textureNames[level] = String("");
-    
+	SafeRelease(textures[level]);
+	textureNames[level] = String("");
+
+	if((TILED_MODE_TILEMASK == tiledShaderMode || TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode) && TEXTURE_TILE_FULL == level)
+		return;
+
     Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {

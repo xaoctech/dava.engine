@@ -36,6 +36,7 @@
 #include "FileSystem/File.h"
 #include "Render/2D/TextBlock.h"
 #include "Core/Core.h"
+#include "Job/JobManager.h"
 
 namespace DAVA 
 {
@@ -232,7 +233,14 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare()
 {
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
+}
+
+void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
+{
 #if 1
+	DVASSERT(Thread::IsMainThread());
+
 	if(!font || text == L"")
 	{
 		SafeRelease(sprite);
@@ -636,7 +644,6 @@ void TextBlock::Prepare()
 		else 
 		{
 			//omg 8888!
-			RenderManager::Instance()->LockNonMain();
 			sprite = Sprite::CreateAsRenderTarget(finalW, finalH, FORMAT_RGBA8888);
 			if (sprite && sprite->GetTexture())
 			{
@@ -648,7 +655,6 @@ void TextBlock::Prepare()
 						sprite->GetTexture()->SetDebugInfo(WStringToString(multilineStrings[0]));
 				}
 			}				
-			RenderManager::Instance()->UnlockNonMain();
 		}
 		
 

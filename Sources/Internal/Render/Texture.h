@@ -320,6 +320,7 @@ private:
 	Vector<Image *> images;
 	bool LoadImages(eGPUFamily gpu);
 	void SetParamsFromImages();
+	void FlushDataToRendererInternal(BaseObject * caller, void * param, void *callerData);
 	void FlushDataToRenderer();
 	void ReleaseImages();
 
@@ -344,6 +345,7 @@ private:
     
 #if defined(__DAVAENGINE_OPENGL__)
 	void HWglCreateFBOBuffers();
+	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
 
     static GLint HWglFilterToGLFilter(TextureFilter filter);
     static GLint HWglConvertWrapMode(TextureWrap wrap);

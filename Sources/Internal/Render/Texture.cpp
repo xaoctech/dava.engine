@@ -56,6 +56,7 @@
 #include "Render/ImageLoader.h"
 
 #include "Render/GPUFamilyDescriptor.h"
+#include "Job/JobManager.h"
 
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -365,7 +366,6 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	
     texture->SetParamsFromImages();
 	texture->FlushDataToRenderer();
-	texture->ReleaseImages();
 
 	return texture;
 }		
@@ -472,7 +472,6 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 
 	texture->SetParamsFromImages();
 	texture->FlushDataToRenderer();
-	texture->ReleaseImages();
 
 	return texture;
 }
@@ -549,17 +548,19 @@ void Texture::SetParamsFromImages()
     state = STATE_DATA_LOADED;
 }
 
-
 void Texture::FlushDataToRenderer()
+{
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::FlushDataToRendererInternal));
+}
+
+void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, void *callerData)
 {
 	DVASSERT(images.size() != 0);
 	DVASSERT(texDescriptor);
+	DVASSERT(Thread::IsMainThread());
 
 	bool needGenerateMipMaps = texDescriptor->GetGenerateMipMaps() && ((1 == images.size()) || texDescriptor->IsCubeMap());
 
-
-	RenderManager::Instance()->LockNonMain();
-    
 #if defined(__DAVAENGINE_OPENGL__)
 	GenerateID();
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -625,9 +626,9 @@ void Texture::FlushDataToRenderer()
 	}
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
-	RenderManager::Instance()->UnlockNonMain();
+	state = STATE_VALID;
 
-    state = STATE_VALID;
+	ReleaseImages();
 }
 
 bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
@@ -748,7 +749,6 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 
 		SetParamsFromImages();
 		FlushDataToRenderer();
-		ReleaseImages();
 	}
 	else
     {
@@ -826,6 +826,12 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 #if defined(__DAVAENGINE_OPENGL__)
 void Texture::HWglCreateFBOBuffers()
 {
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::HWglCreateFBOBuffersInternal));
+}
+
+void Texture::HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData)
+{
+	DVASSERT(Thread::IsMainThread());
 	RenderManager::Instance()->LockNonMain();
 	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
 	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
@@ -838,17 +844,17 @@ void Texture::HWglCreateFBOBuffers()
 
 	if(DEPTH_RENDERBUFFER == depthFormat)
 	{
-		glGenRenderbuffers(1, &rboID);
-		glBindRenderbuffer(GL_RENDERBUFFER, rboID);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+		RENDER_VERIFY(glGenRenderbuffers(1, &rboID));
+		RENDER_VERIFY(glBindRenderbuffer(GL_RENDERBUFFER, rboID));
+		RENDER_VERIFY(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
 	}
 
 	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0));
 
 	if(DEPTH_RENDERBUFFER == depthFormat)
 	{
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboID);
+		RENDER_VERIFY(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID));
+		RENDER_VERIFY(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboID));
 	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -868,6 +874,7 @@ void Texture::HWglCreateFBOBuffers()
 
 	state = STATE_VALID;
 }
+
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
 
@@ -1073,7 +1080,6 @@ void Texture::MakePink()
     
 	SetParamsFromImages();
     FlushDataToRenderer();
-	ReleaseImages();
 
     isPink = true;
 
@@ -1222,15 +1228,8 @@ PixelFormat Texture::GetPixelFormatByName(const String &formatName)
 void Texture::GenerateID()
 {
 #if defined(__DAVAENGINE_OPENGL__)
-	for (int32 i = 0; i < 10; i++)
-	{
-		glGenTextures(1, &id);
-		if(0 != id)
-		{
-			break;
-		}
-		Logger::Error("TEXTURE %d GENERATE ERROR: %d", i, glGetError());
-	}
+	RENDER_VERIFY(glGenTextures(1, &id));
+	DVASSERT(id);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
 }

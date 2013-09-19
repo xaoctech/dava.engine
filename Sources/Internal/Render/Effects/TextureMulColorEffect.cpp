@@ -78,7 +78,7 @@ TextureMulColorEffectGL20::TextureMulColorEffectGL20()
 {
     shader = new Shader();
     shader->LoadFromYaml("~res:/Shaders/Default/fixed_func_texture.shader");
-    shader->Recompile();
+    shader->RecompileAsync();
 }
 
 TextureMulColorEffectGL20::~TextureMulColorEffectGL20()

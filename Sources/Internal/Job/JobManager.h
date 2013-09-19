@@ -41,6 +41,7 @@ namespace DAVA
 class JobQueue;
 class Job;
 class ThreadIdJobWaiter;
+class JobInstanceWaiter;
 
 class JobManager : public Singleton<JobManager>
 {
@@ -61,21 +62,27 @@ public:
 	virtual ~JobManager();
 
 	void CreateJob(eThreadType threadType, const Message & message);
+
 	void Update();
 	
 	void OnJobCreated(Job * job);
 	void OnJobCompleted(Job * job);
+
 	eWaiterRegistrationResult RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+	eWaiterRegistrationResult RegisterWaiterForJobInstance(JobInstanceWaiter * waiter);
 
 protected:
 	Mutex jobsDoneMutex;
 	JobQueue * mainQueue;
 	void UpdateMainQueue();
 
-	void CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId, bool sendSignal);
-
 	Map<Thread::ThreadId, uint32> jobsPerCreatorThread;
-	Map<Thread::ThreadId,  ThreadIdJobWaiter *> waitersPerCreatorThread;
+	Map<Thread::ThreadId, ThreadIdJobWaiter *> waitersPerCreatorThread;
+	void CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId);
+	
+	
+	void CheckAndCallWaiterForJobInstance(Job * job);
+	Map<Job *, JobInstanceWaiter *> waitersPerJob;
 };
 
 }

@@ -96,15 +96,17 @@ void JobManager::OnJobCompleted(Job * job)
 {
 	jobsDoneMutex.Lock();
 
+	//check jobs done for ThreadId
 	uint32 & jobsCount = jobsPerCreatorThread[job->creatorThreadId];
-
 	DVASSERT(jobsCount> 0);
-
 	jobsCount--;
 	if(0 == jobsCount)
 	{
-		CheckAndCallWaiterForThreadId(job->creatorThreadId, true);
+		CheckAndCallWaiterForThreadId(job->creatorThreadId);
 	}
+
+	//check specific job done
+	CheckAndCallWaiterForJobInstance(job);
 
 	jobsDoneMutex.Unlock();
 }
@@ -120,7 +122,7 @@ JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread
 	uint32 & jobsCount = jobsPerCreatorThread[waiter->GetThreadId()];
 	if(0 == jobsCount)
 	{
-		CheckAndCallWaiterForThreadId(waiter->GetThreadId(), false);
+		CheckAndCallWaiterForThreadId(waiter->GetThreadId());
 		result = JobManager::WAITER_RETURN_IMMEDIATELY;
 	}
 
@@ -130,16 +132,23 @@ JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread
 }
 
 
-void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId, bool sendSignal)
+void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId)
 {
 	Map<Thread::ThreadId,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(threadId);
 	if(waitersPerCreatorThread.end() != it)
 	{
-		if(sendSignal)
-		{
-			Thread::Broadcast(((*it).second)->GetConditionalVariable());
-		}
+		Thread::Broadcast(((*it).second)->GetConditionalVariable());
 		waitersPerCreatorThread.erase(it);
+	}
+}
+
+void JobManager::CheckAndCallWaiterForJobInstance(Job * job)
+{
+	Map<Job *, JobInstanceWaiter *>::iterator it = waitersPerJob.find(job);
+	if(waitersPerJob.end() != it)
+	{
+		Thread::Broadcast(((*it).second)->GetConditionalVariable());
+		waitersPerJob.erase(it);
 	}
 }
 
