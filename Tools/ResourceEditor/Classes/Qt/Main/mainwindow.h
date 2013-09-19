@@ -44,11 +44,6 @@
 // TODO: remove old screen -->
 #include "Classes/SceneEditor/MaterialEditor.h"
 // <---
-class CustomColorsPanel;
-class RulerToolPanel;
-class VisibilityToolPanel;
-class TilemaskEditorPanel;
-class HeightmapEditorPanel;
 
 class AddSwitchEntityDialog;
 class Request;
@@ -236,12 +231,6 @@ private:
 	MaterialEditor *materialEditor;
 	// <--
 
-	CustomColorsPanel* customColorsPanel;
-	RulerToolPanel* rulerToolPanel;
-	VisibilityToolPanel* visibilityToolPanel;
-	TilemaskEditorPanel* tilemaskEditorPanel;
-	HeightmapEditorPanel* heightmapEditorPanel;
-
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 
@@ -250,6 +239,7 @@ private:
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadShadowBlendModeState(SceneEditor2* scene);
 	void LoadGPUFormat();
+	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 
     bool globalInvalidateTimeoutEnabled;

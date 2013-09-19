@@ -14,20 +14,13 @@ public:
 	explicit LandscapeEditorBasePanel(QWidget* parent = 0);
 	virtual ~LandscapeEditorBasePanel();
 	
-	void InitPanel();
+	void InitPanel(SceneEditor2* scene);
 	void DeinitPanel();
 
 protected slots:
 	virtual void EditorToggled(SceneEditor2* scene);
 
-private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
-
 protected:
-	virtual void OnSceneActivated();
-	virtual void OnSceneDeactivated();
-
 	virtual void OnEditorEnabled();
 	virtual void OnEditorDisabled();
 
@@ -48,8 +41,6 @@ protected:
 
 private:
 	SceneEditor2* activeScene;
-	
-	void ConnectToBaseSignals();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORBASEPANEL__) */
