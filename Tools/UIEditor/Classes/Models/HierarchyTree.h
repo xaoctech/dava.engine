@@ -88,6 +88,9 @@ protected:
 	// Do the save itself for only changed screens or for all screens.
 	bool DoSave(const QString& projectPath, bool saveAll);
 
+	// Insert the new scren node to the proper place.
+	void InsertScreenNode(HierarchyTreePlatformNode* platformNode, HierarchyTreeScreenNode* screenNode);
+
 private:
 	void Clear();
     
