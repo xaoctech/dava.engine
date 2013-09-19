@@ -44,6 +44,27 @@ private slots:
 	void SetCopyPasteHeightmap(int state);
 	void SetCopyPasteTilemask(int state);
 
+	void IncreaseBrushSize();
+	void DecreaseBrushSize();
+	void IncreaseBrushSizeLarge();
+	void DecreaseBrushSizeLarge();
+
+	void IncreaseStrength();
+	void DecreaseStrength();
+	void IncreaseStrengthLarge();
+	void DecreaseStrengthLarge();
+
+	void IncreaseAvgStrength();
+	void DecreaseAvgStrength();
+	void IncreaseAvgStrengthLarge();
+	void DecreaseAvgStrengthLarge();
+
+	void PrevTool();
+	void NextTool();
+
+	void ShortcutSetCopyPasteHeightmap();
+	void ShortcutSetCopyPasteTilemask();
+
 protected:
 	virtual bool GetEditorEnabled();
 
@@ -57,6 +78,9 @@ protected:
 	
 	virtual void StoreState();
 	virtual void RestoreState();
+
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
 
 private:
 	SliderWidget* sliderWidgetBrushSize;

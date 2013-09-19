@@ -2181,6 +2181,9 @@
     <ClCompile Include="Classes\Commands2\RemoveComponentCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.cpp">
+      <Filter>Classes\Qt\DockLandscapeEditorControls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3784,6 +3787,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\RemoveComponentCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.h">
+      <Filter>Classes\Qt\DockLandscapeEditorControls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
