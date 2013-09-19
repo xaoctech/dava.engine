@@ -746,6 +746,12 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
+		A63BCD6A17EB26E300EA4811 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63BCD6817EB26E300EA4811 /* Process.cpp */; };
+		A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63BCD6817EB26E300EA4811 /* Process.cpp */; };
+		A63BCD6C17EB26E300EA4811 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63BCD6817EB26E300EA4811 /* Process.cpp */; };
+		A63BCD6D17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
+		A63BCD6E17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
+		A63BCD6F17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
 		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
@@ -2126,6 +2132,8 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
+		A63BCD6817EB26E300EA4811 /* Process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Process.cpp; sourceTree = "<group>"; };
+		A63BCD6917EB26E300EA4811 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
 		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
 		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
@@ -3284,6 +3292,8 @@
 		E8989BD716BD24E400732C04 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				A63BCD6817EB26E300EA4811 /* Process.cpp */,
+				A63BCD6917EB26E300EA4811 /* Process.h */,
 				846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */,
 				846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */,
 				840D24201703311400267C58 /* DeviceInfo.cpp */,
@@ -4233,6 +4243,7 @@
 				A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				02F8B06A17E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
+				A63BCD6F17EB26E300EA4811 /* Process.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4588,6 +4599,7 @@
 				17DC600117DE11650075813E /* UIMovieView.h in Headers */,
 				1770DF5117DF67E500000391 /* MovieViewControlMacOS.h in Headers */,
 				02F8B06817E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
+				A63BCD6D17EB26E300EA4811 /* Process.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4930,6 +4942,7 @@
 				A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				02F8B06917E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
+				A63BCD6E17EB26E300EA4811 /* Process.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5342,6 +5355,7 @@
 				EA56554C17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */,
 				02F8B06717E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
+				A63BCD6C17EB26E300EA4811 /* Process.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5661,6 +5675,7 @@
 				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
 				1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */,
 				02F8B06517E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
+				A63BCD6A17EB26E300EA4811 /* Process.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5962,6 +5977,7 @@
 				EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */,
 				02F8B06617E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
+				A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
