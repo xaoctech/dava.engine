@@ -65,6 +65,7 @@ public:
 	void ResetTransform(const EntityGroup *entities);
 
 	bool InModifState() const;
+	bool InCloneState() const;
 
 protected:
 	SceneCollisionSystem *collisionSystem;
@@ -89,6 +90,15 @@ protected:
 		DAVA::Matrix4 moveFromZeroPos;
 	};
 
+	enum CloneState
+	{
+		CLONE_DONT,
+		CLONE_NEED,
+		CLOLE_DONE
+	};
+
+	CloneState cloneState;
+
 	bool inModifState;
 	bool modified;
 
@@ -104,6 +114,7 @@ protected:
 
 	// entities to modify
 	DAVA::Vector<EntityToModify> modifEntities;
+	DAVA::Vector<DAVA::Entity *> clonedEntities;
 
 	// values calculated, when starting modification
 	ST_PivotPoint modifPivotPoint;
@@ -118,6 +129,9 @@ protected:
 
 	void BeginModification(const EntityGroup *entities);
 	void EndModification();
+
+	void CloneBegin();
+	void CloneEnd();
 
 	void ApplyModification();
 	bool ModifCanStart(const EntityGroup *selectedEntities) const;
