@@ -21,6 +21,11 @@ private slots:
 	void SetLineWidth(int width);
 	void UpdateLengths(SceneEditor2* scene, double length, double previewLength);
 
+	void IncreaseBrushSize();
+	void DecreaseBrushSize();
+	void IncreaseBrushSizeLarge();
+	void DecreaseBrushSizeLarge();
+
 protected:
 	virtual bool GetEditorEnabled();
 	
@@ -32,6 +37,9 @@ protected:
 
 	virtual void StoreState();
 	virtual void RestoreState();
+
+	virtual void ConnectToShortcuts();
+	virtual void DisconnectFromShortcuts();
 
 private:
 	QLabel* labelLength;

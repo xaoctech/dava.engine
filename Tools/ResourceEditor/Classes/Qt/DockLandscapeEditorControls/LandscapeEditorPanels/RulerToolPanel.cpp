@@ -2,6 +2,8 @@
 #include "../../Scene/SceneEditor2.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../SliderWidget/SliderWidget.h"
+#include "../LandscapeEditorShortcutManager.h"
+#include "Constants.h"
 
 #include <QLayout>
 #include <QFormLayout>
@@ -146,4 +148,56 @@ void RulerToolPanel::UpdateLengths(SceneEditor2 *scene, double length, double pr
 
 	labelLength->setText(QString::number(length));
 	labelPreview->setText(QString::number(previewLength));
+}
+
+void RulerToolPanel::ConnectToShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+}
+
+void RulerToolPanel::DisconnectFromShortcuts()
+{
+	LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSize()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(IncreaseBrushSizeLarge()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+			this, SLOT(DecreaseBrushSizeLarge()));
+}
+
+void RulerToolPanel::IncreaseBrushSize()
+{
+	sliderWidgetLineWidth->SetValue(sliderWidgetLineWidth->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void RulerToolPanel::DecreaseBrushSize()
+{
+	sliderWidgetLineWidth->SetValue(sliderWidgetLineWidth->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+}
+
+void RulerToolPanel::IncreaseBrushSizeLarge()
+{
+	sliderWidgetLineWidth->SetValue(sliderWidgetLineWidth->GetValue()
+									+ ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+}
+
+void RulerToolPanel::DecreaseBrushSizeLarge()
+{
+	sliderWidgetLineWidth->SetValue(sliderWidgetLineWidth->GetValue()
+									- ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
