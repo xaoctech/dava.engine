@@ -55,7 +55,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 ,	originalImage(NULL)
 ,	colorIndex(0)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
@@ -128,7 +128,7 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	
 	if (!toolImageSprite)
 	{
-		CreateToolImage(512, "~res:/LandscapeEditor/Tools/customcolorsbrush/circle.png");
+		CreateToolImage(512, "~res:/LandscapeEditor/Tools/customcolorsbrush/circle.tex");
 	}
 	
 	enabled = true;

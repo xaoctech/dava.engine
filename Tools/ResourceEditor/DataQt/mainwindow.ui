@@ -1465,6 +1465,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/customcolors.png</normaloff>:/QtIcons/customcolors.png</iconset>
+   </property>
    <property name="text">
     <string>Custom Colors Editor</string>
    </property>
@@ -1475,6 +1479,10 @@
   <action name="actionVisibilityCheckTool">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/visibilitytool.png</normaloff>:/QtIcons/visibilitytool.png</iconset>
    </property>
    <property name="text">
     <string>Visibility Check Tool</string>

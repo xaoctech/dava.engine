@@ -243,6 +243,8 @@ private:
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 
     bool globalInvalidateTimeoutEnabled;
+
+	bool IsSavingAllowed();
 };
 
 
