@@ -96,6 +96,9 @@ public:
     
     inline void SetRemoveIndex(uint32 removeIndex);
     inline uint32 GetRemoveIndex();
+
+	inline void SetTreeNodeIndex(uint32 index);
+	inline uint32 GetTreeNodeIndex();
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
@@ -141,6 +144,7 @@ protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
+	uint32 treeNodeIndex;
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
@@ -173,6 +177,15 @@ inline uint32 RenderObject::GetRemoveIndex()
 inline void RenderObject::SetRemoveIndex(uint32 _removeIndex)
 {
     removeIndex = _removeIndex;
+}
+
+inline void RenderObject::SetTreeNodeIndex(uint32 index)
+{
+	treeNodeIndex = index;
+}
+inline uint32 RenderObject::GetTreeNodeIndex()
+{
+	return treeNodeIndex;
 }
     
 inline void RenderObject::SetAABBox(const AABBox3 & _bbox)
