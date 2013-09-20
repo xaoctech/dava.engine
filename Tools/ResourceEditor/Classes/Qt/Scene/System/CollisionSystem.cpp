@@ -379,22 +379,31 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		switch(command->GetId())
 		{
 		case CMDID_TRANSFORM:
-		case CMDID_ENTITY_MOVE:
-			// update bullet object
 			UpdateCollisionObject(entity);
 			break;
-			/*
 		case CMDID_ENTITY_MOVE:
 			{
-				const EntityMoveCommand* moveCommand = (EntityMoveCommand*) command;
-
-				if(entityToCollision.contains(moveCommand->entity))
+				EntityMoveCommand *cmd = (EntityMoveCommand *) command;
+				if(redo)
 				{
-					UpdateCollisionObject(moveCommand->entity);
+					if(NULL != cmd->newParent)
+					{
+						UpdateCollisionObject(entity);
+					}
+				}
+				else
+				{
+					if(NULL != cmd->oldParent)
+					{
+						UpdateCollisionObject(entity);
+					}
+					else
+					{
+						RemoveCollisionObject(entity);
+					}
 				}
 			}
 			break;
-			*/
 		default:
 			break;
 		}
