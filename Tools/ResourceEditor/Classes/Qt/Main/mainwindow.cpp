@@ -1489,6 +1489,11 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 
 void QtMainWindow::OnSaveHeightmapToPNG()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
@@ -1503,6 +1508,11 @@ void QtMainWindow::OnSaveHeightmapToPNG()
 
 void QtMainWindow::OnSaveTiledTexture()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
