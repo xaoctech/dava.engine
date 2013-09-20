@@ -1244,9 +1244,9 @@ private:
 	String	name;
 	int32	tag;
 
-	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
+	void RecalculatePivotPoint(const Rect &newRect);
 
 	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
