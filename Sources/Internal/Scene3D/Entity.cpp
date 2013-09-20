@@ -620,6 +620,7 @@ Entity* Entity::Clone(Entity *dstNode)
 			}
 
 			Component * clonedComponent = components[k]->Clone(dstNode);
+            dstNode->RemoveComponent(clonedComponent->GetType());
 			dstNode->AddComponent(clonedComponent);
 			clonedComponent->Release();
 		}
@@ -869,6 +870,7 @@ CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 	if(NULL == component)
 	{
 		component = (CustomPropertiesComponent *) Component::CreateByType(Component::CUSTOM_PROPERTIES_COMPONENT);
+        RemoveComponent(component->GetType());
 		AddComponent(component);
 		component->Release();
 	}
