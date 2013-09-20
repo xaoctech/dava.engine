@@ -120,6 +120,7 @@ void ModifyTilemaskCommand::Undo()
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(undoImageMask, maskTexture);
+	sprite->GetTexture()->GenerateMipmaps();
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
@@ -132,6 +133,7 @@ void ModifyTilemaskCommand::Redo()
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(redoImageMask, maskTexture);
+	sprite->GetTexture()->GenerateMipmaps();
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 

@@ -331,11 +331,14 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->RestoreRenderTarget();
 	RenderManager::Instance()->SetColor(Color::White());
 	
+	oldMaskSprite->GetTexture()->GenerateMipmaps();
+	maskSprite->GetTexture()->GenerateMipmaps();
 	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(maskSprite->GetTexture());
 	Sprite * temp = oldMaskSprite;
 	oldMaskSprite = maskSprite;
 	maskSprite = temp;
 	
+
 	RenderManager::Instance()->SetRenderTarget(toolSprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	RenderManager::Instance()->RestoreRenderTarget();
@@ -456,6 +459,7 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 		RenderManager::Instance()->UnlockNonMain();
 	}
 	
+	oldMaskSprite->GetTexture()->GenerateMipmaps();
 	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(oldMaskSprite->GetTexture());
 }
 
