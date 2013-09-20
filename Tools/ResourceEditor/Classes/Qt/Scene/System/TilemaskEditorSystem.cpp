@@ -58,7 +58,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	originalMask(NULL)
 ,	toolImageIndex(0)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	
     tileMaskEditorShader = new Shader();
