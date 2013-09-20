@@ -2,11 +2,11 @@
 #include "../Scene/SceneSignals.h"
 #include "../Scene/SceneEditor2.h"
 
-#include "CustomColorsPanel.h"
-#include "RulerToolPanel.h"
-#include "VisibilityToolPanel.h"
-#include "TilemaskEditorPanel.h"
-#include "HeightmapEditorPanel.h"
+#include "LandscapeEditorPanels/CustomColorsPanel.h"
+#include "LandscapeEditorPanels/RulerToolPanel.h"
+#include "LandscapeEditorPanels/VisibilityToolPanel.h"
+#include "LandscapeEditorPanels/TilemaskEditorPanel.h"
+#include "LandscapeEditorPanels/HeightmapEditorPanel.h"
 
 #include <QVBoxLayout>
 
