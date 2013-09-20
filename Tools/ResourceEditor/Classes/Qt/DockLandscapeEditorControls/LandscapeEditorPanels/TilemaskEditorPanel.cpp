@@ -224,6 +224,8 @@ void TilemaskEditorPanel::UpdateTileTextures()
 		QIcon icon = QIcon(QPixmap::fromImage(img));
 
 		comboTileTexture->addItem(icon, "");
+
+		SafeRelease(tileImage);
 	}
 }
 
