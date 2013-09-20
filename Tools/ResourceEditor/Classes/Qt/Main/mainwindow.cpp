@@ -625,7 +625,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
         if(NULL != parent && NULL != scene)
         {
             parent->RemoveControl(materialEditor);
-            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
+            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelectionEntity(0));
             parent->AddControl(materialEditor);
         }
     }
@@ -1063,7 +1063,8 @@ void QtMainWindow::OnPlaceOnLandscape()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		scene->modifSystem->PlaceOnLandscape(scene->selectionSystem->GetSelection());
+		EntityGroup selection = scene->selectionSystem->GetSelection();
+		scene->modifSystem->PlaceOnLandscape(selection);
 	}
 }
 
@@ -1082,7 +1083,8 @@ void QtMainWindow::OnResetTransform()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		scene->modifSystem->ResetTransform(scene->selectionSystem->GetSelection());
+		EntityGroup selection = scene->selectionSystem->GetSelection();
+		scene->modifSystem->ResetTransform(selection);
 	}
 }
 
@@ -1095,7 +1097,7 @@ void QtMainWindow::OnMaterialEditor()
 		SceneEditor2* sceneEditor = GetCurrentScene();
 		if(NULL != sceneEditor)
 		{
-			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelection()->GetEntity(0));
+			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelectionEntity(0));
 			
 			DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
 			curScreen->AddControl(materialEditor);
@@ -1115,7 +1117,7 @@ void QtMainWindow::OnTextureBrowser()
 
 	if(NULL != sceneEditor)
 	{
-		selectedEntity = sceneEditor->selectionSystem->GetSelection()->GetEntity(0);
+		selectedEntity = sceneEditor->selectionSystem->GetSelectionEntity(0);
 	}
 
 	TextureBrowser::Instance()->sceneActivated(sceneEditor);
@@ -1279,9 +1281,8 @@ void QtMainWindow::OnUniteEntitiesWithLODs()
 	{
 		return;
 	}
-	const EntityGroup* selectedEntities = sceneEditor->selectionSystem->GetSelection();
 
-	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(selectedEntities);
+	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(sceneEditor->selectionSystem->GetSelection());
 	sceneEditor->Exec(command);
 	sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 }
@@ -1295,7 +1296,8 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 		ui->actionUniteEntitiesWithLODs->setEnabled(false);
 		return;
 	}
-	int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
+
+	size_t selectedItemsNumber =	sceneEditor->selectionSystem->GetSelectionCount();
 	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
 }
 
@@ -1528,8 +1530,7 @@ void QtMainWindow::UpdateStatusBar()
         return;
     }
 
-    const EntityGroup *selection = scene->selectionSystem->GetSelection();
-    if(selection->Size())
+    if(scene->selectionSystem->GetSelectionCount() > 0)
     {
         float32 distanceToCamera = scene->selectionSystem->GetDistanceToCamera();
         ui->statusBar->SetDistanceToCamera(distanceToCamera);
@@ -1573,15 +1574,14 @@ void QtMainWindow::OnConvertToShadow()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
     
-    const EntityGroup *selection = scene->selectionSystem->GetSelection();
-    if(selection->Size())
+	SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
     {
         scene->BeginBatch("Convert To Shadow");
         
-        size_t count = selection->Size();
-        for(size_t i = 0; i < count; ++i)
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
         {
-            scene->Exec(new ConvertToShadowCommand(selection->GetEntity(i)));
+            scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
         }
         
         scene->EndBatch();
@@ -1840,15 +1840,14 @@ void QtMainWindow::OnAddActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 	
-	const EntityGroup *selection = scene->selectionSystem->GetSelection();
-	size_t count = selection->Size();
-	if(count)
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
 	{
 		scene->BeginBatch("Add Action Component");
 
-		for(size_t i = 0; i < count; ++i)
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(selection->GetEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
 		}
 
 		scene->EndBatch();
@@ -1860,15 +1859,14 @@ void QtMainWindow::OnRemoveActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
-	const EntityGroup *selection = scene->selectionSystem->GetSelection();
-	size_t count = selection->Size();
-	if(count)
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
 	{
 		scene->BeginBatch("Remove Action Component");
 
-		for(size_t i = 0; i < count; ++i)
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new RemoveComponentCommand(selection->GetEntity(i), Component::ACTION_COMPONENT));
+			scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), Component::ACTION_COMPONENT));
 		}
 
 		scene->EndBatch();

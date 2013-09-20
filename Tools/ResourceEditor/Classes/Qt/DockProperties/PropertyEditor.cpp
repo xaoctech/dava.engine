@@ -199,7 +199,7 @@ void PropertyEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(NULL != scene)
 	{
-		SetNode(scene->selectionSystem->GetSelection()->GetEntity(0));
+		SetNode(scene->selectionSystem->GetSelectionEntity(0));
 	}
 }
 

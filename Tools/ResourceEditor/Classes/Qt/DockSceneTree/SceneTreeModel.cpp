@@ -331,7 +331,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 					entityGroup.Add((DAVA::Entity*) entitiesV->at(i));
 				}
 
-				curScene->structureSystem->Move(&entityGroup, parentEntity, beforeEntity);
+				curScene->structureSystem->Move(entityGroup, parentEntity, beforeEntity);
 				ret = true;
 			}
 

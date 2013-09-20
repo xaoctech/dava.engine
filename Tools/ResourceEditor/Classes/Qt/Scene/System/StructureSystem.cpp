@@ -73,25 +73,23 @@ void StructureSystem::Init()
 	}
 }
 
-void StructureSystem::Move(const EntityGroup *entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
+void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && NULL != entityGroup)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
-		EntityGroup toMove = *entityGroup;
-
-		if(toMove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
 			LockSignals(false);
 			sceneEditor->BeginBatch("Move entities");
 		}
 
-		for(size_t i = 0; i < toMove.Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityMoveCommand(toMove.GetEntity(i), newParent, newBefore));
+			sceneEditor->Exec(new EntityMoveCommand(entityGroup.GetEntity(i), newParent, newBefore));
 		}
 
-		if(toMove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
 			LockSignals(false);
@@ -101,25 +99,23 @@ void StructureSystem::Move(const EntityGroup *entityGroup, DAVA::Entity *newPare
 	}
 }
 
-void StructureSystem::Remove(const EntityGroup *entityGroup)
+void StructureSystem::Remove(const EntityGroup &entityGroup)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && NULL != entityGroup)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
-		EntityGroup toRemove = *entityGroup;
-
-		if(toRemove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
 			LockSignals(true);
 			sceneEditor->BeginBatch("Remove entities");
 		}
 
-		for(size_t i = 0; i < toRemove.Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityRemoveCommand(toRemove.GetEntity(i)));
+			sceneEditor->Exec(new EntityRemoveCommand(entityGroup.GetEntity(i)));
 		}
 
-		if(toRemove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
 			LockSignals(false);
@@ -240,6 +236,8 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
 		DAVA::Vector<DAVA::Entity*> newEntities;
+		SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
+
 		bool loadSuccess = false;
 
 		// load new models
@@ -272,9 +270,13 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 		// replace old models with new
 		if(loadSuccess)
 		{
+			// lock structure system and collision system
+			// collision objects will be updated manually, after reload complete
+			// this will increase performance
 			LockSignals(true);
-			sceneEditor->BeginBatch("Reload model");
+			collisionSystem->LockCollisionObjects(true);
 
+			sceneEditor->BeginBatch("Reload model");
 			for(size_t i = 0; i < entityGroup.Size(); ++i)
 			{
 				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
@@ -297,9 +299,21 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 					newEntity->Release();
 				}
 			}
-
 			sceneEditor->EndBatch();
+
+			// unlock systems
+			collisionSystem->LockCollisionObjects(false);
 			LockSignals(false);
+
+			// manually update collision system
+			for(size_t i = 0; i < entityGroup.Size(); ++i)
+			{
+				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
+				DAVA::Entity *newEntity = newEntities[i];
+
+				collisionSystem->RemoveCollisionObject(origEntity);
+				collisionSystem->UpdateCollisionObject(newEntity);
+			}
 
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
             
@@ -317,6 +331,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 		if(NULL != loadedEntity)
 		{
 			DAVA::Vector3 entityPos = pos;
+			SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
 
 			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
@@ -341,9 +356,15 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			loadedEntity->SetLocalTransform(transform);
 
 			LockSignals(true);
+			collisionSystem->LockCollisionObjects(true);
+
 			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
+
+			collisionSystem->LockCollisionObjects(false);
 			LockSignals(false);
 
+			// manually update collision object
+			collisionSystem->UpdateCollisionObject(loadedEntity);
 			loadedEntity->Release();
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
@@ -352,6 +373,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
 			// <--
             
+			EmitChanged();
 		}
 	}
 }

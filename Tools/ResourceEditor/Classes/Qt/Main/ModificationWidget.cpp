@@ -77,15 +77,14 @@ void ModificationWidget::ReloadValues()
 {
 	if(NULL != curScene)
 	{
-		const EntityGroup* selection = curScene->selectionSystem->GetSelection();
-		if(NULL != selection && selection->Size() > 0 &&
-			(modifMode == ST_MODIF_MOVE || modifMode == ST_MODIF_ROTATE || modifMode == ST_MODIF_SCALE))
+		EntityGroup selection = curScene->selectionSystem->GetSelection();
+		if(selection.Size() > 0 && (modifMode == ST_MODIF_MOVE || modifMode == ST_MODIF_ROTATE || modifMode == ST_MODIF_SCALE))
 		{
 			ui->xAxisModify->setEnabled(true);
 			ui->yAxisModify->setEnabled(true);
 			ui->zAxisModify->setEnabled(true);
 
-			if(selection->Size() > 1)
+			if(selection.Size() > 1)
 			{
 				groupMode = true;
 
@@ -105,7 +104,7 @@ void ModificationWidget::ReloadValues()
 				}
 				else
 				{
-					DAVA::Entity *singleEntity = selection->GetEntity(0);
+					DAVA::Entity *singleEntity = selection.GetEntity(0);
 					if(NULL != singleEntity)
 					{
 
@@ -197,60 +196,57 @@ void ModificationWidget::ApplyMoveValues(ST_Axis axis)
 
 	if(NULL != curScene)
 	{
-		const EntityGroup* selection = curScene->selectionSystem->GetSelection();
-		if(NULL != selection)
+		EntityGroup selection = curScene->selectionSystem->GetSelection();
+		for (size_t i = 0; i < selection.Size(); ++i)
 		{
-			for (size_t i = 0; i < selection->Size(); ++i)
+			DAVA::Entity *entity = selection.GetEntity(i);
+			if(NULL != entity)
 			{
-				DAVA::Entity *entity = selection->GetEntity(i);
-				if(NULL != entity)
+				DAVA::Matrix4 origMatrix = entity->GetLocalTransform();
+				DAVA::Vector3 origPos = origMatrix.GetTranslationVector();
+				DAVA::Vector3 newPos = origPos;
+
+				if(pivotMode == PivotAbsolute)
 				{
-					DAVA::Matrix4 origMatrix = entity->GetLocalTransform();
-					DAVA::Vector3 origPos = origMatrix.GetTranslationVector();
-					DAVA::Vector3 newPos = origPos;
-
-					if(pivotMode == PivotAbsolute)
+					switch (axis)
 					{
-						switch (axis)
-						{
-						case ST_AXIS_X:
-							newPos.x = x;
-							break;
-						case ST_AXIS_Y:
-							newPos.y = y;
-							break;
-						case ST_AXIS_Z:
-							newPos.z = z;
-							break;
-						default:
-							break;
-						}
+					case ST_AXIS_X:
+						newPos.x = x;
+						break;
+					case ST_AXIS_Y:
+						newPos.y = y;
+						break;
+					case ST_AXIS_Z:
+						newPos.z = z;
+						break;
+					default:
+						break;
 					}
-					else
+				}
+				else
+				{
+					switch (axis)
 					{
-						switch (axis)
-						{
-						case ST_AXIS_X:
-							newPos.x += x;
-							break;
-						case ST_AXIS_Y:
-							newPos.y += y;
-							break;
-						case ST_AXIS_Z:
-							newPos.z += z;
-							break;
-						default:
-							break;
-						}
+					case ST_AXIS_X:
+						newPos.x += x;
+						break;
+					case ST_AXIS_Y:
+						newPos.y += y;
+						break;
+					case ST_AXIS_Z:
+						newPos.z += z;
+						break;
+					default:
+						break;
 					}
+				}
 
-					if(newPos != origPos)
-					{
-						DAVA::Matrix4 newMatrix = origMatrix;
-						newMatrix.SetTranslationVector(newPos);
+				if(newPos != origPos)
+				{
+					DAVA::Matrix4 newMatrix = origMatrix;
+					newMatrix.SetTranslationVector(newPos);
 
-						curScene->Exec(new TransformCommand(entity,	origMatrix, newMatrix));
-					}
+					curScene->Exec(new TransformCommand(entity,	origMatrix, newMatrix));
 				}
 			}
 		}

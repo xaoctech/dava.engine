@@ -865,18 +865,16 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	
 CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 {
-	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
-	
+	CustomPropertiesComponent* component = (CustomPropertiesComponent *) GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
 	if(NULL == component)
 	{
 		component = (CustomPropertiesComponent *) Component::CreateByType(Component::CUSTOM_PROPERTIES_COMPONENT);
-        RemoveComponent(component->GetType());
+
 		AddComponent(component);
 		component->Release();
 	}
 	
     return component;
-
 }
 	
 KeyedArchive* Entity::GetCustomProperties()
