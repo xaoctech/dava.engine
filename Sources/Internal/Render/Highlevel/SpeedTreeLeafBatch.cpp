@@ -57,7 +57,12 @@ void SpeedTreeLeafBatch::SetTexture(Texture * _texture)
 
 void SpeedTreeLeafBatch::Draw(Camera * camera)
 {
-    if(!renderObject)return;
+    if(!renderObject)
+        return;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPEEDTREE_LEAFS_DRAW))
+        return;
+
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
     if (!worldTransformPtr)
     {
