@@ -199,6 +199,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 			case UIEvent::PHASE_BEGAN:
 				if (isIntersectsLandscape)
 				{
+					CreateMaskTexture();
 					UpdateToolImage();
 					ResetAccumulatorRect();
 					StoreOriginalState();
