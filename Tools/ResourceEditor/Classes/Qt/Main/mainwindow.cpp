@@ -811,6 +811,11 @@ void QtMainWindow::OnSceneOpen()
 
 void QtMainWindow::OnSceneSave()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
@@ -820,6 +825,11 @@ void QtMainWindow::OnSceneSave()
 
 void QtMainWindow::OnSceneSaveAs()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
@@ -829,6 +839,11 @@ void QtMainWindow::OnSceneSaveAs()
 
 void QtMainWindow::OnSceneSaveToFolder()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
@@ -1706,23 +1721,23 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	{
 		ui->actionCustomColorsEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
 	{
 		ui->actionHeightMapEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
 	{
 		ui->actionRulerTool->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
 	{
 		ui->actionTileMapEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
 	{
 		ui->actionVisibilityCheckTool->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
 	{
 		ui->actionShowNotPassableLandscape->setChecked(true);
 	}
@@ -1876,3 +1891,15 @@ void QtMainWindow::OnRemoveActionComponent()
 	}
 }
 
+bool QtMainWindow::IsSavingAllowed()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	if (!scene || scene->GetEnabledTools() != 0)
+	{
+		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
+		return false;
+	}
+
+	return true;
+}
