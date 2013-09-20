@@ -743,6 +743,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         oldMeshInstanceNode->Entity::Clone(newMeshInstanceNode);
 
 		Component *clonedComponent = oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode);
+        newMeshInstanceNode->RemoveComponent(clonedComponent->GetType());
         newMeshInstanceNode->AddComponent(clonedComponent);
 		clonedComponent->Release();
         
