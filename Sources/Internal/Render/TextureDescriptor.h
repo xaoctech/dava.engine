@@ -162,9 +162,6 @@ protected:
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
 
-    DAVA_DEPRECATED(void LoadVersion2(int32 signature, File *file));
-	DAVA_DEPRECATED(void LoadVersion3(int32 signature, File *file));
-	DAVA_DEPRECATED(void LoadVersion4(int32 signature, File *file));
 	void LoadVersion5(int32 signature, File *file);
 	void LoadVersion6(int32 signature, File *file);
     

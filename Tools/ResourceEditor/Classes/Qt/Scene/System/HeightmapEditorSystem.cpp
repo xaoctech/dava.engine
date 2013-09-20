@@ -66,7 +66,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	copyPasteTilemask(false)
 ,	curHeight(0.f)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
