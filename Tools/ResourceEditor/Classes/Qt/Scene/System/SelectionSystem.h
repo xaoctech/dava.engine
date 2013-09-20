@@ -57,7 +57,10 @@ public:
 	void RemSelection(DAVA::Entity *entity);
 	void Clear();
 
-	const EntityGroup* GetSelection() const;
+	EntityGroup GetSelection() const;
+
+	size_t GetSelectionCount() const;
+	DAVA::Entity* GetSelectionEntity(int index) const;
 
 	void SetDrawMode(int mode);
 	int GetDrawMode() const;
@@ -67,6 +70,7 @@ public:
 
 	void LockSelection(bool lock);
 
+	DAVA::AABBox3 GetSelectionAABox(int index) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const;
     

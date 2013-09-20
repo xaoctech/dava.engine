@@ -414,11 +414,9 @@ void SceneInfo::CollectLODDataForSelection()
     if(!activeScene) return;
     
     Vector<LodComponent *>lods;
-    const EntityGroup *selection = activeScene->selectionSystem->GetSelection();
-    size_t entitiesCount = selection->Size();
-    for(size_t i = 0; i < entitiesCount; ++i)
+    for(size_t i = 0; i < activeScene->selectionSystem->GetSelectionCount(); ++i)
     {
-        EditorLODData::EnumerateLODsRecursive(selection->GetEntity(i), lods);
+        EditorLODData::EnumerateLODsRecursive(activeScene->selectionSystem->GetSelectionEntity(i), lods);
     }
     
     CollectLODTriangles(lods, lodInfoSelection);

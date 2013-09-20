@@ -258,6 +258,14 @@ void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 	}
 }
 
+void SceneCollisionSystem::RemoveCollisionObject(DAVA::Entity *entity)
+{
+	if(!lockedCollisionObjects)
+	{
+		RemoveEntity(entity);
+	}
+}
+
 void SceneCollisionSystem::LockCollisionObjects(bool lock)
 {
 	lockedCollisionObjects = lock;
@@ -340,17 +348,16 @@ void SceneCollisionSystem::Draw()
 		SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 		if(NULL != selectionSystem)
 		{
-			const EntityGroup *selectedEntities = selectionSystem->GetSelection();
-			for (size_t i = 0; i < selectedEntities->Size(); i++)
+			for (size_t i = 0; i < selectionSystem->GetSelectionCount(); i++)
 			{
 				// get collision object for solid selected entity
-				CollisionBaseObject *cObj = entityToCollision.value(selectedEntities->GetEntity(i), NULL);
+				CollisionBaseObject *cObj = entityToCollision.value(selectionSystem->GetSelectionEntity(i), NULL);
 
 				// if no collision object for solid selected entity,
 				// try to get collision object for real selected entity
 				if(NULL == cObj)
 				{
-					cObj = entityToCollision.value(selectedEntities->GetEntity(i), NULL);
+					cObj = entityToCollision.value(selectionSystem->GetSelectionEntity(i), NULL);
 				}
 
 				if(NULL != cObj && NULL != cObj->btObject)
@@ -396,7 +403,7 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity * entity)
 {
-	if(NULL != entity)
+	if(!lockedCollisionObjects && NULL != entity)
 	{
 		// check if we still don't have this entity in our collision world
 		CollisionBaseObject *cObj = entityToCollision.value(entity, NULL);
@@ -416,7 +423,7 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity * entity)
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity * entity)
 {
-	if(NULL != entity)
+	if(!lockedCollisionObjects && NULL != entity)
 	{
 		// destroy collision object from entity
 		DestroyFromEntity(entity);
@@ -433,45 +440,42 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 {
 	CollisionBaseObject *collObj = NULL;
 
-	if(!lockedCollisionObjects)
+	// check if this entity is landscape
+	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
+	if( NULL == collObj &&
+		NULL != landscape)
 	{
-		// check if this entity is landscape
-		DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
-		if( NULL == collObj &&
-			NULL != landscape)
-		{
-			collObj = new CollisionLandscape(entity, landCollWorld, landscape);
-			curLandscape = landscape;
+		collObj = new CollisionLandscape(entity, landCollWorld, landscape);
+		curLandscape = landscape;
 
-			return collObj;
-		}
+		return collObj;
+	}
 
-		DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
-		if( NULL == collObj &&
-			NULL != particleEmitter)
-		{
-			collObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
-		}
+	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
+	if( NULL == collObj &&
+		NULL != particleEmitter)
+	{
+		collObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
+	}
 
-		DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
-		if( NULL == collObj &&
-			NULL != renderObject && entity->IsLodMain(0))
-		{
-			collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
-		}
+	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
+	if( NULL == collObj &&
+		NULL != renderObject && entity->IsLodMain(0))
+	{
+		collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+	}
 
-		DAVA::Camera *camera = DAVA::GetCamera(entity);
-		if( NULL == collObj && 
-			NULL != camera)
-		{
-			collObj = new CollisionCamera(entity, objectsCollWorld, camera);
-		}
+	DAVA::Camera *camera = DAVA::GetCamera(entity);
+	if( NULL == collObj && 
+		NULL != camera)
+	{
+		collObj = new CollisionCamera(entity, objectsCollWorld, camera);
+	}
 
-		if(NULL != collObj)
-		{
-			entityToCollision[entity] = collObj;
-			collisionToEntity[collObj->btObject] = entity;
-		}
+	if(NULL != collObj)
+	{
+		entityToCollision[entity] = collObj;
+		collisionToEntity[collObj->btObject] = entity;
 	}
 
 	return collObj;

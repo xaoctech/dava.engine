@@ -302,9 +302,19 @@ void SceneSelectionSystem::Clear()
 	}
 }
 
-const EntityGroup* SceneSelectionSystem::GetSelection() const
+EntityGroup SceneSelectionSystem::GetSelection() const
 {
-	return &curSelections;
+	return curSelections;
+}
+
+size_t SceneSelectionSystem::GetSelectionCount() const
+{
+	return curSelections.Size();
+}
+
+DAVA::Entity* SceneSelectionSystem::GetSelectionEntity(int index) const
+{
+	return curSelections.GetEntity(index);
 }
 
 void SceneSelectionSystem::SelectedItemsWereModified()
@@ -413,6 +423,11 @@ DAVA::Entity* SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 	}
 
 	return selectableEntity;
+}
+
+DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(int index) const
+{
+	return curSelections.GetBbox(index);
 }
 
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) const

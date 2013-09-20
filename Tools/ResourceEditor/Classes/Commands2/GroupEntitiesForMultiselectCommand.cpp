@@ -31,10 +31,10 @@
 #include "Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
-GroupEntitiesForMultiselectCommand::GroupEntitiesForMultiselectCommand(const EntityGroup* entities)
+GroupEntitiesForMultiselectCommand::GroupEntitiesForMultiselectCommand(const EntityGroup &entities)
 	: Command2(CMDID_GROUP_ENTITIES_FOR_MULTISELECT, "Add complex entity with LODs")
 {
-	this->entitiesToGroup = (*entities);
+	this->entitiesToGroup = entities;
 	this->resultEntity = NULL;
 	Entity* en = entitiesToGroup.GetEntity(0);
 	sceneEditor = NULL;

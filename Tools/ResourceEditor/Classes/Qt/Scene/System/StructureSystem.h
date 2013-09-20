@@ -53,8 +53,8 @@ public:
 
 	void Init();
 
-	void Move(const EntityGroup *entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
-	void Remove(const EntityGroup *entityGroup);
+	void Move(const EntityGroup& entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
+	void Remove(const EntityGroup& entityGroup);
 	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);

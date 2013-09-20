@@ -111,11 +111,10 @@ void EditorParticlesSystem::Draw()
 	if(selectionSystem != NULL)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
-		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
 		
-		for (size_t i = 0; i < selectedEntities->Size(); i++)
+		for (size_t i = 0; i < selectionSystem->GetSelectionCount(); i++)
 		{
-			DAVA::Entity *entity = selectedEntities->GetEntity(i);
+			DAVA::Entity *entity = selectionSystem->GetSelectionEntity(i);
 			
 			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent*>(entity->GetComponent(DAVA::Component::RENDER_COMPONENT));
 		
@@ -126,7 +125,7 @@ void EditorParticlesSystem::Draw()
 				if (emitter)
 				{
 					// Get center of entity object
-					DAVA::AABBox3 selectionBox = selectedEntities->GetBbox(i);
+					DAVA::AABBox3 selectionBox = selectionSystem->GetSelectionAABox(i);
 					DAVA::Vector3 center = selectionBox.GetCenter();
 					// Always draw emission vector arrow for emitter
 					DrawVectorArrow(entity, emitter, center);

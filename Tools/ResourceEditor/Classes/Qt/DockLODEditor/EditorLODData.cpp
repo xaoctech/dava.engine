@@ -102,7 +102,7 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
     {
         activeScene->BeginBatch("LOD Distance Changed");
         
-        for(DAVA::int32 i = 0; i < componentsCount; ++i)
+        for(DAVA::uint32 i = 0; i < componentsCount; ++i)
         {
             if(layerNum >= GetLayersCount(lodData[i]))
                 continue;
@@ -130,7 +130,7 @@ void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32>
 			DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
 			lodDistances[layerNum] = distance;
 
-			for(DAVA::int32 i = 0; i < componentsCount; ++i)
+			for(DAVA::uint32 i = 0; i < componentsCount; ++i)
 			{
 				if(layerNum < GetLayersCount(lodData[i]))
 				{
@@ -323,12 +323,12 @@ DAVA::uint32 EditorLODData::GetTrianglesForEntity(DAVA::Entity *entity, bool che
 
 void EditorLODData::EnumerateSelectionLODs(SceneEditor2 * scene)
 {
-    const EntityGroup * selection = scene->selectionSystem->GetSelection();
+    EntityGroup selection = scene->selectionSystem->GetSelection();
     
-    DAVA::uint32 count = selection->Size();
+    DAVA::uint32 count = selection.Size();
     for(DAVA::uint32 i = 0; i < count; ++i)
     {
-        EnumerateLODsRecursive(selection->GetEntity(i), lodData);
+        EnumerateLODsRecursive(selection.GetEntity(i), lodData);
     }
 }
 

@@ -95,9 +95,9 @@ void EntityModificationSystem::SetLandscapeSnap(bool snap)
 	snapToLandscape = snap;
 }
 
-void EntityModificationSystem::PlaceOnLandscape(const EntityGroup *entities)
+void EntityModificationSystem::PlaceOnLandscape(const EntityGroup &entities)
 {
-	if(NULL != entities)
+	if(entities.Size() > 0)
 	{
 		bool prevSnapToLandscape = snapToLandscape;
 
@@ -116,13 +116,13 @@ void EntityModificationSystem::PlaceOnLandscape(const EntityGroup *entities)
 	}
 }
 
-void EntityModificationSystem::ResetTransform(const EntityGroup *entities)
+void EntityModificationSystem::ResetTransform(const EntityGroup &entities)
 {
 	SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
 
 	if(NULL != sceneEditor)
 	{
-		bool isMultiple = (entities->Size() > 1);
+		bool isMultiple = (entities.Size() > 1);
 		
 		DAVA::Matrix4 zeroTransform;
 		zeroTransform.Identity();
@@ -132,9 +132,9 @@ void EntityModificationSystem::ResetTransform(const EntityGroup *entities)
 			sceneEditor->BeginBatch("Multiple transform");
 		}
 
-		for (size_t i = 0; i < entities->Size(); ++i)
+		for (size_t i = 0; i < entities.Size(); ++i)
 		{
-			DAVA::Entity *entity = entities->GetEntity(i);
+			DAVA::Entity *entity = entities.GetEntity(i);
 			if(NULL != entity)
 			{
 				sceneEditor->Exec(new TransformCommand(entity,	entity->GetLocalTransform(), zeroTransform));
@@ -172,7 +172,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	{
 		// current selected entities
 		SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
+		EntityGroup selectedEntities = selectionSystem->GetSelection();
 
 		// remember current cursor point, when looking from current camera
 		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
@@ -185,7 +185,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			// can we start modification???
 			if(ModifCanStart(selectedEntities))
 			{
-				SceneSignals::Instance()->EmitMouseOverSelection((SceneEditor2 *) GetScene(), selectedEntities);
+				SceneSignals::Instance()->EmitMouseOverSelection((SceneEditor2 *) GetScene(), &selectedEntities);
 
 				if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 				{
@@ -352,20 +352,20 @@ void EntityModificationSystem::ProcessCommand(const Command2 *command, bool redo
 
 }
 
-void EntityModificationSystem::BeginModification(const EntityGroup *entities)
+void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 {
 	// clear any priv. selection
 	EndModification();
 
-	if(NULL != entities)
+	if(entities.Size() > 0)
 	{
-		for(size_t i = 0; i < entities->Size(); ++i)
+		for(size_t i = 0; i < entities.Size(); ++i)
 		{
-			DAVA::Entity *en = entities->GetEntity(i);
+			DAVA::Entity *en = entities.GetEntity(i);
 
 			if(NULL == en)
 			{
-				en = entities->GetEntity(i);
+				en = entities.GetEntity(i);
 			}
 
 			if(NULL != en)
@@ -399,7 +399,7 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		}
 
 		// center of this bbox will modification center, common for all entities
-		modifEntitiesCenter = entities->GetCommonBbox().GetCenter();
+		modifEntitiesCenter = entities.GetCommonBbox().GetCenter();
 
 		// prepare translation matrix's, used before and after rotation
 		moveToZeroPosRelativeCenter.CreateTranslation(-modifEntitiesCenter);
@@ -456,18 +456,18 @@ void EntityModificationSystem::EndModification()
 	modifEntities.clear();
 }
 
-bool EntityModificationSystem::ModifCanStart(const EntityGroup *selectedEntities) const
+bool EntityModificationSystem::ModifCanStart(const EntityGroup &selectedEntities) const
 {
 	bool modifCanStart = false;
 
-	if(selectedEntities->Size() > 0)
+	if(selectedEntities.Size() > 0)
 	{
 		bool hasLocked = false;
 
 		// check if we have some locked items in selection
-		for(size_t i = 0; i < selectedEntities->Size(); ++i)
+		for(size_t i = 0; i < selectedEntities.Size(); ++i)
 		{
-			if(selectedEntities->GetEntity(i)->GetLocked())
+			if(selectedEntities.GetEntity(i)->GetLocked())
 			{
 				hasLocked = true;
 				break;
@@ -497,9 +497,9 @@ bool EntityModificationSystem::ModifCanStart(const EntityGroup *selectedEntities
 					{
 						DAVA::Entity *collisionedEntity = collisionEntities->GetEntity(i);
 
-						for(size_t j = 0; !modifCanStart && j < selectedEntities->Size(); ++j)
+						for(size_t j = 0; !modifCanStart && j < selectedEntities.Size(); ++j)
 						{
-							DAVA::Entity *selectedEntity = selectedEntities->GetEntity(j);
+							DAVA::Entity *selectedEntity = selectedEntities.GetEntity(j);
 
 							if(selectedEntity == collisionedEntity)
 							{
@@ -528,21 +528,34 @@ void EntityModificationSystem::ApplyModification()
 
 	if(NULL != sceneEditor)
 	{
-		bool isMultiple = (modifEntities.size() > 1);
-
-		if(isMultiple)
-		{
-			sceneEditor->BeginBatch("Multiple transform");
-		}
-
+		bool transformChanged = false;
 		for (size_t i = 0; i < modifEntities.size(); ++i)
 		{
-			sceneEditor->Exec(new TransformCommand(modifEntities[i].entity,	modifEntities[i].originalTransform, modifEntities[i].entity->GetLocalTransform()));
+			if(modifEntities[i].originalTransform != modifEntities[i].entity->GetLocalTransform())
+			{
+				transformChanged = true;
+				break;
+			}
 		}
 
-		if(isMultiple)
+		if(transformChanged)
 		{
-			sceneEditor->EndBatch();
+			bool isMultiple = (modifEntities.size() > 1);
+
+			if(isMultiple)
+			{
+				sceneEditor->BeginBatch("Multiple transform");
+			}
+
+			for (size_t i = 0; i < modifEntities.size(); ++i)
+			{
+				sceneEditor->Exec(new TransformCommand(modifEntities[i].entity,	modifEntities[i].originalTransform, modifEntities[i].entity->GetLocalTransform()));
+			}
+
+			if(isMultiple)
+			{
+				sceneEditor->EndBatch();
+			}
 		}
 	}
 }
