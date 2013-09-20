@@ -500,8 +500,6 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 		}
 		break;
 
-	case DropingUnknown:
-	case DropingMixed:
 	default:
 		break;
 	}
@@ -625,12 +623,7 @@ int SceneTreeModel::GetDropType(const QMimeData *data) const
 
 	if(NULL != data)
 	{
-		if(data->formats().size() > 1)
-		{
-			// more than one format in data
-			ret = DropingMixed;
-		}
-		else if(data->hasFormat(mimeFormatEntity))
+		if(data->hasFormat(mimeFormatEntity))
 		{
 			ret = DropingEntity;
 		}
