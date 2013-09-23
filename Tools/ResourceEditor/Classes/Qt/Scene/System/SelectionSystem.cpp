@@ -46,7 +46,6 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
 	, selectionLocked(false)
-    , distanceToCamera(0.f)
 {
 
 }
@@ -58,15 +57,12 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
-    UpdateDistanceToCamera();
-
 	if (IsLocked())
 	{
 		return;
 	}
 
 	UpdateHoodPos();
-
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -373,6 +369,9 @@ void SceneSelectionSystem::UpdateHoodPos() const
 		hoodSystem->LockModif(false);
 		hoodSystem->Show(false);
 	}
+    
+    SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+    sc->cameraSystem->UpdateDistanceToCamera();
 }
 
 EntityGroup SceneSelectionSystem::GetSelecetableFromCollision(const EntityGroup *collisionEntities)
@@ -486,23 +485,5 @@ int SceneSelectionSystem::GetDrawMode() const
 	return drawMode;
 }
 
-DAVA::float32 SceneSelectionSystem::GetDistanceToCamera() const
-{
-    return distanceToCamera;
-}
 
-void SceneSelectionSystem::UpdateDistanceToCamera()
-{
-    Vector3 center = curSelections.GetCommonBbox().GetCenter();
-    
-    const Camera *cam = GetScene()->GetCurrentCamera();
-    if(cam)
-    {
-        distanceToCamera = (cam->GetPosition() - center).Length();
-    }
-    else
-    {
-        distanceToCamera = 0.f;
-    }
-}
 
