@@ -1512,8 +1512,13 @@ void QtMainWindow::OnSaveHeightmapToPNG()
     
     Heightmap * heightmap = landscape->GetHeightmap();
     FilePath heightmapPath = landscape->GetHeightmapPathname();
-    heightmapPath.ReplaceExtension(".png");
-    heightmap->SaveToImage(heightmapPath);
+    FilePath requestedPngPath = FilePath::CreateWithNewExtension(heightmapPath, ".png");
+
+    QString selectedPath = QFileDialog::getSaveFileName(this, "Save heightmap as", requestedPngPath.GetAbsolutePathname().c_str(), "PGN Image (*.png)");
+    if(selectedPath.isEmpty()) return;
+
+    requestedPngPath = DAVA::FilePath(selectedPath.toStdString());
+    heightmap->SaveToImage(requestedPngPath);
 }
 
 void QtMainWindow::OnSaveTiledTexture()
