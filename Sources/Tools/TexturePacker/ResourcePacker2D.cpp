@@ -490,6 +490,16 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				packer.SetMaxTextureSize(2048);
 			}
 
+            if(definitionFileList.size() == 1)
+            {
+                DefinitionFile * def = definitionFileList.front();
+                if(def->frameCount == 1)
+                {
+                    def->frameRects[0] = packer.ReduceRectToOriginalSize(def->frameRects[0]);
+                    CommandLineParser::Instance()->AddArgument("--add0pixel");
+                }
+            }
+
 			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 			{
 				packer.PackToTexturesSeparate(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);

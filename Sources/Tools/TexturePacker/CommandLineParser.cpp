@@ -70,6 +70,10 @@ void CommandLineParser::SetArguments(const Vector<String> &arguments)
         params.push_back(String());
 }
 
+void CommandLineParser::AddArgument(const String & arg)
+{
+    flags.push_back(arg);
+}
     
 void CommandLineParser::SetArguments(int argc, char * argv[])
 {
