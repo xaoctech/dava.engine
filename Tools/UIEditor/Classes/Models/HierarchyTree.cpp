@@ -179,7 +179,14 @@ void HierarchyTree::CloseProject()
 	if (!bundleName.IsEmpty())
 	{
 		bundleName.MakeDirectoryPathname();
-		FilePath::RemoveResourcesFolder(bundleName);
+		// DF-1805 - Do not remove bundleName which is not in resources
+        List<FilePath> resFolders = FilePath::GetResourcesFolders();
+        List<FilePath>::const_iterator searchIt = find(resFolders.begin(), resFolders.end(), bundleName);
+        
+        if(searchIt != resFolders.end())
+        {
+			FilePath::RemoveResourcesFolder(bundleName);
+		}
 	}  
 	// Reset project path
 	rootNode.SetProjectFilePath(QString());
