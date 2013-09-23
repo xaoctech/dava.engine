@@ -1613,7 +1613,18 @@ void QtMainWindow::OnConvertToShadow()
     if(ss->GetSelectionCount() > 0)
     {
         scene->BeginBatch("Convert To Shadow");
-        
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            RenderObject * ro = GetRenderObject(ss->GetSelectionEntity(i));
+            if(!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch)))
+            {
+                ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+                scene->EndBatch();
+                return;
+            }
+        }
+
         for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
         {
             scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
