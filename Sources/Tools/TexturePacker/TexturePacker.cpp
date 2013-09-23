@@ -34,7 +34,6 @@
 #include "TexturePacker/DefinitionFile.h"
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"
-#include "Render/Texture.h"
 #include "TextureCompression/TextureConverter.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
@@ -616,22 +615,15 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 
-    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
     descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
-    if(descriptor->settings.generateMipMaps)
-    {
-        descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-    }
-    else
-    {
-        descriptor->settings.minFilter = Texture::FILTER_LINEAR;
-        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-    }
-    
+	
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps);
+	descriptor->settings.minFilter = ftItem.minFilter;
+	descriptor->settings.magFilter = ftItem.magFilter;
+	
     if(forGPU == GPU_UNKNOWN)   // not need compression
         return descriptor;
-    
     
     descriptor->exportedAsGpuFamily = forGPU;
 
@@ -663,6 +655,60 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     }
     
     return descriptor;
+}
+
+Texture::TextureWrap TexturePacker::GetDescriptorWrapMode()
+{
+	if (CommandLineParser::Instance()->IsFlagSet("--wrapClampToEdge"))
+	{
+		return Texture::WRAP_CLAMP_TO_EDGE;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--wrapRepeat"))
+	{
+		return Texture::WRAP_REPEAT;
+	}
+	
+	// Default Wrap mode
+	return Texture::WRAP_CLAMP_TO_EDGE;
+}
+
+TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMaps)
+{
+	// Default filter
+	TexturePacker::FilterItem filterItem(generateMipMaps ? Texture::FILTER_LINEAR_MIPMAP_LINEAR : Texture::FILTER_LINEAR,
+															Texture::FILTER_LINEAR);
+	if (CommandLineParser::Instance()->IsFlagSet("--filterNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST;
+		filterItem.magFilter = Texture::FILTER_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR;
+		filterItem.magFilter = Texture::FILTER_LINEAR;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
+		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
+		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
+		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+	}
+
+	return filterItem;
 }
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
