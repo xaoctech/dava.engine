@@ -412,6 +412,8 @@ QWidget * MainWindow::CreateAppAvalibleTableItem(Application * app)
         comboBox->view()->setTextElideMode(Qt::ElideLeft);
         comboBox->setFont(tableFont);
         comboBox->setFocusPolicy(Qt::NoFocus);
+        comboBox->model()->sort(0, Qt::DescendingOrder);
+        comboBox->setCurrentIndex(0);
 
         return comboBox;
     }
