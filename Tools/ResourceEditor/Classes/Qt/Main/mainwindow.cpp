@@ -752,7 +752,6 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	{
 		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
 		scene->Exec(command);
-		SafeRelease(switchEntity);
 		
 		Entity* affectedEntity = command->GetEntity();
 		scene->selectionSystem->SetSelection(affectedEntity);
