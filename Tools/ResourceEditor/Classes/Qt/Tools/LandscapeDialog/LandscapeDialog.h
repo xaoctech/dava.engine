@@ -35,16 +35,16 @@
 #include <QPushButton.h>
 #include <QDialogButtonBox>
 
-#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
 #include "Qt/Scene/SceneEditor2.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "./../Qt/Tools/SelectPathWidget/SelectPathWidgetBase.h"
+#include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "LandscapeSettingsEditor.h"
 
 class SelectEntityPathWidget;
 
-class LandscapeDialog: public QDialog
+class LandscapeDialog: public BaseAddEntityDialog
 {
 	Q_OBJECT
 	
@@ -55,6 +55,8 @@ public:
 	
 	void CleanupPathWidgets();
 
+	Entity* GetModificatedEntity();
+	
 public slots:
 	
 	void reject();
@@ -65,18 +67,28 @@ protected slots:
 	
 	void TileModeChanged(int newValue);
 	
+	void ActionButtonClicked();
+	
 protected:
+		
+	void SetLandscapeEntity(Entity* _landscapeEntity);
+
+	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
 	
-	DAVA::Vector<QWidget*>			additionalWidgets;
+	Landscape*				innerLandscape;
+	Entity*					innerLandscapeEntity;
+	Entity*					defaultLandscapeEntity;
 	
-	Landscape*						landscape;
+	QPushButton*			actionButton;
 	
 	struct DefaultInfo
 	{
 		int32 specificInfo;
 		FilePath path;
 		DefaultInfo()
-		{}
+		{
+			specificInfo = 0;
+		}
 		
 		DefaultInfo(int32 _specificInfo, FilePath _path)
 		{
@@ -86,13 +98,6 @@ protected:
 	};
 	
 	DAVA::Map<SelectPathWidgetBase*,DefaultInfo>  widgetMap;
-	
-	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
-	
-	QVBoxLayout* mainLayout;
-	QDialogButtonBox* btnBox;
-	
-	LandscapeSettingsEditor* editor;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */
