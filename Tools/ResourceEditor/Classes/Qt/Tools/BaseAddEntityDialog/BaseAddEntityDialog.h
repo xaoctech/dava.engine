@@ -71,6 +71,8 @@ protected:
 	
 	void AddControlToUserContainer(QWidget* widget);
 	
+	void AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString);
+	
 	void RemoveControlFromUserContainer(QWidget* widget);
 	
 	void RemoveAllControlsFromUserContainer();
@@ -78,6 +80,8 @@ protected:
 	DAVA::Entity* entity;
 	
 	Ui::BaseAddEntityDialog *ui;
+	
+	DAVA::Map<QWidget*, QWidget*> additionalWidgetMap;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

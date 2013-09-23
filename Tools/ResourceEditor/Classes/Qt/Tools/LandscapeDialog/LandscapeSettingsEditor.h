@@ -34,9 +34,10 @@
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "DockProperties/PropertyEditorDialog.h"
 #include <QPushButton>
 
-class LandscapeSettingsEditor: public QtPropertyEditor
+class LandscapeSettingsEditor: public PropertyEditorDialog
 {
 	Q_OBJECT
 	
@@ -45,9 +46,11 @@ public:
 	
 	~LandscapeSettingsEditor();
 	
-	void InitializeProperties();
+	void InitializeProperties(Entity* landscapeEntity);
 	
 	void RestoreInitialSettings();
+	
+	void SetLandscapeEntity(Entity* landscapeEntity);
 	
 signals:
 	
