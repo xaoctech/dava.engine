@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
+#include "Render/Texture.h"
 #include "Math/Math2D.h"
 
 namespace DAVA
@@ -55,6 +56,18 @@ class TexturePacker
 public:
 
 	static const int32 TEXTURE_SIZE = 2048;
+	
+	struct FilterItem
+	{
+		int8 minFilter;
+		int8 magFilter;
+		
+		FilterItem(int8 minF, int8 magF)
+		{
+			minFilter = minF;
+			magFilter = magF;
+		}
+	};
 
 public:
 	TexturePacker();
@@ -83,6 +96,9 @@ private:
     
     void ExportImage(PngImageExt *image, const FilePath &exportedPathname, eGPUFamily forGPU);
     TextureDescriptor * CreateDescriptor(eGPUFamily forGPU);
+	
+	Texture::TextureWrap GetDescriptorWrapMode();
+	FilterItem GetDescriptorFilter(bool generateMipMaps = false);
     
     bool CheckFrameSize(const Size2i &spriteSize, const Size2i &frameSize);
     
