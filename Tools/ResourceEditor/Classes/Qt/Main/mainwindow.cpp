@@ -91,6 +91,7 @@
 #include "Classes/Commands2/VisibilityToolActions.h"
 #include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 
 
 #include <QFileDialog>
@@ -1205,37 +1206,46 @@ void QtMainWindow::OnLandscapeDialog()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(!sceneEditor)
 	{
-		return;	
+		return;
 	}
-	Entity *landscapeEntity = FindLandscapeEntity(sceneEditor);
-	Entity* entityToProcess = NULL;
-	if(!landscapeEntity)
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
+	LandscapeDialog * dlg = new LandscapeDialog(presentEntity, this);
+	dlg->exec();
+	Entity *returnedEntity = NULL;
+	returnedEntity = dlg->GetModificatedEntity();
+	bool isOKpressed = dlg->result() == QDialog::Accepted;
+	
+	if(!presentEntity)
 	{
-		entityToProcess = new Entity();
-		entityToProcess->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(ScopedPtr<Landscape>(new Landscape()))));
-		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+		if(isOKpressed)
+		{
+			AddEntityCommand* command = new AddEntityCommand(returnedEntity, sceneEditor);
+			sceneEditor->Exec(command);
+			sceneEditor->selectionSystem->SetSelection(command->GetEntity());
+		}
+		else
+		{
+			SafeRelease(returnedEntity);
+		}
 	}
 	else
 	{
-		entityToProcess = landscapeEntity;
-	}
-	
-	
-	LandscapeDialog * dlg = new LandscapeDialog(entityToProcess, this);
-
-	//dlg->SetEntity(entityToProcess);
-	dlg->exec();
-	
-	if(dlg->result() == QDialog::Accepted && !landscapeEntity)
-	{
-		AddEntityCommand* command = new AddEntityCommand(entityToProcess, sceneEditor);
-		sceneEditor->Exec(command);
-		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
-	}
-	
-	if(!landscapeEntity)
-	{
-		SafeRelease(entityToProcess);
+		if(returnedEntity)
+		{
+			if(returnedEntity != presentEntity)
+			{
+				EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
+				sceneEditor->Exec(command);
+				AddEntityCommand* commandAdd = new AddEntityCommand(returnedEntity, sceneEditor);
+				sceneEditor->Exec(commandAdd);
+				sceneEditor->selectionSystem->SetSelection(commandAdd->GetEntity());
+			}
+		}
+		else
+		{
+			EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
+			sceneEditor->Exec(command);
+		}
 	}
 	
 	delete dlg;

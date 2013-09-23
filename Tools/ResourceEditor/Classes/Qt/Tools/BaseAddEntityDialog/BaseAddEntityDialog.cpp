@@ -32,6 +32,7 @@
 #include "ui_BaseAddEntityDialog.h"
 #include "Qt/Main/QtUtils.h"
 #include <QSizePolicy>
+#include <Qlabel>
 
 BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 :	QDialog(parent),
@@ -49,18 +50,23 @@ BaseAddEntityDialog::~BaseAddEntityDialog()
 {
 	delete ui;
 	SafeRelease(entity);
+	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
+	{
+		delete it->second;
+	}
+	additionalWidgetMap.clear();
 }
 
 void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 {
 	QDialog::showEvent(event);
-	if(!entity)
-	{
-		return;
-	}
 	PropertyEditor* pEditor = ui->propEditor;
-	pEditor->SetNode(entity);
-	pEditor->expandAll();
+	if(entity)
+	{
+		pEditor->SetNode(entity);
+		pEditor->expandAll();
+	}
+
 	int height= ui->verticalLayout->sizeHint().height();
 	QRect rect = geometry();
 	rect.setHeight(height);
@@ -71,7 +77,10 @@ void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
 {
 	QDialog::hideEvent(event);
-	ui->propEditor->SetNode(NULL);
+	if(entity)
+	{
+		ui->propEditor->SetNode(NULL);
+	}
 }
 
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
@@ -91,20 +100,42 @@ void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 	ui->userContentLayout->addWidget(widget);
 }
 
+
+void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString)
+{
+	QLabel* label = new QLabel(labelString.c_str(),this);
+	int rowCount = ui->userContentLayout->rowCount();
+	ui->userContentLayout->addWidget(label, rowCount, 0);
+	ui->userContentLayout->addWidget(widget, rowCount, 1);
+	additionalWidgetMap[widget] = label;
+}
+
 void BaseAddEntityDialog::RemoveControlFromUserContainer(QWidget* widget)
 {
 	setMinimumHeight(minimumHeight() - widget->height());
 	ui->userContentLayout->removeWidget(widget);
+	if(additionalWidgetMap.find(widget) != additionalWidgetMap.end())
+	{
+		QWidget* additionalWidget = additionalWidgetMap[widget];
+		additionalWidgetMap.erase(additionalWidgetMap.find(widget));
+		delete additionalWidget;
+	}
 }
 
 void BaseAddEntityDialog::RemoveAllControlsFromUserContainer()
 {
-	QVBoxLayout* container = ui->userContentLayout;
+	QLayout* container = ui->userContentLayout;
 	while (QLayoutItem* item = container->takeAt(0))
 	{
 		if (QWidget* widget = item->widget())
 		{
 			container->removeWidget( widget);
+			if(additionalWidgetMap.find(widget) != additionalWidgetMap.end())
+			{
+				QWidget* additionalWidget = additionalWidgetMap[widget];
+				additionalWidgetMap.erase(additionalWidgetMap.find(widget));
+				delete additionalWidget;
+			}
 			setMinimumHeight(minimumHeight() - widget->height());
 		}
 	}
@@ -112,7 +143,7 @@ void BaseAddEntityDialog::RemoveAllControlsFromUserContainer()
 
 void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 {
-	QVBoxLayout* container = ui->userContentLayout;
+	QLayout* container = ui->userContentLayout;
 	for (int i = 0; i < container->count(); ++i)
 	{
 		QWidget* child = container->itemAt(i)->widget();

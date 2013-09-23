@@ -63,33 +63,44 @@ VariantType senderContent(sender->GetVariantValue());
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
 LandscapeSettingsEditor::LandscapeSettingsEditor(Entity* landscapeEntity, QWidget* parent)
-		:QtPropertyEditor(parent),
+		:PropertyEditorDialog(parent),
 		landscapeEntity(landscapeEntity)
 {
-	propertyList = landscapeEntity->GetCustomProperties();
-	landscape = DAVA::GetLandscape(landscapeEntity);
-
 	tiledModes.push_back("Tile mask mode");
 	tiledModes.push_back("Texture mode");
 	tiledModes.push_back("Mixed mode");
 	tiledModes.push_back("Detail mask mode");
 
-	InitializeProperties();
-	expandAll();
-	resizeColumnToContents(0);
+	SetLandscapeEntity(landscapeEntity);
 }
 
 LandscapeSettingsEditor::~LandscapeSettingsEditor()
 {
-	for( DAVA::List<PropertyInfo>::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
-	{
-		delete it->property;
-	}
+	RemovePropertyAll();
 	propertiesMap.clear();
 }
 
-void LandscapeSettingsEditor::InitializeProperties()
+void LandscapeSettingsEditor::SetLandscapeEntity(Entity* _landscapeEntity)
 {
+	RemovePropertyAll();
+	propertiesMap.clear();
+		
+	landscapeEntity = _landscapeEntity;
+	if(landscapeEntity == NULL)
+	{
+		return;
+	}
+	
+	InitializeProperties(landscapeEntity);
+	expandAll();
+	resizeColumnToContents(0);
+}
+
+void LandscapeSettingsEditor::InitializeProperties(Entity* landscapeEntity)
+{
+	propertyList = landscapeEntity->GetCustomProperties();
+	landscape = DAVA::GetLandscape(landscapeEntity);
+	
 	QtPropertyItem *header = NULL;
 		
 	ADD_HEADER("Used in static lightning:");

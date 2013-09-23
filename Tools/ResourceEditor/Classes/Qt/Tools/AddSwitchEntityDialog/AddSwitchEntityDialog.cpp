@@ -42,25 +42,13 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent);
 	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent);
 
-	QLabel* label1 = new QLabel("First Entity:", parent);
-	QLabel* label2 = new QLabel("Second Entity:", parent);
-	QLabel* label3 = new QLabel("Third Entity:", parent);
-	
-	
-	AddControlToUserContainer(label1);
-	AddControlToUserContainer(firstWidget);
-	AddControlToUserContainer(label2);
-	AddControlToUserContainer(secondWidget);
-	AddControlToUserContainer(label3);
-	AddControlToUserContainer(thirdWidget);
+	AddControlToUserContainer(firstWidget, "First Entity:");
+	AddControlToUserContainer(secondWidget, "Second Entity:");
+	AddControlToUserContainer(thirdWidget, "Third Entity:");
 
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
-	
-	additionalWidgets.push_back(label1);
-	additionalWidgets.push_back(label2);
-	additionalWidgets.push_back(label3);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
@@ -68,10 +56,6 @@ AddSwitchEntityDialog::~AddSwitchEntityDialog()
 	RemoveAllControlsFromUserContainer();
 	
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
-	{
-		delete widget;
-	}
-	Q_FOREACH(QWidget* widget, additionalWidgets)
 	{
 		delete widget;
 	}
