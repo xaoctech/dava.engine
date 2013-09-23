@@ -1471,10 +1471,11 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         heightmapPath.ReplaceExtension(Heightmap::FileExtension());
-        heightmap->Save(heightmapPath);
     }
     //
-    
+
+	heightmap->Save(heightmapPath);
+
     archive->SetString("hmap", heightmapPath.GetRelativePathname(sceneFile->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
