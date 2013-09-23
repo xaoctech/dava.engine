@@ -501,30 +501,26 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
-		loadedEntity = sceneEditor->GetRootNode(sc2path);
-
-		if(NULL != loadedEntity)
-		{
-			Entity *parentForOptimize = new Entity();
+        Entity *rootNode = sceneEditor->GetRootNode(sc2path);
+        if(rootNode)
+        {
+            loadedEntity = rootNode->Clone();
+            
+            Entity *parentForOptimize = new Entity();
 			parentForOptimize->AddNode(loadedEntity);
-
+            SafeRelease(loadedEntity);
+            
 			SceneFileV2 sceneFile;
 			sceneFile.OptimizeScene(parentForOptimize);
-
 			if(parentForOptimize->GetChildrenCount())
 			{
 				loadedEntity = parentForOptimize->GetChild(0);
 				loadedEntity->SetSolid(true);
 				loadedEntity->Retain();
 			}
-			else
-			{
-				loadedEntity->Release();
-				loadedEntity = NULL;
-			}
 
 			parentForOptimize->Release();
-		}
+        }
 
 		sceneEditor->ReleaseRootNode(sc2path);
 	}
