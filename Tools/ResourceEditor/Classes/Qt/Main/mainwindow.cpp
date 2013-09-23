@@ -1566,7 +1566,7 @@ void QtMainWindow::UpdateStatusBar()
 
     if(scene->selectionSystem->GetSelectionCount() > 0)
     {
-        float32 distanceToCamera = scene->selectionSystem->GetDistanceToCamera();
+        float32 distanceToCamera = scene->cameraSystem->GetDistanceToCamera();
         ui->statusBar->SetDistanceToCamera(distanceToCamera);
     }
     else
