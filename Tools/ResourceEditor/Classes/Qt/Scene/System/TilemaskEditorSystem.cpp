@@ -197,7 +197,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 		switch(event->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
-				if (isIntersectsLandscape)
+				if (isIntersectsLandscape && !needCreateUndo)
 				{
 					CreateMaskTexture();
 					UpdateToolImage();
