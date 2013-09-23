@@ -477,7 +477,6 @@
 		A6B0519117E8B600000EED68 /* ActionComponentEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6B0518F17E8B600000EED68 /* ActionComponentEditor.cpp */; };
 		A6B0519317E8B763000EED68 /* ActionComponentEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6B0519217E8B763000EED68 /* ActionComponentEditor_moc.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
-		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C18521B416831F84003D4A6F /* BaseParticleEditorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C18521A716831F84003D4A6F /* BaseParticleEditorNode.cpp */; };
@@ -1826,7 +1825,6 @@
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
-				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
 				A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */,
 				A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */,
