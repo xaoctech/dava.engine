@@ -105,6 +105,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
 	landscapeProxy->SetHeightmap(heightmapProxy);
+	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
