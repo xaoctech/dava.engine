@@ -132,6 +132,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	Entity * rootNode = GetRootNode(path);
 	if(rootNode)
 	{
+		rootNode = rootNode->Clone();
+
 		ret = true;
 
 		DAVA::Vector<DAVA::Entity*> tmpEntities;
@@ -160,6 +162,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		isLoaded = true;
 
 		commandStack.SetClean(true);
+
+		rootNode->Release();
 	}
 
 	structureSystem->Init();

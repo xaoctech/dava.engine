@@ -84,10 +84,7 @@ public:
 
     virtual void SetSize(const Vector2 &newSize);
 
-    void ReloadRootScene(const FilePath &pathToFile);
-    void ReloadNode(Entity *node, const FilePath &pathToFile);
-    
-	void BeastProcessScene();
+    void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();

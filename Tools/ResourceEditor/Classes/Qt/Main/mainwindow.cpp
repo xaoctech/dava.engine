@@ -746,7 +746,12 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	
 	Q_FOREACH(Entity* item, vector)
 	{
-		switchEntity->AddNode(item);
+		if(item)
+		{
+			Entity *e = item->Clone();
+			switchEntity->AddNode(e);
+			e->Release();
+		}
 	}
 	if(vector.size())
 	{

@@ -441,18 +441,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-void SceneEditorScreenMain::OpenFileAtScene(const FilePath &pathToFile)
-{
-	// In case the current scene isn't the "level" one, switch to it firstly.
-	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
-	{
-		ActivateLevelBodyItem();
-	}
-
-    //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneDataManager::Instance()->EditLevelScene(pathToFile);
-}
-
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
     ReleaseResizedControl(textureTrianglesDialog);
