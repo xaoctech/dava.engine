@@ -143,10 +143,7 @@ int SceneTabWidget::OpenTab()
 
 int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
-	if(previewDialog && previewDialog->GetParent())
-	{
-		previewDialog->Close();
-	}
+	HideScenePreview();
 
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
@@ -461,6 +458,14 @@ void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
 		previewDialog->Show(scenePath);
 	}
 	else
+	{
+		previewDialog->Close();
+	}
+}
+
+void SceneTabWidget::HideScenePreview()
+{
+	if(previewDialog && previewDialog->GetParent())
 	{
 		previewDialog->Close();
 	}

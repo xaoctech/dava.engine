@@ -78,6 +78,7 @@ public:
 	SceneEditor2* GetTabScene(int index) const;
 
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
+	void HideScenePreview();
 
 signals:
     
