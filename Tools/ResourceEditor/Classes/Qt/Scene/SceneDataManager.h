@@ -138,11 +138,6 @@ protected:
     };
 	
     DAVA::Vector<AddedNode> nodesToAdd;
-    
-    //Deprecated
-public:
-    void SceneShowPreview(const FilePath &path);
-    void SceneHidePreview();
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

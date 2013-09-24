@@ -581,29 +581,3 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 }
 
 
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-    if(screen)
-    {
-        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-        {
-            screen->ShowScenePreview(path);
-        }
-        else
-        {
-            SceneHidePreview();
-        }
-    }
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HideScenePreview();
-    }
-}
-
