@@ -191,7 +191,6 @@ private:
     void ReleaseResizedControl(UIControl *control);
 
 public: //For Qt integration
-    void OpenFileAtScene(const FilePath &pathToFile);
     void NewScene();
 
     bool SaveIsAvailable();

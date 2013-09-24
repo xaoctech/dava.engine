@@ -79,8 +79,13 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
     
     Scene *scene = new Scene();
     Entity *rootNode = scene->GetRootNode(scePath);
-    scene->AddNode(rootNode);
-    scene->BakeTransforms();
+	if(rootNode)
+	{
+		rootNode = rootNode->Clone();
+		scene->AddNode(rootNode);
+		scene->BakeTransforms();
+		rootNode->Release();
+	}
     
     return scene;
 }
@@ -137,6 +142,8 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
     Entity * rootNode = scene->GetRootNode(scenePathname);
 	if(rootNode)
 	{
+		rootNode = rootNode->Clone();
+
 		Vector<Entity*> tmpEntities;
 		uint32 entitiesCount = (uint32)rootNode->GetChildrenCount();
         
@@ -153,11 +160,14 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
 			tmpEntities.push_back(rootNode->GetChild(i));
 		}
         
+
 		// now we can safely add entities into our hierarchy
 		for (uint32 i = 0; i < (uint32) tmpEntities.size(); ++i)
 		{
 			scene->AddNode(tmpEntities[i]);
 		}
+
+		rootNode->Release();
 
         Set<String> errorsLog;
         SceneValidator::Instance()->ValidateScene(scene, errorsLog);

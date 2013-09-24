@@ -35,20 +35,6 @@
 #include "../Constants.h"
 #include "EditorScene.h"
 
-class CommandOpenScene: public Command
-{
-public:	
-	DAVA_DEPRECATED(CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath())); // DEPRECATED: using QFileDialog
-    
-protected:	
-    
-    virtual void Execute();
-    
-protected:
-    
-    DAVA::FilePath selectedScenePathname;
-};
-
 
 class CommandSaveSpecifiedScene: public Command
 {
