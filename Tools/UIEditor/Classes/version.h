@@ -26,44 +26,5 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#define UI_EDITOR_VERSION "0.2"
 
-
-#ifndef UIEditor_EditorSettings_h
-#define UIEditor_EditorSettings_h
-
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-class EditorSettings: public Singleton<EditorSettings>
-{
-
-public: 
-    enum eDefaultSettings
-    {
-        RECENT_FILES_COUNT = 5,
-    };
-	
-public:
-	EditorSettings();
-    virtual ~EditorSettings();
-
-    KeyedArchive *GetSettings();
-    void Save();
-	
-	void SetProjectPath(const String &projectPath);
-    String GetProjectPath();
-	
-    int32 GetLastOpenedCount();
-    String GetLastOpenedFile(int32 index);
-    void AddLastOpenedFile(const String & pathToFile);
-
-	void SetUIEditorVersion(const String& editorVersion);
-	String GetUIEditorVersion();
-
-protected:
-	KeyedArchive *settings;
-	
-};
-
-#endif //UIEditor_EditorSettings_h
