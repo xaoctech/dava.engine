@@ -117,11 +117,14 @@ RenderBatch * SpeedTreeLeafBatch::Clone(RenderBatch * dstNode)
         DVASSERT_MSG(IsPointerToExactClass<SpeedTreeLeafBatch>(this), "Can clone only SpeedTreeLeafBatch");
         dstNode = new SpeedTreeLeafBatch();
     }
-
+    
     RenderBatch::Clone(dstNode);
     SpeedTreeLeafBatch *nd = (SpeedTreeLeafBatch *)dstNode;
-
-    nd->shader = shader;
+    
+    SafeRelease(nd->texture);
+    SafeRelease(nd->shader);
+    
+    nd->shader = SafeRetain(shader);
     nd->texture = SafeRetain(texture);
 
     return nd;
