@@ -73,7 +73,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
 	davaWidget->setFocusPolicy(Qt::StrongFocus);
-
+    
 	// put tab bar and davawidget into vertical layout
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(tabBar);
@@ -81,9 +81,9 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
-
+    
 	setAcceptDrops(true);
-
+    
 	// create DAVA UI
 	InitDAVAUI();
 
@@ -471,6 +471,29 @@ void SceneTabWidget::HideScenePreview()
 	}
 }
 
+void SceneTabWidget::AddToolWidget(QWidget *widget)
+{
+    if(widget)
+    {
+        widget->setParent(davaWidget);
+        
+        int xOffset =  0;
+        if(toolWidgets.size())
+        {
+            const QWidget *w = toolWidgets.back();
+            xOffset = w->geometry().x() + w->geometry().width() + 1;
+        }
+        
+        QRect r = widget->geometry();
+        r.setX(xOffset);
+        r.setY(0);
+        widget->setGeometry(r);
+        
+        toolWidgets.push_back(widget);
+    }
+}
+
+
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 	: QTabBar(parent)
 {
@@ -499,3 +522,5 @@ void MainTabBar::dropEvent(QDropEvent *event)
 		emit OnDrop(mimeData);
 	}
 }
+
+

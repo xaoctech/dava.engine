@@ -219,7 +219,7 @@ protected slots:
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
-
+    
 #if defined (__DAVAENGINE_BEAST__)
 	QtWaitDialog *beastWaitDialog;
 #endif //#if defined (__DAVAENGINE_BEAST__)
