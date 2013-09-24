@@ -545,6 +545,7 @@
 		E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */; };
 		E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
+		E8526CED17F1D9B300E87C1A /* DebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8526CEB17F1D9B300E87C1A /* DebugDrawSystem.cpp */; };
 		E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */; };
 		E862903C17BBD20100C88FC0 /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */; };
 		E8637C4B17B37DCF00ECA297 /* LODEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8637C4917B37DCF00ECA297 /* LODEditor.cpp */; };
@@ -1705,6 +1706,8 @@
 		E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeLODDistanceCommand.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
+		E8526CEB17F1D9B300E87C1A /* DebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugDrawSystem.cpp; sourceTree = "<group>"; };
+		E8526CEC17F1D9B300E87C1A /* DebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugDrawSystem.h; sourceTree = "<group>"; };
 		E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveEntityAsAction.cpp; sourceTree = "<group>"; };
 		E860839A17BCF05500FF798D /* SaveEntityAsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveEntityAsAction.h; sourceTree = "<group>"; };
 		E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MetaObjModifyCommand.cpp; sourceTree = "<group>"; };
@@ -2455,6 +2458,8 @@
 		4FB96A231705C90500EB205E /* System */ = {
 			isa = PBXGroup;
 			children = (
+				E8526CEB17F1D9B300E87C1A /* DebugDrawSystem.cpp */,
+				E8526CEC17F1D9B300E87C1A /* DebugDrawSystem.h */,
 				4FBD351F17BA38940051833D /* TextDrawSystem.cpp */,
 				4FBD352017BA38940051833D /* TextDrawSystem.h */,
 				49CAAF7817A65FA400C91496 /* RulerToolSystem.cpp */,
@@ -4337,6 +4342,7 @@
 				5C574E4D15C9463C0015537A /* btConvexConvexAlgorithm.cpp in Build Sources */,
 				5C574E4E15C9463C0015537A /* btConvexPlaneCollisionAlgorithm.cpp in Build Sources */,
 				5C574E4F15C9463C0015537A /* btDefaultCollisionConfiguration.cpp in Build Sources */,
+				E8526CED17F1D9B300E87C1A /* DebugDrawSystem.cpp in Build Sources */,
 				5C574E5015C9463C0015537A /* btEmptyCollisionAlgorithm.cpp in Build Sources */,
 				5C574E5115C9463C0015537A /* btGhostObject.cpp in Build Sources */,
 				5C574E5215C9463C0015537A /* btInternalEdgeUtility.cpp in Build Sources */,
