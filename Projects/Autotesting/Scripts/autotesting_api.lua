@@ -723,9 +723,9 @@ function ScrollDown(list, invert)
 		Wait(0.5)
 		
 		if invert then
-			position.y = position.y + rect.dy/2
+			position.y = position.y + rect.dy/3
 		else
-        	position.y = position.y - rect.dy/2
+        	position.y = position.y - rect.dy/3
         end
         
 		TouchMovePosition(position)
@@ -750,9 +750,9 @@ function ScrollLeft(list, invert)
 		TouchDownPosition(position)
 		Wait(0.5)
         if invert then
-			position.x = position.x + rect.dx/2
+			position.x = position.x + rect.dx/3
 		else
-        	position.x = position.x - rect.dx/2
+        	position.x = position.x - rect.dx/3
         end
 		TouchMovePosition(position)
 		TouchUp()
