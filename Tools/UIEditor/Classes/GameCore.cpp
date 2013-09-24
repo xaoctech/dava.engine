@@ -44,6 +44,7 @@
 #include "ResourcesManageHelper.h"
 #include "LibraryController.h"
 #include "FileSystem/ResourceArchive.h"
+#include "version.h"
 
 using namespace DAVA;
 
@@ -132,9 +133,10 @@ void GameCore::Draw()
 
 void GameCore::UnpackHelp()
 {
-	//Unpack Help to Documents. TODO! add version management.
-	FilePath docsPath = FilePath(ResourcesManageHelper::GetDocumentationPath().toStdString()	);
-	if(!docsPath.Exists())
+	//Unpack Help to Documents.
+    String editorVer = EditorSettings::Instance()->GetUIEditorVersion();
+	FilePath docsPath = FilePath(ResourcesManageHelper::GetDocumentationPath().toStdString());
+	if(editorVer != UI_EDITOR_VERSION  || !docsPath.Exists())
 	{
 		ResourceArchive * helpRA = new ResourceArchive();
 		if(helpRA->Open("~res:/Help.docs"))
@@ -143,8 +145,9 @@ void GameCore::UnpackHelp()
 			FileSystem::Instance()->CreateDirectory(docsPath, true);
 		
 			helpRA->UnpackToFolder(docsPath);
+			EditorSettings::Instance()->SetUIEditorVersion(UI_EDITOR_VERSION);
 		}
-		
+
 		SafeRelease(helpRA);
 	}
 }
