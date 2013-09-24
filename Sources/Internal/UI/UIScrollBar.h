@@ -100,6 +100,8 @@ private:
 
 	Vector2 startPoint;
 	Vector2 startOffset;
+	
+	float32 GetValidSliderSize(float32 size);
 };
 
 
