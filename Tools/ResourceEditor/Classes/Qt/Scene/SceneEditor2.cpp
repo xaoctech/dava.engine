@@ -104,6 +104,9 @@ SceneEditor2::SceneEditor2()
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
 	AddSystem(textDrawSystem, 0);
 
+	debugDrawSystem = new DebugDrawSystem(this);
+	AddSystem(debugDrawSystem, 0);
+
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
@@ -373,6 +376,8 @@ void SceneEditor2::Draw()
 	structureSystem->Draw();
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
+
+	debugDrawSystem->Draw();
 
 	// should be last
 	hoodSystem->Draw();

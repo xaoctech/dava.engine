@@ -102,6 +102,22 @@ enum eEditActions
 	EDIT_COUNT
 };
 
+// list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall"]
+
+enum eCollisionBoxType
+{
+	ECBT_NO_COLLISION = 0,
+	ECBT_TREE,
+	ECBT_BUSH,
+	ECBT_FRAGILE_PROJ,
+	ECBT_FRAGILE_PROJ_INV,
+	ECBT_FALLING,
+	ECBT_BUILDING,
+	ECBT_INVISIBLE_WALL,
+
+	ECBT_COUNT
+};
+
 // coefficient for converting brush size from UI value to system value for landscape editors
 const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
 

@@ -176,6 +176,9 @@ public slots:
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
 
+	void OnCollisionBoxTypeMenuWillShow();
+	void OnCollisionBoxTypeChanged(QAction *action);
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 

@@ -402,15 +402,6 @@ void QtMainWindow::SetupToolBars()
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
-	// adding reload sprites action
-	//QToolButton *reloadSpritesBtn = new QToolButton();
-	//reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
-	//reloadSpritesBtn->setMaximumWidth(100);
-	//reloadSpritesBtn->setMinimumWidth(100);
-	//ui->sceneToolBar->addSeparator();
-	//ui->sceneToolBar->addWidget(reloadSpritesBtn);
-	//reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
 	// adding reload textures actions
 	QToolButton *reloadTexturesBtn = new QToolButton();
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
@@ -544,6 +535,27 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
+
+// 	//Collision Box Types
+// 	QToolButton *collisionButton = new QToolButton();
+// 	collisionButton->setMenu(ui->menuCollisionBoxes);
+// 	collisionButton->setPopupMode(QToolButton::MenuButtonPopup);
+// 	collisionButton->setDefaultAction(ui->actionNoColisions);
+// 	collisionButton->setMaximumWidth(100);
+// 	collisionButton->setMinimumWidth(100);
+// 	collisionButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+// 	collisionButton->setAutoRaise(false);
+
+	ui->actionNoColisions->setData(ResourceEditor::ECBT_NO_COLLISION);
+	ui->actionTree->setData(ResourceEditor::ECBT_TREE);
+	ui->actionBush->setData(ResourceEditor::ECBT_BUSH);
+	ui->actionFragileProj->setData(ResourceEditor::ECBT_FRAGILE_PROJ);
+	ui->actionFragileProjInv->setData(ResourceEditor::ECBT_FRAGILE_PROJ_INV);
+	ui->actionFalling->setData(ResourceEditor::ECBT_FALLING);
+	ui->actionBuilding->setData(ResourceEditor::ECBT_BUILDING);
+	ui->actionInvisibleWall->setData(ResourceEditor::ECBT_INVISIBLE_WALL);
+	QObject::connect(ui->menuCollisionBoxes, SIGNAL(triggered(QAction *)), this, SLOT(OnCollisionBoxTypeChanged(QAction *)));
+	QObject::connect(ui->menuCollisionBoxes, SIGNAL(aboutToShow()), this, SLOT(OnCollisionBoxTypeMenuWillShow()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -564,7 +576,6 @@ void QtMainWindow::SetupShortCuts()
 
 	// scene tree collapse/expand
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
-	
 }
 
 void QtMainWindow::InitRecent()
@@ -1939,3 +1950,33 @@ bool QtMainWindow::IsSavingAllowed()
 
 	return true;
 }
+
+void QtMainWindow::OnCollisionBoxTypeChanged( QAction *action )
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	ResourceEditor::eCollisionBoxType boxType = (ResourceEditor::eCollisionBoxType) action->data().toInt();
+	if(boxType < ResourceEditor::ECBT_COUNT && boxType >= ResourceEditor::ECBT_NO_COLLISION)
+	{
+		scene->debugDrawSystem->SetCollisionBoxType(boxType);
+	}
+}
+
+void QtMainWindow::OnCollisionBoxTypeMenuWillShow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	ResourceEditor::eCollisionBoxType boxType = scene->debugDrawSystem->GetCollisionBoxType();
+
+	ui->actionNoColisions->setChecked(ResourceEditor::ECBT_NO_COLLISION == boxType);
+	ui->actionTree->setChecked(ResourceEditor::ECBT_TREE == boxType);
+	ui->actionBush->setChecked(ResourceEditor::ECBT_BUSH == boxType);
+	ui->actionFragileProj->setChecked(ResourceEditor::ECBT_FRAGILE_PROJ == boxType);
+	ui->actionFragileProjInv->setChecked(ResourceEditor::ECBT_FRAGILE_PROJ_INV == boxType);
+	ui->actionFalling->setChecked(ResourceEditor::ECBT_FALLING == boxType);
+	ui->actionBuilding->setChecked(ResourceEditor::ECBT_BUILDING == boxType);
+	ui->actionInvisibleWall->setChecked(ResourceEditor::ECBT_INVISIBLE_WALL == boxType);
+}
+
