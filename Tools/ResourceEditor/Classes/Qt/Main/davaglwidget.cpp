@@ -102,10 +102,10 @@ DavaGLWidget::~DavaGLWidget()
     delete ui;
 }
 
-QPaintEngine *DavaGLWidget::paintEngine() const
-{
-	return NULL;
-}
+//QPaintEngine *DavaGLWidget::paintEngine() const
+//{
+//	return NULL;
+//}
 
 void DavaGLWidget::paintEvent(QPaintEvent *event)
 {
@@ -240,6 +240,7 @@ int DavaGLWidget::GetFPS() const
 	return fps;
 }
 
+
 void DavaGLWidget::Render()
 {
 	QElapsedTimer frameTimer;
@@ -268,6 +269,8 @@ void DavaGLWidget::Render()
 		// so we can wait a minimum time
 		waitUntilNextFrameMs = 1;
 	}
+
+    QWidget::paintEvent(new QPaintEvent(rect()));
 
 	QTimer::singleShot(waitUntilNextFrameMs, this, SLOT(Render()));
 }

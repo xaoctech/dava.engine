@@ -31,13 +31,16 @@
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/CollisionSystem.h"
+#include "Classes/SceneEditor/EditorConfig.h"
 
 using namespace DAVA;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, collisionBoxType(ResourceEditor::ECBT_NO_COLLISION)
+    , collisionColor(Color::White())
 {
+    
 }
 
 
@@ -56,6 +59,16 @@ void DebugDrawSystem::SetCollisionBoxType( ResourceEditor::eCollisionBoxType col
 	if(ResourceEditor::ECBT_NO_COLLISION != collisionBoxType)
 	{
 		EnumerateEntitiesForDrawRecursive(GetScene());
+        
+        const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("CollisionTypeColor");
+        if(collisionBoxType < colors.size())
+        {
+            collisionColor = colors[collisionBoxType];
+        }
+        else
+        {
+            collisionColor = Color(1.f, 0, 0, 1.f);
+        }
 	}
 }
 
@@ -74,26 +87,19 @@ void DebugDrawSystem::DrawCollisionBoxes()
 {
 	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
 	SceneCollisionSystem *collSystem = sc->collisionSystem;
+	SceneSelectionSystem *selSystem = sc->selectionSystem;
 
-	if(!collSystem) return;
-
-
-
+	if(!collSystem || !selSystem) return;
 
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
 
-	DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.f, 1.0f, 0, 1.0f));		
+	DAVA::RenderManager::Instance()->SetColor(collisionColor);
 
 	auto endIt = drawEntities.end();
 	for(auto it = drawEntities.begin(); it != endIt; ++it)
 	{
-		AABBox3 collBox = collSystem->GetBoundingBox(*it);
-		Matrix4 transform = (*it)->GetWorldTransform();
-
-		AABBox3 worldBox;
-		collBox.GetTransformedBox(transform, worldBox);	
-
+		AABBox3 worldBox = selSystem->GetSelectionAABox(*it, (*it)->GetWorldTransform());
 		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
 	}
 
@@ -103,27 +109,17 @@ void DebugDrawSystem::DrawCollisionBoxes()
 
 void DebugDrawSystem::EnumerateEntitiesForDrawRecursive( DAVA::Entity *entity )
 {
-	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
-	const EntityGroup selection = sc->selectionSystem->GetSelection();
-
-	for(int32 i = 0; i < selection.Size(); ++i)
-	{
-		drawEntities.push_back(selection.GetEntity(i));
-	}
-
-// 	KeyedArchive * customProperties = entity->GetCustomProperties();
-// 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == collisionBoxType))
-// 	{
-// 		drawEntities.push_back(entity);
-// 	}
-// 
-// 	uint32 count = entity->GetChildrenCount();
-// 	for(uint32 i = 0; i < count; ++i)
-// 	{
-// 		EnumerateEntitiesForDrawRecursive(entity->GetChild(i));
-// 	}
-
-
+ 	KeyedArchive * customProperties = entity->GetCustomProperties();
+ 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == collisionBoxType))
+ 	{
+ 		drawEntities.push_back(entity);
+ 	}
+ 
+ 	uint32 count = entity->GetChildrenCount();
+ 	for(uint32 i = 0; i < count; ++i)
+ 	{
+ 		EnumerateEntitiesForDrawRecursive(entity->GetChild(i));
+ 	}
 }
 
 

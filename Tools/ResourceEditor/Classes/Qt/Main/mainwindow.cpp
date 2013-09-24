@@ -444,7 +444,6 @@ void QtMainWindow::SetupActions()
 	ui->actionExportMali->setData(GPU_MALI);
 	ui->actionExportAdreno->setData(GPU_ADRENO);
 	ui->actionExportPNG->setData(GPU_UNKNOWN);
-
 	
 	// import
 #ifdef __DAVAENGINE_SPEEDTREE__
@@ -536,16 +535,21 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
 
-// 	//Collision Box Types
-// 	QToolButton *collisionButton = new QToolButton();
-// 	collisionButton->setMenu(ui->menuCollisionBoxes);
-// 	collisionButton->setPopupMode(QToolButton::MenuButtonPopup);
-// 	collisionButton->setDefaultAction(ui->actionNoColisions);
-// 	collisionButton->setMaximumWidth(100);
-// 	collisionButton->setMinimumWidth(100);
-// 	collisionButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-// 	collisionButton->setAutoRaise(false);
+ 	//Collision Box Types
+    QToolButton *collisionButton = new QToolButton();
+ 	collisionButton->setMenu(ui->menuCollisionBoxes);
+ 	collisionButton->setPopupMode(QToolButton::MenuButtonPopup);
+ 	collisionButton->setDefaultAction(ui->actionNoColisions);
+ 	collisionButton->setMaximumWidth(100);
+ 	collisionButton->setMinimumWidth(100);
+    collisionButton->setMaximumHeight(20);
+ 	collisionButton->setMinimumHeight(20);
 
+ 	collisionButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+ 	collisionButton->setAutoRaise(false);
+    
+    ui->sceneTabWidget->AddToolWidget(collisionButton);
+    
 	ui->actionNoColisions->setData(ResourceEditor::ECBT_NO_COLLISION);
 	ui->actionTree->setData(ResourceEditor::ECBT_TREE);
 	ui->actionBush->setData(ResourceEditor::ECBT_BUSH);

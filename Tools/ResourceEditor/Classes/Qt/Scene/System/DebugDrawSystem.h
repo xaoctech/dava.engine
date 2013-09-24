@@ -60,6 +60,7 @@ private:
 	DAVA::List<DAVA::Entity *> drawEntities;
 
 	ResourceEditor::eCollisionBoxType collisionBoxType;
+    DAVA::Color collisionColor;
 };
 
 
