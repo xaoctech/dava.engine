@@ -106,8 +106,9 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	}
 }
 
-static const char8 * logLevelString[4] =
+static const char8 * logLevelString[5] =
 {	
+	"framwork",
 	"debug",
 	"info",
 	"warning",
@@ -116,7 +117,7 @@ static const char8 * logLevelString[4] =
 	
 Logger::Logger()
 {
-	logLevel = LEVEL_DEBUG;
+	logLevel = LEVEL_FRAMEWORK;
 	SetLogFilename(String());
     
     consoleModeEnabled = false;
@@ -165,6 +166,15 @@ void Logger::Log(eLogLevel ll, const char16* text, ...)
 	va_end(vl);
 }
 	
+void Logger::FrameworkDebug( const char8 * text, ... )
+{
+	va_list vl;
+	va_start(vl, text);
+	if (Logger::Instance())
+		Logger::Instance()->Logv(LEVEL_FRAMEWORK, text, vl);
+	va_end(vl);
+}
+
 void Logger::Debug(const char8 * text, ...)
 {
 	va_list vl;
@@ -198,6 +208,15 @@ void Logger::Error(const char8 * text, ...)
 	va_start(vl, text);
     if (Logger::Instance())
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+	va_end(vl);
+}
+
+void Logger::FrameworkDebug( const char16 * text, ... )
+{
+	va_list vl;
+	va_start(vl, text);
+	if (Logger::Instance())
+		Logger::Instance()->Logv(LEVEL_FRAMEWORK, text, vl);
 	va_end(vl);
 }
 
@@ -320,6 +339,7 @@ void Logger::ConsoleLog(DAVA::Logger::eLogLevel ll, const char16 *text)
 {
     wprintf(L"[%s] %s", StringToWString(GetLogLevelString(ll)).c_str(), text);
 }
+
 
 }
 
