@@ -536,3 +536,37 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		DeinitLandscape();
 	}
 }
+
+void LandscapeEditorDrawSystem::SaveTileMaskTexture()
+{
+	Texture* texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
+
+	if (texture)
+	{
+		FilePath texturePathname = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+
+		if (texturePathname.IsEmpty())
+		{
+			return;
+		}
+
+		texturePathname.ReplaceExtension(".png");
+		Image *image = texture->CreateImageFromMemory();
+		if(image)
+		{
+			ImageLoader::Save(image, texturePathname);
+			SafeRelease(image);
+		}
+
+		FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
+		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+		if(!descriptor)
+		{
+			descriptor = new TextureDescriptor();
+			descriptor->pathname = descriptorPathname;
+			descriptor->Save();
+		}
+
+		SafeRelease(descriptor);
+	}
+}
