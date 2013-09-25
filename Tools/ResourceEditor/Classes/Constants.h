@@ -103,19 +103,18 @@ enum eEditActions
 };
 
 // list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall"]
-
-enum eCollisionBoxType
+enum eSceneObjectType
 {
-	ECBT_NO_COLLISION = 0,
-	ECBT_TREE,
-	ECBT_BUSH,
-	ECBT_FRAGILE_PROJ,
-	ECBT_FRAGILE_PROJ_INV,
-	ECBT_FALLING,
-	ECBT_BUILDING,
-	ECBT_INVISIBLE_WALL,
+	ESOT_NONE = 0,
+	ESOT_TREE,
+	ESOT_BUSH,
+	ESOT_FRAGILE_PROJ,
+	ESOT_FRAGILE_PROJ_INV,
+	ESOT_FALLING,
+	ESOT_BUILDING,
+	ESOT_INVISIBLE_WALL,
 
-	ECBT_COUNT
+	ESOT_COUNT
 };
 
 // coefficient for converting brush size from UI value to system value for landscape editors

@@ -28,41 +28,41 @@
 
 
 
-#ifndef __DEBUG_DRAW_SYSTEM_H__
-#define __DEBUG_DRAW_SYSTEM_H__
+#ifndef __QT_LABEL_WITH_ACTIONS_H__
+#define __QT_LABEL_WITH_ACTIONS_H__
 
-#include "DAVAEngine.h"
-#include "Classes/Constants.h"
+#include <QLabel>
 
-class Command2;
-class DebugDrawSystem : public DAVA::SceneSystem
+class QMenu;
+class QAction;
+class QtLabelWithActions: public QLabel
 {
-	friend class SceneEditor2;
-	friend class EditorScene;
+	Q_OBJECT
 
 public:
-	DebugDrawSystem(DAVA::Scene * scene);
-	virtual ~DebugDrawSystem();
+	QtLabelWithActions(QWidget *parent = 0);
+	~QtLabelWithActions();
 
-	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
-	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
+	void setMenu(QMenu *menu);
+	void setDefaultAction(QAction *action);
+
+	void SetTextColor(const QColor &color);
+
+protected slots:
+	
+	void MenuTriggered(QAction *action);
+
 
 protected:
 
-	void Draw();
+	void mousePressEvent ( QMouseEvent * event );
+	void enterEvent(QEvent *event);
+	void leaveEvent(QEvent *event);
 
-	void DrawObjectBoxesByType();
 
-	void EnumerateEntitiesForDrawRecursive(DAVA::Entity *entity);
+protected:
 
-private:
-
-	DAVA::List<DAVA::Entity *> drawEntities;
-
-	ResourceEditor::eSceneObjectType objectType;
-    DAVA::Color objectTypeColor;
+	QMenu *menu;
 };
 
-
-
-#endif // __DEBUG_DRAW_SYSTEM_H__
+#endif // __QT_LABEL_WITH_ACTIONS_H__

@@ -47,6 +47,7 @@
 
 class AddSwitchEntityDialog;
 class Request;
+class QtLabelWithActions;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -176,8 +177,8 @@ public slots:
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
 
-	void OnCollisionBoxTypeMenuWillShow();
-	void OnCollisionBoxTypeChanged(QAction *action);
+	void OnObjectsTypeMenuWillShow();
+	void OnObjectsTypeChanged(QAction *action);
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -234,6 +235,8 @@ private:
 	MaterialEditor *materialEditor;
 	// <--
 
+	QtLabelWithActions *objectTypesLabel;
+
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 
@@ -244,6 +247,7 @@ private:
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
+	void LoadObjectTypesLabel(SceneEditor2 *scene);
 
     bool globalInvalidateTimeoutEnabled;
 
