@@ -53,7 +53,7 @@ public:
 	int GetMaxFPS();
 	int GetFPS() const;
     
-//	virtual QPaintEngine *paintEngine() const;
+	virtual QPaintEngine *paintEngine() const;
 	
 	virtual void paintEvent(QPaintEvent *);
 	virtual void resizeEvent(QResizeEvent *);
