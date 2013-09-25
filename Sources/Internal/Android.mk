@@ -40,6 +40,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_SRC_FILES := \
                      $(subst $(LOCAL_PATH)/,, \
+					 $(wildcard $(LOCAL_PATH)/Autotesting/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Animation/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Base/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Collision/*.cpp) \
