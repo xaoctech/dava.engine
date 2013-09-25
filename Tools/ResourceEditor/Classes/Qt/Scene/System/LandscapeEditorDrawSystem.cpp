@@ -539,6 +539,11 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 
 void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 {
+	if (!baseLandscape)
+	{
+		return;
+	}
+
 	Texture* texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
 
 	if (texture)
