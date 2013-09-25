@@ -400,6 +400,19 @@
      <addaction name="actionBeast"/>
      <addaction name="actionBeastAndSave"/>
     </widget>
+    <widget class="QMenu" name="menuCollisionBoxes">
+     <property name="title">
+      <string>Collision Boxes</string>
+     </property>
+     <addaction name="actionNoColisions"/>
+     <addaction name="actionTree"/>
+     <addaction name="actionBush"/>
+     <addaction name="actionFragileProj"/>
+     <addaction name="actionFragileProjInv"/>
+     <addaction name="actionFalling"/>
+     <addaction name="actionBuilding"/>
+     <addaction name="actionInvisibleWall"/>
+    </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
@@ -412,6 +425,8 @@
     <addaction name="actionSkyboxEditor"/>
     <addaction name="separator"/>
     <addaction name="menuBeast"/>
+    <addaction name="separator"/>
+    <addaction name="menuCollisionBoxes"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1519,6 +1534,70 @@
   <action name="actionRemoveActionComponent">
    <property name="text">
     <string>Remove Action Component</string>
+   </property>
+  </action>
+  <action name="actionNoColisions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>No Collision</string>
+   </property>
+  </action>
+  <action name="actionTree">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tree</string>
+   </property>
+  </action>
+  <action name="actionBush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bush</string>
+   </property>
+  </action>
+  <action name="actionFragileProj">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fragile Proj</string>
+   </property>
+  </action>
+  <action name="actionFragileProjInv">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fragile ^Proj</string>
+   </property>
+  </action>
+  <action name="actionFalling">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Falling</string>
+   </property>
+  </action>
+  <action name="actionBuilding">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Building</string>
+   </property>
+  </action>
+  <action name="actionInvisibleWall">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Invisible Wall</string>
    </property>
   </action>
  </widget>

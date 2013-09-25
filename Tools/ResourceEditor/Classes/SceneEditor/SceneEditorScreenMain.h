@@ -191,7 +191,6 @@ private:
     void ReleaseResizedControl(UIControl *control);
 
 public: //For Qt integration
-    void OpenFileAtScene(const FilePath &pathToFile);
     void NewScene();
 
     bool SaveIsAvailable();
@@ -227,14 +226,6 @@ public: //For Qt integration
     void ProcessBeast();
     
     UIControl *focusedControl;
-    
-    //VK: Deprecated
-public:
-    void ShowScenePreview(const FilePath & scenePathname);
-    void HideScenePreview();
-private:
-    ScenePreviewDialog *scenePreviewDialog;
-
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

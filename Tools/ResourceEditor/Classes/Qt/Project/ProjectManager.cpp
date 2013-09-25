@@ -127,7 +127,9 @@ void ProjectManager::ProjectClose()
 {
 	if("" != curProjectPath)
 	{
-		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.toStdString());
+		FilePath path = curProjectPath.toStdString();
+		path.MakeDirectoryPathname();
+		DAVA::FilePath::RemoveResourcesFolder(path);
 
 		curProjectPath = "";
 		emit ProjectClosed();
@@ -137,7 +139,6 @@ void ProjectManager::ProjectClose()
 void ProjectManager::LoadProjectSettings()
 {
 	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
+	prjPath.MakeDirectoryPathname();
 	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
-
-
 }

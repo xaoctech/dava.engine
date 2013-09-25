@@ -2184,6 +2184,9 @@
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.cpp">
       <Filter>Classes\Qt\DockLandscapeEditorControls</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3787,6 +3790,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.h">
       <Filter>Classes\Qt\DockLandscapeEditorControls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

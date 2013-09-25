@@ -78,6 +78,9 @@ public:
 	SceneEditor2* GetTabScene(int index) const;
 
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
+	void HideScenePreview();
+    
+    void AddToolWidget(QWidget *widget);
 
 signals:
     
@@ -119,6 +122,8 @@ protected:
 private:
 	int newSceneCounter;
 	SceneEditor2 *curScene;
+    
+    QList<QWidget *>toolWidgets;
 };
 
 // this is helper class

@@ -73,12 +73,6 @@ protected slots:
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 
-//TODO: add set of slots to different scene changes
-//    void nodeDeleted(SceneData *scene);
-//    void nodeAdded(SceneData *scene);
-//    void TexturesReloaded();
-//    void MaterialsChanged();
-    
 protected slots:
     
     void UpdateInfoByTimer();
@@ -133,6 +127,7 @@ protected:
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 
+    static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
     
 protected:
     
