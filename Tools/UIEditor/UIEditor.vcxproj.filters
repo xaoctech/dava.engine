@@ -618,6 +618,12 @@
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\scrollcontrolpropertygridwidget_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\regexpinputdialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\regexpinputdialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -982,6 +988,9 @@
     </ClInclude>
     <ClInclude Include="Classes\version.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\regexpinputdialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

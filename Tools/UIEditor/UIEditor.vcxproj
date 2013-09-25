@@ -79,6 +79,7 @@
     <ClCompile Include="Classes\UI\Dialogs\createaggregatordlg.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp" />
+    <ClCompile Include="Classes\UI\Dialogs\regexpinputdialog.cpp" />
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp" />
     <ClCompile Include="Classes\UI\hierarchytreecontrol.cpp" />
     <ClCompile Include="Classes\UI\hierarchytreewidget.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="GeneratedFiles\UI\Dialogs\createaggregatordlg_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\importdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationeditordialog_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\regexpinputdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\fontmanagerdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\hierarchytreecontrol_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\hierarchytreewidget_moc.cpp" />
@@ -439,6 +441,7 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\Dialogs\createaggregatordlg.h" />
     <ClInclude Include="Classes\UI\Dialogs\importdialog.h" />
+    <ClInclude Include="Classes\UI\Dialogs\regexpinputdialog.h" />
     <ClInclude Include="Classes\UI\IconHelper.h" />
     <ClInclude Include="Classes\UI\importdialogfilewidget.h" />
     <ClInclude Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.h" />
