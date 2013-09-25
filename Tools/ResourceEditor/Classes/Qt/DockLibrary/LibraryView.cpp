@@ -96,6 +96,9 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 		QString fileExtension = fileInfo.suffix();
 		if(fileInfo.isFile())
 		{
+			SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
+			widget->HideScenePreview();
+
 			QMenu contextMenu(this);
 
 			if(0 == fileExtension.compare("sc2", Qt::CaseInsensitive))
@@ -212,3 +215,4 @@ void LibraryView::ShowSC2(bool show)
 {
 	libModel->SetFileNameFilters(libModel->IsDAEShown(), show);
 }
+

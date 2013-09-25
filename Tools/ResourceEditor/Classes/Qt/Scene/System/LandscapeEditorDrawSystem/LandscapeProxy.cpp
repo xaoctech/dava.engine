@@ -91,7 +91,9 @@ Texture* LandscapeProxy::GetLandscapeTexture(Landscape::eTextureLevel level)
 
 void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 {
+	FilePath texturePathname = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
+	baseLandscape->SetTextureName(Landscape::TEXTURE_TILE_MASK, texturePathname);
 }
 
 void LandscapeProxy::SetNotPassableTexture(Texture* texture)

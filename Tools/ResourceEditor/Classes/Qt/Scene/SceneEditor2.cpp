@@ -104,6 +104,9 @@ SceneEditor2::SceneEditor2()
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
 	AddSystem(textDrawSystem, 0);
 
+	debugDrawSystem = new DebugDrawSystem(this);
+	AddSystem(debugDrawSystem, 0);
+
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
@@ -132,6 +135,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	Entity * rootNode = GetRootNode(path);
 	if(rootNode)
 	{
+		rootNode = rootNode->Clone();
+
 		ret = true;
 
 		DAVA::Vector<DAVA::Entity*> tmpEntities;
@@ -160,6 +165,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		isLoaded = true;
 
 		commandStack.SetClean(true);
+
+		rootNode->Release();
 	}
 
 	structureSystem->Init();
@@ -189,6 +196,7 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 		commandStack.SetClean(true);
 	}
 
+	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
 	PushEditorEntities();
 
@@ -369,6 +377,8 @@ void SceneEditor2::Draw()
 	structureSystem->Draw();
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
+
+	debugDrawSystem->Draw();
 
 	// should be last
 	hoodSystem->Draw();

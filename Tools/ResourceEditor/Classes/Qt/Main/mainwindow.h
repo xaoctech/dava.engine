@@ -176,6 +176,9 @@ public slots:
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
 
+	void OnCollisionBoxTypeMenuWillShow();
+	void OnCollisionBoxTypeChanged(QAction *action);
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 
@@ -216,7 +219,7 @@ protected slots:
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
-
+    
 #if defined (__DAVAENGINE_BEAST__)
 	QtWaitDialog *beastWaitDialog;
 #endif //#if defined (__DAVAENGINE_BEAST__)

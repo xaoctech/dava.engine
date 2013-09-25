@@ -54,6 +54,7 @@
 #include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
+#include "Scene/System/DebugDrawSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -90,6 +91,7 @@ public:
 	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;
 	TextDrawSystem *textDrawSystem;
+	DebugDrawSystem *debugDrawSystem;
 
 
 	// save/load
