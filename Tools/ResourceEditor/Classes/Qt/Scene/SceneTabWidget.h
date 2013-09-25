@@ -80,7 +80,7 @@ public:
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
 	void HideScenePreview();
     
-    void AddToolWidget(QWidget *widget);
+    void AddTopToolWidget(QWidget *widget);
 
 signals:
     
@@ -107,6 +107,10 @@ protected:
 	const int davaUIScreenID;
 	const int dava3DViewMargin;
 
+	QWidget *topPlaceholder;
+	QLayout *topPlaceholderLayout;
+
+
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 	void UpdateTabName(int index);
@@ -122,8 +126,6 @@ protected:
 private:
 	int newSceneCounter;
 	SceneEditor2 *curScene;
-    
-    QList<QWidget *>toolWidgets;
 };
 
 // this is helper class
