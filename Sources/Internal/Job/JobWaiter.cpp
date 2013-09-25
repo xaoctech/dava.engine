@@ -68,4 +68,9 @@ void JobInstanceWaiter::Wait()
 
 }
 
+ConditionalVariable * JobInstanceWaiter::GetConditionalVariable()
+{
+	return &cv;
+}
+
 }

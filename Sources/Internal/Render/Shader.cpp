@@ -389,6 +389,7 @@ Shader::~Shader()
 Job * Shader::RecompileAsync()
 {
 	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::RecompileInternal));
+	return 0;
 }
 
 void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerData)
