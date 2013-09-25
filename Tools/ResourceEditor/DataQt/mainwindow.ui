@@ -400,11 +400,11 @@
      <addaction name="actionBeast"/>
      <addaction name="actionBeastAndSave"/>
     </widget>
-    <widget class="QMenu" name="menuCollisionBoxes">
+    <widget class="QMenu" name="menuObjectTypes">
      <property name="title">
-      <string>Collision Boxes</string>
+      <string>Object Types</string>
      </property>
-     <addaction name="actionNoColisions"/>
+     <addaction name="actionNoObject"/>
      <addaction name="actionTree"/>
      <addaction name="actionBush"/>
      <addaction name="actionFragileProj"/>
@@ -426,7 +426,7 @@
     <addaction name="separator"/>
     <addaction name="menuBeast"/>
     <addaction name="separator"/>
-    <addaction name="menuCollisionBoxes"/>
+    <addaction name="menuObjectTypes"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1536,12 +1536,12 @@
     <string>Remove Action Component</string>
    </property>
   </action>
-  <action name="actionNoColisions">
+  <action name="actionNoObject">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>No Collision</string>
+    <string>No Object</string>
    </property>
   </action>
   <action name="actionTree">

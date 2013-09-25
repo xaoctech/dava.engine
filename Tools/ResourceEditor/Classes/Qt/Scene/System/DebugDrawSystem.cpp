@@ -37,8 +37,8 @@ using namespace DAVA;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, collisionBoxType(ResourceEditor::ECBT_NO_COLLISION)
-    , collisionColor(Color::White())
+	, objectType(ResourceEditor::ESOT_NONE)
+    , objectTypeColor(Color::White())
 {
     
 }
@@ -50,40 +50,40 @@ DebugDrawSystem::~DebugDrawSystem()
 }
 
 
-void DebugDrawSystem::SetCollisionBoxType( ResourceEditor::eCollisionBoxType collisionType )
+void DebugDrawSystem::SetRequestedObjectType( ResourceEditor::eSceneObjectType _objectType )
 {
 	drawEntities.clear();
 
-	collisionBoxType = collisionType;
+	objectType = _objectType;
 
-	if(ResourceEditor::ECBT_NO_COLLISION != collisionBoxType)
+	if(ResourceEditor::ESOT_NONE != objectType)
 	{
 		EnumerateEntitiesForDrawRecursive(GetScene());
         
         const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("CollisionTypeColor");
-        if(collisionBoxType < colors.size())
+        if(objectType < colors.size())
         {
-            collisionColor = colors[collisionBoxType];
+            objectTypeColor = colors[objectType];
         }
         else
         {
-            collisionColor = Color(1.f, 0, 0, 1.f);
+            objectTypeColor = Color(1.f, 0, 0, 1.f);
         }
 	}
 }
 
 
-ResourceEditor::eCollisionBoxType DebugDrawSystem::GetCollisionBoxType() const
+ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
 {
-	return collisionBoxType;
+	return objectType;
 }
 
 void DebugDrawSystem::Draw()
 {
-	DrawCollisionBoxes();
+	DrawObjectBoxesByType();
 }
 
-void DebugDrawSystem::DrawCollisionBoxes()
+void DebugDrawSystem::DrawObjectBoxesByType()
 {
 	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
 	SceneCollisionSystem *collSystem = sc->collisionSystem;
@@ -94,7 +94,7 @@ void DebugDrawSystem::DrawCollisionBoxes()
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
 
-	DAVA::RenderManager::Instance()->SetColor(collisionColor);
+	DAVA::RenderManager::Instance()->SetColor(objectTypeColor);
 
 	auto endIt = drawEntities.end();
 	for(auto it = drawEntities.begin(); it != endIt; ++it)
@@ -110,7 +110,7 @@ void DebugDrawSystem::DrawCollisionBoxes()
 void DebugDrawSystem::EnumerateEntitiesForDrawRecursive( DAVA::Entity *entity )
 {
  	KeyedArchive * customProperties = entity->GetCustomProperties();
- 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == collisionBoxType))
+ 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
  	{
  		drawEntities.push_back(entity);
  	}
