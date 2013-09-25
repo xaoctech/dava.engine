@@ -196,6 +196,7 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 		commandStack.SetClean(true);
 	}
 
+	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
 	PushEditorEntities();
 
