@@ -675,22 +675,22 @@ TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMap
 	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapNearest"))
 	{
 		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
-		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
+		filterItem.magFilter = Texture::FILTER_NEAREST;
 	}
 	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapNearest"))
 	{
 		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
-		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
+		filterItem.magFilter = Texture::FILTER_LINEAR;
 	}
 	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapLinear"))
 	{
 		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
-		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
+		filterItem.magFilter = Texture::FILTER_NEAREST;
 	}
 	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapLinear"))
 	{
 		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+		filterItem.magFilter = Texture::FILTER_LINEAR;
 	}
 
 	return filterItem;
