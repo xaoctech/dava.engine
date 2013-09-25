@@ -98,7 +98,9 @@ QToolButton* SelectPathWidgetBase::CreateToolButton(const DAVA::String& iconPath
 void SelectPathWidgetBase::EraseWidget()
 {
 	setText(QString(""));
+	mimeData.clear();
 }
+
 
 void SelectPathWidgetBase::EraseClicked()
 {
@@ -136,6 +138,10 @@ void SelectPathWidgetBase::HandlePathSelected(DAVA::String name)
 	DVASSERT(fullPath.Exists());
 	
 	setText(name);
+
+	DAVA::List<DAVA::FilePath> urls;
+	urls.push_back(fullPath);
+	DAVA::MimeDataHelper::ConvertToMimeData(urls, &mimeData);
 }
 
 void SelectPathWidgetBase::setText(const QString& filePath)
@@ -177,3 +183,62 @@ DAVA::String SelectPathWidgetBase::ConvertToRelativPath(const DAVA::String& path
 	}
 }
 
+void SelectPathWidgetBase::dropEvent(QDropEvent* event)
+{
+	const QMimeData* sendedMimeData = event->mimeData();
+		
+	DAVA::List<DAVA::String> nameList;
+	
+	DAVA::MimeDataHelper::GetItemNamesFromMimeData(sendedMimeData, nameList);
+	if(nameList.size() == 0)
+	{
+		return;
+	}
+	
+	mimeData.clear();
+	
+	foreach(const QString & format, event->mimeData()->formats())
+	{
+		if(DAVA::MimeDataHelper::IsMimeDataTypeSupported(format.toStdString()))
+		{
+			mimeData.setData(format, event->mimeData()->data(format));
+		}
+	}
+	
+	DAVA::String itemName = *nameList.begin();
+	DAVA::FilePath filePath(itemName);
+	if(filePath.Exists())// check is it item form scene tree or file system
+	{
+		setText(filePath.GetAbsolutePathname());
+	}
+	else
+	{
+		setText(itemName);
+	}
+	
+	event->acceptProposedAction();
+}
+
+void SelectPathWidgetBase::dragEnterEvent(QDragEnterEvent* event)
+{
+	if(event->mimeData()->hasFormat("text/uri-list"))
+	{
+		bool isFormatSupported = allowedFormatsList.size() == 0 ? true : false;
+
+		DAVA::FilePath path(event->mimeData()->urls().first().toString().toStdString());
+		DAVA::String extension = path.GetExtension();
+		Q_FOREACH(DAVA::String item, allowedFormatsList)
+		{
+			if(item == extension)
+			{
+				isFormatSupported = true;
+				break;
+			}
+		}
+
+		if(isFormatSupported)
+		{
+			event->acceptProposedAction();
+		}
+	}
+}
