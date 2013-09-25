@@ -544,6 +544,8 @@
 		E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */; };
 		E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */; };
 		E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */; };
+		E846D4B717F32B4D007383E3 /* QtLabelWithActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E846D4B517F32B4D007383E3 /* QtLabelWithActions.cpp */; };
+		E846D4C117F32B72007383E3 /* QtLabelWithActions_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E846D4C017F32B72007383E3 /* QtLabelWithActions_moc.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E8526CED17F1D9B300E87C1A /* DebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8526CEB17F1D9B300E87C1A /* DebugDrawSystem.cpp */; };
 		E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */; };
@@ -1704,6 +1706,9 @@
 		E84551EA17DF48A70041F0B1 /* ConvertToShadowCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertToShadowCommand.h; sourceTree = "<group>"; };
 		E845520B17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChangeLODDistanceCommand.cpp; sourceTree = "<group>"; };
 		E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeLODDistanceCommand.h; sourceTree = "<group>"; };
+		E846D4B517F32B4D007383E3 /* QtLabelWithActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtLabelWithActions.cpp; sourceTree = "<group>"; };
+		E846D4B617F32B4D007383E3 /* QtLabelWithActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtLabelWithActions.h; sourceTree = "<group>"; };
+		E846D4C017F32B72007383E3 /* QtLabelWithActions_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtLabelWithActions_moc.cpp; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
 		E8526CEB17F1D9B300E87C1A /* DebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugDrawSystem.cpp; sourceTree = "<group>"; };
@@ -2362,6 +2367,7 @@
 		4FAD0CAF1785EC6E00B05A35 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E846D4BF17F32B72007383E3 /* QtLabelWithActions */,
 				62AC3F0617E0B7A3008F8299 /* LandscapeDialog */,
 				E8BD39D417B4BB4D00C63420 /* LabeledSlider */,
 				62A7CA6B17B8D072000AEBF5 /* SettingsDialog */,
@@ -3303,6 +3309,7 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E846D4B417F32B4D007383E3 /* QtLabelWithActions */,
 				A662EDCB17E0D37800AF2135 /* AddSkyboxDialog */,
 				62AC3EF417E0B0CB008F8299 /* LandscapeDialog */,
 				62784FBE17D9CFE00032CF8A /* SelectPathWidget */,
@@ -3735,6 +3742,24 @@
 				E83AB8F91779AF1E0037561B /* ScenePreviewControl.h */,
 			);
 			name = Deprecated;
+			sourceTree = "<group>";
+		};
+		E846D4B417F32B4D007383E3 /* QtLabelWithActions */ = {
+			isa = PBXGroup;
+			children = (
+				E846D4B517F32B4D007383E3 /* QtLabelWithActions.cpp */,
+				E846D4B617F32B4D007383E3 /* QtLabelWithActions.h */,
+			);
+			name = QtLabelWithActions;
+			path = Classes/Qt/Tools/QtLabelWithActions;
+			sourceTree = "<group>";
+		};
+		E846D4BF17F32B72007383E3 /* QtLabelWithActions */ = {
+			isa = PBXGroup;
+			children = (
+				E846D4C017F32B72007383E3 /* QtLabelWithActions_moc.cpp */,
+			);
+			path = QtLabelWithActions;
 			sourceTree = "<group>";
 		};
 		E8637C4817B37DCF00ECA297 /* DockLODEditor */ = {
@@ -4387,6 +4412,7 @@
 				5C574E7915C9463C0015537A /* btTriangleIndexVertexArray.cpp in Build Sources */,
 				5C574E7A15C9463C0015537A /* btTriangleIndexVertexMaterialArray.cpp in Build Sources */,
 				5C574E7B15C9463C0015537A /* btTriangleMesh.cpp in Build Sources */,
+				E846D4B717F32B4D007383E3 /* QtLabelWithActions.cpp in Build Sources */,
 				5C574E7C15C9463C0015537A /* btTriangleMeshShape.cpp in Build Sources */,
 				5C574E7D15C9463C0015537A /* btUniformScalingShape.cpp in Build Sources */,
 				5C574E7E15C9463C0015537A /* btContactProcessing.cpp in Build Sources */,
@@ -4546,6 +4572,7 @@
 				E8FB1E06172E93CD00D1428F /* CommandLineTool.cpp in Build Sources */,
 				E8FB1E0C172E949700D1428F /* ImageSplitter.cpp in Build Sources */,
 				E8FB1E0D172E949700D1428F /* ImageSplitterTool.cpp in Build Sources */,
+				E846D4C117F32B72007383E3 /* QtLabelWithActions_moc.cpp in Build Sources */,
 				E8FB1E24172EABE700D1428F /* SceneExporter.cpp in Build Sources */,
 				E8FB1E25172EABE700D1428F /* SceneSaver.cpp in Build Sources */,
 				E8FB1E26172EABE700D1428F /* SceneUtils.cpp in Build Sources */,
