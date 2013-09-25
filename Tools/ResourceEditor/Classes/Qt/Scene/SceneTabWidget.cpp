@@ -49,7 +49,10 @@ public:
 
 	QTransparentWidget(QWidget *parent) : QWidget(parent)
 	{
-		setStyleSheet(QString::fromUtf8("background-color: rgb(75, 75, 75);"));
+		setStyleSheet(QString::fromUtf8("background-color: rgba(175, 75, 75, 0);"));
+
+//        setAttribute(Qt::WA_TranslucentBackground);
+//        setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 	}
 };
 
@@ -225,7 +228,7 @@ int SceneTabWidget::GetCurrentTab() const
 void SceneTabWidget::SetCurrentTab(int index)
 {
 	davaWidget->setEnabled(false);
-	topPlaceholder->setVisible(false);
+ 	topPlaceholder->setVisible(false);
 
 	if(index >= 0 && index < tabBar->count())
 	{
@@ -418,7 +421,8 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
 
-		topPlaceholder->setGeometry(0, 25, width(), 20);
+//		topPlaceholder->setGeometry(0, 25, width(), 20);
+		topPlaceholder->setGeometry(0, 15, width(), 20);
 	}
 }
 
