@@ -710,8 +710,7 @@ void Landscape::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod
         MarkFrames(currentNode, newdepth2);
     }
     
-    int32 step = (1 << lod);
-    
+    int32 step = Min((int16)(1 << lod), currentNode->data.size);
     
     if ((currentNode->data.rdoQuad != queueRdoQuad) && (queueRdoQuad != -1))
     {
@@ -1001,7 +1000,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 			
 			if(maxQuadDistance >= 0.0f)
 			{
-				maxLod = GetMaxLod(maxQuadDistance);
+				maxLod = Max(maxLod, GetMaxLod(maxQuadDistance));
 			}
 		}
     }
