@@ -51,58 +51,6 @@ void SelectEntityPathWidget::dragEnterEvent(QDragEnterEvent* event)
 	}
 }
 
-void SelectEntityPathWidget::dropEvent(QDropEvent* event)
-{
-	const QMimeData* sendedMimeData = event->mimeData();
-		
-	DAVA::List<DAVA::String> nameList;
-	
-	DAVA::MimeDataHelper::GetItemNamesFromMimeData(sendedMimeData, nameList);
-	if(nameList.size() == 0)
-	{
-		return;
-	}
-	
-	mimeData.clear();
-
-	
-	foreach(const QString & format, event->mimeData()->formats())
-	{
-		if(DAVA::MimeDataHelper::IsMimeDataTypeSupported(format.toStdString()))
-		{
-			mimeData.setData(format, event->mimeData()->data(format));
-		}
-	}
-	
-	DAVA::String itemName = *nameList.begin();
-	DAVA::FilePath filePath(itemName);
-	if(filePath.Exists())// check is it item form scene tree or file system
-	{
-		setText(filePath.GetAbsolutePathname());
-	}
-	else
-	{
-		setText(itemName);
-	}
-	
-	event->acceptProposedAction();
-}
-
-void SelectEntityPathWidget::EraseWidget()
-{
-	setText(QString(""));
-	mimeData.clear();
-}
-
-void SelectEntityPathWidget::HandlePathSelected(DAVA::String name)
-{
-	SelectPathWidgetBase::HandlePathSelected(name);
-	
-	DAVA::FilePath fullPath(name);
-	DAVA::List<DAVA::FilePath> urls;
-	urls.push_back(fullPath);
-	DAVA::MimeDataHelper::ConvertToMimeData(urls, &mimeData);
-}
 
 DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(SceneEditor2* editor)
 {

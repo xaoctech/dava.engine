@@ -47,21 +47,12 @@ class SelectEntityPathWidget: public SelectPathWidgetBase
 public:
 	explicit SelectEntityPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
 
-	void EraseWidget();
-	
 	DAVA::Entity* GetOutputEntity(SceneEditor2*);
-
 
 protected:
 
 	void dragEnterEvent(QDragEnterEvent* event);
 	
-	void dropEvent(QDropEvent * event);
-	
-	void HandlePathSelected(DAVA::String name);
-	
-	QMimeData				mimeData;
-
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */

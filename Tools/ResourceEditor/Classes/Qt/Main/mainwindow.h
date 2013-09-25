@@ -48,6 +48,8 @@
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
+class LandscapeDialog;
+
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -212,6 +214,7 @@ protected slots:
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
     
 	void AddSwitchDialogFinished(int result);
+	void LandscapeDialogFinished(int result);
 
     void OnGlobalInvalidateTimeout();
 
@@ -230,6 +233,7 @@ private:
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
 	AddSwitchEntityDialog* addSwitchEntityDialog;
+	LandscapeDialog* landscapeDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
