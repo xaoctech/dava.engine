@@ -55,7 +55,10 @@ public:
 	
 	void CleanupPathWidgets();
 
-	Entity* GetModificatedEntity();
+	Entity* GetEntity()
+	{
+		return innerLandscapeEntity;
+	}
 	
 public slots:
 	

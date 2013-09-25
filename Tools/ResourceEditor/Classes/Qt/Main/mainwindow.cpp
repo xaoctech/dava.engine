@@ -115,6 +115,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	, materialEditor(NULL)
 	, addSwitchEntityDialog(NULL)
+	, landscapeDialog(NULL)
 	, globalInvalidateTimeoutEnabled(false)
 	, objectTypesLabel(NULL)
 {
@@ -542,7 +543,7 @@ void QtMainWindow::SetupActions()
     objectTypesLabel = new QtLabelWithActions();
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
  	objectTypesLabel->setDefaultAction(ui->actionNoObject);
-
+	
     ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
     
 	ui->actionNoObject->setData(ResourceEditor::ESOT_NONE);
@@ -1223,13 +1224,28 @@ void QtMainWindow::OnLandscapeDialog()
 	{
 		return;
 	}
-	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	LandscapeDialog * dlg = new LandscapeDialog(presentEntity, this);
-	dlg->exec();
-	Entity *returnedEntity = NULL;
-	returnedEntity = dlg->GetModificatedEntity();
-	bool isOKpressed = dlg->result() == QDialog::Accepted;
+	if(landscapeDialog!= NULL)//dialog is on screen, do nothing
+	{
+		return;
+	}
 	
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
+	landscapeDialog = new LandscapeDialog(presentEntity, this);
+	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
+	
+	QObject::connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+	landscapeDialog->show();
+}
+
+void QtMainWindow::LandscapeDialogFinished(int result)
+{
+	QObject::disconnect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+
+	Entity *returnedEntity = NULL;
+	returnedEntity = landscapeDialog->GetEntity();
+	bool isOKpressed = landscapeDialog->result() == QDialog::Accepted;
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
 	if(!presentEntity)
 	{
 		if(isOKpressed)
@@ -1263,7 +1279,7 @@ void QtMainWindow::OnLandscapeDialog()
 		}
 	}
 	
-	delete dlg;
+	landscapeDialog = NULL;
 }
 
 void QtMainWindow::OnLightDialog()

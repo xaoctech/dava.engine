@@ -62,30 +62,33 @@ VariantType senderContent(sender->GetVariantValue());
 #define DEFAULT_LANDSCAPE_SIDE_LENGTH	445.0f
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
-LandscapeSettingsEditor::LandscapeSettingsEditor(Entity* landscapeEntity, QWidget* parent)
-		:PropertyEditorDialog(parent),
-		landscapeEntity(landscapeEntity)
+LandscapeSettingsEditor::LandscapeSettingsEditor(QWidget* parent)
+		:PropertyEditorDialog(parent)
 {
 	tiledModes.push_back("Tile mask mode");
 	tiledModes.push_back("Texture mode");
 	tiledModes.push_back("Mixed mode");
 	tiledModes.push_back("Detail mask mode");
-
-	SetLandscapeEntity(landscapeEntity);
+	propertyList = NULL;
+	landscape = NULL;
+	landscapeEntity = NULL;
 }
 
 LandscapeSettingsEditor::~LandscapeSettingsEditor()
 {
 	RemovePropertyAll();
+	SafeRelease(landscapeEntity);
 	propertiesMap.clear();
 }
 
-void LandscapeSettingsEditor::SetLandscapeEntity(Entity* _landscapeEntity)
+void LandscapeSettingsEditor::SetNode(Entity* _landscapeEntity)
 {
+	SafeRelease(landscapeEntity);
+	landscapeEntity = SafeRetain(_landscapeEntity);
+	
 	RemovePropertyAll();
 	propertiesMap.clear();
-		
-	landscapeEntity = _landscapeEntity;
+	
 	if(landscapeEntity == NULL)
 	{
 		return;
@@ -126,6 +129,13 @@ void LandscapeSettingsEditor::InitializeProperties(Entity* landscapeEntity)
 		}
 		size = transformedBox.max - transformedBox.min;
 	}
+	else
+	{
+		AABBox3 bboxForEmptyLandscape;
+		bboxForEmptyLandscape.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
+		bboxForEmptyLandscape.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
+		landscape->BuildLandscapeFromHeightmapImage(landscape->GetHeightmapPathname(), bboxForEmptyLandscape);
+	}
 	
 	INIT_PROPERTY(sizeLandscape, size.x, "Size:", HandleLandSize());
 	INIT_PROPERTY(heightLandscape, size.z, "Height:", HandleLandHeight());
@@ -145,6 +155,16 @@ void LandscapeSettingsEditor::InitializeProperties(Entity* landscapeEntity)
 	INIT_COLOR_PROPERTY(tilecolor1, landscape->GetTileColor(Landscape::TEXTURE_TILE1), "Tile color 1:", HandleTileColor1());
 	INIT_COLOR_PROPERTY(tilecolor2, landscape->GetTileColor(Landscape::TEXTURE_TILE2), "Tile color 2:", HandleTileColor2());
 	INIT_COLOR_PROPERTY(tilecolor3, landscape->GetTileColor(Landscape::TEXTURE_TILE3), "Tile color 3:", HandleTileColor3());
+	
+	INIT_PROPERTY(lightmapSize, propertyList->GetInt32("lightmap.size", 1024), "Lightmap size", HandleLightmapSize());
+	INIT_PROPERTY(texture0Tilex, landscape->GetTextureTiling(Landscape::TEXTURE_TILE0).x, "Texture 0 Tiling X", HandleTexture0TilingX());
+	INIT_PROPERTY(texture0Tiley, landscape->GetTextureTiling(Landscape::TEXTURE_TILE0).y, "Texture 0 Tiling Y", HandleTexture0TilingY());
+	INIT_PROPERTY(texture1Tilex, landscape->GetTextureTiling(Landscape::TEXTURE_TILE1).x, "Texture 1 Tiling X", HandleTexture1TilingX());
+	INIT_PROPERTY(texture1Tiley, landscape->GetTextureTiling(Landscape::TEXTURE_TILE1).y, "Texture 1 Tiling Y", HandleTexture1TilingY());
+	INIT_PROPERTY(texture2Tilex, landscape->GetTextureTiling(Landscape::TEXTURE_TILE2).x, "Texture 2 Tiling X", HandleTexture2TilingX());
+	INIT_PROPERTY(texture2Tiley, landscape->GetTextureTiling(Landscape::TEXTURE_TILE2).y, "Texture 2 Tiling Y", HandleTexture2TilingY());
+	INIT_PROPERTY(texture3Tilex, landscape->GetTextureTiling(Landscape::TEXTURE_TILE3).x, "Texture 3 Tiling X", HandleTexture3TilingX());
+	INIT_PROPERTY(texture3Tiley, landscape->GetTextureTiling(Landscape::TEXTURE_TILE3).y, "Texture 3 Tiling Y", HandleTexture3TilingY());
 }
 
 void LandscapeSettingsEditor::RestoreInitialSettings()
@@ -271,4 +291,83 @@ void LandscapeSettingsEditor::HandleTileMode()
 	}
 	landscape->SetTiledShaderMode(selectedMode);
 	emit TileModeChanged((int)selectedMode);
+}
+
+
+void LandscapeSettingsEditor::HandleLightmapSize()
+{
+	GET_SENDER_CONTENT;
+	propertyList->SetInt32("lightmap.size", senderContent.AsInt32());
+}
+
+void LandscapeSettingsEditor::HandleTexture0TilingX()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE0);
+	tiling.x = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE0, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture0TilingY()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE0);
+	tiling.y = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE0, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture1TilingX()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE1);
+	tiling.x = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE1, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture1TilingY()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE1);
+	tiling.y = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE1, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture2TilingX()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE2);
+	tiling.x = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE2, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture2TilingY()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE2);
+	tiling.y = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE2, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture3TilingX()
+{
+	GET_SENDER_CONTENT;
+
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE3);
+	tiling.x = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE3, tiling);
+}
+
+void LandscapeSettingsEditor::HandleTexture3TilingY()
+{
+	GET_SENDER_CONTENT;
+	
+	Vector2 tiling = landscape->GetTextureTiling(Landscape::TEXTURE_TILE3);
+	tiling.y = senderContent.AsFloat();
+	landscape->SetTextureTiling(Landscape::TEXTURE_TILE3, tiling);
 }
