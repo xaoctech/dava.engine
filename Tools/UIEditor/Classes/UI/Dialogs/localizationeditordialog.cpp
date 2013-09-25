@@ -35,10 +35,11 @@
 #include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
 
+#include "regexpinputdialog.h"
+
 #include <QFileDialog>
 #include <QMenu>
 #include <QMessageBox>
-#include <QInputDialog>
 
 using namespace DAVA;
 
@@ -434,9 +435,10 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 	QString newLocalizationValue = QString(DEFAULT_LOCALIZATION_VALUE).arg(addedStringsCount);
 
 	bool isOK = false;
-	QString text = QInputDialog::getText(this, "Localization Key",
-										 "New Localization Key", QLineEdit::Normal,
-										 newLocalizationKey, &isOK);
+	QRegExp asciiRegExp("[ -~]+");
+	QString text = RegExpInputDialog::getText(this, "Localization Key",
+										 "New Localization Key (ASCII characters only)",
+										 newLocalizationKey, asciiRegExp, &isOK);
 	if (isOK && !text.isEmpty())
 	{
 		newLocalizationKey = text;
