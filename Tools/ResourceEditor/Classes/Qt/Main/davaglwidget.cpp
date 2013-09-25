@@ -102,10 +102,10 @@ DavaGLWidget::~DavaGLWidget()
     delete ui;
 }
 
-//QPaintEngine *DavaGLWidget::paintEngine() const
-//{
-//	return NULL;
-//}
+QPaintEngine *DavaGLWidget::paintEngine() const
+{
+	return NULL;
+}
 
 void DavaGLWidget::paintEvent(QPaintEvent *event)
 {
