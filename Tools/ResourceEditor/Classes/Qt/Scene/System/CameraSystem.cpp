@@ -123,15 +123,8 @@ const DAVA::Rect SceneCameraSystem::GetViewportRect()
 
 DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3) const
 {
-	DAVA::Vector2 ret;
-
-	if(NULL != curSceneCamera)
-	{
-		if(curSceneCamera)
-		ret = curSceneCamera->GetOnScreenPosition(pos3, viewportRect);
-	}
-
-	return ret;
+	DAVA::Vector3 ret3d = GetScreenPosAndDepth(pos3);
+	return DAVA::Vector2(ret3d.x, ret3d.y);
 }
 
 DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const
@@ -141,7 +134,25 @@ DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3)
 	if(NULL != curSceneCamera)
 	{
 		if(curSceneCamera)
-			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, viewportRect);
+		{
+			DAVA::Rect r = DAVA::Rect(0, 0, viewportRect.dx, viewportRect.dy);
+			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, r);
+
+			// Sergey Zdanevich, 2013-09-26
+			// Это костыль для более точного расчета координал точки
+			// проблема в том, что искомая точка смещается вверх/вправо тем больше,
+			// чем направление камеры выше/левее входящей pos3
+			// числа 18 и 10 визуально подобраны
+			// 
+			// TODO: разобраться почему это происходит и решить правильно
+			// -->
+			if(viewportRect.dy > 0 && viewportRect.dx > 0)
+			{
+				ret.y -= (ret.y * 18) / viewportRect.dy;
+				ret.x += (ret.x * 10) / viewportRect.dx;
+			}
+			// <--
+		}
 	}
 
 	return ret;
@@ -213,6 +224,7 @@ void SceneCameraSystem::Update(float timeElapsed)
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
+			curSceneCamera->SetAspect(1.0f);
 			SafeRetain(curSceneCamera);
 
 			// recalc current view angles using new camera pos and direction
