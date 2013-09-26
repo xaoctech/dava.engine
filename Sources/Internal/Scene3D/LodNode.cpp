@@ -296,7 +296,7 @@ void LodNode::RecheckLod()
 #ifdef LOD_DEBUG
                     if (cl != currentLod->layer) 
                     {
-                        Logger::Info("Switch lod to %d", currentLod->layer);
+                        Logger::FrameworkDebug("Switch lod to %d", currentLod->layer);
                     }
 #endif
                     return;
@@ -307,7 +307,7 @@ void LodNode::RecheckLod()
 #ifdef LOD_DEBUG
     if (cl != currentLod->layer) 
     {
-        Logger::Info("Switch lod to %d", currentLod->layer);
+        Logger::FrameworkDebug("Switch lod to %d", currentLod->layer);
     }
 #endif
 }

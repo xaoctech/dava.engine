@@ -245,7 +245,7 @@ namespace DAVA
 			SetWindowText(hWindow, titleW.c_str());
 		}
 
-		Logger::Info("[PlatformWin32] best display fullscreen mode matched: %d x %d x %d refreshRate: %d", fullscreenMode.width, fullscreenMode.height, fullscreenMode.bpp, fullscreenMode.refreshRate);
+		Logger::FrameworkDebug("[PlatformWin32] best display fullscreen mode matched: %d x %d x %d refreshRate: %d", fullscreenMode.width, fullscreenMode.height, fullscreenMode.bpp, fullscreenMode.refreshRate);
 
 		currentMode = windowedMode;
 		if (isFullscreen)

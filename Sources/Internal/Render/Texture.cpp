@@ -881,12 +881,12 @@ void Texture::DumpTextures()
 {
 	int32 allocSize = 0;
 	int32 cnt = 0;
-	Logger::Info("============================================================");
-	Logger::Info("--------------- Currently allocated textures ---------------");
+	Logger::FrameworkDebug("============================================================");
+	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
 		cnt++;
         
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
@@ -895,8 +895,8 @@ void Texture::DumpTextures()
             allocSize += t->width * t->height * GetPixelFormatSizeInBytes(t->format);
         }
 	}
-	Logger::Info("      Total allocated textures %d    memory size %d", cnt, allocSize);
-	Logger::Info("============================================================");
+	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize);
+	Logger::FrameworkDebug("============================================================");
 }
 	
 PixelFormat Texture::defaultRGBAFormat = FORMAT_RGBA8888;

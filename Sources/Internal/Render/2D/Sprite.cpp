@@ -91,8 +91,8 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 	if(spriteName.IsEmpty() || spriteName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
 
-//	Logger::Debug("pure create: %s", spriteName.c_str());
-//	Logger::Info("Sprite pure creation");
+//	Logger::FrameworkDebug("pure create: %s", spriteName.c_str());
+//	Logger::FrameworkDebug("Sprite pure creation");
 	FilePath pathName = FilePath::CreateWithNewExtension(spriteName, ".txt");
     
 	// Yuri Coder, 2013/07/15. According to DF-1504 issue we have to sent the full existing
@@ -450,7 +450,7 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 //	int32 height = sprHeight;
 	this->size.dy = (float32)sprHeight;
 	
-//	Logger::Info("Init from texture: %.4fx%.4f", sprWidth, sprWidth);
+//	Logger::FrameworkDebug("Init from texture: %.4fx%.4f", sprWidth, sprWidth);
 
 //	this->originalSize = this->size;
 	this->defaultPivotPoint.x = 0;
@@ -608,7 +608,7 @@ void Sprite::Clear()
 
 Sprite::~Sprite()
 {
-//	Logger::Info("Removing sprite");
+//	Logger::FrameworkDebug("Removing sprite");
 	Clear();
 		
 }
@@ -1493,14 +1493,14 @@ void Sprite::ValidateForSize()
 	
 void Sprite::DumpSprites()
 {
-	Logger::Info("============================================================");
-	Logger::Info("--------------- Currently allocated sprites ----------------");
+	Logger::FrameworkDebug("============================================================");
+	Logger::FrameworkDebug("--------------- Currently allocated sprites ----------------");
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
 		Sprite *sp = it->second; //[spriteDict objectForKey:[txKeys objectAtIndex:i]];
-		Logger::Debug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
+		Logger::FrameworkDebug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
 	}
-	Logger::Info("============================================================");
+	Logger::FrameworkDebug("============================================================");
 }
 
 void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)
