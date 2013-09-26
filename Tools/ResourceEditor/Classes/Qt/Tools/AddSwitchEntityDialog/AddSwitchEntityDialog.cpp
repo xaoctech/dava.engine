@@ -31,6 +31,8 @@
 #include "AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "./../Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
+#include "Main/mainwindow.h"
+#include "EditorSettings.h"
 #include <QLabel>
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
@@ -38,9 +40,21 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(false);
 	
-	SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent);
-	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent);
-	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent);
+	FilePath defaultPath(EditorSettings::Instance()->GetProjectPath().GetAbsolutePathname() + "/DataSource/3d");
+	
+	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+	if(scene)
+	{
+		FilePath scenePath = scene->GetScenePath();
+		if(scenePath.Exists())
+		{
+			defaultPath = scenePath.GetDirectory();
+		}
+	}
+	
+	SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
+	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
+	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
 
 	AddControlToUserContainer(firstWidget, "First Entity:");
 	AddControlToUserContainer(secondWidget, "Second Entity:");
