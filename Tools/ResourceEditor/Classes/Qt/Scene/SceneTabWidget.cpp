@@ -86,6 +86,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
 	davaWidget->setFocusPolicy(Qt::StrongFocus);
+	davaWidget->installEventFilter(this);
     
 	// put tab bar and davawidget into vertical layout
 	QVBoxLayout *layout = new QVBoxLayout();
@@ -123,6 +124,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 SceneTabWidget::~SceneTabWidget()
 {
+	davaWidget->removeEventFilter(this);
 	SafeRelease(previewDialog);
 
 	ReleaseDAVAUI();
@@ -404,11 +406,9 @@ void SceneTabWidget::SceneModifyStatusChanged(SceneEditor2 *scene, bool modified
 	}
 }
 
-void SceneTabWidget::resizeEvent(QResizeEvent * event)
+bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 {
-	QWidget::resizeEvent(event);
-
-	if(NULL != event)
+	if(object == davaWidget && event->type() == QEvent::Resize)
 	{
 		QSize s = davaWidget->size();
 
@@ -423,6 +423,8 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 
 		topPlaceholder->setGeometry(0, 25, width(), 20);
 	}
+
+	return QWidget::eventFilter(object, event);
 }
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
