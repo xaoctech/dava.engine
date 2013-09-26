@@ -556,7 +556,13 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		}
 
 		texturePathname.ReplaceExtension(".png");
+
+		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 		Image *image = texture->CreateImageFromMemory();
+		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+
 		if(image)
 		{
 			ImageLoader::Save(image, texturePathname);
