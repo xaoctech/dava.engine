@@ -69,6 +69,7 @@ void TextDrawSystem::Draw()
 {
 	if(listToDraw.size() > 0)
 	{
+
 		if(NULL != font)
 		{
 			DAVA::RenderManager::Instance()->SetRenderOrientation(DAVA::Core::SCREEN_ORIENTATION_PORTRAIT);
@@ -77,13 +78,77 @@ void TextDrawSystem::Draw()
 			DAVA::List<TextToDraw>::iterator i  = listToDraw.begin();
 			DAVA::List<TextToDraw>::iterator end  = listToDraw.end();
 
+			DAVA::Sprite *fontSprite = font->GetFontSprite();
+			DAVA::GraphicsFontDefinition *fontDef = font->GetFontDefinition();
+
 			for (; i != end; ++i)
 			{
 				DAVA::WideString wStr = DAVA::StringToWString(i->text);
 				DAVA::Size2i sSize = font->GetStringSize(wStr);
 
+				DAVA::float32 x = i->pos.x;
+				DAVA::float32 y = i->pos.y;
+
 				DAVA::RenderManager::Instance()->SetColor(i->color);
-				font->DrawString(i->pos.x - sSize.dx / 2, i->pos.y - sSize.dy, wStr);
+
+				switch(i->align)
+				{
+				case TopLeft:
+					break;
+				case TopCenter:
+					x -= (sSize.dx/2);
+					break;
+				case TopRight:
+					x -= sSize.dx;
+					break;
+				case Left:
+					y -= (sSize.dy/2);
+					break;
+				case Center:
+					x -= (sSize.dx/2);
+					y -= (sSize.dy/2);
+					break;
+				case Right:
+					x -= sSize.dx;
+					y -= (sSize.dy/2);
+					break;
+				case BottomLeft:
+					y -= sSize.dy;
+					break;
+				case BottomCenter:
+					x -= (sSize.dx/2);
+					y -= sSize.dy;
+					break;
+				case BottomRight:
+					x -= sSize.dx;
+					y -= sSize.dy;
+					break;
+				}
+
+				font->DrawString(x, y, wStr);
+
+				/*
+				size_t strLen = wStr.length();
+				DAVA::Sprite::DrawState state;
+
+				for(size_t i = 0; i < strLen; ++i)
+				{
+					DAVA::char16 ch = wStr[i];
+					DAVA::uint16 chIndex = fontDef->CharacterToIndex(ch);
+
+					// TODO:
+					// x += fontDef->GetDistanceFromAtoB(prevChIndex, chIndex);
+					// x += fontDef->characterPreShift[chIndex];
+
+					state.SetFrame(chIndex);
+					state.SetPosition(x, y);
+
+					fontSprite->Draw(&state);
+
+					x += fontDef->characterWidthTable[chIndex];
+				}
+				*/
+
 			}
 		}
 
@@ -91,16 +156,16 @@ void TextDrawSystem::Draw()
 	}
 }
 
-void TextDrawSystem::DrawText(int x, int y, const DAVA::String &text, const DAVA::Color &color)
+void TextDrawSystem::DrawText(int x, int y, const DAVA::String &text, const DAVA::Color &color, Align align)
 {
 	DrawText(DAVA::Vector2((DAVA::float32)x, (DAVA::float32)y), text, color);
 }
 
-void TextDrawSystem::DrawText(DAVA::Vector2 pos2d, const DAVA::String &text, const DAVA::Color &color)
+void TextDrawSystem::DrawText(DAVA::Vector2 pos2d, const DAVA::String &text, const DAVA::Color &color, Align align)
 {
 	if(pos2d.x >= 0 && pos2d.y >= 0)
 	{
-		TextToDraw ttd(pos2d, text, color);
+		TextToDraw ttd(pos2d, text, color, align);
 		listToDraw.push_back(ttd);
 	}
 }

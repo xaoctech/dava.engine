@@ -110,7 +110,6 @@ protected:
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
 	DAVA::Vector2 modifStartPos2d;
-	DAVA::Vector3 modifCurPos3d;
 
 	// entities to modify
 	DAVA::Vector<EntityToModify> modifEntities;
