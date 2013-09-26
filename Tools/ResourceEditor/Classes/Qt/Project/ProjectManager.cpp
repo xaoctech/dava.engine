@@ -109,7 +109,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
 		projectPath.MakeDirectoryPathname();
 
-		DAVA::FilePath::AddResourcesFolder(projectPath);
+		DAVA::FilePath::AddTopResourcesFolder(projectPath);
 	}
 }
 
@@ -129,6 +129,7 @@ void ProjectManager::ProjectClose()
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
+
 		DAVA::FilePath::RemoveResourcesFolder(path);
 
 		curProjectPath = "";
