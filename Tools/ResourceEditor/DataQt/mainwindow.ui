@@ -1037,7 +1037,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>PowerVR iOS</string>
+    <string>PVR iOS</string>
    </property>
   </action>
   <action name="actionReloadPoverVRAndroid">
@@ -1045,7 +1045,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>PowerVR Android</string>
+    <string>PVR Android</string>
    </property>
   </action>
   <action name="actionReloadTegra">
