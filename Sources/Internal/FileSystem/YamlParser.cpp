@@ -78,6 +78,7 @@ YamlNode::YamlNode(eType _type)
 	type = _type;
 	mapIndex = 0;
 	mapCount = 0;
+	isWideString = false;
 }
 
 YamlNode::~YamlNode()
@@ -759,6 +760,7 @@ void  YamlNode::InitFromVariantType(VariantType* varType)
 void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
 {
     type = TYPE_STRING;
+	isWideString = false;
     char str[30];
     str[0]='\0';
     switch(varType->type)
@@ -791,6 +793,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
         {
             stringValue = L'"' + varType->AsWideString() +L'"';
             nwStringValue = WStringToString(stringValue);
+			isWideString = true;
         }
             break;
         case VariantType::TYPE_UINT32:
@@ -1396,7 +1399,7 @@ void YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, V
     std::sort(sortedChildren.begin(), sortedChildren.end());
 }
 
-bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth) const
+bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const YamlNode* currentNode, int16 depth) const
 {
     if (nodeName.compare(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME) == 0)
     {
@@ -1404,13 +1407,22 @@ bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeN
         return true;
     }
 
-    const char8* NAME_VALUE_DELIMITER = ": ";
-    String resultString = PrepareIdentedString(depth);
+    const char16* NAME_VALUE_DELIMITER = L": ";
+    WideString resultString = StringToWString(PrepareIdentedString(depth));
 
-    resultString += nodeName;
+    resultString += StringToWString(nodeName);
     resultString += NAME_VALUE_DELIMITER;
-    resultString += nodeValue;
-    resultString += '\n';
+
+	// For WideString nodes take their value as-is, otherwise convert the string representation to wide.
+	if (currentNode->IsWideString())
+	{
+		resultString += currentNode->AsWString();
+	}
+	else
+	{
+		resultString += StringToWString(currentNode->AsString());
+	}
+    resultString += L'\n';
  
     return WriteStringToYamlFile(fileToSave, resultString);
 }
@@ -1552,7 +1564,7 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
         case YamlNode::TYPE_STRING:
         {
             // Just write Node Name and Value.
-            return WriteScalarNodeToYamlFile(fileToSave, nodeName, currentNode->AsString(), depth);
+            return WriteScalarNodeToYamlFile(fileToSave, nodeName, currentNode, depth);
         }
 
         case YamlNode::TYPE_ARRAY:

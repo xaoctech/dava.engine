@@ -28,31 +28,41 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
-#define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
+#ifndef __QT_LABEL_WITH_ACTIONS_H__
+#define __QT_LABEL_WITH_ACTIONS_H__
 
-#include <QWidget>
-#include <QMimeData>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
-#include "SelectPathWidgetBase.h"
+#include <QLabel>
 
-#include "DAVAEngine.h"
-class SceneEditor2;
-
-class SelectEntityPathWidget: public SelectPathWidgetBase
+class QMenu;
+class QAction;
+class QtLabelWithActions: public QLabel
 {
 	Q_OBJECT
 
 public:
-	explicit SelectEntityPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+	QtLabelWithActions(QWidget *parent = 0);
+	~QtLabelWithActions();
 
-	DAVA::Entity* GetOutputEntity(SceneEditor2*);
+	void setMenu(QMenu *menu);
+	void setDefaultAction(QAction *action);
+
+	void SetTextColor(const QColor &color);
+
+protected slots:
+	
+	void MenuTriggered(QAction *action);
+
 
 protected:
 
-	void dragEnterEvent(QDragEnterEvent* event);
-	
+	void mousePressEvent ( QMouseEvent * event );
+	void enterEvent(QEvent *event);
+	void leaveEvent(QEvent *event);
+
+
+protected:
+
+	QMenu *menu;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */
+#endif // __QT_LABEL_WITH_ACTIONS_H__

@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include "ui_BaseAddEntityDialog.h"
-
+#include "SceneEditor/EditorSettings.h"
 
 #define  INIT_PATH_WIDGET(widgetName, widgetNum, widgetTitle, fileFilter) SelectPathWidgetBase* widgetName = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);\
 	if(innerLandscape){\
@@ -41,6 +41,7 @@
 		widgetMap[widgetName] = DefaultInfo(widgetNum, FilePath());\
 	}\
 	widgetName->setEnabled(innerLandscape);\
+	widgetName->SetAllowedFormatsList(textureFormats);\
 	connect(widgetName, SIGNAL(PathSelected(DAVA::String)), this, SLOT(ValueChanged(DAVA::String)));
 
 #define OPEN_TEXTURE_TITLE "Open texture"
@@ -50,7 +51,7 @@
 #define HEIGHT_MAP_ID 0xABCD
 
 #define TAB_CONTENT_WIDTH 450
-#define TAB_CONTENT_HEIGHT 380
+#define TAB_CONTENT_HEIGHT 300
 
 #define CREATE_TITLE "Create"
 #define DELETE_TITLE "Delete"
@@ -60,19 +61,26 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 {
 	setWindowTitle("Landscape Settings");
 	setAcceptDrops(false);
+
+	DAVA::List<DAVA::String> textureFormats;
+	textureFormats.push_back(".tex");
+	textureFormats.push_back(".png");
 	
+	DAVA::List<DAVA::String> heightMapFormats;
+	heightMapFormats.push_back(".heightmap");
+
 	delete	ui->propEditor;
-	ui->propEditor = new LandscapeSettingsEditor(_landscapeEntity, this);
-	ui->propEditor->setMinimumSize(QSize(TAB_CONTENT_WIDTH,TAB_CONTENT_HEIGHT));
+	ui->propEditor = new LandscapeSettingsEditor(this);
 	connect(ui->propEditor, SIGNAL(TileModeChanged(int)), this, SLOT(TileModeChanged(int)));
 	ui->verticalLayout_4->addWidget(ui->propEditor);
 
 	innerLandscapeEntity = _landscapeEntity;
 	defaultLandscapeEntity = _landscapeEntity;
-
-	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
 	
-	DAVA::String resFolder = FilePath("~res:/").GetAbsolutePathname();
+	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
+
+
+	DAVA::String resFolder = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
 	
 	INIT_PATH_WIDGET(colorTexutureWidget, Landscape::TEXTURE_COLOR, OPEN_TEXTURE_TITLE, TEXTURE_FILE_FILTER);
 	INIT_PATH_WIDGET(tileTexuture0Widget, Landscape::TEXTURE_TILE0, OPEN_TEXTURE_TITLE, TEXTURE_FILE_FILTER);
@@ -84,13 +92,14 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	
 	SelectPathWidgetBase* heightMapWidget = new SelectPathWidgetBase(parent, resFolder,"",
 																	 OPEN_HEIGHTMAP_TITLE, HEIGHTMAP_FILE_FILTER);
-	widgetMap[heightMapWidget] = DefaultInfo();
+	widgetMap[heightMapWidget] = DefaultInfo(HEIGHT_MAP_ID, FilePath());
 	if(innerLandscape)
 	{
 		heightMapWidget->setText(innerLandscape->GetHeightmapPathname().GetAbsolutePathname());
 		widgetMap[heightMapWidget] = DefaultInfo(HEIGHT_MAP_ID, innerLandscape->GetHeightmapPathname());
 	}
 	heightMapWidget->setEnabled(innerLandscape);
+	heightMapWidget->SetAllowedFormatsList(heightMapFormats);
 	connect(heightMapWidget, SIGNAL(PathSelected(DAVA::String)), this, SLOT(ValueChanged(DAVA::String)));
 	
 	AddControlToUserContainer(colorTexutureWidget, "Color texture:");
@@ -113,6 +122,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	ui->lowerLayOut->removeWidget(ui->buttonBox);
 	ui->lowerLayOut->addWidget(actionButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
+	SetLandscapeEntity(innerLandscapeEntity);
 }
 
 LandscapeDialog::~LandscapeDialog()
@@ -153,19 +163,12 @@ void LandscapeDialog::ActionButtonClicked()
 	}
 }
 
-Entity* LandscapeDialog::GetModificatedEntity()
-{
-	return innerLandscapeEntity;
-}
-
-
 void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
 {
 	innerLandscapeEntity = _landscapeEntity;
 	innerLandscape = innerLandscapeEntity== NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
 	LandscapeSettingsEditor* editor = dynamic_cast<LandscapeSettingsEditor*>(ui->propEditor);
 	DVASSERT(editor);
-	editor->SetLandscapeEntity(innerLandscapeEntity);
 	for (DAVA::Map<SelectPathWidgetBase*,DefaultInfo>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
 	{
 		SelectPathWidgetBase* widget = it->first;
@@ -196,7 +199,9 @@ void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
 	{
 		TileModeChanged((int)innerLandscape->GetTiledShaderMode());
 	}
-	
+	ui->propEditor->SetNode(innerLandscapeEntity);
+	ui->propEditor->expandAll();
+	PerformResize();
 }
 
 void LandscapeDialog::TileModeChanged(int newValue)
@@ -211,9 +216,7 @@ void LandscapeDialog::TileModeChanged(int newValue)
 	tileTexuture1Widget->setEnabled(shouldEnableControls);
 	tileTexuture2Widget->setEnabled(shouldEnableControls);
 	tileTexuture3Widget->setEnabled(shouldEnableControls);
-	
-	
-	
+		
 	if(!shouldEnableControls)
 	{
 		tileTexuture1Widget->blockSignals(true);
@@ -228,7 +231,6 @@ void LandscapeDialog::TileModeChanged(int newValue)
 		tileTexuture1Widget->blockSignals(false);
 		tileTexuture2Widget->blockSignals(false);
 		tileTexuture3Widget->blockSignals(false);
-		
 	}
 	else
 	{
@@ -275,9 +277,7 @@ void LandscapeDialog::ValueChanged(String fileName)
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
 		if(filePath != presentPath)
 		{
-			Heightmap* heightmap = new Heightmap();
-			heightmap->Load(filePath);
-			innerLandscape->SetHeightmap(heightmap);
+			innerLandscape->BuildLandscapeFromHeightmapImage(filePath, innerLandscape->GetBoundingBox());
 		}
 	}
 	else

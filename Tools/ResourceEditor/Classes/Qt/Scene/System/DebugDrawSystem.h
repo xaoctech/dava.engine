@@ -44,14 +44,14 @@ public:
 	DebugDrawSystem(DAVA::Scene * scene);
 	virtual ~DebugDrawSystem();
 
-	void SetCollisionBoxType(ResourceEditor::eCollisionBoxType collisionType);
-	ResourceEditor::eCollisionBoxType GetCollisionBoxType() const;
+	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
+	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
 
 protected:
 
 	void Draw();
 
-	void DrawCollisionBoxes();
+	void DrawObjectBoxesByType();
 
 	void EnumerateEntitiesForDrawRecursive(DAVA::Entity *entity);
 
@@ -59,8 +59,8 @@ private:
 
 	DAVA::List<DAVA::Entity *> drawEntities;
 
-	ResourceEditor::eCollisionBoxType collisionBoxType;
-    DAVA::Color collisionColor;
+	ResourceEditor::eSceneObjectType objectType;
+    DAVA::Color objectTypeColor;
 };
 
 

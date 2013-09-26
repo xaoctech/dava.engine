@@ -93,6 +93,8 @@
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 
+#include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
+
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -113,7 +115,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	, materialEditor(NULL)
 	, addSwitchEntityDialog(NULL)
+	, landscapeDialog(NULL)
 	, globalInvalidateTimeoutEnabled(false)
+	, objectTypesLabel(NULL)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -536,30 +540,22 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
 
  	//Collision Box Types
-    QToolButton *collisionButton = new QToolButton();
- 	collisionButton->setMenu(ui->menuCollisionBoxes);
- 	collisionButton->setPopupMode(QToolButton::MenuButtonPopup);
- 	collisionButton->setDefaultAction(ui->actionNoColisions);
- 	collisionButton->setMaximumWidth(100);
- 	collisionButton->setMinimumWidth(100);
-    collisionButton->setMaximumHeight(20);
- 	collisionButton->setMinimumHeight(20);
-
- 	collisionButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
- 	collisionButton->setAutoRaise(false);
+    objectTypesLabel = new QtLabelWithActions();
+ 	objectTypesLabel->setMenu(ui->menuObjectTypes);
+ 	objectTypesLabel->setDefaultAction(ui->actionNoObject);
+	
+    ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
     
-    ui->sceneTabWidget->AddToolWidget(collisionButton);
-    
-	ui->actionNoColisions->setData(ResourceEditor::ECBT_NO_COLLISION);
-	ui->actionTree->setData(ResourceEditor::ECBT_TREE);
-	ui->actionBush->setData(ResourceEditor::ECBT_BUSH);
-	ui->actionFragileProj->setData(ResourceEditor::ECBT_FRAGILE_PROJ);
-	ui->actionFragileProjInv->setData(ResourceEditor::ECBT_FRAGILE_PROJ_INV);
-	ui->actionFalling->setData(ResourceEditor::ECBT_FALLING);
-	ui->actionBuilding->setData(ResourceEditor::ECBT_BUILDING);
-	ui->actionInvisibleWall->setData(ResourceEditor::ECBT_INVISIBLE_WALL);
-	QObject::connect(ui->menuCollisionBoxes, SIGNAL(triggered(QAction *)), this, SLOT(OnCollisionBoxTypeChanged(QAction *)));
-	QObject::connect(ui->menuCollisionBoxes, SIGNAL(aboutToShow()), this, SLOT(OnCollisionBoxTypeMenuWillShow()));
+	ui->actionNoObject->setData(ResourceEditor::ESOT_NONE);
+	ui->actionTree->setData(ResourceEditor::ESOT_TREE);
+	ui->actionBush->setData(ResourceEditor::ESOT_BUSH);
+	ui->actionFragileProj->setData(ResourceEditor::ESOT_FRAGILE_PROJ);
+	ui->actionFragileProjInv->setData(ResourceEditor::ESOT_FRAGILE_PROJ_INV);
+	ui->actionFalling->setData(ResourceEditor::ESOT_FALLING);
+	ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
+	ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
+	QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
+	QObject::connect(ui->menuObjectTypes, SIGNAL(aboutToShow()), this, SLOT(OnObjectsTypeMenuWillShow()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -632,6 +628,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadEditorLightState(scene);
 	LoadShadowBlendModeState(scene);
 	LoadLandscapeEditorState(scene);
+	LoadObjectTypesLabel(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -1227,13 +1224,28 @@ void QtMainWindow::OnLandscapeDialog()
 	{
 		return;
 	}
-	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	LandscapeDialog * dlg = new LandscapeDialog(presentEntity, this);
-	dlg->exec();
-	Entity *returnedEntity = NULL;
-	returnedEntity = dlg->GetModificatedEntity();
-	bool isOKpressed = dlg->result() == QDialog::Accepted;
+	if(landscapeDialog!= NULL)//dialog is on screen, do nothing
+	{
+		return;
+	}
 	
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
+	landscapeDialog = new LandscapeDialog(presentEntity, this);
+	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
+	
+	QObject::connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+	landscapeDialog->show();
+}
+
+void QtMainWindow::LandscapeDialogFinished(int result)
+{
+	QObject::disconnect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+
+	Entity *returnedEntity = NULL;
+	returnedEntity = landscapeDialog->GetEntity();
+	bool isOKpressed = landscapeDialog->result() == QDialog::Accepted;
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
 	if(!presentEntity)
 	{
 		if(isOKpressed)
@@ -1267,7 +1279,7 @@ void QtMainWindow::OnLandscapeDialog()
 		}
 	}
 	
-	delete dlg;
+	landscapeDialog = NULL;
 }
 
 void QtMainWindow::OnLightDialog()
@@ -1955,32 +1967,51 @@ bool QtMainWindow::IsSavingAllowed()
 	return true;
 }
 
-void QtMainWindow::OnCollisionBoxTypeChanged( QAction *action )
+void QtMainWindow::OnObjectsTypeChanged( QAction *action )
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
-	ResourceEditor::eCollisionBoxType boxType = (ResourceEditor::eCollisionBoxType) action->data().toInt();
-	if(boxType < ResourceEditor::ECBT_COUNT && boxType >= ResourceEditor::ECBT_NO_COLLISION)
+	ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType) action->data().toInt();
+	if(objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
 	{
-		scene->debugDrawSystem->SetCollisionBoxType(boxType);
+		scene->debugDrawSystem->SetRequestedObjectType(objectType);
 	}
 }
 
-void QtMainWindow::OnCollisionBoxTypeMenuWillShow()
+void QtMainWindow::OnObjectsTypeMenuWillShow()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
-	ResourceEditor::eCollisionBoxType boxType = scene->debugDrawSystem->GetCollisionBoxType();
+	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
 
-	ui->actionNoColisions->setChecked(ResourceEditor::ECBT_NO_COLLISION == boxType);
-	ui->actionTree->setChecked(ResourceEditor::ECBT_TREE == boxType);
-	ui->actionBush->setChecked(ResourceEditor::ECBT_BUSH == boxType);
-	ui->actionFragileProj->setChecked(ResourceEditor::ECBT_FRAGILE_PROJ == boxType);
-	ui->actionFragileProjInv->setChecked(ResourceEditor::ECBT_FRAGILE_PROJ_INV == boxType);
-	ui->actionFalling->setChecked(ResourceEditor::ECBT_FALLING == boxType);
-	ui->actionBuilding->setChecked(ResourceEditor::ECBT_BUILDING == boxType);
-	ui->actionInvisibleWall->setChecked(ResourceEditor::ECBT_INVISIBLE_WALL == boxType);
+	ui->actionNoObject->setChecked(ResourceEditor::ESOT_NONE == objectType);
+	ui->actionTree->setChecked(ResourceEditor::ESOT_TREE == objectType);
+	ui->actionBush->setChecked(ResourceEditor::ESOT_BUSH == objectType);
+	ui->actionFragileProj->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ == objectType);
+	ui->actionFragileProjInv->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ_INV == objectType);
+	ui->actionFalling->setChecked(ResourceEditor::ESOT_FALLING == objectType);
+	ui->actionBuilding->setChecked(ResourceEditor::ESOT_BUILDING == objectType);
+	ui->actionInvisibleWall->setChecked(ResourceEditor::ESOT_INVISIBLE_WALL == objectType);
+}
+
+void QtMainWindow::LoadObjectTypesLabel( SceneEditor2 *scene )
+{
+	if(!scene) return;
+	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
+
+	QList<QAction *> actions = ui->menuObjectTypes->actions();
+
+	auto endIt = actions.end();
+	for(auto it = actions.begin(); it != endIt; ++it)
+	{
+		ResourceEditor::eSceneObjectType objectTypeAction = (ResourceEditor::eSceneObjectType) (*it)->data().toInt();
+		if(objectTypeAction == objectType)
+		{
+			objectTypesLabel->setDefaultAction(*it);
+			break;
+		}
+	}
 }
 
