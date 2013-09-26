@@ -632,6 +632,7 @@ Entity* Entity::Clone(Entity *dstNode)
     
     dstNode->nodeAnimations = nodeAnimations;
     
+	dstNode->RemoveAllChildren();
     std::vector<Entity*>::iterator it = children.begin();
 	const std::vector<Entity*>::iterator & childsEnd = children.end();
 	for(; it != childsEnd; it++)
