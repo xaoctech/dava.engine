@@ -64,11 +64,16 @@ namespace DAVA
 		   NULL != entity)
 		{
 			RenderComponent* renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
-			SkyboxRenderObject* renderObj = cast_if_equal<SkyboxRenderObject*>(renderComponent->GetRenderObject());
 			
-			if(renderObj)
+			if(renderComponent)
 			{
-				skyboxEntity = SafeRetain(entity);
+				RenderObject* renderObj = renderComponent->GetRenderObject();
+				
+				if(renderObj &&
+				   RenderObject::TYPE_SKYBOX == renderObj->GetType())
+				{
+					skyboxEntity = SafeRetain(entity);
+				}
 			}
 		}
 	}
