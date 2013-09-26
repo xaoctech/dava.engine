@@ -121,6 +121,10 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 		DVASSERT_MSG(IsPointerToExactClass<RenderObject>(this), "Can clone only RenderObject");
 		newObject = new RenderObject();
 	}
+	else
+	{
+		DVASSERT(false);
+	}
 
 	newObject->type = type;
 	newObject->flags = flags;
