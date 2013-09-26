@@ -36,7 +36,7 @@ static const int BUF_SIZE = 512;
 namespace DAVA
 {
 	
-	Process::Process(FilePath path, String args)
+	Process::Process(FilePath path, const Vector<String>& args)
 	{
 		pid = -1; //invalid pid
 		output = "[Process::Process] The program has not been started yet!";
@@ -85,7 +85,7 @@ namespace DAVA
 		return executablePath;
 	}
 	
-	const String& Process::GetArgs() const
+	const Vector<String>& Process::GetArgs() const
 	{
 		return runArgs;
 	}
@@ -173,6 +173,16 @@ namespace DAVA
 			
 			// Create the child process.
 
+			String runArgsFlat = executablePath.GetAbsolutePathname();
+			if(runArgs.size() > 0)
+			{
+				for(int i = 0; i < runArgs.size(); ++i)
+				{
+					runArgsFlat += " ";
+					runArgsFlat += runArgs[i];
+				}
+			}
+
 #if defined(UNICODE)
 
 			wchar_t* execPathW;
@@ -181,7 +191,7 @@ namespace DAVA
 			size_t execArgsWLength;
 
 			ConvertToWideChar(executablePath.GetAbsolutePathname(), &execPathW, &execPathWLength);
-			ConvertToWideChar(runArgs, &execArgsW, &execArgsWLength);
+			ConvertToWideChar(runArgsFlat, &execArgsW, &execArgsWLength);
 
 			if(execPathW != NULL)
 			{
@@ -209,7 +219,7 @@ namespace DAVA
 
 #else
 				bSuccess = CreateProcess(executablePath.GetAbsolutePathname().c_str(),
-									 runArgs.c_str(),   // command line
+									 runArgsFlat.c_str(),   // command line
 									 NULL,          // process security attributes
 									 NULL,          // primary thread security attributes
 									 TRUE,          // handles are inherited
@@ -305,8 +315,19 @@ namespace DAVA
 			return result;
 		}
 		
-		const char* execPath = executablePath.GetAbsolutePathname().c_str();
-		const char* execArgs = runArgs.c_str();
+		String execPath = executablePath.GetAbsolutePathname();
+		Vector<char*> execArgs;
+
+		execArgs.push_back(&execPath[0]);
+		
+		for(Vector<String>::iterator it = runArgs.begin();
+			it != runArgs.end();
+			++it)
+		{
+			execArgs.push_back(&(*it)[0]);
+		}
+		
+		execArgs.push_back(NULL);
 		
 		pid = fork();
 		
@@ -322,8 +343,9 @@ namespace DAVA
 				
 				close(pipes[READ]);
 				pipes[READ] = -1;
-								
-				execl(execPath, execPath, execArgs, NULL);
+				
+				int execResult = execv(execPath.c_str(), &execArgs[0]);
+				DVASSERT(execResult >= 0);
 				_exit(0); //if we got here - there's a problem
 				break;
 			}
@@ -361,22 +383,21 @@ namespace DAVA
 		
 		if (WIFEXITED(status) == 0)
         {
-			output = "[Process::Wait] The process exited abnormally!";
 			Logger::Error("[Process::Wait] The process %s exited abnormally!", executablePath.GetAbsolutePathname().c_str());
 		}
-		else
+		//else
+		//{
+		output = "";
+		
+		char readBuf[BUF_SIZE];
+		int bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
+		while(bytesRead > 0)
 		{
-			output = "";
+			output.append(readBuf, bytesRead);
 			
-			char readBuf[BUF_SIZE];
-			int bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
-			while(bytesRead > 0)
-			{
-				output.append(readBuf, bytesRead);
-				
-				bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
-			}
+			bytesRead = read(pipes[READ], readBuf, BUF_SIZE);
 		}
+		//}
 		
 		CleanupIOHandles();
 	}
