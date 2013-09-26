@@ -536,8 +536,8 @@ uint32 KeyedArchive::Count(const String &key)
 	
 void KeyedArchive::Dump()
 {
-	Logger::Info("============================================================");
-	Logger::Info("--------------- Archive Currently contain ----------------");
+	Logger::FrameworkDebug("============================================================");
+	Logger::FrameworkDebug("--------------- Archive Currently contain ----------------");
 	for(Map<String, VariantType*>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
 	{
 		switch(it->second->GetType())
@@ -585,7 +585,7 @@ void KeyedArchive::Dump()
                 break;
 		}
 	}
-	Logger::Info("============================================================");
+	Logger::FrameworkDebug("============================================================");
 }
 
 

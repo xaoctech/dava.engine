@@ -67,7 +67,7 @@ void SystemTimer::InitTickCount()
 	savedSec = tv.tv_sec;
 	tickMutex->Unlock();
 
-	Logger::Info("[SystemTimer::InitTickCount] savedSec = %ld", savedSec);
+	Logger::FrameworkDebug("[SystemTimer::InitTickCount] savedSec = %ld", savedSec);
 }
 
 uint64 SystemTimer::GetTickCount() 
@@ -218,7 +218,7 @@ float32 SystemTimer::ElapsedSec()
 	else
 	{
 		float32 currentTime = (float32)(GetTickCount() / 1000.0f);
-		Logger::Info("delta %f", currentTime - t0);
+		Logger::FrameworkDebug("delta %f", currentTime - t0);
 		return currentTime - t0;
 	}
 #elif defined(__DAVAENGINE_ANDROID__)

@@ -122,7 +122,7 @@ bool IsGLExtensionSupported(const String &extension)
     if(String::npos != spacePosition || extension.empty())
     {
         /* Extension names should not have spaces. */
-        Logger::Info("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
+        Logger::FrameworkDebug("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
         return false;
     }
     
@@ -227,12 +227,12 @@ void RenderManager::PrepareRealMatrix()
         
         glTranslate = glScale * glTranslate;
         SetMatrix(MATRIX_MODELVIEW, glTranslate);
-//        Logger::Info("2D matricies recalculated");
+//        Logger::FrameworkDebug("2D matricies recalculated");
 //        Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-//        Logger::Info("Model matrix");
+//        Logger::FrameworkDebug("Model matrix");
 //        modelViewSave.Dump();
 //        Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-//        Logger::Info("Proj matrix");
+//        Logger::FrameworkDebug("Proj matrix");
 //        projectionSave.Dump();
     }
 }
@@ -890,7 +890,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();
-//		Logger::Info("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
+//		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}
 	

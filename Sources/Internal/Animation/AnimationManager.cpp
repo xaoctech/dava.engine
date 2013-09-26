@@ -277,8 +277,8 @@ void AnimationManager::Update(float timeElapsed)
 	
 void AnimationManager::DumpState()
 {
-	Logger::Info("============================================================");
-	Logger::Info("------------ Currently allocated animations - %2d ---------", animations.size());
+	Logger::FrameworkDebug("============================================================");
+	Logger::FrameworkDebug("------------ Currently allocated animations - %2d ---------", animations.size());
 	for (int k = 0; k < (int)animations.size(); ++k)
 	{
 		Animation * animation = animations[k];  
@@ -286,9 +286,9 @@ void AnimationManager::DumpState()
         String ownerName = "no owner";
         if (animation->owner)
             ownerName = typeid(*animation->owner).name();
-		Logger::Debug("addr:0x%08x state:%d class: %s ownerClass: %s", animation, animation->state, typeid(*animation).name(), ownerName.c_str());
+		Logger::FrameworkDebug("addr:0x%08x state:%d class: %s ownerClass: %s", animation, animation->state, typeid(*animation).name(), ownerName.c_str());
 	}
-	Logger::Info("============================================================");
+	Logger::FrameworkDebug("============================================================");
 }
 
 

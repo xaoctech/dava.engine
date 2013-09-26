@@ -277,10 +277,10 @@ void  Matrix4::glScale(float32 x, float32 y, float32 z)
 
 void Matrix4::Dump()
 {
-    Logger::Info("%5.5f %5.5f %5.5f %5.5f ", _00, _01, _02, _03);
-    Logger::Info("%5.5f %5.5f %5.5f %5.5f ", _10, _11, _12, _13);
-    Logger::Info("%5.5f %5.5f %5.5f %5.5f ", _20, _21, _22, _23);
-    Logger::Info("%5.5f %5.5f %5.5f %5.5f ", _30, _31, _32, _33);
+    Logger::FrameworkDebug("%5.5f %5.5f %5.5f %5.5f ", _00, _01, _02, _03);
+    Logger::FrameworkDebug("%5.5f %5.5f %5.5f %5.5f ", _10, _11, _12, _13);
+    Logger::FrameworkDebug("%5.5f %5.5f %5.5f %5.5f ", _20, _21, _22, _23);
+    Logger::FrameworkDebug("%5.5f %5.5f %5.5f %5.5f ", _30, _31, _32, _33);
 }
 
 
