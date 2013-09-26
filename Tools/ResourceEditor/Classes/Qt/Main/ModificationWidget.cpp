@@ -29,13 +29,14 @@
 
 
 #include "ModificationWidget.h"
-#include "ui_ModificationWidget.h"
 #include "Commands2/TransformCommand.h"
 #include "Math/MathHelpers.h"
 
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QStylePainter>
+#include <QHBoxLayout>
+#include <QStyleOptionSpinBox>
 
 ModificationWidget::ModificationWidget(QWidget* parent)
 	: QWidget(parent)

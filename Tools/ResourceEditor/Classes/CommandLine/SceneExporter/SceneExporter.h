@@ -49,6 +49,8 @@ public:
     void SetInFolder(const FilePath &folderPathname);
     void SetOutFolder(const FilePath &folderPathname);
     
+	void EnableOptimizations( bool enable );
+
     void ExportFile(const String &fileName, Set<String> &errorLog);
     void ExportFolder(const String &folderName, Set<String> &errorLog);
     
@@ -65,7 +67,6 @@ protected:
 
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog);
-
     
     
     
@@ -75,6 +76,7 @@ protected:
     SceneUtils sceneUtils;
 
     eGPUFamily exportForGPU;
+	bool optimizeOnExport;
 };
 
 

@@ -135,23 +135,7 @@ DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3)
 	{
 		if(curSceneCamera)
 		{
-			DAVA::Rect r = DAVA::Rect(0, 0, viewportRect.dx, viewportRect.dy);
-			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, r);
-
-			// Sergey Zdanevich, 2013-09-26
-			// Это костыль для более точного расчета координал точки
-			// проблема в том, что искомая точка смещается вверх/вправо тем больше,
-			// чем направление камеры выше/левее входящей pos3
-			// числа 18 и 10 визуально подобраны
-			// 
-			// TODO: разобраться почему это происходит и решить правильно
-			// -->
-			if(viewportRect.dy > 0 && viewportRect.dx > 0)
-			{
-				ret.y -= (ret.y * 18) / viewportRect.dy;
-				ret.x += (ret.x * 10) / viewportRect.dx;
-			}
-			// <--
+			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, viewportRect);
 		}
 	}
 
