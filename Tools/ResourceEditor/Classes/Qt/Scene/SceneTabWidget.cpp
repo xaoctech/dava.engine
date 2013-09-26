@@ -252,7 +252,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->selectionSystem->LockSelection(false);
 
 			davaWidget->setEnabled(true);
-			topPlaceholder->setVisible(true);
+//			topPlaceholder->setVisible(true); //VK: disabled for future.
 		}
 	}
 }
@@ -421,8 +421,7 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
 
-//		topPlaceholder->setGeometry(0, 25, width(), 20);
-		topPlaceholder->setGeometry(0, 15, width(), 20);
+		topPlaceholder->setGeometry(0, 25, width(), 20);
 	}
 }
 
