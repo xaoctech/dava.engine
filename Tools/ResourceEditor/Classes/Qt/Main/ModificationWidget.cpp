@@ -36,6 +36,7 @@
 #include <QLineEdit>
 #include <QStylePainter>
 #include <QHBoxLayout>
+#include <QStyleOptionSpinBox>
 
 ModificationWidget::ModificationWidget(QWidget* parent)
 	: QWidget(parent)
