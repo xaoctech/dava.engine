@@ -1084,6 +1084,11 @@ namespace DAVA
 	}
 	void UIControl::RemoveControl(UIControl *control)
 	{
+		if (NULL == control)
+		{
+			return;
+		}
+
 		List<UIControl*>::iterator it = childs.begin();
 		for(; it != childs.end(); ++it)
 		{
