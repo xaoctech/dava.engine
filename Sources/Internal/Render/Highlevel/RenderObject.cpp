@@ -128,6 +128,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;
 
+	//TODO:VK: Do we need remove all renderbatches from newObject?
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{

@@ -588,7 +588,7 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	maxValue = t->maxValue;
 	
 	currentValue = t->currentValue;
-	
+
 	if (t->thumbButton)
 	{
 		thumbButton = t->thumbButton->Clone();
