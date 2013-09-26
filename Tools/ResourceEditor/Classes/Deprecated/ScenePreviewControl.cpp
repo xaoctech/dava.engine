@@ -296,7 +296,8 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
         }
     }
     
-    SceneValidator::Instance()->ValidateSceneAndShowErrors(editorScene);
+	Set<String> errorsLogToHideDialog;
+	SceneValidator::Instance()->ValidateScene(editorScene, errorsLogToHideDialog);
     
     return retError;
 }
