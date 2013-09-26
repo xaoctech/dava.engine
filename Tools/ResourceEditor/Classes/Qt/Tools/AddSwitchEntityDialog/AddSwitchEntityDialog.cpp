@@ -29,10 +29,10 @@
 
 
 #include "AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
+#include "Tools/MimeDataHelper/MimeDataHelper.h"
+#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include "Main/mainwindow.h"
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 #include <QLabel>
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
