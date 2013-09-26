@@ -91,6 +91,11 @@ public:
 	{
 		return fileFormatFilter;
 	}
+
+	void SetAllowedFormatsList(const DAVA::List<DAVA::String>& _allowedFormatsList)
+	{
+		allowedFormatsList = _allowedFormatsList;
+	}
 	
 public slots:
 
@@ -113,15 +118,23 @@ protected:
 	DAVA::String ConvertToRelativPath(const DAVA::String& path);
 	
 	QToolButton* CreateToolButton(const DAVA::String& iconPath);
+
+	void dragEnterEvent(QDragEnterEvent* event);
+	
+	void dropEvent(QDropEvent * event);
 	
 	DAVA::FilePath			relativePath;
 	
 	DAVA::String			openDialogDefaultPath;
 	
 	DAVA::String			fileFormatFilter;// like "Scene File (*.sc2)"
+
+	DAVA::List<DAVA::String> allowedFormatsList;
 	
 	DAVA::String			openFileDialogTitle;
-	
+		
+	QMimeData				mimeData;
+
 protected slots:
 
 	void EraseClicked();

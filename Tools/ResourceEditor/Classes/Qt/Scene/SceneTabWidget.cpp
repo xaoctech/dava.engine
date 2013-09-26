@@ -43,6 +43,19 @@
 #include <QMessageBox>
 #include <QFileInfo>
 
+class QTransparentWidget: public QWidget
+{
+public:
+
+	QTransparentWidget(QWidget *parent) : QWidget(parent)
+	{
+		setStyleSheet(QString::fromUtf8("background-color: rgba(175, 75, 75, 0);"));
+
+//        setAttribute(Qt::WA_TranslucentBackground);
+//        setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+	}
+};
+
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
 	, davaUIScreenID(SCREEN_MAIN)
@@ -81,7 +94,16 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
-    
+	
+	// create top widget for tool buttons
+	topPlaceholder = new QTransparentWidget(this);
+
+	topPlaceholderLayout = new QHBoxLayout(topPlaceholder);
+	topPlaceholderLayout->setMargin(2);
+	topPlaceholderLayout->setSpacing(1);
+	topPlaceholderLayout->setAlignment(Qt::AlignLeft);
+	topPlaceholder->setLayout(topPlaceholderLayout);
+
 	setAcceptDrops(true);
     
 	// create DAVA UI
@@ -206,6 +228,7 @@ int SceneTabWidget::GetCurrentTab() const
 void SceneTabWidget::SetCurrentTab(int index)
 {
 	davaWidget->setEnabled(false);
+ 	topPlaceholder->setVisible(false);
 
 	if(index >= 0 && index < tabBar->count())
 	{
@@ -229,6 +252,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->selectionSystem->LockSelection(false);
 
 			davaWidget->setEnabled(true);
+//			topPlaceholder->setVisible(true); //VK: disabled for future.
 		}
 	}
 }
@@ -396,6 +420,8 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		{
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
+
+		topPlaceholder->setGeometry(0, 25, width(), 20);
 	}
 }
 
@@ -471,25 +497,12 @@ void SceneTabWidget::HideScenePreview()
 	}
 }
 
-void SceneTabWidget::AddToolWidget(QWidget *widget)
+void SceneTabWidget::AddTopToolWidget(QWidget *widget)
 {
     if(widget)
     {
-        widget->setParent(davaWidget);
-        
-        int xOffset =  0;
-        if(toolWidgets.size())
-        {
-            const QWidget *w = toolWidgets.back();
-            xOffset = w->geometry().x() + w->geometry().width() + 1;
-        }
-        
-        QRect r = widget->geometry();
-        r.setX(xOffset);
-        r.setY(0);
-        widget->setGeometry(r);
-        
-        toolWidgets.push_back(widget);
+        widget->setParent(topPlaceholder);
+		topPlaceholderLayout->addWidget(widget);
     }
 }
 
