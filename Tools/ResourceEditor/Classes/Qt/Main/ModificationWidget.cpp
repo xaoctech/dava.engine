@@ -29,7 +29,7 @@
 
 
 #include "ModificationWidget.h"
-#include "ui_ModificationWidget.h"
+//#include "ui_ModificationWidget.h"
 #include "Commands2/TransformCommand.h"
 #include "Math/MathHelpers.h"
 
