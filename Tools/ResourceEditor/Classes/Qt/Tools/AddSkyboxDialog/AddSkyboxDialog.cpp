@@ -48,63 +48,63 @@ void AddSkyboxDialog::Show(SceneEditor2* scene)
 	bool skyboxInitiallyPresent = scene->skyboxSystem->IsSkyboxPresent();
 	
 	Entity* skyboxNode = scene->skyboxSystem->AddSkybox();
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(skyboxNode->GetComponent(Component::RENDER_COMPONENT));
-	DVASSERT(renderComponent);
+	RenderObject* ro = GetRenderObject(skyboxNode);
 	
-	if(renderComponent)
+	if(ro &&
+	   ro->GetType() == RenderObject::TYPE_SKYBOX)
 	{
-		SkyboxRenderObject* renderObject = cast_if_equal<SkyboxRenderObject*>(renderComponent->GetRenderObject());
-		DVASSERT(renderObject);
+		SkyboxRenderObject* renderObject = static_cast<SkyboxRenderObject*>(ro);
 		
-		if(renderObject)
+		if(renderObject->GetTextureValidator() == NULL)
 		{
-			if(renderObject->GetTextureValidator() == NULL)
+			renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
+		}
+		
+		FilePath currentTexture = renderObject->GetTexture();
+		DAVA::float32 currentOffset = renderObject->GetOffsetZ();
+		DAVA::float32 currentRotation = renderObject->GetRotationZ();
+		
+		BaseAddEntityDialog dlg(this);
+		dlg.SetEntity(skyboxNode);
+		dlg.setWindowTitle("Set up Skybox");
+		dlg.exec();
+		
+		if(dlg.result() != QDialog::Accepted)
+		{
+			if(!skyboxInitiallyPresent)
 			{
-				renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}
-			
-			FilePath currentTexture = renderObject->GetTexture();
-			DAVA::float32 currentOffset = renderObject->GetOffsetZ();
-			DAVA::float32 currentRotation = renderObject->GetRotationZ();
-			
-			BaseAddEntityDialog dlg(this);
-			dlg.SetEntity(skyboxNode);
-			dlg.setWindowTitle("Set up Skybox");
-			dlg.exec();
-			
-			if(dlg.result() != QDialog::Accepted)
-			{
-				if(!skyboxInitiallyPresent)
-				{
-					skyboxNode->GetParent()->RemoveNode(skyboxNode);
-					skyboxNode = NULL;
-				}
-				else
-				{
-					if(renderObject->GetTexture() != currentTexture)
-					{
-						renderObject->SetTexture(currentTexture);
-					}
-					
-					if(renderObject->GetRotationZ() != currentRotation)
-					{
-						renderObject->SetRotationZ(currentRotation);
-					}
-					
-					if(renderObject->GetOffsetZ() != currentOffset)
-					{
-						renderObject->SetOffsetZ(currentOffset);
-					}
-				}
+				skyboxNode->GetParent()->RemoveNode(skyboxNode);
+				skyboxNode = NULL;
 			}
 			else
 			{
-				if(!skyboxInitiallyPresent)
+				if(renderObject->GetTexture() != currentTexture)
 				{
-					scene->selectionSystem->SetSelection(skyboxNode);
+					renderObject->SetTexture(currentTexture);
+				}
+				
+				if(renderObject->GetRotationZ() != currentRotation)
+				{
+					renderObject->SetRotationZ(currentRotation);
+				}
+				
+				if(renderObject->GetOffsetZ() != currentOffset)
+				{
+					renderObject->SetOffsetZ(currentOffset);
 				}
 			}
 		}
+		else
+		{
+			if(!skyboxInitiallyPresent)
+			{
+				scene->selectionSystem->SetSelection(skyboxNode);
+			}
+		}
+	}
+	else
+	{
+		DVASSERT(false); //skybox must have render object of type RenderObject::TYPE_SKYBOX
 	}
 }
 
