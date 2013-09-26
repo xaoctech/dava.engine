@@ -144,6 +144,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 {
 	if(!dstLayer)
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleLayer>(this), "Can clone only ParticleLayer");
 		dstLayer = new ParticleLayer();
 	}
 
@@ -178,10 +179,12 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 		dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
 
 	// Copy the forces.
+	dstLayer->CleanupForces();
 	for (int32 f = 0; f < (int32)forces.size(); ++ f)
 	{
 		ParticleForce* clonedForce = new ParticleForce(this->forces[f]);
 		dstLayer->AddForce(clonedForce);
+		clonedForce->Release();
 	}
 
 	if (spin)
@@ -228,6 +231,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (angleVariation)
 		dstLayer->angleVariation.Set(angleVariation->Clone());
 
+	SafeRelease(dstLayer->innerEmitter);
 	if (innerEmitter)
 		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
 
@@ -248,6 +252,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->loopEndTime = loopEndTime;
 	
 	dstLayer->type = type;
+	SafeRelease(dstLayer->sprite);
 	dstLayer->sprite = SafeRetain(sprite);
 	dstLayer->layerPivotPoint = layerPivotPoint;	
 

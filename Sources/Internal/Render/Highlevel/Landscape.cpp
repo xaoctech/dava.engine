@@ -1836,6 +1836,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         newLandscape->textureNames[k] = textureNames[k];
+		SafeRelease(newLandscape->textures[k]);
         newLandscape->textures[k] = SafeRetain(textures[k]);
         newLandscape->textureTiling[k] = textureTiling[k];
         newLandscape->tileColor[k] = tileColor[k];
