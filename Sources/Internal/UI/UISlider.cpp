@@ -591,19 +591,27 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	
 	if (t->thumbButton)
 	{
+		RemoveControl(thumbButton);
 		thumbButton = t->thumbButton->Clone();
 		AddControl(thumbButton);
+		thumbButton->Release();
 	}
 	if (t->bgMin)
 	{
+		RemoveControl(bgMin);
 		bgMin = t->bgMin->Clone();
 		AddControl(bgMin);
+		bgMin->Release();
+
 		PostInitBackground(bgMin);
 	}
 	if (t->bgMax)
 	{
+		RemoveControl(bgMax);
 		bgMax = t->bgMax->Clone();
 		AddControl(bgMax);
+		bgMax->Release();
+
 		PostInitBackground(bgMax);
 	}
 	
