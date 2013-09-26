@@ -78,9 +78,6 @@ void TextDrawSystem::Draw()
 			DAVA::List<TextToDraw>::iterator i  = listToDraw.begin();
 			DAVA::List<TextToDraw>::iterator end  = listToDraw.end();
 
-			DAVA::Sprite *fontSprite = font->GetFontSprite();
-			DAVA::GraphicsFontDefinition *fontDef = font->GetFontDefinition();
-
 			for (; i != end; ++i)
 			{
 				DAVA::WideString wStr = DAVA::StringToWString(i->text);
@@ -126,29 +123,6 @@ void TextDrawSystem::Draw()
 				}
 
 				font->DrawString(x, y, wStr);
-
-				/*
-				size_t strLen = wStr.length();
-				DAVA::Sprite::DrawState state;
-
-				for(size_t i = 0; i < strLen; ++i)
-				{
-					DAVA::char16 ch = wStr[i];
-					DAVA::uint16 chIndex = fontDef->CharacterToIndex(ch);
-
-					// TODO:
-					// x += fontDef->GetDistanceFromAtoB(prevChIndex, chIndex);
-					// x += fontDef->characterPreShift[chIndex];
-
-					state.SetFrame(chIndex);
-					state.SetPosition(x, y);
-
-					fontSprite->Draw(&state);
-
-					x += fontDef->characterWidthTable[chIndex];
-				}
-				*/
-
 			}
 		}
 
