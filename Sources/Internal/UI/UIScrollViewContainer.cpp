@@ -232,6 +232,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	}
 	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_ENDED)
 	{
+		Input(currentTouch);
 		mainTouch = -1;
 	}
 
@@ -265,6 +266,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		if (FLOAT_EQUAL(curOutboundOffset.x, 0.0f) && FLOAT_EQUAL(curOutboundOffset.y, 0.0f))
 		{
 			// Returned back to the bounds.
+			state = STATE_NONE;
 			return;
 		}
 
