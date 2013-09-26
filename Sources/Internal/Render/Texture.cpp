@@ -487,7 +487,9 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == texDescriptor->exportedAsGpuFamily))
 	{
 		Vector<String> faceNames;
-		GenerateCubeFaceNames(texDescriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
+		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
+		texDescFullPath.ReplaceExtension(TextureDescriptor::GetSourceTextureExtension());
+		GenerateCubeFaceNames(texDescFullPath.GetAbsolutePathname(), faceNames);
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
