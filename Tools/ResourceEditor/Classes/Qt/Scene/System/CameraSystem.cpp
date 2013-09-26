@@ -221,6 +221,13 @@ void SceneCameraSystem::Update(float timeElapsed)
 		// is current camera in scene changed?
 		if(curSceneCamera != camera)
 		{
+			// update collision object for last camera
+			if(NULL != curSceneCamera)
+			{
+				SceneCollisionSystem *collSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
+				collSystem->UpdateCollisionObject(GetEntityFromCamera(curSceneCamera));
+			}
+			
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
@@ -632,3 +639,22 @@ DAVA::float32 SceneCameraSystem::GetDistanceToCamera() const
     return distanceToCamera;
 }
 
+DAVA::Entity* SceneCameraSystem::GetEntityFromCamera(DAVA::Camera *c) const
+{
+	DAVA::Entity *ret = NULL;
+
+	DAVA::Set<DAVA::Entity *>::iterator it = sceneCameras.begin();
+	for(; it != sceneCameras.end(); ++it)
+	{
+		DAVA::Entity *entity = *it;
+		DAVA::Camera *camera = GetCamera(entity);
+
+		if(camera == c)
+		{
+			ret = entity;
+			break;
+		}
+	}
+
+	return ret;
+}

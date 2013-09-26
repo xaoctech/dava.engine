@@ -77,7 +77,6 @@ protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
-
     void ProcessKeyboardMove(float timeElapsed);
     
 	void CreateDebugCameras();
@@ -87,6 +86,7 @@ protected:
 	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
     
 	void MoveAnimate(DAVA::float32 timeElapsed);
+	DAVA::Entity* GetEntityFromCamera(DAVA::Camera *camera) const;
 
 protected:
 	DAVA::Rect viewportRect;
