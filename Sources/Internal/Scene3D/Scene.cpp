@@ -407,7 +407,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         SafeRelease(file);
 				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
-        Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
+        Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
 	it = rootNodes.find(rootNodePath.GetAbsolutePathname());

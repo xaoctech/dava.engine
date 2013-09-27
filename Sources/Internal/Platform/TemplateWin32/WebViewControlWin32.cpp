@@ -93,17 +93,17 @@ public:
 			switch (action)
 			{
 				case IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
-					Logger::Debug("PROCESS_IN_WEBVIEW");
+					Logger::FrameworkDebug("PROCESS_IN_WEBVIEW");
 					break;
 
 				case IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
-					Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					Logger::FrameworkDebug("PROCESS_IN_SYSTEM_BROWSER");
 					process = false;
 					ShellExecute(NULL, L"open", bstr, NULL, NULL, SW_SHOWNORMAL);
 					break;
 
 				case IUIWebViewDelegate::NO_PROCESS:
-					Logger::Debug("NO_PROCESS");
+					Logger::FrameworkDebug("NO_PROCESS");
 
 				default:
 					process = false;

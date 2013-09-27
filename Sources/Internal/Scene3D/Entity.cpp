@@ -67,7 +67,7 @@ Entity::Entity()
     , tag(0)
 	, entity(0)
 {
-//    Logger::Debug("Entity: %p", this);
+//    Logger::FrameworkDebug("Entity: %p", this);
     componentFlags = 0;
 
 	components.resize(Component::COMPONENT_COUNT);
@@ -107,7 +107,7 @@ Entity::~Entity()
 		}
 	}
 
-//  Logger::Debug("~Entity: %p", this);
+//  Logger::FrameworkDebug("~Entity: %p", this);
 }
     
 void Entity::AddComponent(Component * component)

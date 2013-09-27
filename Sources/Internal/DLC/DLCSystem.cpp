@@ -378,7 +378,7 @@ void DLCSystem::SendStatusToDelegates(const CollbackType type, const DLCSystemDe
                 delegates[i]->DLCCompleted(code, index);
                 break;
             case ALL_DOWNLOAD_COMPLETE:
-                Logger::Instance()->Debug(" DLC System finish");
+                Logger::Instance()->FrameworkDebug(" DLC System finish");
                 delegates[i]->AllDLCCompleted();
                 break;
         }

@@ -42,10 +42,10 @@ namespace DAVA
 	{\
 		DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");\
 	}\
-	/*Logger::Debug("%s started",  #command);*/\
+	/*Logger::FrameworkDebug("%s started",  #command);*/\
 	HRESULT xhr = command;\
-	/*Logger::Debug("%s ended",  #command);*/\
-	if (FAILED(xhr))Logger::Debug("%s file:%s line:%d failed with errorcode: 0x%08x %s", #command, __FILE__, __LINE__, xhr, DXHelperGetErrorDescription(xhr));\
+	/*Logger::FrameworkDebug("%s ended",  #command);*/\
+	if (FAILED(xhr))Logger::Error("%s file:%s line:%d failed with errorcode: 0x%08x %s", #command, __FILE__, __LINE__, xhr, DXHelperGetErrorDescription(xhr));\
 }
 
 	const char8 * DXHelperGetErrorDescription(HRESULT hr);

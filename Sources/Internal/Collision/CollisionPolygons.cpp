@@ -72,7 +72,7 @@ void Collisions::AddSeparationAxis(const Vector2 & axis)
 		if (cross < EPSILON)
 			return;
 	}
-	// Logger::Debug("new axis: %f %f", axis.x, axis.y);
+	// Logger::FrameworkDebug("new axis: %f %f", axis.x, axis.y);
 	separationAxes.push_back(axis);
 }
 	

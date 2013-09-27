@@ -517,7 +517,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 		}		
 		if (oIndex == optSize)
 		{
-//            Logger::Debug("vertex added: (%f, %f, %f) - (%f, %f)", 
+//            Logger::FrameworkDebug("vertex added: (%f, %f, %f) - (%f, %f)", 
 //                          tvj->position.x, tvj->position.y, tvj->position.z, 
 //                          tvj->texCoords[0].x, tvj->texCoords[0].y);
 			indexArray[index] = optSize;

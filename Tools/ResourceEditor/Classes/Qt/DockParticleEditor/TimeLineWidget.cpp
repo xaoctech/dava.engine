@@ -465,7 +465,7 @@ void TimeLineWidget::AddLines(const Vector< PropValue<Vector2> >& lines, const V
 {
 	if (colors.size() < 2 || legends.size() < 2)
 	{
-		Logger::Debug("incorrect number of input arguments");
+		Logger::FrameworkDebug("incorrect number of input arguments");
 		return;
 	}
 	
@@ -498,7 +498,7 @@ void TimeLineWidget::AddLines(const Vector< PropValue<Vector3> >& lines, const V
 {
 	if (colors.size() < 3 || legends.size() < 3)
 	{
-		Logger::Debug("incorrect number of input arguments");
+		Logger::FrameworkDebug("incorrect number of input arguments");
 		return;
 	}
 	
