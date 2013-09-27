@@ -1857,7 +1857,7 @@ namespace DAVA
 								relativePosition = __oldPosition + currentInput->point - __touchStart;
 								__oldPosition = relativePosition;
 								__touchStart = Vector2(0.f, 0.f);
-								Logger::Info("DEBUG_CONTROL_COORDINATE: Vector2(%.1f, %.1f)", relativeRect.x, relativeRect.y); 
+								Logger::FrameworkDebug("DEBUG_CONTROL_COORDINATE: Vector2(%.1f, %.1f)", relativeRect.x, relativeRect.y); 
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{

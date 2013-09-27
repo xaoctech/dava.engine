@@ -147,20 +147,20 @@ void GameObjectManager::RealAddObject(GameObject * _object)
 	//int objectsCount = objects.size();
 	List<GameObject*>::iterator currentPos = objects.begin();
 	
-	//Logger::Debug("myp: %d\n", _object->GetPriority());
+	//Logger::FrameworkDebug("myp: %d\n", _object->GetPriority());
 	int pos = 0;
 	for (; currentPos != objects.end(); ++currentPos)
 	{
 		GameObject * curObject = *currentPos;
 		if ( curObject->GetPriority() > _object->GetPriority())
 		{
-			//Logger::Debug("op: %d\n", curObject->GetPriority());
+			//Logger::FrameworkDebug("op: %d\n", curObject->GetPriority());
 			
 			break;
 		}
 		pos++;
 	}
-	//Logger::Debug("added to pos: %d\n", pos);
+	//Logger::FrameworkDebug("added to pos: %d\n", pos);
 	objects.insert(currentPos, _object);
 	_object->SetManager(this);
     RecalcObjectHierarchy(_object);

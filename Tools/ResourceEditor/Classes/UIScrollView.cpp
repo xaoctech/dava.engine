@@ -398,7 +398,7 @@ void UIScrollView::Input(UIEvent *currentTouch)
 							deccelerationSpeed.y = 0.0f;
 						}
 						
-						//Logger::Debug("Dcs: %f, %f\n", deccelerationSpeed.x, deccelerationSpeed.y);
+						//Logger::FrameworkDebug("Dcs: %f, %f\n", deccelerationSpeed.x, deccelerationSpeed.y);
 						
 						EndScroll();
 						
@@ -546,9 +546,9 @@ void UIScrollView::Input(UIEvent *currentTouch)
 	
 //	if (saveState == state)
 //	{
-//		Logger::Debug("event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
+//		Logger::FrameworkDebug("event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
 //	}else
-//		Logger::Debug("CHANGED: event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
+//		Logger::FrameworkDebug("CHANGED: event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
 }
 
 void UIScrollView::SystemDraw(const UIGeometricData & geometricData)
@@ -558,7 +558,7 @@ void UIScrollView::SystemDraw(const UIGeometricData & geometricData)
 	drawPos.x = (scrollOrigin.x + drawScrollPos.x) * invScale;
 	drawPos.y = (scrollOrigin.y + drawScrollPos.y) * invScale;
 	
-	//Logger::Debug("dp %f %f", drawPos.x, drawPos.y);
+	//Logger::FrameworkDebug("dp %f %f", drawPos.x, drawPos.y);
 	
 	//Rect2f currRect = r + _parentRect.GetPosition() + drawPos;
 

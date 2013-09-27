@@ -93,7 +93,7 @@ void Action::DebugLog(const String &prefix, bool toAutotestingSystem)
 	}
 	else
 	{
-		Logger::Debug("Action::DebugLog %s", logMsg.c_str());
+		Logger::FrameworkDebug("Action::DebugLog %s", logMsg.c_str());
 	}
 }
 
@@ -118,7 +118,7 @@ void Action::SetText(const Vector<String> &controlPath, const WideString &text)
     if(staticText)
     {
         staticText->SetText(text);
-        //Logger::Debug("Action::SetText UIStaticText");
+        //Logger::FrameworkDebug("Action::SetText UIStaticText");
     }
     else
     {
@@ -126,11 +126,11 @@ void Action::SetText(const Vector<String> &controlPath, const WideString &text)
         if(textField)
         {
             textField->SetText(text);
-            //Logger::Debug("Action::SetText UITextField");
+            //Logger::FrameworkDebug("Action::SetText UITextField");
         }
         else
         {
-            Logger::Debug("Action::SetText FAILED");
+            Logger::FrameworkDebug("Action::SetText FAILED");
         }
     }
 }
@@ -161,7 +161,7 @@ WideString Action::GetText(const Vector<String> &controlPath)
 // helpers
 void Action::ProcessInput(const UIEvent &input)
 {
-    Logger::Debug("Action::ProcessInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
+    Logger::FrameworkDebug("Action::ProcessInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
 
     Vector<UIEvent> emptyTouches;
     Vector<UIEvent> touches;
@@ -328,7 +328,7 @@ void KeyPressAction::Execute()
 void KeyPressAction::KeyPress(char16 keyChar)
 {
     //TODO: KeyPress
-    //Logger::Debug("KeyPressAction::KeyPress %c", keyChar);
+    //Logger::FrameworkDebug("KeyPressAction::KeyPress %c", keyChar);
     UIEvent keyPress;
     keyPress.tid = 0;
     keyPress.phase = UIEvent::PHASE_KEYCHAR;

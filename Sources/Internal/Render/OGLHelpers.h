@@ -69,7 +69,7 @@ namespace DAVA
 	GLenum err = glGetError();\
 	if (err != GL_NO_ERROR)\
     {  \
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
         OGLDebugBreak(); \
     }\
 }
@@ -80,7 +80,7 @@ namespace DAVA
     GLenum err = glGetError();\
     if (err != GL_NO_ERROR)\
     {  \
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
         DVASSERT(false);\
 		OGLDebugBreak(); \
     }\

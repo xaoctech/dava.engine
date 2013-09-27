@@ -43,7 +43,7 @@ namespace DAVA
     
 void DLCUnpacker::Unpack(const FilePath & filePathSrc, const FilePath & unpackPath, const FilePath & fileForPaths)
 {
-    Logger::Debug("DLC Complete");
+    Logger::FrameworkDebug("DLC Complete");
     
     FilePath filePathDest = FilePath::CreateWithNewExtension(filePathSrc, "");
     

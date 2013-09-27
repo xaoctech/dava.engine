@@ -182,7 +182,7 @@ void PolygonGroupWithMaterial::Draw()
 MeshInstanceNode::MeshInstanceNode()
 :	Entity()
 {
-    //Logger::Debug("MeshInstance: %p", this);
+    //Logger::FrameworkDebug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
     
     //RenderComponent * renderComponent = new RenderComponent();
@@ -205,7 +205,7 @@ MeshInstanceNode::~MeshInstanceNode()
     
     SafeRelease(materialState);
 
-    //Logger::Debug("~MeshInstance: %p", this);
+    //Logger::FrameworkDebug("~MeshInstance: %p", this);
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -576,7 +576,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
                 DVASSERT(pgIndex != errorIdx);
 
                 if(sceneFile->DebugLogEnabled())
-                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                    Logger::FrameworkDebug("+ assign material: %s", material->GetName().c_str());
                 
                 AddPolygonGroup(mesh, pgIndex, material);
             }
@@ -605,7 +605,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
                         DVASSERT(pgIndex != errorIdx);
 
                         if(sceneFile->DebugLogEnabled())
-                            Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                            Logger::FrameworkDebug("+ assign material: %s", material->GetName().c_str());
                         
                         AddPolygonGroup(mesh, pgIndex, material);
                     }
@@ -624,7 +624,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     //                {
     //                    Material * material = sceneFile->GetMaterial(materialIndex);
     //                    StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
-    //                    Logger::Debug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
+    //                    Logger::FrameworkDebug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
     //                    
     //                    AddPolygonGroupForLayer(mesh, pgIndex, material);
     //                }
@@ -774,7 +774,7 @@ void MeshInstanceNode::BakeTransforms()
     bool canBakeEverything = true;
     for (int k = 0; k < (int32)polygroups.size(); ++k)
     {
-        //Logger::Debug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
+        //Logger::FrameworkDebug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
      
         StaticMesh * mesh = polygroups[k]->GetMesh();
         PolygonGroup * polygroup = polygroups[k]->GetPolygonGroup();
