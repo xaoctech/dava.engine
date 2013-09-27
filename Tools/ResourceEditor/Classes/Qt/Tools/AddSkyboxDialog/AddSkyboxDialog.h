@@ -34,16 +34,56 @@
 #include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
 #include "Qt/Scene/SceneEditor2.h"
+#include <QPushButton>
 
-class AddSkyboxDialog: public BaseAddEntityDialog
+class AddSkyboxDialog : public BaseAddEntityDialog
 {
+	Q_OBJECT
+	
 public:
 	
 	AddSkyboxDialog(QWidget* parent = 0);
 	
 	~AddSkyboxDialog();
 	
-	void Show(SceneEditor2* scene);
+	static void Show(QWidget* parent, SceneEditor2* scene);
+	
+	void SetInitialState(Entity* skyboxState);
+	void SetEditorScene(SceneEditor2* scene);
+	
+	SceneEditor2* GetEditorScene() const;
+	
+protected slots:
+	
+	void OnFinished(int code);
+	void OnCreateButtonClicked();
+	void OnDeleteButtonClicked();
+	
+private:
+	
+	void MakeCreateButton();
+	void MakeDeleteButton();
+	
+	void UpdateEntity(Entity* newEntity);
+	
+private:
+	
+	struct InitialSkyboxState
+	{
+		Entity* initialSkyboxNode;
+		DAVA::float32 offset;
+		DAVA::float32 rotation;
+		FilePath texture;
+	};
+	
+private:
+	
+	QPushButton* controlButton;
+	bool closeHandled;
+	SceneEditor2* editorScene;
+
+	InitialSkyboxState initialState;
+	
 };
 
 #endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */
