@@ -1079,13 +1079,13 @@ bool YamlParser::Parse(const FilePath & pathName)
 		
 		/*if (event.encoding != YAML_UTF8_ENCODING)
 		{
-			Logger::Debug("wrong encoding");
+			Logger::FrameworkDebug("wrong encoding");
 		}*/
 		
 		switch(event.type)
 		{
 		case YAML_ALIAS_EVENT:
-			Logger::Debug("alias: %s", event.data.alias.anchor);
+			Logger::FrameworkDebug("alias: %s", event.data.alias.anchor);
 			break;
 		
 		case YAML_SCALAR_EVENT:
@@ -1135,7 +1135,7 @@ bool YamlParser::Parse(const FilePath & pathName)
 				
 //				NSLog()
 //				wprintf(L"scalar: %s %S\n", event.data.scalar.value, node->stringValue.c_str());
-//				Logger::Debug("scalar: %s %d", event.data.scalar.value, length);
+//				Logger::FrameworkDebug("scalar: %s %d", event.data.scalar.value, length);
 //				CFIndex length = CFStringGetLength(s);
 //				UniChar *buffer = malloc(length * sizeof(UniChar));
 //				CFStringGetCharacters(str, CFRangeMake(0, length), buffer);
@@ -1147,11 +1147,11 @@ bool YamlParser::Parse(const FilePath & pathName)
 			break;
 		
 		case YAML_DOCUMENT_START_EVENT:
-			//Logger::Debug("document start:");
+			//Logger::FrameworkDebug("document start:");
 			break;
 		
 		case YAML_DOCUMENT_END_EVENT:
-			//Logger::Debug("document end:");
+			//Logger::FrameworkDebug("document end:");
 			break;
 
 		case YAML_SEQUENCE_START_EVENT:

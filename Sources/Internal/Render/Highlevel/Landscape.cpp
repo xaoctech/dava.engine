@@ -204,7 +204,7 @@ void Landscape::ReleaseShaders()
 
 int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 {
-//    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
+//    Logger::FrameworkDebug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
     LandscapeVertex * landscapeVertices = new LandscapeVertex[(quad->size + 1) * (quad->size + 1)];
     
@@ -217,7 +217,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 
             landscapeVertices[index].texCoord = texCoord;
             //landscapeVertices[index].texCoord -= Vector2(0.5f, 0.5f);
-//            Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
+//            Logger::FrameworkDebug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
             index++;
         }
     
@@ -232,7 +232,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
     
     landscapeRDOArray.push_back(landscapeRDO);
     
-//    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
+//    Logger::FrameworkDebug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
     return (int16)landscapeRDOArray.size() - 1;
 }
@@ -328,10 +328,10 @@ void Landscape::BuildLandscape()
         indices = new uint16[INDEX_ARRAY_COUNT];
     }
     
-//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
-//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
-//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+//    Logger::FrameworkDebug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
+//    Logger::FrameworkDebug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
+//    Logger::FrameworkDebug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
+//    Logger::FrameworkDebug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
     
 /*
@@ -704,7 +704,7 @@ void Landscape::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod
     {
         //int32 newdepth = (int)(logf((float)depth) / logf(2.0f) + 0.5f);
         int32 newdepth2 = CountLeadingZeros(depth);
-        //Logger::Debug("dp: %d %d %d", depth, newdepth, newdepth2);
+        //Logger::FrameworkDebug("dp: %d %d %d", depth, newdepth, newdepth2);
         //DVASSERT(newdepth == newdepth2); // Check of math, we should use optimized version with depth2
         
         MarkFrames(currentNode, newdepth2);
@@ -1009,9 +1009,9 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 #if 1
     if (currentNode == &quadTreeHead)
     {
-        //Logger::Debug("== draw start ==");
+        //Logger::FrameworkDebug("== draw start ==");
     }
-    //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
+    //Logger::FrameworkDebug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
 #endif
 
 //    if (frustum->IsFullyInside(currentNode->data.bbox))
@@ -1023,7 +1023,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     
     if ((minLod == maxLod) && (/*frustum->IsFullyInside(currentNode->data.bbox)*/(frustumRes == Frustum::EFR_INSIDE) || currentNode->data.size <= (1 << maxLod) + 1) )
     {
-        //Logger::Debug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
+        //Logger::FrameworkDebug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
         
 //        if (currentNode->data.size <= (1 << maxLod))
 //            RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -1317,7 +1317,7 @@ void Landscape::Draw(Camera * camera)
 
     
 	FlushQueue();
-    //    Logger::Debug("[LN] flashQueueCounter = %d", flashQueueCounter);
+    //    Logger::FrameworkDebug("[LN] flashQueueCounter = %d", flashQueueCounter);
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1397,7 +1397,7 @@ void Landscape::Draw(Camera * camera)
     
     //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-    //Logger::Debug("landscape draw time: %lld", drawTime);
+    //Logger::FrameworkDebug("landscape draw time: %lld", drawTime);
 }
 
 
@@ -1485,7 +1485,7 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         String relPath  = textureNames[k].GetRelativePathname(sceneFile->GetScenePath());
         
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
+            Logger::FrameworkDebug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
@@ -1533,7 +1533,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
 
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
+            Logger::FrameworkDebug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
 
         if (sceneFile->GetVersion() >= 4)
         {
@@ -1731,7 +1731,7 @@ FilePath Landscape::SaveFullTiledTexture()
         }
     }
     
-    Logger::Debug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
     return pathToSave;
 }
     

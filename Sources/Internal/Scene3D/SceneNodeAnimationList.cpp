@@ -76,7 +76,7 @@ void SceneNodeAnimationList::Execute(float32 _fadeInTime, float32 _fadeOutTime, 
 {
 	if (active)return; // do not reexecute active animations
 	
-	Logger::Debug("[SceneNodeAnimationList::Execute] %s\n", name.c_str());
+	Logger::FrameworkDebug("[SceneNodeAnimationList::Execute] %s\n", name.c_str());
 	
 	cycled = false;
 	fadeInTime = _fadeInTime;
@@ -98,7 +98,7 @@ void SceneNodeAnimationList::BlendTo(SceneNodeAnimationList * next, float32 _ble
 {
 	if (active)return; // do not reexecute active animations
 	
-	Logger::Debug("[SceneNodeAnimationList::BlendTo] from: %s to: %s\n", name.c_str(), next->name.c_str());
+	Logger::FrameworkDebug("[SceneNodeAnimationList::BlendTo] from: %s to: %s\n", name.c_str(), next->name.c_str());
 
 	blendTo = next;
 	blendTime = _blendTime;
@@ -160,7 +160,7 @@ void SceneNodeAnimationList::Update(float32 timeElapsed)
 		}
 	}
 	
-	// Logger::Debug("anim: %s currentTime:%f, wei: %f", name.c_str(), currentTime, tWeight);
+	// Logger::FrameworkDebug("anim: %s currentTime:%f, wei: %f", name.c_str(), currentTime, tWeight);
 	
 	int32 size = (int32)animations.size();
 	for (int32 k = 0; k < size; ++k)
@@ -205,7 +205,7 @@ void SceneNodeAnimationList::StopAnimation()
 		anim->bindNode->DetachAnimation(anim);
 	}
 	active = false;
-	Logger::Debug("[SceneNodeAnimationList] Finished: %s\n", name.c_str());
+	Logger::FrameworkDebug("[SceneNodeAnimationList] Finished: %s\n", name.c_str());
 }
 
 void SceneNodeAnimationList::SetWeight(float32 weight)

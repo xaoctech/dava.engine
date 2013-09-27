@@ -354,7 +354,7 @@ bool Shader::LoadFromYaml(const FilePath & pathname)
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
     
-//    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
+//    Logger::FrameworkDebug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
     return true;
 }
     
@@ -734,7 +734,7 @@ GLint Shader::LinkProgram(GLuint prog)
         RENDER_VERIFY(glGetProgramInfoLog(prog, 4096, &logLength, log));
 		if (logLength)
 		{
-			Logger::Debug("Program link log:\n%s", log);
+			Logger::FrameworkDebug("Program link log:\n%s", log);
 		}
     }
 #endif
@@ -785,7 +785,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
 		RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
 		if (logLength)
 		{
-			Logger::Debug("Shader compile log:\n%s", log);
+			Logger::FrameworkDebug("Shader compile log:\n%s", log);
 		}
 	}
 #endif
@@ -868,28 +868,28 @@ void Shader::Bind()
     
 void Shader::Dump()
 {
-    Logger::Debug("Attributes: ");
+    Logger::FrameworkDebug("Attributes: ");
     for (int32 k = 0; k < activeAttributes; ++k)
     {
         int32 flagIndex = GetAttributeIndexByName(attributeNames[k].c_str());
-        Logger::Debug("Attribute: %s location: %d vertexFormatIndex:%x", attributeNames[k].c_str(), vertexFormatAttribIndeces[flagIndex], flagIndex);
+        Logger::FrameworkDebug("Attribute: %s location: %d vertexFormatIndex:%x", attributeNames[k].c_str(), vertexFormatAttribIndeces[flagIndex], flagIndex);
     }
     
     RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
     
     
-    Logger::Debug("Uniforms: ");
+    Logger::FrameworkDebug("Uniforms: ");
     for (int32 k = 0; k < activeUniforms; ++k)
     {
 		Uniform* currentUniform = GET_UNIFORM(k);
 		
-        //Logger::Debug("shader uniform: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
+        //Logger::FrameworkDebug("shader uniform: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
 //        uniformNames[k] = attributeName;
 //        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
 //        uniformIDs[k] = uniform;
 //        uniformTypes[k] = (eUniformType)type;
         eUniform uniform = GetUniformByName(currentUniform->name.c_str());
-        Logger::Debug("uniform: %s(%d) type: %s", currentUniform->name.c_str(), uniform, VertexTypeStringFromEnum(currentUniform->type).c_str());
+        Logger::FrameworkDebug("uniform: %s(%d) type: %s", currentUniform->name.c_str(), uniform, VertexTypeStringFromEnum(currentUniform->type).c_str());
     }
 
     

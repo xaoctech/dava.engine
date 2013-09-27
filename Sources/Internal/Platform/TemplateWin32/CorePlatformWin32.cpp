@@ -117,7 +117,7 @@ namespace DAVA
 				WideString w = szArglist[i];
 				String nonWide = WStringToString(w);
 				cl.push_back(nonWide);
-				Logger::Debug("%d: %s\n", i, nonWide.c_str());
+				Logger::FrameworkDebug("%d: %s\n", i, nonWide.c_str());
 			}
 		}
 		// Free memory allocated for CommandLineToArgvW arguments.
@@ -347,7 +347,7 @@ namespace DAVA
 
 		glewInit();
 		const GLubyte * extensions = glGetString(GL_EXTENSIONS);
-		Logger::Debug("[CoreWin32Platform] gl extensions: %s", (const char*)extensions);
+		Logger::FrameworkDebug("[CoreWin32Platform] gl extensions: %s", (const char*)extensions);
 	}*/
 
 	void CoreWin32Platform::ReleaseOpenGL()
@@ -448,7 +448,7 @@ namespace DAVA
 			SetWindowPos( hWindow, HWND_NOTOPMOST, windowPositionBeforeFullscreen.left, windowPositionBeforeFullscreen.top, windowedRect.right - windowedRect.left, windowedRect.bottom - windowedRect.top, SWP_NOACTIVATE | SWP_SHOWWINDOW );
 		}
 		
-		Logger::Debug("[RenderManagerDX9] toggle mode: %d x %d isFullscreen: %d", currentMode.width, currentMode.height, isFullscreen);
+		Logger::FrameworkDebug("[RenderManagerDX9] toggle mode: %d x %d isFullscreen: %d", currentMode.width, currentMode.height, isFullscreen);
 
 		RenderManager::Instance()->ChangeDisplayMode(currentMode, isFullscreen);
 		RenderManager::Instance()->Init(currentMode.width, currentMode.height);
@@ -497,7 +497,7 @@ namespace DAVA
 			ZeroMemory (&dmi, sizeof(dmi)) ;
 			availableDisplayModes.push_back(mode);
 
-			Logger::Debug(L"[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d",
+			Logger::FrameworkDebug(L"[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d",
 				mode.width,
 				mode.height,
 				mode.bpp);
@@ -667,7 +667,7 @@ namespace DAVA
 	void OnMouseEvent(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		{
-			//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			//Logger::FrameworkDebug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 			Vector<DAVA::UIEvent> touches;
 			Vector<DAVA::UIEvent> emptyTouches;
@@ -821,7 +821,7 @@ namespace DAVA
                 WORD hiWord = HIWORD(wParam);
                 if(!loWord || hiWord)
                 {
-                    Logger::Debug("[PlatformWin32] deactivate application");
+                    Logger::FrameworkDebug("[PlatformWin32] deactivate application");
                     RenderResource::SaveAllResourcesToSystemMem();
 					
                     if(core)
@@ -835,7 +835,7 @@ namespace DAVA
                 }
                 else
                 {
-                    Logger::Debug("[PlatformWin32] activate application");
+                    Logger::FrameworkDebug("[PlatformWin32] activate application");
 					if(core)
 					{
 						core->OnResume();

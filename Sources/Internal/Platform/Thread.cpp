@@ -41,20 +41,20 @@ ConditionalVariable::ConditionalVariable()
 {
     int32 ret = pthread_cond_init(&cv, 0);
     if(ret)
-        Logger::Debug("[ConditionalVariable::ConditionalVariable()]: pthread_cond_init error code %d", ret);
+        Logger::FrameworkDebug("[ConditionalVariable::ConditionalVariable()]: pthread_cond_init error code %d", ret);
     ret = pthread_mutex_init(&exMutex, 0);
     if(ret)
-        Logger::Debug("[ConditionalVariable::ConditionalVariable()]: pthread_mutex_init error code %d", ret);
+        Logger::FrameworkDebug("[ConditionalVariable::ConditionalVariable()]: pthread_mutex_init error code %d", ret);
 }
 
 ConditionalVariable::~ConditionalVariable()
 {
     int32 ret = pthread_cond_destroy(&cv);
     if(ret)
-        Logger::Debug("[ConditionalVariable::~ConditionalVariable()]: pthread_cond_destroy error code %d", ret);
+        Logger::FrameworkDebug("[ConditionalVariable::~ConditionalVariable()]: pthread_cond_destroy error code %d", ret);
     ret = pthread_mutex_destroy(&exMutex);
     if(ret)
-        Logger::Debug("[ConditionalVariable::~ConditionalVariable()]: pthread_mutex_destroy error code %d", ret);
+        Logger::FrameworkDebug("[ConditionalVariable::~ConditionalVariable()]: pthread_mutex_destroy error code %d", ret);
 }
 
 Thread * Thread::Create(const Message& msg)
@@ -106,27 +106,27 @@ void Thread::Wait(ConditionalVariable * cv)
 {
     int32 ret = 0;
     if((ret = pthread_mutex_lock(&cv->exMutex)))
-        Logger::Debug("[Thread::Wait]: pthread_mutex_lock error code %d", ret);
+        Logger::FrameworkDebug("[Thread::Wait]: pthread_mutex_lock error code %d", ret);
     
     if((ret = pthread_cond_wait(&cv->cv, &cv->exMutex)))
-        Logger::Debug("[Thread::Wait]: pthread_cond_wait error code %d", ret);
+        Logger::FrameworkDebug("[Thread::Wait]: pthread_cond_wait error code %d", ret);
 
     if((ret = pthread_mutex_unlock(&cv->exMutex)))
-        Logger::Debug("[Thread::Wait]: pthread_mutex_unlock error code %d", ret);
+        Logger::FrameworkDebug("[Thread::Wait]: pthread_mutex_unlock error code %d", ret);
 }
 
 void Thread::Signal(ConditionalVariable * cv)
 {
     int32 ret = pthread_cond_signal(&cv->cv);
     if(ret)
-        Logger::Debug("[Thread::Signal]: pthread_cond_signal error code %d", ret);
+        Logger::FrameworkDebug("[Thread::Signal]: pthread_cond_signal error code %d", ret);
 }
 
 void Thread::Broadcast(ConditionalVariable * cv)
 {
     int32 ret = pthread_cond_broadcast(&cv->cv);
     if(ret)
-        Logger::Debug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
+        Logger::FrameworkDebug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
 }
 
 #ifndef __DAVAENGINE_WIN32__
