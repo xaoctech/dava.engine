@@ -64,10 +64,10 @@ void Animation::Start(int _groupId)
 //#ifdef ANIMATIONS_DEBUG
 //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
 //	{
-//		Logger::Debug("ANIMATION LOGGER: Animation::Start 0x%x    for owner 0x%x", (int)this, (int)owner);
+//		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Start 0x%x    for owner 0x%x", (int)this, (int)owner);
 //	}
 //#endif
-	//Logger::Debug("Animation started: %d", _groupId);
+	//Logger::FrameworkDebug("Animation started: %d", _groupId);
 	Reset();
 	groupId = _groupId;
 	
@@ -75,17 +75,17 @@ void Animation::Start(int _groupId)
 	
 	if (!prevAnimation || (prevAnimation == this))
 	{
-		//Logger::Debug("real anim start");
+		//Logger::FrameworkDebug("real anim start");
 		state |= STATE_IN_PROGRESS;
 		OnStart();
 	}
 	else
 	{	
-		//Logger::Debug("add to queue");
+		//Logger::FrameworkDebug("add to queue");
 //#ifdef ANIMATIONS_DEBUG
 //		if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
 //		{
-//			Logger::Debug("ANIMATION LOGGER: Animation::Set animation 0x%x as next for 0x%x   for owner 0x%x", (int)this, (int)prevAnimation, (int)owner);
+//			Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Set animation 0x%x as next for 0x%x   for owner 0x%x", (int)this, (int)prevAnimation, (int)owner);
 //		}
 //#endif
 		prevAnimation->next = this;
@@ -94,7 +94,7 @@ void Animation::Start(int _groupId)
 
 void Animation::Stop()
 {
-	//Logger::Debug("Animation stopped: %d", groupId);
+	//Logger::FrameworkDebug("Animation stopped: %d", groupId);
 	state &= ~STATE_IN_PROGRESS; 
 	state |= STATE_DELETE_ME;
 	OnStop();
@@ -164,7 +164,7 @@ void Animation::OnStart()
 //#ifdef ANIMATIONS_DEBUG
 //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
 //	{
-//		Logger::Debug("ANIMATION LOGGER: Animation::OnStart 0x%x    for owner 0x%x", (int)this, (int)owner);
+//		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStart 0x%x    for owner 0x%x", (int)this, (int)owner);
 //	}
 //#endif
 	PerformEvent(EVENT_ANIMATION_START);
@@ -175,14 +175,14 @@ void Animation::OnStop()
 //#ifdef ANIMATIONS_DEBUG
 //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
 //	{
-//		Logger::Debug("ANIMATION LOGGER: Animation::OnStop 0x%x    for owner 0x%x", (int)this, (int)owner);
+//		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop 0x%x    for owner 0x%x", (int)this, (int)owner);
 //	}
 //#endif
 	PerformEvent(EVENT_ANIMATION_END);
 //#ifdef ANIMATIONS_DEBUG
 //	if(AnimationManager::Instance()->IsAnimationLoggerEnabled())
 //	{
-//		Logger::Debug("ANIMATION LOGGER: Animation::OnStop DONE 0x%x    for owner 0x%x", (int)this, (int)owner);
+//		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop DONE 0x%x    for owner 0x%x", (int)this, (int)owner);
 //	}
 //#endif
 };

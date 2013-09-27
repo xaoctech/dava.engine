@@ -90,21 +90,21 @@ void Replay::StopRecord()
 
 void Replay::RecordFrame(float32 frameTime)
 {
-	//Logger::Debug("[Replay::RecordFrame] %f", frameTime);
+	//Logger::FrameworkDebug("[Replay::RecordFrame] %f", frameTime);
 	Write<int8>(VALUE_FRAMETIME);
 	Write(frameTime);
 }
 
 void Replay::RecordEventsCount(int32 eventsCount)
 {
-	//Logger::Debug("[Replay::RecordEventsCount] %d", eventsCount);
+	//Logger::FrameworkDebug("[Replay::RecordEventsCount] %d", eventsCount);
 	Write<int8>(VALUE_EVENTS_COUNT);
 	Write(eventsCount);
 }
 
 void Replay::RecordEvent(const UIEvent * ev)
 {
-	//Logger::Debug("[Replay::RecordEvent]");
+	//Logger::FrameworkDebug("[Replay::RecordEvent]");
 	Write(ev->tid);
 	Write(ev->point.x);
 	Write(ev->point.y);
@@ -153,7 +153,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 
 float32 Replay::PlayFrameTime()
 {
-	//Logger::Debug("[Replay::PlayFrameTime]");
+	//Logger::FrameworkDebug("[Replay::PlayFrameTime]");
 	if(!skipType)
 	{
 		int8 type = Read<int8>();
@@ -177,7 +177,7 @@ float32 Replay::PlayFrameTime()
 
 int32 Replay::PlayEventsCount()
 {
-	//Logger::Debug("[Replay::PlayEventsCount]");
+	//Logger::FrameworkDebug("[Replay::PlayEventsCount]");
 	if(!skipType)
 	{
 		Read<int8>();
@@ -195,7 +195,7 @@ int32 Replay::PlayEventsCount()
 
 UIEvent	Replay::PlayEvent()
 {
-	//Logger::Debug("[Replay::PlayEvent]");
+	//Logger::FrameworkDebug("[Replay::PlayEvent]");
 	UIEvent ev;
 
 	ev.tid = Read<int32>(); if(!isPlayback) return ev;

@@ -93,7 +93,7 @@ void CoreWin32Platform::InitArgs()
 			WideString w = szArglist[i];
 			String nonWide = WStringToString(w);
 			cl.push_back(nonWide);
-			Logger::Debug("%d: %s\n", i, nonWide.c_str());
+			Logger::FrameworkDebug("%d: %s\n", i, nonWide.c_str());
 		}
 	}
 	// Free memory allocated for CommandLineToArgvW arguments.
@@ -241,7 +241,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 #define WHEEL_DELTA 120
 #endif
 
-//		Logger::Debug("Event: %d(%0x)", message->message, message->message);
+//		Logger::FrameworkDebug("Event: %d(%0x)", message->message, message->message);
 
 	switch (message->message) 
 	{

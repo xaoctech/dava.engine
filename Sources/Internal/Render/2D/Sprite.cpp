@@ -145,11 +145,11 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
     
     SafeRelease(fp);
     
-//	Logger::Debug("Adding to map for key: %s", spr->relativePathname.c_str());
+//	Logger::FrameworkDebug("Adding to map for key: %s", spr->relativePathname.c_str());
 	spriteMap[spr->relativePathname.GetAbsolutePathname()] = spr;
-//	Logger::Debug("Resetting sprite");
+//	Logger::FrameworkDebug("Resetting sprite");
 	spr->Reset();
-//	Logger::Debug("Returning pointer");
+//	Logger::FrameworkDebug("Returning pointer");
 	return spr;
 }
     
@@ -233,7 +233,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		sscanf(tempBuf, "%s", textureCharName);
         
 		FilePath tp = pathName.GetDirectory() + String(textureCharName);
-//		Logger::Debug("Opening texture: %s", tp.c_str());
+//		Logger::FrameworkDebug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
 		textureNames[k] = tp;
 		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
@@ -338,7 +338,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		frameVertices[i][7] *= resourceToVirtualFactor;
 	}
     
-//	Logger::Debug("Frames created: %d", spr->frameCount);
+//	Logger::FrameworkDebug("Frames created: %d", spr->frameCount);
 	//	center.x = width / 2;
 	//	center.y = height / 2;
 	
@@ -346,7 +346,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 	defaultPivotPoint.y = 0;
 	
 //	timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead2;
-//  Logger::Debug("Sprite: %s time:%lld", relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
+//  Logger::FrameworkDebug("Sprite: %s time:%lld", relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
 
 }
 
@@ -1420,14 +1420,14 @@ void Sprite::PrepareForNewSize()
 	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
 	String scaledName = pathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	
-	Logger::Instance()->Debug("Seraching for file: %s", scaledName.c_str());
+	Logger::Instance()->FrameworkDebug("Seraching for file: %s", scaledName.c_str());
 	
 	
 	File *fp = File::Create(scaledName, File::READ|File::OPEN);
 	
 	if (!fp)
 	{
-		Logger::Instance()->Debug("Can't find file: %s", scaledName.c_str());
+		Logger::Instance()->FrameworkDebug("Can't find file: %s", scaledName.c_str());
 		return;
 	}
 	SafeRelease(fp);
@@ -1435,7 +1435,7 @@ void Sprite::PrepareForNewSize()
 	Vector2 tempPivotPoint = defaultPivotPoint;
 		
 	Clear();
-	Logger::Debug("erasing from sprite from map");
+	Logger::FrameworkDebug("erasing from sprite from map");
 	spriteMap.erase(relativePathname.GetAbsolutePathname());
 	textures = 0;
 	textureNames = 0;
@@ -1472,7 +1472,7 @@ void Sprite::PrepareForNewSize()
 
 void Sprite::ValidateForSize()
 {
-	Logger::Debug("--------------- Sprites validation for new resolution ----------------");
+	Logger::FrameworkDebug("--------------- Sprites validation for new resolution ----------------");
 	List<Sprite*> spritesToReload;
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
@@ -1486,7 +1486,7 @@ void Sprite::ValidateForSize()
 	{
 		(*it)->PrepareForNewSize();
 	}
-	Logger::Debug("----------- Sprites validation for new resolution DONE  --------------");
+	Logger::FrameworkDebug("----------- Sprites validation for new resolution DONE  --------------");
 //	Texture::DumpTextures();
 }
 

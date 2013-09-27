@@ -169,8 +169,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     // save data objects
     if(isDebugLogEnabled)
     {
-        Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
+        Logger::FrameworkDebug("+ save data objects");
+        Logger::FrameworkDebug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths
@@ -182,7 +182,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //            if (material->names[k].length() > 0)
 //            {
 //                replace(material->names[k], rootNodePath, String(""));
-//                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
+//                Logger::FrameworkDebug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
 //            }
 //        }   
 //    }
@@ -201,7 +201,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     // save hierarchy
     if(isDebugLogEnabled)
-        Logger::Debug("+ save hierarchy");
+        Logger::FrameworkDebug("+ save hierarchy");
 
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
@@ -245,7 +245,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     }
     
     if(isDebugLogEnabled)
-        Logger::Debug("+ load data objects");
+        Logger::FrameworkDebug("+ load data objects");
 
     if (GetVersion() >= 2)
     {
@@ -257,7 +257,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     }
     
     if(isDebugLogEnabled)
-        Logger::Debug("+ load hierarchy");
+        Logger::FrameworkDebug("+ load hierarchy");
         
     Entity * rootNode = new Entity();
     rootNode->SetName(rootNodePathName.GetFilename());
@@ -309,7 +309,7 @@ bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
     
     
     node->Save(archive, this);  
@@ -346,7 +346,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, this);
         AddToNodeMap(node);
@@ -369,7 +369,7 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
 
     node->Save(archive, this);    
     
@@ -421,7 +421,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, this);
         
@@ -447,7 +447,7 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
     uint64 ptr = node->GetPreviousPointer();
     
     if(isDebugLogEnabled)
-        Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
     
     dataNodes[ptr] = SafeRetain(node);
 }
@@ -456,7 +456,7 @@ bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
+        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, this);    
     
 	archive->SetInt32("#childrenCount", node->GetChildrenCount());
@@ -564,7 +564,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
 
 		if(!skipNode)
@@ -690,7 +690,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
                 String currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
-                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
                 
                 childNode->SetName(currentName);
@@ -732,7 +732,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
-                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
                 }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
@@ -757,7 +757,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
 //                if (oldMeshInstanceNode->GetLightmapCount() == 0)
 //                {
-//                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+//                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
 //                }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
@@ -1020,7 +1020,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 //            node->SetName(rootNodeName);
 //    }
     int32 nowCount = rootNode->GetChildrenCountRecursive();
-    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+    Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
 void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)

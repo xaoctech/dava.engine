@@ -151,7 +151,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     RenderManager::Instance()->LockNonMain();
 //#if !defined(__DAVAENGINE_MACOS__)
     
-//    Logger::Debug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
+//    Logger::FrameworkDebug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
     
 #if defined (__DAVAENGINE_OPENGL__)
     
@@ -183,7 +183,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     }
     
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
-//    Logger::Debug("glGenBuffers: %d", vboBuffer);
+//    Logger::FrameworkDebug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 
@@ -191,7 +191,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     for (uint32 k = 1; k < size; ++k)
     {
         streamArray[k]->pointer = (uint8*)streamArray[k - 1]->pointer + GetVertexSize(streamArray[k - 1]->formatMark);
-        //Logger::Debug("vbo offset: %d", (uint32)streamArray[k]->pointer);
+        //Logger::FrameworkDebug("vbo offset: %d", (uint32)streamArray[k]->pointer);
     }
     
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -238,7 +238,7 @@ void RenderDataObject::BuildIndexBuffer()
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
-//    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+//    Logger::FrameworkDebug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
 #endif
@@ -261,7 +261,7 @@ void RenderDataObject::BuildIndexBuffer()
 //
 //void RenderDataObject::Lost()
 //{
-////    Logger::Debug("[RenderDataObject::Lost]");
+////    Logger::FrameworkDebug("[RenderDataObject::Lost]");
 //    //    vboBuffer = 0;
 //#if defined(__DAVAENGINE_OPENGL__)
 //#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
@@ -286,7 +286,7 @@ void RenderDataObject::BuildIndexBuffer()
 //
 //void RenderDataObject::Invalidate()
 //{
-////    Logger::Debug("[RenderDataObject::Invalidate]");
+////    Logger::FrameworkDebug("[RenderDataObject::Invalidate]");
 //
 //    if(isLost)
 //    {

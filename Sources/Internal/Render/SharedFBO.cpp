@@ -113,10 +113,10 @@ SharedFBO::Block * SharedFBO::AcquireBlock(const Vector2 & size)
 	int32 maxIndex = frees.size()-1;
 
 	//debug
-	//Logger::Debug("Free blocks:"); 
+	//Logger::FrameworkDebug("Free blocks:"); 
 	//for(int32 i = 0; i <= maxIndex; ++i)
 	//{
-	//	Logger::Debug("(%.1f_%.1f) %d", sizes[i].x, sizes[i].y, frees[i]);
+	//	Logger::FrameworkDebug("(%.1f_%.1f) %d", sizes[i].x, sizes[i].y, frees[i]);
 	//}
 
 	//first try to find block of closest size

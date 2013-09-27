@@ -546,38 +546,38 @@ void KeyedArchive::Dump()
 			{
 				if(it->second->boolValue)
 				{
-					Logger::Debug("%s : true", it->first.c_str());
+					Logger::FrameworkDebug("%s : true", it->first.c_str());
 				}
 				else 
 				{
-					Logger::Debug("%s : false", it->first.c_str());
+					Logger::FrameworkDebug("%s : false", it->first.c_str());
 				}
 
 			}
 				break;
 			case VariantType::TYPE_INT32:
 			{
-				Logger::Debug("%s : %d", it->first.c_str(), it->second->int32Value);
+				Logger::FrameworkDebug("%s : %d", it->first.c_str(), it->second->int32Value);
 			}
 				break;	
 			case VariantType::TYPE_UINT32:
 			{
-				Logger::Debug("%s : %d", it->first.c_str(), it->second->uint32Value);
+				Logger::FrameworkDebug("%s : %d", it->first.c_str(), it->second->uint32Value);
 			}
 				break;	
 			case VariantType::TYPE_FLOAT:
 			{
-				Logger::Debug("%s : %f", it->first.c_str(), it->second->floatValue);
+				Logger::FrameworkDebug("%s : %f", it->first.c_str(), it->second->floatValue);
 			}
 				break;	
 			case VariantType::TYPE_STRING:
 			{
-				Logger::Debug("%s : %s", it->first.c_str(), it->second->stringValue->c_str());
+				Logger::FrameworkDebug("%s : %s", it->first.c_str(), it->second->stringValue->c_str());
 			}
 				break;	
 			case VariantType::TYPE_WIDE_STRING:
 			{
-				Logger::Debug("%s : %S", it->first.c_str(), it->second->wideStringValue->c_str());
+				Logger::FrameworkDebug("%s : %S", it->first.c_str(), it->second->wideStringValue->c_str());
 			}
 				break;
                 

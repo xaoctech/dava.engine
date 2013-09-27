@@ -395,7 +395,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 	}
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 }
 	
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
@@ -443,7 +443,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
     SafeRelease(resultNode);
     
     uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+	Logger::FrameworkDebug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 
     return savedOK;
 }
@@ -470,11 +470,11 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * root
 		UIControl* control = CreateControl(type, baseType);
 		if (!control)
 		{
-			Logger::Debug("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
+			Logger::Warning("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
 			continue;
 		}else
 		{
-			//Logger::Debug("Create control with type:%s", type.c_str());
+			//Logger::FrameworkDebug("Create control with type:%s", type.c_str());
 		}
 		control->LoadFromYamlNode(node, this);
 		parentControl->AddControl(control);

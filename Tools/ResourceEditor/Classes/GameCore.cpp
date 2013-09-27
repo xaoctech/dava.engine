@@ -99,7 +99,7 @@ void GameCore::OnAppStarted()
     FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
     if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
     {
-//        Logger::Debug("[GameCore::OnAppStarted()] Unpacking Help");
+//        Logger::FrameworkDebug("[GameCore::OnAppStarted()] Unpacking Help");
         ResourceArchive * helpRA = new ResourceArchive();
         if(helpRA->Open("~res:/Help.docs"))
         {

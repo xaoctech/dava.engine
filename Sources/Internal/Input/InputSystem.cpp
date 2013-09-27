@@ -59,7 +59,7 @@ void InputSystem::ProcessInputEvent(UIEvent * event)
 			(*it)(event);
 	}
 
-//	Logger::Debug("InputSystem::ProcessInputEvent: keyCode: %d", event->tid);
+//	Logger::FrameworkDebug("InputSystem::ProcessInputEvent: keyCode: %d", event->tid);
 //	UIControlSystem::Instance()->OnInput(event);
 }
 

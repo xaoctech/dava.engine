@@ -345,8 +345,8 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 		}
 
 		//check all touches for active state
-//		Logger::Debug("IN   Active touches %d", activeInputs.size());
-//		Logger::Debug("IN   Total touches %d", allInputs.size());
+//		Logger::FrameworkDebug("IN   Active touches %d", activeInputs.size());
+//		Logger::FrameworkDebug("IN   Total touches %d", allInputs.size());
 		for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++) 
 		{
 			(*it).activeState = UIEvent::ACTIVITY_STATE_INACTIVE;
@@ -459,11 +459,11 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
             it++;
 		}
 		
-//		Logger::Debug("Total touches %d", totalInputs.size());
+//		Logger::FrameworkDebug("Total touches %d", totalInputs.size());
 //		for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++)
 //		{
-//			Logger::Debug("		ID %d", (*it).tid);
-//			Logger::Debug("		phase %d", (*it).phase);
+//			Logger::FrameworkDebug("		ID %d", (*it).tid);
+//			Logger::FrameworkDebug("		phase %d", (*it).phase);
 //		}
 
 
