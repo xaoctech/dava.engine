@@ -48,6 +48,7 @@ namespace DAVA
 		parent = NULL;
 		controlState = STATE_NORMAL;
 		visible = true;
+		visibleForUIEditor = true;
 		/* 
 			VB:
 			please do not change anymore to false, it no make any sense to make all controls untouchable by default.
@@ -1303,6 +1304,7 @@ namespace DAVA
 
 		controlState = srcControl->controlState;
 		visible = srcControl->visible;
+		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
 		clipContents = srcControl->clipContents;
 
@@ -1547,7 +1549,7 @@ namespace DAVA
 			RenderManager::Instance()->ClipRect(unrotatedRect);
 		}
 
-		if(visible)
+		if(visible && visibleForUIEditor)
 		{
 			Draw(drawData);
 		}
@@ -1567,7 +1569,7 @@ namespace DAVA
 			DVASSERT(!isIteratorCorrupted);
 		}
 		
-		if(visible)
+		if(visible && visibleForUIEditor)
 		{
 			DrawAfterChilds(drawData);
 		}
