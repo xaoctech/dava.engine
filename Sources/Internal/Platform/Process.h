@@ -40,7 +40,7 @@ namespace DAVA
 	{
 	public:
 		
-		Process(FilePath path, String args);
+		Process(FilePath path, const Vector<String>& args);
 		~Process();
 		
 		bool Run(bool showWindow);
@@ -49,7 +49,7 @@ namespace DAVA
 		const String& GetOutput() const;
 		int64 GetPID() const;
 		const FilePath& GetPath() const;
-		const String& GetArgs() const;
+		const Vector<String>& GetArgs() const;
 	
 	private:
 		
@@ -66,7 +66,7 @@ namespace DAVA
 		int64 pid;
 		String output;
 		FilePath executablePath;
-		String runArgs;
+		Vector<String> runArgs;
 		bool running;
 		
 #if defined (__DAVAENGINE_WIN32__)
