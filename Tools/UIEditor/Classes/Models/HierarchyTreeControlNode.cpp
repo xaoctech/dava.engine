@@ -340,3 +340,21 @@ Rect HierarchyTreeControlNode::GetRect() const
 
 	return rect;
 }
+
+void HierarchyTreeControlNode::SetVisibleFlag(bool value)
+{
+	if (uiObject)
+	{
+		uiObject->SetVisibleForUIEditor(value);
+	}
+}
+
+bool HierarchyTreeControlNode::GetVisibleFlag() const
+{
+	if (uiObject)
+	{
+		return uiObject->GetVisibleForUIEditor();
+	}
+
+	return false;
+}
