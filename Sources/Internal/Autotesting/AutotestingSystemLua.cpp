@@ -500,7 +500,7 @@ void AutotestingSystemLua::TouchMove(const Vector2 &point, int32 touchId)
     }
     else
     {
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
         Logger::Warning("AutotestingSystemLua::TouchMove point=(%f, %f) ignored no touch down found", point.x, point.y);
 #else
         touchMove.phase = UIEvent::PHASE_MOVE;
