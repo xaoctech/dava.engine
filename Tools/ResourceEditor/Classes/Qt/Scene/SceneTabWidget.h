@@ -117,7 +117,7 @@ protected:
 
 	void SetTabScene(int index, SceneEditor2* scene);
 
-	virtual void resizeEvent(QResizeEvent * event);
+	virtual bool eventFilter(QObject *object, QEvent *event);
 	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dropEvent(QDropEvent *event);
 

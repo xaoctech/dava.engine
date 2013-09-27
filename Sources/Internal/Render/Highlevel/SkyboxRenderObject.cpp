@@ -186,7 +186,8 @@ namespace DAVA
 	
 	void SkyboxRenderObject::UpdateMaterial()
 	{
-		if(renderBatchArray.size() > 0)
+		if(renderBatchArray.size() > 0 &&
+		   !texturePath.IsEmpty())
 		{
 			Material* skyboxMaterial = renderBatchArray[0]->GetMaterial();
 			
