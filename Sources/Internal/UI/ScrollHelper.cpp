@@ -35,8 +35,8 @@ namespace DAVA
 {
 	ScrollHelper::ScrollHelper()
 	:	BaseObject()
-	,	position(0)
-	,	elementSize(0)
+	,	position(0.f, 0.f)
+	,	elementSize(0.f, 0.f)
 	,	totalDeltaTime(0)
 	,	totalDeltaMove(0)
 	,   speed(0)
@@ -47,43 +47,53 @@ namespace DAVA
 
 	void ScrollHelper::SetPosition(float32 pos)
 	{
-		position = pos;
-        position = Min(position, 0.f);
-        position = Max(position, -elementSize);
+		position.x = pos;
+        position.x = Min(position.x, 0.f);
+        position.x = Max(position.x, -elementSize.x);
 	}
+	
+	void ScrollHelper::SetPosition(const Vector2& pos)
+	{
+		position = pos;
+        position.x = Min(position.x, 0.f);
+        position.x = Max(position.x, -elementSize.x);
+        position.y = Min(position.y, 0.f);
+        position.y = Max(position.y, -elementSize.y);
+	}
+	
 	void ScrollHelper::SetElementSize(float32 newSize)
 	{
-		elementSize = newSize;
-		virtualViewSize = viewSize;
-		if(viewSize > elementSize)
+		elementSize.x = newSize;
+		virtualViewSize.x = viewSize.x;
+		if(viewSize.x > elementSize.x)
 		{
-			virtualViewSize = elementSize;
+			virtualViewSize.x = elementSize.x;
 		}
 	}
 	
 	float ScrollHelper::GetPosition()
 	{
-		return position;
+		return position.x;
 	}
 	
 	void ScrollHelper::SetViewSize(float32 size)
 	{
-		viewSize = size;
-		virtualViewSize = viewSize;
-		if(viewSize > elementSize)
+		viewSize.x = size;
+		virtualViewSize.x = viewSize.x;
+		if(viewSize.x > elementSize.x)
 		{
-			virtualViewSize = elementSize;
+			virtualViewSize.x = elementSize.x;
 		}
 	}
     
     float32 ScrollHelper::GetViewSize()
     {
-        return viewSize;
+        return viewSize.x;
     }
     
     float32 ScrollHelper::GetElementSize()
     {
-        return elementSize;
+        return elementSize.x;
     }
 
 
@@ -99,7 +109,7 @@ namespace DAVA
 
 	void ScrollHelper::Impulse(float impulseSpeed)
 	{
-		if((position > 0 && impulseSpeed > 0) || (position + elementSize < virtualViewSize && impulseSpeed < 0))
+		if((position.x > 0 && impulseSpeed > 0) || (position.x + elementSize.x < virtualViewSize.x && impulseSpeed < 0))
 		{
 			return;
 		}
@@ -111,16 +121,16 @@ namespace DAVA
 	{
 		if(isPositionLocked)
 		{
-			if(position + positionDelta > 0)
+			if(position.x + positionDelta > 0)
 			{
-				positionDelta *= (1.0f - position / virtualViewSize) * backward;
+				positionDelta *= (1.0f - position.x / virtualViewSize.x) * backward;
 			}
-			if(position + elementSize + positionDelta  < virtualViewSize)
+			if(position.x + elementSize.x + positionDelta  < virtualViewSize.x)
 			{
                 
-				positionDelta *= (1.0f - (virtualViewSize - (position + elementSize)) / virtualViewSize) * backward;
+				positionDelta *= (1.0f - (virtualViewSize.x - (position.x + elementSize.x)) / virtualViewSize.x) * backward;
 			}
-			position += positionDelta;
+			position.x += positionDelta;
 			speed = 0;
 			MovesDelta m;
 			m.deltaMove = positionDelta;
@@ -141,57 +151,57 @@ namespace DAVA
 			if(totalDeltaMove != 0)
 			{
 				speed = totalDeltaMove / totalDeltaTime;
-				speed = Min(speed, virtualViewSize * 2);
-				speed = Max(speed, -virtualViewSize * 2);
+				speed = Min(speed, virtualViewSize.x * 2);
+				speed = Max(speed, -virtualViewSize.x * 2);
 			}
 			
-			if(position > 0)
+			if(position.x > 0)
 			{
 				if(backward != 0 && slowDown != 0)
 				{
 					if(slowDown != 0)
 					{
-						speed -= virtualViewSize * timeDelta / slowDown / backward;
+						speed -= virtualViewSize.x * timeDelta / slowDown / backward;
 					}
 					else
 					{
-						speed -= virtualViewSize * timeDelta * 4 / backward;
+						speed -= virtualViewSize.x * timeDelta * 4 / backward;
 					}
-					position += speed * timeDelta;
-					if(position < 0)
+					position.x += speed * timeDelta;
+					if(position.x < 0)
 					{
-						position = 0;
+						position.x = 0;
 						speed = 0;
 					}
 				}
 				else
 				{
-					position = 0;
+					position.x = 0;
 					speed = 0;
 				}
 			}
-			else if(position + elementSize < virtualViewSize)
+			else if(position.x + elementSize.x < virtualViewSize.x)
 			{
 				if(backward != 0)
 				{
 					if(slowDown != 0)
 					{
-						speed += virtualViewSize * timeDelta / slowDown / backward;
+						speed += virtualViewSize.x * timeDelta / slowDown / backward;
 					}
 					else
 					{
-						speed += virtualViewSize * timeDelta * 4 / backward;
+						speed += virtualViewSize.x * timeDelta * 4 / backward;
 					}
-					position += speed * timeDelta;
-					if(position + elementSize > virtualViewSize)
+					position.x += speed * timeDelta;
+					if(position.x + elementSize.x > virtualViewSize.x)
 					{
-						position = virtualViewSize - elementSize;
+						position.x = virtualViewSize.x - elementSize.x;
 						speed = 0;
 					}
 				}
 				else
 				{
-					position = virtualViewSize - elementSize;
+					position.x = virtualViewSize.x - elementSize.x;
 					speed = 0;
 				}
 			}
@@ -205,7 +215,7 @@ namespace DAVA
 					{
 						speed = 0;
 					}
-					position += speed * timeDelta;
+					position.x += speed * timeDelta;
 				}
 				else
 				{
@@ -218,7 +228,7 @@ namespace DAVA
 			totalDeltaMove = 0;
 		}
 		
-		return position;
+		return position.x;
 	}
 }
 

@@ -269,9 +269,14 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 			state = STATE_NONE;
 			return;
 		}
+		
+		float32 speedMultiup = Max(fabs(curOutboundOffset.x / 50.0f),
+									fabs(curOutboundOffset.y / 50.0f));
+								
+		speedMultiup = Max(1.0f, speedMultiup);
 
 		// Calculate the new position and clamp it to avoid overscrolling and flickering.
-		float32 curOffset = (timeElapsed * returnToBoundsSpeed);
+		float32 curOffset = (timeElapsed * returnToBoundsSpeed * speedMultiup);
 		
 		// Position and clamp X axis.
 		const float32 SCROLLING_EPSILON = 1.0f;

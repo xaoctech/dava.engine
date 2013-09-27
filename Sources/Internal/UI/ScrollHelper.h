@@ -33,6 +33,7 @@
 
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
+#include "Math/Vector.h"
 
 namespace DAVA 
 {
@@ -63,6 +64,8 @@ public:
 	 \param[in] pos new scrolling position.
 	 */
 	void SetPosition(float32 pos);
+	
+	void SetPosition(const Vector2& pos);
 	/**
 	 \brief Sets scrollable element size.
 	 \param[in] newSize scrollable element size.
@@ -116,10 +119,10 @@ public:
 	void SetBorderMoveModifer(float newValue);
 	
 private:
-	float position;
-	float elementSize;
-	float viewSize;
-	float virtualViewSize;
+	Vector2 position;
+	Vector2 elementSize;
+	Vector2 viewSize;
+	Vector2 virtualViewSize;
 	
 	float totalDeltaTime;
 	float totalDeltaMove;
