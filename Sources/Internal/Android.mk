@@ -32,6 +32,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/Platform/TemplateAndroid/
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/fmod/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/lua/include
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
