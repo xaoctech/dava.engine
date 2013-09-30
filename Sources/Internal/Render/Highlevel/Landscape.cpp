@@ -316,7 +316,7 @@ void Landscape::BuildLandscape()
     quadTreeHead.data.size = heightmap->Size() - 1;
     quadTreeHead.data.rdoQuad = -1;
     
-    SetLods(Vector4(50.0f, 100.0f, 200.0f, 480.0f));
+    SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
  
     allocatedMemoryForQuads = 0;
 
@@ -971,7 +971,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 	
 	//VI: this check should fix occasional cracks on the landscape
 	//VI: DF-1864 - select max distance from camera to quad and calculate max lod for that distance only
-	if(minLod == maxLod)
+	/*if(minLod == maxLod)
 	{
 		LandQuadTreeNode<LandscapeQuad> * parentNode = currentNode->parent;
 		float32 maxQuadDistance = -1.0f;
@@ -1003,7 +1003,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 				maxLod = Max(maxLod, GetMaxLod(maxQuadDistance));
 			}
 		}
-    }
+    }*/
     
     // debug block
 #if 1
