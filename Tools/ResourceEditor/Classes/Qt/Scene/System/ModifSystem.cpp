@@ -261,7 +261,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					if(cloneState == CLONE_NEED)
 					{
 						CloneBegin();
-						cloneState = CLOLE_DONE;
+						cloneState = CLONE_DONE;
 					}
 
 					// say to selection system, that selected items were modified
@@ -281,7 +281,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if(modified)
 					{
-						if(cloneState == CLOLE_DONE)
+						if(cloneState == CLONE_DONE)
 						{
 							CloneEnd();
 						}
