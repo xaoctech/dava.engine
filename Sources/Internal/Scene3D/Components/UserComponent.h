@@ -35,6 +35,7 @@
 #include "Debug/DVAssert.h"
 #include "Entity/Component.h"
 #include "Base/Introspection.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -45,8 +46,8 @@ namespace DAVA
 
 		UserComponent();
 		virtual Component * Clone(Entity * toEntity);
-		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		virtual void Serialize(KeyedArchive *archive, SerializationContext *sceneFile);
+		virtual void Deserialize(KeyedArchive *archive, SerializationContext *sceneFile);
 
 	public:
 		/*

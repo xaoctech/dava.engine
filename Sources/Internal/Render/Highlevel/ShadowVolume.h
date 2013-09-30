@@ -35,6 +35,7 @@
 #include "Render/Shader.h"
 #include "Render/3D/EdgeAdjacency.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -56,8 +57,8 @@ public:
     
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
-	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
 	virtual void UpdateAABBoxFromSource();
 

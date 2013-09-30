@@ -40,6 +40,8 @@
 
 #include "FileSystem/FilePath.h"
 
+#include "Scene3D/SceneFile/SerializationContext.h"
+
 //#define LANDSCAPE_SPECULAR_LIT 1
 
 namespace DAVA
@@ -265,8 +267,8 @@ public:
     const FilePath & GetHeightmapPathname();
 
     
-    void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
-    void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+    void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
     // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal = 0) const;
@@ -298,6 +300,8 @@ public:
 	virtual RenderObject * Clone(RenderObject *newObject);
 
     uint32 GetDrawIndices() const;
+	
+	virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 protected:	
     

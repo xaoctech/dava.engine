@@ -61,6 +61,34 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 	
 	return material;
 }
+	
+void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList)
+{
+	if(NULL == parent)
+	{
+		HashMap<FastName, NMaterial*>::Iterator mapIter = materials.Begin();
+		while(mapIter != materials.End())
+		{
+			NMaterial* material = mapIter.GetValue();
+			if(NULL == material->state.parent)
+			{
+				materialList.push_back(material);
+				BuildMaterialList(material, materialList);
+			}
+			
+			++mapIter;
+		}
+	}
+	else
+	{
+		for(int i = 0; i < parent->children.size(); ++i)
+		{
+			NMaterial* material = parent->children[i];
+			materialList.push_back(material);
+			BuildMaterialList(material, materialList);
+		}
+	}
+}
 
 bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 {

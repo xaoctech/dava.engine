@@ -88,7 +88,6 @@ Component * Component::CreateByType(uint32 componentType)
 		return new ActionComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
-			return new ActionComponent();
 	case SCRIPT_COMPONENT:
 	default:
 		DVASSERT(0);
@@ -121,12 +120,12 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     //Empty as default
 }
 
-void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void Component::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
 }
 
-void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void Component::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{

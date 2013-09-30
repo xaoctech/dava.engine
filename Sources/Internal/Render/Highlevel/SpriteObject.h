@@ -86,6 +86,7 @@ public:
 	const Vector2& GetScale() const;
 	const Vector2& GetPivot() const;
 
+	virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 	virtual RenderObject * Clone(RenderObject *newObject);
 

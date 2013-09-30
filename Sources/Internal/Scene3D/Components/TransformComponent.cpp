@@ -99,9 +99,9 @@ Matrix4 & TransformComponent::ModifyLocalTransform()
 	return localMatrix;
 }
 
-void TransformComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void TransformComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(NULL != archive)
 	{
@@ -110,7 +110,7 @@ void TransformComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile
 	}
 }
 
-void TransformComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void TransformComponent::Deserialize(KeyedArchive *archive, SerializationContext *sceneFile)
 {
 	if(NULL != archive)
 	{

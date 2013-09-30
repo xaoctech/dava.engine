@@ -684,9 +684,6 @@
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
-		1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
-		1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
-		1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
 		4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
@@ -754,18 +751,27 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
+		A66533E817F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
+		A66533E917F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
+		A66533EA17F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
 		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102217B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
 		A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
 		A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
+		A68290BA17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */; };
+		A68290BB17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */; };
+		A68290BC17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */; };
 		A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
 		A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
 		A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
+		A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
+		A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
+		A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6E4FE031761D96C00B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */; };
 		A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FE001761D96C00B48E41 /* ActionComponent.h */; };
 		A6E4FE051761D96C00B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -2131,10 +2137,13 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
+		A66533E717F98EC100B8906A /* Serializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serializable.h; sourceTree = "<group>"; };
 		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
 		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
+		A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerializationContext.cpp; sourceTree = "<group>"; };
 		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
+		A6B0517F17E886D8000EED68 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FE001761D96C00B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -2921,6 +2930,15 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		A6B97D9917E20A5A00CBD64C /* SceneFile */ = {
+			isa = PBXGroup;
+			children = (
+				A6B0517F17E886D8000EED68 /* SerializationContext.h */,
+				A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */,
+			);
+			path = SceneFile;
+			sourceTree = "<group>";
+		};
 		E8989ABD16BD24E400732C04 /* Animation */ = {
 			isa = PBXGroup;
 			children = (
@@ -2978,6 +2996,7 @@
 		E8989AD916BD24E400732C04 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				A66533E717F98EC100B8906A /* Serializable.h */,
 				4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */,
 				4F64848017AFB73C00034454 /* AllocatorFactory.h */,
 				4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */,
@@ -3585,6 +3604,7 @@
 		E8989CBF16BD24E500732C04 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				A6B97D9917E20A5A00CBD64C /* SceneFile */,
 				CCC7A48716F1D6B80061EA5D /* Entity.cpp */,
 				CCC7A48816F1D6B80061EA5D /* Entity.h */,
 				E8989CC816BD24E500732C04 /* Components */,
@@ -4235,6 +4255,8 @@
 				EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187517B256250022E8FA /* ShaderCache.h in Headers */,
 				50A5187D17B256590022E8FA /* MaterialSystem.h in Headers */,
+				A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */,
+				A66533EA17F98EC100B8906A /* Serializable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4590,6 +4612,8 @@
 				50A5186917B255EC0022E8FA /* RenderHierarchy.h in Headers */,
 				50A5187317B256250022E8FA /* ShaderCache.h in Headers */,
 				50A5187B17B256590022E8FA /* MaterialSystem.h in Headers */,
+				A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */,
+				A66533E817F98EC100B8906A /* Serializable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4932,6 +4956,8 @@
 				EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187417B256250022E8FA /* ShaderCache.h in Headers */,
 				50A5187C17B256590022E8FA /* MaterialSystem.h in Headers */,
+				A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */,
+				A66533E917F98EC100B8906A /* Serializable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5345,6 +5371,7 @@
 				50A5186D17B256040022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187217B256250022E8FA /* ShaderCache.cpp in Sources */,
 				50A5187A17B256590022E8FA /* MaterialSystem.cpp in Sources */,
+				A68290BC17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5663,6 +5690,7 @@
 				50A5186817B255EC0022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187017B256250022E8FA /* ShaderCache.cpp in Sources */,
 				50A5187817B256590022E8FA /* MaterialSystem.cpp in Sources */,
+				A68290BA17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5965,6 +5993,7 @@
 				50A5186C17B256030022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187117B256250022E8FA /* ShaderCache.cpp in Sources */,
 				50A5187917B256590022E8FA /* MaterialSystem.cpp in Sources */,
+				A68290BB17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

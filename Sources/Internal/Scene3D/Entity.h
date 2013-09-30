@@ -38,6 +38,7 @@
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Base/HashMap.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 //#define COMPONENT_STORAGE_STDMAP 1
 #include "Scene3D/Components/CustomPropertiesComponent.h"
@@ -284,12 +285,12 @@ public:
     /**
         \brief virtual function to save node to KeyedArchive
      */
-    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+    virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     
     /**
         \brief virtual function to load node to KeyedArchive
      */
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
     /**
         \brief Function to get node description for debug printing
@@ -355,8 +356,8 @@ protected:
     
     inline void CleanupComponent(Component* component, uint32 componentCount);
     void RemoveAllComponents();
-    void LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2);
-    void LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2);
+    void LoadComponentsV6(KeyedArchive *compsArch, SerializationContext * serializationContext);
+    void LoadComponentsV7(KeyedArchive *compsArch, SerializationContext * serializationContext);
    
 protected:
 

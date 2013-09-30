@@ -64,14 +64,14 @@ Component * LightComponent::Clone(Entity * toEntity)
     return component;
 }
 
-void LightComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LightComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(NULL != archive && NULL != light)
 	{
 		KeyedArchive *lightArch = new KeyedArchive();
-		light->Save(lightArch, sceneFile);
+		light->Save(lightArch, serializationContext);
 
 		archive->SetArchive("lc.light", lightArch);
 
@@ -79,7 +79,7 @@ void LightComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void LightComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LightComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -87,13 +87,13 @@ void LightComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(NULL != lightArch)
 		{
 			Light* l = new Light();
-			l->Load(lightArch, sceneFile);
+			l->Load(lightArch, serializationContext);
 			SetLightObject(l);
 			l->Release();
 		}
 	}
 
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 

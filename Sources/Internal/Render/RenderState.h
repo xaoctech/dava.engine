@@ -33,6 +33,7 @@
 #include "Render/RenderBase.h"
 #include "Core/Core.h"
 #include "Render/Texture.h"
+#include "Base/Serializable.h"
 
 namespace DAVA
 {
@@ -191,7 +192,7 @@ static const String RENDER_STATES_NAMES[] =
 	"STATE_COLORMASK_ALPHA"
 };
 
-class RenderState
+class RenderState : public Serializable
 {
 public:  
     enum 
@@ -497,6 +498,9 @@ public:
 	static uint32 GetRenderStateByName(const String & str);
 	
 	void CopyTo(RenderState* target) const;
+	
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
 private:
 	RenderState(const RenderState & renderState);

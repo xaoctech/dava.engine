@@ -35,6 +35,7 @@
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
@@ -47,8 +48,8 @@ public:
     
     IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
     virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
     void SetLightObject(Light * _light);
     Light * GetLightObject();

@@ -70,7 +70,7 @@ void GameCore::OnAppStarted()
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 	
-	MaterialSystem::Instance()->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
+	//MaterialSystem::Instance()->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
 
     
 #ifdef __DAVAENGINE_BEAST__

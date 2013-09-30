@@ -101,20 +101,20 @@ void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     }
 }
 
-void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void RenderComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(NULL != archive && NULL != renderObject)
 	{
 		KeyedArchive *roArch = new KeyedArchive();
-		renderObject->Save(roArch, sceneFile);
+		renderObject->Save(roArch, serializationContext);
 		archive->SetArchive("rc.renderObj", roArch);
 		roArch->Release();
 	}
 }
 
-void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void RenderComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -124,7 +124,7 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New<RenderObject>(roArch->GetString("##name"));
 			if(NULL != ro)
 			{
-				ro->Load(roArch, sceneFile);
+				ro->Load(roArch, serializationContext);
 				SetRenderObject(ro);
 
 				ro->Release();
@@ -132,7 +132,7 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		}
 	}
 
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 };

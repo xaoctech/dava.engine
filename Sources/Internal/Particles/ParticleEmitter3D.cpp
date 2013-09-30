@@ -331,8 +331,9 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitter3D>(this), "Can clone only ParticleEmitter3D");
 		newObject = new ParticleEmitter3D();
 	}
-
+	
 	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
+		
 	clonedEmitter->SetConfigPath(this->configPath);
 	clonedEmitter->SetPosition(this->position);
 	clonedEmitter->SetAngle(this->angle);

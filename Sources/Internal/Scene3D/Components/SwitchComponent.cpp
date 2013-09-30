@@ -54,9 +54,9 @@ Component * SwitchComponent::Clone(Entity * toEntity)
 	return newComponent;
 }
 
-void SwitchComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SwitchComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(NULL != archive)
 	{
@@ -64,14 +64,14 @@ void SwitchComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void SwitchComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SwitchComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
 		SetSwitchIndex(archive->GetInt32("sc.switchindex"));
 	}
 
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 void SwitchComponent::SetSwitchIndex(const int32 & _switchIndex)

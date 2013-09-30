@@ -35,6 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -42,7 +43,6 @@ namespace DAVA
 /**
     
  */
-class SceneFileV2;
 class DataNode : public BaseObject
 {
 public:	
@@ -82,12 +82,12 @@ public:
     /**
         \brief virtual function to save node to KeyedArchive
      */
-    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     
     /**
         \brief virtual function to load node to KeyedArchive
      */
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
 protected:
     uint64 pointer;

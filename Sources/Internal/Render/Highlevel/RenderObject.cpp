@@ -138,7 +138,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	return newObject;
 }
 
-void RenderObject::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
+void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializationContext)
 {
 	AnimatedObject::Save(archive);
 
@@ -156,7 +156,7 @@ void RenderObject::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 			if(NULL != batch)
 			{
 				KeyedArchive *batchArch = new KeyedArchive();
-				batch->Save(batchArch, sceneFile);
+				batch->Save(batchArch, serializationContext);
 				if(batchArch->Count() > 0)
 				{
 					batchArch->SetString("rb.classname", batch->GetClassName());
@@ -171,7 +171,7 @@ void RenderObject::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 	}
 }
 
-void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -189,7 +189,7 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 					RenderBatch *batch = ObjectFactory::Instance()->New<RenderBatch>(batchArch->GetString("rb.classname"));
 					if(NULL != batch)
 					{
-						batch->Load(batchArch, sceneFile);
+						batch->Load(batchArch, serializationContext);
 						AddRenderBatch(batch);
 						batch->Release();
 					}

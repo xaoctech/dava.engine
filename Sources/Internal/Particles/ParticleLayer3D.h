@@ -41,6 +41,7 @@ namespace DAVA
 class RenderDataObject;
 class NMaterial;
 class Camera;
+class MaterialSystem;
 class ParticleLayer3D : public ParticleLayer
 {
 public:
@@ -69,6 +70,8 @@ public:
 	
 	// Create the inner emitter where needed.
 	virtual void CreateInnerEmitter();
+	
+	virtual void MaterialSystemReady(MaterialSystem* materialSystem);
 
 protected:
 	void CalcNonLong(Particle* current,
@@ -100,6 +103,9 @@ protected:
 
 	// Current position of the particle - cached for speedup.
 	Vector3 currentParticlePosition;
+	
+	NMaterial* regularMaterial;
+	NMaterial* additiveMaterial;
 
 public:
     //INTROSPECTION_EXTEND(ParticleLayer3D, ParticleLayer,

@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 
-
+#include "Render/Material/MaterialSystem.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderState.h"
@@ -40,6 +40,8 @@
 #include "Render/ShaderCache.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -128,7 +130,6 @@ static FastName TEXTURE_NAME_PROPS[] = {
 };
 
 NMaterial::NMaterial()
-    : parent(0)
 {
     activeTechnique = 0;
 	ready = false;
@@ -144,15 +145,15 @@ NMaterial::~NMaterial()
 		children[i]->SetParent(NULL);
 	}
 	
-	for(HashMap<FastName, TextureBucket*>::Iterator i = textures.Begin();
-		i != textures.End();
+	for(HashMap<FastName, TextureBucket*>::Iterator i = state.textures.Begin();
+		i != state.textures.End();
 		++i)
 	{
 		SafeRelease(i.GetValue()->texture);
 		delete i.GetValue();
 	}
 	
-	textures.Clear();
+	state.textures.Clear();
 	texturesArray.clear();
 }
     
@@ -237,12 +238,12 @@ void NMaterial::AddMaterialProperty(const String & keyName, const YamlNode * uni
     
     memcpy(materialProperty->data, &data, Shader::GetUniformTypeSize(type));
     
-    materialProperties.Insert(uniformName, materialProperty);
+    state.materialProperties.Insert(uniformName, materialProperty);
 }
     
 void NMaterial::SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data)
 {
-    NMaterialProperty * materialProperty = materialProperties.GetValue(propertyFastName);
+    NMaterialProperty * materialProperty = state.materialProperties.GetValue(propertyFastName);
     if (materialProperty)
     {
         if (materialProperty->type != type || materialProperty->size != size)
@@ -259,7 +260,7 @@ void NMaterial::SetPropertyValue(const FastName & propertyFastName, Shader::eUni
         materialProperty->size = size;
         materialProperty->type = type;
         materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
-        materialProperties.Insert(propertyFastName, materialProperty);
+        state.materialProperties.Insert(propertyFastName, materialProperty);
     }
 
     memcpy(materialProperty->data, data, size * Shader::GetUniformTypeSize(type));
@@ -271,13 +272,13 @@ NMaterialProperty* NMaterial::GetMaterialProperty(const FastName & keyName)
     NMaterialProperty * property = NULL;
     while(currentMaterial != 0)
     {
-		property = currentMaterial->materialProperties.GetValue(keyName);
+		property = currentMaterial->state.materialProperties.GetValue(keyName);
         if (property)
         {
 			break;
 		}
 		
-		currentMaterial = currentMaterial->parent;
+		currentMaterial = currentMaterial->state.parent;
     }
 	
 	return property;
@@ -285,7 +286,7 @@ NMaterialProperty* NMaterial::GetMaterialProperty(const FastName & keyName)
 	
 void NMaterial::SetMaterialName(const String& name)
 {
-	materialName = name;
+	state.materialName = name;
 }
 
 bool NMaterial::LoadFromFile(const String & pathname)
@@ -314,10 +315,10 @@ bool NMaterial::LoadFromFile(const String & pathname)
         for (int32 k = 0; k < count; ++k)
         {
             const YamlNode * singleLayerNode = layersNode->Get(k);
-            layers.Insert(FastName(singleLayerNode->AsString()));
+            state.layers.Insert(FastName(singleLayerNode->AsString()));
         }
     }
-	effectiveLayers.Combine(layers);
+	effectiveLayers.Combine(state.layers);
     
     const YamlNode * uniformsNode = materialNode->Get("Uniforms");
     if (uniformsNode)
@@ -342,7 +343,7 @@ bool NMaterial::LoadFromFile(const String & pathname)
             const YamlNode * defineNode = materialDefinesNode->Get(k);
             if (defineNode)
             {
-                nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
+                state.nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
             }
         }
     }
@@ -424,12 +425,12 @@ bool NMaterial::LoadFromFile(const String & pathname)
     
 void NMaterial::AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique)
 {
-    techniqueForRenderPass.Insert(techniqueName, materialTechnique);
+    state.techniqueForRenderPass.Insert(techniqueName, materialTechnique);
 }
     
 MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
 {
-    MaterialTechnique * technique = techniqueForRenderPass.GetValue(techniqueName);
+    MaterialTechnique * technique = state.techniqueForRenderPass.GetValue(techniqueName);
 /*  
     if (!technique)
     {
@@ -454,7 +455,7 @@ MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
     
 void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
 {
-	TextureBucket* bucket = textures.GetValue(textureFastName);
+	TextureBucket* bucket = state.textures.GetValue(textureFastName);
 	if(NULL != bucket)
 	{
 		DVASSERT(bucket->index < texturesArray.size());
@@ -472,7 +473,7 @@ void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
 		bucket->texture = SafeRetain(texture);
 		bucket->index = texturesArray.size();
 		
-		textures.Insert(textureFastName, bucket);
+		state.textures.Insert(textureFastName, bucket);
 		texturesArray.push_back(texture);
 		textureNamesArray.push_back(textureFastName);
 		textureSlotArray.push_back(-1);
@@ -481,20 +482,20 @@ void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
     
 Texture * NMaterial::GetTexture(const FastName & textureFastName) const
 {
-    TextureBucket* bucket = textures.GetValue(textureFastName);
+    TextureBucket* bucket = state.textures.GetValue(textureFastName);
     if (!bucket)
     {
-        NMaterial * currentMaterial = parent;
+        NMaterial * currentMaterial = state.parent;
         while(currentMaterial != 0)
         {
-            bucket = currentMaterial->textures.GetValue(textureFastName);
+            bucket = currentMaterial->state.textures.GetValue(textureFastName);
             if (bucket)
             {
                 // TODO: Find effective way to store parent techniques in children, to avoid cycling through them
                 // As a first decision we can use just store of this technique in child material map.
                 break;
             }
-            currentMaterial = currentMaterial->parent;
+            currentMaterial = currentMaterial->state.parent;
         }
     }
     return (bucket != NULL) ? bucket->texture : NULL;
@@ -532,7 +533,7 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* ca
 	while(texMat)
 	{
 		BindTextures(texMat, renderState);
-		texMat = texMat->parent;
+		texMat = texMat->state.parent;
 	}
 	
     Shader * shader = activeTechnique->GetShader();	
@@ -550,13 +551,13 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* ca
             
             while(currentMaterial != 0)
             {
-                NMaterialProperty * property = currentMaterial->materialProperties.GetValue(uniform->name);
+                NMaterialProperty * property = currentMaterial->state.materialProperties.GetValue(uniform->name);
                 if (property)
                 {
                     shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data);
                     break;
                 }
-                currentMaterial = currentMaterial->parent;
+                currentMaterial = currentMaterial->state.parent;
             }
         }
     }
@@ -626,17 +627,17 @@ void NMaterial::Draw(RenderDataObject*	renderData, uint16* indices, uint16 index
     
 void NMaterial::SetParent(NMaterial* material)
 {
-	if(parent)
+	if(state.parent)
 	{
-		parent->RemoveChild(this);
+		state.parent->RemoveChild(this);
 	}
 	
 	ResetParent();
-	parent = SafeRetain(material);
+	state.parent = SafeRetain(material);
 	
-	if(parent)
+	if(state.parent)
 	{
-		parent->AddChild(this);
+		state.parent->AddChild(this);
 	}
 }
 	
@@ -674,26 +675,26 @@ void NMaterial::ResetParent()
 {
 	//TODO: clear parent states such as textures, defines, etc
 	effectiveLayers.Clear();
-	effectiveLayers.Combine(layers);
+	effectiveLayers.Combine(state.layers);
 	UnPropagateParentDefines();
 	
-	SafeRelease(parent);
+	SafeRelease(state.parent);
 }
 	
 void NMaterial::PropagateParentDefines()
 {
 	ready = false;
 	inheritedDefines.Clear();
-	if(parent)
+	if(state.parent)
 	{
-		if(parent->inheritedDefines.Size() > 0)
+		if(state.parent->inheritedDefines.Size() > 0)
 		{
-			inheritedDefines.Combine(parent->inheritedDefines);
+			inheritedDefines.Combine(state.parent->inheritedDefines);
 		}
 		
-		if(parent->nativeDefines.Size() > 0)
+		if(state.parent->state.nativeDefines.Size() > 0)
 		{
-			inheritedDefines.Combine(parent->nativeDefines);
+			inheritedDefines.Combine(state.parent->state.nativeDefines);
 		}
 	}	
 }
@@ -708,13 +709,13 @@ void NMaterial::Rebuild(bool recursive)
 {
 	FastNameSet combinedDefines = inheritedDefines;
 	
-	if(nativeDefines.Size() > 0)
+	if(state.nativeDefines.Size() > 0)
 	{
-		combinedDefines.Combine(nativeDefines);
+		combinedDefines.Combine(state.nativeDefines);
 	}
 	
-	HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
-	while(iter != techniqueForRenderPass.End())
+	HashMap<FastName, MaterialTechnique *>::Iterator iter = state.techniqueForRenderPass.Begin();
+	while(iter != state.techniqueForRenderPass.End())
 	{
 		MaterialTechnique* technique = iter.GetValue();
 		technique->RecompileShader(combinedDefines);
@@ -742,7 +743,7 @@ void NMaterial::Rebuild(bool recursive)
 void NMaterial::AddMaterialDefine(const FastName& defineName)
 {
 	ready = false;
-	nativeDefines.Insert(defineName);
+	state.nativeDefines.Insert(defineName);
 	
 	NotifyChildrenOnChange();
 }
@@ -750,7 +751,7 @@ void NMaterial::AddMaterialDefine(const FastName& defineName)
 void NMaterial::RemoveMaterialDefine(const FastName& defineName)
 {
 	ready = false;
-	nativeDefines.Remove(defineName);
+	state.nativeDefines.Remove(defineName);
 	
 	NotifyChildrenOnChange();
 }
@@ -780,11 +781,11 @@ void NMaterial::NotifyChildrenOnChange()
 void NMaterial::PropagateParentLayers()
 {
 	effectiveLayers.Clear();
-	effectiveLayers.Combine(layers);
+	effectiveLayers.Combine(state.layers);
 	
-	if(parent)
+	if(state.parent)
 	{
-		const FastNameSet& parentLayers = parent->GetRenderLayers();
+		const FastNameSet& parentLayers = state.parent->GetRenderLayers();
 		effectiveLayers.Combine(parentLayers);
 	}
 }
@@ -793,8 +794,8 @@ NMaterial* NMaterial::CreateChild()
 {
 	NMaterial* childMaterial = new NMaterial();
 	
-	HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
-	while(iter != techniqueForRenderPass.End())
+	HashMap<FastName, MaterialTechnique *>::Iterator iter = state.techniqueForRenderPass.Begin();
+	while(iter != state.techniqueForRenderPass.End())
 	{
 		MaterialTechnique* technique = iter.GetValue();
 		
@@ -847,6 +848,123 @@ void NMaterial::SetupPerFrameProperties(Camera* camera)
 		SetPropertyValue("materialLightSpecularColor", Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
 		SetPropertyValue("lightIntensity0", Shader::UT_FLOAT, 1, &intensity);
 	}
+}
+	
+void NMaterial::Save(KeyedArchive * archive, SerializationContext * serializationContext)
+{
+		
+}
+	
+void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
+{
+		
+}
+	
+void NMaterial::Serialize(const MaterialState& materialState,
+						  KeyedArchive * archive,
+						  SerializationContext * serializationContext)
+{
+	/*
+	+FastName materialName;
+	+NMaterial* parent;
+	+FastNameSet layers;
+	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
+	+FastNameSet nativeDefines;
+	+HashMap<FastName, NMaterialProperty*> materialProperties;
+	+HashMap<FastName, TextureBucket*> textures;*/
+	
+	archive->SetString("materialName", materialState.materialName.c_str());
+	archive->SetString("parentName", materialState.parent->state.materialName.c_str());
+	
+	KeyedArchive* materialLayers = new KeyedArchive();
+	for(FastNameSet::Iterator it = materialState.layers.Begin();
+		it != state.layers.End();
+		++it)
+	{
+		materialLayers->SetBool(it.GetKey().c_str(), true);
+	}
+	archive->SetArchive("layers", materialLayers);
+	SafeRelease(materialLayers);
+	
+	
+	KeyedArchive* materialNativeDefines = new KeyedArchive();
+	for(FastNameSet::Iterator it = materialState.nativeDefines.Begin();
+		it != state.nativeDefines.End();
+		++it)
+	{
+		materialNativeDefines->SetBool(it.GetKey().c_str(), true);
+	}
+	archive->SetArchive("nativeDefines", materialNativeDefines);
+	SafeRelease(materialNativeDefines);
+
+	KeyedArchive* materialProps = new KeyedArchive();
+	for(HashMap<FastName, NMaterialProperty*>::Iterator it = materialState.materialProperties.Begin();
+		it != state.materialProperties.End();
+		++it)
+	{
+		materialProps->SetByteArray(it.GetKey().c_str(), static_cast<uint8*>(it.GetValue()->data), it.GetValue()->size);
+	}
+	archive->SetArchive("properties", materialProps);
+	SafeRelease(materialProps);
+	
+	KeyedArchive* materialTextures = new KeyedArchive();
+	for(HashMap<FastName, TextureBucket*>::Iterator it = materialState.textures.Begin();
+		it != materialState.textures.End();
+		++it)
+	{
+		materialTextures->SetString(it.GetKey().c_str(), it.GetValue()->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+	}
+	archive->SetArchive("textures", materialTextures);
+	SafeRelease(materialTextures);
+	
+	
+	/*
+	+const FastName & GetShaderName() const { return shaderName; }
+    --Shader * GetShader() const { return shader; }
+    RenderState * GetRenderState() const { return renderState; }
+    +const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
+	 */
+	
+	int techniqueIndex = 0;
+	KeyedArchive* materialTechniques = new KeyedArchive();
+	for(HashMap<FastName, MaterialTechnique *>::Iterator it = state.techniqueForRenderPass.Begin();
+		it != state.techniqueForRenderPass.End();
+		++it)
+	{
+		MaterialTechnique* technique = it.GetValue();
+		KeyedArchive* techniqueArchive = new KeyedArchive();
+		
+		techniqueArchive->SetString("renderPass", it.GetKey().c_str());
+		techniqueArchive->SetString("shaderName", it.GetValue()->GetShaderName().c_str());
+		
+		KeyedArchive* techniqueDefines = new KeyedArchive();
+		const FastNameSet& techniqueDefinesSet = technique->GetUniqueDefineSet();
+		for(FastNameSet::Iterator definesIt = techniqueDefinesSet.Begin();
+			definesIt != techniqueDefinesSet.End();
+			++definesIt)
+		{
+			techniqueDefines->SetBool(definesIt.GetKey().c_str(), true);
+		}
+		techniqueArchive->SetArchive("defines", techniqueDefines);
+		SafeRelease(techniqueDefines);
+		
+		KeyedArchive* techniqueRenderState = new KeyedArchive();
+		RenderState* renderState = technique->GetRenderState();
+		renderState->Serialize(techniqueRenderState, serializationContext);
+		
+		materialTechniques->SetArchive(Format("technique.%d", techniqueIndex), techniqueArchive);
+		SafeRelease(techniqueArchive);
+		techniqueIndex++;
+	}
+	archive->SetArchive("techniques", materialTechniques);
+	SafeRelease(materialTechniques);
+}
+	
+void NMaterial::Deserialize(MaterialState& materialState,
+							KeyedArchive * archive,
+							SerializationContext * serializationContext)
+{
+		
 }
 	
 };

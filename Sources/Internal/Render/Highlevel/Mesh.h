@@ -35,6 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -57,8 +58,8 @@ public:
     
 	virtual RenderObject * Clone(RenderObject *newObject);
 
-	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
 	virtual void BakeTransform(const Matrix4 & transform);
 	virtual ShadowVolume * CreateShadow();

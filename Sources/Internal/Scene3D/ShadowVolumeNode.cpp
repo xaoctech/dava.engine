@@ -448,19 +448,19 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 	SafeRelease(newPolygonGroup);
 }
 
-void ShadowVolumeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+void ShadowVolumeNode::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-	Entity::Save(archive, sceneFileV2);
+	Entity::Save(archive, serializationContext);
 
 	archive->SetByteArrayAsType("pg", (uint64)shadowPolygonGroup);
 }
 
-void ShadowVolumeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+void ShadowVolumeNode::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-	Entity::Load(archive, sceneFileV2);
+	Entity::Load(archive, serializationContext);
 
 	uint64 ptr = archive->GetByteArrayAsType("pg", (uint64)0);
-	shadowPolygonGroup = dynamic_cast<PolygonGroup*>(sceneFileV2->GetNodeByPointer(ptr));
+	shadowPolygonGroup = static_cast<PolygonGroup*>(serializationContext->GetDataBlock(ptr));
 	SafeRetain(shadowPolygonGroup);
 }
 

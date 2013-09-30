@@ -125,22 +125,11 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	tileMaskMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
-	fullTiledMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
-	
-#ifdef LANDSCAPE_SPECULAR_LIT
-	tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
-	fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
-#endif
-		
+	tileMaskMaterial = NULL;
+	fullTiledMaterial = NULL;
+			
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_MIXED);
-	
-	LandscapeChunk * chunk = new LandscapeChunk(this);
-	//TODO: how should be handled situation when single renderbatch object draws with multiple materials?
-	chunk->SetMaterial(tileMaskMaterial);
-    AddRenderBatch(chunk);
-    SafeRelease(chunk);
 }
 
 Landscape::~Landscape()
@@ -1391,9 +1380,9 @@ const FilePath & Landscape::GetHeightmapPathname()
     return heightmapPath;
 }
     
-void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Landscape::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-    RenderObject::Save(archive, sceneFile);
+    RenderObject::Save(archive, serializationContext);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
     if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
@@ -1403,7 +1392,7 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     }
     //
     
-    archive->SetString("hmap", heightmapPath.GetRelativePathname(sceneFile->GetScenePath()));
+    archive->SetString("hmap", heightmapPath.GetRelativePathname(serializationContext->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
     archive->SetByteArrayAsType("bbox", bbox);
@@ -1411,9 +1400,9 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         if(TEXTURE_DETAIL == k) continue;
 
-        String relPath  = textureNames[k].GetRelativePathname(sceneFile->GetScenePath());
+        String relPath  = textureNames[k].GetRelativePathname(serializationContext->GetScenePath());
         
-        if(sceneFile->DebugLogEnabled())
+        if(serializationContext->IsDebugLogEnabled())
             Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
@@ -1426,11 +1415,23 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetBool("isFogEnabled", isFogEnabled);
 }
     
-void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Landscape::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-	RenderObject::Load(archive, sceneFile);
+	RenderObject::Load(archive, serializationContext);
+	
+	if(NULL == tileMaskMaterial)
+	{
+		tileMaskMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
+		fullTiledMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+		
+#ifdef LANDSCAPE_SPECULAR_LIT
+		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+		fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
+#endif
 
-    FilePath path(sceneFile->GetScenePath());
+	}
+
+    FilePath path(serializationContext->GetScenePath());
     path += archive->GetString("hmap");
 
     AABBox3 boxDef;
@@ -1454,17 +1455,17 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         FilePath absPath;
         if(!textureName.empty())
         {
-            FilePath path(sceneFile->GetScenePath());
+            FilePath path(serializationContext->GetScenePath());
             path += archive->GetString("hmap");
 
-            absPath = sceneFile->GetScenePath();
+            absPath = serializationContext->GetScenePath();
             absPath += textureName;
         }
 
-        if(sceneFile->DebugLogEnabled())
+        if(serializationContext->IsDebugLogEnabled())
             Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
 
-        if (sceneFile->GetVersion() >= 4)
+        if (serializationContext->GetVersion() >= 4)
         {
             SetTexture((eTextureLevel)k, absPath);
             textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
@@ -1485,9 +1486,11 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     }
 	
 	SetupMaterialProperties();
-	
+
+#ifdef LANDSCAPE_SPECULAR_LIT
 	//HACK
 	tileMaskMaterial->SetTexture("specularMap", SafeRetain(textures[TEXTURE_COLOR]));
+#endif
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1721,11 +1724,12 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
     }
 	
-	if(prevContainsDetailMask != curContainsDetailMask)
+	if(renderSystem &&
+	   prevContainsDetailMask != curContainsDetailMask)
 	{
-		NMaterial* globalLandscape = MaterialSystem::Instance()->GetMaterial("Global.Landscape");
+		NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
 		DVASSERT(globalLandscape);
-
+		
 		if(curContainsDetailMask)
 		{
 			globalLandscape->AddMaterialDefine("DETAILMASK");
@@ -1736,7 +1740,7 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 		}
 		
 		globalLandscape->Rebuild();
-	}	
+	}
 }
     
 void Landscape::SetFog(const bool& fogState)
@@ -1745,19 +1749,22 @@ void Landscape::SetFog(const bool& fogState)
     {
         isFogEnabled = fogState;
 		
-		NMaterial* global = MaterialSystem::Instance()->GetMaterial("Global");
-		DVASSERT(global);
-		
-		if(isFogEnabled)
+		if(renderSystem)
 		{
-			global->AddMaterialDefine("VERTEX_FOG");
+			NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+			DVASSERT(global);
+			
+			if(isFogEnabled)
+			{
+				global->AddMaterialDefine("VERTEX_FOG");
+			}
+			else
+			{
+				global->RemoveMaterialDefine("VERTEX_FOG");
+			}
+			
+			global->Rebuild();
 		}
-		else
-		{
-			global->RemoveMaterialDefine("VERTEX_FOG");
-		}
-		
-		global->Rebuild();
     }
 }
 
@@ -1863,6 +1870,55 @@ uint32 Landscape::GetDrawIndices() const
 	return drawIndices;
 }
 	
+void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
+{
+	RenderObject::SetRenderSystem(_renderSystem);
+	
+	if(NULL == tileMaskMaterial)
+	{
+		tileMaskMaterial = _renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
+		fullTiledMaterial = _renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+		
+#ifdef LANDSCAPE_SPECULAR_LIT
+		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+		fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
+#endif
+
+	}
+	
+	LandscapeChunk * chunk = new LandscapeChunk(this);
+	chunk->SetMaterial(tileMaskMaterial);
+    AddRenderBatch(chunk);
+    SafeRelease(chunk);
+	
+	bool curContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode);
+	NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
+	DVASSERT(globalLandscape);
+	
+	if(curContainsDetailMask)
+	{
+		globalLandscape->AddMaterialDefine("DETAILMASK");
+	}
+	else
+	{
+		globalLandscape->RemoveMaterialDefine("DETAILMASK");
+	}
+	
+	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+	DVASSERT(global);
+	
+	if(isFogEnabled)
+	{
+		global->AddMaterialDefine("VERTEX_FOG");
+	}
+	else
+	{
+		global->RemoveMaterialDefine("VERTEX_FOG");
+	}
+	
+	global->Rebuild();
+}
+
 #ifdef LANDSCAPE_SPECULAR_LIT
 	
 void Landscape::SetSpecularColor(const Color& color)

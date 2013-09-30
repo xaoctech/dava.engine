@@ -46,17 +46,14 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	isLong = false;
 	renderData = new RenderDataObject();
 	this->emitter = parent;
-
-    NMaterial * material = MaterialSystem::Instance()->GetMaterial("Global.Textured.VertexColor.ParticlesBlend");
-	DVASSERT(material);
-	
-	renderBatch->SetMaterial(material->CreateChild());
-	SafeRelease(material);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
 {
 	SafeRelease(renderData);
+	
+	SafeRelease(regularMaterial);
+	SafeRelease(additiveMaterial);
 }
 
 void ParticleLayer3D::Draw(Camera * camera)
@@ -351,7 +348,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 		dstLayer = new ParticleLayer3D(parentFor3DLayer);
 		dstLayer->SetLong(this->isLong);
 	}
-
+	
 	ParticleLayer::Clone(dstLayer);
 
 	return dstLayer;
@@ -365,11 +362,9 @@ NMaterial * ParticleLayer3D::GetMaterial()
 void ParticleLayer3D::SetAdditive(bool additive)
 {
 	ParticleLayer::SetAdditive(additive);
-	NMaterial * material = MaterialSystem::Instance()->GetMaterial(
-		(additive) ? "Global.Textured.VertexColor.ParticlesAdditive" : "Global.Textured.VertexColor.ParticlesBlend");
-	DVASSERT(material);
+	NMaterial * material = (additive) ? additiveMaterial : regularMaterial;
 
-	renderBatch->SetMaterial(material->CreateChild());
+	renderBatch->SetMaterial(material);
 }
 
 bool ParticleLayer3D::IsLong()
@@ -408,6 +403,14 @@ void ParticleLayer3D::CreateInnerEmitter()
 {
 	SafeRelease(this->innerEmitter);
 	this->innerEmitter = new ParticleEmitter3D();
+}
+	
+void ParticleLayer3D::MaterialSystemReady(MaterialSystem* materialSystem)
+{
+	regularMaterial = SafeRetain(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesBlend")->CreateChild());
+	additiveMaterial = SafeRetain(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesAdditive")->CreateChild());
+    
+	renderBatch->SetMaterial(regularMaterial);		
 }
 
 };

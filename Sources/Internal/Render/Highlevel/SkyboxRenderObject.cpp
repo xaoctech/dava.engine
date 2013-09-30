@@ -95,7 +95,7 @@ namespace DAVA
 			skyboxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
 			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;*/
 			
-			NMaterial* skyboxMaterial = MaterialSystem::Instance()->GetMaterial("Skybox")->CreateChild();
+			NMaterial* skyboxMaterial = renderSystem->GetMaterialSystem()->GetMaterial("Skybox")->CreateChild();
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
 			skyboxRenderBatch->SetRenderDataObject(renderDataObj);
@@ -251,9 +251,9 @@ namespace DAVA
 		return newObject;
 	}
 	
-	void SkyboxRenderObject::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+	void SkyboxRenderObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 	{
-		RenderObject::Save(archive, sceneFile);
+		RenderObject::Save(archive, serializationContext);
 		
 		if(archive != NULL)
 		{
@@ -264,9 +264,9 @@ namespace DAVA
 		}
 	}
 	
-	void SkyboxRenderObject::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+	void SkyboxRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 	{
-		RenderObject::Load(archive, sceneFile);
+		RenderObject::Load(archive, serializationContext);
 		
 		if(archive != NULL)
 		{

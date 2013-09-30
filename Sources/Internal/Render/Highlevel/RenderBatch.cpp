@@ -223,7 +223,7 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	return rb;
 }
 
-void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
+void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializationContext)
 {
 	BaseObject::Save(archive);
 
@@ -242,7 +242,7 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 	}
 }
 
-void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -251,14 +251,14 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		startIndex = archive->GetUInt32("rb.startIndex", startIndex);
 		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
 
-		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
-		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.material")->AsUInt64()));
+		PolygonGroup *pg = static_cast<PolygonGroup*>(serializationContext->GetDataBlock(archive->GetVariant("rb.datasource")->AsUInt64()));
+		Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
 
         InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
         KeyedArchive *mia = archive->GetArchive("rb.matinst");
 		if(NULL != mia)
 		{
-			oldMaterialInstance->Load(mia, sceneFile);
+			oldMaterialInstance->Load(mia, serializationContext);
 		}else
         {
             DVASSERT(0 && "Mat Inst");
@@ -268,7 +268,7 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		
 		if(mat)
 		{
-			sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial);
+			SceneFileV2::ConvertOldMaterialToNewMaterial(serializationContext, mat, oldMaterialInstance, &newMaterial);
 		}
 		
         SafeRelease(oldMaterialInstance);

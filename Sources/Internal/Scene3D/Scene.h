@@ -36,6 +36,7 @@
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -76,6 +77,7 @@ class SwitchSystem;
 class SoundUpdateSystem;
 class ActionUpdateSystem;
 class SkyboxSystem;
+class MaterialSystem;
     
 /**
     \ingroup scene3d

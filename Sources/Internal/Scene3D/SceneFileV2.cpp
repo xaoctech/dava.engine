@@ -80,6 +80,9 @@ SceneFileV2::SceneFileV2()
     isDebugLogEnabled = false;
     isSaveForGame = false;
     lastError = ERROR_NO_ERROR;
+	
+	serializationContext.SetDebugLogEnabled(isDebugLogEnabled);
+	serializationContext.SetLastError(lastError);
 
 	UserNode *n = new UserNode();
 	n->Release();
@@ -103,6 +106,7 @@ void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
 void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
+	serializationContext.SetDebugLogEnabled(isDebugLogEnabled);
 }
 
 bool SceneFileV2::DebugLogEnabled()
@@ -110,7 +114,7 @@ bool SceneFileV2::DebugLogEnabled()
     return isDebugLogEnabled;
 }
     
-Material * SceneFileV2::GetMaterial(int32 index)
+/*Material * SceneFileV2::GetMaterial(int32 index)
 {
     return materials[index];
 }
@@ -128,7 +132,7 @@ DataNode * SceneFileV2::GetNodeByPointer(uint64 pointer)
         return it->second;
     }
     return 0;
-}
+}*/
 
 int32 SceneFileV2::GetVersion()
 {
@@ -165,6 +169,11 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     header.version = 8;
     header.nodeCount = _scene->GetChildrenCount();
+	
+	serializationContext.SetRootNodePath(rootNodePathName);
+	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
+	serializationContext.SetVersion(header.version);
+	serializationContext.SetScene(scene);
     
     file->Write(&header, sizeof(Header));
     
@@ -245,6 +254,11 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         SetError(ERROR_VERSION_IS_TOO_OLD);
         return GetError();
     }
+	
+	serializationContext.SetRootNodePath(rootNodePathName);
+	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
+	serializationContext.SetVersion(header.version);
+	serializationContext.SetScene(scene);
     
     if(isDebugLogEnabled)
         Logger::Debug("+ load data objects");
@@ -284,23 +298,23 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         SafeRelease(rootNode);
     }
     
-    for (size_t mi = 0; mi < materials.size(); ++mi)
+    /*for (size_t mi = 0; mi < materials.size(); ++mi)
     {
         SafeRelease(materials[mi]);
     }
-    materials.clear();
+    materials.clear();*/
     
-    for (size_t mi = 0; mi < staticMeshes.size(); ++mi)
+    /*for (size_t mi = 0; mi < staticMeshes.size(); ++mi)
     {
         SafeRelease(staticMeshes[mi]);
     }
-    staticMeshes.clear();
+    staticMeshes.clear();*/
     
-    for (Map<uint64, DataNode*>::iterator it = dataNodes.begin(); it != dataNodes.end(); ++it)
+    /*for (Map<uint64, DataNode*>::iterator it = dataNodes.begin(); it != dataNodes.end(); ++it)
     {
         SafeRelease(it->second);
     }
-    dataNodes.clear();
+    dataNodes.clear();*/
     
     SafeRelease(rootNode);
     SafeRelease(file);
@@ -314,7 +328,7 @@ bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
         Logger::Debug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
     
     
-    node->Save(archive, this);  
+    node->Save(archive, &serializationContext);
     archive->SetInt32("#childrenCount", node->GetChildrenCount());
     archive->Save(file);
     
@@ -350,7 +364,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
             String name = archive->GetString("name");
             Logger::Debug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
         }
-        node->Load(archive, this);
+        node->Load(archive, &serializationContext);
         AddToNodeMap(node);
         
         if (parent)
@@ -373,7 +387,7 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
     if (isDebugLogEnabled)
         Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
 
-    node->Save(archive, this);    
+    node->Save(archive, &serializationContext);
     
     
     archive->SetInt32("#childrenCount", node->GetChildrenCount());
@@ -410,22 +424,22 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         node->SetScene(scene);
         
         // TODO: Rethink here
-        Material * material = dynamic_cast<Material*>(node);
+        /*Material * material = dynamic_cast<Material*>(node);
         if (material)
         {
             materials.push_back(SafeRetain(material));
-        }
-        StaticMesh * staticMesh = dynamic_cast<StaticMesh*>(node);
+        }*/
+        /*StaticMesh * staticMesh = dynamic_cast<StaticMesh*>(node);
         if (staticMesh)
         {
             staticMeshes.push_back(SafeRetain(staticMesh));
-        }
+        }*/
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
             Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
-        node->Load(archive, this);
+        node->Load(archive, &serializationContext);
         
         
         AddToNodeMap(node);
@@ -451,7 +465,8 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
     if(isDebugLogEnabled)
         Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
     
-    dataNodes[ptr] = SafeRetain(node);
+    //dataNodes[ptr] = SafeRetain(node);
+	serializationContext.SetDataBlock(ptr, SafeRetain(node));
 }
     
 bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
@@ -459,7 +474,7 @@ bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
         Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
-    node->Save(archive, this);    
+    node->Save(archive, &serializationContext);
     
 	archive->SetInt32("#childrenCount", node->GetChildrenCount());
  
@@ -494,10 +509,10 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         baseObject = node;
 
         node->SetScene(scene);
-        node->Load(archive, this);
+        node->Load(archive, &serializationContext);
         
         Landscape * landscapeRenderObject = new Landscape();
-        landscapeRenderObject->Load(archive, this);
+        landscapeRenderObject->Load(archive, &serializationContext);
         
         node->AddComponent(new RenderComponent(landscapeRenderObject));
 
@@ -512,7 +527,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         baseObject = node;
         
         node->SetScene(scene);
-        node->Load(archive, this);
+        node->Load(archive, &serializationContext);
         
         Camera * cameraObject = new Camera();
         cameraObject->Load(archive);
@@ -528,12 +543,12 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         baseObject = node;
         
         node->SetScene(scene);
-        node->Load(archive, this);
+        node->Load(archive, &serializationContext);
         
         bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
         
         Light * light = new Light();
-        light->Load(archive, this);
+        light->Load(archive, &serializationContext);
         light->SetDynamic(isDynamic);
         
         node->AddComponent(new LightComponent(light));
@@ -572,7 +587,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 		if(!skipNode)
 		{
 			node->SetScene(scene);
-			node->Load(archive, this);
+			node->Load(archive, &serializationContext);
             
             //ReplaceNodeAfterLoad(&node);
             
@@ -719,14 +734,15 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     return false;
 }
 
-void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
+void SceneFileV2::ConvertOldMaterialToNewMaterial(SerializationContext* serializationContext,
+												  Material * oldMaterial,
 												  InstanceMaterialState * oldMaterialState,
                                                   NMaterial ** newMaterial)
 {
     NMaterial * parentMaterial = 0;
 	
 	FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
-	parentMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+	parentMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial(newMaterialName);
 	DVASSERT(parentMaterial);
 	
 	/*RenderState& renderStateBlock = *oldMaterial->GetRenderState();
@@ -880,7 +896,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             
             NMaterial * nMaterial = 0;
 			Material* oldMaterial = group->GetMaterial();
-            ConvertOldMaterialToNewMaterial(oldMaterial, 0, &nMaterial);
+            ConvertOldMaterialToNewMaterial(&serializationContext, oldMaterial, 0, &nMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             
@@ -1178,7 +1194,7 @@ void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
 	}
 		
 }
-
+		
 String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 {
 	String name = "Global";

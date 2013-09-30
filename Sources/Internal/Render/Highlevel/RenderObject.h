@@ -36,6 +36,7 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -121,8 +122,8 @@ public:
     inline eType GetType() { return (eType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
-	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
 

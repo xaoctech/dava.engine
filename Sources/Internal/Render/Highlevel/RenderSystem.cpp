@@ -38,6 +38,7 @@
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Render/Material/MaterialSystem.h"
 
 // TODO: Move class to other place
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
@@ -79,7 +80,8 @@ RenderSystem::RenderSystem()
 	particleEmitterSystem = new ParticleEmitterSystem();
     renderHierarchy = new RenderHierarchy();
     globalBatchArray = new RenderPassBatchArray();
-
+	materialSystem = new MaterialSystem();
+	materialSystem->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
 }
 
 RenderSystem::~RenderSystem()
@@ -103,6 +105,8 @@ RenderSystem::~RenderSystem()
         SafeDelete(layer);
     }
     renderLayersMap.Clear();
+	
+	SafeDelete(materialSystem);
 }
     
 

@@ -98,9 +98,9 @@ Component * LodComponent::Clone(Entity * toEntity)
 	return newLod;
 }
 
-void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LodComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(NULL != archive)
 	{
@@ -152,7 +152,7 @@ void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LodComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -206,7 +206,7 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 
 	flags |= NEED_UPDATE_AFTER_LOAD;
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 LodComponent::LodComponent()

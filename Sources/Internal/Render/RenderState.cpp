@@ -34,6 +34,7 @@
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
 #include "FileSystem/YamlParser.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 
 namespace DAVA
@@ -1059,4 +1060,63 @@ void RenderState::CopyTo(RenderState* target) const
 		target->currentTexture[i] = SafeRetain(currentTexture[i]);
 	}	
 }
+	
+void RenderState::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	archive->SetUInt32("state", state);
+	Vector4 vecColor(color.r, color.g, color.b, color.a);
+	archive->SetVector4("color", vecColor);
+	archive->SetInt32("sourceFactor", (int32)sourceFactor);
+	archive->SetInt32("destFactor", (int32)destFactor);
+	archive->SetInt32("cullMode", (int32)cullMode);
+	archive->SetInt32("alphaFunc", (int32)alphaFunc);
+	archive->SetInt32("alphaFuncCmpValue", (int32)alphaFuncCmpValue);
+	archive->SetInt32("depthFunc", (int32)depthFunc);
+	Vector4 rect(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
+	archive->SetVector4("scissorRect", rect);
+	archive->SetInt32("fillMode", (int32)fillMode);
+	
+	archive->SetInt32("stencil_ref", stencilState.ref);
+	archive->SetUInt32("stencil_mask", stencilState.mask);
+	uint8 stencilPackedFuncs[8];
+	stencilPackedFuncs[0] = stencilState.fail[0];
+	stencilPackedFuncs[1] = stencilState.fail[1];
+	stencilPackedFuncs[2] = stencilState.func[0];
+	stencilPackedFuncs[3] = stencilState.func[1];
+	stencilPackedFuncs[4] = stencilState.pass[0];
+	stencilPackedFuncs[5] = stencilState.pass[1];
+	stencilPackedFuncs[6] = stencilState.zFail[0];
+	stencilPackedFuncs[7] = stencilState.zFail[1];
+	archive->SetByteArray("stencil_funcs", stencilPackedFuncs, 8);
+}
+
+void RenderState::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	state = archive->GetUInt32("state");
+	Vector4 vecColor = archive->GetVector4("color");
+	color = Color(vecColor.x, vecColor.y, vecColor.z, vecColor.w);
+	sourceFactor = (eBlendMode)archive->GetInt32("sourceFactor");
+	destFactor = (eBlendMode)archive->GetInt32("destFactor");
+	cullMode = (eFace)archive->GetInt32("cullMode");
+	alphaFunc = (eCmpFunc)archive->GetInt32("alphaFunc");
+	alphaFuncCmpValue = (uint8)archive->GetInt32("alphaFuncCmpValue");
+	depthFunc = (eCmpFunc)archive->GetInt32("depthFunc");
+	Vector4 rect = archive->GetVector4("scissorRect");
+	scissorRect = Rect(rect.x, rect.y, rect.z, rect.w);
+	fillMode = (eFillMode)archive->GetInt32("fillMode");
+	
+	stencilState.ref = archive->GetInt32("stencil_ref");
+	stencilState.mask = archive->GetUInt32("stencil_mask");
+	const uint8* stencilPackedFuncs = archive->GetByteArray("stencil_funcs");
+	
+	stencilState.fail[0] = (eStencilOp)stencilPackedFuncs[0];
+	stencilState.fail[1] = (eStencilOp)stencilPackedFuncs[1];
+	stencilState.func[0] = (eCmpFunc)stencilPackedFuncs[2];
+	stencilState.func[1] = (eCmpFunc)stencilPackedFuncs[3];
+	stencilState.pass[0] = (eStencilOp)stencilPackedFuncs[4];
+	stencilState.pass[1] = (eStencilOp)stencilPackedFuncs[5];
+	stencilState.zFail[0] = (eStencilOp)stencilPackedFuncs[6];
+	stencilState.zFail[1] = (eStencilOp)stencilPackedFuncs[7];
+}
+
 };

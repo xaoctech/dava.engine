@@ -290,23 +290,23 @@ bool ParticleEffectComponent::IsStopOnLoad() const
 	return this->stopOnLoad;
 }
 
-void ParticleEffectComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 	if(archive)
 	{
 		archive->SetBool("pec.stoponload", this->stopOnLoad);
 	}
 }
 	
-void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(archive)
 	{
 		this->stopOnLoad = archive->GetBool("pec.stoponload", false);
 	}
 		
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 

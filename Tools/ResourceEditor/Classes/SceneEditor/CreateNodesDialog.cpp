@@ -191,7 +191,6 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName(ResourceEditor::PARTICLE_EMITTER_NODE_NAME);
 
 			ParticleEmitter3D* newEmitter = new ParticleEmitter3D();
-
 			RenderComponent * renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(newEmitter);
 			sceneNode->AddComponent(renderComponent);
