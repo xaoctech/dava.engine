@@ -30,13 +30,10 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "Scene/SceneHelper.h"
+
 #include "SceneEditor/EditorSettings.h"
-
-#include "Render/Highlevel/ShadowVolumeRenderPass.h"
-
-#include "Classes/SceneEditor/SceneValidator.h"
-#include "Classes/Qt/Scene/SceneHelper.h"
+#include "SceneEditor/SceneValidator.h"
 
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
@@ -45,8 +42,11 @@
 #include "Commands2/RulerToolActions.h"
 #include "Commands2/LandscapeEditorDrawSystemActions.h"
 
+#include "CommandLine/SceneExporter/SceneExporter.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 SceneEditor2::SceneEditor2()
 	: Scene()
@@ -372,15 +372,14 @@ void SceneEditor2::Draw()
 	gridSystem->Draw();
 	cameraSystem->Draw();
 	collisionSystem->Draw();
-	selectionSystem->Draw();
 	modifSystem->Draw();
 	structureSystem->Draw();
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
-
 	debugDrawSystem->Draw();
 
 	// should be last
+	selectionSystem->Draw();
 	hoodSystem->Draw();
 	textDrawSystem->Draw();
 }

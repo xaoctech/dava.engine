@@ -28,21 +28,20 @@
 
 
 
-#ifndef __SCENE_COLLISION_CAMERA_H__
-#define __SCENE_COLLISION_CAMERA_H__
+#ifndef __SCENE_COLLISION_BOX_H__
+#define __SCENE_COLLISION_BOX_H__
 
 #include "Scene/System/CollisionSystem/CollisionBaseObject.h"
 #include "Render/Highlevel/Camera.h"
 
-class CollisionCamera : public CollisionBaseObject
+class CollisionBox : public CollisionBaseObject
 {
 public:
-	CollisionCamera(DAVA::Entity *entity, btCollisionWorld *word, DAVA::Camera *camera);
-	virtual ~CollisionCamera();
+	CollisionBox(DAVA::Entity *entity, btCollisionWorld *word, DAVA::Vector3 position, DAVA::float32 boxHalfSize = 0.75f);
+	virtual ~CollisionBox();
 
 protected:
 	btCollisionShape* btShape;
-	static const DAVA::float32 boxHalfSize;
 };
 
-#endif // __SCENE_COLLISION_CAMERA_H__
+#endif // __SCENE_COLLISION_BOX_H__
