@@ -82,9 +82,9 @@ Component * SoundComponent::Clone(Entity * toEntity)
     return component;
 }
 
-void SoundComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SoundComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	Component::Serialize(archive, sceneFile);
+	Component::Serialize(archive, serializationContext);
 
 	if(archive != 0 && soundEvent != 0)
 	{
@@ -92,14 +92,14 @@ void SoundComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void SoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(archive)
 	{
 		SetEventName(archive->GetString("sc.eventName"));
 	}
 
-	Component::Deserialize(archive, sceneFile);
+	Component::Deserialize(archive, serializationContext);
 }
 
 };

@@ -129,7 +129,7 @@ const Vector2 & InstanceMaterialState::GetTextureShift()
     return texture0Shift;
 }
 
-void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
+void InstanceMaterialState::Save(KeyedArchive * archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -145,7 +145,7 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		
 		if(!lightmapName.IsEmpty())
 		{
-            String filename = lightmapName.GetRelativePathname(sceneFile->GetScenePath());
+            String filename = lightmapName.GetRelativePathname(serializationContext->GetScenePath());
             archive->SetString("ims.lightmapname", filename);
 		}
 		
@@ -166,7 +166,7 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+void InstanceMaterialState::Load(KeyedArchive * archive, SerializationContext *serializationContext)
 {
 	if(NULL != archive)
 	{
@@ -176,7 +176,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		String filename = archive->GetString("ims.lightmapname");
 		if(!filename.empty())
 		{
-            FilePath lName = sceneFile->GetScenePath() + filename;
+            FilePath lName = serializationContext->GetScenePath() + filename;
 
 			Texture* lTexture = Texture::CreateFromFile(lName);
 			SetLightmap(lTexture, lName);
@@ -692,19 +692,19 @@ void Material::SetType(eType _type)
     RebuildShader();
 }
     
-void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
+void Material::Save(KeyedArchive * keyedArchive, SerializationContext * serializationContext)
 {
-    DataNode::Save(keyedArchive, sceneFile);
+    DataNode::Save(keyedArchive, serializationContext);
     
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if (!names[k].IsEmpty())
         {
-            String filename = names[k].GetRelativePathname(sceneFile->GetScenePath());
+            String filename = names[k].GetRelativePathname(serializationContext->GetScenePath());
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
             
-            if(sceneFile->DebugLogEnabled())
+            if(serializationContext->IsDebugLogEnabled())
                 Logger::Debug("--- save material texture: %s", filename.c_str());
         }
     }
@@ -737,9 +737,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	}
 }
 
-void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
+void Material::Load(KeyedArchive * keyedArchive, SerializationContext * serializationContext)
 {
-    DataNode::Load(keyedArchive, sceneFile);
+    DataNode::Load(keyedArchive, serializationContext);
 
 	eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
 
@@ -760,10 +760,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             else
             {
-                names[k] = sceneFile->GetScenePath() + relativePathname;
+                names[k] = serializationContext->GetScenePath() + relativePathname;
             }
             
-            if(sceneFile->DebugLogEnabled())
+            if(serializationContext->IsDebugLogEnabled())
             	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
             
             //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());

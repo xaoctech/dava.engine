@@ -47,7 +47,7 @@ class MaterialGraphNode;
 class NMaterial;
 class PolygonGroup;
 
-class MaterialSystem : public StaticSingleton<MaterialSystem>
+class MaterialSystem
 {
 public:
 	
@@ -57,8 +57,10 @@ public:
 	bool LoadMaterialConfig(const FilePath& filePath);
 	
     NMaterial* GetMaterial(const FastName & name);
-    
+	
 private:
+	
+	friend class NMaterial;
 	
 	struct MaterialData
 	{
@@ -68,11 +70,15 @@ private:
 	};
 	
 private:
-	
+		
 	NMaterial* LoadMaterial(const FastName& name,
 							const FilePath& filePath,
 							NMaterial* parentMaterial,
 							Map<String, Vector<MaterialData> >& nodes);
+	
+	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
+	
+private:
 	
     HashMap<FastName, NMaterial*> materials;
 };

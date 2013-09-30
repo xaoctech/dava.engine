@@ -495,9 +495,9 @@ RenderBatch * ShadowVolume::Clone(RenderBatch * dstNode /*= NULL*/)
 	return nd;
 }
 
-void ShadowVolume::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ShadowVolume::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderBatch::Save(archive, sceneFile);
+	RenderBatch::Save(archive, serializationContext);
 
 	if(NULL != archive)
 	{
@@ -505,15 +505,15 @@ void ShadowVolume::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	}
 }
 
-void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ShadowVolume::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderBatch::Load(archive, sceneFile);
+	RenderBatch::Load(archive, serializationContext);
 
-	if(NULL != archive && NULL != sceneFile)
+	if(NULL != archive && NULL != serializationContext)
 	{
 		if(archive->IsKeyExists("sv.spg"))
 		{
-			PolygonGroup *pg = (PolygonGroup *) sceneFile->GetNodeByPointer(archive->GetVariant("sv.spg")->AsUInt64());
+			PolygonGroup *pg = (PolygonGroup*)serializationContext->GetDataBlock(archive->GetVariant("sv.spg")->AsUInt64());
 			if(NULL != pg)
 			{
 				SetPolygonGroup(pg);

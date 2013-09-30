@@ -138,7 +138,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	{
 		dstLayer = new ParticleLayer();
 	}
-
+	
 	if (life)
 		dstLayer->life.Set(life->Clone());
 	
@@ -1573,6 +1573,11 @@ void ParticleLayer::SetPivotPoint(const Vector2& value)
 void ParticleLayer::HandleRemoveFromSystem()
 {
 	DeleteAllParticles();
+}
+	
+void ParticleLayer::MaterialSystemReady(MaterialSystem* materialSystem)
+{
+	//do nothing here
 }
 	
 };

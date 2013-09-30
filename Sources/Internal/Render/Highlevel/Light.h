@@ -34,6 +34,7 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 //default direction (with identity matrix) is -y
 namespace DAVA 
@@ -84,8 +85,8 @@ public:
     //virtual void Update(float32 timeElapsed);
     //virtual void Draw();
     
-	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 
 	bool IsDynamic();
 	void SetDynamic(bool isDynamic);

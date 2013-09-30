@@ -41,6 +41,7 @@
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Particles/ParticleLayer.h"
 #include "FileSystem/FilePath.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
@@ -82,6 +83,7 @@ class Particle;
 	emitAtPoints - this number means that particles will be generated evenly on circle. If it's not defined particles will be generated randomly.
 	life - emitter life in seconds. When accumulated time in ParticleEmitter::Update exceeds this value, emitter restarts and delete all previous particles. 
  */
+class MaterialSystem;
 class ParticleEmitter : public RenderObject, public IRenderUpdatable
 {
 public:
@@ -233,8 +235,8 @@ public:
 	//ParticleEmitter * Clone();
 
 	virtual RenderObject * Clone(RenderObject *newObject);
-	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void RecalcBoundingBox();
 	
 	/**
@@ -396,7 +398,9 @@ public:
 	void SetDesiredLodLevel(int32 level);
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
-
+	
+	virtual void SetRenderSystem(RenderSystem * _renderSystem);
+	
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -439,7 +443,6 @@ protected:
 	uint32 currentLodLevel, desiredLodLevel; //if lodLevelLocked - set lod level updates desired level
 	bool lodLevelLocked; //short effect locks it's lod layer once started
 	
-
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;

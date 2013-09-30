@@ -40,6 +40,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -101,8 +102,11 @@ protected:
 };
 
 class Camera;
+class SerializationContext;
 class NMaterial : public DataNode
 {
+	friend class MaterialSystem;
+	
 public:
     static const FastName TEXTURE_ALBEDO;
     static const FastName TEXTURE_NORMAL;
@@ -110,7 +114,7 @@ public:
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
     
-    NMaterial();
+	NMaterial();
     virtual ~NMaterial();
     
     bool LoadFromFile(const String & pathname);
@@ -152,10 +156,13 @@ public:
 	//this is done in order to be able change defines serially without autorebuild
 	void AddMaterialDefine(const FastName& defineName);
 	void RemoveMaterialDefine(const FastName& defineName);
+	
+    virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
     // Load default render state from yaml.
     // Keep it here, by default MaterialInstance Render State should be referenced from this point.
-    
+	
 private:
 	
 	struct TextureBucket
@@ -164,24 +171,32 @@ private:
 		size_t index;
 	};
 	
+	struct MaterialState
+	{
+		FastName materialName;
+		NMaterial* parent;
+		FastNameSet layers;
+		HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
+		FastNameSet nativeDefines;
+		HashMap<FastName, NMaterialProperty*> materialProperties;
+		HashMap<FastName, TextureBucket*> textures;
+		
+		MaterialState()
+		{
+			parent = NULL;
+		}
+	};
+	
 private:
 	
     void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
+
+	MaterialState state; //TODO: VI: this will be extended to an array for material LOD support
     
-    FastName materialName;
-    
-    NMaterial* parent;
-	Vector<NMaterial*> children;
-	
-	FastNameSet effectiveLayers;
-    FastNameSet layers;
-    HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
-	
-	FastNameSet nativeDefines;
 	FastNameSet inheritedDefines;
-    
-    HashMap<FastName, NMaterialProperty*> materialProperties;
-    HashMap<FastName, TextureBucket*> textures;
+	FastNameSet effectiveLayers;
+	
+	Vector<NMaterial*> children;
     Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
 	Vector<int32> textureSlotArray;
@@ -208,11 +223,14 @@ private:
 	
 	void BindTextures(NMaterial* curMaterial, RenderState* rs);
 	void SetupPerFrameProperties(Camera* camera);
-			
-public:
-    INTROSPECTION_EXTEND(NMaterial, DataNode,
-         MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)
-         );
+	
+	void Serialize(const MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
+	void Deserialize(MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
+
+//public:
+    //INTROSPECTION_EXTEND(NMaterial, DataNode,
+    //     MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)
+    //     );
 
 };
 

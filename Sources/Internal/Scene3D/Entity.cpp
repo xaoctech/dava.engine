@@ -1057,7 +1057,7 @@ String Entity::GetDebugDescription()
 }
 
     
-void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+void Entity::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
@@ -1087,7 +1087,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			}
 			
 			KeyedArchive *compArch = new KeyedArchive();
-			components[i]->Serialize(compArch, sceneFileV2);
+			components[i]->Serialize(compArch, serializationContext);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
 			compArch->Release();
             savedIndex++;
@@ -1121,11 +1121,11 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
             compIt != componentsVector->end(); ++compIt)
         {
             KeyedArchive *compArch = new KeyedArchive();
-			(*compIt)->Serialize(compArch, sceneFileV2);
+			(*compIt)->Serialize(compArch, serializationContext);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
 			compArch->Release();
             savedIndex++;
-	}
+		}
     }
     
 #endif
@@ -1135,7 +1135,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	compsArch->Release();
 }
 
-void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+void Entity::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     BaseObject::Load(archive);
         
@@ -1155,17 +1155,17 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
 	KeyedArchive *compsArch = archive->GetArchive("components");
     
-    if(sceneFileV2->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
+    if(serializationContext->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
     {
-        LoadComponentsV6(compsArch, sceneFileV2);
+        LoadComponentsV6(compsArch, serializationContext);
     }
     else
     {
-        LoadComponentsV7(compsArch, sceneFileV2);
+        LoadComponentsV7(compsArch, serializationContext);
     }
 }
     
-void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
+void Entity::LoadComponentsV6(KeyedArchive *compsArch, SerializationContext * serializationContext)
 {
 	if(NULL != compsArch)
 	{
@@ -1195,7 +1195,7 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
 					Component *comp = Component::CreateByType(compType);
 					if(NULL != comp)
 					{
-						comp->Deserialize(compArch, sceneFileV2);
+						comp->Deserialize(compArch, serializationContext);
 						AddComponent(comp);
 					}
 				}
@@ -1203,14 +1203,14 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
 		}
 	}
 	
-	if(sceneFileV2->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
+	if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
 	{
 		KeyedArchive* customProps = compsArch->GetArchiveFromByteArray("customprops");
 		
 		if(customProps != NULL)
 		{
 			CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
-			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
+			customPropsComponent->LoadFromArchive(*customProps, serializationContext);
 			
 			SafeRelease(customProps);
 		}
@@ -1231,7 +1231,7 @@ CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 
 }
 
-void Entity::LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
+void Entity::LoadComponentsV7(KeyedArchive *compsArch, SerializationContext * serializationContext)
 {
     if(NULL != compsArch)
 	{
@@ -1245,7 +1245,7 @@ void Entity::LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
                 Component* comp = ObjectFactory::Instance()->New<Component>(componentType);
                 if(NULL != comp)
                 {
-                    comp->Deserialize(compArch, sceneFileV2);
+                    comp->Deserialize(compArch, serializationContext);
                     AddComponent(comp);
                 }
 

@@ -37,6 +37,7 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Utils/Utils.h"
 #include "FileSystem/File.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -91,7 +92,6 @@ namespace DAVA
      scene->Load("filename
 */
 
-class NMaterialInstance;
 class NMaterial;
     
 class SceneFileV2 : public BaseObject
@@ -126,10 +126,10 @@ public:
     
     const FilePath GetScenePath();
     
-    Material * GetMaterial(int32 index);
-    StaticMesh * GetStaticMesh(int32 index);
+    //Material * GetMaterial(int32 index);
+    //StaticMesh * GetStaticMesh(int32 index);
     
-    DataNode * GetNodeByPointer(uint64 pointer);
+    //DataNode * GetNodeByPointer(uint64 pointer);
     
     int32 GetVersion();
     void SetError(eError error);
@@ -141,9 +141,13 @@ public:
 	void ConvertShadows(Entity * rootNode);
     int32 removedNodeCount;
     
-    void ConvertOldMaterialToNewMaterial(Material * oldMaterial, InstanceMaterialState * oldMaterialState,
-                                         NMaterial ** newMaterial);
-
+    static void ConvertOldMaterialToNewMaterial(SerializationContext* serializationContext,
+												Material * oldMaterial,
+												InstanceMaterialState * oldMaterialState,
+												NMaterial ** newMaterial);
+	
+	Scene* GetScene() {return scene;}
+	
 private:
     void AddToNodeMap(DataNode * node);
 
@@ -154,9 +158,9 @@ private:
         int32   nodeCount;
     };
     Header header;
-    Map<uint64, DataNode*> dataNodes;
-    Vector<Material*> materials;
-    Vector<StaticMesh*> staticMeshes;
+    //Map<uint64, DataNode*> dataNodes;
+    //Vector<Material*> materials;
+   // Vector<StaticMesh*> staticMeshes;
     
     bool SaveDataHierarchy(DataNode * node, File * file, int32 level);
     void LoadDataHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
@@ -177,6 +181,8 @@ private:
     FilePath rootNodePathName;
     Scene * scene;
     eError lastError;
+	
+	SerializationContext serializationContext;
 };
   
 }; // namespace DAVA

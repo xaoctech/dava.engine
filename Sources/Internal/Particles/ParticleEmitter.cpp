@@ -39,6 +39,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/SceneFileV2.h"
 
+
 namespace DAVA 
 {
 
@@ -146,32 +147,33 @@ RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 		newObject = new ParticleEmitter();
 	}
 
-	((ParticleEmitter*)newObject)->LoadFromYaml(configPath);
+	ParticleEmitter* pe = (ParticleEmitter*)newObject;
+	pe->LoadFromYaml(configPath);
 
 	return newObject;
 }
 
-void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ParticleEmitter::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderObject::Save(archive, sceneFile);
+	RenderObject::Save(archive, serializationContext);
 
 	if(NULL != archive)
 	{
-        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath());
+        String filename = configPath.GetRelativePathname(serializationContext->GetScenePath());
 		archive->SetString("pe.configpath", filename);
 	}
 }
 
-void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void ParticleEmitter::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderObject::Load(archive, sceneFile);
+	RenderObject::Load(archive, serializationContext);
 
 	if(NULL != archive)
 	{
 		String filename = archive->GetString("pe.configpath");
 		if(!filename.empty())
 		{
-			configPath = sceneFile->GetScenePath() + filename;
+			configPath = serializationContext->GetScenePath() + filename;
 			LoadFromYaml(configPath);
 		}
 	}
@@ -963,6 +965,13 @@ void ParticleEmitter::HandleRemoveFromSystem()
 	{
 		(*it)->HandleRemoveFromSystem();
 	}
+}
+	
+void ParticleEmitter::SetRenderSystem(RenderSystem * _renderSystem)
+{
+	RenderObject::SetRenderSystem(_renderSystem);
+	
+	
 }
 
 }; 

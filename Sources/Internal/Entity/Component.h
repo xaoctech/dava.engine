@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Serializable.h"
 #include "Base/Introspection.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
@@ -73,8 +74,8 @@ public:
 
     virtual uint32 GetType() = 0;
     virtual Component* Clone(Entity * toEntity) = 0;
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
 	Entity* GetEntity();
 	virtual void SetEntity(Entity * entity);

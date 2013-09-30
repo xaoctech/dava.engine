@@ -164,7 +164,7 @@ uint64 DataNode::GetPreviousPointer()
 }
 
     
-void DataNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void DataNode::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     BaseObject::Load(archive);
     name = archive->GetString("name");
@@ -172,7 +172,7 @@ void DataNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     pointer = archive->GetByteArrayAsType("#id", (uint64)0);
 }
 
-void DataNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void DataNode::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     BaseObject::Save(archive);
     archive->SetInt32("#index", index);

@@ -55,12 +55,12 @@ void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
 	}
 }
 
-void LandscapeChunk::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LandscapeChunk::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	// Don't need to save this batch
 }
 
-void LandscapeChunk::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void LandscapeChunk::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	// Don't need to load this batch
 }

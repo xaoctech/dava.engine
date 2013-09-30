@@ -42,6 +42,8 @@
 #include "Render/Material.h"
 #include "Render/Material/NMaterial.h"
 
+#include "Scene3D/SceneFile/SerializationContext.h"
+
 namespace DAVA
 {
 
@@ -111,8 +113,8 @@ public:
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
-	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
     
     /*
         \brief This is additional sorting key. It should be from 0 to 15.

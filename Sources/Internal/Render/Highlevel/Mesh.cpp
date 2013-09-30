@@ -83,14 +83,14 @@ RenderObject * Mesh::Clone( RenderObject *newObject )
 	return RenderObject::Clone(newObject);
 }
 
-void Mesh::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void Mesh::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderObject::Save(archive, sceneFile);
+	RenderObject::Save(archive, serializationContext);
 }
 
-void Mesh::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void Mesh::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderObject::Load(archive, sceneFile);
+	RenderObject::Load(archive, serializationContext);
 }
 
 void Mesh::BakeTransform(const Matrix4 & transform)

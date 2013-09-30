@@ -92,19 +92,19 @@ Entity* ParticleEmitterNode::Clone(Entity *dstNode /*= NULL*/)
 	return dstNode;
 }
 
-void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void ParticleEmitterNode::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-	Entity::Save(archive, sceneFile);
+	Entity::Save(archive, serializationContext);
 
-	archive->SetString("yamlPath", yamlPath.GetRelativePathname(sceneFile->GetScenePath()));
+	archive->SetString("yamlPath", yamlPath.GetRelativePathname(serializationContext->GetScenePath()));
 }
 
-void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void ParticleEmitterNode::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-	Entity::Load(archive, sceneFile);
+	Entity::Load(archive, serializationContext);
 	
 	String path = archive->GetString("yamlPath");
-	yamlPath = sceneFile->GetScenePath() + path;
+	yamlPath = serializationContext->GetScenePath() + path;
 	LoadFromYaml(yamlPath);
 }
 

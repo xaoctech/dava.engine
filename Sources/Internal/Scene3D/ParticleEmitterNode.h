@@ -35,6 +35,7 @@
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleEmitter3D.h"
 #include "FileSystem/FilePath.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -52,8 +53,8 @@ public:
 	virtual void Draw();
 
 	virtual Entity* Clone(Entity *dstNode = NULL);
-	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 

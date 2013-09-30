@@ -37,6 +37,7 @@
 
 #include "FileSystem/FilePath.h"
 #include "Base/FastName.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -71,8 +72,8 @@ public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
 
-	virtual void Save(KeyedArchive * archive, SceneFileV2 *sceneFile);
-	virtual void Load(KeyedArchive * archive, SceneFileV2 *sceneFile);
+	virtual void Save(KeyedArchive * archive, SerializationContext *serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext *serializationContext);
     
     void SetLight(int32 lightIndex, Light * lightNode);
     Light * GetLight(int32 lightIndex);
@@ -296,8 +297,8 @@ public:
         TEXTURE_COUNT, 
     };    
 
-    void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
-    void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
+    void Save(KeyedArchive * keyedArchive, SerializationContext * serializationContext);
+    void Load(KeyedArchive * keyedArchive, SerializationContext * serializationContext);
     
     
     //void SetTextureSlotName(uint32 index, const String & string);

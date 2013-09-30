@@ -48,7 +48,7 @@ class Light;
 class ParticleEmitterSystem;
 class RenderHierarchy;
 class RenderPassBatchArray;
-
+class MaterialSystem;
     
 class RenderSystem
 {
@@ -109,6 +109,8 @@ public:
     
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
+	
+	inline MaterialSystem* GetMaterialSystem() {return materialSystem;}
     
 private:
     void ProcessClipping();
@@ -144,6 +146,8 @@ private:
     //Vector<RenderObject*> forRemove;
     
 	ParticleEmitterSystem * particleEmitterSystem;
+	
+	MaterialSystem* materialSystem;
     
     friend class RenderPass;
 };

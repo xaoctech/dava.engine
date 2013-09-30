@@ -62,12 +62,12 @@ Component * DebugRenderComponent::Clone(Entity * toEntity)
     return component;
 }
 
-void DebugRenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void DebugRenderComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	// Don't need to save
 }
 
-void DebugRenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void DebugRenderComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	// Don't need to load
 }

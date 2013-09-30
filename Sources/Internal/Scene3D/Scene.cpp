@@ -69,6 +69,8 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
+#include "Render/Material/MaterialSystem.h"
+
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
 //#include "Entity/Components.h"
@@ -107,7 +109,7 @@ void Scene::CreateSystems()
 {
 	renderSystem = new RenderSystem();
 	eventSystem = new EventSystem();
-
+	
     transformSystem = new TransformSystem(this);
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
 
