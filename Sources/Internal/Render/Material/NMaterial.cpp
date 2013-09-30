@@ -864,15 +864,6 @@ void NMaterial::Serialize(const MaterialState& materialState,
 						  KeyedArchive * archive,
 						  SerializationContext * serializationContext)
 {
-	/*
-	+FastName materialName;
-	+NMaterial* parent;
-	+FastNameSet layers;
-	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
-	+FastNameSet nativeDefines;
-	+HashMap<FastName, NMaterialProperty*> materialProperties;
-	+HashMap<FastName, TextureBucket*> textures;*/
-	
 	archive->SetString("materialName", materialState.materialName.c_str());
 	archive->SetString("parentName", materialState.parent->state.materialName.c_str());
 	
@@ -918,13 +909,6 @@ void NMaterial::Serialize(const MaterialState& materialState,
 	SafeRelease(materialTextures);
 	
 	
-	/*
-	+const FastName & GetShaderName() const { return shaderName; }
-    --Shader * GetShader() const { return shader; }
-    RenderState * GetRenderState() const { return renderState; }
-    +const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
-	 */
-	
 	int techniqueIndex = 0;
 	KeyedArchive* materialTechniques = new KeyedArchive();
 	for(HashMap<FastName, MaterialTechnique *>::Iterator it = state.techniqueForRenderPass.Begin();
@@ -951,6 +935,8 @@ void NMaterial::Serialize(const MaterialState& materialState,
 		KeyedArchive* techniqueRenderState = new KeyedArchive();
 		RenderState* renderState = technique->GetRenderState();
 		renderState->Serialize(techniqueRenderState, serializationContext);
+		techniqueArchive->SetArchive("renderState", techniqueRenderState);
+		SafeRelease(techniqueRenderState);
 		
 		materialTechniques->SetArchive(Format("technique.%d", techniqueIndex), techniqueArchive);
 		SafeRelease(techniqueArchive);
