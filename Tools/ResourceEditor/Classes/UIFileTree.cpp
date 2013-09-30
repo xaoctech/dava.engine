@@ -157,12 +157,12 @@ void UIFileTree::OnDirectoryChange(BaseObject * obj, void * userData, void * cal
 	UIEvent * event = reinterpret_cast<UIEvent*> (callerData);	
 	if (cell && event)
 	{
-		Logger::Debug("Click count: %d", event->tapCount);
+		Logger::FrameworkDebug("Click count: %d", event->tapCount);
 		if (isRootFolderChangeEnabled && (event->tapCount == 2))
 		{
 			UITreeItemInfo * info = cell->GetItemInfo();
 			FilePath pathname = info->GetPathname();
-			Logger::Debug("Switch to path: %s", pathname.GetAbsolutePathname().c_str());
+			Logger::FrameworkDebug("Switch to path: %s", pathname.GetAbsolutePathname().c_str());
 			SetPath(pathname, originalExtensionsString);
 			treeHead->ToggleExpanded();
 		}

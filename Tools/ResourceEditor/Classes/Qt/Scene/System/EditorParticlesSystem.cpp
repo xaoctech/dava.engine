@@ -134,9 +134,13 @@ void EditorParticlesSystem::Draw()
 					{
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
-						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 						{
 							DrawSizeCircle(entity, emitter, center);
+						}
+						break;
+						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
+						{
+							DrawSizeCircleShockWave(emitter, center);
 						}
 						break;
 					
@@ -160,6 +164,12 @@ void EditorParticlesSystem::Draw()
 	
 	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
 	DAVA::RenderManager::Instance()->SetState(oldState);
+}
+
+void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+{
+	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(emitter->GetTime()) : 0.0f;
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)

@@ -314,6 +314,11 @@ namespace DAVA
 		offsetZ = offset;
 	}
 	
+	void SkyboxRenderObject::ForceSetOffsetZ(float32 offset)
+	{
+		offsetZ = offset;
+	}
+	
 	float32 SkyboxRenderObject::GetOffsetZ()
 	{
 		return offsetZ;

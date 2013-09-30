@@ -56,7 +56,7 @@ StaticIndexBuffer::StaticIndexBuffer(int32 _indexFormat, const int32 _indexSize,
 		0);
 	if (!FAILED(hr))
 	{
-		Logger::Debug(Format("[StaticIndexBuffer] created >> elementsize(%d) buffersize(%d)\n", _indexSize, _indexCount));
+		Logger::FrameworkDebug(Format("[StaticIndexBuffer] created >> elementsize(%d) buffersize(%d)\n", _indexSize, _indexCount));
 	}
 }
 
@@ -68,7 +68,7 @@ StaticIndexBuffer::~StaticIndexBuffer()
 //	renderSystem->pID3DDevice->SetIndices(0);
 
 	D3DSafeRelease(indexBuffer);
-	Logger::Debug("[StaticIndexBuffer] released\n");
+	Logger::FrameworkDebug("[StaticIndexBuffer] released\n");
 }
 
 void * StaticIndexBuffer::Lock(const int32 lockIndexCount, int32 & startIndex)

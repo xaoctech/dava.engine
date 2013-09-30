@@ -34,6 +34,7 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 //do not create lower cube face
 const int SKYBOX_VERTEX_COUNT = (5 * 6);
@@ -105,7 +106,7 @@ namespace DAVA
 			
 			RenderComponent* renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(skyboxRenderObject);
-			SafeRelease(skyboxRenderObject);
+			
 			
 			result = new Entity();
 			result->SetName("Skybox");
@@ -116,11 +117,21 @@ namespace DAVA
 
 			GetScene()->AddNode(result);
 			
+			Matrix4 * worldTransformPointer = ((TransformComponent*)result->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+			skyboxRenderObject->SetWorldTransformPtr(worldTransformPointer);
+			result->GetScene()->renderSystem->MarkForUpdate(skyboxRenderObject);
+			SafeRelease(skyboxRenderObject);
+			
 			DVASSERT(skyboxEntity);
 			result->Release();
 		}
 		
 		return result;
+	}
+	
+	Entity* SkyboxSystem::GetSkybox()
+	{
+		return skyboxEntity;
 	}
 	
 	void SkyboxSystem::Reload()

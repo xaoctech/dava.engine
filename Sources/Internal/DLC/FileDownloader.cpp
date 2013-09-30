@@ -126,7 +126,7 @@ size_t FileDownloader::write_data(void *ptr, size_t size, size_t nmemb, void *fi
     {
         curl_easy_pause( fd->GetCurlHandler(), CURLPAUSE_ALL );
         fd->isPauseChangeApplied = true;
-        Logger::Instance()->Debug(" ----- Downloader pause");
+        Logger::Instance()->FrameworkDebug(" ----- Downloader pause");
     }
     
     // Stop download
@@ -145,7 +145,7 @@ void FileDownloader::DownloadFile(BaseObject* bo, void* v1, void* v2)
     
 uint32 FileDownloader::DownloadFile()
 {
-    Logger::Instance()->Debug("Start download");
+    Logger::Instance()->FrameworkDebug("Start download");
 
     fileForWrite = NULL;
     
@@ -202,7 +202,7 @@ uint32 FileDownloader::DownloadFile()
         delegate->DownloadComplete(FileDownloaderDelegate::DL_ERROR_DOWNLOAD);
     }
 
-    Logger::Instance()->Debug("End download");
+    Logger::Instance()->FrameworkDebug("End download");
     
     return status;
 }
@@ -264,7 +264,7 @@ void FileDownloader::Resume()
     state = FD_RUN;
     isPauseChangeApplied = true;
     curl_easy_pause( GetCurlHandler(), CURLPAUSE_CONT );
-    Logger::Instance()->Debug(" ----- Downloader resume");
+    Logger::Instance()->FrameworkDebug(" ----- Downloader resume");
 }
     
 void FileDownloader::Stop()

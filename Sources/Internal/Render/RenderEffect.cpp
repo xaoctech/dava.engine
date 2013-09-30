@@ -43,11 +43,11 @@ RenderEffect::RenderEffect()
     Map<String, RenderEffect *>::iterator effectIt = effectsMap.find(name);
     if (effectIt == effectsMap.end())
     {
-        //Logger::Debug("Register effect: %s", name.c_str());
+        //Logger::FrameworkDebug("Register effect: %s", name.c_str());
         effectsMap[name] = this; 
     }else
     {
-        //Logger::Debug("RenderEffect \"%s\" already registered", name.c_str());
+        //Logger::FrameworkDebug("RenderEffect \"%s\" already registered", name.c_str());
     }*/
 }
 
