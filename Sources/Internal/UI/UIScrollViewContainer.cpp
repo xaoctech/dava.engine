@@ -46,7 +46,10 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsolu
 	mainTouch(-1),
 	touchTreshold(DEFAULT_TOUCH_TRESHOLD),
 	enableHorizontalScroll(true),
-	enableVerticalScroll(true)
+	enableVerticalScroll(true),
+	newPos(0.f, 0.f),
+	oldPos(0.f, 0.f),
+	lockTouch(false)
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
@@ -165,6 +168,8 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 	
 	if(1 == touches.size())
 	{
+		
+		
 		switch(currentTouch->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
@@ -174,6 +179,9 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				Vector2 start = currentTouch->point;
 				StartScroll(start);
 				state = STATE_SCROLL;
+				newPos = currentTouch->point;
+				lockTouch = TRUE;
+				oldPos = newPos;
 			}
 			break;
 			case UIEvent::PHASE_DRAG:
@@ -184,6 +192,7 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 					{
 						// perform scrolling
 						ProcessScroll(currentTouch->point);
+						newPos = currentTouch->point;
 					}
 				}
 			}
@@ -196,6 +205,8 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 					{
 						EndScroll();
 						state = STATE_DECCELERATION;
+						
+						lockTouch = FALSE;
 					}
 				}
 			}
@@ -215,6 +226,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	{
 		if(IsPointInside(currentTouch->point))
 		{
+			lockTouch = true;
 			mainTouch = currentTouch->tid;
 			PerformEvent(EVENT_TOUCH_DOWN);
 			Input(currentTouch);
@@ -232,6 +244,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	}
 	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_ENDED)
 	{
+		lockTouch = FALSE;
 		Input(currentTouch);
 		mainTouch = -1;
 	}
@@ -254,6 +267,16 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	if(state == STATE_DECCELERATION)
 	{
 		Rect contentRect = this->GetRect();
+		
+		/*Vector2 d = newPos - oldPos;
+	    oldPos = newPos;
+
+		ScrollHelper *sh = ((UIScrollView*)this->GetParent())->GetScrollHelper();
+		
+		Vector2 p = sh->GetPosition(d.x, d.y, SystemTimer::FrameDelta(), lockTouch);
+		contentRect.x = p.x;
+		contentRect.y = p.y;*/
+		
 		scrollOrigin = Vector2(contentRect.x, contentRect.y);
 	}
 	
@@ -276,7 +299,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		speedMultiup = Max(1.0f, speedMultiup);
 
 		// Calculate the new position and clamp it to avoid overscrolling and flickering.
-		float32 curOffset = (timeElapsed * returnToBoundsSpeed * speedMultiup);
+		float32 curOffset = (timeElapsed * returnToBoundsSpeed);
 		
 		// Position and clamp X axis.
 		const float32 SCROLLING_EPSILON = 1.0f;

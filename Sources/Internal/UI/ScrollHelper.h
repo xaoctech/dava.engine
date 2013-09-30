@@ -64,18 +64,22 @@ public:
 	 \param[in] pos new scrolling position.
 	 */
 	void SetPosition(float32 pos);
-	
+		
 	void SetPosition(const Vector2& pos);
 	/**
 	 \brief Sets scrollable element size.
 	 \param[in] newSize scrollable element size.
 	 */
 	void SetElementSize(float32 newSize);
+	
+	void SetElementSize(const Vector2& newSize);
 	/**
 	 \brief Sets view area size.
 	 \param[in] size size of the view area.
 	 */
 	void SetViewSize(float32 size);
+	
+	void SetViewSize(const Vector2& newSize);
 	/**
 	 \brief Adding move impulse. After the impulse scrolling position moves
 		to the impulse direction for the period of time.
@@ -88,10 +92,13 @@ public:
 	 \returns Current scroll position.
 	 */
 	float32 GetPosition();
+	const Vector2 &GetFullPosition();
     
     float32 GetViewSize();
-    float32 GetElementSize();
+	const Vector2 &GetFullViewSize();
 	
+    float32 GetElementSize();
+	const Vector2 &GetFullElementSize();	
 	
 	/**
 	 \brief Returns scroll position accordingly to the new incoming data.
@@ -101,6 +108,8 @@ public:
 	 \returns new scroll position.
 	 */
 	float GetPosition(float positionDelta, float timeDelta, bool isPositionLocked);
+	
+	const Vector2 &GetPosition(float positionXDelta, float positionYDelta, float timeDelta, bool isPositionLocked);
 	
 	/**
 	 \brief Sets how fast scroll speed will be reduced
@@ -125,14 +134,16 @@ private:
 	Vector2 virtualViewSize;
 	
 	float totalDeltaTime;
-	float totalDeltaMove;
+	float totalDeltaXMove;
+	float totalDeltaYMove;
 	
 	float slowDown;
 	float backward;
 	
 	float speed;
 	
-	List<MovesDelta> moves;
+	List<MovesDelta> movesX;
+	List<MovesDelta> movesY;
 };
 };
 
