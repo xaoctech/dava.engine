@@ -925,6 +925,12 @@
 		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
 		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		E843505617FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */; };
+		E843505717FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */; };
+		E843505817FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */; };
+		E843505917FA0D3B00A25F04 /* TeamcityOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = E843505517FA0D3B00A25F04 /* TeamcityOutput.h */; };
+		E843505A17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = E843505517FA0D3B00A25F04 /* TeamcityOutput.h */; };
+		E843505B17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = E843505517FA0D3B00A25F04 /* TeamcityOutput.h */; };
 		E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E8951B741738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */; };
@@ -2227,6 +2233,8 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TeamcityOutput.cpp; sourceTree = "<group>"; };
+		E843505517FA0D3B00A25F04 /* TeamcityOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeamcityOutput.h; sourceTree = "<group>"; };
 		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
 		E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GPUFamilyDescriptor.cpp; sourceTree = "<group>"; };
 		E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUFamilyDescriptor.h; sourceTree = "<group>"; };
@@ -3823,6 +3831,8 @@
 		E8989D8C16BD24E500732C04 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */,
+				E843505517FA0D3B00A25F04 /* TeamcityOutput.h */,
 				E8989D8D16BD24E500732C04 /* HTTPDownloader.h */,
 				E8989D8E16BD24E500732C04 /* HTTPDownloader.mm */,
 				74A909A91701FA51003FDB31 /* CRC32.cpp */,
@@ -4032,6 +4042,7 @@
 				176DE97E174B5561007A983B /* CorePlatformMacOS.h in Headers */,
 				176DE97F174B5561007A983B /* MainWindowController.h in Headers */,
 				176DE980174B5561007A983B /* NSFullScreenWindow.h in Headers */,
+				E843505B17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
 				176DE981174B5561007A983B /* OpenGLView.h in Headers */,
 				176DE982174B5561007A983B /* Thread.h in Headers */,
 				176DE983174B5561007A983B /* Font.h in Headers */,
@@ -4438,6 +4449,7 @@
 				E8989F7516BD24E500732C04 /* GameObject.h in Headers */,
 				E8989F7716BD24E500732C04 /* GameObjectAnimations.h in Headers */,
 				E8989F7916BD24E500732C04 /* GameObjectManager.h in Headers */,
+				E843505917FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
 				E8989F7B16BD24E500732C04 /* TextGameObject.h in Headers */,
 				E8989F7D16BD24E500732C04 /* BillboardNode.h in Headers */,
 				E8989F7F16BD24E500732C04 /* BoneNode.h in Headers */,
@@ -4842,6 +4854,7 @@
 				E898A16A16BD265400732C04 /* TransformSystem.h in Headers */,
 				E898A16C16BD265400732C04 /* UserNode.h in Headers */,
 				E898A16E16BD265400732C04 /* Sound.h in Headers */,
+				E843505A17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
 				E898A17216BD265400732C04 /* SoundGroup.h in Headers */,
 				E898A17516BD265400732C04 /* SoundSystem.h in Headers */,
 				E898A17716BD265400732C04 /* ScrollHelper.h in Headers */,
@@ -5230,6 +5243,7 @@
 				176DEAF4174B5561007A983B /* SceneFileV2.cpp in Sources */,
 				176DEAF5174B5561007A983B /* SceneManager.cpp in Sources */,
 				176DEAF6174B5561007A983B /* SceneNodeAnimation.cpp in Sources */,
+				E843505817FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */,
 				176DEAF7174B5561007A983B /* SceneNodeAnimationKey.cpp in Sources */,
 				176DEAF8174B5561007A983B /* SceneNodeAnimationList.cpp in Sources */,
 				176DEAF9174B5561007A983B /* ShadowVolumeNode.cpp in Sources */,
@@ -5531,6 +5545,7 @@
 				E8989FAD16BD24E500732C04 /* PathManip.cpp in Sources */,
 				E8989FAF16BD24E500732C04 /* PolygonGroupInstance.cpp in Sources */,
 				E8989FB116BD24E500732C04 /* ProxyNode.cpp in Sources */,
+				E843505617FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */,
 				E8989FB916BD24E500732C04 /* Scene.cpp in Sources */,
 				E8989FBB16BD24E500732C04 /* SceneAnimationMixer.cpp in Sources */,
 				E8989FBD16BD24E500732C04 /* SceneFile.cpp in Sources */,
@@ -5769,6 +5784,7 @@
 				E898A1F216BD265400732C04 /* ParticleEmitter3D.cpp in Sources */,
 				E898A1F316BD265400732C04 /* ParticleEmitterObject.cpp in Sources */,
 				E898A1F416BD265400732C04 /* ParticleLayer.cpp in Sources */,
+				E843505717FA0D3B00A25F04 /* TeamcityOutput.cpp in Sources */,
 				E898A1F516BD265400732C04 /* ParticleLayer3D.cpp in Sources */,
 				E898A1F716BD265400732C04 /* ParticlePropertyLine.cpp in Sources */,
 				E898A1F916BD265400732C04 /* Mutex.cpp in Sources */,
