@@ -197,7 +197,6 @@
 		4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351F17BA38940051833D /* TextDrawSystem.cpp */; };
 		4FFA515217DF49B9008B6A1E /* KeyedArchiveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */; };
 		4FFA515C17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFA515A17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp */; };
-		4FFA516417E0DFB2008B6A1E /* CollisionCamera.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFA516217E0DFB2008B6A1E /* CollisionCamera.cpp */; };
 		4FFE5C75176B379600728624 /* SceneEditor2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C73176B379600728624 /* SceneEditor2.cpp */; };
 		4FFE5C82176B37B600728624 /* Command2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C77176B37B600728624 /* Command2.cpp */; };
 		4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C79176B37B600728624 /* CommandBatch.cpp */; };
@@ -558,6 +557,7 @@
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8A1091817944416007FF496 /* EditorLightSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A1091617944416007FF496 /* EditorLightSystem.cpp */; };
+		E8A34A6017F966AF00B0649E /* CollisionBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */; };
 		E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B6213E17E1FD6400C5678E /* Request.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39CD17B4BA8E00C63420 /* LabeledSlider.cpp */; };
@@ -955,8 +955,6 @@
 		4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiveCommand.h; sourceTree = "<group>"; };
 		4FFA515A17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataKeyedArchiveMember.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.cpp; sourceTree = SOURCE_ROOT; };
 		4FFA515B17DF49E1008B6A1E /* QtPropertyDataKeyedArchiveMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataKeyedArchiveMember.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h; sourceTree = SOURCE_ROOT; };
-		4FFA516217E0DFB2008B6A1E /* CollisionCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionCamera.cpp; sourceTree = "<group>"; };
-		4FFA516317E0DFB2008B6A1E /* CollisionCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionCamera.h; sourceTree = "<group>"; };
 		4FFE5C73176B379600728624 /* SceneEditor2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditor2.cpp; sourceTree = "<group>"; };
 		4FFE5C74176B379600728624 /* SceneEditor2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditor2.h; sourceTree = "<group>"; };
 		4FFE5C77176B37B600728624 /* Command2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command2.cpp; sourceTree = "<group>"; };
@@ -1730,6 +1728,8 @@
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8A1091617944416007FF496 /* EditorLightSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightSystem.cpp; sourceTree = "<group>"; };
 		E8A1091717944416007FF496 /* EditorLightSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightSystem.h; sourceTree = "<group>"; };
+		E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionBox.cpp; sourceTree = "<group>"; };
+		E8A34A5F17F966AF00B0649E /* CollisionBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionBox.h; sourceTree = "<group>"; };
 		E8B6213E17E1FD6400C5678E /* Request.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Request.cpp; sourceTree = "<group>"; };
 		E8B6213F17E1FD6400C5678E /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
 		E8B836241740FCC800D11EAE /* ImageTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTools.cpp; sourceTree = "<group>"; };
@@ -3894,8 +3894,8 @@
 		E8C4C63217294079004B0B3B /* CollisionSystem */ = {
 			isa = PBXGroup;
 			children = (
-				4FFA516217E0DFB2008B6A1E /* CollisionCamera.cpp */,
-				4FFA516317E0DFB2008B6A1E /* CollisionCamera.h */,
+				E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */,
+				E8A34A5F17F966AF00B0649E /* CollisionBox.h */,
 				4FFE5CA91779DA3E00728624 /* CollisionParticleEmitter.cpp */,
 				4FFE5CAA1779DA3E00728624 /* CollisionParticleEmitter.h */,
 				E8C4C63317294079004B0B3B /* CollisionBaseObject.h */,
@@ -4474,6 +4474,7 @@
 				5C574EAB15C9463C0015537A /* btGeometryUtil.cpp in Build Sources */,
 				5C574EAC15C9463C0015537A /* btQuickprof.cpp in Build Sources */,
 				5C574EAD15C9463C0015537A /* btSerializer.cpp in Build Sources */,
+				E8A34A6017F966AF00B0649E /* CollisionBox.cpp in Build Sources */,
 				5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */,
 				5C6549C815D3CE2900C3AC3F /* LibraryCommands.cpp in Build Sources */,
 				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
@@ -4819,7 +4820,6 @@
 				62784FC817D9D4210032CF8A /* SelectPathWidgetBase_moc.cpp in Build Sources */,
 				E845520D17E0C0360041F0B1 /* ChangeLODDistanceCommand.cpp in Build Sources */,
 				A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */,
-				4FFA516417E0DFB2008B6A1E /* CollisionCamera.cpp in Build Sources */,
 				E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */,
 				02F8B06217E32B9400D5A334 /* SpeedTreeImporter.cpp in Build Sources */,
 				E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */,
