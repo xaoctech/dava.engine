@@ -68,7 +68,7 @@ void DAEConvertAction::ConvertFromSceToSc2() const
 {
     Scene *scene = CreateSceneFromSce();
     FilePath sc2Path = FilePath::CreateWithNewExtension(daePath, ".sc2");
-	SceneHelper::SaveScene(scene, sc2Path);
+    scene->Save(sc2Path);
     scene->Release();
 }
 
@@ -106,8 +106,8 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
         
         FilePath newSc2Path = sc2Path;
         newSc2Path.ReplaceBasename(sc2Path.GetBasename() + "_new");
-        SceneHelper::SaveScene(scene, newSc2Path);
-        SafeRelease(scene);
+        scene->Save(newSc2Path);
+        scene->Release();
         
         TryToMergeScenes(sc2Path, newSc2Path);
         
@@ -129,7 +129,7 @@ void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &origin
     CopyLODSettings(oldScene, newScene);
 	CopyShadowSettings(oldScene, newScene);
     
-    SceneHelper::SaveScene(newScene, originalPath);
+    newScene->Save(originalPath);
     
     oldScene->Release();
     newScene->Release();

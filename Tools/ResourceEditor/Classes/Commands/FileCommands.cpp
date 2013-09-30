@@ -111,7 +111,7 @@ void CommandSaveSpecifiedScene::Execute()
 			sc->AddNode(entityToAdd);
 		}
 
-		SceneHelper::SaveScene(sc, normalizedPathname);
+        sc->Save(normalizedPathname);
 
 		SafeRelease(entityToAdd); 
 		SafeRelease(sc);
@@ -121,20 +121,5 @@ void CommandSaveSpecifiedScene::Execute()
 	//QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
-//Export
-CommandExport::CommandExport(eGPUFamily gpu)
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
-    ,   gpuFamily(gpu)
-{
-}
 
-
-void CommandExport::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->ExportAs(gpuFamily);
-    }
-}
 

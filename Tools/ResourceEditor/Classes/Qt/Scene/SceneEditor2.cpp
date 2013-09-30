@@ -185,15 +185,13 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	return ret;
 }
 
-bool SceneEditor2::Save(const DAVA::FilePath &path)
+SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveForGame /*= false*/)
 {
 	structureSystem->LockSignals(true);
-	PopEditorEntities();
+	ExtractEditorEntities();
 
-	DAVA::SceneFileV2::eError err = SceneHelper::SaveScene(this, path);
-	bool ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
-
-	if(ret)
+	DAVA::SceneFileV2::eError err = Scene::Save(path, saveForGame);
+	if(DAVA::SceneFileV2::ERROR_NO_ERROR == err)
 	{
 		curScenePath = path;
 		isLoaded = true;
@@ -204,16 +202,16 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 
 	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
-	PushEditorEntities();
+	InjectEditorEntities();
 	structureSystem->LockSignals(false);
 
 	SceneSignals::Instance()->EmitSaved(this);
 	//SceneSignals::Instance()->EmitStructureChanged(this, this);
 
-	return ret;
+	return err;
 }
 
-void SceneEditor2::PopEditorEntities()
+void SceneEditor2::ExtractEditorEntities()
 {
 	DVASSERT(editorEntities.size() == 0);
 
@@ -233,7 +231,7 @@ void SceneEditor2::PopEditorEntities()
 	}
 }
 
-void SceneEditor2::PushEditorEntities()
+void SceneEditor2::InjectEditorEntities()
 {
 	for(DAVA::int32 i = editorEntities.size() - 1; i >= 0; i--)
 	{
@@ -245,7 +243,7 @@ void SceneEditor2::PushEditorEntities()
 }
 
 
-bool SceneEditor2::Save()
+SceneFileV2::eError SceneEditor2::Save()
 {
 	return Save(curScenePath);
 }

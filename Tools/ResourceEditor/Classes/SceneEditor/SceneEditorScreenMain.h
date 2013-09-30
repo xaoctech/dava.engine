@@ -196,8 +196,6 @@ public: //For Qt integration
     bool SaveIsAvailable();
    
 
-    void ExportAs(eGPUFamily forGPU);
-
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
     

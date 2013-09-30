@@ -829,6 +829,16 @@ void Scene::Load(KeyedArchive * archive)
     Entity::Load(archive);
 }*/
     
+    
+    
+SceneFileV2::eError Scene::Save(const DAVA::FilePath & pathname, bool saveForGame /*= false*/)
+{
+    SceneFileV2 file;
+	file.EnableDebugLog(false);
+	file.EnableSaveForGame(saveForGame);
+	return file.SaveScene(pathname, this);
+}
+
 
 
 
