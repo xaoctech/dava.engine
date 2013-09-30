@@ -74,6 +74,7 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(StructureChanged(SceneEditor2 *, DAVA::Entity *)));
 
 	// particles signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)), this, SLOT(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
@@ -215,6 +216,19 @@ void SceneTree::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 			skipTreeSelectionProcessing = false;
 
 		}
+	}
+}
+
+void SceneTree::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
+	if(scene == treeModel->GetScene())
+	{
+		skipTreeSelectionProcessing = true;
+
+		treeModel->ResyncStructure(treeModel->invisibleRootItem(), treeModel->GetScene());
+		SyncSelectionToTree();
+
+		skipTreeSelectionProcessing = false;
 	}
 }
 
@@ -631,7 +645,13 @@ void SceneTree::SaveEntityAs()
 		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
 		if(selection.Size() > 0)
 		{
-			QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save scene file"), ProjectManager::Instance()->CurProjectDataSourcePath(), QString("DAVA SceneV2 (*.sc2)"));
+			DAVA::FilePath scenePath = sceneEditor->GetScenePath();
+			if(scenePath.IsEmpty())
+			{
+				scenePath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
+			}
+
+			QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save scene file"), QString(scenePath.GetDirectory().GetAbsolutePathname().c_str()), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->Exec(new SaveEntityAsAction(&selection, filePath.toStdString()));

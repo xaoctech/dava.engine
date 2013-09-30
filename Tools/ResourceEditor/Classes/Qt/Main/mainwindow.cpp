@@ -211,7 +211,11 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 	} 
 	else
 	{
-		if(scene->IsChanged())
+		// SZ: df-2128
+		// This check was removed until all editor actions will be done through commands
+		// because it's not possible to save scene if some thing changes without command
+		// 
+		//if(scene->IsChanged())
 		{
 			if(!scene->Save(scenePath))
 			{
@@ -230,7 +234,11 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 
 	if(NULL != scene)
 	{
-		DAVA::FilePath saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		DAVA::FilePath saveAsPath = scene->GetScenePath();
+		if(saveAsPath.IsEmpty())
+		{
+			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		}
 
 		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
