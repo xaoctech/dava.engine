@@ -32,6 +32,7 @@
 #include <QSizePolicy>
 #include <Qlabel>
 #include "QScrollBar.h"
+#include "Scene/System/BeastSystem.h"
 
 #define PROPERTY_EDITOR_HEIGHT 300
 
@@ -102,6 +103,8 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	SafeRetain(entity);
 	if(entity)
 	{
+		BeastSystem::SetDefaultPropertyValues(entity);
+			
 		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
 		PropertyEditor* pEditor = ui->propEditor;	
 
