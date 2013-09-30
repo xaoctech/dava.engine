@@ -42,7 +42,8 @@ static const String UISCROLL_VIEW_CONTAINER_NAME = "scrollContainerControl";
 
 UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
-	scrollContainer(new UIScrollViewContainer())
+	scrollContainer(new UIScrollViewContainer()),
+	scroll(new ScrollHelper())
 {
 	inputEnabled = true;
 	multiInput = true;
@@ -61,14 +62,14 @@ UIScrollView::~UIScrollView()
 void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 {
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-	
+	scroll->SetViewSize(Vector2(rect.dx, rect.dy));
 	RecalculateContentSize();
 }
 
 void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
-
+	scroll->SetViewSize(Vector2(newSize.x, newSize.y));
 	RecalculateContentSize();
 }
 
@@ -192,6 +193,7 @@ void UIScrollView::SetPadding(const Vector2 & padding)
 	}
 	
 	scrollContainer->SetRect(contentRect);
+	scroll->SetPosition(Vector2(contentRect.x, contentRect.y));
 }
 
 const Vector2 UIScrollView::GetPadding() const
@@ -249,6 +251,7 @@ void UIScrollView::RecalculateContentSize()
 
 		// Update scroll view content size
 		scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, maxSize.x, maxSize.y));
+		scroll->SetElementSize(maxSize);
 	}
 }
 
@@ -314,6 +317,7 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 	}
 	
 	scrollContainer->SetRect(curContainerRect);
+	scroll->SetPosition(Vector2(curContainerRect.x, curContainerRect.y));
 }
 
 float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam)
@@ -342,6 +346,11 @@ void UIScrollView::AddControlToContainer(UIControl* control)
 UIScrollViewContainer* UIScrollView::GetContainer()
 {
 	return scrollContainer;
+}
+
+ScrollHelper* UIScrollView::GetScrollHelper()
+{
+	return scroll;
 }
 
 };

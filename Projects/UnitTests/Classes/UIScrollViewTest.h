@@ -67,7 +67,7 @@ private:
 	UIStaticText*	testMessageText;
 	UIScrollView*	scrollView;
 	bool 			testFinished;
-		
+	
 	float32 onScreenTime;
 };
 

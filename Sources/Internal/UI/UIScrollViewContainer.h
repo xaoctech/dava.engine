@@ -99,6 +99,10 @@ protected:
 	int 		mainTouch;	
 	bool		scrollStartMovement;
 	UIEvent		scrollTouch;
+	
+	Vector2 	oldPos;
+	Vector2		newPos;
+	bool 		lockTouch;
 };
 };
 

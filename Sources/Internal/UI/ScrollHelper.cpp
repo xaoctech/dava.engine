@@ -38,7 +38,8 @@ namespace DAVA
 	,	position(0.f, 0.f)
 	,	elementSize(0.f, 0.f)
 	,	totalDeltaTime(0)
-	,	totalDeltaMove(0)
+	,	totalDeltaXMove(0)
+	,	totalDeltaYMove(0)
 	,   speed(0)
 	{
 		slowDown = 0.25f;
@@ -71,9 +72,18 @@ namespace DAVA
 		}
 	}
 	
-	float ScrollHelper::GetPosition()
+	void ScrollHelper::SetElementSize(const Vector2& newSize)
 	{
-		return position.x;
+		elementSize = newSize;
+		virtualViewSize = viewSize;
+		if(viewSize.x > elementSize.x)
+		{
+			virtualViewSize.x = elementSize.x;
+		}
+		if(viewSize.y > elementSize.y)
+		{
+			virtualViewSize.y = elementSize.y;
+		}
 	}
 	
 	void ScrollHelper::SetViewSize(float32 size)
@@ -85,17 +95,50 @@ namespace DAVA
 			virtualViewSize.x = elementSize.x;
 		}
 	}
+	
+	void ScrollHelper::SetViewSize(const Vector2& size)
+	{
+		viewSize = size;
+		virtualViewSize = viewSize;
+		if(viewSize.x > elementSize.x)
+		{
+			virtualViewSize.x = elementSize.x;
+		}
+		if(viewSize.y > elementSize.y)
+		{
+			virtualViewSize.y = elementSize.y;
+		}
+	}
+		
+	float ScrollHelper::GetPosition()
+	{
+		return position.x;
+	}
+	
+	const Vector2& ScrollHelper::GetFullPosition()
+	{
+		return position;
+	}
     
     float32 ScrollHelper::GetViewSize()
     {
         return viewSize.x;
+    }
+	
+    const Vector2& ScrollHelper::GetFullViewSize()
+    {
+        return viewSize;
     }
     
     float32 ScrollHelper::GetElementSize()
     {
         return elementSize.x;
     }
-
+	
+    const Vector2& ScrollHelper::GetFullElementSize()
+    {
+        return elementSize;
+    }
 
 	void ScrollHelper::SetSlowDownTime(float newValue)
 	{
@@ -135,22 +178,22 @@ namespace DAVA
 			MovesDelta m;
 			m.deltaMove = positionDelta;
 			m.deltaTime = timeDelta;
-			moves.push_back(m);
+			movesX.push_back(m);
 			totalDeltaTime += timeDelta;
-			totalDeltaMove += positionDelta;
+			totalDeltaXMove += positionDelta;
 			if(totalDeltaTime >= 0.4)
 			{
-				List<MovesDelta>::iterator it = moves.begin();
+				List<MovesDelta>::iterator it = movesX.begin();
 				totalDeltaTime -= it->deltaTime;
-				totalDeltaMove -= it->deltaMove;
-				moves.erase(it);
+				totalDeltaXMove -= it->deltaMove;
+				movesX.erase(it);
 			}
 		}
 		else
 		{
-			if(totalDeltaMove != 0)
+			if(totalDeltaXMove != 0)
 			{
-				speed = totalDeltaMove / totalDeltaTime;
+				speed = totalDeltaXMove / totalDeltaTime;
 				speed = Min(speed, virtualViewSize.x * 2);
 				speed = Max(speed, -virtualViewSize.x * 2);
 			}
@@ -223,12 +266,228 @@ namespace DAVA
 				}
 			}
 			
-			moves.clear();
+			movesX.clear();
 			totalDeltaTime = 0;
-			totalDeltaMove = 0;
+			totalDeltaXMove = 0;
 		}
 		
 		return position.x;
+	}
+	
+	const Vector2& ScrollHelper::GetPosition(float positionXDelta, float positionYDelta,
+												float timeDelta, bool isPositionLocked)
+	{
+		if(isPositionLocked)
+		{
+			if(position.x + positionXDelta > 0)
+			{
+				positionXDelta *= (1.0f - position.x / virtualViewSize.x) * backward;
+			}
+			if(position.y + positionYDelta > 0)
+			{
+				positionYDelta *= (1.0f - position.y / virtualViewSize.y) * backward;
+			}
+			if(position.x + elementSize.x + positionXDelta  < virtualViewSize.x)
+			{                
+				positionXDelta *= (1.0f - (virtualViewSize.x - (position.x + elementSize.x)) / virtualViewSize.x) * backward;
+			}
+			if(position.y + elementSize.y + positionYDelta  < virtualViewSize.y)
+			{                
+				positionYDelta *= (1.0f - (virtualViewSize.y - (position.y + elementSize.y)) / virtualViewSize.y) * backward;
+			}
+			
+			position.x += positionXDelta;
+			speed = 0;
+			MovesDelta m;
+			m.deltaMove = positionXDelta;
+			m.deltaTime = timeDelta;
+			movesX.push_back(m);
+			totalDeltaTime += timeDelta;
+			totalDeltaXMove += positionXDelta;
+			if(totalDeltaTime >= 0.4)
+			{
+				List<MovesDelta>::iterator it = movesX.begin();
+				totalDeltaTime -= it->deltaTime;
+				totalDeltaXMove -= it->deltaMove;
+				movesX.erase(it);
+			}
+			
+			position.y += positionYDelta;
+			speed = 0;
+			m.deltaMove = positionYDelta;
+			m.deltaTime = timeDelta;
+			movesY.push_back(m);
+			totalDeltaTime += timeDelta;
+			totalDeltaYMove += positionYDelta;
+			if(totalDeltaTime >= 0.4)
+			{
+				List<MovesDelta>::iterator it = movesY.begin();
+				totalDeltaTime -= it->deltaTime;
+				totalDeltaYMove -= it->deltaMove;
+				movesY.erase(it);
+			}
+		}
+		else
+		{
+			if(totalDeltaXMove != 0)
+			{
+				speed = totalDeltaXMove / totalDeltaTime;
+				speed = Min(speed, virtualViewSize.x * 2);
+				speed = Max(speed, -virtualViewSize.x * 2);
+			}
+			
+			if(position.x > 0)
+			{
+				if(backward != 0 && slowDown != 0)
+				{
+					if(slowDown != 0)
+					{
+						speed -= virtualViewSize.x * timeDelta / slowDown / backward;
+					}
+					else
+					{
+						speed -= virtualViewSize.x * timeDelta * 4 / backward;
+					}
+					position.x += speed * timeDelta;
+					if(position.x < 0)
+					{
+						position.x = 0;
+						speed = 0;
+					}
+				}
+				else
+				{
+					position.x = 0;
+					speed = 0;
+				}
+			}
+			else if(position.x + elementSize.x < virtualViewSize.x)
+			{
+				if(backward != 0)
+				{
+					if(slowDown != 0)
+					{
+						speed += virtualViewSize.x * timeDelta / slowDown / backward;
+					}
+					else
+					{
+						speed += virtualViewSize.x * timeDelta * 4 / backward;
+					}
+					position.x += speed * timeDelta;
+					if(position.x + elementSize.x > virtualViewSize.x)
+					{
+						position.x = virtualViewSize.x - elementSize.x;
+						speed = 0;
+					}
+				}
+				else
+				{
+					position.x = virtualViewSize.x - elementSize.x;
+					speed = 0;
+				}
+			}
+			else if(speed != 0)
+			{
+				if(slowDown != 0)
+				{
+					float oldSpd = speed;
+					speed = speed - speed / slowDown * timeDelta;
+					if((oldSpd > 0 && speed < 1.0) || (oldSpd < 0 && speed > -1.0))
+					{
+						speed = 0;
+					}
+					position.x += speed * timeDelta;
+				}
+				else
+				{
+					speed = 0;
+				}
+			}
+			
+			// Y COORDINATE
+			if(totalDeltaYMove != 0)
+			{
+				speed = totalDeltaYMove / totalDeltaTime;
+				speed = Min(speed, virtualViewSize.y * 2);
+				speed = Max(speed, -virtualViewSize.y * 2);
+			}
+			
+			if(position.y > 0)
+			{
+				if(backward != 0 && slowDown != 0)
+				{
+					if(slowDown != 0)
+					{
+						speed -= virtualViewSize.y * timeDelta / slowDown / backward;
+					}
+					else
+					{
+						speed -= virtualViewSize.y * timeDelta * 4 / backward;
+					}
+					position.y += speed * timeDelta;
+					if(position.y < 0)
+					{
+						position.y = 0;
+						speed = 0;
+					}
+				}
+				else
+				{
+					position.y = 0;
+					speed = 0;
+				}
+			}
+			else if(position.y + elementSize.y < virtualViewSize.y)
+			{
+				if(backward != 0)
+				{
+					if(slowDown != 0)
+					{
+						speed += virtualViewSize.y * timeDelta / slowDown / backward;
+					}
+					else
+					{
+						speed += virtualViewSize.y * timeDelta * 4 / backward;
+					}
+					position.y += speed * timeDelta;
+					if(position.y + elementSize.y > virtualViewSize.y)
+					{
+						position.y = virtualViewSize.y - elementSize.y;
+						speed = 0;
+					}
+				}
+				else
+				{
+					position.y = virtualViewSize.y - elementSize.y;
+					speed = 0;
+				}
+			}
+			else if(speed != 0)
+			{
+				if(slowDown != 0)
+				{
+					float oldSpd = speed;
+					speed = speed - speed / slowDown * timeDelta;
+					if((oldSpd > 0 && speed < 1.0) || (oldSpd < 0 && speed > -1.0))
+					{
+						speed = 0;
+					}
+					position.y += speed * timeDelta;
+				}
+				else
+				{
+					speed = 0;
+				}
+			}
+			
+			movesX.clear();
+			movesY.clear();
+			totalDeltaTime = 0;
+			totalDeltaXMove = 0;
+			totalDeltaYMove = 0;
+		}
+		
+		return position;
 	}
 }
 
