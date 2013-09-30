@@ -32,7 +32,7 @@
 #include "Scene/System/CollisionSystem/CollisionRenderObject.h"
 #include "Scene/System/CollisionSystem/CollisionLandscape.h"
 #include "Scene/System/CollisionSystem/CollisionParticleEmitter.h"
-#include "Scene/System/CollisionSystem/CollisionCamera.h"
+#include "Scene/System/CollisionSystem/CollisionBox.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/SceneEditor2.h"
