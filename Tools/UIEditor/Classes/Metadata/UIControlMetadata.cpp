@@ -302,28 +302,6 @@ void UIControlMetadata::SetAngle(float value)
     GetActiveUIControl()->SetAngle(DegToRad(value));
 }
 
-//Boolean getters/setters
-bool UIControlMetadata::GetSelected() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-
-    return GetActiveUIControl()->GetSelected();
-}
-
-void UIControlMetadata::SetSelected(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-
-   	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
-    GetActiveUIControl()->SetSelected(value, false);
-}
-
 bool UIControlMetadata::GetVisible() const
 {
     if (!VerifyActiveParamID())
@@ -344,27 +322,6 @@ void UIControlMetadata::SetVisible(const bool value)
     
 	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
     GetActiveUIControl()->SetVisible(value, false);
-}
-
-bool UIControlMetadata::GetEnabled() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-    
-    return !GetActiveUIControl()->GetDisabled();
-}
-
-void UIControlMetadata::SetEnabled(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-
-   	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
-    GetActiveUIControl()->SetDisabled(!value, false);
 }
 
 bool UIControlMetadata::GetInput() const
