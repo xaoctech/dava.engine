@@ -190,6 +190,7 @@ namespace DAVA
 			wchar_t* execArgsW;
 			size_t execArgsWLength;
 
+			//VI: TODO: UNICODE: Use framework methods to convert to Unicode once it will be ready.
 			ConvertToWideChar(executablePath.GetAbsolutePathname(), &execPathW, &execPathWLength);
 			ConvertToWideChar(runArgsFlat, &execArgsW, &execArgsWLength);
 
