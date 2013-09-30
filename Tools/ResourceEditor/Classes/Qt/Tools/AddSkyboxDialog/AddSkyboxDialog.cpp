@@ -141,26 +141,14 @@ void AddSkyboxDialog::MakeCreateButton()
 {
 	QObject::disconnect(controlButton, SIGNAL(clicked()), this, SLOT(OnDeleteButtonClicked()));
 	QObject::connect(controlButton, SIGNAL(clicked()), this, SLOT(OnCreateButtonClicked()));
-	controlButton->setText("Create");
-	
-	QPushButton* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
-	if(okButton)
-	{
-		okButton->setEnabled(false);
-	}
+	controlButton->setText("Create");	
 }
 
 void AddSkyboxDialog::MakeDeleteButton()
 {
 	QObject::connect(controlButton, SIGNAL(clicked()), this, SLOT(OnDeleteButtonClicked()));
 	QObject::disconnect(controlButton, SIGNAL(clicked()), this, SLOT(OnCreateButtonClicked()));
-	controlButton->setText("Delete");
-	
-	QPushButton* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
-	if(okButton)
-	{
-		okButton->setEnabled(true);
-	}
+	controlButton->setText("Delete");	
 }
 
 void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
