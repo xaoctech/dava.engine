@@ -123,7 +123,7 @@ void Core::CreateSingletons()
 		 */
 		Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 	}
-//	Logger::Debug("[Core::Create] successfull");
+//	Logger::FrameworkDebug("[Core::Create] successfull");
     
 	new LocalizationSystem();
 
@@ -178,7 +178,7 @@ void Core::ReleaseSingletons()
 	//SoundSystem::Instance()->Release();
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	LocalizationSystem::Instance()->Release();
-//	Logger::Debug("[Core::Release] successfull");
+//	Logger::FrameworkDebug("[Core::Release] successfull");
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
@@ -337,7 +337,7 @@ void Core::CalculateScaleMultipliers()
         TextBlock::ScreenResolutionChanged();
     }
 			
-//	Logger::Debug("[Core] CalculateScaleMultipliers desirableIndex: %d", desirableIndex);
+//	Logger::FrameworkDebug("[Core] CalculateScaleMultipliers desirableIndex: %d", desirableIndex);
 		
 }
 	
@@ -450,13 +450,13 @@ float32 Core::GetVirtualScreenYMax()
 	
 Core::eScreenMode Core::GetScreenMode()
 {
-	Logger::Debug("[Core::GetScreenMode] return screen mode MODE_UNSUPPORTED");
+	Logger::FrameworkDebug("[Core::GetScreenMode] return screen mode MODE_UNSUPPORTED");
 	return MODE_UNSUPPORTED;
 }
 
 void Core::SwitchScreenToMode(eScreenMode screenMode)
 {
-	Logger::Debug("[Core::SwitchScreenToMode] do not supported by platform implementation of core");
+	Logger::FrameworkDebug("[Core::SwitchScreenToMode] do not supported by platform implementation of core");
 }
 
 void Core::GetAvailableDisplayModes(List<DisplayMode> & availableModes)
@@ -576,7 +576,7 @@ DisplayMode Core::GetCurrentDisplayMode()
 void Core::Quit()
 {
     exit(0);
-	Logger::Debug("[Core::Quit] do not supported by platform implementation of core");
+	Logger::FrameworkDebug("[Core::Quit] do not supported by platform implementation of core");
 }
 	
 void Core::SetApplicationCore(ApplicationCore * _core)

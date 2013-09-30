@@ -461,6 +461,7 @@
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A662EDCC17E0D37800AF2135 /* AddSkyboxDialog.cpp */; };
+		A68290A517F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A68290A417F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp */; };
 		A69AA39C1796EDE80008B683 /* ClickableQLabel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */; };
 		A69AA39D1796EDE80008B683 /* CubeListItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3941796EDE80008B683 /* CubeListItemDelegate.cpp */; };
 		A69AA39E1796EDE80008B683 /* CubemapEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3961796EDE80008B683 /* CubemapEditorDialog.cpp */; };
@@ -1556,6 +1557,7 @@
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A662EDCC17E0D37800AF2135 /* AddSkyboxDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSkyboxDialog.cpp; sourceTree = "<group>"; };
 		A662EDCD17E0D37800AF2135 /* AddSkyboxDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSkyboxDialog.h; sourceTree = "<group>"; };
+		A68290A417F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSkyboxDialog_moc.cpp; sourceTree = "<group>"; };
 		A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClickableQLabel.cpp; sourceTree = "<group>"; };
 		A69AA3931796EDE80008B683 /* ClickableQLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClickableQLabel.h; sourceTree = "<group>"; };
 		A69AA3941796EDE80008B683 /* CubeListItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeListItemDelegate.cpp; sourceTree = "<group>"; };
@@ -2367,6 +2369,7 @@
 		4FAD0CAF1785EC6E00B05A35 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				A68290A317F58E6D007BAFDC /* AddSkyboxDialog */,
 				E846D4BF17F32B72007383E3 /* QtLabelWithActions */,
 				62AC3F0617E0B7A3008F8299 /* LandscapeDialog */,
 				E8BD39D417B4BB4D00C63420 /* LabeledSlider */,
@@ -3448,6 +3451,14 @@
 			);
 			name = AddSkyboxDialog;
 			path = Classes/Qt/Tools/AddSkyboxDialog;
+			sourceTree = "<group>";
+		};
+		A68290A317F58E6D007BAFDC /* AddSkyboxDialog */ = {
+			isa = PBXGroup;
+			children = (
+				A68290A417F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp */,
+			);
+			path = AddSkyboxDialog;
 			sourceTree = "<group>";
 		};
 		A69AA3911796EDE80008B683 /* CubemapEditor */ = {
@@ -4836,6 +4847,7 @@
 				E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */,
 				E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */,
 				49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */,
+				A68290A517F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

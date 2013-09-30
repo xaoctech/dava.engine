@@ -88,7 +88,7 @@ void CullingSystem::Process()
     {
         RenderObject * node = renderObjectArray[pos];
         node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
+        //Logger::FrameworkDebug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
         //if (!frustum->IsInside(node->GetWorldTransformedBox()))
         {
             //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);

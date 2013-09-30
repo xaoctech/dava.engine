@@ -77,7 +77,7 @@ void ObjectFactory::Dump()
     Map<String, CreateObjectFunc>::iterator it = creatorMap.begin();
     for (; it != creatorMap.end(); ++it)
     {
-        Logger::Debug("Class: %s size: %d", it->first.c_str(), sizeMap[it->first]);
+        Logger::FrameworkDebug("Class: %s size: %d", it->first.c_str(), sizeMap[it->first]);
     }
 }
 }

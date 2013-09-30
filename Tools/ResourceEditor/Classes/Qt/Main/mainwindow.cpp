@@ -1191,8 +1191,7 @@ void QtMainWindow::OnSetSkyboxNode()
 		return;
 	}
 	
-	AddSkyboxDialog dlg(this);
-	dlg.Show(scene);
+	AddSkyboxDialog::Show(this, scene);
 }
 
 void QtMainWindow::OnSwitchEntityDialog()

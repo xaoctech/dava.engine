@@ -111,7 +111,7 @@ namespace DAVA
 		if (error > maxError)
 			maxError = error;
 	}
-	Logger::Debug("Fast sin accuracy: %f %%", maxError);  
+	Logger::FrameworkDebug("Fast sin accuracy: %f %%", maxError);  
 	
 	uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
 	float32 angle = 0.0f;
@@ -135,7 +135,7 @@ namespace DAVA
 	}
 	uint64 xt2 = SystemTimer::Instance()->AbsoluteMS();
 	
-	Logger::Debug("sin default:%lld sin fast: %lld, %f %f, %f", t2 - t1, xt2 - xt1, y2 - y1, y2, y1);
+	Logger::FrameworkDebug("sin default:%lld sin fast: %lld, %f %f, %f", t2 - t1, xt2 - xt1, y2 - y1, y2, y1);
 	*/
     
     uint32 CountLeadingZeros(uint32 value)
