@@ -175,6 +175,9 @@ private:
 
 	// Stop all the Particle Effect Components for which appropriate flag is set.
 	void StopParticleEffectComponents(Entity* rootNode);
+	
+	void SaveMaterialSystem(File * file, SerializationContext* serializationContext);
+	
 
     bool isDebugLogEnabled;
     bool isSaveForGame;

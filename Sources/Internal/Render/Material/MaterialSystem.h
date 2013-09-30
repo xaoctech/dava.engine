@@ -58,6 +58,8 @@ public:
 	
     NMaterial* GetMaterial(const FastName & name);
 	
+	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
+	
 private:
 	
 	friend class NMaterial;
@@ -75,8 +77,6 @@ private:
 							const FilePath& filePath,
 							NMaterial* parentMaterial,
 							Map<String, Vector<MaterialData> >& nodes);
-	
-	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
 	
 private:
 	

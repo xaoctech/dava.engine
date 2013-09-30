@@ -167,7 +167,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 8;
+    header.version = 9;
     header.nodeCount = _scene->GetChildrenCount();
 	
 	serializationContext.SetRootNodePath(rootNodePathName);
@@ -204,7 +204,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     List<DataNode*> nodes;
 	if (isSaveForGame)
 		_scene->OptimizeBeforeExport();
-    _scene->GetDataNodes(nodes);
+   
+	_scene->GetDataNodes(nodes);
     int32 dataNodesCount = (int32)nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));
     for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -213,6 +214,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     // save hierarchy
     if(isDebugLogEnabled)
         Logger::Debug("+ save hierarchy");
+	
+	SaveMaterialSystem(file, &serializationContext);
 
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
@@ -1194,6 +1197,30 @@ void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
 	}
 		
 }
+	
+void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializationContext)
+{
+	MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
+	Vector<NMaterial*> materials;
+	matSystem->BuildMaterialList(NULL, materials);
+	
+	KeyedArchive* matSystemArchive = new KeyedArchive();
+	
+	size_t materialCount = materials.size();
+	for(size_t i = 0; i < materialCount; ++i)
+	{
+		NMaterial* mat = materials[i];
+		KeyedArchive* materialArchive = new KeyedArchive();
+		mat->Save(materialArchive, serializationContext);
+		matSystemArchive->SetArchive(Format("material.%d", i), materialArchive);
+		SafeRelease(materialArchive);
+	}
+	matSystemArchive->SetUInt32("materialCount", materialCount);
+	matSystemArchive->Save(file);
+	
+	SafeRelease(matSystemArchive);
+}
+	
 		
 String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 {

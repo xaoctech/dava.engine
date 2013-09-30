@@ -234,11 +234,18 @@ void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializati
 		archive->SetUInt32("rb.startIndex", startIndex);
 		archive->SetVariant("rb.aabbox", VariantType(aabbox));
 		archive->SetVariant("rb.datasource", VariantType((uint64)dataSource));
-		archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
 		
-		KeyedArchive *mia = new KeyedArchive();
-		archive->SetArchive("rb.matinst", mia);
-		mia->Release();
+		NMaterial* material = GetMaterial();
+		if(material)
+		{
+			archive->SetString("rb.nmatname", material->GetName());
+		}
+		
+		//archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
+		
+		//KeyedArchive *mia = new KeyedArchive();
+		//archive->SetArchive("rb.matinst", mia);
+		//mia->Release();
 	}
 }
 
@@ -259,16 +266,18 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		if(NULL != mia)
 		{
 			oldMaterialInstance->Load(mia, serializationContext);
-		}else
-        {
-            DVASSERT(0 && "Mat Inst");
-        }
+		}
 
         NMaterial * newMaterial = 0;
 		
 		if(mat)
 		{
 			SceneFileV2::ConvertOldMaterialToNewMaterial(serializationContext, mat, oldMaterialInstance, &newMaterial);
+		}
+		else
+		{
+			//TODO:add NMaterial load by name
+			DVASSERT(false);
 		}
 		
         SafeRelease(oldMaterialInstance);
