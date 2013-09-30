@@ -66,6 +66,14 @@ void NormalHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, TextDrawSyste
 	DAVA::RenderManager::Instance()->SetColor(colorX);
 	DAVA::RenderHelper::Instance()->DrawLine(axisX->curFrom, axisX->curTo);
 
+	// y
+	DAVA::RenderManager::Instance()->SetColor(colorY);
+	DAVA::RenderHelper::Instance()->DrawLine(axisY->curFrom, axisY->curTo);
+
+	// z
+	DAVA::RenderManager::Instance()->SetColor(colorZ);
+	DAVA::RenderHelper::Instance()->DrawLine(axisZ->curFrom, axisZ->curTo);
+
 	DrawAxisText(textDrawSystem, axisX, axisY, axisZ);
 
 	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
