@@ -801,6 +801,8 @@ void EntityModificationSystem::CloneEnd()
 
 			// and add it once again with command
 			sceneEditor->Exec(new EntityMoveCommand(clonedEntities[i], cloneParent));
+
+			SafeRelease(clonedEntities[i]);
 		}
 
 		sceneEditor->EndBatch();
