@@ -139,7 +139,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	Entity * rootNode = GetRootNode(path);
 	if(rootNode)
 	{
-		rootNode = rootNode->Clone();
+		//rootNode = rootNode->Clone();
 
 		ret = true;
 
@@ -170,7 +170,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 		commandStack.SetClean(true);
 
-		rootNode->Release();
+		ReleaseRootNode(rootNode);
+		//rootNode->Release();
 	}
 
 	structureSystem->Init();

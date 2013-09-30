@@ -456,19 +456,20 @@ void ModificationWidget::ApplyScaleValues(ST_Axis axis)
 				moveToZeroPos.CreateTranslation(-origMatrix.GetTranslationVector());
 				moveFromZeroPos.CreateTranslation(origMatrix.GetTranslationVector());
 
+				DAVA::float32 newEntityScale;
 				if(pivotMode == PivotAbsolute)
 				{
 					if(0 != scale.x)
 					{
-						scaleValue = scaleValue / scale.x;
+						newEntityScale = scaleValue / scale.x;
 					}
 					else
 					{
-						scaleValue = 0;
+						newEntityScale = 0;
 					}
 				}
 
-				scaleMatrix.CreateScale(DAVA::Vector3(scaleValue, scaleValue, scaleValue));
+				scaleMatrix.CreateScale(DAVA::Vector3(newEntityScale, newEntityScale, newEntityScale));
 				newMatrix = origMatrix * moveToZeroPos * scaleMatrix * moveFromZeroPos;
 				newMatrix.SetTranslationVector(origMatrix.GetTranslationVector());
 
