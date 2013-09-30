@@ -109,6 +109,7 @@ SceneEditor2::SceneEditor2()
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
+	structureSystem->LockSignals(false);
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -182,6 +183,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 bool SceneEditor2::Save(const DAVA::FilePath &path)
 {
+	structureSystem->LockSignals(true);
 	PopEditorEntities();
 
 	DAVA::SceneFileV2::eError err = SceneHelper::SaveScene(this, path);
@@ -199,8 +201,11 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
 	PushEditorEntities();
+	structureSystem->LockSignals(false);
 
 	SceneSignals::Instance()->EmitSaved(this);
+	//SceneSignals::Instance()->EmitStructureChanged(this, this);
+
 	return ret;
 }
 
@@ -226,7 +231,7 @@ void SceneEditor2::PopEditorEntities()
 
 void SceneEditor2::PushEditorEntities()
 {
-	for(DAVA::uint32 i = 0; i < editorEntities.size(); ++i)
+	for(DAVA::int32 i = editorEntities.size() - 1; i >= 0; i--)
 	{
 		AddEditorEntity(editorEntities[i]);
 		editorEntities[i]->Release();
