@@ -97,9 +97,7 @@ void CommandConvertScene::Execute()
         
         // Export to *.sc2
         path.ReplaceExtension(".sc2");
-
-		SceneHelper::SaveScene(scene, path);
-
+        scene->Save(path);
         SafeRelease(scene);
     }
     else if(code == COLLADA_ERROR_OF_ROOT_NODE)

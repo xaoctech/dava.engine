@@ -890,9 +890,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	sceneSaver.SetOutFolder(folder);
 
 	Set<String> errorsLog;
-	scene->PopEditorEntities();
 	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
-	scene->PushEditorEntities();
 
 	ShowErrorDialog(errorsLog);
 }

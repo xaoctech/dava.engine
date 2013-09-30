@@ -486,38 +486,6 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	}
 }
 
-void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
-{
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	if(sceneData->GetScenePathname().IsEmpty())
-	{
-		ShowErrorDialog("Can't export not saved scene.");
-		return;
-	}
-
-	BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushEditorEntities();
-    
-    // Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
-    
-    SceneExporter exporter;
-    
-    exporter.SetInFolder(projectPath + String("DataSource/3d/"));
-    exporter.SetOutFolder(projectPath + String("Data/3d/"));
-    
-    exporter.SetGPUForExporting(forGPU);
-    
-    //TODO: how to be with removed nodes?
-    Set<String> errorsLog;
-    exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
-    
-	iBody->bodyControl->PopEditorEntities();
-    
-    ShowErrorDialog(errorsLog);
-}
-
 
 void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
 {

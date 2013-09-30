@@ -49,20 +49,6 @@ protected:
 	FilePath	filePath;
 };
 
-class CommandExport: public Command
-{
-    
-public:	
-	DAVA_DEPRECATED(CommandExport(DAVA::eGPUFamily gpu)); // DEPRECATED: using of SceneEditorScreenMain, Cancel absent
-    
-protected:	
-    
-    virtual void Execute();
-    
-protected:
-    DAVA::eGPUFamily gpuFamily;
-    
-};
 
 
 #endif // #ifndef __FILE_COMMANDS_H__
