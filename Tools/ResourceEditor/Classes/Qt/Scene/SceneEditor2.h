@@ -55,6 +55,7 @@
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
+#include "Scene/System/BeastSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -92,7 +93,7 @@ public:
 	EditorLightSystem *editorLightSystem;
 	TextDrawSystem *textDrawSystem;
 	DebugDrawSystem *debugDrawSystem;
-
+	BeastSystem	*beastSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
