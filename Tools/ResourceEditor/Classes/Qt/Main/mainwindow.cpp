@@ -1259,7 +1259,7 @@ void QtMainWindow::LandscapeDialogFinished(int result)
 		{
 			AddEntityCommand* command = new AddEntityCommand(returnedEntity, sceneEditor);
 			sceneEditor->Exec(command);
-			sceneEditor->selectionSystem->SetSelection(command->GetEntity());
+			sceneEditor->selectionSystem->SetSelection(returnedEntity);
 		}
 		else
 		{
@@ -1276,7 +1276,7 @@ void QtMainWindow::LandscapeDialogFinished(int result)
 				sceneEditor->Exec(command);
 				AddEntityCommand* commandAdd = new AddEntityCommand(returnedEntity, sceneEditor);
 				sceneEditor->Exec(commandAdd);
-				sceneEditor->selectionSystem->SetSelection(commandAdd->GetEntity());
+				sceneEditor->selectionSystem->SetSelection(returnedEntity);
 			}
 		}
 		else
