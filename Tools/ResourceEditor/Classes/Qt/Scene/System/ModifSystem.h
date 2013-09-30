@@ -94,7 +94,7 @@ protected:
 	{
 		CLONE_DONT,
 		CLONE_NEED,
-		CLOLE_DONE
+		CLONE_DONE
 	};
 
 	CloneState cloneState;
