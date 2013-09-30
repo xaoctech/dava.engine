@@ -106,6 +106,9 @@ SceneEditor2::SceneEditor2()
 
 	debugDrawSystem = new DebugDrawSystem(this);
 	AddSystem(debugDrawSystem, 0);
+	
+	beastSystem = new BeastSystem(this);
+	AddSystem(beastSystem, 0);
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
