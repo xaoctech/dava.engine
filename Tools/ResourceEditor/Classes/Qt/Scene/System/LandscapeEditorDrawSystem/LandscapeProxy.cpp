@@ -44,6 +44,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 
 	customLandscape = new CustomLandscape();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
+	customLandscape->SetAABBox(baseLandscape->GetBoundingBox());
 }
 
 LandscapeProxy::~LandscapeProxy()
@@ -306,6 +307,7 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 	if (force || mode == MODE_CUSTOM_LANDSCAPE)
 	{
 		uint32 state = RenderManager::Instance()->GetState();
+		baseLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, NULL);
 		baseLandscape->UpdateFullTiledTexture();
 		RenderManager::Instance()->SetState(state);
 
