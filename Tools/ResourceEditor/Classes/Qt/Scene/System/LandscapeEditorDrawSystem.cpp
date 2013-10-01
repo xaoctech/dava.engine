@@ -581,3 +581,8 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		SafeRelease(descriptor);
 	}
 }
+
+Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
+{
+	return baseLandscape->GetTiledShaderMode();
+}

@@ -27,54 +27,31 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_TEAMCITY_OUTPUT_H__
+#define __DAVAENGINE_TEAMCITY_OUTPUT_H__
 
-#ifndef __DAVAENGINE_TRANSFORM_SYSTEM_H__
-#define __DAVAENGINE_TRANSFORM_SYSTEM_H__
+/**
+	\defgroup utils Utilities
+ */
 
-#include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
+#include "FileSystem/Logger.h"
 
 namespace DAVA 
 {
-
-class Entity;
-class Transform;
-
-class TransformSystem : public SceneSystem
+    
+class TeamcityOutput: public LoggerOutput
 {
 public:
-	TransformSystem(Scene * scene);
-	~TransformSystem();
 
-    Transform * CreateTransform();
-
-	virtual void ImmediateEvent(Entity * entity, uint32 event);
-	virtual void AddEntity(Entity * entity);
-	virtual void RemoveEntity(Entity * entity);
-
-    void DeleteTransform(Transform * transform);
-    void LinkTransform(int32 parentIndex, int32 childIndex);
-	void UnlinkTransform(int32 childIndex);
+    virtual void Output(Logger::eLogLevel ll, const char8* text) const;
+    virtual void Output(Logger::eLogLevel ll, const char16* text) const;
     
-    virtual void Process();
-
 private:
-    void SortAndThreadSplit();
     
-	Vector<Entity*> updatableEntities;
-
-	void EntityNeedUpdate(Entity * entity);
-	void HierahicAddToUpdate(Entity * entity);
-
-	void HierahicFindUpdatableTransform(Entity * entity, bool forcedUpdate = false);
-
-	int32 passedNodes;
-	int32 multipliedNodes;
+    String NormalizeString(const char8 *text) const;
 };
 
 };
 
-#endif //__DAVAENGINE_TRANSFORM_SYSTEM_H__
+#endif // __DAVAENGINE_TEAMCITY_OUTPUT_H__
+
