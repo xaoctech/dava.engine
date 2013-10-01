@@ -324,7 +324,11 @@ private:
 	void FlushDataToRenderer();
 	void ReleaseImages();
 
+	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
+
     void MakePink();
+
+	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
 
     static bool CheckImageSize(const Vector<Image *> &imageSet);
     static bool IsCompressedFormat(PixelFormat format);

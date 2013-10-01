@@ -46,7 +46,7 @@ ShadowVolume::ShadowVolume()
 {
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	shader->RecompileAsync();
+	shader->Recompile();
 
     SetOwnerLayerName(LAYER_SHADOW_VOLUME);
     

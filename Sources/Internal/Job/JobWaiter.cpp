@@ -39,6 +39,11 @@ ThreadIdJobWaiter::ThreadIdJobWaiter()
 
 }
 
+ThreadIdJobWaiter::~ThreadIdJobWaiter()
+{
+	JobManager::Instance()->UnregisterWaiterForCreatorThread(this);
+}
+
 void ThreadIdJobWaiter::Wait()
 {
 	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForCreatorThread(this))
@@ -47,7 +52,7 @@ void ThreadIdJobWaiter::Wait()
 	}
 }
 
-const Thread::ThreadId & ThreadIdJobWaiter::GetThreadId()
+Thread::ThreadId & ThreadIdJobWaiter::GetThreadId()
 {
 	return threadId;
 }
@@ -57,20 +62,37 @@ ConditionalVariable * ThreadIdJobWaiter::GetConditionalVariable()
 	return &cv;
 }
 
+
+
 JobInstanceWaiter::JobInstanceWaiter(Job * _job)
 :	job(_job)
 {
 
 }
 
+JobInstanceWaiter::~JobInstanceWaiter()
+{
+	JobManager::Instance()->UnregisterWaiterForJobInstance(this);
+}
+
 void JobInstanceWaiter::Wait()
 {
-
+	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForJobInstance(this))
+	{
+		Thread::Wait(&cv);
+	}
 }
 
 ConditionalVariable * JobInstanceWaiter::GetConditionalVariable()
 {
 	return &cv;
 }
+
+Job * JobInstanceWaiter::GetJob()
+{
+	return job;
+}
+
+
 
 }

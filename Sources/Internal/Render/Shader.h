@@ -38,6 +38,7 @@
 #include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
 #include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -106,7 +107,7 @@ public:
     bool LoadFromYaml(const FilePath & pathname);
     bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
     
-	Job * RecompileAsync();
+	void Recompile();
 	void RecompileInternal(BaseObject * caller, void * param, void *callerData);
 
     Shader * RecompileNewInstance(const String & combination);
@@ -221,6 +222,7 @@ private:
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
     void DeleteShaders();
+	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
     eUniform GetUniformByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);

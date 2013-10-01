@@ -46,7 +46,7 @@ ShadowVolumeNode::ShadowVolumeNode()
 {
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	shader->RecompileAsync();
+	shader->Recompile();
 }
 
 DAVA::ShadowVolumeNode::~ShadowVolumeNode()

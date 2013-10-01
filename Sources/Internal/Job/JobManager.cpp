@@ -57,7 +57,7 @@ void JobManager::UpdateMainQueue()
 	mainQueue->Update();
 }
 
-void JobManager::CreateJob(eThreadType threadType, const Message & message)
+ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & message)
 {
 	const Thread::ThreadId & creatorThreadId = Thread::GetCurrentThreadId();
 	ScopedPtr<Job> job(new Job(message, creatorThreadId));
@@ -79,6 +79,8 @@ void JobManager::CreateJob(eThreadType threadType, const Message & message)
 	{
 		DVASSERT(0);
 	}
+
+	return job;
 }
 
 
@@ -95,6 +97,8 @@ void JobManager::OnJobCreated(Job * job)
 void JobManager::OnJobCompleted(Job * job)
 {
 	jobsDoneMutex.Lock();
+
+	job->SetState(Job::STATUS_DONE);
 
 	//check jobs done for ThreadId
 	uint32 & jobsCount = jobsPerCreatorThread[job->creatorThreadId];
@@ -116,14 +120,18 @@ JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread
 	jobsDoneMutex.Lock();
 
 	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_WILL_WAIT;
-	waitersPerCreatorThread[waiter->GetThreadId()] = waiter;
+	const Thread::ThreadId threadId = waiter->GetThreadId();
+	DVASSERT(waitersPerCreatorThread.find(threadId) == waitersPerCreatorThread.end());
 
 	//check if all desired jobs are already done
-	uint32 & jobsCount = jobsPerCreatorThread[waiter->GetThreadId()];
+	uint32 & jobsCount = jobsPerCreatorThread[threadId];
 	if(0 == jobsCount)
 	{
-		CheckAndCallWaiterForThreadId(waiter->GetThreadId());
 		result = JobManager::WAITER_RETURN_IMMEDIATELY;
+	}
+	else
+	{
+		waitersPerCreatorThread[threadId] = waiter;
 	}
 
 	jobsDoneMutex.Unlock();
@@ -131,6 +139,18 @@ JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread
 	return result;
 }
 
+void JobManager::UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
+{
+	jobsDoneMutex.Lock();
+
+	Map<Thread::ThreadId,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(waiter->GetThreadId());
+	if(waitersPerCreatorThread.end() != it)
+	{
+		waitersPerCreatorThread.erase(it);
+	}
+
+	jobsDoneMutex.Unlock();
+}
 
 void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId)
 {
@@ -142,6 +162,44 @@ void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId
 	}
 }
 
+//===================================
+
+JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForJobInstance(JobInstanceWaiter * waiter)
+{
+	jobsDoneMutex.Lock();
+
+	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_WILL_WAIT;
+
+	Job * job = waiter->GetJob();
+	DVASSERT(waitersPerJob.find(job) == waitersPerJob.end());
+	
+	if(Job::STATUS_DONE == job->GetState())
+	{
+		result = JobManager::WAITER_RETURN_IMMEDIATELY;
+	}
+	else
+	{
+		waitersPerJob[job] = waiter;
+	}
+
+	jobsDoneMutex.Unlock();
+
+	return result;
+}
+
+void JobManager::UnregisterWaiterForJobInstance(JobInstanceWaiter * waiter)
+{
+	jobsDoneMutex.Lock();
+
+	Map<Job *, JobInstanceWaiter *>::iterator it = waitersPerJob.find(waiter->GetJob());
+	if(waitersPerJob.end() != it)
+	{
+		waitersPerJob.erase(it);
+	}
+
+	jobsDoneMutex.Unlock();
+}
+
 void JobManager::CheckAndCallWaiterForJobInstance(Job * job)
 {
 	Map<Job *, JobInstanceWaiter *>::iterator it = waitersPerJob.find(job);
@@ -151,6 +209,5 @@ void JobManager::CheckAndCallWaiterForJobInstance(Job * job)
 		waitersPerJob.erase(it);
 	}
 }
-
 
 }
