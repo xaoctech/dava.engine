@@ -236,6 +236,9 @@ public:
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void RecalcBoundingBox();
+
+	/*from RenderObject*/
+	virtual void RecalculateWorldBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.

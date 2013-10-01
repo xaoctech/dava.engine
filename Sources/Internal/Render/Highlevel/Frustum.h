@@ -118,6 +118,11 @@ public:
 	//! \return \ref eFrustumResult to classify intersection
 	eFrustumResult Classify(const AABBox3 & box) const;
 
+	//checks only planes mentioned in [io]planeMask starting with [io]startId
+	//if box is completely inside planes subspace - plane is removed from planeMask
+	//if box is clipped by plane startId is set to this plane
+	eFrustumResult Classify(const AABBox3 & box, uint32 &planeMask, uint32 &startId) const;
+
 	//! \brief check bounding sphere visibility against frustum
 	//! \param point sphere center point
 	//! \param radius sphere radius
@@ -141,9 +146,20 @@ public:
 	// 
 	void DebugDraw();
 
+
+	//count  actual plane compares for Classify with plane masking - reset explicitly!
+	static uint32 planeCalls;
+
 private:
 	int32					planeCount;
 	Vector<Plane>		planeArray;
+	struct PlaneAcces
+	{
+		uint8 minx,miny,minz,maxx,maxy,maxz;
+	};
+
+	Vector<PlaneAcces> planeAccesArray;
+
 };
 
 };

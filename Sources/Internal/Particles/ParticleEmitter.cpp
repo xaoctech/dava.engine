@@ -955,6 +955,11 @@ void ParticleEmitter::RecalcBoundingBox()
 	bbox = AABBox3(Vector3(), Vector3());
 }
 
+void ParticleEmitter::RecalculateWorldBoundingBox()
+{
+	worldBBox = bbox; //as ParticelEmmiter dont use world transform for particle rendering, just for generation
+}
+
 void ParticleEmitter::SetLongToAllLayers(bool isLong)
 {
 	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
