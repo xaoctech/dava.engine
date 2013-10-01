@@ -50,6 +50,7 @@ class LoggerOutput;
 
 class Logger : public Singleton<Logger>
 {
+	friend class TeamcityOutput;
 public:
 	enum eLogLevel
 	{
