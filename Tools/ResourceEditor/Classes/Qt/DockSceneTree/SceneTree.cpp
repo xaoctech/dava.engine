@@ -170,11 +170,23 @@ void SceneTree::dragMoveEvent(QDragMoveEvent *event)
 
 void SceneTree::dragEnterEvent(QDragEnterEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-	if(SceneTreeModel::DropingUnknown != treeModel->GetDropType(mimeData))
+	QTreeView::dragEnterEvent(event);
+
 	{
-		event->setDropAction(Qt::MoveAction);
-		event->accept();
+		int row, col; 
+		QModelIndex parent;
+
+		GetDropParams(event->pos(), parent, row, col);
+		if(treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, filteringProxyModel->mapToSource(parent)))
+		{
+			event->setDropAction(Qt::MoveAction);
+			event->accept();
+		}
+		else
+		{
+			event->setDropAction(Qt::IgnoreAction);
+			event->accept();
+		}
 	}
 }
 
