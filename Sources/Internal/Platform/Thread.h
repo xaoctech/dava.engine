@@ -99,7 +99,22 @@ public:
 		}
 		DWORD internalTid;
 #else
-		Not implemented
+    public:
+		bool operator<(const ThreadId & otherThread) const
+		{
+			return internalTid < otherThread.internalTid;
+		}
+        
+    private:
+        ThreadId(pthread_t _internalTid = 0)
+		{
+			internalTid = _internalTid;
+		}
+		bool operator==(const ThreadId & otherThread) const
+		{
+			return internalTid == otherThread.internalTid;
+		}
+		pthread_t internalTid;
 #endif
 		friend class Thread;
 	};

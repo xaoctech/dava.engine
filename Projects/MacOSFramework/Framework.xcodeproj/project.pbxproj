@@ -901,6 +901,30 @@
 		CCC7A4FB17579C6B0061EA5D /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */; };
 		CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
+		CCFB9E4F17FB0D3F005E9B06 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4717FB0D3F005E9B06 /* Job.cpp */; };
+		CCFB9E5017FB0D3F005E9B06 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4717FB0D3F005E9B06 /* Job.cpp */; };
+		CCFB9E5117FB0D3F005E9B06 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4717FB0D3F005E9B06 /* Job.cpp */; };
+		CCFB9E5217FB0D3F005E9B06 /* Job.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4817FB0D3F005E9B06 /* Job.h */; };
+		CCFB9E5317FB0D3F005E9B06 /* Job.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4817FB0D3F005E9B06 /* Job.h */; };
+		CCFB9E5417FB0D3F005E9B06 /* Job.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4817FB0D3F005E9B06 /* Job.h */; };
+		CCFB9E5517FB0D3F005E9B06 /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4917FB0D3F005E9B06 /* JobManager.cpp */; };
+		CCFB9E5617FB0D3F005E9B06 /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4917FB0D3F005E9B06 /* JobManager.cpp */; };
+		CCFB9E5717FB0D3F005E9B06 /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4917FB0D3F005E9B06 /* JobManager.cpp */; };
+		CCFB9E5817FB0D3F005E9B06 /* JobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4A17FB0D3F005E9B06 /* JobManager.h */; };
+		CCFB9E5917FB0D3F005E9B06 /* JobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4A17FB0D3F005E9B06 /* JobManager.h */; };
+		CCFB9E5A17FB0D3F005E9B06 /* JobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4A17FB0D3F005E9B06 /* JobManager.h */; };
+		CCFB9E5B17FB0D3F005E9B06 /* JobQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4B17FB0D3F005E9B06 /* JobQueue.cpp */; };
+		CCFB9E5C17FB0D3F005E9B06 /* JobQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4B17FB0D3F005E9B06 /* JobQueue.cpp */; };
+		CCFB9E5D17FB0D3F005E9B06 /* JobQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4B17FB0D3F005E9B06 /* JobQueue.cpp */; };
+		CCFB9E5E17FB0D3F005E9B06 /* JobQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4C17FB0D3F005E9B06 /* JobQueue.h */; };
+		CCFB9E5F17FB0D3F005E9B06 /* JobQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4C17FB0D3F005E9B06 /* JobQueue.h */; };
+		CCFB9E6017FB0D3F005E9B06 /* JobQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4C17FB0D3F005E9B06 /* JobQueue.h */; };
+		CCFB9E6117FB0D3F005E9B06 /* JobWaiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4D17FB0D3F005E9B06 /* JobWaiter.cpp */; };
+		CCFB9E6217FB0D3F005E9B06 /* JobWaiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4D17FB0D3F005E9B06 /* JobWaiter.cpp */; };
+		CCFB9E6317FB0D3F005E9B06 /* JobWaiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFB9E4D17FB0D3F005E9B06 /* JobWaiter.cpp */; };
+		CCFB9E6417FB0D3F005E9B06 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4E17FB0D3F005E9B06 /* JobWaiter.h */; };
+		CCFB9E6517FB0D3F005E9B06 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4E17FB0D3F005E9B06 /* JobWaiter.h */; };
+		CCFB9E6617FB0D3F005E9B06 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFB9E4E17FB0D3F005E9B06 /* JobWaiter.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
@@ -2198,6 +2222,14 @@
 		CCC7A48216F1D6700061EA5D /* UpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateSystem.h; sourceTree = "<group>"; };
 		CCC7A48716F1D6B80061EA5D /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
 		CCC7A48816F1D6B80061EA5D /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
+		CCFB9E4717FB0D3F005E9B06 /* Job.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Job.cpp; path = Job/Job.cpp; sourceTree = "<group>"; };
+		CCFB9E4817FB0D3F005E9B06 /* Job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Job.h; path = Job/Job.h; sourceTree = "<group>"; };
+		CCFB9E4917FB0D3F005E9B06 /* JobManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobManager.cpp; path = Job/JobManager.cpp; sourceTree = "<group>"; };
+		CCFB9E4A17FB0D3F005E9B06 /* JobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobManager.h; path = Job/JobManager.h; sourceTree = "<group>"; };
+		CCFB9E4B17FB0D3F005E9B06 /* JobQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobQueue.cpp; path = Job/JobQueue.cpp; sourceTree = "<group>"; };
+		CCFB9E4C17FB0D3F005E9B06 /* JobQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobQueue.h; path = Job/JobQueue.h; sourceTree = "<group>"; };
+		CCFB9E4D17FB0D3F005E9B06 /* JobWaiter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobWaiter.cpp; path = Job/JobWaiter.cpp; sourceTree = "<group>"; };
+		CCFB9E4E17FB0D3F005E9B06 /* JobWaiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobWaiter.h; path = Job/JobWaiter.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
@@ -2895,6 +2927,21 @@
 				32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		CCFB9E3617FB0CFA005E9B06 /* Job */ = {
+			isa = PBXGroup;
+			children = (
+				CCFB9E4717FB0D3F005E9B06 /* Job.cpp */,
+				CCFB9E4817FB0D3F005E9B06 /* Job.h */,
+				CCFB9E4917FB0D3F005E9B06 /* JobManager.cpp */,
+				CCFB9E4A17FB0D3F005E9B06 /* JobManager.h */,
+				CCFB9E4B17FB0D3F005E9B06 /* JobQueue.cpp */,
+				CCFB9E4C17FB0D3F005E9B06 /* JobQueue.h */,
+				CCFB9E4D17FB0D3F005E9B06 /* JobWaiter.cpp */,
+				CCFB9E4E17FB0D3F005E9B06 /* JobWaiter.h */,
+			);
+			name = Job;
 			sourceTree = "<group>";
 		};
 		E8989ABD16BD24E400732C04 /* Animation */ = {
@@ -3834,6 +3881,7 @@
 				E8989B3616BD24E400732C04 /* Entity */,
 				E8989B5816BD24E400732C04 /* FileSystem */,
 				E8989B8316BD24E400732C04 /* Input */,
+				CCFB9E3617FB0CFA005E9B06 /* Job */,
 				E8989B8E16BD24E400732C04 /* Math */,
 				E8989BB316BD24E400732C04 /* Network */,
 				E8989BC416BD24E400732C04 /* Particles */,
@@ -3890,6 +3938,7 @@
 				176DE910174B5561007A983B /* FastNameMap.h in Headers */,
 				176DE911174B5561007A983B /* FixedSizePoolAllocator.h in Headers */,
 				176DE912174B5561007A983B /* Hash.h in Headers */,
+				CCFB9E6617FB0D3F005E9B06 /* JobWaiter.h in Headers */,
 				176DE913174B5561007A983B /* HashMap.h in Headers */,
 				176DE914174B5561007A983B /* Introspection.h in Headers */,
 				176DE915174B5561007A983B /* IntrospectionBase.h in Headers */,
@@ -3928,6 +3977,7 @@
 				176DE936174B5561007A983B /* MemoryManager.h in Headers */,
 				176DE937174B5561007A983B /* Replay.h in Headers */,
 				176DE938174B5561007A983B /* Stats.h in Headers */,
+				CCFB9E6017FB0D3F005E9B06 /* JobQueue.h in Headers */,
 				176DE939174B5561007A983B /* DLCSystem.h in Headers */,
 				176DE93A174B5561007A983B /* DLCUnpacker.h in Headers */,
 				176DE93B174B5561007A983B /* FileDownloader.h in Headers */,
@@ -3938,6 +3988,7 @@
 				176DE940174B5561007A983B /* DynamicMemoryFile.h in Headers */,
 				176DE941174B5561007A983B /* File.h in Headers */,
 				176DE942174B5561007A983B /* FileList.h in Headers */,
+				CCFB9E5A17FB0D3F005E9B06 /* JobManager.h in Headers */,
 				176DE943174B5561007A983B /* FilePath.h in Headers */,
 				176DE944174B5561007A983B /* FileSystem.h in Headers */,
 				176DE945174B5561007A983B /* KeyedArchive.h in Headers */,
@@ -4114,6 +4165,7 @@
 				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
 				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
 				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
+				CCFB9E5417FB0D3F005E9B06 /* Job.h in Headers */,
 				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
 				176DE9F5174B5561007A983B /* UIEvent.h in Headers */,
 				176DE9F6174B5561007A983B /* UIFadeTransition.h in Headers */,
@@ -4409,6 +4461,7 @@
 				E8989F8516BD24E500732C04 /* BulletComponent.h in Headers */,
 				E8989F8716BD24E500732C04 /* CameraComponent.h in Headers */,
 				E8989F8916BD24E500732C04 /* DebugRenderComponent.h in Headers */,
+				CCFB9E5817FB0D3F005E9B06 /* JobManager.h in Headers */,
 				E8989F8B16BD24E500732C04 /* LightComponent.h in Headers */,
 				E8989F8D16BD24E500732C04 /* LodComponent.h in Headers */,
 				E8989F8F16BD24E500732C04 /* ParticleEffectComponent.h in Headers */,
@@ -4506,6 +4559,8 @@
 				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42716F1D6170061EA5D /* Camera.h in Headers */,
 				CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */,
+				CCFB9E5217FB0D3F005E9B06 /* Job.h in Headers */,
+				CCFB9E6417FB0D3F005E9B06 /* JobWaiter.h in Headers */,
 				CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43316F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43516F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -4548,6 +4603,7 @@
 				4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */,
 				A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */,
 				A6E4FE061761D96C00B48E41 /* CustomPropertiesComponent.h in Headers */,
+				CCFB9E5E17FB0D3F005E9B06 /* JobQueue.h in Headers */,
 				A6E4FE0A1761D97C00B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
@@ -4602,6 +4658,7 @@
 				E898A07A16BD265400732C04 /* Observable.h in Headers */,
 				E898A07B16BD265400732C04 /* Observer.h in Headers */,
 				E898A07C16BD265400732C04 /* Radix.h in Headers */,
+				CCFB9E5917FB0D3F005E9B06 /* JobManager.h in Headers */,
 				E898A07D16BD265400732C04 /* RefPtr.h in Headers */,
 				E898A07E16BD265400732C04 /* ScopedPtr.h in Headers */,
 				E898A07F16BD265400732C04 /* Singleton.h in Headers */,
@@ -4632,6 +4689,7 @@
 				E898A09816BD265400732C04 /* DoxygenDocumenation.h in Headers */,
 				E898A09916BD265400732C04 /* Component.h in Headers */,
 				E898A09A16BD265400732C04 /* SceneSystem.h in Headers */,
+				CCFB9E5317FB0D3F005E9B06 /* Job.h in Headers */,
 				E898A09B16BD265400732C04 /* Bitstream.h in Headers */,
 				E898A09C16BD265400732C04 /* DynamicMemoryFile.h in Headers */,
 				E898A09D16BD265400732C04 /* File.h in Headers */,
@@ -4764,6 +4822,7 @@
 				E898A13B16BD265400732C04 /* LodComponent.h in Headers */,
 				E898A13C16BD265400732C04 /* ParticleEffectComponent.h in Headers */,
 				E898A13E16BD265400732C04 /* RenderComponent.h in Headers */,
+				CCFB9E6517FB0D3F005E9B06 /* JobWaiter.h in Headers */,
 				E898A13F16BD265400732C04 /* SwitchComponent.h in Headers */,
 				E898A14016BD265400732C04 /* TransformComponent.h in Headers */,
 				E898A14116BD265400732C04 /* UpdatableComponent.h in Headers */,
@@ -4834,6 +4893,7 @@
 				E898A19116BD265400732C04 /* UIStaticText.h in Headers */,
 				E898A19216BD265400732C04 /* UITextField.h in Headers */,
 				E898A19316BD265400732C04 /* UIYamlLoader.h in Headers */,
+				CCFB9E5F17FB0D3F005E9B06 /* JobQueue.h in Headers */,
 				E898A19416BD265400732C04 /* HTTPDownloader.h in Headers */,
 				E898A19516BD265400732C04 /* MD5.h in Headers */,
 				E898A19616BD265400732C04 /* Random.h in Headers */,
@@ -5024,6 +5084,7 @@
 				176DEA4E174B5561007A983B /* BaseMath.cpp in Sources */,
 				176DEA4F174B5561007A983B /* BaseObject.cpp in Sources */,
 				176DEA50174B5561007A983B /* BaseObjectChecker.cpp in Sources */,
+				CCFB9E5717FB0D3F005E9B06 /* JobManager.cpp in Sources */,
 				176DEA51174B5561007A983B /* Data.cpp in Sources */,
 				176DEA52174B5561007A983B /* DynamicObjectCache.cpp in Sources */,
 				176DEA53174B5561007A983B /* EventDispatcher.cpp in Sources */,
@@ -5125,6 +5186,7 @@
 				176DEAB4174B5561007A983B /* TextureMulColorAlphaTestEffect.cpp in Sources */,
 				176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */,
 				176DEAB6174B5561007A983B /* Image.cpp in Sources */,
+				CCFB9E5D17FB0D3F005E9B06 /* JobQueue.cpp in Sources */,
 				176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */,
 				176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */,
 				176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */,
@@ -5275,6 +5337,7 @@
 				176DEB4A174B5561007A983B /* ShadowRect.cpp in Sources */,
 				176DEB4B174B5561007A983B /* ShadowVolume.cpp in Sources */,
 				176DEB4C174B5561007A983B /* ShadowVolumeRenderPass.cpp in Sources */,
+				CCFB9E6317FB0D3F005E9B06 /* JobWaiter.cpp in Sources */,
 				176DEB4D174B5561007A983B /* SpriteObject.cpp in Sources */,
 				176DEB4E174B5561007A983B /* SpriteRenderBatch.cpp in Sources */,
 				176DEB4F174B5561007A983B /* RenderState.cpp in Sources */,
@@ -5288,6 +5351,7 @@
 				176DEB57174B5561007A983B /* SoundEvent.cpp in Sources */,
 				176DEB58174B5561007A983B /* SoundEventCategory.cpp in Sources */,
 				176DEB59174B5561007A983B /* VolumeAnimatedObject.cpp in Sources */,
+				CCFB9E5117FB0D3F005E9B06 /* Job.cpp in Sources */,
 				176DEB5A174B5561007A983B /* SoundComponent.cpp in Sources */,
 				176DEB5B174B5561007A983B /* SoundUpdateSystem.cpp in Sources */,
 				176DEB5C174B5561007A983B /* NMaterialConsts.cpp in Sources */,
@@ -5332,6 +5396,7 @@
 				E8989DBD16BD24E500732C04 /* DynamicObjectCache.cpp in Sources */,
 				E8989DBF16BD24E500732C04 /* EventDispatcher.cpp in Sources */,
 				E8989DC216BD24E500732C04 /* FastName.cpp in Sources */,
+				CCFB9E5B17FB0D3F005E9B06 /* JobQueue.cpp in Sources */,
 				E8989DC516BD24E500732C04 /* FixedSizePoolAllocator.cpp in Sources */,
 				E8989DCF16BD24E500732C04 /* Message.cpp in Sources */,
 				E8989DD316BD24E500732C04 /* ObjectFactory.cpp in Sources */,
@@ -5356,6 +5421,7 @@
 				E8989E0516BD24E500732C04 /* DLCUnpacker.cpp in Sources */,
 				E8989E0716BD24E500732C04 /* FileDownloader.cpp in Sources */,
 				E8989E0A16BD24E500732C04 /* Component.cpp in Sources */,
+				CCFB9E5517FB0D3F005E9B06 /* JobManager.cpp in Sources */,
 				E8989E0C16BD24E500732C04 /* SceneSystem.cpp in Sources */,
 				E8989E2C16BD24E500732C04 /* Bitstream.cpp in Sources */,
 				E8989E2E16BD24E500732C04 /* DynamicMemoryFile.cpp in Sources */,
@@ -5403,6 +5469,7 @@
 				E8989E9716BD24E500732C04 /* ParticleEmitterObject.cpp in Sources */,
 				E8989E9916BD24E500732C04 /* ParticleLayer.cpp in Sources */,
 				E8989E9B16BD24E500732C04 /* ParticleLayer3D.cpp in Sources */,
+				CCFB9E4F17FB0D3F005E9B06 /* Job.cpp in Sources */,
 				E8989E9F16BD24E500732C04 /* ParticlePropertyLine.cpp in Sources */,
 				E8989EAA16BD24E500732C04 /* Mutex.cpp in Sources */,
 				E8989EBA16BD24E500732C04 /* SystemTimer.cpp in Sources */,
@@ -5475,6 +5542,7 @@
 				E8989F9216BD24E500732C04 /* RenderComponent.cpp in Sources */,
 				E8989F9416BD24E500732C04 /* SwitchComponent.cpp in Sources */,
 				E8989F9616BD24E500732C04 /* TransformComponent.cpp in Sources */,
+				CCFB9E6117FB0D3F005E9B06 /* JobWaiter.cpp in Sources */,
 				E8989F9816BD24E500732C04 /* UpdatableComponent.cpp in Sources */,
 				E8989F9A16BD24E500732C04 /* DataNode.cpp in Sources */,
 				E8989F9F16BD24E500732C04 /* ImposterManager.cpp in Sources */,
@@ -5675,6 +5743,7 @@
 				E898A1C416BD265400732C04 /* FileDownloader.cpp in Sources */,
 				E898A1C516BD265400732C04 /* Component.cpp in Sources */,
 				E898A1C616BD265400732C04 /* SceneSystem.cpp in Sources */,
+				CCFB9E5C17FB0D3F005E9B06 /* JobQueue.cpp in Sources */,
 				E898A1C716BD265400732C04 /* Bitstream.cpp in Sources */,
 				E898A1C816BD265400732C04 /* DynamicMemoryFile.cpp in Sources */,
 				E898A1C916BD265400732C04 /* File.cpp in Sources */,
@@ -5770,6 +5839,7 @@
 				E898A23E16BD265400732C04 /* Shader.cpp in Sources */,
 				E898A23F16BD265400732C04 /* ShaderGL.cpp in Sources */,
 				E898A24016BD265400732C04 /* SharedFBO.cpp in Sources */,
+				CCFB9E5017FB0D3F005E9B06 /* Job.cpp in Sources */,
 				E898A24116BD265400732C04 /* Texture.cpp in Sources */,
 				E898A24216BD265400732C04 /* TextureDescriptor.cpp in Sources */,
 				E898A24316BD265400732C04 /* UberShader.cpp in Sources */,
@@ -5832,6 +5902,7 @@
 				E898A28916BD265400732C04 /* SoundGroup.cpp in Sources */,
 				E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */,
 				E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */,
+				CCFB9E5617FB0D3F005E9B06 /* JobManager.cpp in Sources */,
 				E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */,
 				E898A29016BD265400732C04 /* UI3DView.cpp in Sources */,
 				E898A29116BD265400732C04 /* UIButton.cpp in Sources */,
@@ -5854,6 +5925,7 @@
 				E898A2A216BD265400732C04 /* UIScreen.cpp in Sources */,
 				E898A2A316BD265400732C04 /* UIScreenManagerMacOS.cpp in Sources */,
 				E898A2A416BD265400732C04 /* UIScreenTransition.cpp in Sources */,
+				CCFB9E6217FB0D3F005E9B06 /* JobWaiter.cpp in Sources */,
 				E898A2A516BD265400732C04 /* UIScrollBar.cpp in Sources */,
 				E898A2A616BD265400732C04 /* UISlider.cpp in Sources */,
 				E898A2A716BD265400732C04 /* UIStaticText.cpp in Sources */,
