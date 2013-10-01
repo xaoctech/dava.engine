@@ -97,6 +97,8 @@ public:
 
 	void SaveTileMaskTexture();
 
+	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;

@@ -28,53 +28,59 @@
 
 
 
-#ifndef __DAVAENGINE_TRANSFORM_SYSTEM_H__
-#define __DAVAENGINE_TRANSFORM_SYSTEM_H__
+#include "Utils/TeamcityOutput.h"
+#include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
-#include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-
-namespace DAVA 
+namespace DAVA
 {
-
-class Entity;
-class Transform;
-
-class TransformSystem : public SceneSystem
+    
+void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
 {
-public:
-	TransformSystem(Scene * scene);
-	~TransformSystem();
+    String outStr = NormalizeString(text);
+	String status = "NORMAL";
+    switch (ll)
+    {
+        case Logger::LEVEL_ERROR:
+			status = "ERROR";
+            break;
 
-    Transform * CreateTransform();
+        case Logger::LEVEL_WARNING:
+			status = "WARNING";
+            break;
+            
+        default:
+            break;
+    }
 
-	virtual void ImmediateEvent(Entity * entity, uint32 event);
-	virtual void AddEntity(Entity * entity);
-	virtual void RemoveEntity(Entity * entity);
+	Logger::Instance()->PlatformLog(ll, Format("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'%s\']\n", outStr.c_str(), status.c_str()));
+}
 
-    void DeleteTransform(Transform * transform);
-    void LinkTransform(int32 parentIndex, int32 childIndex);
-	void UnlinkTransform(int32 childIndex);
+void TeamcityOutput::Output(Logger::eLogLevel ll, const char16 *text) const
+{
+    WideString wstr = text;
+    Output(ll, WStringToString(wstr).c_str());
+}
+
+String TeamcityOutput::NormalizeString(const char8 *text) const
+{
+    String str = text;
     
-    virtual void Process();
+    StringReplace(str, "|", "||");
 
-private:
-    void SortAndThreadSplit();
+    StringReplace(str, "'", "|'");
+    StringReplace(str, "\n", "|n");
+    StringReplace(str, "\r", "|r");
+
+//    StringReplace(str, "\u0085", "|x");
+    StringReplace(str, "\u2028", "|l");
+    StringReplace(str, "\u2029", "|p");
+
+    StringReplace(str, "[", "|[");
+    StringReplace(str, "]", "|]");
     
-	Vector<Entity*> updatableEntities;
-
-	void EntityNeedUpdate(Entity * entity);
-	void HierahicAddToUpdate(Entity * entity);
-
-	void HierahicFindUpdatableTransform(Entity * entity, bool forcedUpdate = false);
-
-	int32 passedNodes;
-	int32 multipliedNodes;
-};
-
-};
-
-#endif //__DAVAENGINE_TRANSFORM_SYSTEM_H__
+    return str;
+}
+	
+    
+}; // end of namespace DAVA
