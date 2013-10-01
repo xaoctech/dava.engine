@@ -695,6 +695,8 @@
 		EA56555317CE00E100426EB8 /* PerformanceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA56555117CE00E100426EB8 /* PerformanceSettings.cpp */; };
 		EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56555217CE00E100426EB8 /* PerformanceSettings.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
+		EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA84E17317FAC20100304C3C /* SpatialTree.cpp */; };
+		EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */ = {isa = PBXBuildFile; fileRef = EA84E17417FAC20100304C3C /* SpatialTree.h */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
 
@@ -1412,6 +1414,8 @@
 		EA56555217CE00E100426EB8 /* PerformanceSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerformanceSettings.h; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
+		EA84E17317FAC20100304C3C /* SpatialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpatialTree.cpp; sourceTree = "<group>"; };
+		EA84E17417FAC20100304C3C /* SpatialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpatialTree.h; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -2039,6 +2043,8 @@
 		E8B3C92316B9326D002BD35F /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				EA84E17317FAC20100304C3C /* SpatialTree.cpp */,
+				EA84E17417FAC20100304C3C /* SpatialTree.h */,
 				02AF979A17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp */,
 				02AF979B17EB596D005A62F2 /* SpeedTreeLeafBatch.h */,
 				A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */,
@@ -2810,6 +2816,7 @@
 				17DC600C17DE16D40075813E /* UIMovieView.h in Headers */,
 				17DC601017DE18460075813E /* MovieViewControliOS.h in Headers */,
 				02AF979D17EB596D005A62F2 /* SpeedTreeLeafBatch.h in Headers */,
+				EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3197,6 +3204,7 @@
 				17DC600B17DE16D40075813E /* UIMovieView.cpp in Sources */,
 				17DC600F17DE18460075813E /* MovieViewControliOS.mm in Sources */,
 				02AF979C17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp in Sources */,
+				EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
