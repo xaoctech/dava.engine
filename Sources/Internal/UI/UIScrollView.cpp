@@ -271,7 +271,8 @@ float32 UIScrollView::VisibleAreaSize(UIScrollBar *forScrollBar)
 	}
 
 	// Visible area is our rect.
-	Vector2 visibleAreaSize(GetRect().dx, GetRect().dy);
+	//Vector2 visibleAreaSize(GetRect().dx, GetRect().dy);
+	Vector2 visibleAreaSize(scroll->GetFullViewSize().x, scroll->GetFullViewSize().y);
 	return GetParameterForScrollBar(forScrollBar, visibleAreaSize);
 }
 
@@ -283,7 +284,8 @@ float32 UIScrollView::TotalAreaSize(UIScrollBar *forScrollBar)
 	}
 
 	// Total area is the rect of the container.
-	Vector2 totalAreaSize(scrollContainer->GetRect().dx, scrollContainer->GetRect().dy);
+	//Vector2 totalAreaSize(scrollContainer->GetRect().dx, scrollContainer->GetRect().dy);
+	Vector2 totalAreaSize(scroll->GetFullElementSize().x, scroll->GetFullElementSize().y);
 	return GetParameterForScrollBar(forScrollBar, totalAreaSize);
 }
 
@@ -295,7 +297,8 @@ float32 UIScrollView::ViewPosition(UIScrollBar *forScrollBar)
 	}
 
 	// View position is the position of the scroll container in relation to us.
-	Vector2 viewPosition = Vector2(scrollContainer->GetRect().x, scrollContainer->GetRect().y);
+	//Vector2 viewPosition = Vector2(scrollContainer->GetRect().x, scrollContainer->GetRect().y);
+	Vector2 viewPosition = Vector2(scroll->GetFullPosition().x, scroll->GetFullPosition().y);
 	return GetParameterForScrollBar(forScrollBar, viewPosition);
 }
  
@@ -316,7 +319,7 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 		curContainerRect.y = -newPosition;
 	}
 	
-	scrollContainer->SetRect(curContainerRect);
+//	scrollContainer->SetRect(curContainerRect);
 	scroll->SetPosition(Vector2(curContainerRect.x, curContainerRect.y));
 }
 
