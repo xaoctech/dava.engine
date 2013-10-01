@@ -57,7 +57,8 @@ void UIScrollViewTest::LoadResources()
 
     UIYamlLoader::Load( this, "~res:/UI/Test/ScrollScreen.yaml" );
 	scrollView = DynamicTypeCheck<UIScrollView *>( FindByName( "Scrollview" ) );
-//	scrollView->SetReturnSpeed(200);
+//	scrollView->SetReturnSpeed(600);
+//	scrollView->SetReturnSpeed(100);
 	UIControl* innerControl = FindByName("UIControl1");
 	if (innerControl)
 	{
