@@ -40,7 +40,7 @@ namespace DAVA
 	{
 	public:
 		
-		Process(FilePath path, const Vector<String>& args);
+		Process(const FilePath& path, const Vector<String>& args);
 		~Process();
 		
 		bool Run(bool showWindow);
@@ -53,7 +53,7 @@ namespace DAVA
 	
 	private:
 		
-		void CleanupIOHandles();
+		void CleanupHandles();
 
 #if defined (__DAVAENGINE_WIN32__) && defined(UNICODE)
 		
