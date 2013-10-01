@@ -151,6 +151,14 @@ void Thread::YieldThread()
 {
     return pthread_yield_np();
 }
+    
+Thread::ThreadId Thread::GetCurrentThreadId()
+{
+    ThreadId ret;
+    ret.internalTid = pthread_self();
+    
+    return ret;
+}
 	
 };
 

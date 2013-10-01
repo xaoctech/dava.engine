@@ -182,7 +182,7 @@ void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * par
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
 
-	int32 vertexCount = (int32)param;
+	int32 vertexCount = (int32)((int64)param);
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 
     streamArray[0]->pointer = 0;
