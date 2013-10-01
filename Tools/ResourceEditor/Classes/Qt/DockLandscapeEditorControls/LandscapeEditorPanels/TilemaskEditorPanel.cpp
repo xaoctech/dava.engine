@@ -242,7 +242,8 @@ void TilemaskEditorPanel::UpdateTileTextures()
 	iconSize = iconSize.expandedTo(QSize(150, 32));
 	comboTileTexture->setIconSize(iconSize);
 
-	Image* images[sceneEditor->tilemaskEditorSystem->GetTileTextureCount()];
+	int32 count = (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount();
+	Image** images = new Image*[count];
 
 	if (sceneEditor->landscapeEditorDrawSystem->GetLandscapeTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
 	{
@@ -253,7 +254,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
 	}
 	else
 	{
-		for (int32 i = 0; i < sceneEditor->tilemaskEditorSystem->GetTileTextureCount(); ++i)
+		for (int32 i = 0; i < count; ++i)
 		{
 			Texture* texture = sceneEditor->tilemaskEditorSystem->GetTileTexture(i);
 			images[i] = texture->CreateImageFromMemory();
@@ -261,7 +262,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
 		}
 	}
 
-	for (int32 i = 0; i < (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount(); ++i)
+	for (int32 i = 0; i < count; ++i)
 	{
 		QImage img = TextureConvertor::FromDavaImage(images[i]);
 		QIcon icon = QIcon(QPixmap::fromImage(img));
@@ -270,6 +271,8 @@ void TilemaskEditorPanel::UpdateTileTextures()
 
 		SafeRelease(images[i]);
 	}
+
+	SafeDelete(images);
 }
 
 void TilemaskEditorPanel::SetBrushSize(int brushSize)
