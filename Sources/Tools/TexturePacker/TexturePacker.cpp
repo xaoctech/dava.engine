@@ -660,37 +660,41 @@ Texture::TextureWrap TexturePacker::GetDescriptorWrapMode()
 TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMaps)
 {
 	// Default filter
-	TexturePacker::FilterItem filterItem(generateMipMaps ? Texture::FILTER_LINEAR_MIPMAP_LINEAR : Texture::FILTER_LINEAR,
+	TexturePacker::FilterItem filterItem(generateMipMaps ? Texture::FILTER_LINEAR_MIPMAP_LINEAR :
+															Texture::FILTER_LINEAR,
 															Texture::FILTER_LINEAR);
-	if (CommandLineParser::Instance()->IsFlagSet("--filterNearest"))
+	
+	if (CommandLineParser::Instance()->IsFlagSet("--magFilterNearest"))
 	{
-		filterItem.minFilter = Texture::FILTER_NEAREST;
 		filterItem.magFilter = Texture::FILTER_NEAREST;
 	}
-	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinear"))
+	if (CommandLineParser::Instance()->IsFlagSet("--magFilterLinear"))
 	{
-		filterItem.minFilter = Texture::FILTER_LINEAR;
 		filterItem.magFilter = Texture::FILTER_LINEAR;
 	}
-	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapNearest"))
+	if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearestMipmapNearest"))
 	{
 		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
-		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
 	}
-	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapNearest"))
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinearMipmapNearest"))
 	{
 		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
-		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
 	}
-	else if (CommandLineParser::Instance()->IsFlagSet("--filterNearestMipmapLinear"))
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearestMipmapLinear"))
 	{
 		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
-		filterItem.magFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
 	}
-	else if (CommandLineParser::Instance()->IsFlagSet("--filterLinearMipmapLinear"))
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinearMipmapLinear"))
 	{
 		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-		filterItem.magFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
 	}
 
 	return filterItem;
