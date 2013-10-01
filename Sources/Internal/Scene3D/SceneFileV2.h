@@ -177,7 +177,7 @@ private:
 	void StopParticleEffectComponents(Entity* rootNode);
 	
 	void SaveMaterialSystem(File * file, SerializationContext* serializationContext);
-	
+	void LoadMaterialSystem(File * file, SerializationContext* serializationContext);
 
     bool isDebugLogEnabled;
     bool isSaveForGame;

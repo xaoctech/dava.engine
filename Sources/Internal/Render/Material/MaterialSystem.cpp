@@ -40,19 +40,12 @@
 
 namespace DAVA
 {
-    
-/*NMaterial * MaterialSystem::GetMaterial(const FastName & name)
-{
-    NMaterial * material = materials.GetValue(name);
-    if (!material)
-    {
-        material = new NMaterial();
-        bool result = material->LoadFromFile(name.c_str());
-        //materials.Insert(name, material);
-    }
-    return material;
-}*/
 	
+MaterialSystem::~MaterialSystem()
+{
+	Clear();
+}
+    
 NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
 	NMaterial* material = materials.GetValue(name);
@@ -212,6 +205,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 										Map<String, Vector<MaterialData> >& nodes)
 {
 	NMaterial* material = new NMaterial();
+	material->configMaterial = true;
 	bool result = material->LoadFromFile(filePath.GetAbsolutePathname());
 	
 	DVASSERT(result);
@@ -219,7 +213,8 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	{
 		material->SetName(name.c_str());
 		material->SetMaterialName(name.c_str());
-		materials.Insert(name, material);
+		AddMaterial(material);
+		material->Release(); //need to release material since material system took ownership
 		material->SetParent(parentMaterial);
 		
 		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetName());
@@ -241,6 +236,37 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	}
 	
 	return material;
+}
+	
+void MaterialSystem::AddMaterial(NMaterial* material)
+{
+	DVASSERT(material);
+	SafeRetain(material);
+	materials.Insert(material->GetName(), material);
+}
+
+void MaterialSystem::RemoveMaterial(NMaterial* material)
+{
+	DVASSERT(material);
+	materials.Remove(material->GetName());
+	SafeRelease(material);
+}
+	
+void MaterialSystem::Clear()
+{
+	//remove all materials in correct order - from leaves to root
+	
+	Vector<NMaterial*> materialList;
+	BuildMaterialList(NULL, materialList);
+	
+	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
+		it != materialList.rend();
+		++it)
+	{
+		RemoveMaterial(*it);
+	}
+	
+	DVASSERT(materials.Size() == 0);
 }
 
 };
