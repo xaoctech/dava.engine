@@ -147,6 +147,16 @@ void TransformSystem::HierahicAddToUpdate(Entity * entity)
 	}
 }
 
+void TransformSystem::AddEntity(Entity * entity)
+{
+	TransformComponent * transform = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
+	if (!transform) return; //just in case
+	if(transform->parentMatrix)	
+		transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
+	else
+		transform->worldMatrix = transform->localMatrix;
+}
+
 void TransformSystem::RemoveEntity(Entity * entity)
 {
 	//TODO: use hashmap
