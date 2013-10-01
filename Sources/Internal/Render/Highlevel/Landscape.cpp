@@ -1715,14 +1715,21 @@ FilePath Landscape::SaveFullTiledTexture()
     
     if(textures[TEXTURE_TILE_FULL])
     {
-		pathToSave = GetTextureName(TEXTURE_COLOR);
-		pathToSave.ReplaceExtension(".thumbnail.png");
-		Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-		if(image)
-		{
-			ImageLoader::Save(image, pathToSave);
-			SafeRelease(image);
-		}
+        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
+        {
+            pathToSave = GetTextureName(TEXTURE_COLOR);
+            pathToSave.ReplaceExtension(".thumbnail.png");
+            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+            if(image)
+            {
+                ImageLoader::Save(image, pathToSave);
+                SafeRelease(image);
+            }
+        }
+        else
+        {
+            pathToSave = textureNames[TEXTURE_TILE_FULL];
+        }
     }
     
     Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
