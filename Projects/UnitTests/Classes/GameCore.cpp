@@ -125,8 +125,10 @@ void GameCore::OnAppStarted()
     
     errors.reserve(TestCount());
 
-	TeamcityOutput *out = new TeamcityOutput();
 
+	Logger::FrameworkDebug("Teamcity test started");
+
+	TeamcityOutput *out = new TeamcityOutput();
 	Logger::AddCustomOutput(out);
 	Logger::Error("Teamcity Error Start");
 	Logger::Warning("Teamcity Warning");
@@ -137,6 +139,7 @@ void GameCore::OnAppStarted()
 	Logger::RemoveCustomOutput(out);
 	delete out;
 
+	Logger::FrameworkDebug("Teamcity test fnished");
 
     RunTests();
 }

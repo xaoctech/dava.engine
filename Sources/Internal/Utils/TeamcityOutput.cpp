@@ -30,6 +30,7 @@
 
 #include "Utils/TeamcityOutput.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -37,20 +38,22 @@ namespace DAVA
 void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
 {
     String outStr = NormalizeString(text);
+	String status = "NORMAL";
     switch (ll)
     {
         case Logger::LEVEL_ERROR:
-            printf("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'ERROR\']", outStr.c_str());
+			status = "ERROR";
             break;
 
         case Logger::LEVEL_WARNING:
-            printf("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'WARNING\']", outStr.c_str());
+			status = "WARNING";
             break;
             
         default:
-            printf("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'NORMAL\']", outStr.c_str());
             break;
     }
+
+	Logger::Instance()->PlatformLog(ll, Format("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'%s\']\n", outStr.c_str(), status.c_str()));
 }
 
 void TeamcityOutput::Output(Logger::eLogLevel ll, const char16 *text) const
