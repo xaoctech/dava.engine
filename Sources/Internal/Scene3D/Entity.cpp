@@ -67,7 +67,7 @@ Entity::Entity()
     , tag(0)
 	, entity(0)
 {
-//    Logger::Debug("Entity: %p", this);
+//    Logger::FrameworkDebug("Entity: %p", this);
     componentFlags = 0;
 
 	components.resize(Component::COMPONENT_COUNT);
@@ -107,7 +107,7 @@ Entity::~Entity()
 		}
 	}
 
-//  Logger::Debug("~Entity: %p", this);
+//  Logger::FrameworkDebug("~Entity: %p", this);
 }
     
 void Entity::AddComponent(Component * component)
@@ -620,6 +620,7 @@ Entity* Entity::Clone(Entity *dstNode)
 			}
 
 			Component * clonedComponent = components[k]->Clone(dstNode);
+            dstNode->RemoveComponent(clonedComponent->GetType());
 			dstNode->AddComponent(clonedComponent);
 			clonedComponent->Release();
 		}
@@ -631,6 +632,7 @@ Entity* Entity::Clone(Entity *dstNode)
     
     dstNode->nodeAnimations = nodeAnimations;
     
+	dstNode->RemoveAllChildren();
     std::vector<Entity*>::iterator it = children.begin();
 	const std::vector<Entity*>::iterator & childsEnd = children.end();
 	for(; it != childsEnd; it++)
@@ -864,17 +866,16 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	
 CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 {
-	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
-	
+	CustomPropertiesComponent* component = (CustomPropertiesComponent *) GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
 	if(NULL == component)
 	{
 		component = (CustomPropertiesComponent *) Component::CreateByType(Component::CUSTOM_PROPERTIES_COMPONENT);
+
 		AddComponent(component);
 		component->Release();
 	}
 	
     return component;
-
 }
 	
 KeyedArchive* Entity::GetCustomProperties()

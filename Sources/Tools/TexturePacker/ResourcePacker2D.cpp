@@ -70,7 +70,7 @@ void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & o
     
 void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 {
-	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s\n",
+	Logger::FrameworkDebug("Input: %s \nOutput: %s \nExclude: %s\n",
                   inputGfxDirectory.GetAbsolutePathname().c_str(),
                   outputGfxDirectory.GetAbsolutePathname().c_str(),
                   excludeDirectory.GetAbsolutePathname().c_str());
@@ -104,7 +104,7 @@ void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 		bool result = FileSystem::Instance()->DeleteDirectory(outputGfxDirectory);
 		if (result)
 		{
-			Logger::Debug("Removed output directory: %s", outputGfxDirectory.GetAbsolutePathname().c_str());
+			Logger::FrameworkDebug("Removed output directory: %s", outputGfxDirectory.GetAbsolutePathname().c_str());
 		}
 		if (!result && Core::Instance()->IsConsoleMode())
 		{
@@ -225,7 +225,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			layers.push_back(layers[0]);
 		}
 		
-		//Logger::Debug("psd file: %s wext: %s", psdPathname.c_str(), psdNameWithoutExtension.c_str());
+		//Logger::FrameworkDebug("psd file: %s wext: %s", psdPathname.c_str(), psdNameWithoutExtension.c_str());
 		
 		int width = (int)layers[0].columns();
 		int height = (int)layers[0].rows();
@@ -364,7 +364,7 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 	if (CommandLineParser::Instance()->GetVerbose())
 		for (int k = 0; k < (int) tokens.size(); ++k)
 		{
-			Logger::Debug("Token: %s", tokens[k].c_str());
+			Logger::FrameworkDebug("Token: %s", tokens[k].c_str());
 		}
 
 //	if (Core::Instance()->IsConsoleMode())
@@ -489,6 +489,16 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				packer.UseOnlySquareTextures();
 				packer.SetMaxTextureSize(2048);
 			}
+
+            if(definitionFileList.size() == 1)
+            {
+                DefinitionFile * def = definitionFileList.front();
+                if(def->frameCount == 1)
+                {
+                    def->frameRects[0] = packer.ReduceRectToOriginalSize(def->frameRects[0]);
+                    CommandLineParser::Instance()->AddArgument("--add0pixel");
+                }
+            }
 
 			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 			{

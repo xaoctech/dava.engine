@@ -174,10 +174,3 @@ void SceneHelper::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &
 	}
 }
 
-DAVA::SceneFileV2::eError  SceneHelper::SaveScene( DAVA::Scene *scene, const DAVA::FilePath & pathname, bool saveForGame/* = false */ )
-{
-	SceneFileV2 file;
-	file.EnableDebugLog(false);
-	file.EnableSaveForGame(saveForGame);
-	return file.SaveScene(pathname, scene);
-}

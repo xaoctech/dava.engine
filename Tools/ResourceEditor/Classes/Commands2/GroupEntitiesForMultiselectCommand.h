@@ -39,7 +39,7 @@
 class GroupEntitiesForMultiselectCommand : public Command2
 {
 public:
-	GroupEntitiesForMultiselectCommand(const EntityGroup* entities);
+	GroupEntitiesForMultiselectCommand(const EntityGroup &entities);
 	virtual ~GroupEntitiesForMultiselectCommand();
 
 	virtual void Undo();

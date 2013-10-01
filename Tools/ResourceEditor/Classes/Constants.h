@@ -102,6 +102,21 @@ enum eEditActions
 	EDIT_COUNT
 };
 
+// list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall"]
+enum eSceneObjectType
+{
+	ESOT_NONE = 0,
+	ESOT_TREE,
+	ESOT_BUSH,
+	ESOT_FRAGILE_PROJ,
+	ESOT_FRAGILE_PROJ_INV,
+	ESOT_FALLING,
+	ESOT_BUILDING,
+	ESOT_INVISIBLE_WALL,
+
+	ESOT_COUNT
+};
+
 // coefficient for converting brush size from UI value to system value for landscape editors
 const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
 

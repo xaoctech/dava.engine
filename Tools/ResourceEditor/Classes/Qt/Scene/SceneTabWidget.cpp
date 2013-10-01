@@ -43,6 +43,19 @@
 #include <QMessageBox>
 #include <QFileInfo>
 
+class QTransparentWidget: public QWidget
+{
+public:
+
+	QTransparentWidget(QWidget *parent) : QWidget(parent)
+	{
+		setStyleSheet(QString::fromUtf8("background-color: rgba(175, 75, 75, 0);"));
+
+//        setAttribute(Qt::WA_TranslucentBackground);
+//        setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+	}
+};
+
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
 	, davaUIScreenID(SCREEN_MAIN)
@@ -73,7 +86,8 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
 	davaWidget->setFocusPolicy(Qt::StrongFocus);
-
+	davaWidget->installEventFilter(this);
+    
 	// put tab bar and davawidget into vertical layout
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(tabBar);
@@ -81,9 +95,18 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
+	
+	// create top widget for tool buttons
+	topPlaceholder = new QTransparentWidget(this);
+
+	topPlaceholderLayout = new QHBoxLayout(topPlaceholder);
+	topPlaceholderLayout->setMargin(2);
+	topPlaceholderLayout->setSpacing(1);
+	topPlaceholderLayout->setAlignment(Qt::AlignLeft);
+	topPlaceholder->setLayout(topPlaceholderLayout);
 
 	setAcceptDrops(true);
-
+    
 	// create DAVA UI
 	InitDAVAUI();
 
@@ -101,6 +124,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 SceneTabWidget::~SceneTabWidget()
 {
+	davaWidget->removeEventFilter(this);
 	SafeRelease(previewDialog);
 
 	ReleaseDAVAUI();
@@ -143,10 +167,7 @@ int SceneTabWidget::OpenTab()
 
 int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
-	if(previewDialog && previewDialog->GetParent())
-	{
-		previewDialog->Close();
-	}
+	HideScenePreview();
 
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
@@ -209,6 +230,7 @@ int SceneTabWidget::GetCurrentTab() const
 void SceneTabWidget::SetCurrentTab(int index)
 {
 	davaWidget->setEnabled(false);
+ 	topPlaceholder->setVisible(false);
 
 	if(index >= 0 && index < tabBar->count())
 	{
@@ -232,6 +254,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->selectionSystem->LockSelection(false);
 
 			davaWidget->setEnabled(true);
+//			topPlaceholder->setVisible(true); //VK: disabled for future.
 		}
 	}
 }
@@ -383,11 +406,9 @@ void SceneTabWidget::SceneModifyStatusChanged(SceneEditor2 *scene, bool modified
 	}
 }
 
-void SceneTabWidget::resizeEvent(QResizeEvent * event)
+bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 {
-	QWidget::resizeEvent(event);
-
-	if(NULL != event)
+	if(object == davaWidget && event->type() == QEvent::Resize)
 	{
 		QSize s = davaWidget->size();
 
@@ -399,7 +420,11 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		{
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
+
+		topPlaceholder->setGeometry(0, 25, width(), 20);
 	}
+
+	return QWidget::eventFilter(object, event);
 }
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -466,6 +491,24 @@ void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
 	}
 }
 
+void SceneTabWidget::HideScenePreview()
+{
+	if(previewDialog && previewDialog->GetParent())
+	{
+		previewDialog->Close();
+	}
+}
+
+void SceneTabWidget::AddTopToolWidget(QWidget *widget)
+{
+    if(widget)
+    {
+        widget->setParent(topPlaceholder);
+		topPlaceholderLayout->addWidget(widget);
+    }
+}
+
+
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 	: QTabBar(parent)
 {
@@ -494,3 +537,5 @@ void MainTabBar::dropEvent(QDropEvent *event)
 		emit OnDrop(mimeData);
 	}
 }
+
+

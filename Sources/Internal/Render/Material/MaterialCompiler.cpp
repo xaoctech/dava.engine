@@ -138,7 +138,7 @@ void MaterialCompiler::FixNodesWithoutProperInputs()
 
 MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader)
 {
-    Logger::Debug("Generate Code: %s %d", node->GetName().c_str(), node->GetType());
+    Logger::FrameworkDebug("Generate Code: %s %d", node->GetName().c_str(), node->GetType());
     
     
     //uint32 usedByOthersCount = usedByOthersModifier.length();
@@ -208,7 +208,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
                           node->textureChannelIndex,
                           inputVarName.c_str(),
                           node->RGBAModifierToString(node->usedByOthersModifier).c_str());
-        Logger::Debug("%s", node->nodeCode.c_str());
+        Logger::FrameworkDebug("%s", node->nodeCode.c_str());
         *destinationCode += node->nodeCode;
         
         NMaterialDescriptor * descriptor = currentMaterial->GetDescriptor();
@@ -249,7 +249,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
                           node->name.c_str(),
                           op1.c_str(),
                           op2.c_str());
-        Logger::Debug("%s", node->nodeCode.c_str());
+        Logger::FrameworkDebug("%s", node->nodeCode.c_str());
         *destinationCode += node->nodeCode;
     }
     if (type == MaterialGraphNode::TYPE_ADD)
@@ -268,7 +268,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
                           connectorB->node->GetName().c_str(),
                           connectorB->modifier.c_str());
         
-        Logger::Debug("%s", node->nodeCode.c_str());
+        Logger::FrameworkDebug("%s", node->nodeCode.c_str());
         *destinationCode += node->nodeCode;
     }
     

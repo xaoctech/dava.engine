@@ -1,12 +1,9 @@
 #include "LandscapeEditorShortcutManager.h"
 #include "../Main/mainwindow.h"
 
-extern void qt_set_sequence_auto_mnemonic(bool b);
-
 LandscapeEditorShortcutManager::LandscapeEditorShortcutManager()
 {
 	InitDefaultShortcuts();
-	qt_set_sequence_auto_mnemonic(true);
 }
 
 LandscapeEditorShortcutManager::~LandscapeEditorShortcutManager()

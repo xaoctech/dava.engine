@@ -134,7 +134,7 @@ void KeyframeAnimation::Update(float32 timeElapsed)
 			float32 duration = currentFrame->next->time - currentFrame->time;
 			float32 frame = currentFrame->frame + (currentFrame->next->frame - currentFrame->frame) * frameDelta / duration;
 			*var = (int)frame;
-			//Logger::Debug("%0.2f", frame);
+			//Logger::FrameworkDebug("%0.2f", frame);
 		}
 	}
 	//*var = startValue + (endValue - startValue) * normalizedTime;

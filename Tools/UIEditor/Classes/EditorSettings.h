@@ -58,6 +58,9 @@ public:
     String GetLastOpenedFile(int32 index);
     void AddLastOpenedFile(const String & pathToFile);
 
+	void SetUIEditorVersion(const String& editorVersion);
+	String GetUIEditorVersion();
+
 protected:
 	KeyedArchive *settings;
 	

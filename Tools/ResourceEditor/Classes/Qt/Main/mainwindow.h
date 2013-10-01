@@ -47,6 +47,9 @@
 
 class AddSwitchEntityDialog;
 class Request;
+class QtLabelWithActions;
+class LandscapeDialog;
+
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -176,6 +179,9 @@ public slots:
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
 
+	void OnObjectsTypeMenuWillShow();
+	void OnObjectsTypeChanged(QAction *action);
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 
@@ -208,6 +214,7 @@ protected slots:
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
     
 	void AddSwitchDialogFinished(int result);
+	void LandscapeDialogFinished(int result);
 
     void OnGlobalInvalidateTimeout();
 
@@ -216,7 +223,7 @@ protected slots:
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
-
+    
 #if defined (__DAVAENGINE_BEAST__)
 	QtWaitDialog *beastWaitDialog;
 #endif //#if defined (__DAVAENGINE_BEAST__)
@@ -226,10 +233,13 @@ private:
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
 	AddSwitchEntityDialog* addSwitchEntityDialog;
+	LandscapeDialog* landscapeDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
 	// <--
+
+	QtLabelWithActions *objectTypesLabel;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
@@ -241,8 +251,11 @@ private:
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
+	void LoadObjectTypesLabel(SceneEditor2 *scene);
 
     bool globalInvalidateTimeoutEnabled;
+
+	bool IsSavingAllowed();
 };
 
 

@@ -70,8 +70,6 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
-    SafeRelease(scenePreviewDialog);
-    
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -118,8 +116,6 @@ void SceneEditorScreenMain::InitControls()
     // add line after menu
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
-    
-    scenePreviewDialog = new ScenePreviewDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -184,8 +180,6 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
-    HideScenePreview();
-    
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
     SceneDataManager::Instance()->SetActiveScene(scene);
     
@@ -441,18 +435,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-void SceneEditorScreenMain::OpenFileAtScene(const FilePath &pathToFile)
-{
-	// In case the current scene isn't the "level" one, switch to it firstly.
-	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
-	{
-		ActivateLevelBodyItem();
-	}
-
-    //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneDataManager::Instance()->EditLevelScene(pathToFile);
-}
-
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
     ReleaseResizedControl(textureTrianglesDialog);
@@ -502,38 +484,6 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	{
 		bodies[i]->bodyControl->UpdateModificationPanel();
 	}
-}
-
-void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
-{
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	if(sceneData->GetScenePathname().IsEmpty())
-	{
-		ShowErrorDialog("Can't export not saved scene.");
-		return;
-	}
-
-	BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushEditorEntities();
-    
-    // Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
-    
-    SceneExporter exporter;
-    
-    exporter.SetInFolder(projectPath + String("DataSource/3d/"));
-    exporter.SetOutFolder(projectPath + String("Data/3d/"));
-    
-    exporter.SetGPUForExporting(forGPU);
-    
-    //TODO: how to be with removed nodes?
-    Set<String> errorsLog;
-    exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
-    
-	iBody->bodyControl->PopEditorEntities();
-    
-    ShowErrorDialog(errorsLog);
 }
 
 
@@ -773,18 +723,3 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceRes
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
 }
 
-void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Show(scenePathname);
-    }
-}
-
-void SceneEditorScreenMain::HideScenePreview()
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Close();
-    }
-}

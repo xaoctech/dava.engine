@@ -57,7 +57,7 @@ void SaveEntityAsAction::Redo()
 			scene->AddNode(clone);
 		}
 
-		SceneHelper::SaveScene(scene, sc2Path);
+        scene->Save(sc2Path);
 
 		scene->Release();
 	}

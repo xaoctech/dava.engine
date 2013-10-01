@@ -127,7 +127,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;__DAVAENGINE_SPEEDTREE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;__DAVAENGINE_SPEEDTREE__;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -176,45 +176,19 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
     <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</ExcludedFromBuild>
@@ -508,13 +482,15 @@
     <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp" />
-    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CustomColorsSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\EditorParticlesSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
@@ -564,6 +540,7 @@
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp" />
@@ -775,6 +752,7 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\AddSkyboxDialog\AddSkyboxDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
@@ -783,6 +761,7 @@
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\MimeDataHelper\MimeDataHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\QtLabelWithActions\QtLabelWithActions_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPosSaver\QtPosSaver_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
@@ -801,48 +780,20 @@
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h">
@@ -1132,9 +1083,7 @@
     <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h" />
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h" />
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
-    <ClInclude Include="Classes\LightmapAtlasingData.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h" />
@@ -1221,14 +1170,16 @@
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />
-    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CustomColorsSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\EditorParticlesSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
@@ -1278,6 +1229,7 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h" />

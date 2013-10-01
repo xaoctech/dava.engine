@@ -34,20 +34,23 @@
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "DockProperties/PropertyEditorDialog.h"
 #include <QPushButton>
 
-class LandscapeSettingsEditor: public QtPropertyEditor
+class LandscapeSettingsEditor: public PropertyEditorDialog
 {
 	Q_OBJECT
 	
 public:
-	explicit LandscapeSettingsEditor(DAVA::Entity* landscapeEntity, QWidget* parent = 0);
+	explicit LandscapeSettingsEditor(QWidget* parent = 0);
 	
 	~LandscapeSettingsEditor();
 	
-	void InitializeProperties();
+	void InitializeProperties(Entity* landscapeEntity);
 	
 	void RestoreInitialSettings();
+	
+	void SetNode(Entity* landscapeEntity);
 	
 signals:
 	
@@ -80,6 +83,17 @@ protected slots:
 	void HandleTileColor3();
 	
 	void HandleTileMode();
+	
+	void HandleLightmapSize();
+	
+	void HandleTexture0TilingX();
+	void HandleTexture0TilingY();
+	void HandleTexture1TilingX();
+	void HandleTexture1TilingY();
+	void HandleTexture2TilingX();
+	void HandleTexture2TilingY();
+	void HandleTexture3TilingX();
+	void HandleTexture3TilingY();
 
 protected:
 
@@ -104,9 +118,9 @@ protected:
 	
 	DAVA::KeyedArchive* propertyList;
 	DAVA::Landscape*	landscape;
-	DAVA::Vector3		size;
 	DAVA::Entity*		landscapeEntity;
-	
+	DAVA::Vector3		size;
+
 	DAVA::Vector<DAVA::String> tiledModes;
 	
 };

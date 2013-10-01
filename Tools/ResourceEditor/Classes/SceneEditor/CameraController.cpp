@@ -106,14 +106,14 @@ void WASDCameraController::Update(float32 timeElapsed)
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
-                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+                //Logger::FrameworkDebug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
                 
                 direction.Normalize();
                 pos += direction * moveSpeed;
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 
-                //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
+                //Logger::FrameworkDebug("newpos: %f %f %f", pos.x, pos.y, pos.z);
             }
  
             bool moveLeft = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_LEFT) | 
@@ -136,12 +136,12 @@ void WASDCameraController::Update(float32 timeElapsed)
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
-                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+                //Logger::FrameworkDebug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
                 
                 pos -= direction * moveSpeed;
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
-                //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+                //Logger::FrameworkDebug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
             }
 
             

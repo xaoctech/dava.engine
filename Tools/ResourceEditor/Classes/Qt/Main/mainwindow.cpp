@@ -91,6 +91,9 @@
 #include "Classes/Commands2/VisibilityToolActions.h"
 #include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
+
+#include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 
 
 #include <QFileDialog>
@@ -112,7 +115,9 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	, materialEditor(NULL)
 	, addSwitchEntityDialog(NULL)
+	, landscapeDialog(NULL)
 	, globalInvalidateTimeoutEnabled(false)
+	, objectTypesLabel(NULL)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -206,7 +211,11 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 	} 
 	else
 	{
-		if(scene->IsChanged())
+		// SZ: df-2128
+		// This check was removed until all editor actions will be done through commands
+		// because it's not possible to save scene if some thing changes without command
+		// 
+		//if(scene->IsChanged())
 		{
 			if(!scene->Save(scenePath))
 			{
@@ -225,7 +234,11 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 
 	if(NULL != scene)
 	{
-		DAVA::FilePath saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		DAVA::FilePath saveAsPath = scene->GetScenePath();
+		if(saveAsPath.IsEmpty())
+		{
+			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		}
 
 		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
@@ -401,15 +414,6 @@ void QtMainWindow::SetupToolBars()
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
-	// adding reload sprites action
-	//QToolButton *reloadSpritesBtn = new QToolButton();
-	//reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
-	//reloadSpritesBtn->setMaximumWidth(100);
-	//reloadSpritesBtn->setMinimumWidth(100);
-	//ui->sceneToolBar->addSeparator();
-	//ui->sceneToolBar->addWidget(reloadSpritesBtn);
-	//reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
 	// adding reload textures actions
 	QToolButton *reloadTexturesBtn = new QToolButton();
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
@@ -452,7 +456,6 @@ void QtMainWindow::SetupActions()
 	ui->actionExportMali->setData(GPU_MALI);
 	ui->actionExportAdreno->setData(GPU_ADRENO);
 	ui->actionExportPNG->setData(GPU_UNKNOWN);
-
 	
 	// import
 #ifdef __DAVAENGINE_SPEEDTREE__
@@ -543,6 +546,24 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
+
+ 	//Collision Box Types
+    objectTypesLabel = new QtLabelWithActions();
+ 	objectTypesLabel->setMenu(ui->menuObjectTypes);
+ 	objectTypesLabel->setDefaultAction(ui->actionNoObject);
+	
+    ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
+    
+	ui->actionNoObject->setData(ResourceEditor::ESOT_NONE);
+	ui->actionTree->setData(ResourceEditor::ESOT_TREE);
+	ui->actionBush->setData(ResourceEditor::ESOT_BUSH);
+	ui->actionFragileProj->setData(ResourceEditor::ESOT_FRAGILE_PROJ);
+	ui->actionFragileProjInv->setData(ResourceEditor::ESOT_FRAGILE_PROJ_INV);
+	ui->actionFalling->setData(ResourceEditor::ESOT_FALLING);
+	ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
+	ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
+	QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
+	QObject::connect(ui->menuObjectTypes, SIGNAL(aboutToShow()), this, SLOT(OnObjectsTypeMenuWillShow()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -563,7 +584,6 @@ void QtMainWindow::SetupShortCuts()
 
 	// scene tree collapse/expand
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
-	
 }
 
 void QtMainWindow::InitRecent()
@@ -616,6 +636,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadEditorLightState(scene);
 	LoadShadowBlendModeState(scene);
 	LoadLandscapeEditorState(scene);
+	LoadObjectTypesLabel(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -625,7 +646,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
         if(NULL != parent && NULL != scene)
         {
             parent->RemoveControl(materialEditor);
-            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
+            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelectionEntity(0));
             parent->AddControl(materialEditor);
         }
     }
@@ -745,13 +766,17 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	
 	Q_FOREACH(Entity* item, vector)
 	{
-		switchEntity->AddNode(item);
+		if(item)
+		{
+			Entity *e = item->Clone();
+			switchEntity->AddNode(e);
+			e->Release();
+		}
 	}
 	if(vector.size())
 	{
 		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
 		scene->Exec(command);
-		SafeRelease(switchEntity);
 		
 		Entity* affectedEntity = command->GetEntity();
 		scene->selectionSystem->SetSelection(affectedEntity);
@@ -810,6 +835,11 @@ void QtMainWindow::OnSceneOpen()
 
 void QtMainWindow::OnSceneSave()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
@@ -819,6 +849,11 @@ void QtMainWindow::OnSceneSave()
 
 void QtMainWindow::OnSceneSaveAs()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
@@ -828,6 +863,11 @@ void QtMainWindow::OnSceneSaveAs()
 
 void QtMainWindow::OnSceneSaveToFolder()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
@@ -850,9 +890,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	sceneSaver.SetOutFolder(folder);
 
 	Set<String> errorsLog;
-	scene->PopEditorEntities();
 	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
-	scene->PushEditorEntities();
 
 	ShowErrorDialog(errorsLog);
 }
@@ -1063,7 +1101,8 @@ void QtMainWindow::OnPlaceOnLandscape()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		scene->modifSystem->PlaceOnLandscape(scene->selectionSystem->GetSelection());
+		EntityGroup selection = scene->selectionSystem->GetSelection();
+		scene->modifSystem->PlaceOnLandscape(selection);
 	}
 }
 
@@ -1082,7 +1121,8 @@ void QtMainWindow::OnResetTransform()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
-		scene->modifSystem->ResetTransform(scene->selectionSystem->GetSelection());
+		EntityGroup selection = scene->selectionSystem->GetSelection();
+		scene->modifSystem->ResetTransform(selection);
 	}
 }
 
@@ -1095,7 +1135,7 @@ void QtMainWindow::OnMaterialEditor()
 		SceneEditor2* sceneEditor = GetCurrentScene();
 		if(NULL != sceneEditor)
 		{
-			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelection()->GetEntity(0));
+			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelectionEntity(0));
 			
 			DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
 			curScreen->AddControl(materialEditor);
@@ -1115,7 +1155,7 @@ void QtMainWindow::OnTextureBrowser()
 
 	if(NULL != sceneEditor)
 	{
-		selectedEntity = sceneEditor->selectionSystem->GetSelection()->GetEntity(0);
+		selectedEntity = sceneEditor->selectionSystem->GetSelectionEntity(0);
 	}
 
 	TextureBrowser::Instance()->sceneActivated(sceneEditor);
@@ -1157,8 +1197,7 @@ void QtMainWindow::OnSetSkyboxNode()
 		return;
 	}
 	
-	AddSkyboxDialog dlg(this);
-	dlg.Show(scene);
+	AddSkyboxDialog::Show(this, scene);
 }
 
 void QtMainWindow::OnSwitchEntityDialog()
@@ -1188,40 +1227,64 @@ void QtMainWindow::OnLandscapeDialog()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(!sceneEditor)
 	{
-		return;	
+		return;
 	}
-	Entity *landscapeEntity = FindLandscapeEntity(sceneEditor);
-	Entity* entityToProcess = NULL;
-	if(!landscapeEntity)
+	if(landscapeDialog!= NULL)//dialog is on screen, do nothing
 	{
-		entityToProcess = new Entity();
-		entityToProcess->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(ScopedPtr<Landscape>(new Landscape()))));
-		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+		return;
+	}
+	
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
+	landscapeDialog = new LandscapeDialog(presentEntity, this);
+	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
+	
+	QObject::connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+	landscapeDialog->show();
+}
+
+void QtMainWindow::LandscapeDialogFinished(int result)
+{
+	QObject::disconnect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
+
+	Entity *returnedEntity = NULL;
+	returnedEntity = landscapeDialog->GetEntity();
+	bool isOKpressed = landscapeDialog->result() == QDialog::Accepted;
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
+	if(!presentEntity)
+	{
+		if(isOKpressed)
+		{
+			AddEntityCommand* command = new AddEntityCommand(returnedEntity, sceneEditor);
+			sceneEditor->Exec(command);
+			sceneEditor->selectionSystem->SetSelection(returnedEntity);
+		}
+		else
+		{
+			SafeRelease(returnedEntity);
+		}
 	}
 	else
 	{
-		entityToProcess = landscapeEntity;
+		if(returnedEntity)
+		{
+			if(returnedEntity != presentEntity)
+			{
+				EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
+				sceneEditor->Exec(command);
+				AddEntityCommand* commandAdd = new AddEntityCommand(returnedEntity, sceneEditor);
+				sceneEditor->Exec(commandAdd);
+				sceneEditor->selectionSystem->SetSelection(returnedEntity);
+			}
+		}
+		else
+		{
+			EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
+			sceneEditor->Exec(command);
+		}
 	}
 	
-	
-	LandscapeDialog * dlg = new LandscapeDialog(entityToProcess, this);
-
-	//dlg->SetEntity(entityToProcess);
-	dlg->exec();
-	
-	if(dlg->result() == QDialog::Accepted && !landscapeEntity)
-	{
-		AddEntityCommand* command = new AddEntityCommand(entityToProcess, sceneEditor);
-		sceneEditor->Exec(command);
-		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
-	}
-	
-	if(!landscapeEntity)
-	{
-		SafeRelease(entityToProcess);
-	}
-	
-	delete dlg;
+	landscapeDialog = NULL;
 }
 
 void QtMainWindow::OnLightDialog()
@@ -1279,9 +1342,8 @@ void QtMainWindow::OnUniteEntitiesWithLODs()
 	{
 		return;
 	}
-	const EntityGroup* selectedEntities = sceneEditor->selectionSystem->GetSelection();
 
-	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(selectedEntities);
+	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(sceneEditor->selectionSystem->GetSelection());
 	sceneEditor->Exec(command);
 	sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 }
@@ -1295,7 +1357,8 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 		ui->actionUniteEntitiesWithLODs->setEnabled(false);
 		return;
 	}
-	int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
+
+	size_t selectedItemsNumber =	sceneEditor->selectionSystem->GetSelectionCount();
 	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
 }
 
@@ -1472,6 +1535,11 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 
 void QtMainWindow::OnSaveHeightmapToPNG()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
@@ -1480,17 +1548,28 @@ void QtMainWindow::OnSaveHeightmapToPNG()
     
     Heightmap * heightmap = landscape->GetHeightmap();
     FilePath heightmapPath = landscape->GetHeightmapPathname();
-    heightmapPath.ReplaceExtension(".png");
-    heightmap->SaveToImage(heightmapPath);
+    FilePath requestedPngPath = FilePath::CreateWithNewExtension(heightmapPath, ".png");
+
+    QString selectedPath = QFileDialog::getSaveFileName(this, "Save heightmap as", requestedPngPath.GetAbsolutePathname().c_str(), "PGN Image (*.png)");
+    if(selectedPath.isEmpty()) return;
+
+    requestedPngPath = DAVA::FilePath(selectedPath.toStdString());
+    heightmap->SaveToImage(requestedPngPath);
 }
 
 void QtMainWindow::OnSaveTiledTexture()
 {
+	if (!IsSavingAllowed())
+	{
+		return;
+	}
+
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
+	landscape->UpdateFullTiledTexture();
     
     FilePath texPathname = landscape->SaveFullTiledTexture();
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
@@ -1502,8 +1581,6 @@ void QtMainWindow::OnSaveTiledTexture()
         descriptor->pathname = descriptorPathname;
         descriptor->Save();
     }
-    
-    landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, descriptor->pathname);
     
     SafeRelease(descriptor);
 }
@@ -1528,10 +1605,9 @@ void QtMainWindow::UpdateStatusBar()
         return;
     }
 
-    const EntityGroup *selection = scene->selectionSystem->GetSelection();
-    if(selection->Size())
+    if(scene->selectionSystem->GetSelectionCount() > 0)
     {
-        float32 distanceToCamera = scene->selectionSystem->GetDistanceToCamera();
+        float32 distanceToCamera = scene->cameraSystem->GetDistanceToCamera();
         ui->statusBar->SetDistanceToCamera(distanceToCamera);
     }
     else
@@ -1573,15 +1649,24 @@ void QtMainWindow::OnConvertToShadow()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
     
-    const EntityGroup *selection = scene->selectionSystem->GetSelection();
-    if(selection->Size())
+	SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
     {
-        scene->BeginBatch("Convert To Shadow");
-        
-        size_t count = selection->Size();
-        for(size_t i = 0; i < count; ++i)
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
         {
-            scene->Exec(new ConvertToShadowCommand(selection->GetEntity(i)));
+            RenderObject * ro = GetRenderObject(ss->GetSelectionEntity(i));
+            if(!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch)))
+            {
+                ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+                return;
+            }
+        }
+		
+        scene->BeginBatch("Convert To Shadow");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
         }
         
         scene->EndBatch();
@@ -1705,23 +1790,23 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	{
 		ui->actionCustomColorsEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
 	{
 		ui->actionHeightMapEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
 	{
 		ui->actionRulerTool->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
 	{
 		ui->actionTileMapEditor->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_VISIBILITY)
 	{
 		ui->actionVisibilityCheckTool->setChecked(true);
 	}
-	else if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
+	if (tools & SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN)
 	{
 		ui->actionShowNotPassableLandscape->setChecked(true);
 	}
@@ -1840,15 +1925,14 @@ void QtMainWindow::OnAddActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 	
-	const EntityGroup *selection = scene->selectionSystem->GetSelection();
-	size_t count = selection->Size();
-	if(count)
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
 	{
 		scene->BeginBatch("Add Action Component");
 
-		for(size_t i = 0; i < count; ++i)
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(selection->GetEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
 		}
 
 		scene->EndBatch();
@@ -1860,18 +1944,78 @@ void QtMainWindow::OnRemoveActionComponent()
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
-	const EntityGroup *selection = scene->selectionSystem->GetSelection();
-	size_t count = selection->Size();
-	if(count)
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
 	{
 		scene->BeginBatch("Remove Action Component");
 
-		for(size_t i = 0; i < count; ++i)
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new RemoveComponentCommand(selection->GetEntity(i), Component::ACTION_COMPONENT));
+			scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), Component::ACTION_COMPONENT));
 		}
 
 		scene->EndBatch();
+	}
+}
+
+bool QtMainWindow::IsSavingAllowed()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	if (!scene || scene->GetEnabledTools() != 0)
+	{
+		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
+		return false;
+	}
+
+	return true;
+}
+
+void QtMainWindow::OnObjectsTypeChanged( QAction *action )
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType) action->data().toInt();
+	if(objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
+	{
+		scene->debugDrawSystem->SetRequestedObjectType(objectType);
+	}
+}
+
+void QtMainWindow::OnObjectsTypeMenuWillShow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
+
+	ui->actionNoObject->setChecked(ResourceEditor::ESOT_NONE == objectType);
+	ui->actionTree->setChecked(ResourceEditor::ESOT_TREE == objectType);
+	ui->actionBush->setChecked(ResourceEditor::ESOT_BUSH == objectType);
+	ui->actionFragileProj->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ == objectType);
+	ui->actionFragileProjInv->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ_INV == objectType);
+	ui->actionFalling->setChecked(ResourceEditor::ESOT_FALLING == objectType);
+	ui->actionBuilding->setChecked(ResourceEditor::ESOT_BUILDING == objectType);
+	ui->actionInvisibleWall->setChecked(ResourceEditor::ESOT_INVISIBLE_WALL == objectType);
+}
+
+void QtMainWindow::LoadObjectTypesLabel( SceneEditor2 *scene )
+{
+	if(!scene) return;
+	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
+
+	QList<QAction *> actions = ui->menuObjectTypes->actions();
+
+	auto endIt = actions.end();
+	for(auto it = actions.begin(); it != endIt; ++it)
+	{
+		ResourceEditor::eSceneObjectType objectTypeAction = (ResourceEditor::eSceneObjectType) (*it)->data().toInt();
+		if(objectTypeAction == objectType)
+		{
+			objectTypesLabel->setDefaultAction(*it);
+			break;
+		}
 	}
 }
 

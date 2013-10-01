@@ -30,11 +30,12 @@
 #ifndef HIERARCHYTREEWIDGET_H
 #define HIERARCHYTREEWIDGET_H
 
-#include <QWidget>
-#include <QTreeWidgetItem>
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreeController.h"
 
+#include <QWidget>
+#include <QTreeWidgetItem>
+#include <QStandardItem>
 
 namespace Ui {
 class HierarchyTreeWidget;
@@ -63,7 +64,8 @@ signals:
 
 protected slots:
 	void OnTreeUpdated(bool needRestoreSelection);
-	
+	void OnTreeItemChanged(QTreeWidgetItem *item, int column);
+
 private slots:
     void on_treeWidget_itemSelectionChanged();
 	void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
@@ -86,6 +88,10 @@ private:
 	// Apply the icon, font color etc to the tree item.
 	void Decorate(QTreeWidgetItem* item, UIControl* uiControl);
 	bool IsDeleteNodeAllowed(HierarchyTreeControlNode* selectedControlNode);
+
+	// "UI Editor Visible Flag" behavior.
+	HierarchyTreeControlNode* GetControlNodeByTreeItem(QTreeWidgetItem* item);
+	void UpdateVisibleFlagRecursive(QTreeWidgetItem* rootItem, int column, bool flagValue);
 
 private:
 	bool internalSelectionChanged;

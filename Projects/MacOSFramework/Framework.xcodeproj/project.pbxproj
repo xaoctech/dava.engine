@@ -671,7 +671,6 @@
 		176DEB69174B5561007A983B /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
 		176DEB6A174B5561007A983B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		176DEB6B174B5561007A983B /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
-		176DEB6C174B5561007A983B /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
 		176DEB6D174B5561007A983B /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		176DEB6E174B5561007A983B /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
 		176DEB6F174B5561007A983B /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
@@ -1967,7 +1966,6 @@
 		E898A2B816BD265400732C04 /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
 		E898A2B916BD265400732C04 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E898A2BA16BD265400732C04 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
-		E898A2BB16BD265400732C04 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
 		E898A2BC16BD265400732C04 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		E898A2BD16BD265400732C04 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
 		E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
@@ -1997,7 +1995,6 @@
 		EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */; };
 		EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56554917CDFF4B00426EB8 /* PerformanceSettings.h */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
-		FE444430114E77EC00F5EFD6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
 		FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
@@ -2793,7 +2790,6 @@
 				176DEB69174B5561007A983B /* libBox2D_MacOS.a in Frameworks */,
 				176DEB6A174B5561007A983B /* Cocoa.framework in Frameworks */,
 				176DEB6B174B5561007A983B /* ApplicationServices.framework in Frameworks */,
-				176DEB6C174B5561007A983B /* OpenAL.framework in Frameworks */,
 				176DEB6D174B5561007A983B /* libogg_macos.a in Frameworks */,
 				176DEB6E174B5561007A983B /* libvorbis_macos.a in Frameworks */,
 				176DEB6F174B5561007A983B /* libvorbisfile_macos.a in Frameworks */,
@@ -2820,7 +2816,6 @@
 				FEF4E23212CD3C1F004B850E /* libBox2D_MacOS.a in Frameworks */,
 				D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */,
 				FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */,
-				FE444430114E77EC00F5EFD6 /* OpenAL.framework in Frameworks */,
 				FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */,
 				FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */,
 				FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */,
@@ -2845,7 +2840,6 @@
 				E898A2B816BD265400732C04 /* libBox2D_MacOS.a in Frameworks */,
 				E898A2B916BD265400732C04 /* Cocoa.framework in Frameworks */,
 				E898A2BA16BD265400732C04 /* ApplicationServices.framework in Frameworks */,
-				E898A2BB16BD265400732C04 /* OpenAL.framework in Frameworks */,
 				E898A2BC16BD265400732C04 /* libogg_macos.a in Frameworks */,
 				E898A2BD16BD265400732C04 /* libvorbis_macos.a in Frameworks */,
 				E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */,
