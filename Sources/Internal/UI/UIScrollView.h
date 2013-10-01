@@ -53,7 +53,8 @@ public:
 
 	// Access to the Scroll View Container.
 	UIScrollViewContainer* GetContainer();
-	ScrollHelper* GetScrollHelper();
+	ScrollHelper* GetScrollHHelper();
+	ScrollHelper* GetScrollVHelper();
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
@@ -90,7 +91,8 @@ protected:
 	float32 GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam);
 
 	UIScrollViewContainer *scrollContainer;
-	ScrollHelper *scroll;
+	ScrollHelper *scrollH;
+	ScrollHelper *scrollV;
 
 private:
 	void FindRequiredControls();

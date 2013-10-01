@@ -43,7 +43,8 @@ static const String UISCROLL_VIEW_CONTAINER_NAME = "scrollContainerControl";
 UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
 	scrollContainer(new UIScrollViewContainer()),
-	scroll(new ScrollHelper())
+	scrollH(new ScrollHelper()),
+	scrollV(new ScrollHelper())
 {
 	inputEnabled = true;
 	multiInput = true;
@@ -62,14 +63,18 @@ UIScrollView::~UIScrollView()
 void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 {
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-	scroll->SetViewSize(Vector2(rect.dx, rect.dy));
+	//scroll->SetViewSize(Vector2(rect.dx, rect.dy));
+	scrollH->SetViewSize(rect.dx);
+	scrollV->SetViewSize(rect.dy);
 	RecalculateContentSize();
 }
 
 void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
-	scroll->SetViewSize(Vector2(newSize.x, newSize.y));
+	//scroll->SetViewSize(Vector2(newSize.x, newSize.y));
+	scrollH->SetViewSize(newSize.x);
+	scrollV->SetViewSize(newSize.y);
 	RecalculateContentSize();
 }
 
@@ -193,7 +198,9 @@ void UIScrollView::SetPadding(const Vector2 & padding)
 	}
 	
 	scrollContainer->SetRect(contentRect);
-	scroll->SetPosition(Vector2(contentRect.x, contentRect.y));
+	//scroll->SetPosition(Vector2(contentRect.x, contentRect.y));
+	scrollH->SetPosition(contentRect.x);
+	scrollV->SetPosition(contentRect.y);
 }
 
 const Vector2 UIScrollView::GetPadding() const
@@ -251,7 +258,8 @@ void UIScrollView::RecalculateContentSize()
 
 		// Update scroll view content size
 		scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, maxSize.x, maxSize.y));
-		scroll->SetElementSize(maxSize);
+		scrollH->SetElementSize(maxSize.x);
+		scrollV->SetElementSize(maxSize.y);
 	}
 }
 
@@ -272,7 +280,8 @@ float32 UIScrollView::VisibleAreaSize(UIScrollBar *forScrollBar)
 
 	// Visible area is our rect.
 	//Vector2 visibleAreaSize(GetRect().dx, GetRect().dy);
-	Vector2 visibleAreaSize(scroll->GetFullViewSize().x, scroll->GetFullViewSize().y);
+	//Vector2 visibleAreaSize(scroll->GetFullViewSize().x, scroll->GetFullViewSize().y);
+	Vector2 visibleAreaSize(scrollH->GetViewSize(), scrollV->GetViewSize());
 	return GetParameterForScrollBar(forScrollBar, visibleAreaSize);
 }
 
@@ -285,7 +294,8 @@ float32 UIScrollView::TotalAreaSize(UIScrollBar *forScrollBar)
 
 	// Total area is the rect of the container.
 	//Vector2 totalAreaSize(scrollContainer->GetRect().dx, scrollContainer->GetRect().dy);
-	Vector2 totalAreaSize(scroll->GetFullElementSize().x, scroll->GetFullElementSize().y);
+	//Vector2 totalAreaSize(scroll->GetFullElementSize().x, scroll->GetFullElementSize().y);
+	Vector2 totalAreaSize(scrollH->GetElementSize(), scrollV->GetElementSize());
 	return GetParameterForScrollBar(forScrollBar, totalAreaSize);
 }
 
@@ -298,7 +308,8 @@ float32 UIScrollView::ViewPosition(UIScrollBar *forScrollBar)
 
 	// View position is the position of the scroll container in relation to us.
 	//Vector2 viewPosition = Vector2(scrollContainer->GetRect().x, scrollContainer->GetRect().y);
-	Vector2 viewPosition = Vector2(scroll->GetFullPosition().x, scroll->GetFullPosition().y);
+	//Vector2 viewPosition = Vector2(scroll->GetFullPosition().x, scroll->GetFullPosition().y);
+	Vector2 viewPosition = Vector2(scrollH->GetPosition(), scrollV->GetPosition());
 	return GetParameterForScrollBar(forScrollBar, viewPosition);
 }
  
@@ -320,7 +331,9 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 	}
 	
 //	scrollContainer->SetRect(curContainerRect);
-	scroll->SetPosition(Vector2(curContainerRect.x, curContainerRect.y));
+//	scroll->SetPosition(Vector2(curContainerRect.x, curContainerRect.y));
+	scrollH->SetPosition(curContainerRect.x);
+	scrollV->SetPosition(curContainerRect.y);
 }
 
 float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam)
@@ -351,9 +364,14 @@ UIScrollViewContainer* UIScrollView::GetContainer()
 	return scrollContainer;
 }
 
-ScrollHelper* UIScrollView::GetScrollHelper()
+ScrollHelper* UIScrollView::GetScrollHHelper()
 {
-	return scroll;
+	return scrollH;
+}
+
+ScrollHelper* UIScrollView::GetScrollVHelper()
+{
+	return scrollV;
 }
 
 };
