@@ -248,7 +248,8 @@ void NMaterial::SetPropertyValue(const FastName & propertyFastName, Shader::eUni
     {
         if (materialProperty->type != type || materialProperty->size != size)
         {
-            SafeDelete(materialProperty->data);
+			char* tmpPtr = static_cast<char*>(materialProperty->data);
+            SafeDeleteArray(tmpPtr); //cannot delete void* pointer
             materialProperty->size = size;
             materialProperty->type = type;
             materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
