@@ -34,12 +34,13 @@
 #include "Base/Message.h"
 #include "Platform/Thread.h"
 #include "Platform/Mutex.h"
+#include "Base/ScopedPtr.h"
+#include "Job/Job.h"
 
 namespace DAVA
 {
 
 class JobQueue;
-class Job;
 class ThreadIdJobWaiter;
 class JobInstanceWaiter;
 
@@ -61,7 +62,7 @@ public:
 	JobManager();
 	virtual ~JobManager();
 
-	void CreateJob(eThreadType threadType, const Message & message);
+	ScopedPtr<Job> CreateJob(eThreadType threadType, const Message & message);
 
 	void Update();
 	
@@ -69,7 +70,10 @@ public:
 	void OnJobCompleted(Job * job);
 
 	eWaiterRegistrationResult RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+	void UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+
 	eWaiterRegistrationResult RegisterWaiterForJobInstance(JobInstanceWaiter * waiter);
+	void UnregisterWaiterForJobInstance(JobInstanceWaiter * waiter);
 
 protected:
 	Mutex jobsDoneMutex;

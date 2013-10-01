@@ -34,7 +34,8 @@ namespace DAVA
 
 Job::Job(const Message & _message, const Thread::ThreadId & _creatorThreadId)
 :	message(_message),
-	creatorThreadId(_creatorThreadId)
+	creatorThreadId(_creatorThreadId),
+	state(STATUS_UNDONE)
 {
 
 }
@@ -43,6 +44,16 @@ void Job::Perform()
 {
 	message(this);
 	JobManager::Instance()->OnJobCompleted(this);
+}
+
+Job::eState Job::GetState()
+{
+	return state;
+}
+
+void Job::SetState(eState newState)
+{
+	state = newState;
 }
 
 

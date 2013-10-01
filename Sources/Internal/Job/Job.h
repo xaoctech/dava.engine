@@ -41,12 +41,23 @@ namespace DAVA
 class Job : public BaseObject
 {
 public:
+	enum eState
+	{
+		STATUS_UNDONE,
+		STATUS_DONE
+	};
+
 	Job(const Message & message, const Thread::ThreadId & creatorThreadId);
+	eState GetState();
 
 protected:
 	void Perform();
+	void SetState(eState newState);
+
 	Message message;
 	Thread::ThreadId creatorThreadId;
+
+	eState state;
 
 	friend class JobQueue;
 	friend class JobManager;

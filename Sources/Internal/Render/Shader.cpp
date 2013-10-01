@@ -386,10 +386,11 @@ Shader::~Shader()
     DeleteShaders();
 }
     
-Job * Shader::RecompileAsync()
+void Shader::Recompile()
 {
-	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::RecompileInternal));
-	return 0;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::RecompileInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
 }
 
 void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerData)
@@ -704,22 +705,26 @@ int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
 
 void Shader::DeleteShaders()
 {
-    RenderManager::Instance()->LockNonMain();
     DVASSERT(vertexShader != 0);  
     DVASSERT(fragmentShader != 0);
     DVASSERT(program != 0);
     
-    
-    RENDER_VERIFY(glDetachShader(program, vertexShader));
-    RENDER_VERIFY(glDetachShader(program, fragmentShader));
-    RENDER_VERIFY(glDeleteShader(vertexShader));
-    RENDER_VERIFY(glDeleteShader(fragmentShader));
-    RENDER_VERIFY(glDeleteProgram(program));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::DeleteShadersInternal));
+    JobInstanceWaiter waiter(job);
+	waiter.Wait();
+
     vertexShader = 0;
     fragmentShader = 0;
     program = 0;
+}
 
-    RenderManager::Instance()->UnlockNonMain();
+void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *callerData)
+{
+	RENDER_VERIFY(glDetachShader(program, vertexShader));
+	RENDER_VERIFY(glDetachShader(program, fragmentShader));
+	RENDER_VERIFY(glDeleteShader(vertexShader));
+	RENDER_VERIFY(glDeleteShader(fragmentShader));
+	RENDER_VERIFY(glDeleteProgram(program));
 }
 
 /* Link a program with all currently attached shaders */
@@ -900,7 +905,7 @@ Shader * Shader::RecompileNewInstance(const String & combination)
     shader->SetDefineList(combination);
     
 	//TODO: return "invalid shader" on error;
-	shader->RecompileAsync();
+	shader->Recompile();
 	/*if (!shader->Recompile())
     {
         SafeRelease(shader);
@@ -929,7 +934,7 @@ void Shader::Lost()
 void Shader::Invalidate()
 {
 	RenderResource::Invalidate();
-	RecompileAsync();
+	Recompile();
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

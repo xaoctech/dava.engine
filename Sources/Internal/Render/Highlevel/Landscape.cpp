@@ -139,7 +139,7 @@ void Landscape::InitShaders()
     }
     tileMaskShader->SetDefineList(defines);
     
-    tileMaskShader->RecompileAsync();
+    tileMaskShader->Recompile();
     
     uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("tileTexture0");
     uniformTextures[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("tileTexture1");
@@ -174,7 +174,7 @@ void Landscape::InitShaders()
         fullTiledShader->SetDefineList("VERTEX_FOG");   
     }
     
-    fullTiledShader->RecompileAsync();
+    fullTiledShader->Recompile();
     
     if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
@@ -1781,7 +1781,6 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
     }
     // Reload shaders to
-    ReleaseShaders();
     InitShaders();
 }
     

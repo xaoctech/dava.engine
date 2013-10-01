@@ -57,6 +57,7 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 #include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -218,27 +219,30 @@ Texture::~Texture()
     
 void Texture::ReleaseTextureData()
 {
-	RenderManager::Instance()->LockNonMain();
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
+	state = STATE_INVALID;
 
 	//release data that was loaded from file
 	ReleaseImages();
     
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
+}
+
+void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
+{
 #if defined(__DAVAENGINE_OPENGL__)
-    
+
 	if(fboID != (uint32)-1)
 	{
 		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
-    }
-    
+	}
+
 	if(rboID != (uint32)-1)
 	{
 		RENDER_VERIFY(glDeleteRenderbuffers(1, &rboID));
 	}
-	
+
 	if(id)
 	{
 		RENDER_VERIFY(glDeleteTextures(1, &id));
@@ -247,9 +251,6 @@ void Texture::ReleaseTextureData()
 	D3DSafeRelease(id);
 	D3DSafeRelease(saveTexture);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
-	RenderManager::Instance()->UnlockNonMain();
-
-    state = STATE_INVALID;
 }
 
 
@@ -429,9 +430,17 @@ void Texture::GenerateMipmaps()
 	RenderManager::Instance()->UnlockNonMain();
 }
 
+
+
 void Texture::GeneratePixelesation()
 {
-	RenderManager::Instance()->LockNonMain();
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::GeneratePixelesationInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
+}
+
+void Texture::GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData)
+{
 
 #if defined(__DAVAENGINE_OPENGL__)
     
@@ -452,7 +461,6 @@ void Texture::GeneratePixelesation()
 #elif defined(__DAVAENGINE_DIRECTX9__)
     
 #endif // #if defined(__DAVAENGINE_OPENGL__)
-	RenderManager::Instance()->UnlockNonMain();
 }
     
 
