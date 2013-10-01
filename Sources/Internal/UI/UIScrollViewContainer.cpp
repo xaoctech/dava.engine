@@ -263,10 +263,15 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	oldPos = newPos;
 	Rect contentRect = this->GetRect();
 		
-	ScrollHelper *sh = ((UIScrollView*)this->GetParent())->GetScrollHelper();
-	Vector2 p = sh->GetPosition(d.x, d.y, SystemTimer::FrameDelta(), lockTouch);
-	contentRect.x = p.x;
-	contentRect.y = p.y;
+	ScrollHelper *sh = ((UIScrollView*)this->GetParent())->GetScrollHHelper();
+	ScrollHelper *sv = ((UIScrollView*)this->GetParent())->GetScrollVHelper();
+	
+	float p1 = sh->GetPosition(d.x, SystemTimer::FrameDelta(), lockTouch);
+	float p2 = sv->GetPosition(d.y, SystemTimer::FrameDelta(), lockTouch);
+	
+	//Vector2 p = sh->GetPosition(d.x, d.y, SystemTimer::FrameDelta(), lockTouch);
+	contentRect.x = p1;//.x;
+	contentRect.y = p2;//.y;
 
 	this->SetRect(contentRect);
 	
