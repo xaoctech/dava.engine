@@ -37,6 +37,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Core/Core.h"
 #include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 namespace DAVA 
 {
@@ -233,7 +234,9 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare()
 {
-	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
