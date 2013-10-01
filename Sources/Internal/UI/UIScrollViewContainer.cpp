@@ -259,7 +259,23 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 
 void UIScrollViewContainer::Update(float32 timeElapsed)
 {
-	if (state == STATE_NONE)
+	Vector2 d = newPos - oldPos;
+	oldPos = newPos;
+	Rect contentRect = this->GetRect();
+		
+	ScrollHelper *sh = ((UIScrollView*)this->GetParent())->GetScrollHelper();
+	Vector2 p = sh->GetPosition(d.x, d.y, SystemTimer::FrameDelta(), lockTouch);
+	contentRect.x = p.x;
+	contentRect.y = p.y;
+
+	this->SetRect(contentRect);
+	
+	if(state == STATE_DECCELERATION)
+	{
+	//	scrollOrigin = Vector2(contentRect.x, contentRect.y);
+	}
+	
+	/*if (state == STATE_NONE)
 	{
 		return;
 	}
@@ -267,16 +283,6 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	if(state == STATE_DECCELERATION)
 	{
 		Rect contentRect = this->GetRect();
-		
-		/*Vector2 d = newPos - oldPos;
-	    oldPos = newPos;
-
-		ScrollHelper *sh = ((UIScrollView*)this->GetParent())->GetScrollHelper();
-		
-		Vector2 p = sh->GetPosition(d.x, d.y, SystemTimer::FrameDelta(), lockTouch);
-		contentRect.x = p.x;
-		contentRect.y = p.y;*/
-		
 		scrollOrigin = Vector2(contentRect.x, contentRect.y);
 	}
 	
@@ -352,7 +358,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 
 		// Done calculations.
 		this->SetRect(contentRect);
-	}
+	}*/
 }
 
 YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
