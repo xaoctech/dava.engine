@@ -52,19 +52,10 @@ namespace DAVA
 #endif
 	}
 	
-	
-#if defined (__DAVAENGINE_WIN32__)
 	Process::~Process()
 	{
 		CleanupHandles();
 	}
-#else
-	Process::~Process()
-	{
-		CleanupHandles();
-	}
-#endif
-	
 	
 	const String& Process::GetOutput() const
 	{
