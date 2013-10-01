@@ -303,7 +303,10 @@ bool Landscape::BuildHeightmap()
     }
 	else if(!heightmapPath.IsEmpty())
 	{
-		DVASSERT(false && "wrong extension");
+		// SZ: don't assert here, and it will be possible to load landscape in editor and 
+		// fix wrong path to heightmap
+		// 
+		//DVASSERT(false && "wrong extension");
 	}
 
     return retValue;
