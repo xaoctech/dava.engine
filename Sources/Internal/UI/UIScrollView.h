@@ -53,8 +53,8 @@ public:
 
 	// Access to the Scroll View Container.
 	UIScrollViewContainer* GetContainer();
-	ScrollHelper* GetScrollHHelper();
-	ScrollHelper* GetScrollVHelper();
+	ScrollHelper* GetHorizontalScroll();
+	ScrollHelper* GetVerticalScroll();
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
@@ -77,8 +77,6 @@ public:
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar);
     virtual float32 ViewPosition(UIScrollBar *forScrollBar);
     virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition);
-	
-
 
 protected:
 	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
@@ -91,8 +89,8 @@ protected:
 	float32 GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam);
 
 	UIScrollViewContainer *scrollContainer;
-	ScrollHelper *scrollH;
-	ScrollHelper *scrollV;
+	ScrollHelper *scrollHorizontal;
+	ScrollHelper *scrollVertical;
 
 private:
 	void FindRequiredControls();
