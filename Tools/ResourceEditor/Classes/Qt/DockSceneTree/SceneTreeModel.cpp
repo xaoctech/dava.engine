@@ -447,11 +447,19 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 					for (int i = 0; i < entities->size(); ++i)
 					{
 						DAVA::Entity *entity = (DAVA::Entity *) entities->at(i);
+						QModelIndex entityIndex = GetIndex(entity);
 
 						// 2. we don't accept drops if it has locked items
+						if(NULL != entity && entity->GetLocked()) 
+						{
+							ret = false;
+							break;
+						}
+
 						// 3. or this is self-drop
-						if((NULL != entity && entity->GetLocked()) ||
-							parentEntity == entity)
+						if( parentEntity == entity || // dropping into
+							entityIndex == index(row, column, parent) || // dropping above
+							entityIndex == index(row - 1, column, parent)) // dropping below
 						{
 							ret = false;
 							break;
