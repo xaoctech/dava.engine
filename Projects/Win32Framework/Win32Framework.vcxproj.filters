@@ -1329,6 +1329,9 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Process.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2362,6 +2365,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Process.cpp">
       <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
+      <Filter>Internal\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
