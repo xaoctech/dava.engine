@@ -1,15 +1,17 @@
 #ifndef __DAVAENGINE_RENDER_SPATIAL_TREE_H__
 #define	__DAVAENGINE_RENDER_SPATIAL_TREE_H__
 
-#include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderObject.h"
+#include "Base/BaseObject.h"
+#include "Math/AABBox3.h"
+//#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
 
 const static uint32 INVALID_TREE_NODE_INDEX = (uint32)(-1);
-
-class AbstractSpatialTree
+class RenderObject;
+class Frustum;
+class AbstractSpatialTree : public BaseObject
 {
 public:	
 	virtual void AddObject(RenderObject *object) = 0;
@@ -22,12 +24,16 @@ public:
 
 class QuadTree : public AbstractSpatialTree
 {
-	struct QuadTreeNode
+	struct QuadTreeNode //still basic implementation - later move it to more compact
 	{
 		enum eNodeType {NODE_LB=0, NODE_RB=1, NODE_LT=2, NODE_RT=3, NODE_NONE = 4};
 		uint32 parent;
-		uint32 children[4];
-		List<RenderObject *> objects;
+		uint32 children[4]; //think about allocating and freeing at groups of for
+		float32 zMin, zMax;		
+		int32 numChildNodes; 
+		uint32 startClipPlane;
+		Vector<RenderObject *>  objects;
+		QuadTreeNode();
 	};
 
 	
@@ -37,15 +43,31 @@ class QuadTree : public AbstractSpatialTree
 	
 	AABBox3 worldBox;
 	int32 maxTreeDepth;
+	Frustum *currFrustum;
+	
+	/*to compare*/
+	int32 objFrustrumCalls;	
+	int32 nodeFrustrumCalls;
+	int32 processClippingCalls;
+	
+	bool CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax);		
+	bool CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& nodeBoxe, QuadTreeNode::eNodeType nodeType); //assuming it already fit parent!
+	void UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childType);
+	void UpdateParentBox(AABBox3 &childBox, QuadTreeNode::eNodeType childType);	
+	
+	void DebugDrawNode(uint32 nodeId, AABBox3 box);
+	void ProcessNodeClipping(uint32 nodeId, AABBox3& box, uint32 clippingFlags);	
 
-	void CheckRemoveBranch(uint32 nodeIndex);
-	bool CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax);
+	void AddObjectToNode(uint32 baseNodeId, int32 baseDepth, const AABBox3& box, RenderObject *object);
+	void RecalculateNodeZLimits(uint32 nodeId);
 
 public:
-	QuadTree(const AABBox3& worldBox, int32 maxTreeDepth);
+	QuadTree(const AABBox3 &worldBox, int32 maxTreeDepth);
+	
 	virtual void AddObject(RenderObject *object);
 	virtual void RemoveObject(RenderObject *object);	
 	virtual void ObjectUpdated(RenderObject *object);  
+
 	virtual void ProcessClipping(Frustum *frustum);
 	virtual void UpdateTree();
 	virtual void DebugDraw();
