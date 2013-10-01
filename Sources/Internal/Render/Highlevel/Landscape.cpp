@@ -303,7 +303,10 @@ bool Landscape::BuildHeightmap()
     }
 	else if(!heightmapPath.IsEmpty())
 	{
-		DVASSERT(false && "wrong extension");
+		// SZ: don't assert here, and it will be possible to load landscape in editor and 
+		// fix wrong path to heightmap
+		// 
+		//DVASSERT(false && "wrong extension");
 	}
 
     return retValue;
@@ -1715,14 +1718,21 @@ FilePath Landscape::SaveFullTiledTexture()
     
     if(textures[TEXTURE_TILE_FULL])
     {
-		pathToSave = GetTextureName(TEXTURE_COLOR);
-		pathToSave.ReplaceExtension(".thumbnail.png");
-		Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-		if(image)
-		{
-			ImageLoader::Save(image, pathToSave);
-			SafeRelease(image);
-		}
+        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
+        {
+            pathToSave = GetTextureName(TEXTURE_COLOR);
+            pathToSave.ReplaceExtension(".thumbnail.png");
+            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+            if(image)
+            {
+                ImageLoader::Save(image, pathToSave);
+                SafeRelease(image);
+            }
+        }
+        else
+        {
+            pathToSave = textureNames[TEXTURE_TILE_FULL];
+        }
     }
     
     Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());

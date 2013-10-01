@@ -115,7 +115,7 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	FilePath filePath = GetCurrentSaveFileName();
 	if (!filePath.IsEmpty())
 	{
-		LoadTexture(filePath);
+		LoadTexture(filePath, false);
 	}
 
 	drawSystem->EnableCursor(landscapeSize);
@@ -369,7 +369,7 @@ void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 	drawSystem->GetCustomColorsProxy()->ResetChanges();
 }
 
-void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
+void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool createUndo /* = true */)
 {
 	if(filePath.IsEmpty())
 		return;
@@ -388,7 +388,10 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
 												   false);
 		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
 
-		StoreOriginalState();
+		if (createUndo)
+		{
+			StoreOriginalState();
+		}
 		RenderManager::Instance()->SetRenderTarget(drawSystem->GetCustomColorsProxy()->GetSprite());
 		sprite->Draw();
 		RenderManager::Instance()->RestoreRenderTarget();
@@ -400,7 +403,10 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
 
 		StoreSaveFileName(filePath);
 
-		CreateUndoPoint();
+		if (createUndo)
+		{
+			CreateUndoPoint();
+		}
 	}
 }
 
