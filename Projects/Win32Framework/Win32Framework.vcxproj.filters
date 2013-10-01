@@ -2336,5 +2336,8 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
