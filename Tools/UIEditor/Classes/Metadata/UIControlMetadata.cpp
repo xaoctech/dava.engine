@@ -294,7 +294,7 @@ void UIControlMetadata::SetAngle(float value)
     GetActiveUIControl()->SetAngle(DegToRad(value));
 }
 
-//Boolean getters/setters
+
 bool UIControlMetadata::GetVisible() const
 {
     if (!VerifyActiveParamID())
