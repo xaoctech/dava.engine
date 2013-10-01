@@ -468,6 +468,10 @@ void ModificationWidget::ApplyScaleValues(ST_Axis axis)
 						newEntityScale = 0;
 					}
 				}
+				else
+				{
+					newEntityScale = scaleValue;
+				}
 
 				scaleMatrix.CreateScale(DAVA::Vector3(newEntityScale, newEntityScale, newEntityScale));
 				newMatrix = origMatrix * moveToZeroPos * scaleMatrix * moveFromZeroPos;
