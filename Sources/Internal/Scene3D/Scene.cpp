@@ -593,6 +593,8 @@ void Scene::Draw()
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
+	//renderSystem->DebugDrawSpatialTree();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     

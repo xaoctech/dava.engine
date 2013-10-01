@@ -217,4 +217,10 @@ void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
 {
 }
 
+void RenderObject::RecalculateWorldBoundingBox()
+{
+	DVASSERT(!bbox.IsEmpty());
+	bbox.GetTransformedBox(*worldTransform, worldBBox);
+}
+
 };

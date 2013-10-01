@@ -46,6 +46,7 @@ Frustum::~Frustum()
 void Frustum::Build(const Matrix4 & viewProjection)
 {
 	planeArray.resize(6);
+	planeAccesArray.resize(6);
 	
 #define SETUP_PLANE(plane, x1, x2, x3, x4) \
 	planeArray[plane].n.x = -(x1); planeArray[plane].n.y = -(x2); \
@@ -105,6 +106,17 @@ void Frustum::Build(const Matrix4 & viewProjection)
 	planeCount = 6;
 
 #undef SETUP_PLANE 
+
+	//build plane min/max acces array
+	for (int32 i=0; i<planeCount; i++)
+	{
+		planeAccesArray[i].minx = ((planeArray[i].n.x>=0)?0:1);
+		planeAccesArray[i].maxx = 1 - planeAccesArray[i].minx;
+		planeAccesArray[i].miny = ((planeArray[i].n.y>=0)?0:1);
+		planeAccesArray[i].maxy = 1 - planeAccesArray[i].miny;
+		planeAccesArray[i].minz = ((planeArray[i].n.z>=0)?0:1);
+		planeAccesArray[i].maxz = 1 - planeAccesArray[i].minz;
+	}
 }
 
 void Frustum::Build()
@@ -277,6 +289,46 @@ Frustum::eFrustumResult Frustum::Classify(const Vector3 & min, const Vector3 &ma
 Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 {
 	return Classify(box.min, box.max);
+}
+
+
+uint32 Frustum::planeCalls;
+Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint32 &planeMask, uint32 &startId) const
+{
+
+	Frustum::eFrustumResult result = EFR_INSIDE;
+	Vector3 verts[2] = {box.min, box.max};
+	uint32 plane, k;
+	plane = startId;
+	k=1<<startId;
+	if (k&planeMask)
+	{
+		planeCalls++;
+		if (planeArray[plane].DistanceToPoint(Vector3(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z)) > 0.0f)		
+			return EFR_OUTSIDE;		
+		if (planeArray[plane].DistanceToPoint(Vector3(verts[planeAccesArray[plane].maxx].x, verts[planeAccesArray[plane].maxy].y, verts[planeAccesArray[plane].maxz].z)) >= 0.0f)
+			result = EFR_INTERSECT;
+		else
+			planeMask^=k; //plane is inside
+	}
+	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
+	{		
+		if ((k&planeMask)&&(plane!=startId))
+		{
+			planeCalls++;
+			if (planeArray[plane].DistanceToPoint(Vector3(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z)) > 0.0f)
+			{
+				startId = plane;
+				return EFR_OUTSIDE;
+			}
+			if (planeArray[plane].DistanceToPoint(Vector3(verts[planeAccesArray[plane].maxx].x, verts[planeAccesArray[plane].maxy].y, verts[planeAccesArray[plane].maxz].z)) >= 0.0f)
+				result = EFR_INTERSECT;
+			else
+				planeMask^=k; //plane is inside
+		}
+		
+	}	
+	return result;
 }
 
 //! \brief check bounding sphere visibility against frustum
