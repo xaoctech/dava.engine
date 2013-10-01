@@ -61,7 +61,6 @@
 #include "UIScrollViewTest.h"
 #include "ThreadSyncTest.h"
 #include "UIMovieTest.h"
-#include "Utils/TeamcityOutput.h"
 
 using namespace DAVA;
 
@@ -124,22 +123,6 @@ void GameCore::OnAppStarted()
     new ThreadSyncTest();
     
     errors.reserve(TestCount());
-
-
-	Logger::FrameworkDebug("Teamcity test started");
-
-	TeamcityOutput *out = new TeamcityOutput();
-	Logger::AddCustomOutput(out);
-	Logger::Error("Teamcity Error Start");
-	Logger::Warning("Teamcity Warning");
-	Logger::Debug("Teamcity Debug");
-	Logger::Info("Teamcity Info");
-	Logger::FrameworkDebug("Teamcity FrameworkDebug");
-	Logger::Error("Teamcity Error Start");
-	Logger::RemoveCustomOutput(out);
-	delete out;
-
-	Logger::FrameworkDebug("Teamcity test fnished");
 
     RunTests();
 }
