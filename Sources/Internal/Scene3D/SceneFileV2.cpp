@@ -159,6 +159,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
         return GetError();
     }
     
+	scene = _scene;
     rootNodePathName = filename;
 
     // save header
@@ -167,13 +168,13 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 9;
+    header.version = 10;
     header.nodeCount = _scene->GetChildrenCount();
 	
 	serializationContext.SetRootNodePath(rootNodePathName);
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
-	serializationContext.SetScene(scene);
+	serializationContext.SetScene(_scene);
     
     file->Write(&header, sizeof(Header));
     
@@ -277,7 +278,12 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     
     if(isDebugLogEnabled)
         Logger::Debug("+ load hierarchy");
-        
+	
+	if(header.version >= 10)
+	{
+		LoadMaterialSystem(file, &serializationContext);
+	}
+    
     Entity * rootNode = new Entity();
     rootNode->SetName(rootNodePathName.GetFilename());
 	rootNode->SetScene(0);
@@ -1210,17 +1216,46 @@ void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializ
 	for(size_t i = 0; i < materialCount; ++i)
 	{
 		NMaterial* mat = materials[i];
-		KeyedArchive* materialArchive = new KeyedArchive();
-		mat->Save(materialArchive, serializationContext);
-		matSystemArchive->SetArchive(Format("material.%d", i), materialArchive);
-		SafeRelease(materialArchive);
+		
+		if(!mat->IsConfigMaterial())
+		{
+			KeyedArchive* materialArchive = new KeyedArchive();
+			mat->Save(materialArchive, serializationContext);
+			matSystemArchive->SetArchive(Format("material.%d", i), materialArchive);
+			SafeRelease(materialArchive);
+		}
 	}
 	matSystemArchive->SetUInt32("materialCount", materialCount);
 	matSystemArchive->Save(file);
 	
 	SafeRelease(matSystemArchive);
 }
+
+void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializationContext)
+{
+	MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
+
+	KeyedArchive* matSystemArchive = new KeyedArchive();
+	matSystemArchive->Load(file);
 	
+	uint32 materialCount = matSystemArchive->GetUInt32("materialCount");
+	for(uint32 i = 0; i < materialCount; ++i)
+	{
+		NMaterial* material = new NMaterial();
+		KeyedArchive* materialArchive = matSystemArchive->GetArchive(Format("material.%d", i));
+		
+		DVASSERT(materialArchive->Count() > 0);
+		material->Load(materialArchive, serializationContext);
+		
+		//TODO: apply default LOD here
+		
+		matSystem->AddMaterial(material);
+		
+		SafeRelease(material);
+	}
+	
+	SafeRelease(matSystemArchive);
+}
 		
 String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 {

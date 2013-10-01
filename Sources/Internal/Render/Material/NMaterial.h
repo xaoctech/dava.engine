@@ -149,8 +149,9 @@ public:
 	NMaterial* CreateChild();
 	
 	void Rebuild(bool recursive = true);
-	bool IsReady() {return ready;}
-	bool IsDynamicLit() {return materialDynamicLit;}
+	inline bool IsReady() {return ready;}
+	inline bool IsDynamicLit() {return materialDynamicLit;}
+	inline bool IsConfigMaterial() {return configMaterial;}
 	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild
@@ -209,6 +210,7 @@ private:
 	bool ready;
 	
 	bool materialDynamicLit;
+	bool configMaterial;
 	
 private:
 	
@@ -226,6 +228,9 @@ private:
 	
 	void Serialize(const MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
 	void Deserialize(MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
+	
+	void SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive);
+	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
 
 //public:
     //INTROSPECTION_EXTEND(NMaterial, DataNode,

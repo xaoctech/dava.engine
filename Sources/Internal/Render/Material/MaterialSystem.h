@@ -51,12 +51,18 @@ class MaterialSystem
 {
 public:
 	
-	//VI: use this method to load material config.
-	//You may create several material configuration files with different settings (i.e Low, Medium, High)
-	//and load them depending on the device
+	~MaterialSystem();
+	
 	bool LoadMaterialConfig(const FilePath& filePath);
 	
     NMaterial* GetMaterial(const FastName & name);
+
+	//MaterialSystem will take ownership on the added material so release it after adding
+	void AddMaterial(NMaterial* material);
+	
+	//MaterialSystem will call Release() on the material after removing it from its state
+	void RemoveMaterial(NMaterial* material);
+	void Clear();
 	
 	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
 	

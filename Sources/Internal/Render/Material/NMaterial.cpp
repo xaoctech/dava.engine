@@ -134,10 +134,14 @@ NMaterial::NMaterial()
     activeTechnique = 0;
 	ready = false;
 	materialDynamicLit = false;
+	configMaterial = false;
 }
     
 NMaterial::~NMaterial()
 {
+	//VI: TODO: It would be really great to remove itself from the material system here
+	//VI: but it's not really good to store pointer to material system in each material
+	
 	SetParent(NULL);
 	
 	for(size_t i = 0; i < children.size(); ++i)
@@ -853,12 +857,14 @@ void NMaterial::SetupPerFrameProperties(Camera* camera)
 	
 void NMaterial::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-		
+	//VI: TODO: serialize multiple states per single LOD material
+	Serialize(state, archive, serializationContext);
 }
 	
 void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
-		
+	//VI: TODO: deserialize multiple states per single LOD material
+	Deserialize(state, archive, serializationContext);
 }
 	
 void NMaterial::Serialize(const MaterialState& materialState,
@@ -866,35 +872,35 @@ void NMaterial::Serialize(const MaterialState& materialState,
 						  SerializationContext * serializationContext)
 {
 	archive->SetString("materialName", materialState.materialName.c_str());
-	archive->SetString("parentName", materialState.parent->state.materialName.c_str());
+	archive->SetString("parentName", (materialState.parent) ? materialState.parent->state.materialName.c_str() : "");
 	
 	KeyedArchive* materialLayers = new KeyedArchive();
-	for(FastNameSet::Iterator it = materialState.layers.Begin();
-		it != state.layers.End();
-		++it)
-	{
-		materialLayers->SetBool(it.GetKey().c_str(), true);
-	}
+	SerializeFastNameSet(materialState.layers, materialLayers);
 	archive->SetArchive("layers", materialLayers);
 	SafeRelease(materialLayers);
 	
 	
 	KeyedArchive* materialNativeDefines = new KeyedArchive();
-	for(FastNameSet::Iterator it = materialState.nativeDefines.Begin();
-		it != state.nativeDefines.End();
-		++it)
-	{
-		materialNativeDefines->SetBool(it.GetKey().c_str(), true);
-	}
+	SerializeFastNameSet(materialState.nativeDefines, materialNativeDefines);
 	archive->SetArchive("nativeDefines", materialNativeDefines);
 	SafeRelease(materialNativeDefines);
 
 	KeyedArchive* materialProps = new KeyedArchive();
 	for(HashMap<FastName, NMaterialProperty*>::Iterator it = materialState.materialProperties.Begin();
-		it != state.materialProperties.End();
+		it != materialState.materialProperties.End();
 		++it)
 	{
-		materialProps->SetByteArray(it.GetKey().c_str(), static_cast<uint8*>(it.GetValue()->data), it.GetValue()->size);
+		NMaterialProperty* property = it.GetValue();
+		
+		uint32 propDataSize = Shader::GetUniformTypeSize(property->type) * property->size;
+		uint8* propertyStorage = new uint8[propDataSize + sizeof(uint32) + sizeof(uint32)];
+		
+		uint32 uniformType = property->type; //make sure uniform type is always uint32
+		memcpy(propertyStorage, &uniformType, sizeof(uint32));
+		memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
+		memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, propDataSize);
+		
+		materialProps->SetByteArray(it.GetKey().c_str(), propertyStorage, propDataSize + sizeof(uint32) + sizeof(uint32));
 	}
 	archive->SetArchive("properties", materialProps);
 	SafeRelease(materialProps);
@@ -908,7 +914,6 @@ void NMaterial::Serialize(const MaterialState& materialState,
 	}
 	archive->SetArchive("textures", materialTextures);
 	SafeRelease(materialTextures);
-	
 	
 	int techniqueIndex = 0;
 	KeyedArchive* materialTechniques = new KeyedArchive();
@@ -924,12 +929,7 @@ void NMaterial::Serialize(const MaterialState& materialState,
 		
 		KeyedArchive* techniqueDefines = new KeyedArchive();
 		const FastNameSet& techniqueDefinesSet = technique->GetUniqueDefineSet();
-		for(FastNameSet::Iterator definesIt = techniqueDefinesSet.Begin();
-			definesIt != techniqueDefinesSet.End();
-			++definesIt)
-		{
-			techniqueDefines->SetBool(definesIt.GetKey().c_str(), true);
-		}
+		SerializeFastNameSet(techniqueDefinesSet, techniqueDefines);
 		techniqueArchive->SetArchive("defines", techniqueDefines);
 		SafeRelease(techniqueDefines);
 		
@@ -951,7 +951,58 @@ void NMaterial::Deserialize(MaterialState& materialState,
 							KeyedArchive * archive,
 							SerializationContext * serializationContext)
 {
+	String parentName = archive->GetString("parentName");
+	
+	materialState.materialName = archive->GetString("materialName");
+	
+	DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
+	DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
+	
+	const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
+	for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
+		it != propsMap.end();
+		++it)
+	{
+		const VariantType* propVariant = it->second;
+		DVASSERT(VariantType::TYPE_BYTE_ARRAY == propVariant->type);
+		DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) + sizeof(uint32)));
 		
+		const uint8* ptr = propVariant->AsByteArray();
+		
+		SetPropertyValue(it->first, (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
+	}
+	
+	const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
+	for(Map<String, VariantType*>::const_iterator it = texturesMap.begin();
+		it != texturesMap.end();
+		++it)
+	{
+		Texture* tex = Texture::CreateFromFile(it->second->AsString());
+		SetTexture(it->first, tex);
+	}
+	
+	//TODO: continue loading...
+}
+	
+void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
+{
+	const Map<String, VariantType*>& setData = srcArchive->GetArchieveData();
+	for(Map<String, VariantType*>::const_iterator it = setData.begin();
+		it != setData.end();
+		++it)
+	{
+		targetSet.Insert(it->first);
+	}
+}
+	
+void NMaterial::SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive)
+{
+	for(FastNameSet::Iterator it = srcSet.Begin();
+		it != srcSet.End();
+		++it)
+	{
+		targetArchive->SetBool(it.GetKey().c_str(), true);
+	}
 }
 	
 };
