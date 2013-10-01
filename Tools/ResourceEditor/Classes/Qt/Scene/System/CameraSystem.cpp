@@ -55,6 +55,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	, animateToNewPos(false)
 	, animateToNewPosTime(0)
 	, debugCamerasCreated(false)
+    , distanceToCamera(0.f)
 { }
 
 SceneCameraSystem::~SceneCameraSystem()
@@ -122,15 +123,8 @@ const DAVA::Rect SceneCameraSystem::GetViewportRect()
 
 DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3) const
 {
-	DAVA::Vector2 ret;
-
-	if(NULL != curSceneCamera)
-	{
-		if(curSceneCamera)
-		ret = curSceneCamera->GetOnScreenPosition(pos3, viewportRect);
-	}
-
-	return ret;
+	DAVA::Vector3 ret3d = GetScreenPosAndDepth(pos3);
+	return DAVA::Vector2(ret3d.x, ret3d.y);
 }
 
 DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const
@@ -140,7 +134,9 @@ DAVA::Vector3 SceneCameraSystem::GetScreenPosAndDepth(const DAVA::Vector3 &pos3)
 	if(NULL != curSceneCamera)
 	{
 		if(curSceneCamera)
+		{
 			ret = curSceneCamera->GetOnScreenPositionAndDepth(pos3, viewportRect);
+		}
 	}
 
 	return ret;
@@ -209,9 +205,17 @@ void SceneCameraSystem::Update(float timeElapsed)
 		// is current camera in scene changed?
 		if(curSceneCamera != camera)
 		{
+			// update collision object for last camera
+			if(NULL != curSceneCamera)
+			{
+				SceneCollisionSystem *collSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
+				collSystem->UpdateCollisionObject(GetEntityFromCamera(curSceneCamera));
+			}
+			
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
+			curSceneCamera->SetAspect(viewportRect.dy / viewportRect.dx);
 			SafeRetain(curSceneCamera);
 
 			// recalc current view angles using new camera pos and direction
@@ -344,6 +348,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				pos += dir * moveSpeed;
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+                UpdateDistanceToCamera();
 			}
 
 			if(kd->IsKeyPressed(DAVA::DVKEY_LEFT) || kd->IsKeyPressed(DAVA::DVKEY_A))
@@ -355,6 +360,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				pos -= left * moveSpeed;
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);
+                UpdateDistanceToCamera();
 			}
 
 			if(kd->IsKeyPressed(DAVA::DVKEY_DOWN) || kd->IsKeyPressed(DAVA::DVKEY_S))
@@ -365,6 +371,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				pos -= dir * moveSpeed;
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+                UpdateDistanceToCamera();
 			}
 
 			if(kd->IsKeyPressed(DAVA::DVKEY_RIGHT) || kd->IsKeyPressed(DAVA::DVKEY_D))
@@ -376,6 +383,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				pos += left * moveSpeed;
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);
+                UpdateDistanceToCamera();
 			}
 		}
 	}
@@ -463,6 +471,8 @@ void SceneCameraSystem::RecalcCameraViewAngles()
 		curViewAngleY = 0;
 		curViewAngleZ = 0;
 	}
+    
+    UpdateDistanceToCamera();
 }
 
 void SceneCameraSystem::MouseMoveCameraDirection()
@@ -488,6 +498,8 @@ void SceneCameraSystem::MouseMoveCameraDirection()
 
 		DAVA::Vector3 dir = DAVA::Vector3(0.f, 10.f, 0.f) * mt2;
 		curSceneCamera->SetDirection(dir);
+        
+        UpdateDistanceToCamera();
 	}
 }
 
@@ -508,8 +520,10 @@ void SceneCameraSystem::MouseMoveCameraPosition()
 
 		DAVA::Vector3 pos = curSceneCamera->GetPosition() + (DAVA::Vector3(0, 0, 0) * mt);
 		DAVA::Vector3 dir = curSceneCamera->GetDirection();
+        
 		curSceneCamera->SetPosition(pos);
 		curSceneCamera->SetDirection(dir);
+        UpdateDistanceToCamera();
 	}
 }
 
@@ -540,6 +554,7 @@ void SceneCameraSystem::MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point
 
 		curSceneCamera->SetPosition(newPos);
 		curSceneCamera->SetTarget(point);
+        UpdateDistanceToCamera();
 	}
 }
 
@@ -581,5 +596,49 @@ void SceneCameraSystem::MoveAnimate(DAVA::float32 timeElapsed)
 
 			RecalcCameraViewAngles();
 		}
+        
+        UpdateDistanceToCamera();
 	}
+}
+
+void SceneCameraSystem::UpdateDistanceToCamera()
+{
+    SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+    
+    Vector3 center = sc->selectionSystem->GetSelection().GetCommonBbox().GetCenter();
+    
+    const Camera *cam = GetScene()->GetCurrentCamera();
+    if(cam)
+    {
+        distanceToCamera = (cam->GetPosition() - center).Length();
+    }
+    else
+    {
+        distanceToCamera = 0.f;
+    }
+}
+
+DAVA::float32 SceneCameraSystem::GetDistanceToCamera() const
+{
+    return distanceToCamera;
+}
+
+DAVA::Entity* SceneCameraSystem::GetEntityFromCamera(DAVA::Camera *c) const
+{
+	DAVA::Entity *ret = NULL;
+
+	DAVA::Set<DAVA::Entity *>::iterator it = sceneCameras.begin();
+	for(; it != sceneCameras.end(); ++it)
+	{
+		DAVA::Entity *entity = *it;
+		DAVA::Camera *camera = GetCamera(entity);
+
+		if(camera == c)
+		{
+			ret = entity;
+			break;
+		}
+	}
+
+	return ret;
 }

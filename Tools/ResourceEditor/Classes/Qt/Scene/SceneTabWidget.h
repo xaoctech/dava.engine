@@ -78,6 +78,9 @@ public:
 	SceneEditor2* GetTabScene(int index) const;
 
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
+	void HideScenePreview();
+    
+    void AddTopToolWidget(QWidget *widget);
 
 signals:
     
@@ -104,13 +107,17 @@ protected:
 	const int davaUIScreenID;
 	const int dava3DViewMargin;
 
+	QWidget *topPlaceholder;
+	QLayout *topPlaceholderLayout;
+
+
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 	void UpdateTabName(int index);
 
 	void SetTabScene(int index, SceneEditor2* scene);
 
-	virtual void resizeEvent(QResizeEvent * event);
+	virtual bool eventFilter(QObject *object, QEvent *event);
 	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dropEvent(QDropEvent *event);
 

@@ -61,8 +61,8 @@ public:
 	bool GetLandscapeSnap() const;
 	void SetLandscapeSnap(bool snap);
 
-	void PlaceOnLandscape(const EntityGroup *entities);
-	void ResetTransform(const EntityGroup *entities);
+	void PlaceOnLandscape(const EntityGroup &entities);
+	void ResetTransform(const EntityGroup &entities);
 
 	bool InModifState() const;
 	bool InCloneState() const;
@@ -94,7 +94,7 @@ protected:
 	{
 		CLONE_DONT,
 		CLONE_NEED,
-		CLOLE_DONE
+		CLONE_DONE
 	};
 
 	CloneState cloneState;
@@ -110,7 +110,6 @@ protected:
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
 	DAVA::Vector2 modifStartPos2d;
-	DAVA::Vector3 modifCurPos3d;
 
 	// entities to modify
 	DAVA::Vector<EntityToModify> modifEntities;
@@ -127,14 +126,14 @@ protected:
 	DAVA::float32 crossXZ;
 	DAVA::float32 crossYZ;
 
-	void BeginModification(const EntityGroup *entities);
+	void BeginModification(const EntityGroup &entities);
 	void EndModification();
 
 	void CloneBegin();
 	void CloneEnd();
 
 	void ApplyModification();
-	bool ModifCanStart(const EntityGroup *selectedEntities) const;
+	bool ModifCanStart(const EntityGroup &selectedEntities) const;
 
 	DAVA::Vector3 CamCursorPosToModifPos(const DAVA::Vector3 &camPosition, const DAVA::Vector3 &camPointDirection, const DAVA::Vector3 &planePoint);
 	DAVA::Vector2 Cam2dProjection(const DAVA::Vector3 &from, const DAVA::Vector3 &to);

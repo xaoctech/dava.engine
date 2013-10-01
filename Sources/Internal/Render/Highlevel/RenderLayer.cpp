@@ -151,7 +151,7 @@ void RenderLayer::Draw(Camera * camera)
 			renderBatchArray[k]->Draw(camera);
 		}
 #if 0
-		Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
+		Logger::FrameworkDebug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
 #endif
 	}
 }

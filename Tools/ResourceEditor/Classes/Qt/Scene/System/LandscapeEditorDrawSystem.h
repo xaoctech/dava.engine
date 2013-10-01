@@ -95,6 +95,8 @@ public:
 	Rect GetHeightmapRect();
 	Rect GetLandscapeRect();
 
+	void SaveTileMaskTexture();
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;

@@ -59,6 +59,7 @@ protected:
     DAVA::FilePath outFolder;
     
     DAVA::String gpu;
+	bool optimizeOnExport;
 };
 
 

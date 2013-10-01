@@ -48,6 +48,7 @@ using namespace DAVA;
 SceneExporter::SceneExporter()
 {
     exportForGPU = GPU_UNKNOWN;
+	optimizeOnExport = true;
 }
 
 SceneExporter::~SceneExporter()
@@ -78,7 +79,7 @@ void SceneExporter::SetGPUForExporting(const eGPUFamily newGPU)
 
 void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneExporter::ExportFile] %s", fileName.c_str());
+    Logger::FrameworkDebug("[SceneExporter::ExportFile] %s", fileName.c_str());
     
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
     
@@ -131,8 +132,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
-    
-	SceneHelper::SaveScene(scene, tempSceneName, true);
+    scene->Save(tempSceneName, optimizeOnExport);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
@@ -383,5 +383,10 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
 		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
     }
+}
+
+void SceneExporter::EnableOptimizations( bool enable )
+{
+	optimizeOnExport = enable;
 }
 

@@ -32,14 +32,13 @@
 #define __RESOURCEEDITORQT__MODIFICATIONWIDGET__
 
 #include <QWidget>
+#include <QAbstractSpinBox>
+#include <QLabel>
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
 
-namespace Ui
-{
-	class ModificationWidget;
-}
+class DAVAFloat32SpinBox;
 
 class ModificationWidget: public QWidget
 {
@@ -65,12 +64,17 @@ private slots:
 	void OnSceneEntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void OnSceneCommand(SceneEditor2 *scene, const Command2* command, bool redo);
 
-	void OnEditingFinishedX();
-	void OnEditingFinishedY();
-	void OnEditingFinishedZ();
+	void OnXChanged();
+	void OnYChanged();
+	void OnZChanged();
 
 private:
-	Ui::ModificationWidget *ui;
+	QLabel *xLabel;
+	QLabel *yLabel;
+	QLabel *zLabel;
+	DAVAFloat32SpinBox *xAxisModify;
+	DAVAFloat32SpinBox *yAxisModify;
+	DAVAFloat32SpinBox *zAxisModify;
 	SceneEditor2 *curScene;
 	bool groupMode;
 
@@ -83,6 +87,43 @@ private:
 	void ApplyMoveValues(ST_Axis axis);
 	void ApplyRotateValues(ST_Axis axis);
 	void ApplyScaleValues(ST_Axis axis);
+};
+
+class DAVAFloat32SpinBox : public QAbstractSpinBox
+{
+	Q_OBJECT
+
+public:
+	DAVAFloat32SpinBox(QWidget *parent = 0);
+	virtual ~DAVAFloat32SpinBox();
+
+	void showButtons(bool show);
+
+	DAVA::float32 value() const;
+	void setValue(DAVA::float32 val);
+	virtual void stepBy(int steps);
+
+signals:
+	void valueEdited();
+	void valueChanged();
+
+public slots:
+	virtual void clear();
+
+protected slots:
+	void textEditingFinished();
+
+protected:
+	DAVA::float32 originalValue;
+	QString originalString;
+
+	int precision;
+	bool hasButtons;
+	bool cleared;
+
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void paintEvent(QPaintEvent *event);
+	virtual QAbstractSpinBox::StepEnabled stepEnabled() const;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__MODIFICATIONWIDGET__) */

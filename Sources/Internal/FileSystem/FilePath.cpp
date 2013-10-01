@@ -84,6 +84,23 @@ void FilePath::AddResourcesFolder(const FilePath & folder)
     resPath.pathType = PATH_IN_RESOURCES;
     resourceFolders.push_back(resPath);
 }
+
+void FilePath::AddTopResourcesFolder(const FilePath & folder)
+{
+	DVASSERT(!folder.IsEmpty());
+
+	for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
+	{
+		if(folder == *it)
+		{
+			DVASSERT(false);
+		}
+	}
+
+	FilePath resPath = folder;
+	resPath.pathType = PATH_IN_RESOURCES;
+	resourceFolders.push_front(resPath);
+}
     
 void FilePath::RemoveResourcesFolder(const FilePath & folder)
 {
@@ -220,8 +237,7 @@ void FilePath::Initialize(const String &_pathname)
     }
     else
     {
-        Logger::Warning("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
-        
+        Logger::FrameworkDebug("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
         
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;

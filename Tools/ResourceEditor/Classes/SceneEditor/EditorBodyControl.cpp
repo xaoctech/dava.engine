@@ -216,35 +216,6 @@ FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 }
 
 
-void EditorBodyControl::PushEditorEntities()
-{
-	DVASSERT(poppedEditorEntitiesForSave.size() == 0);
-
-	Vector<Entity *>entities;
-	scene->GetChildNodes(entities);
-
-	uint32 count = entities.size();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		if(entities[i]->GetName().find("editor.") != String::npos)
-		{
-			poppedEditorEntitiesForSave.push_back(SafeRetain(entities[i]));
-			entities[i]->GetParent()->RemoveNode(entities[i]);
-		}
-	}
-}
-
-void EditorBodyControl::PopEditorEntities()
-{
-	uint32 count = poppedEditorEntitiesForSave.size();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		scene->AddEditorEntity(poppedEditorEntitiesForSave[i]);
-		SafeRelease(poppedEditorEntitiesForSave[i]);
-	}
-	
-	poppedEditorEntitiesForSave.clear();
-}
 
 void EditorBodyControl::CreateModificationPanel(void)
 {
@@ -748,54 +719,6 @@ void EditorBodyControl::Update(float32 timeElapsed)
     
     
     UIControl::Update(timeElapsed);
-}
-
-void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
-{
-    scene->ReleaseRootNode(pathToFile);
-    
-    ReloadNode(scene, pathToFile);
-    
-    scene->SetSelection(0);
-    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++) 
-    {
-        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
-        SafeRelease(nodesToAdd[i].nodeToAdd);
-    }
-    nodesToAdd.clear();
-
-	modificationPanel->OnReloadScene();
-    Refresh();
-}
-
-void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
-{//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == pathToFile.GetAbsolutePathname())
-    {
-        Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
-        newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, pathToFile.GetAbsolutePathname());
-        newNode->SetSolid(true);
-        
-        Entity *parent = node->GetParent();
-        AddedNode addN;
-        addN.nodeToAdd = newNode;
-        addN.nodeToRemove = node;
-        addN.parent = parent;
-
-        nodesToAdd.push_back(addN);
-        return;
-    }
-    
-    int32 csz = node->GetChildrenCount();
-    for (int ci = 0; ci < csz; ++ci)
-    {
-        Entity * child = node->GetChild(ci);
-        ReloadNode(child, pathToFile);
-    }
 }
 
 

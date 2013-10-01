@@ -46,7 +46,6 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
 	, selectionLocked(false)
-    , distanceToCamera(0.f)
 {
 
 }
@@ -58,15 +57,12 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
-    UpdateDistanceToCamera();
-
 	if (IsLocked())
 	{
 		return;
 	}
 
 	UpdateHoodPos();
-
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -289,22 +285,29 @@ void SceneSelectionSystem::Clear()
 {
 	if(!selectionLocked)
 	{
-		if(curSelections.Size() > 0)
+		while(curSelections.Size() > 0)
 		{
-			while(curSelections.Size() > 0)
-			{
-				DAVA::Entity *entity = curSelections.GetEntity(0);
-				curSelections.Rem(entity);
+			DAVA::Entity *entity = curSelections.GetEntity(0);
+			curSelections.Rem(entity);
 
-				SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
-			}
+			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
 		}
 	}
 }
 
-const EntityGroup* SceneSelectionSystem::GetSelection() const
+EntityGroup SceneSelectionSystem::GetSelection() const
 {
-	return &curSelections;
+	return curSelections;
+}
+
+size_t SceneSelectionSystem::GetSelectionCount() const
+{
+	return curSelections.Size();
+}
+
+DAVA::Entity* SceneSelectionSystem::GetSelectionEntity(int index) const
+{
+	return curSelections.GetEntity(index);
 }
 
 void SceneSelectionSystem::SelectedItemsWereModified()
@@ -363,6 +366,9 @@ void SceneSelectionSystem::UpdateHoodPos() const
 		hoodSystem->LockModif(false);
 		hoodSystem->Show(false);
 	}
+    
+    SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+    sc->cameraSystem->UpdateDistanceToCamera();
 }
 
 EntityGroup SceneSelectionSystem::GetSelecetableFromCollision(const EntityGroup *collisionEntities)
@@ -415,6 +421,11 @@ DAVA::Entity* SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 	return selectableEntity;
 }
 
+DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(int index) const
+{
+	return curSelections.GetBbox(index);
+}
+
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) const
 {
 	DAVA::Matrix4 beginTransform;
@@ -425,7 +436,7 @@ DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) cons
 
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const
 {
-	DAVA::AABBox3 ret;
+	DAVA::AABBox3 ret = DAVA::AABBox3(DAVA::Vector3(0, 0, 0), 0);
 
 	if(NULL != entity)
 	{
@@ -471,23 +482,5 @@ int SceneSelectionSystem::GetDrawMode() const
 	return drawMode;
 }
 
-DAVA::float32 SceneSelectionSystem::GetDistanceToCamera() const
-{
-    return distanceToCamera;
-}
 
-void SceneSelectionSystem::UpdateDistanceToCamera()
-{
-    Vector3 center = curSelections.GetCommonBbox().GetCenter();
-    
-    const Camera *cam = GetScene()->GetCurrentCamera();
-    if(cam)
-    {
-        distanceToCamera = (cam->GetPosition() - center).Length();
-    }
-    else
-    {
-        distanceToCamera = 0.f;
-    }
-}
 

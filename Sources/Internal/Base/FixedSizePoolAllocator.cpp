@@ -52,7 +52,7 @@ void FixedSizePoolAllocator::CreateNewDataBlock()
 {
     DVASSERT(blockSize >= sizeof(uint8*));
     void * block = ::malloc(blockArraySize * blockSize + sizeof(uint8*));
-    //Logger::Debug("Allocated new data block: %p pointer size: %d", block, sizeof(uint8*));
+    //Logger::FrameworkDebug("Allocated new data block: %p pointer size: %d", block, sizeof(uint8*));
     // insert to list
     *(uint8**)block = (uint8*)allocatedBlockArrays;
     allocatedBlockArrays = block;
@@ -69,7 +69,7 @@ void FixedSizePoolAllocator::InsertBlockToFreeNodes(void * block)
     uint8 * blockItem = (uint8*)block + sizeof(uint8*) + blockSize * (blockArraySize - 1);
     for (uint32 k = 0; k < blockArraySize; ++k)
     {
-        //Logger::Debug("Free block added: %p", blockItem);
+        //Logger::FrameworkDebug("Free block added: %p", blockItem);
 
         *(uint8**)blockItem = (uint8*)nextFreeBlock;
         nextFreeBlock = blockItem;
@@ -102,7 +102,7 @@ void FixedSizePoolAllocator::DeallocateMemory()
 #ifdef __DAVAENGINE_DEBUG__
 		totalBlockCount--;
 #endif
-        //Logger::Debug("Deallocated data block: %p pointer size: %d", allocatedBlockArrays, sizeof(uint8*));
+        //Logger::FrameworkDebug("Deallocated data block: %p pointer size: %d", allocatedBlockArrays, sizeof(uint8*));
         allocatedBlockArrays = next;
     }
 

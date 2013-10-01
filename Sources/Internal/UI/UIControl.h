@@ -1158,6 +1158,10 @@ public:
 	int32 GetInitialState() const;
 	void SetInitialState(int32 newState);
 
+	// Get/set visible flag for UI editor. Should not be serialized.
+	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
+	void SetVisibleForUIEditor(bool value) { visibleForUIEditor = value; };
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1183,6 +1187,7 @@ protected:
 //	Rect absoluteRect;
 	int32 controlState;
 	bool visible;
+	bool visibleForUIEditor;
 	bool inputEnabled;
 	bool clipContents;
 
@@ -1244,9 +1249,9 @@ private:
 	String	name;
 	int32	tag;
 
-	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
+	void RecalculatePivotPoint(const Rect &newRect);
 
 	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);

@@ -155,7 +155,7 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
     {
         //Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         const String & uniformName = shader->GetUniformName(uniformIndex);
-        //Logger::Debug("Find uniform: %s", uniformName.c_str());
+        //Logger::FrameworkDebug("Find uniform: %s", uniformName.c_str());
         
         if ((uniformName == "texture[0]") || (uniformName == "texture"))
         {
@@ -197,7 +197,7 @@ void NMaterialInstance::BindUniforms()
         
         if (uniformInfo.flags & SKIP_UNIFORM)continue;
         
-//        Logger::Debug("Bind uniform: %s", shader->GetUniformName(uniformIndex).c_str());
+//        Logger::FrameworkDebug("Bind uniform: %s", shader->GetUniformName(uniformIndex).c_str());
         
         uint8 * data = &uniformData[uniformInfo.shift];
         switch(uniformType)

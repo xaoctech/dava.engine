@@ -464,12 +464,12 @@ void PropertyFilepathCell::Input(UIEvent *currentInput)
     if(currentInput->phase == UIEvent::PHASE_MOVE)
     {
         ++moveCounter;
-//        Logger::Debug("move");
+//        Logger::FrameworkDebug("move");
     }
     else 
     {
         moveCounter = 0;
-//        Logger::Debug("not_move");
+//        Logger::FrameworkDebug("not_move");
     }
     
     UIListCell::Input(currentInput);

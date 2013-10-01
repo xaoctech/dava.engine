@@ -64,6 +64,9 @@ public:
 	DAVA::Vector3 GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const;
 	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z) const;
 
+    DAVA::float32 GetDistanceToCamera() const;
+    void UpdateDistanceToCamera();
+
 protected:
 	void Update(DAVA::float32 timeElapsed);
 	void Draw();
@@ -73,6 +76,17 @@ protected:
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
+
+    void ProcessKeyboardMove(float timeElapsed);
+    
+	void CreateDebugCameras();
+	void RecalcCameraViewAngles();
+	void MouseMoveCameraPosition();
+	void MouseMoveCameraDirection();
+	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
+    
+	void MoveAnimate(DAVA::float32 timeElapsed);
+	DAVA::Entity* GetEntityFromCamera(DAVA::Camera *camera) const;
 
 protected:
 	DAVA::Rect viewportRect;
@@ -94,15 +108,10 @@ protected:
 
 	DAVA::Set<DAVA::Entity *> sceneCameras;
 
-	void ProcessKeyboardMove(float timeElapsed);
+    DAVA::float32 distanceToCamera;
 
-	void CreateDebugCameras();
-	void RecalcCameraViewAngles();
-	void MouseMoveCameraPosition();
-	void MouseMoveCameraDirection();
-	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
-
-	void MoveAnimate(DAVA::float32 timeElapsed);
+    
+    
 };
 
 #endif

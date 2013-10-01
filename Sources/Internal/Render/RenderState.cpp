@@ -81,7 +81,7 @@ void RenderState::Reset(bool doHardwareReset)
     if (doHardwareReset)
     {
         RenderManager::Instance()->LockNonMain();
-//        Logger::Debug("Do hardware reset");
+//        Logger::FrameworkDebug("Do hardware reset");
         // PrintBackTraceToLog();
         SetColorInHW();
         SetEnableBlendingInHW();
@@ -135,7 +135,7 @@ void RenderState::Flush(RenderState * hardwareState) const
     RenderManager::Instance()->LockNonMain();
 
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::Flush started");
+    Logger::FrameworkDebug("RenderState::Flush started");
 #endif    
 
     uint32 diffState = state ^ hardwareState->state;
@@ -367,7 +367,7 @@ void RenderState::Flush(RenderState * hardwareState) const
     hardwareState->shader = shader;
     
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::Flush finished");
+    Logger::FrameworkDebug("RenderState::Flush finished");
 #endif    
     RenderManager::Instance()->UnlockNonMain();
 
@@ -380,7 +380,7 @@ inline void RenderState::SetColorInHW() const
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::color = (%f, %f, %f, %f)", color.r, color.g, color.b, color.a);
+        Logger::FrameworkDebug("RenderState::color = (%f, %f, %f, %f)", color.r, color.g, color.b, color.a);
 #endif
         RENDER_VERIFY(glColor4f(color.r, color.g, color.b, color.a));
     }
@@ -394,7 +394,7 @@ inline void RenderState::SetColorMaskInHW() const
     GLboolean alphaMask = (state & STATE_COLORMASK_ALPHA) != 0;
     
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::colormask = %d %d %d %d", redMask, greenMask, blueMask, alphaMask);
+    Logger::FrameworkDebug("RenderState::colormask = %d %d %d %d", redMask, greenMask, blueMask, alphaMask);
 #endif    
     RENDER_VERIFY(glColorMask(redMask, 
                               greenMask, 
@@ -407,14 +407,14 @@ inline void RenderState::SetStensilTestInHW() const
 	if (state & STATE_STENCIL_TEST)
 	{
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::stencil = true");
+        Logger::FrameworkDebug("RenderState::stencil = true");
 #endif    
 		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
 	}
 	else
 	{
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::stencil = false");
+        Logger::FrameworkDebug("RenderState::stencil = false");
 #endif    
 		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
 	}
@@ -425,14 +425,14 @@ inline void RenderState::SetEnableBlendingInHW() const
     if (state & STATE_BLEND)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::blend = true");
+        Logger::FrameworkDebug("RenderState::blend = true");
 #endif    
         RENDER_VERIFY(glEnable(GL_BLEND));
     }
     else 
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::blend = false");
+        Logger::FrameworkDebug("RenderState::blend = false");
 #endif    
         RENDER_VERIFY(glDisable(GL_BLEND));
     }
@@ -443,7 +443,7 @@ inline void RenderState::SetCullInHW() const
     if (state & STATE_CULL)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::cullface = true");
+        Logger::FrameworkDebug("RenderState::cullface = true");
 #endif    
 
         RENDER_VERIFY(glEnable(GL_CULL_FACE));
@@ -451,7 +451,7 @@ inline void RenderState::SetCullInHW() const
     else 
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::cullface = false");
+        Logger::FrameworkDebug("RenderState::cullface = false");
 #endif    
         RENDER_VERIFY(glDisable(GL_CULL_FACE));
     }
@@ -460,7 +460,7 @@ inline void RenderState::SetCullInHW() const
 inline void RenderState::SetCullModeInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::cull_mode = %d", cullMode);
+    Logger::FrameworkDebug("RenderState::cull_mode = %d", cullMode);
 #endif    
 
     RENDER_VERIFY(glCullFace(CULL_FACE_MAP[cullMode]));
@@ -470,7 +470,7 @@ inline void RenderState::SetCullModeInHW() const
 inline void RenderState::SetBlendModeInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::blend_src_dst = (%d, %d)", sourceFactor, destFactor);
+    Logger::FrameworkDebug("RenderState::blend_src_dst = (%d, %d)", sourceFactor, destFactor);
 #endif    
 
     RENDER_VERIFY(glBlendFunc(BLEND_MODE_MAP[sourceFactor], BLEND_MODE_MAP[destFactor]));
@@ -482,13 +482,13 @@ inline void RenderState::SetTextureLevelInHW(uint32 textureLevel) const
     if(currentTexture[textureLevel])
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
+        Logger::FrameworkDebug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
 #endif    
         RenderManager::Instance()->HWglBindTexture(currentTexture[textureLevel]->id, currentTexture[textureLevel]->textureType);
     }else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, 0);
+        Logger::FrameworkDebug("RenderState::bind_texture %d = (%d)", textureLevel, 0);
 #endif    
         RenderManager::Instance()->HWglBindTexture(0);
     }    
@@ -498,14 +498,14 @@ inline void RenderState::SetDepthTestInHW() const
     if(state & STATE_DEPTH_TEST)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::depth_test = true");
+        Logger::FrameworkDebug("RenderState::depth_test = true");
 #endif    
         RENDER_VERIFY(glEnable(GL_DEPTH_TEST));
     }
     else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::depth_test = false");
+        Logger::FrameworkDebug("RenderState::depth_test = false");
 #endif    
         RENDER_VERIFY(glDisable(GL_DEPTH_TEST));
     }    
@@ -516,7 +516,7 @@ inline void RenderState::SetDepthWriteInHW() const
     if(state & STATE_DEPTH_WRITE)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::depth_mask = true");
+        Logger::FrameworkDebug("RenderState::depth_mask = true");
 #endif    
 
         RENDER_VERIFY(glDepthMask(GL_TRUE));
@@ -524,7 +524,7 @@ inline void RenderState::SetDepthWriteInHW() const
     else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::depth_mask = false");
+        Logger::FrameworkDebug("RenderState::depth_mask = false");
 #endif    
         RENDER_VERIFY(glDepthMask(GL_FALSE));
     }
@@ -535,7 +535,7 @@ inline void RenderState::SetAlphaTestInHW() const
     if(state & STATE_ALPHA_TEST)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::alpha_test = true");
+        Logger::FrameworkDebug("RenderState::alpha_test = true");
 #endif    
 
         RENDER_VERIFY(glEnable(GL_ALPHA_TEST));
@@ -543,7 +543,7 @@ inline void RenderState::SetAlphaTestInHW() const
     else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::alpha_test = false");
+        Logger::FrameworkDebug("RenderState::alpha_test = false");
 #endif    
         RENDER_VERIFY(glDisable(GL_ALPHA_TEST));
     }
@@ -554,14 +554,14 @@ inline void RenderState::SetAlphaTestFuncInHW() const
     if (renderer == Core::RENDERER_OPENGL)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
+        Logger::FrameworkDebug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
 #endif    
 
         RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], (float32)alphaFuncCmpValue / 255.0f) );
     }else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
+        Logger::FrameworkDebug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
 #endif    
         RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
     }
@@ -570,7 +570,7 @@ inline void RenderState::SetAlphaTestFuncInHW() const
 inline void RenderState::SetDepthFuncInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::depth func = (%d)", depthFunc);
+    Logger::FrameworkDebug("RenderState::depth func = (%d)", depthFunc);
 #endif    
 
 	RENDER_VERIFY(glDepthFunc(COMPARE_FUNCTION_MAP[depthFunc]));
@@ -581,14 +581,14 @@ inline void RenderState::SetScissorTestInHW() const
 	if(state & STATE_SCISSOR_TEST)
 	{
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::scissor_test = true");
+        Logger::FrameworkDebug("RenderState::scissor_test = true");
 #endif  
 		RENDER_VERIFY(glEnable(GL_SCISSOR_TEST));
 	}
 	else
 	{
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::scissor_test = false");
+        Logger::FrameworkDebug("RenderState::scissor_test = false");
 #endif  
 		RENDER_VERIFY(glDisable(GL_SCISSOR_TEST));
 	}
@@ -597,7 +597,7 @@ inline void RenderState::SetScissorTestInHW() const
 inline void RenderState::SetScissorRectInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
-    Logger::Debug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
+    Logger::FrameworkDebug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
 #endif  
 
 	RENDER_VERIFY(glScissor((GLint)scissorRect.x, (GLint)scissorRect.y, (GLsizei)scissorRect.dx, (GLsizei)scissorRect.dy));

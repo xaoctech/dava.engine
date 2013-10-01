@@ -107,6 +107,8 @@
 		173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */; };
 		173AC3441630285B00A773F5 /* PropertyGridWidgetsFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3421630285A00A773F5 /* PropertyGridWidgetsFactory.cpp */; };
 		173AC3471631458000A773F5 /* PropertyGridWidgetData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */; };
+		174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */; };
+		174E1FC617F3485A00C7EC10 /* regexpinputdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */; };
 		17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */; };
 		17607FEF16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */; };
 		1767C4301636C8F5008D25BD /* UIStaticTextMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */; };
@@ -190,7 +192,6 @@
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A641262F17D0C98B004D3C5E /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A641262C17D0C97C004D3C5E /* libFrameworkToolsQt.a */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
-		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C10740DE163A94360069A640 /* createplatformdlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740DA163A94360069A640 /* createplatformdlg.cpp */; };
@@ -438,6 +439,9 @@
 		173AC3431630285A00A773F5 /* PropertyGridWidgetsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetsFactory.h; path = PropertyGridWidgets/PropertyGridWidgetsFactory.h; sourceTree = "<group>"; };
 		173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyGridWidgetData.cpp; path = PropertyGridWidgets/PropertyGridWidgetData.cpp; sourceTree = "<group>"; };
 		173AC3461631458000A773F5 /* PropertyGridWidgetData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetData.h; path = PropertyGridWidgets/PropertyGridWidgetData.h; sourceTree = "<group>"; };
+		174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = regexpinputdialog.cpp; path = Dialogs/regexpinputdialog.cpp; sourceTree = "<group>"; };
+		174E1FBE17F3483600C7EC10 /* regexpinputdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regexpinputdialog.h; path = Dialogs/regexpinputdialog.h; sourceTree = "<group>"; };
+		174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = regexpinputdialog_moc.cpp; sourceTree = "<group>"; };
 		175313CF16381155000B08FD /* BaseMetadataParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMetadataParams.h; path = Metadata/BaseMetadataParams.h; sourceTree = "<group>"; };
 		1759BE26164A89A80067F498 /* PropertyNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyNames.h; path = Metadata/PropertyNames.h; sourceTree = "<group>"; };
 		17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalizationSystemHelper.cpp; path = Helpers/LocalizationSystemHelper.cpp; sourceTree = "<group>"; };
@@ -687,7 +691,6 @@
 				5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
-				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
 				A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */,
 				A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */,
@@ -802,6 +805,7 @@
 		02D69C6F16F08CED00F3803F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */,
 				497774C1170DB80F004CE2FB /* importdialog_moc.cpp */,
 				C18593F816F314F1005D30E2 /* createaggregatordlg_moc.cpp */,
 				02D69C7016F08CED00F3803F /* localizationeditordialog_moc.cpp */,
@@ -1080,6 +1084,8 @@
 		17FF15FD16400A41001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */,
+				174E1FBE17F3483600C7EC10 /* regexpinputdialog.h */,
 				49B0264F170AC25C001E28CC /* importdialog.cpp */,
 				49B02650170AC25C001E28CC /* importdialog.h */,
 				C18593F316F30D74005D30E2 /* createaggregatordlg.cpp */,
@@ -1687,6 +1693,8 @@
 				749B309417E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp in Build Sources */,
 				749B309517E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp in Build Sources */,
 				7499C4BC17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp in Build Sources */,
+				174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */,
+				174E1FC617F3485A00C7EC10 /* regexpinputdialog_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

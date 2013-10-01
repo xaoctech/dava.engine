@@ -150,6 +150,7 @@ public:
     
 	eType			GetType() const { return type; }
 	int32			GetCount() const;
+	bool			IsWideString() const { return isWideString; };
 
     void            InitFromKeyedArchive(KeyedArchive* archive);
     void            InitFromVariantType(VariantType* varType);
@@ -184,6 +185,7 @@ private:
 	String					 nwStringValue;
 	Vector<YamlNode*>		 objectArray;
     MultiMap<String, YamlNode*>	objectMap;
+	bool					isWideString;
 	friend class YamlParser;
 };
 
@@ -230,7 +232,7 @@ private:
     void OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<YamlNodeKeyValuePair> &sortedChildren ) const;
 
     // Write different Yaml node types to the file.
-    bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth) const;
+    bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const YamlNode* currentNode, int16 depth) const;
     bool WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeName,
                                   const YamlNode* currentNode, int16 depth) const;
     bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth) const;
@@ -245,6 +247,9 @@ private:
 
     // Return the identation string of the appropriate depth.
     String PrepareIdentedString(int16 depth) const;
+
+	// Replace \n characters to "\n" string.
+	WideString ReplaceLineEndings(const WideString& rawString) const;
 
 	YamlNode			* rootObject;
 	String				lastMapKey;

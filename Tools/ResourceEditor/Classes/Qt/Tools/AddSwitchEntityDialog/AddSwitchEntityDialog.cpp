@@ -29,8 +29,10 @@
 
 
 #include "AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
+#include "Tools/MimeDataHelper/MimeDataHelper.h"
+#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
+#include "Main/mainwindow.h"
+#include "SceneEditor/EditorSettings.h"
 #include <QLabel>
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
@@ -38,29 +40,29 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(false);
 	
-	SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent);
-	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent);
-	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent);
+	FilePath defaultPath(EditorSettings::Instance()->GetProjectPath().GetAbsolutePathname() + "/DataSource/3d");
+	
+	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+	if(scene)
+	{
+		FilePath scenePath = scene->GetScenePath();
+		if(scenePath.Exists())
+		{
+			defaultPath = scenePath.GetDirectory();
+		}
+	}
+	
+	SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
+	SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
+	SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(),"");
 
-	QLabel* label1 = new QLabel("First Entity:", parent);
-	QLabel* label2 = new QLabel("Second Entity:", parent);
-	QLabel* label3 = new QLabel("Third Entity:", parent);
-	
-	
-	AddControlToUserContainer(label1);
-	AddControlToUserContainer(firstWidget);
-	AddControlToUserContainer(label2);
-	AddControlToUserContainer(secondWidget);
-	AddControlToUserContainer(label3);
-	AddControlToUserContainer(thirdWidget);
+	AddControlToUserContainer(firstWidget, "First Entity:");
+	AddControlToUserContainer(secondWidget, "Second Entity:");
+	AddControlToUserContainer(thirdWidget, "Third Entity:");
 
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
-	
-	additionalWidgets.push_back(label1);
-	additionalWidgets.push_back(label2);
-	additionalWidgets.push_back(label3);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
@@ -68,10 +70,6 @@ AddSwitchEntityDialog::~AddSwitchEntityDialog()
 	RemoveAllControlsFromUserContainer();
 	
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
-	{
-		delete widget;
-	}
-	Q_FOREACH(QWidget* widget, additionalWidgets)
 	{
 		delete widget;
 	}

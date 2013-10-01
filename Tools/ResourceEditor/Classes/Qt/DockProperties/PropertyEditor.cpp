@@ -59,6 +59,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 		QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
 		QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
 		QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+		QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool )));
 
 		// MainWindow actions
 		QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
@@ -94,6 +95,9 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
+		// ensure that custom properties exist
+		curNode->GetCustomProperties();
+
         AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
 
 		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -199,7 +203,7 @@ void PropertyEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(NULL != scene)
 	{
-		SetNode(scene->selectionSystem->GetSelection()->GetEntity(0));
+		SetNode(scene->selectionSystem->GetSelectionEntity(0));
 	}
 }
 
@@ -225,7 +229,22 @@ void PropertyEditor::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 
 void PropertyEditor::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
+	if(curNode == entity)
+	{
+		SetNode(NULL);
+	}
+}
 
+void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+	if(command->GetEntity() == curNode)
+	{
+		if( command->GetId() == CMDID_ADD_COMPONENT ||
+			command->GetId() == CMDID_REMOVE_COMPONENT)
+		{
+			SetNode(curNode);
+		}
+	}
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

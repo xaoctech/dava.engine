@@ -57,7 +57,12 @@ void SpeedTreeLeafBatch::SetTexture(Texture * _texture)
 
 void SpeedTreeLeafBatch::Draw(Camera * camera)
 {
-    if(!renderObject)return;
+    if(!renderObject)
+        return;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPEEDTREE_LEAFS_DRAW))
+        return;
+
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
     if (!worldTransformPtr)
     {
@@ -112,11 +117,14 @@ RenderBatch * SpeedTreeLeafBatch::Clone(RenderBatch * dstNode)
         DVASSERT_MSG(IsPointerToExactClass<SpeedTreeLeafBatch>(this), "Can clone only SpeedTreeLeafBatch");
         dstNode = new SpeedTreeLeafBatch();
     }
-
+    
     RenderBatch::Clone(dstNode);
     SpeedTreeLeafBatch *nd = (SpeedTreeLeafBatch *)dstNode;
-
-    nd->shader = shader;
+    
+    SafeRelease(nd->texture);
+    SafeRelease(nd->shader);
+    
+    nd->shader = SafeRetain(shader);
     nd->texture = SafeRetain(texture);
 
     return nd;

@@ -444,7 +444,7 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //    {
 //        Vector3 normal;
 //        GetNormal(k, normal);
-//        Logger::Debug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
+//        Logger::FrameworkDebug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
 //    }
     
 

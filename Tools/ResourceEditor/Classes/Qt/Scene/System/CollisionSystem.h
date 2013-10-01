@@ -72,6 +72,7 @@ public:
 	DAVA::Landscape* GetLandscape() const;
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
+	void RemoveCollisionObject(DAVA::Entity *entity);
 	void LockCollisionObjects(bool lock);
 
 protected:

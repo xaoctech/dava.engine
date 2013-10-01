@@ -55,15 +55,15 @@ AllocatorFactory::~AllocatorFactory()
 void AllocatorFactory::Dump()
 {
 #ifdef __DAVAENGINE_DEBUG__
-	Logger::Info("AllocatorFactory::Dump (Max item count) ================");
+	Logger::FrameworkDebug("AllocatorFactory::Dump (Max item count) ================");
 	Map<String, FixedSizePoolAllocator*>::iterator itEnd = allocators.end();
 	for(Map<String, FixedSizePoolAllocator*>::iterator it = allocators.begin(); it != itEnd; ++it)
 	{
 		FixedSizePoolAllocator * alloc = (*it).second;
-		Logger::Info("  %s: %u", it->first.c_str(), alloc->maxItemCount);
+		Logger::FrameworkDebug("  %s: %u", it->first.c_str(), alloc->maxItemCount);
 	}
 
-	Logger::Info("End of AllocatorFactory::Dump ==========================");
+	Logger::FrameworkDebug("End of AllocatorFactory::Dump ==========================");
 #endif //__DAVAENGINE_DEBUG__
 }
 

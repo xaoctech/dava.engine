@@ -111,11 +111,10 @@ void EditorParticlesSystem::Draw()
 	if(selectionSystem != NULL)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
-		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
 		
-		for (size_t i = 0; i < selectedEntities->Size(); i++)
+		for (size_t i = 0; i < selectionSystem->GetSelectionCount(); i++)
 		{
-			DAVA::Entity *entity = selectedEntities->GetEntity(i);
+			DAVA::Entity *entity = selectionSystem->GetSelectionEntity(i);
 			
 			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent*>(entity->GetComponent(DAVA::Component::RENDER_COMPONENT));
 		
@@ -126,7 +125,7 @@ void EditorParticlesSystem::Draw()
 				if (emitter)
 				{
 					// Get center of entity object
-					DAVA::AABBox3 selectionBox = selectedEntities->GetBbox(i);
+					DAVA::AABBox3 selectionBox = selectionSystem->GetSelectionAABox(i);
 					DAVA::Vector3 center = selectionBox.GetCenter();
 					// Always draw emission vector arrow for emitter
 					DrawVectorArrow(entity, emitter, center);
@@ -135,9 +134,13 @@ void EditorParticlesSystem::Draw()
 					{
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
-						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 						{
 							DrawSizeCircle(entity, emitter, center);
+						}
+						break;
+						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
+						{
+							DrawSizeCircleShockWave(emitter, center);
 						}
 						break;
 					
@@ -161,6 +164,12 @@ void EditorParticlesSystem::Draw()
 	
 	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
 	DAVA::RenderManager::Instance()->SetState(oldState);
+}
+
+void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+{
+	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(emitter->GetTime()) : 0.0f;
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)

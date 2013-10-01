@@ -204,7 +204,7 @@ void Landscape::ReleaseShaders()
 
 int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 {
-//    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
+//    Logger::FrameworkDebug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
     LandscapeVertex * landscapeVertices = new LandscapeVertex[(quad->size + 1) * (quad->size + 1)];
     
@@ -217,7 +217,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 
             landscapeVertices[index].texCoord = texCoord;
             //landscapeVertices[index].texCoord -= Vector2(0.5f, 0.5f);
-//            Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
+//            Logger::FrameworkDebug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
             index++;
         }
     
@@ -232,7 +232,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
     
     landscapeRDOArray.push_back(landscapeRDO);
     
-//    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
+//    Logger::FrameworkDebug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
     return (int16)landscapeRDOArray.size() - 1;
 }
@@ -316,7 +316,7 @@ void Landscape::BuildLandscape()
     quadTreeHead.data.size = heightmap->Size() - 1;
     quadTreeHead.data.rdoQuad = -1;
     
-    SetLods(Vector4(50.0f, 100.0f, 200.0f, 480.0f));
+    SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
  
     allocatedMemoryForQuads = 0;
 
@@ -328,10 +328,10 @@ void Landscape::BuildLandscape()
         indices = new uint16[INDEX_ARRAY_COUNT];
     }
     
-//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
-//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
-//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+//    Logger::FrameworkDebug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
+//    Logger::FrameworkDebug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
+//    Logger::FrameworkDebug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
+//    Logger::FrameworkDebug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
     
 /*
@@ -704,14 +704,13 @@ void Landscape::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod
     {
         //int32 newdepth = (int)(logf((float)depth) / logf(2.0f) + 0.5f);
         int32 newdepth2 = CountLeadingZeros(depth);
-        //Logger::Debug("dp: %d %d %d", depth, newdepth, newdepth2);
+        //Logger::FrameworkDebug("dp: %d %d %d", depth, newdepth, newdepth2);
         //DVASSERT(newdepth == newdepth2); // Check of math, we should use optimized version with depth2
         
         MarkFrames(currentNode, newdepth2);
     }
     
-    int32 step = (1 << lod);
-    
+    int32 step = Min((int16)(1 << lod), currentNode->data.size);
     
     if ((currentNode->data.rdoQuad != queueRdoQuad) && (queueRdoQuad != -1))
     {
@@ -972,7 +971,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 	
 	//VI: this check should fix occasional cracks on the landscape
 	//VI: DF-1864 - select max distance from camera to quad and calculate max lod for that distance only
-	if(minLod == maxLod)
+	/*if(minLod == maxLod)
 	{
 		LandQuadTreeNode<LandscapeQuad> * parentNode = currentNode->parent;
 		float32 maxQuadDistance = -1.0f;
@@ -1001,18 +1000,18 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 			
 			if(maxQuadDistance >= 0.0f)
 			{
-				maxLod = GetMaxLod(maxQuadDistance);
+				maxLod = Max(maxLod, GetMaxLod(maxQuadDistance));
 			}
 		}
-    }
+    }*/
     
     // debug block
 #if 1
     if (currentNode == &quadTreeHead)
     {
-        //Logger::Debug("== draw start ==");
+        //Logger::FrameworkDebug("== draw start ==");
     }
-    //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
+    //Logger::FrameworkDebug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
 #endif
 
 //    if (frustum->IsFullyInside(currentNode->data.bbox))
@@ -1024,7 +1023,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     
     if ((minLod == maxLod) && (/*frustum->IsFullyInside(currentNode->data.bbox)*/(frustumRes == Frustum::EFR_INSIDE) || currentNode->data.size <= (1 << maxLod) + 1) )
     {
-        //Logger::Debug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
+        //Logger::FrameworkDebug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
         
 //        if (currentNode->data.size <= (1 << maxLod))
 //            RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -1318,7 +1317,7 @@ void Landscape::Draw(Camera * camera)
 
     
 	FlushQueue();
-    //    Logger::Debug("[LN] flashQueueCounter = %d", flashQueueCounter);
+    //    Logger::FrameworkDebug("[LN] flashQueueCounter = %d", flashQueueCounter);
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1398,7 +1397,7 @@ void Landscape::Draw(Camera * camera)
     
     //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-    //Logger::Debug("landscape draw time: %lld", drawTime);
+    //Logger::FrameworkDebug("landscape draw time: %lld", drawTime);
 }
 
 
@@ -1471,10 +1470,11 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         heightmapPath.ReplaceExtension(Heightmap::FileExtension());
-        heightmap->Save(heightmapPath);
     }
     //
-    
+
+	heightmap->Save(heightmapPath);
+
     archive->SetString("hmap", heightmapPath.GetRelativePathname(sceneFile->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
@@ -1486,7 +1486,7 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         String relPath  = textureNames[k].GetRelativePathname(sceneFile->GetScenePath());
         
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
+            Logger::FrameworkDebug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
@@ -1534,7 +1534,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
 
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
+            Logger::FrameworkDebug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
 
         if (sceneFile->GetVersion() >= 4)
         {
@@ -1715,24 +1715,17 @@ FilePath Landscape::SaveFullTiledTexture()
     
     if(textures[TEXTURE_TILE_FULL])
     {
-        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
-        {
-            pathToSave = GetTextureName(TEXTURE_COLOR);
-            pathToSave.ReplaceExtension(".thumbnail.png");
-            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-            if(image)
-            {
-                ImageLoader::Save(image, pathToSave);
-                SafeRelease(image);
-            }
-        }
-        else 
-        {
-            pathToSave = textureNames[TEXTURE_TILE_FULL];
-        }
+		pathToSave = GetTextureName(TEXTURE_COLOR);
+		pathToSave.ReplaceExtension(".thumbnail.png");
+		Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+		if(image)
+		{
+			ImageLoader::Save(image, pathToSave);
+			SafeRelease(image);
+		}
     }
     
-    Logger::Debug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
     return pathToSave;
 }
     
@@ -1843,6 +1836,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         newLandscape->textureNames[k] = textureNames[k];
+		SafeRelease(newLandscape->textures[k]);
         newLandscape->textures[k] = SafeRetain(textures[k]);
         newLandscape->textureTiling[k] = textureTiling[k];
         newLandscape->tileColor[k] = tileColor[k];

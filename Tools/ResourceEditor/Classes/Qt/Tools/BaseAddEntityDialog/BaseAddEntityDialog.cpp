@@ -26,12 +26,15 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "BaseAddEntityDialog.h"
 #include "ui_BaseAddEntityDialog.h"
 #include "Qt/Main/QtUtils.h"
 #include <QSizePolicy>
+#include <Qlabel>
+#include "QScrollBar.h"
+#include "Scene/System/BeastSystem.h"
+
+#define PROPERTY_EDITOR_HEIGHT 300
 
 BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 :	QDialog(parent),
@@ -43,35 +46,53 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 	setWindowModality(Qt::NonModal);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
+
+	ui->scrollArea->setVisible(false);
+	ui->propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
 	delete ui;
 	SafeRelease(entity);
+	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
+	{
+		delete it->second;
+	}
+	additionalWidgetMap.clear();
 }
 
-void BaseAddEntityDialog::showEvent ( QShowEvent * event )
+void BaseAddEntityDialog::PerformResize()
 {
-	QDialog::showEvent(event);
-	if(!entity)
-	{
-		return;
-	}
 	PropertyEditor* pEditor = ui->propEditor;
-	pEditor->SetNode(entity);
 	pEditor->expandAll();
-	int height= ui->verticalLayout->sizeHint().height();
-	QRect rect = geometry();
-	rect.setHeight(height);
-	setMinimumHeight(height);
-	setGeometry(rect);
+	this->adjustSize();
+	ui->scrollArea->setMaximumHeight(ui->scrollArea->sizeHint().height());
+	setMinimumHeight(sizeHint().height());
+	
+	bool isEditorFullyDisplayed = pEditor->verticalScrollBar()->maximum() == 0;
+	QScrollArea* area = ui->scrollArea;
+	bool isScrollAreaFullyDisplayed = area->isVisible() ?
+	area->verticalScrollBar()->maximum() == 0 : true;
+	int maxLimit = std::numeric_limits<int>::max();
+	int maxHeight = isEditorFullyDisplayed? PROPERTY_EDITOR_HEIGHT : maxLimit;
+	
+	ui->propEditor->setMaximumHeight(maxHeight);
+	maxHeight = isScrollAreaFullyDisplayed ? area->sizeHint().height() : maxLimit;
+	area->setMaximumHeight(maxHeight);
+	
+	this->adjustSize();
+	maxHeight = (isEditorFullyDisplayed && isScrollAreaFullyDisplayed) ? sizeHint().height() : 800;
+	setMaximumHeight(maxHeight);
 }
 
 void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
 {
 	QDialog::hideEvent(event);
-	ui->propEditor->SetNode(NULL);
+	if(entity)
+	{
+		ui->propEditor->SetNode(NULL);
+	}
 }
 
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
@@ -82,37 +103,66 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	SafeRetain(entity);
 	if(entity)
 	{
+		BeastSystem::SetDefaultPropertyValues(entity);
+			
 		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
+		PropertyEditor* pEditor = ui->propEditor;	
+
+		pEditor->SetNode(entity);
+		pEditor->expandAll();
+		PerformResize();
 	}
 }
 
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 {
 	ui->userContentLayout->addWidget(widget);
+	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
+}
+
+
+void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString)
+{
+	QLabel* label = new QLabel(labelString.c_str(),this);
+	int rowCount = ui->userContentLayout->rowCount();
+	ui->userContentLayout->addWidget(label, rowCount, 0);
+	ui->userContentLayout->addWidget(widget, rowCount, 1);
+	additionalWidgetMap[widget] = label;
+	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
 }
 
 void BaseAddEntityDialog::RemoveControlFromUserContainer(QWidget* widget)
 {
-	setMinimumHeight(minimumHeight() - widget->height());
 	ui->userContentLayout->removeWidget(widget);
+	if(additionalWidgetMap.find(widget) != additionalWidgetMap.end())
+	{
+		QWidget* additionalWidget = additionalWidgetMap[widget];
+		additionalWidgetMap.erase(additionalWidgetMap.find(widget));
+		delete additionalWidget;
+	}
 }
 
 void BaseAddEntityDialog::RemoveAllControlsFromUserContainer()
 {
-	QVBoxLayout* container = ui->userContentLayout;
+	QLayout* container = ui->userContentLayout;
 	while (QLayoutItem* item = container->takeAt(0))
 	{
 		if (QWidget* widget = item->widget())
 		{
 			container->removeWidget( widget);
-			setMinimumHeight(minimumHeight() - widget->height());
+			if(additionalWidgetMap.find(widget) != additionalWidgetMap.end())
+			{
+				QWidget* additionalWidget = additionalWidgetMap[widget];
+				additionalWidgetMap.erase(additionalWidgetMap.find(widget));
+				delete additionalWidget;
+			}
 		}
 	}
 }
 
 void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 {
-	QVBoxLayout* container = ui->userContentLayout;
+	QLayout* container = ui->userContentLayout;
 	for (int i = 0; i < container->count(); ++i)
 	{
 		QWidget* child = container->itemAt(i)->widget();

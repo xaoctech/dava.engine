@@ -186,7 +186,8 @@ namespace DAVA
 	
 	void SkyboxRenderObject::UpdateMaterial()
 	{
-		if(renderBatchArray.size() > 0)
+		if(renderBatchArray.size() > 0 &&
+		   !texturePath.IsEmpty())
 		{
 			Material* skyboxMaterial = renderBatchArray[0]->GetMaterial();
 			
@@ -225,25 +226,35 @@ namespace DAVA
 	
 	RenderObject* SkyboxRenderObject::Clone(RenderObject *newObject)
 	{
-		SkyboxRenderObject* skyboxRenderObject = cast_if_equal<SkyboxRenderObject*>(newObject);
+		if(!newObject)
+		{
+			DVASSERT_MSG(IsPointerToExactClass<SkyboxRenderObject>(this), "Can clone only SkyboxRenderObject");
+			newObject = new SkyboxRenderObject();
+		}
 		
-		if(skyboxRenderObject)
+		SkyboxRenderObject* skyboxRenderObject = static_cast<SkyboxRenderObject*>(newObject);
+		
+		skyboxRenderObject->type = type;
+		skyboxRenderObject->flags = flags;
+		skyboxRenderObject->debugFlags = debugFlags;
+		skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
+		
+		skyboxRenderObject->bbox = bbox;
+		skyboxRenderObject->texturePath = texturePath;
+		skyboxRenderObject->offsetZ = offsetZ;
+		skyboxRenderObject->rotationZ = rotationZ;
+		skyboxRenderObject->nonClippingDistance = nonClippingDistance;
+		
+		uint32 size = GetRenderBatchCount();
+		for(uint32 i = 0; i < size; ++i)
 		{
-			skyboxRenderObject->type = type;
-			skyboxRenderObject->flags = flags;
-			skyboxRenderObject->debugFlags = debugFlags;			
-			skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
-
-			skyboxRenderObject->bbox = bbox;
-			skyboxRenderObject->texturePath = texturePath;
-			skyboxRenderObject->offsetZ = offsetZ;
-			skyboxRenderObject->rotationZ = rotationZ;
-			skyboxRenderObject->nonClippingDistance = nonClippingDistance;
+			RenderBatch *batch = GetRenderBatch(i)->Clone();
+			skyboxRenderObject->AddRenderBatch(batch);
+			batch->Release();
 		}
-		else
-		{
-			newObject = RenderObject::Clone(newObject);
-		}
+		
+		skyboxRenderObject->BuildSkybox();
+		skyboxRenderObject->UpdateMaterial();
 		
 		return newObject;
 	}
@@ -310,6 +321,11 @@ namespace DAVA
 			}
 		}
 		
+		offsetZ = offset;
+	}
+	
+	void SkyboxRenderObject::ForceSetOffsetZ(float32 offset)
+	{
 		offsetZ = offset;
 	}
 	

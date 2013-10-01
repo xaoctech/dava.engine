@@ -105,6 +105,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
 	landscapeProxy->SetHeightmap(heightmapProxy);
+	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
@@ -533,5 +534,50 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		}
 
 		DeinitLandscape();
+	}
+}
+
+void LandscapeEditorDrawSystem::SaveTileMaskTexture()
+{
+	if (!baseLandscape)
+	{
+		return;
+	}
+
+	Texture* texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
+
+	if (texture)
+	{
+		FilePath texturePathname = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+
+		if (texturePathname.IsEmpty())
+		{
+			return;
+		}
+
+		texturePathname.ReplaceExtension(".png");
+
+		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		Image *image = texture->CreateImageFromMemory();
+		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+
+		if(image)
+		{
+			ImageLoader::Save(image, texturePathname);
+			SafeRelease(image);
+		}
+
+		FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
+		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+		if(!descriptor)
+		{
+			descriptor = new TextureDescriptor();
+			descriptor->pathname = descriptorPathname;
+			descriptor->Save();
+		}
+
+		SafeRelease(descriptor);
 	}
 }

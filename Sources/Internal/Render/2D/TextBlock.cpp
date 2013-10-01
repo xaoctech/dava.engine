@@ -61,7 +61,7 @@ void UnregisterTextBlock(TextBlock *tbl)
 
 void TextBlock::ScreenResolutionChanged()
 {
-	Logger::Info("Regenerate text blocks");
+	Logger::FrameworkDebug("Regenerate text blocks");
 	for(Vector<TextBlock *>::iterator it = registredBlocks.begin(); it != registredBlocks.end(); it++)
 	{
 		(*it)->needRedraw = true;
@@ -429,7 +429,7 @@ void TextBlock::Prepare()
 		{
 			if(fittingType && (requestedSize.dy >= 0/* || requestedSize.dx >= 0*/) && text.size() > 3)
 			{
-//				Logger::Info("Fitting enabled");
+//				Logger::FrameworkDebug("Fitting enabled");
 				Vector2 rectSz = rectSize;
 				if(requestedSize.dx > 0)
 				{
@@ -528,7 +528,7 @@ void TextBlock::Prepare()
 				};
 				
 			}
-//			Logger::Info("Font size: %.4f", font->GetSize());
+//			Logger::FrameworkDebug("Font size: %.4f", font->GetSize());
 
 
 			Vector2 rectSz = rectSize;
@@ -545,11 +545,11 @@ void TextBlock::Prepare()
 			textSize.dy = 0;
 			
 			int32 yOffset = font->GetVerticalSpacing();
-//			Logger::Info("yOffset = %.4d", yOffset);
+//			Logger::FrameworkDebug("yOffset = %.4d", yOffset);
 //			int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
 //			textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 			int32 fontHeight = font->GetFontHeight() + yOffset;
-//			Logger::Info("fontHeight = %.4d", fontHeight);
+//			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
 			textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
@@ -570,22 +570,22 @@ void TextBlock::Prepare()
 		if(requestedSize.dx == 0)
 		{
 			w = Min(w, textSize.dx);
-//			Logger::Info("On size not requested: w = %d", w);
+//			Logger::FrameworkDebug("On size not requested: w = %d", w);
 		}
 		else if(requestedSize.dx < 0)
 		{
 			w = textSize.dx;
-//			Logger::Info("On size automated: w = %d", w);
+//			Logger::FrameworkDebug("On size automated: w = %d", w);
 		}
 		if(requestedSize.dy == 0)
 		{
 			h = Min(h, textSize.dy);
-//			Logger::Info("On size not requested: h = %d", h);
+//			Logger::FrameworkDebug("On size not requested: h = %d", h);
 		}
 		else if(requestedSize.dy < 0)
 		{
 			h = textSize.dy;
-//			Logger::Info("On size automated: h = %d", w);
+//			Logger::FrameworkDebug("On size automated: h = %d", w);
 		}
 		
 		if (requestedSize.dx >= 0 && useJustify)

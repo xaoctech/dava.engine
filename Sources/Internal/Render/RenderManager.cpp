@@ -57,7 +57,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     needGLScreenShot(false),
     screenShotCallback(NULL)
 {
-//	Logger::Debug("[RenderManager] created");
+//	Logger::FrameworkDebug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
@@ -161,7 +161,7 @@ RenderManager::~RenderManager()
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
 	SafeRelease(cursor);
-	Logger::Debug("[RenderManager] released");
+	Logger::FrameworkDebug("[RenderManager] released");
 }
 
 void RenderManager::SetDebug(bool isDebugEnabled)
@@ -189,7 +189,7 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
     hardwareState.Reset(false);
 	currentState.Reset(true);
     
-	Logger::Debug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
+	Logger::FrameworkDebug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
 }
 #endif //    #ifdef __DAVAENGINE_ANDROID__    
 
@@ -238,9 +238,9 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 	frameBufferWidth = _frameBufferWidth;
 	frameBufferHeight = _frameBufferHeight;
 #if defined (__DAVAENGINE_OPENGL__)
-//	Logger::Debug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
+//	Logger::FrameworkDebug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
 #else
-//	Logger::Debug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
+//	Logger::FrameworkDebug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
 #endif
     // TODO: Rethink of initialization concepts because they changed
     pointerArraysRendererState = pointerArraysCurrentState = 0;
@@ -336,7 +336,7 @@ void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
 		{
 			if(debugEnabled)
 			{
-				Logger::Debug("Bind texture: id %d", texture->id);
+				Logger::FrameworkDebug("Bind texture: id %d", texture->id);
 			}
             
 #if defined(__DAVAENGINE_OPENGL__)
@@ -798,9 +798,9 @@ void RenderManager::ProcessStats()
     if (statsFrameCountToShowDebug >= frameToShowDebugStats)
     {
         statsFrameCountToShowDebug = 0;
-        Logger::Debug("== Frame stats: DrawArraysCount: %d DrawElementCount: %d ==", stats.drawArraysCalls, stats.drawElementsCalls);
+        Logger::FrameworkDebug("== Frame stats: DrawArraysCount: %d DrawElementCount: %d ==", stats.drawArraysCalls, stats.drawElementsCalls);
         for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
-            Logger::Debug("== Primitive Stats: %d ==", stats.primitiveCount[k]);
+            Logger::FrameworkDebug("== Primitive Stats: %d ==", stats.primitiveCount[k]);
     }
 }
     
