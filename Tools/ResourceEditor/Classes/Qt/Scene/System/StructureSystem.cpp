@@ -47,7 +47,7 @@
 
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, lockedSignals(true)
+	, structureChanged(false)
 {
     new DAVA::SwitchComponent();
     new DAVA::ActionComponent();
@@ -79,7 +79,6 @@ void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newPare
 	{
 		if(entityGroup.Size() > 1)
 		{
-			LockSignals(false);
 			sceneEditor->BeginBatch("Move entities");
 		}
 
@@ -91,10 +90,9 @@ void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newPare
 		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -105,7 +103,6 @@ void StructureSystem::Remove(const EntityGroup &entityGroup)
 	{
 		if(entityGroup.Size() > 1)
 		{
-			LockSignals(true);
 			sceneEditor->BeginBatch("Remove entities");
 		}
 
@@ -114,13 +111,13 @@ void StructureSystem::Remove(const EntityGroup &entityGroup)
 			sceneEditor->Exec(new EntityRemoveCommand(entityGroup.GetEntity(i)));
 		}
 
+
 		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -131,7 +128,6 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 	{
 		if(layers.size() > 1)
 		{
-			LockSignals(true);
 			sceneEditor->BeginBatch("Move particle layers");
 		}
 
@@ -143,10 +139,9 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 		if(layers.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -158,7 +153,6 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 	{
 		if(layers.size() > 1)
 		{
-			LockSignals(true);
 			sceneEditor->BeginBatch("Remove particle layers");
 		}
 
@@ -170,10 +164,9 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 		if(layers.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -184,7 +177,6 @@ void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &force
 	{
 		if(forces.size() > 1)
 		{
-			LockSignals(true);
 			sceneEditor->BeginBatch("Move particle layers");
 		}
 
@@ -196,10 +188,9 @@ void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &force
 		if(forces.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -210,7 +201,6 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 	{
 		if(forces.size() > 1)
 		{
-			LockSignals(true);
 			sceneEditor->BeginBatch("Remove particle layers");
 		}
 
@@ -222,10 +212,9 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 		if(forces.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			LockSignals(false);
-
-			EmitChanged();
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -269,12 +258,6 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 		// replace old models with new
 		if(loadSuccess)
 		{
-			// lock structure system and collision system
-			// collision objects will be updated manually, after reload complete
-			// this will increase performance
-			LockSignals(true);
-			collisionSystem->LockCollisionObjects(true);
-
 			sceneEditor->BeginBatch("Reload model");
 			for(size_t i = 0; i < entityGroup.Size(); ++i)
 			{
@@ -300,22 +283,7 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 			}
 			sceneEditor->EndBatch();
 
-			// unlock systems
-			collisionSystem->LockCollisionObjects(false);
-			LockSignals(false);
-
-			// manually update collision system
-			for(size_t i = 0; i < entityGroup.Size(); ++i)
-			{
-				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
-				DAVA::Entity *newEntity = newEntities[i];
-
-				collisionSystem->RemoveCollisionObject(origEntity);
-				collisionSystem->UpdateCollisionObject(newEntity);
-			}
-
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
-            
 			EmitChanged();
 		}
 	}
@@ -330,7 +298,6 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 		if(NULL != loadedEntity)
 		{
 			DAVA::Vector3 entityPos = pos;
-			SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
 
 			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
@@ -354,17 +321,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
-			LockSignals(true);
-			collisionSystem->LockCollisionObjects(true);
-
 			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
-
-			collisionSystem->LockCollisionObjects(false);
-			LockSignals(false);
-
-			// manually update collision object
-			collisionSystem->UpdateCollisionObject(loadedEntity);
-			loadedEntity->Release();
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
 			// -->
@@ -377,19 +334,20 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 	}
 }
 
-void StructureSystem::LockSignals(bool locked)
-{
-	lockedSignals = locked;
-}
-
 void StructureSystem::EmitChanged()
 {
-	SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+	// mark that structure was changed. real signal will be emited on next update() call
+	// this should done be to increase perfomance - on Change emit on multiple scene structure operations
+	structureChanged = true;
 }
 
 void StructureSystem::Update(DAVA::float32 timeElapsed)
 {
-
+	if(structureChanged)
+	{
+		SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		structureChanged = false;
+	}
 }
 
 void StructureSystem::Draw()
@@ -404,38 +362,29 @@ void StructureSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void StructureSystem::ProcessCommand(const Command2 *command, bool redo)
 {
-	if(!lockedSignals)
+	if(NULL != command)
 	{
-		if(NULL != command)
+		int cmdId = command->GetId();
+		if( cmdId == CMDID_PARTICLE_LAYER_REMOVE ||
+			cmdId == CMDID_PARTICLE_LAYER_MOVE ||
+			cmdId == CMDID_PARTICLE_FORCE_REMOVE ||
+			cmdId == CMDID_PARTICLE_FORCE_MOVE)
 		{
-			int cmdId = command->GetId();
-			if(cmdId == CMDID_PARTICLE_LAYER_REMOVE ||
-			   cmdId == CMDID_PARTICLE_LAYER_MOVE ||
-			   cmdId == CMDID_PARTICLE_FORCE_REMOVE ||
-			   cmdId == CMDID_PARTICLE_FORCE_MOVE)
-			{
-				EmitChanged();
-			}
+			EmitChanged();
 		}
 	}
 }
 
 void StructureSystem::AddEntity(DAVA::Entity * entity)
 {
-	if(!lockedSignals)
-	{
-		DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
-		EmitChanged();
-	}
+	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
+	EmitChanged();
 }
 
 void StructureSystem::RemoveEntity(DAVA::Entity * entity)
 {
-	if(!lockedSignals)
-	{
-		DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
-		EmitChanged();
-	}
+	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
+	EmitChanged();
 }
 
 void StructureSystem::CheckAndMarkSolid(DAVA::Entity *entity)
