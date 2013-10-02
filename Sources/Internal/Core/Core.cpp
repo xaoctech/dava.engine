@@ -47,6 +47,7 @@
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"
 #include "Job/JobManager.h"
+#include "Render/RenderHelper.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -110,7 +111,7 @@ void Core::CreateSingletons()
     // check types size
 	new Logger();
 	new AllocatorFactory();
-
+	new JobManager();
 	new FileSystem();
     FilePath::InitializeBundleName();
 	
@@ -136,7 +137,7 @@ void Core::CreateSingletons()
 	new SoundSystem(64);
 	new InputSystem();
 	new PerformanceSettings();
-	new JobManager();
+	new RenderHelper();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
@@ -168,7 +169,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	JobManager::Instance()->Release();
+	RenderHelper::Instance()->Release();
 	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
@@ -190,6 +191,7 @@ void Core::ReleaseSingletons()
 #endif
 
 	InputSystem::Instance()->Release();
+	JobManager::Instance()->Release();
 	AllocatorFactory::Instance()->Release();
 	Logger::Instance()->Release();
 }
