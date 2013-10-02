@@ -639,7 +639,7 @@ DAVA::float32 EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 	{
 		DAVA::Matrix4 rotateModification;
 		rotateModification.Identity();
-		rotateModification.CreateRotation(rotateAround, rotateForce);
+		rotateModification.CreateRotation(rotateAround * modifEntities[i].inversedParentWorldTransform, rotateForce);
 
 		switch(modifPivotPoint)
 		{
@@ -675,7 +675,7 @@ DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 		{
 			DAVA::Matrix4 scaleModification;
 			scaleModification.Identity();
-			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce));
+			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce) * modifEntities[i].inversedParentWorldTransform);
 
 			switch(modifPivotPoint)
 			{
