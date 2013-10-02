@@ -269,10 +269,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.y = size.y * (visibleArea / totalSize);
-                    if (slider->size.y < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.y = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.y = GetValidSliderSize(slider->size.y);
                     if (slider->size.y >= size.y) 
                     {
                         slider->SetVisible(false, true);
@@ -292,6 +289,10 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 else if(slider->relativePosition.y + slider->size.y > size.y)
                 {
                     slider->size.y = size.y - slider->relativePosition.y;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.y = GetValidSliderSize(slider->size.y);
+					slider->relativePosition.y = size.y - slider->size.y;
                 }
 
             }
@@ -301,10 +302,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.x = size.x * (visibleArea / totalSize);
-                    if (slider->size.x < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.x = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.x = GetValidSliderSize(slider->size.x);
                     if (slider->size.x >= size.x) 
                     {
                         slider->SetVisible(false, true);
@@ -323,6 +321,10 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 else if(slider->relativePosition.x + slider->size.x > size.x)
                 {
                     slider->size.x = size.x - slider->relativePosition.x;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.x = GetValidSliderSize(slider->size.x);
+					slider->relativePosition.x = size.x - slider->size.x;
                 }
             }
                 break;
@@ -339,6 +341,11 @@ UIScrollBar::eScrollOrientation UIScrollBar::GetOrientation() const
 void UIScrollBar::SetOrientation(eScrollOrientation value)
 {
 	orientation = value;
+}
+
+float32 UIScrollBar::GetValidSliderSize(float32 size)
+{
+	return (size < MINIMUM_SLIDER_SIZE) ? MINIMUM_SLIDER_SIZE : size;
 }
 
 };
