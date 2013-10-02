@@ -1743,12 +1743,10 @@ void Landscape::UpdateFullTiledTexture()
 {
     if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
     {
-		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
         t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
-		RenderManager::Instance()->UnlockNonMain();
     }
 }
     

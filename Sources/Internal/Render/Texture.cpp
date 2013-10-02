@@ -256,9 +256,7 @@ void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void
 
 Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, bool generateMipMaps, const char * addInfo)
 {
-	RenderManager::Instance()->LockNonMain();
 	Texture * tx = CreateFromData(format, data, width, height, generateMipMaps);
-	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
         AddToMap(tx, Format("Text texture %d", textureFboCounter));
@@ -373,7 +371,6 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	
 void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 {
-    RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
@@ -392,10 +389,7 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	}
 #elif defined(__DAVAENGINE_DIRECTX9____)
 	
-
-
 #endif //#if defined(__DAVAENGINE_OPENGL__) 
-    RenderManager::Instance()->UnlockNonMain();
 }
 	
 void Texture::GenerateMipmaps()
@@ -405,7 +399,6 @@ void Texture::GenerateMipmaps()
 		return;
 	}
     
-	RenderManager::Instance()->LockNonMain();
     
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -427,7 +420,6 @@ void Texture::GenerateMipmaps()
 #elif defined(__DAVAENGINE_DIRECTX9__)
 
 #endif // #if defined(__DAVAENGINE_OPENGL__)
-	RenderManager::Instance()->UnlockNonMain();
 }
 
 
@@ -839,8 +831,6 @@ void Texture::HWglCreateFBOBuffers()
 
 void Texture::HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData)
 {
-	DVASSERT(Thread::IsMainThread());
-	RenderManager::Instance()->LockNonMain();
 	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
 	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
 	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
@@ -877,8 +867,6 @@ void Texture::HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, vo
 	{
 		RenderManager::Instance()->HWglBindTexture(saveTexture, saveType);
 	}
-
-	RenderManager::Instance()->UnlockNonMain();
 
 	state = STATE_VALID;
 }
@@ -993,8 +981,6 @@ Image * Texture::ReadDataToImage()
     
 #if defined(__DAVAENGINE_OPENGL__)
     
-    RenderManager::Instance()->LockNonMain();
-    
     int32 saveFBO = RenderManager::Instance()->HWglGetLastFBO();
     int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
@@ -1010,8 +996,6 @@ Image * Texture::ReadDataToImage()
 
     RenderManager::Instance()->HWglBindFBO(saveFBO);
     RenderManager::Instance()->HWglBindTexture(saveId, saveType);
-    
-    RenderManager::Instance()->UnlockNonMain();
     
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     

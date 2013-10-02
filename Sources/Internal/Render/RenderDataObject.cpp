@@ -31,6 +31,7 @@
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
 #include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 namespace DAVA 
 {
@@ -94,29 +95,26 @@ RenderDataObject::~RenderDataObject()
     //streamArray.clear();
     //streamMap.clear();
     
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::DeleteBuffersInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
+}
+
+void RenderDataObject::DeleteBuffersInternal(BaseObject * caller, void * param, void *callerData)
+{
 #if defined(__DAVAENGINE_OPENGL__)
-
-    //TODO: ios build has assert without LockNonMain()
-	RenderManager::Instance()->LockNonMain();
-
-
-    #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        if (vboBuffer)
-            RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
-        if (indexBuffer)
-            RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
-    #else 
-        if (vboBuffer)
-            RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
-        if (indexBuffer)
-            RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
-    #endif
-    
-    RenderManager::Instance()->UnlockNonMain();
-    //ENDOF TODO
-
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+	if (vboBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
+	if (indexBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
+#else 
+	if (vboBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+	if (indexBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
 #endif
-    
+#endif
 }
 
 RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer)

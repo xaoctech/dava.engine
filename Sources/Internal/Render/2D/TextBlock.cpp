@@ -800,13 +800,11 @@ void TextBlock::PreDraw()
 	
 	if (!font->IsTextSupportsSoftwareRendering())
 	{
-		RenderManager::Instance()->LockNonMain();
 		RenderManager::Instance()->SetRenderTarget(sprite);
 
 		DrawToBuffer(NULL);
 		
 		RenderManager::Instance()->RestoreRenderTarget();
-		RenderManager::Instance()->UnlockNonMain();
 	}
 }
     

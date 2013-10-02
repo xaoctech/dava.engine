@@ -78,6 +78,7 @@ public:
     */
     void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
 	void BuildVertexBufferInternal(BaseObject * caller, void * param, void *callerData);
+	void DeleteBuffersInternal(BaseObject * caller, void * param, void *callerData);
     
 //#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 //	virtual void SaveToSystemMemory();
