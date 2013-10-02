@@ -416,8 +416,14 @@ HierarchyTreeController::SELECTEDCONTROLNODES DefaultScreen::GetActiveMoveContro
 				break;
 			}
 		}
+		
 		if (!isChild)
-			selectedList.insert(controlNode);
+		{
+			if (std::find(selectedList.begin(), selectedList.end(), controlNode) == selectedList.end())
+			{
+				selectedList.push_back(controlNode);
+			}
+		}
 	}
 
 	return selectedList;
@@ -484,10 +490,16 @@ void DefaultScreen::DeleteSelectedControls()
 		{			
 			if (node->IsHasChild(*innerIter))
 			{
-				parentNodes.erase(*innerIter);
+				HierarchyTreeController::SELECTEDCONTROLNODES::iterator parentNodeIter =
+					std::find(parentNodes.begin(), parentNodes.end(), *innerIter);
+				if (parentNodeIter != parentNodes.end())
+				{
+					parentNodes.erase(parentNodeIter);
+				}
 			}
 		}
 	}
+
 	// DF-1273 - put only "parent" nodes to delete
 	for (iter = parentNodes.begin(); iter != parentNodes.end(); ++iter)
 		nodes.push_back(*iter);
@@ -747,7 +759,7 @@ void DefaultScreen::ApplyMouseSelection(const Vector2& rectSize)
 	{
 		HierarchyTreeNode* node = (*iter);
 		HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
-		if (controlNode && oldNodes.find(controlNode) == oldNodes.end())
+		if (controlNode && std::find(oldNodes.begin(), oldNodes.end(), controlNode) == oldNodes.end())
 		{
 			HierarchyTreeController::Instance()->SelectControl(controlNode);
 		}
@@ -806,7 +818,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 		}
 		else
 		{
-			if (HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
+			if (HierarchyTreeController::Instance()->IsControlSelected(selectedControlNode))
 			{
 				//Don't check active controls size anymore - we have to be able to deselect any control
 				if (/*HierarchyTreeController::Instance()->GetActiveControlNodes().size() > 1 &&*/
@@ -992,7 +1004,7 @@ void DefaultScreen::HandleMouseLeftButtonClick(const Vector2& point)
 	HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);
 	if (selectedControlNode)
 	{
-		if (!HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
+		if (!HierarchyTreeController::Instance()->IsControlSelected(selectedControlNode))
 		{
 			if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 				HierarchyTreeController::Instance()->ResetSelectedControl();
@@ -1034,7 +1046,7 @@ void DefaultScreen::ControlContextMenuTriggered(QAction* action)
 			
 	if (controlNode)
 	{
-		if (!HierarchyTreeController::Instance()->IsNodeActive(controlNode))
+		if (!HierarchyTreeController::Instance()->IsControlSelected(controlNode))
 		{
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 			HierarchyTreeController::Instance()->SelectControl(controlNode);			
@@ -1146,7 +1158,7 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 	HierarchyTreeControlNode* newSelectedNode = SmartGetSelectedControl(pos);
 	if (newSelectedNode)
 	{
-		if (!HierarchyTreeController::Instance()->IsNodeActive(newSelectedNode))
+		if (!HierarchyTreeController::Instance()->IsControlSelected(newSelectedNode))
 		{
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 			HierarchyTreeController::Instance()->SelectControl(newSelectedNode);

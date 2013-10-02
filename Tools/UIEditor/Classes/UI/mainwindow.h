@@ -100,6 +100,14 @@ private slots:
 
 	void OnUnsavedChangesNumberChanged();
 
+	// Align block.
+	void OnAlignLeft();
+	void OnAlignHorzCenter();
+	void OnAlignRight();
+	void OnAlignTop();
+	void OnAlignVertCenter();
+	void OnAlignBottom();
+
 private:
 	bool CloseProject();
 
