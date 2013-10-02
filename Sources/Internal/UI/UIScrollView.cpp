@@ -63,7 +63,7 @@ UIScrollView::~UIScrollView()
 void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 {
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-	//scroll->SetViewSize(Vector2(rect.dx, rect.dy));
+
 	scrollHorizontal->SetViewSize(rect.dx);
 	scrollVertical->SetViewSize(rect.dy);
 	RecalculateContentSize();
@@ -72,7 +72,7 @@ void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
-	//scroll->SetViewSize(Vector2(newSize.x, newSize.y));
+
 	scrollHorizontal->SetViewSize(newSize.x);
 	scrollVertical->SetViewSize(newSize.y);
 	RecalculateContentSize();
@@ -180,7 +180,7 @@ void UIScrollView::FindRequiredControls()
 
 void UIScrollView::SetPadding(const Vector2 & padding)
 {
-	if (!scrollContainer)
+	if (!scrollHorizontal || !scrollVertical)
 		return;
 
 	Rect parentRect = this->GetRect();
@@ -196,7 +196,7 @@ void UIScrollView::SetPadding(const Vector2 & padding)
 	{
 		contentRect.y = padding.y;
 	}
-	
+
 	scrollContainer->SetRect(contentRect);
 	scrollHorizontal->SetPosition(contentRect.x);
 	scrollVertical->SetPosition(contentRect.y);
@@ -206,12 +206,18 @@ const Vector2 UIScrollView::GetPadding() const
 {
 	Rect contentRect = scrollContainer ? scrollContainer->GetRect() : Rect();
 	return Vector2(contentRect.x, contentRect.y);
+	//DVASSERT(scrollHorizontal);
+//	DVASSERT(scrollVertical);
+//	return Vector2(scrollHorizontal->GetPosition(), scrollVertical->GetPosition());
 }
 
 const Vector2 UIScrollView::GetContentSize() const
 {
 	Rect contentRect = scrollContainer ? scrollContainer->GetRect() : Rect();
 	return Vector2(contentRect.dx, contentRect.dy);
+	//DVASSERT(scrollHorizontal);
+	//DVASSERT(scrollVertical);
+	//return Vector2(scrollHorizontal->GetElementSize(), scrollVertical->GetElementSize());
 }
 		
 void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
@@ -272,7 +278,7 @@ void UIScrollView::SetReturnSpeed(int32 speedInPixelsPerSec)
 
 float32 UIScrollView::VisibleAreaSize(UIScrollBar *forScrollBar)
 {
-	if (!forScrollBar || !scrollContainer)
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
 	{
 		return 0.0f;
 	}
@@ -284,7 +290,7 @@ float32 UIScrollView::VisibleAreaSize(UIScrollBar *forScrollBar)
 
 float32 UIScrollView::TotalAreaSize(UIScrollBar *forScrollBar)
 {
-	if (!forScrollBar || !scrollContainer)
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
 	{
 		return 0.0f;
 	}
@@ -296,7 +302,7 @@ float32 UIScrollView::TotalAreaSize(UIScrollBar *forScrollBar)
 
 float32 UIScrollView::ViewPosition(UIScrollBar *forScrollBar)
 {
-	if (!forScrollBar || !scrollContainer)
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
 	{
 		return 0.0f;
 	}
@@ -308,7 +314,7 @@ float32 UIScrollView::ViewPosition(UIScrollBar *forScrollBar)
  
 void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition)
 {
-	if (!byScrollBar || !scrollContainer)
+	if (!byScrollBar || !scrollContainer || !scrollHorizontal || !scrollVertical);
 	{
 		return;
 	}
