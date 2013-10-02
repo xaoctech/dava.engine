@@ -288,6 +288,8 @@ void HeightmapEditorPanel::InitBrushImages()
 			comboBrushImage->addItem(toolIcon, f.GetFilename().c_str(), QVariant(qFullname));
 		}
 	}
+
+	SafeRelease(fileList);
 }
 
 
