@@ -45,7 +45,7 @@ namespace DAVA
 	
 	void RenderGuard::LowLevelRenderCall()
 	{
-		if((!Thread::IsMainThread()) && RenderManager::Instance()->GetNonMainLockCount() == 0)
+		if(!Thread::IsMainThread())
 		{
 			DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");
 		}

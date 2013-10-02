@@ -283,8 +283,7 @@ void RenderManager::MakeGLScreenShot()
     uint32 imageDataSize = width * height * formatSize;
     tempData = new uint8[imageDataSize];
 
-    LockNonMain();
-    glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer);
+    RENDER_VERIFY(glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer));
 //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 //    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
 //#else
@@ -293,7 +292,6 @@ void RenderManager::MakeGLScreenShot()
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     RENDER_VERIFY(glReadPixels(0, 0, width, height, formatDescriptor.format, formatDescriptor.type, (GLvoid *)tempData));
-    UnlockNonMain();
     
     //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
     
@@ -938,7 +936,6 @@ void RenderManager::AttachRenderData()
     const int DEBUG = 0;
 	Shader * shader = hardwareState.shader;
     
-    RenderManager::Instance()->LockNonMain();
     if (!shader)
     {
         // TODO: should be moved to RenderManagerGL
@@ -1103,7 +1100,6 @@ void RenderManager::AttachRenderData()
         enabledAttribCount = currentEnabledAttribCount;
         //pointerArraysRendererState = pointerArraysCurrentState;
     }
-    RenderManager::Instance()->UnlockNonMain();
 }
 
 

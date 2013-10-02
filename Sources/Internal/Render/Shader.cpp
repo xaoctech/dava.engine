@@ -397,7 +397,6 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
 {
     DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
     
-    RenderManager::Instance()->LockNonMain();
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
     {
         Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
@@ -599,8 +598,6 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
 			}
 		}
     }
-    
-    RenderManager::Instance()->UnlockNonMain();
 }
     	
 void Shader::SetUniformValueByIndex(int32 uniformIndex, int32 value)
