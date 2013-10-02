@@ -45,6 +45,8 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 	
+	ui->lblSaving->setVisible(false);
+	
 	faceHeight = -1.0f;
 	faceWidth = -1.0f;
 	facePath = new QString[CubemapUtils::GetMaxFaces()];
@@ -488,9 +490,21 @@ void CubemapEditorDialog::OnSave()
 		return;
 	}
 	
+	ui->lblSaving->setVisible(true);
+	
+	this->paintEvent(NULL);
+	ui->lblSaving->update();
+	QApplication::processEvents();
+	QApplication::flush();
+	
+	this->setUpdatesEnabled(false);
+	
 	SaveCubemap(targetFile.GetAbsolutePathname().c_str());
 	
 	faceChanged = false;
+	
+	this->setUpdatesEnabled(true);
+	ui->lblSaving->setVisible(false);
 	
 	EditorSettings::Instance()->Save();
 	close();
