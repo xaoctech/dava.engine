@@ -34,6 +34,9 @@
 #include "BaseCommand.h"
 #include "HierarchyTreeController.h"
 
+#include "AlignDistribute/AlignDistributeEnums.h"
+#include "AlignDistribute/ControlsPositionData.h"
+
 using namespace DAVA;
 
 class ControlsMoveCommand: public BaseCommand
@@ -74,5 +77,25 @@ private:
 	Rect newRect;
 };
 
+// Align the controls.
+class ControlsAlignCommand : public BaseCommand
+{
+public:
+	ControlsAlignCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType);
+
+	virtual void Execute();
+	virtual void Rollback();
+
+	virtual bool IsUndoRedoSupported() {return true;};
+
+protected:
+
+	// List of selected controls and align type.
+	HierarchyTreeController::SELECTEDCONTROLNODES selectedControls;
+	eAlignControlsType selectedAlignType;
+
+	// Alignment result - needed for Undo.
+	ControlsPositionData prevPositionData;
+};
 
 #endif /* defined(__UIEditor__ControlsMoveCommand__) */
