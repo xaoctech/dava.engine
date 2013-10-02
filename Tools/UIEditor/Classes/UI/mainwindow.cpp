@@ -46,6 +46,7 @@
 #include "ResourcesManageHelper.h"
 #include "Dialogs/importdialog.h"
 #include "ImportCommands.h"
+#include "AlignDistribute/AlignDistributeEnums.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -621,6 +622,15 @@ void MainWindow::InitMenu()
 	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
 	connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedoRequested()));
 
+	// Align.
+	connect(ui->actionAlign_Left, SIGNAL(triggered()), this, SLOT(OnAlignLeft()));
+	connect(ui->actionAlign_Horz_Center, SIGNAL(triggered()), this, SLOT(OnAlignHorzCenter()));
+	connect(ui->actionAlign_Right, SIGNAL(triggered()),this, SLOT(OnAlignRight()));
+
+	connect(ui->actionAlign_Top, SIGNAL(triggered()), this, SLOT(OnAlignTop()));
+	connect(ui->actionAlign_Vert_Center, SIGNAL(triggered()), this, SLOT(OnAlignVertCenter()));
+	connect(ui->actionAlign_Bottom, SIGNAL(triggered()), this, SLOT(OnAlignBottom()));
+	
 	UpdateMenu();
 }
 
@@ -1032,4 +1042,34 @@ void MainWindow::ScrollToScenePositionAndPoint(const Vector2& scenePosition, con
 	
 	ui->horizontalScrollBar->setValue(newHScrollValue);
 	ui->verticalScrollBar->setValue(newVScrollValue);
+}
+
+void MainWindow::OnAlignLeft()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_LEFT);
+}
+
+void MainWindow::OnAlignHorzCenter()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_HORZ_CENTER);
+}
+
+void MainWindow::OnAlignRight()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_RIGHT);
+}
+
+void MainWindow::OnAlignTop()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_TOP);
+}
+
+void MainWindow::OnAlignVertCenter()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_VERT_CENTER);
+}
+
+void MainWindow::OnAlignBottom()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_BOTTOM);
 }
