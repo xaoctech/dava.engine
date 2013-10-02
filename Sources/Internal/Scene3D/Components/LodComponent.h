@@ -140,9 +140,7 @@ public:
 
 	void SetLayerVisibility(int32 layerNum, bool visible);
 
-    void CopyLODSettings(const LodComponent * fromLOD);
-    
-	void SetForceLayerAsCurrent();
+    void CopyLODSettings(const LodComponent * fromLOD);	
 
 public:
     

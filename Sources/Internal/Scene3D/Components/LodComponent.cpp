@@ -337,24 +337,5 @@ void LodComponent::CopyLODSettings(const LodComponent * fromLOD)
     forceLodLayer = fromLOD->forceLodLayer;
 }
 
-void LodComponent::SetForceLayerAsCurrent()
-{
-	if(lodLayers.size())
-	{
-		if((int32)lodLayers.size() <= forceLodLayer)
-		{
-			currentLod = lodLayers.size() - 1;
-		}
-		else
-		{
-			currentLod = forceLodLayer;
-		}
-	}
-	else
-	{
-		currentLod = INVALID_LOD_LAYER;
-	}
-}
-
 
 };
