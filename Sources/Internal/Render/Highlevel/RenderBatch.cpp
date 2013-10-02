@@ -59,6 +59,7 @@ RenderBatch::RenderBatch()
     materialInstance = new InstanceMaterialState();
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
+	aabbox = AABBox3(Vector3(), Vector3());
 }
     
 RenderBatch::~RenderBatch()
