@@ -217,7 +217,7 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 		// 
 		//if(scene->IsChanged())
 		{
-			if(!scene->Save(scenePath))
+			if(DAVA::SceneFileV2::ERROR_NO_ERROR != scene->Save(scenePath))
 			{
 				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
 			}
@@ -261,7 +261,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 		}
 	}
 
-	return ret;
+	return (ret == DAVA::SceneFileV2::ERROR_NO_ERROR);
 }
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
@@ -1753,6 +1753,8 @@ void QtMainWindow::RunBeast()
 	scene->Exec(new BeastAction(scene));
 
 	beastWaitDialog->Reset();
+
+	OnReloadTextures();
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
