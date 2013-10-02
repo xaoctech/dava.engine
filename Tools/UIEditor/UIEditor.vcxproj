@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\AlignDistribute\AlignDistributeManager.cpp" />
+    <ClCompile Include="Classes\AlignDistribute\AlignHandlers.cpp" />
+    <ClCompile Include="Classes\AlignDistribute\ControlsPositionData.cpp" />
     <ClCompile Include="Classes\Commands\BaseCommand.cpp" />
     <ClCompile Include="Classes\Commands\ChangeAlignPropertyCommand.cpp" />
     <ClCompile Include="Classes\Commands\ControlCommands.cpp" />
@@ -201,6 +204,10 @@
     <ClCompile Include="GeneratedFiles\UI\StateComboBoxItemDelegate_moc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\AlignDistribute\AlignDistributeEnums.h" />
+    <ClInclude Include="Classes\AlignDistribute\AlignDistributeManager.h" />
+    <ClInclude Include="Classes\AlignDistribute\AlignHandlers.h" />
+    <ClInclude Include="Classes\AlignDistribute\ControlsPositionData.h" />
     <ClInclude Include="Classes\Commands\BaseCommand.h" />
     <ClInclude Include="Classes\Commands\ChangeAlignPropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ChangePropertyCommand.h" />
