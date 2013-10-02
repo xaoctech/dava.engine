@@ -207,10 +207,28 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 		_scene->OptimizeBeforeExport();
    
 	_scene->GetDataNodes(nodes);
-    int32 dataNodesCount = (int32)nodes.size();
+	
+	//TODO: make more appropriate code to exclude materials from saving as DataNode
+	//TODO: probably NMaterial should be not node a DataNode at all
+	List<DataNode*>::iterator it = nodes.begin();
+	while(it != nodes.end())
+	{
+		if(dynamic_cast<NMaterial*>(*it) != NULL)
+		{
+			it = nodes.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	
+	int32 dataNodesCount = nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));
     for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        SaveDataNode(*it, file);
+	{
+		SaveDataNode(*it, file);
+	}
     
     // save hierarchy
     if(isDebugLogEnabled)
@@ -742,6 +760,11 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     }
     return false;
 }
+	
+NMaterial* SceneFileV2::GetNewMaterial(SerializationContext* serializationContext, const String& name)
+{
+	return serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial(name.c_str());
+}
 
 void SceneFileV2::ConvertOldMaterialToNewMaterial(SerializationContext* serializationContext,
 												  Material * oldMaterial,
@@ -1213,6 +1236,7 @@ void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializ
 	KeyedArchive* matSystemArchive = new KeyedArchive();
 	
 	size_t materialCount = materials.size();
+	uint32 savedMaterials = 0;
 	for(size_t i = 0; i < materialCount; ++i)
 	{
 		NMaterial* mat = materials[i];
@@ -1221,11 +1245,13 @@ void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializ
 		{
 			KeyedArchive* materialArchive = new KeyedArchive();
 			mat->Save(materialArchive, serializationContext);
-			matSystemArchive->SetArchive(Format("material.%d", i), materialArchive);
+			matSystemArchive->SetArchive(Format("material.%d", savedMaterials), materialArchive);
 			SafeRelease(materialArchive);
+			
+			savedMaterials++;
 		}
 	}
-	matSystemArchive->SetUInt32("materialCount", materialCount);
+	matSystemArchive->SetUInt32("materialCount", savedMaterials);
 	matSystemArchive->Save(file);
 	
 	SafeRelease(matSystemArchive);
@@ -1247,9 +1273,15 @@ void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializ
 		DVASSERT(materialArchive->Count() > 0);
 		material->Load(materialArchive, serializationContext);
 		
-		//TODO: apply default LOD here
+		//TODO: apply default LOD here. Material parent will depend on its LOD level since each LOD 
 		
 		matSystem->AddMaterial(material);
+		
+		FastName parentName = material->GetParentName();
+		NMaterial* parentMaterial = matSystem->GetMaterial(parentName);
+		material->SetParent(parentMaterial);
+		
+		//TODO: resolve situation when there's no parent material. Some kind of default material should be selected.
 		
 		SafeRelease(material);
 	}

@@ -145,6 +145,7 @@ public:
 												Material * oldMaterial,
 												InstanceMaterialState * oldMaterialState,
 												NMaterial ** newMaterial);
+	static NMaterial* GetNewMaterial(SerializationContext* serializationContext, const String& name);
 	
 	Scene* GetScene() {return scene;}
 	

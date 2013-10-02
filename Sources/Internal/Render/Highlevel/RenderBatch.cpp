@@ -238,7 +238,7 @@ void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializati
 		NMaterial* material = GetMaterial();
 		if(material)
 		{
-			archive->SetString("rb.nmatname", material->GetName());
+			archive->SetString("rb.nmatname", material->GetMaterialName().c_str());
 		}
 		
 		//archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
@@ -257,30 +257,36 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		indexCount = archive->GetUInt32("rb.indexCount", indexCount);
 		startIndex = archive->GetUInt32("rb.startIndex", startIndex);
 		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
-
 		PolygonGroup *pg = static_cast<PolygonGroup*>(serializationContext->GetDataBlock(archive->GetVariant("rb.datasource")->AsUInt64()));
-		Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
-
-        InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
-        KeyedArchive *mia = archive->GetArchive("rb.matinst");
-		if(NULL != mia)
-		{
-			oldMaterialInstance->Load(mia, serializationContext);
-		}
-
-        NMaterial * newMaterial = 0;
 		
-		if(mat)
+		NMaterial * newMaterial = NULL;
+		bool shouldConvertMaterial = archive->IsKeyExists("rb.material");
+		if(shouldConvertMaterial)
 		{
-			SceneFileV2::ConvertOldMaterialToNewMaterial(serializationContext, mat, oldMaterialInstance, &newMaterial);
+			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
+			
+			InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
+			KeyedArchive *mia = archive->GetArchive("rb.matinst");
+			if(NULL != mia)
+			{
+				oldMaterialInstance->Load(mia, serializationContext);
+			}
+			
+			if(mat)
+			{
+				//TODO: move conversion and material creation to more appropiate place. RenderBatch shouldn't now about scene file
+				SceneFileV2::ConvertOldMaterialToNewMaterial(serializationContext, mat, oldMaterialInstance, &newMaterial);
+			}
+			
+			SafeRelease(oldMaterialInstance);
 		}
 		else
 		{
-			//TODO:add NMaterial load by name
-			DVASSERT(false);
+			String matName = archive->GetString("rb.nmatname");
+			//TODO: move conversion and material creation to more appropiate place. RenderBatch shouldn't now about scene file
+			newMaterial = SceneFileV2::GetNewMaterial(serializationContext, matName);
 		}
-		
-        SafeRelease(oldMaterialInstance);
+
 		SetPolygonGroup(pg);
         
 		if(newMaterial)
