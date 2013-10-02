@@ -34,6 +34,7 @@
 LandscapeProxy::LandscapeProxy(Landscape* landscape)
 :	displayingTexture(0)
 ,	mode(MODE_CUSTOM_LANDSCAPE)
+,	tilemaskWasChanged(0)
 {
 	baseLandscape = SafeRetain(landscape);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
@@ -320,4 +321,24 @@ Vector3 LandscapeProxy::PlacePoint(const Vector3& point)
 	Vector3 landscapePoint;
 	bool res = baseLandscape->PlacePoint(point, landscapePoint);
 	return landscapePoint;
+}
+
+bool LandscapeProxy::IsTilemaskChanged()
+{
+	return (tilemaskWasChanged != 0);
+}
+
+void LandscapeProxy::ResetTilemaskChanged()
+{
+	tilemaskWasChanged = 0;
+}
+
+void LandscapeProxy::IncreaseTilemaskChanges()
+{
+	++tilemaskWasChanged;
+}
+
+void LandscapeProxy::DecreaseTilemaskChanges()
+{
+	--tilemaskWasChanged;
 }
