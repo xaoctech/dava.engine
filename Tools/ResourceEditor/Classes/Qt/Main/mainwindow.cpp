@@ -221,6 +221,10 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 			{
 				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
 			}
+            else
+            {
+                sceneWasSaved = true;
+            }
 		}
 	}
 
