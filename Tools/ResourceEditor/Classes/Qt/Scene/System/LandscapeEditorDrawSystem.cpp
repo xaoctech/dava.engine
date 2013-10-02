@@ -544,6 +544,11 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		return;
 	}
 
+	if (!GetLandscapeProxy()->IsTilemaskChanged())
+	{
+		return;
+	}
+
 	Texture* texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
 
 	if (texture)
@@ -579,6 +584,8 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		}
 
 		SafeRelease(descriptor);
+
+		GetLandscapeProxy()->ResetTilemaskChanged();
 	}
 }
 

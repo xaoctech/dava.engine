@@ -198,6 +198,8 @@ void TilemaskEditorPanel::InitBrushImages()
 			comboBrushImage->addItem(toolIcon, f.GetFilename().c_str(), QVariant(qFullname));
 		}
 	}
+
+	SafeRelease(fileList);
 }
 
 void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& g, Image*& b, Image*& a)
@@ -251,6 +253,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
 		image->ResizeCanvas(iconSize.width(), iconSize.height());
 
 		SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
+		SafeRelease(image);
 	}
 	else
 	{
