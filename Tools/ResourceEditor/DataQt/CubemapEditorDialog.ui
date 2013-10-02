@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
+    <width>604</width>
     <height>445</height>
    </rect>
   </property>
@@ -480,6 +480,30 @@
     </property>
    </widget>
   </widget>
+  <widget class="QLabel" name="lblSaving">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>601</width>
+     <height>441</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>18</pointsize>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Saving...</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <zorder>label_14</zorder>
   <zorder>label_13</zorder>
   <zorder>label_12</zorder>
@@ -500,6 +524,7 @@
   <zorder>labelFaceHeight</zorder>
   <zorder>labelPX</zorder>
   <zorder>legend</zorder>
+  <zorder>lblSaving</zorder>
  </widget>
  <customwidgets>
   <customwidget>
