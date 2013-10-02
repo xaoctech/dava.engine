@@ -182,10 +182,12 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
         ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
     }
     
-    Landscape *landscape = dynamic_cast<Landscape *>(ro);
-    if(landscape)
+	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
+		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
+
+		ValidateCustomColorsTexture(ownerNode, errorsLog);
     }
 }
 
@@ -729,6 +731,20 @@ bool SceneValidator::IsTextureChanged(const TextureDescriptor *descriptor, eGPUF
 bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 {
 	return path.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension());
+}
+
+void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<String> &errorsLog)
+{
+	KeyedArchive* customProps = landscapeEntity->GetCustomProperties();
+	if(customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
+	{
+		String currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+		FilePath path = "/" + currentSaveName;
+		if(!path.IsEqualToExtension(".png"))
+		{
+			errorsLog.insert("Need to reassign custom colors texture.");
+		}
+	}
 }
 
 

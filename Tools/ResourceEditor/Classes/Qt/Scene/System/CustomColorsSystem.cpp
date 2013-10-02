@@ -41,8 +41,6 @@
 #include "../../../Commands2/CustomColorsCommands2.h"
 #include "../SceneSignals.h"
 
-#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
-
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	enabled(false)
@@ -415,7 +413,7 @@ void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
 	if (customProps)
 	{
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
 	}
 }
 
@@ -424,9 +422,9 @@ FilePath CustomColorsSystem::GetCurrentSaveFileName()
 	String currentSaveName;
 
 	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
-	if (customProps && customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+	if (customProps && customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
 	{
-		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+		currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 	}
 
 	return GetAbsolutePathFromScenePath(currentSaveName);
