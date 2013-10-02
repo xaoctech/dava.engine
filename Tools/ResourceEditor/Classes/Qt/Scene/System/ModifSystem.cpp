@@ -801,8 +801,6 @@ void EntityModificationSystem::CloneEnd()
 
 			// and add it once again with command
 			sceneEditor->Exec(new EntityMoveCommand(clonedEntities[i], cloneParent));
-
-			SafeRelease(clonedEntities[i]);
 		}
 
 		sceneEditor->EndBatch();
@@ -819,6 +817,8 @@ void EntityModificationSystem::CloneEnd()
 		{
 			collisionSystem->UpdateCollisionObject(clonedEntities[i]);
 			selectionSystem->AddSelection(clonedEntities[i]);
+
+			SafeRelease(clonedEntities[i]);
 		}
 	}
 
