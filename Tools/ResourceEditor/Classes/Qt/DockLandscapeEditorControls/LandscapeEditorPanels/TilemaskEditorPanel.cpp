@@ -253,6 +253,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
 		image->ResizeCanvas(iconSize.width(), iconSize.height());
 
 		SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
+		SafeRelease(image);
 	}
 	else
 	{
