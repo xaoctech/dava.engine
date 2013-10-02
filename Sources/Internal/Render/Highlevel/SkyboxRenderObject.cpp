@@ -45,6 +45,7 @@ namespace DAVA
 	textureValidator(NULL)
 	{
 		type = RenderObject::TYPE_SKYBOX;
+		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
 	}
 	
 	SkyboxRenderObject::~SkyboxRenderObject()

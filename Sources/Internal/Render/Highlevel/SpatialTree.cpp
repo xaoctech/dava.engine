@@ -47,6 +47,7 @@ bool QuadTree::CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& node
 	case QuadTreeNode::NODE_RT:
 		return !((((nodeBox.min.x+nodeBox.max.x)*0.5f)>objBox.max.x)||(((nodeBox.min.y+nodeBox.max.y)*0.5)>objBox.max.y));
 	}			
+	return false;
 }
 
 void QuadTree::UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childType)
@@ -319,7 +320,7 @@ void QuadTree::ProcessNodeClipping(uint32 nodeId, AABBox3& box, uint32 clippingF
 				objFrustrumCalls++;
 				uint32 objClipPlanes = clippingFlags;
 				uint32 startPlane = currNode.startClipPlane; //not to break it by objects culling		
-				if (currFrustum->Classify(currNode.objects[i]->GetWorldBoundingBox(), objClipPlanes, startPlane)!=Frustum::EFR_OUTSIDE)
+				if ((currNode.objects[i]->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE)||(currFrustum->Classify(currNode.objects[i]->GetWorldBoundingBox(), objClipPlanes, startPlane)!=Frustum::EFR_OUTSIDE))
 					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			}				
 		}
