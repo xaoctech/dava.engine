@@ -107,6 +107,11 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 		return false;
 	}
 
+	if (drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK) == NULL)
+	{
+		return false;
+	}
+
 	if (!drawSystem->EnableTilemaskEditing())
 	{
 		return false;

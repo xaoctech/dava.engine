@@ -125,6 +125,7 @@ void ModifyTilemaskCommand::Undo()
 	SafeRelease(sprite);
 
 	landscapeProxy->UpdateFullTiledTexture();
+	landscapeProxy->DecreaseTilemaskChanges();
 }
 
 void ModifyTilemaskCommand::Redo()
@@ -138,6 +139,7 @@ void ModifyTilemaskCommand::Redo()
 	SafeRelease(sprite);
 
 	landscapeProxy->UpdateFullTiledTexture();
+	landscapeProxy->IncreaseTilemaskChanges();
 }
 
 Entity* ModifyTilemaskCommand::GetEntity() const

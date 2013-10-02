@@ -101,6 +101,9 @@
 		1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1712331D1741118F0051D960 /* PropertyNames.cpp */; };
 		1719682217CE4BD400053905 /* ScaleSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719682017CE4BD400053905 /* ScaleSlider.cpp */; };
 		1719682617CE4C2900053905 /* ScaleSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719682517CE4C2900053905 /* ScaleSlider_moc.cpp */; };
+		171FA7F117C4A48B00C7F7F2 /* AlignDistributeManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */; };
+		171FA7F817C4A7F400C7F7F2 /* ControlsPositionData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */; };
+		171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */; };
 		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
 		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
 		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
@@ -427,6 +430,12 @@
 		1719682017CE4BD400053905 /* ScaleSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider.cpp; sourceTree = "<group>"; };
 		1719682117CE4BD400053905 /* ScaleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleSlider.h; sourceTree = "<group>"; };
 		1719682517CE4C2900053905 /* ScaleSlider_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider_moc.cpp; sourceTree = "<group>"; };
+		171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignDistributeManager.cpp; path = AlignDistribute/AlignDistributeManager.cpp; sourceTree = "<group>"; };
+		171FA7F017C4A48B00C7F7F2 /* AlignDistributeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignDistributeManager.h; path = AlignDistribute/AlignDistributeManager.h; sourceTree = "<group>"; };
+		171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControlsPositionData.cpp; path = AlignDistribute/ControlsPositionData.cpp; sourceTree = "<group>"; };
+		171FA7F717C4A7F400C7F7F2 /* ControlsPositionData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlsPositionData.h; path = AlignDistribute/ControlsPositionData.h; sourceTree = "<group>"; };
+		171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignHandlers.cpp; path = AlignDistribute/AlignHandlers.cpp; sourceTree = "<group>"; };
+		171FA7FA17C4AE5D00C7F7F2 /* AlignHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignHandlers.h; path = AlignDistribute/AlignHandlers.h; sourceTree = "<group>"; };
 		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
 		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
 		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
@@ -473,6 +482,7 @@
 		176D3960162C3E890099AACF /* UIControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlMetadata.h; path = Metadata/UIControlMetadata.h; sourceTree = "<group>"; };
 		178F303C165677BF008678AD /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtils.cpp; sourceTree = "<group>"; };
 		178F303D165677BF008678AD /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
+		179D0ECB17C5F65B006F59CA /* AlignDistributeEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlignDistributeEnums.h; path = AlignDistribute/AlignDistributeEnums.h; sourceTree = "<group>"; };
 		17AB665116EDF86B00634657 /* UIListMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListMetadata.cpp; path = Metadata/UIListMetadata.cpp; sourceTree = "<group>"; };
 		17AB665216EDF86B00634657 /* UIListMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListMetadata.h; path = Metadata/UIListMetadata.h; sourceTree = "<group>"; };
 		17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = spinnerpropertygridwidget.ui; sourceTree = "<group>"; };
@@ -935,6 +945,20 @@
 			name = Helpers;
 			sourceTree = "<group>";
 		};
+		171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */ = {
+			isa = PBXGroup;
+			children = (
+				171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */,
+				171FA7FA17C4AE5D00C7F7F2 /* AlignHandlers.h */,
+				171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */,
+				171FA7F017C4A48B00C7F7F2 /* AlignDistributeManager.h */,
+				171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */,
+				171FA7F717C4A7F400C7F7F2 /* ControlsPositionData.h */,
+				179D0ECB17C5F65B006F59CA /* AlignDistributeEnums.h */,
+			);
+			name = AlignDistribute;
+			sourceTree = "<group>";
+		};
 		176D3941162C2F5D0099AACF /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1205,6 +1229,8 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */,
+				E8951B491737B03100755339 /* Tools */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
@@ -1695,6 +1721,9 @@
 				7499C4BC17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp in Build Sources */,
 				174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */,
 				174E1FC617F3485A00C7EC10 /* regexpinputdialog_moc.cpp in Build Sources */,
+				171FA7F117C4A48B00C7F7F2 /* AlignDistributeManager.cpp in Build Sources */,
+				171FA7F817C4A7F400C7F7F2 /* ControlsPositionData.cpp in Build Sources */,
+				171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
