@@ -1652,24 +1652,35 @@ void QtMainWindow::OnConvertToShadow()
 	SceneSelectionSystem *ss = scene->selectionSystem;
     if(ss->GetSelectionCount() > 0)
     {
+        bool isRenderBatchFound = false;
         for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
         {
-            RenderObject * ro = GetRenderObject(ss->GetSelectionEntity(i));
-            if(!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch)))
+            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
             {
-                ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
-                return;
+                isRenderBatchFound = true;
+                break;
             }
         }
-		
-        scene->BeginBatch("Convert To Shadow");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
-        }
         
-        scene->EndBatch();
+        if(isRenderBatchFound)
+        {
+            scene->BeginBatch("Convert To Shadow");
+            
+            for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+            {
+                if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
+                {
+                    scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
+                }
+            }
+            
+            scene->EndBatch();
+        }
+        else
+        {
+            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+            return;
+        }
     }
 }
 
