@@ -162,6 +162,11 @@ int FastName::Index() const
 {
 	return index;
 }
+	
+bool FastName::IsValid() const
+{
+	return (index >= 0);
+}
 
 void FastName::AddRef(int i) const
 {

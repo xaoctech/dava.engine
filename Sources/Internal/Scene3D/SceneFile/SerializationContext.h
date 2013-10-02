@@ -38,6 +38,7 @@ namespace DAVA
 {
 	class Scene;
 	class DataNode;
+	class MaterialSystem;
 	class SerializationContext
 	{
 	private:
@@ -123,7 +124,7 @@ namespace DAVA
 		inline uint32 GetLastError()
 		{
 			return lastError;
-		}
+		}		
 	};
 };
 

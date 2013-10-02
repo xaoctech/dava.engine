@@ -101,9 +101,75 @@ protected:
     FastNameSet uniqueDefines;
 };
 
+class NMaterial;
+class NMaterialState
+{
+	friend class NMaterial;
+	
+protected:
+	
+	struct TextureBucket
+	{
+		Texture* texture;
+		size_t index;
+	};
+
+public:
+			
+	NMaterialState();
+	virtual ~NMaterialState();
+	
+	// Work with textures and properties
+    void SetTexture(const FastName & textureFastName, Texture * texture);
+    Texture * GetTexture(const FastName & textureFastName) const;
+    Texture * GetTexture(uint32 index);
+    uint32 GetTextureCount();
+    
+    void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
+	
+	void SetMaterialName(const String& name);
+	FastName GetMaterialName();
+	FastName GetParentName();
+	
+	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
+    MaterialTechnique * GetTechnique(const FastName & techniqueName);
+			
+protected:
+	
+	FastName parentName;
+	FastName materialName;
+	
+	NMaterial* parent;
+	
+	FastNameSet layers;
+	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
+	FastNameSet nativeDefines;
+	HashMap<FastName, NMaterialProperty*> materialProperties;
+	HashMap<FastName, TextureBucket*> textures;
+	Vector<Texture*> texturesArray;
+    Vector<FastName> textureNamesArray;
+	Vector<int32> textureSlotArray;
+	
+	Vector<NMaterial*> children;
+	
+protected:
+	
+	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
+	
+	void AddMaterialDefineToState(const FastName& defineName);
+	void RemoveMaterialDefineFromState(const FastName& defineName);
+	
+	void SetParentToState(NMaterial* material);
+	void AddChildToState(NMaterial* material);
+	void RemoveChildFromState(NMaterial* material);
+	
+};
+
+
 class Camera;
 class SerializationContext;
-class NMaterial : public DataNode
+class NMaterial : public DataNode, public NMaterialState
 {
 	friend class MaterialSystem;
 	
@@ -116,100 +182,57 @@ public:
     
 	NMaterial();
     virtual ~NMaterial();
-    
-    bool LoadFromFile(const String & pathname);
-	void SetMaterialName(const String& name);
-    
-    // Work with textures and properties
-    void SetTexture(const FastName & textureFastName, Texture * texture);
-    Texture * GetTexture(const FastName & textureFastName) const;
-    Texture * GetTexture(uint32 index);
-    uint32 GetTextureCount();
-    
-    void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
-	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
-
-    uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light) { lights[index] = light; };
-    Light * GetLight(uint32 index) { return lights[index]; };
-
-    
-    void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
-    void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);
-    MaterialTechnique * GetTechnique(const FastName & techniqueName);
-        
-    void Draw(PolygonGroup * polygonGroup);
-	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
-    
-    const FastNameSet & GetRenderLayers();
-	    
+	
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
 	NMaterial* CreateChild();
 	
-	void Rebuild(bool recursive = true);
-	inline bool IsReady() {return ready;}
-	inline bool IsDynamicLit() {return materialDynamicLit;}
-	inline bool IsConfigMaterial() {return configMaterial;}
-	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild
 	void AddMaterialDefine(const FastName& defineName);
 	void RemoveMaterialDefine(const FastName& defineName);
-	
-    virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
-	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
-    
-    // Load default render state from yaml.
-    // Keep it here, by default MaterialInstance Render State should be referenced from this point.
-	
-private:
-	
-	struct TextureBucket
-	{
-		Texture* texture;
-		size_t index;
-	};
-	
-	struct MaterialState
-	{
-		FastName materialName;
-		NMaterial* parent;
-		FastNameSet layers;
-		HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
-		FastNameSet nativeDefines;
-		HashMap<FastName, NMaterialProperty*> materialProperties;
-		HashMap<FastName, TextureBucket*> textures;
-		
-		MaterialState()
-		{
-			parent = NULL;
-		}
-	};
-	
-private:
-	
-    void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
 
-	MaterialState state; //TODO: VI: this will be extended to an array for material LOD support
+	const FastNameSet & GetRenderLayers();
+	
+	//{TODO: these should be removed and changed to a generic system
+	//setting properties via special setters
+    uint32 GetLightCount() { return lightCount; };
+    void SetLight(uint32 index, Light * light) { lights[index] = light; };
+    Light * GetLight(uint32 index) { return lights[index]; };
+	inline bool IsDynamicLit() {return materialDynamicLit;}
+	//}END TODO
+	
+    void Draw(PolygonGroup * polygonGroup);
+	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
+    
+	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);    
+	
+	void Rebuild(bool recursive = true);
+	inline bool IsReady() {return ready;}
+	inline bool IsConfigMaterial() {return configMaterial;}
+	
+	bool LoadFromFile(const String & pathname);
+	
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+	
+protected:
     
 	FastNameSet inheritedDefines;
 	FastNameSet effectiveLayers;
 	
-	Vector<NMaterial*> children;
-    Vector<Texture*> texturesArray;
-    Vector<FastName> textureNamesArray;
-	Vector<int32> textureSlotArray;
+	//{TODO: these should be removed and changed to a generic system
+	//setting properties via special setters
     uint32 lightCount;
     Light * lights[8];
+	bool materialDynamicLit;
+	//}END TODO
 
-    //
     FastName activeTechniqueName;
     MaterialTechnique * activeTechnique;
 	bool ready;
 	
-	bool materialDynamicLit;
 	bool configMaterial;
 	
 private:
@@ -226,8 +249,8 @@ private:
 	void BindTextures(NMaterial* curMaterial, RenderState* rs);
 	void SetupPerFrameProperties(Camera* camera);
 	
-	void Serialize(const MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
-	void Deserialize(MaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
+	void Serialize(const NMaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
+	void Deserialize(NMaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
 	
 	void SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive);
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);

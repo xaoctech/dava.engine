@@ -77,7 +77,7 @@ public:
 	bool operator==(const FastName &_name) const;
 	bool operator!=(const FastName &_name) const;
 	int Index() const;
-
+	bool IsValid() const;
     
 private:
     void Init(const char * name);

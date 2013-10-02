@@ -45,6 +45,7 @@
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {
@@ -122,7 +123,11 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
 
 void Component::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
+	if(NULL != archive)
+	{
+		archive->SetUInt32("comp.type", GetType());
+		archive->SetString("comp.typename", ObjectFactory::Instance()->GetName(this));
+	}
 }
 
 void Component::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)

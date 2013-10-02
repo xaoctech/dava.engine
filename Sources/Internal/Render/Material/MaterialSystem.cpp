@@ -63,7 +63,7 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 		while(mapIter != materials.End())
 		{
 			NMaterial* material = mapIter.GetValue();
-			if(NULL == material->state.parent)
+			if(NULL == material->parent)
 			{
 				materialList.push_back(material);
 				BuildMaterialList(material, materialList);
@@ -74,9 +74,9 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 	}
 	else
 	{
-		for(int i = 0; i < parent->children.size(); ++i)
+		for(int i = 0; i < parent->NMaterialState::children.size(); ++i)
 		{
-			NMaterial* material = parent->children[i];
+			NMaterial* material = parent->NMaterialState::children[i];
 			materialList.push_back(material);
 			BuildMaterialList(material, materialList);
 		}
@@ -217,7 +217,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 		material->Release(); //need to release material since material system took ownership
 		material->SetParent(parentMaterial);
 		
-		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetName());
+		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
 		if(childrenIter != nodes.end())
 		{
 			Vector<MaterialData>& materials = childrenIter->second;
@@ -242,13 +242,13 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 {
 	DVASSERT(material);
 	SafeRetain(material);
-	materials.Insert(material->GetName(), material);
+	materials.Insert(material->GetMaterialName(), material);
 }
 
 void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
-	materials.Remove(material->GetName());
+	materials.Remove(material->GetMaterialName());
 	SafeRelease(material);
 }
 	
