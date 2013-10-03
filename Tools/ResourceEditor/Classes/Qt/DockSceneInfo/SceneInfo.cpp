@@ -62,12 +62,10 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, this->curModel)
 {
 	// global scene manager signals
-    connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
-    connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-    
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+    connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
     
     connect(QtMainWindow::Instance(), SIGNAL(GlobalInvalidateTimeout()), SLOT(UpdateInfoByTimer()));
     
@@ -625,14 +623,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
 }
 
 
-void SceneInfo::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
-{
-    ClearSelectionData();
-    CollectLODDataForSelection();
-    RefreshLODInfoForSelection();
-}
-
-void SceneInfo::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
     ClearSelectionData();
     CollectLODDataForSelection();

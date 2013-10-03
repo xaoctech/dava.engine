@@ -61,7 +61,7 @@ protected:
 	SceneTreeDelegate *treeDelegate;
 	QTimer refreshTimer;
 
-	bool skipTreeSelectionProcessing;
+	bool isInSync;
 
 	void dropEvent(QDropEvent * event);
 	void dragMoveEvent(QDragMoveEvent *event);
@@ -110,9 +110,8 @@ public slots:
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 
 	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
 

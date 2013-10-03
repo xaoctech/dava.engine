@@ -137,6 +137,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
 	static QIcon cameraIcon(":/QtIcons/camera.png");
 	static QIcon lightIcon(":/QtIcons/light.png");
+	static QIcon shadowIcon(":/QtIcons/shadow.png");
 
 	QIcon ret;
 
@@ -160,7 +161,16 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
-			ret = renderobjIcon;
+			DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+			
+			if(ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume))
+			{
+				ret = shadowIcon;
+			}
+			else
+			{
+				ret = renderobjIcon;
+			}
 		}
 		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 		{

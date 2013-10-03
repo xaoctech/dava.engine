@@ -79,8 +79,7 @@ ModificationWidget::ModificationWidget(QWidget* parent)
 	QObject::connect(yAxisModify, SIGNAL(valueEdited()), this, SLOT(OnYChanged()));
 	QObject::connect(zAxisModify, SIGNAL(valueEdited()), this, SLOT(OnZChanged()));
 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnSceneEntitySelected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnSceneEntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(OnSceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(OnSceneCommand(SceneEditor2 *, const Command2* , bool)));
@@ -523,15 +522,7 @@ void ModificationWidget::OnSceneDeactivated(SceneEditor2 *scene)
 	ReloadValues();
 }
 
-void ModificationWidget::OnSceneEntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
-{
-	if(curScene == scene)
-	{
-		ReloadValues();
-	}
-}
-
-void ModificationWidget::OnSceneEntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+void ModificationWidget::OnSceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
 	if(curScene == scene)
 	{
