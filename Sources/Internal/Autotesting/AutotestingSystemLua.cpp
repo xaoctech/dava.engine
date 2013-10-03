@@ -3,12 +3,9 @@
 #ifdef __DAVAENGINE_AUTOTESTING__
 
 #include "AutotestingSystem.h"
+#include "AutotestingDB.h"
 
 #include "Utils/Utils.h"
-
-//TODO: move all wrappers to separate class?
-#include "Action.h"
-#include "TouchAction.h"
 
 extern "C"{
 #include "lua.h"
@@ -130,49 +127,44 @@ void AutotestingSystemLua::StartTest()
     RunScript();
 }
     
-void AutotestingSystemLua::WaitForMaster()
-{
-    Logger::Debug("AutotestingSystemLua::WaitForMaster");
-    AutotestingSystem::Instance()->InitMultiplayer(false);
-    AutotestingSystem::Instance()->RegisterHelperInDB();
-}
-    
-void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
-{
-    Logger::Debug("AutotestingSystemLua::WaitForHelpers %d", helpersCount);
-    AutotestingSystem::Instance()->InitMultiplayer(true);
-    AutotestingSystem::Instance()->RegisterMasterInDB(helpersCount);
-}
-
 // Multiplayer API
 void AutotestingSystemLua::WriteState(const String & device, const String & state)
 {
 	Logger::Debug("AutotestingSystemLua::WriteState device=%s state=%s", device.c_str(), state.c_str());
-	AutotestingSystem::Instance()->WriteState(device,state);
+	AutotestingDB::Instance()->WriteState(device,state);
 }
 
 void AutotestingSystemLua::WriteCommand(const String & device, const String & state)
 {
 	Logger::Debug("AutotestingSystemLua::WriteCommand device=%s command=%s", device.c_str(), state.c_str());
-	AutotestingSystem::Instance()->WriteCommand(device,state);
+	AutotestingDB::Instance()->WriteCommand(device,state);
 }
 
 String AutotestingSystemLua::ReadState(const String & device)
 {
 	Logger::Debug("AutotestingSystemLua::ReadState device=%s", device.c_str());
-	return AutotestingSystem::Instance()->ReadState(device);
+	return AutotestingDB::Instance()->ReadState(device);
 }
 
 String AutotestingSystemLua::ReadCommand(const String & device)
 {
 	Logger::Debug("AutotestingSystemLua::ReadCommand device=%s", device.c_str());
-	return AutotestingSystem::Instance()->ReadCommand(device);
+	return AutotestingDB::Instance()->ReadCommand(device);
 }
 
 void AutotestingSystemLua::InitializeDevice(const String & device)
 {
 	Logger::Debug("AutotestingSystemLua::InitializeDevice device=%s", device.c_str());
 	AutotestingSystem::Instance()->InitializeDevice(device);
+}
+
+
+String AutotestingSystemLua::GetTestParameter(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::GetTestParameter device=%s", device.c_str());
+	String result =  AutotestingDB::Instance()->GetStringTestParameter(AutotestingSystem::Instance()->deviceName, device);
+	Logger::Debug("AutotestingSystemLua::GetTestParameter result=%s", result.c_str());
+	return result;
 }
 
 
@@ -190,12 +182,6 @@ void AutotestingSystemLua::OnError(const String &errorMessage)
 {
     Logger::Debug("AutotestingSystemLua::OnError %s", errorMessage.c_str());
     AutotestingSystem::Instance()->OnError(errorMessage);
-}
-    
-void AutotestingSystemLua::OnTestStep(const String &stepName, bool isPassed, const String &error)
-{
-    Logger::Debug("AutotestingSystemLua::OnTestStep %s %d %s", stepName.c_str(), isPassed, error.c_str());
-    AutotestingSystem::Instance()->OnTestStep(stepName, isPassed, error);
 }
 
 void AutotestingSystemLua::OnTestStart(const String &testName)
@@ -219,25 +205,25 @@ void AutotestingSystemLua::OnStepStart(const String &stepName)
 void AutotestingSystemLua::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystemLua::Log [%s]%s", level.c_str(), message.c_str());
-	AutotestingSystem::Instance()->Log(level, message);
+	AutotestingDB::Instance()->Log(level, message);
 }
 
 void AutotestingSystemLua::WriteString(const String & name, const String & text)
 {
 	Logger::Debug("AutotestingSystemLua::WriteString name=%s text=%s", name.c_str(), text.c_str());
-	AutotestingSystem::Instance()->WriteString(name, text);
+	AutotestingDB::Instance()->WriteString(name, text);
 }
 
 String AutotestingSystemLua::ReadString(const String & name)
 {
 	Logger::Debug("AutotestingSystemLua::ReadString name=%s", name.c_str());
-	return AutotestingSystem::Instance()->ReadString(name);
+	return AutotestingDB::Instance()->ReadString(name);
 }
 
 bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName)
 {
 	Logger::Debug("AutotestingSystemLua::SaveKeyedArchiveToDB");
-	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive, docName);
+	return AutotestingDB::Instance()->SaveKeyedArchiveToDB(archiveName, archive, docName);
 }
 
 String AutotestingSystemLua::MakeScreenshot()
@@ -259,9 +245,108 @@ UIControl *AutotestingSystemLua::FindControl(const String &path)
     Vector<String> controlPath;
     ParsePath(path, controlPath);
     
-    return Action::FindControl(controlPath);
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
+	UIControl* control = NULL;
+	if(UIScreenManager::Instance()->GetScreen() && (!controlPath.empty()))
+	{
+		control = FindControl(UIScreenManager::Instance()->GetScreen(), controlPath[0]);
+
+		for(uint32 i = 1; i < controlPath.size(); ++i)
+		{
+			if(!control) break;
+			control = FindControl(control, controlPath[i]);
+		}
+	}
+	return control;
 }
-    
+
+UIControl* AutotestingSystemLua::FindControl(UIControl* srcControl, const String &controlName)
+{
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
+	if(srcControl)
+	{
+		int32 index = atoi(controlName.c_str());
+		if(Format("%d",index) != controlName)
+		{
+			// not number
+			return srcControl->FindByName(controlName);
+		}
+		else
+		{
+			// number
+			UIList* list = dynamic_cast<UIList*>(srcControl);
+			if(list)
+			{
+				return FindControl(list, index);
+			}
+			else
+			{
+				return FindControl(srcControl, index);
+			}
+		}
+	}
+	return NULL;
+}
+
+UIControl* AutotestingSystemLua::FindControl(UIControl* srcControl, int32 index)
+{
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
+	if(srcControl)
+	{
+		const List<UIControl*> children = srcControl->GetChildren();
+		int32 childIndex = 0;
+		for(List<UIControl*>::const_iterator it = children.begin(); it != children.end(); ++it, ++childIndex)
+		{
+			if(childIndex == index)
+			{
+				return (*it);
+			}
+		}
+	}
+	return NULL;
+}
+
+UIControl* AutotestingSystemLua::FindControl(UIList* srcList, int32 index)
+{
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
+	if(srcList)
+	{
+		const List<UIControl*> &cells = srcList->GetVisibleCells();
+		for(List<UIControl*>::const_iterator it = cells.begin(); it != cells.end(); ++it)
+		{
+			UIListCell* cell = dynamic_cast<UIListCell*>(*it);
+			if(cell)
+			{
+				if(cell->GetIndex() == index && IsCenterInside(srcList, cell))
+				{
+					return cell;
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+bool AutotestingSystemLua::IsCenterInside(UIControl* parent, UIControl* child)
+{
+	bool isInside = false;
+	if(parent && child)
+	{
+		const Rect &parentRect = parent->GetGeometricData().GetUnrotatedRect();
+		const Rect &childRect = child->GetGeometricData().GetUnrotatedRect();
+
+		// check if child center is inside parent rect
+		isInside = ((parentRect.x <= childRect.x + childRect.dx/2) && (childRect.x + childRect.dx/2 <= parentRect.x + parentRect.dx) &&
+			(parentRect.y <= childRect.y + childRect.dy/2) && (childRect.y + childRect.dy/2 <= parentRect.y + parentRect.dy));
+
+	}
+	return isInside;
+}    
+
 bool AutotestingSystemLua::SetText(const String &path, const String &text)
 {
     Logger::Debug("AutotestingSystemLua::SetText %s %s", path.c_str(), text.c_str());
@@ -394,7 +479,7 @@ void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
     UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
     UIControlSystem::Instance()->RecalculatePointToVirtual(touchDown.physPoint, touchDown.point);
         
-    Action::ProcessInput(touchDown);
+    ProcessInput(touchDown);
 }
     
 void AutotestingSystemLua::TouchMove(const Vector2 &point, int32 touchId)
@@ -411,15 +496,15 @@ void AutotestingSystemLua::TouchMove(const Vector2 &point, int32 touchId)
     if(AutotestingSystem::Instance()->IsTouchDown(touchId))
     {
         touchMove.phase = UIEvent::PHASE_DRAG;
-        Action::ProcessInput(touchMove);
+        ProcessInput(touchMove);
     }
     else
     {
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
         Logger::Warning("AutotestingSystemLua::TouchMove point=(%f, %f) ignored no touch down found", point.x, point.y);
 #else
         touchMove.phase = UIEvent::PHASE_MOVE;
-        Action::ProcessInput(touchMove);
+        ProcessInput(touchMove);
 #endif
     }
 }
@@ -435,7 +520,19 @@ void AutotestingSystemLua::TouchUp(int32 touchId)
     touchUp.phase = UIEvent::PHASE_ENDED;
     touchUp.tid = touchId;
     
-    Action::ProcessInput(touchUp);
+    ProcessInput(touchUp);
+}
+
+void AutotestingSystemLua::ProcessInput(const UIEvent &input)
+{
+	Logger::Debug("AutotestingSystemLua::ProcessInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
+
+	Vector<UIEvent> emptyTouches;
+	Vector<UIEvent> touches;
+	touches.push_back(input);
+	UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+
+	AutotestingSystem::Instance()->OnInput(input);
 }
 
 void AutotestingSystemLua::ParsePath(const String &path, Vector<String> &parsedPath)

@@ -32,6 +32,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/Platform/TemplateAndroid/
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/fmod/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/lua/include
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -42,6 +43,7 @@ LOCAL_SRC_FILES := \
                      $(subst $(LOCAL_PATH)/,, \
 					 $(wildcard $(LOCAL_PATH)/Autotesting/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Animation/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Autotesting/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Base/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Collision/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Core/*.cpp) \
@@ -88,6 +90,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/liblua_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libTextureConverter_android.a
