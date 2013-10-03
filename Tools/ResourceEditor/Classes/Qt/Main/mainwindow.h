@@ -210,8 +210,7 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
     
 	void AddSwitchDialogFinished(int result);
 	void LandscapeDialogFinished(int result);
