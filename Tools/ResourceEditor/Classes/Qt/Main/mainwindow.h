@@ -66,6 +66,7 @@ public:
 	SceneTabWidget* GetSceneWidget();
 	SceneEditor2* GetCurrentScene();
 
+    bool OpenScene(const QString & path);
 	bool SaveScene(SceneEditor2 *scene);
 	bool SaveSceneAs(SceneEditor2 *scene);
 
@@ -84,7 +85,6 @@ public:
 	bool BeastWaitCanceled();
 #endif //#if defined (__DAVAENGINE_BEAST__)
 
-	void OpenScene(const QString & path);
 
     
 signals:

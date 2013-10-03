@@ -1963,15 +1963,20 @@ void QtMainWindow::CreateObjectTypesCombobox()
     QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
 }
 
-void QtMainWindow::OpenScene( const QString & path )
+bool QtMainWindow::OpenScene( const QString & path )
 {
-	if (!path.isEmpty())
-	{
-		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
-		ui->sceneTabWidget->SetCurrentTab(index);
+    if(path.isEmpty())
+        return false;
+    
+    int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+    if(index != -1)
+    {
+        ui->sceneTabWidget->SetCurrentTab(index);
+        AddRecent(path);
+        return true;
+    }
 
-		AddRecent(path);
-	}
+    return false;
 }
 
 void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
