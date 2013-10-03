@@ -92,6 +92,8 @@
     <file>QtIcons/remove_force.png</file>
     <file>QtIcons/btn_rotate_ccw.png</file>
     <file>QtIcons/btn_rotate_cw.png</file>
+    <file>QtIcons/skybox.png</file>
+    <file>QtIcons/landscapesettings.png</file>
     <file>QtImages/sky_example0.png</file>
     <file>QtImages/sky_example1.png</file>
     <file>QtImages/sky_example2.png</file>
