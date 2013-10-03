@@ -417,8 +417,8 @@ void SceneCameraSystem::CreateDebugCameras()
 
 		topCamera = new DAVA::Camera();
 		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
-		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
-		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
+		topCamera->SetPosition(DAVA::Vector3(-50.0f, 0.0f, 50.0f));
+		topCamera->SetTarget(DAVA::Vector3(0.0f, 0.1f, 0.0f));
 		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 		topCamera->SetAspect(1.0f);
 

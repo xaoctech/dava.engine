@@ -73,7 +73,6 @@ public:
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
 	void RemoveCollisionObject(DAVA::Entity *entity);
-	void LockCollisionObjects(bool lock);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -87,7 +86,6 @@ protected:
 
 protected:
 	int drawMode;
-	bool lockedCollisionObjects;
 
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;
@@ -117,6 +115,9 @@ protected:
 
 	QMap<DAVA::Entity*, CollisionBaseObject*> entityToCollision;
 	QMap<btCollisionObject*, DAVA::Entity*> collisionToEntity;
+
+	DAVA::Set<DAVA::Entity*> entitiesToAdd;
+	DAVA::Set<DAVA::Entity*> entitiesToRemove;
 
 	CollisionBaseObject* BuildFromEntity(DAVA::Entity * entity);
 	void DestroyFromEntity(DAVA::Entity * entity);

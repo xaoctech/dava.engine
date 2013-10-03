@@ -51,7 +51,7 @@
 
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
-	, skipTreeSelectionProcessing(false)
+	, isInSync(false)
 {
 	CleanupParticleEditorSelectedItems();
 
@@ -72,9 +72,7 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	// scene signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(StructureChanged(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	// particles signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)), this, SLOT(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
@@ -204,54 +202,26 @@ void SceneTree::SceneDeactivated(SceneEditor2 *scene)
 	}
 }
 
-void SceneTree::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
+void SceneTree::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
 	if(scene == treeModel->GetScene())
 	{
-		if(!skipTreeSelectionProcessing)
-		{
-			skipTreeSelectionProcessing = true;
-			SyncSelectionToTree();
-			skipTreeSelectionProcessing = false;
-		}
+		SyncSelectionToTree();
 	}
 }
 
-void SceneTree::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+void SceneTree::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
 {
 	if(scene == treeModel->GetScene())
 	{
-		if(!skipTreeSelectionProcessing)
-		{
-			skipTreeSelectionProcessing = true;
-			SyncSelectionToTree();
-			skipTreeSelectionProcessing = false;
-
-		}
-	}
-}
-
-void SceneTree::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
-{
-	if(scene == treeModel->GetScene())
-	{
-		skipTreeSelectionProcessing = true;
-
 		treeModel->ResyncStructure(treeModel->invisibleRootItem(), treeModel->GetScene());
 		SyncSelectionToTree();
-
-		skipTreeSelectionProcessing = false;
 	}
 }
 
 void SceneTree::TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	if(!skipTreeSelectionProcessing)
-	{
-		skipTreeSelectionProcessing = true;
-		SyncSelectionFromTree();
-		skipTreeSelectionProcessing = false;
-	}
+	SyncSelectionFromTree();
 
 	// emit some signal about particles
 	EmitParticleSignals(selected);
@@ -707,62 +677,81 @@ void SceneTree::TreeItemExpanded(const QModelIndex &index)
 
 void SceneTree::SyncSelectionToTree()
 {
-	SceneEditor2* curScene = treeModel->GetScene();
-	if(NULL != curScene)
+	if(!isInSync)
 	{
-		QModelIndex lastValidIndex;
+		isInSync = true;
 
-		selectionModel()->clear();
-
-		SceneSelectionSystem *ss = curScene->selectionSystem;
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+		SceneEditor2* curScene = treeModel->GetScene();
+		if(NULL != curScene)
 		{
-			QModelIndex sIndex = treeModel->GetIndex(ss->GetSelectionEntity(i));
-			sIndex = filteringProxyModel->mapFromSource(sIndex);
+			QModelIndex lastValidIndex;
 
-			if(sIndex.isValid())
+			selectionModel()->clear();
+
+			SceneSelectionSystem *ss = curScene->selectionSystem;
+			for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 			{
-				lastValidIndex = sIndex;
-				selectionModel()->select(sIndex, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+				QModelIndex sIndex = treeModel->GetIndex(ss->GetSelectionEntity(i));
+				sIndex = filteringProxyModel->mapFromSource(sIndex);
+
+				if(sIndex.isValid())
+				{
+					lastValidIndex = sIndex;
+					selectionModel()->select(sIndex, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+				}
+			}
+
+			if(lastValidIndex.isValid())
+			{
+				scrollTo(lastValidIndex, QAbstractItemView::PositionAtCenter);
 			}
 		}
 
-		if(lastValidIndex.isValid())
-		{
-			scrollTo(lastValidIndex, QAbstractItemView::PositionAtCenter);
-		}
+		isInSync = false;
 	}
 }
 
 void SceneTree::SyncSelectionFromTree()
 {
-	SceneEditor2* curScene = treeModel->GetScene();
-	if(NULL != curScene)
+	if(!isInSync)
 	{
-		QSet<DAVA::Entity*> treeSelectedEntities;
+		isInSync = true;
 
-		// remove from selection system all entities that are not selected in tree
-		EntityGroup selGroup = curScene->selectionSystem->GetSelection();
-		for(size_t i = 0; i < selGroup.Size(); ++i)
+		SceneEditor2* curScene = treeModel->GetScene();
+		if(NULL != curScene)
 		{
-			if(!treeSelectedEntities.contains(selGroup.GetEntity(i)))
+			QSet<DAVA::Entity*> treeSelectedEntities;
+
+			// remove from selection system all entities that are not selected in tree
+			EntityGroup selGroup = curScene->selectionSystem->GetSelection();
+			for(size_t i = 0; i < selGroup.Size(); ++i)
 			{
-				curScene->selectionSystem->RemSelection(selGroup.GetEntity(i));
+				if(!treeSelectedEntities.contains(selGroup.GetEntity(i)))
+				{
+					curScene->selectionSystem->RemSelection(selGroup.GetEntity(i));
+				}
 			}
+
+			// select items in scene
+			QModelIndexList indexList = selectionModel()->selection().indexes();
+			for (int i = 0; i < indexList.size(); ++i)
+			{
+				DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i])));
+
+				if(NULL != entity)
+				{
+					treeSelectedEntities.insert(entity);
+					curScene->selectionSystem->AddSelection(entity);
+				}
+			}
+
+			// force selection system emit signals about new selection
+			// this should be done until we are inSync mode, to prevent unnecessary updates
+			// when signals from selection system will be emited on next frame
+			curScene->selectionSystem->ForceEmitSignals();
 		}
 
-		// select items in scene
-		QModelIndexList indexList = selectionModel()->selection().indexes();
-		for (int i = 0; i < indexList.size(); ++i)
-		{
-			DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i])));
-
-			if(NULL != entity)
-			{
-				treeSelectedEntities.insert(entity);
-				curScene->selectionSystem->AddSelection(entity);
-			}
-		}
+		isInSync = false;
 	}
 }
 

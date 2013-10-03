@@ -73,7 +73,9 @@ public:
 	DAVA::AABBox3 GetSelectionAABox(int index) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const;
-    
+
+	void ForceEmitSignals();
+
 protected:
 	void Update(DAVA::float32 timeElapsed);
 	void Draw();
@@ -96,7 +98,10 @@ private:
 	SceneCollisionSystem *collisionSystem;
 	HoodSystem* hoodSystem;
 
+	bool selectionHasChanges;
 	EntityGroup curSelections;
+	EntityGroup curDeselections;
+
 	DAVA::Entity *lastSelection;
 
 	ST_PivotPoint curPivotPoint;

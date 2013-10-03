@@ -149,8 +149,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
-    QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
@@ -1156,15 +1155,15 @@ void QtMainWindow::OnMaterialEditor()
 void QtMainWindow::OnTextureBrowser()
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	DAVA::Entity *selectedEntity = NULL;
+	EntityGroup selectedEntities;
 
 	if(NULL != sceneEditor)
 	{
-		selectedEntity = sceneEditor->selectionSystem->GetSelectionEntity(0);
+		selectedEntities = sceneEditor->selectionSystem->GetSelection();
 	}
 
 	TextureBrowser::Instance()->sceneActivated(sceneEditor);
-	TextureBrowser::Instance()->sceneNodeSelected(sceneEditor, selectedEntity); 
+	TextureBrowser::Instance()->sceneSelectionChanged(sceneEditor, &selectedEntities, NULL); 
 	TextureBrowser::Instance()->show();
 }
 
@@ -1621,12 +1620,7 @@ void QtMainWindow::UpdateStatusBar()
     }
 }
 
-void QtMainWindow::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
-{
-    UpdateStatusBar();
-}
-                     
-void QtMainWindow::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+void QtMainWindow::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
     UpdateStatusBar();
 }
