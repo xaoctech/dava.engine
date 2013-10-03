@@ -334,23 +334,6 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         SafeRelease(rootNode);
     }
     
-    /*for (size_t mi = 0; mi < materials.size(); ++mi)
-    {
-        SafeRelease(materials[mi]);
-    }
-    materials.clear();*/
-    
-    /*for (size_t mi = 0; mi < staticMeshes.size(); ++mi)
-    {
-        SafeRelease(staticMeshes[mi]);
-    }
-    staticMeshes.clear();*/
-    
-    /*for (Map<uint64, DataNode*>::iterator it = dataNodes.begin(); it != dataNodes.end(); ++it)
-    {
-        SafeRelease(it->second);
-    }
-    dataNodes.clear();*/
     
     SafeRelease(rootNode);
     SafeRelease(file);
@@ -480,17 +463,6 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         
         node->SetScene(scene);
         
-        // TODO: Rethink here
-        /*Material * material = dynamic_cast<Material*>(node);
-        if (material)
-        {
-            materials.push_back(SafeRetain(material));
-        }*/
-        /*StaticMesh * staticMesh = dynamic_cast<StaticMesh*>(node);
-        if (staticMesh)
-        {
-            staticMeshes.push_back(SafeRetain(staticMesh));
-        }*/
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
@@ -522,7 +494,6 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
     if(isDebugLogEnabled)
         Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
     
-    //dataNodes[ptr] = SafeRetain(node);
 	serializationContext.SetDataBlock(ptr, SafeRetain(node));
 }
     

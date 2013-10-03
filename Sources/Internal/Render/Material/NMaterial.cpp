@@ -396,6 +396,46 @@ namespace DAVA
 	{
 		nativeDefines.Remove(defineName);
 	}
+	
+	void NMaterialState::CopyTo(NMaterialState* targetState)
+	{
+		targetState->parentName = parentName;
+		targetState->materialName = materialName;
+		
+		targetState->layers.Clear();
+		targetState->layers.Combine(layers);
+		
+		targetState->nativeDefines.Clear();
+		targetState->nativeDefines.Combine(nativeDefines);
+		
+		targetState->techniqueForRenderPass.Clear();
+		for(HashMap<FastName, MaterialTechnique *>::Iterator it = techniqueForRenderPass.Begin();
+			it != techniqueForRenderPass.End();
+			++it)
+		{
+			targetState->techniqueForRenderPass.Insert(it.GetKey(), it.GetValue());
+		}
+		
+		targetState->materialProperties.Clear();
+		for(HashMap<FastName, NMaterialProperty *>::Iterator it = materialProperties.Begin();
+			it != materialProperties.End();
+			++it)
+		{
+			targetState->materialProperties.Insert(it.GetKey(), it.GetValue());
+		}
+
+		targetState->textures.Clear();
+		targetState->texturesArray.clear();
+		targetState->textureNamesArray.clear();
+		targetState->textureSlotArray.clear();
+		
+		for(HashMap<FastName, TextureBucket *>::Iterator it = textures.Begin();
+			it != textures.End();
+			++it)
+		{
+			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
+		}
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -1079,4 +1119,39 @@ namespace DAVA
 		}
 	}
 	
+	bool NMaterial::SwitchState(const FastName& stateName, MaterialSystem* materialSystem)
+	{
+		NMaterialState* state = states.GetValue(stateName);
+		
+		if(state != NULL)
+		{
+			SetParent(NULL);
+			
+			inheritedDefines.Clear();
+			effectiveLayers.Clear();
+			
+			//{TODO: these should be removed and changed to a generic system
+			//setting properties via special setters
+			lightCount = 0;
+			materialDynamicLit = false;
+			//}END TODO
+			
+			activeTechniqueName = NULL;
+			activeTechnique = NULL;
+			ready = false;
+
+			state->CopyTo(this);
+			
+			NMaterial* newParent = materialSystem->GetMaterial(parentName);
+			DVASSERT(newParent);
+			if(NULL == newParent)
+			{
+				newParent = materialSystem->GetDefaultMaterial();
+			}
+			
+			SetParent(newParent);
+		}
+		
+		return (state != NULL);
+	}
 };
