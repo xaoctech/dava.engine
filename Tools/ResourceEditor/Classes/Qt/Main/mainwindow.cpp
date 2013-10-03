@@ -944,14 +944,7 @@ void QtMainWindow::OnRecentTriggered(QAction *recentAction)
 	if(recentScenes.contains(recentAction))
 	{
 		QString path = recentAction->data().toString();
-
-		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
-		ui->sceneTabWidget->SetCurrentTab(index);
-
-		if(-1 != index)
-		{
-			AddRecent(path);
-		}
+        OpenScene(path);
 	}
 }
 
@@ -1967,6 +1960,16 @@ bool QtMainWindow::OpenScene( const QString & path )
 {
     if(path.isEmpty())
         return false;
+    
+    SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
+    if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
+    {
+        FilePath path = scene->GetScenePath();
+        if(path.GetFilename() == "newscene1.sc2" && !scene->CanUndo())
+        {
+            ui->sceneTabWidget->CloseTab(0);
+        }
+    }
     
     int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
     if(index != -1)
