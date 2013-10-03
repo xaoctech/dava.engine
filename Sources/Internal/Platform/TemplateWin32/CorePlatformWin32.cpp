@@ -712,7 +712,7 @@ namespace DAVA
                 RECT clientRect;
                 GetClientRect(hWnd, &clientRect);
 
-                bool isInside = (x > clientRect.left && x < clientRect.right && y > clientRect.top && y < clientRect.bottom);
+                bool isInside = (x > clientRect.left && x < clientRect.right && y > clientRect.top && y < clientRect.bottom) || InputSystem::Instance()->IsCursorPining();
 
                 OnMouseEvent(raw->data.mouse.usButtonFlags, MAKEWPARAM(isMove, isInside), MAKELPARAM(x, y)); // only move and drag events
             }
