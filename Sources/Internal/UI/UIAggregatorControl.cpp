@@ -55,7 +55,7 @@ YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode* node = UIControl::SaveToYamlNode(loader);
 	SetPreferredNodeType(node, "UIAggregatorControl");
-	node->Set(AGGREGATOR_PATH, aggregatorPath.GetAbsolutePathname());
+	node->Set(AGGREGATOR_PATH, aggregatorPath.GetFrameworkPath());
 	return node;
 }
 
