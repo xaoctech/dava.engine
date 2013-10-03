@@ -105,9 +105,21 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 			{
 				scrollTouch = *currentTouch;
 				scrollStartInitialPosition = currentTouch->point;
+				scrollStartMovement = false;
 				state = STATE_SCROLL;
 				lockTouch = TRUE;
 				oldPos = newPos;
+			}
+				break;
+			case UIEvent::PHASE_DRAG:
+			{
+				if(state == STATE_SCROLL)
+				{
+					if(currentTouch->tid == scrollTouch.tid)
+					{
+						scrollStartMovement = true;
+					}
+				}
 			}
 				break;
 			case UIEvent::PHASE_ENDED:
@@ -152,7 +164,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		mainTouch = -1;
 	}
 
-	if (currentTouch->tid == mainTouch)
+	if (scrollStartMovement && currentTouch->tid == mainTouch)
 	{
 		return true;
 	}
@@ -177,7 +189,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	
 		ScrollHelper *horizontalScroll = scrollView->GetHorizontalScroll();
 		ScrollHelper *verticalScroll = scrollView->GetVerticalScroll();
-		
+		// Get scrolls positions and change scroll container relative position
 		if (horizontalScroll && enableHorizontalScroll)
 		{
 			contentRect.x = horizontalScroll->GetPosition(posDelta.x, SystemTimer::FrameDelta(), lockTouch);
@@ -188,7 +200,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		}
 
 		this->SetRect(contentRect);
-		
+		// Change state when scrolling is not active
 		if (!lockTouch && (horizontalScroll->GetCurrentSpeed() == 0) && (verticalScroll->GetCurrentSpeed() == 0))
 		{
 			state = STATE_NONE;
@@ -221,41 +233,5 @@ void UIScrollViewContainer::SaveChildren(UIControl *parent, UIYamlLoader * loade
 		SaveChildren(childControl, loader, childNode);
 	}
 }
-
-Vector2 UIScrollViewContainer::CalculateOutboundsOffset()
-{
-	Rect contentRect = this->GetRect();
-	Rect parentRect = this->GetParent()->GetRect();
-	
-	float32 shiftSizeX = abs(contentRect.x) + parentRect.dx;
-	float32 shiftSizeY = abs(contentRect.y) + parentRect.dy;
-
-	Vector2 outboundsOffset;
-	if (contentRect.x > 0.0f)
-	{
-		// Scrolled too right.
-		outboundsOffset.x = contentRect.x;
-	}
-	else if (shiftSizeX > contentRect.dx)
-	{
-		// Scrolled too left (the offset is negative).
-		outboundsOffset.x = contentRect.dx - shiftSizeX;
-	}
-	
-	if (contentRect.y > 0.0f)
-	{
-		// Scrolled too bottom.
-		outboundsOffset.y = contentRect.y;
-	}
-	else if (shiftSizeY > contentRect.dy)
-	{
-		// Scrolled too top (the offset is negative).
-		outboundsOffset.y = contentRect.dy - shiftSizeY;
-	}
-
-	return outboundsOffset;
-}
-
-
 
 };

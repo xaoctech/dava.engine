@@ -69,8 +69,10 @@ public:
 	
 	void RecalculateContentSize();
 	
-	// Set the speed of returning scroll container to bounds.
-	void SetReturnSpeed(int32 speedInPixelsPerSec);
+	//Sets how fast scroll container will return to its bounds
+	void SetReturnSpeed(float32 speedInSeconds);
+	//Sets how fast scroll speed will be reduced
+	void SetScrollSpeed(float32 speedInSeconds);
 
 	// UIScrollBarDelegate implementation.
 	virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
