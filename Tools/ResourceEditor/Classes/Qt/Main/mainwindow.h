@@ -212,9 +212,6 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-    
-	void AddSwitchDialogFinished(int result);
-	void LandscapeDialogFinished(int result);
 
     void OnGlobalInvalidateTimeout();
 
@@ -234,8 +231,6 @@ private:
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
-	AddSwitchEntityDialog* addSwitchEntityDialog;
-	LandscapeDialog* landscapeDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;

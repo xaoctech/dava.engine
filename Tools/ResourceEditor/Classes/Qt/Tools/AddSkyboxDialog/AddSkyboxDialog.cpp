@@ -158,8 +158,12 @@ void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
 	entity = newEntity;
 	SafeRetain(entity);
 
-	PropertyEditor* pEditor = ui->propEditor;
-	
+	PropertyEditor* pEditor = propEditor;
+	if(NULL == pEditor)
+	{
+		return;
+	}
+
 	pEditor->SetNode(entity);
 	
 	if(entity)

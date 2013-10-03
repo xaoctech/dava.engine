@@ -39,6 +39,8 @@ class SelectEntityPathWidget;
 
 class AddSwitchEntityDialog: public BaseAddEntityDialog
 {
+	Q_OBJECT
+
 public:
 	AddSwitchEntityDialog( QWidget* parent = 0);
 	
@@ -52,6 +54,10 @@ public:
 	}
 	
 	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
+	
+	void accept();
+	
+	void reject();
 
 protected:
 	

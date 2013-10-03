@@ -34,7 +34,9 @@
 #include "QScrollBar.h"
 #include "Scene/System/BeastSystem.h"
 
-#define PROPERTY_EDITOR_HEIGHT 300
+#define PROPERTY_EDITOR_HEIGHT	300
+#define QT_HEIGHT_LIMIT			16777215
+#define WINDOW_HEIGHT_LIMIT		800
 
 BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 :	QDialog(parent),
@@ -48,12 +50,13 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
 
 	ui->scrollArea->setVisible(false);
-	ui->propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
+	propEditor = NULL;
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
 	delete ui;
+	delete propEditor;
 	SafeRelease(entity);
 	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
 	{
@@ -62,36 +65,45 @@ BaseAddEntityDialog::~BaseAddEntityDialog()
 	additionalWidgetMap.clear();
 }
 
+void BaseAddEntityDialog::showEvent ( QShowEvent * event )
+{
+	QDialog::showEvent(event);
+	InitPropertyEditor();
+	if(entity)
+	{
+		propEditor->SetNode(entity);
+		propEditor->expandAll();
+		PerformResize();
+	}
+}
+
 void BaseAddEntityDialog::PerformResize()
 {
-	PropertyEditor* pEditor = ui->propEditor;
-	pEditor->expandAll();
-	this->adjustSize();
-	ui->scrollArea->setMaximumHeight(ui->scrollArea->sizeHint().height());
-	setMinimumHeight(sizeHint().height());
+	propEditor->expandAll();
+	QRect rectEditor = propEditor->geometry();
+	rectEditor.setHeight(PROPERTY_EDITOR_HEIGHT);
+	propEditor->setGeometry(rectEditor);
 	
-	bool isEditorFullyDisplayed = pEditor->verticalScrollBar()->maximum() == 0;
 	QScrollArea* area = ui->scrollArea;
-	bool isScrollAreaFullyDisplayed = area->isVisible() ?
-	area->verticalScrollBar()->maximum() == 0 : true;
-	int maxLimit = std::numeric_limits<int>::max();
-	int maxHeight = isEditorFullyDisplayed? PROPERTY_EDITOR_HEIGHT : maxLimit;
+	int scrollAreaHeight = area->sizeHint().height();
 	
-	ui->propEditor->setMaximumHeight(maxHeight);
-	maxHeight = isScrollAreaFullyDisplayed ? area->sizeHint().height() : maxLimit;
-	area->setMaximumHeight(maxHeight);
+	QRect areaEditor = area->geometry();
+	areaEditor.setHeight(scrollAreaHeight);
+	area->setGeometry(areaEditor);
 	
-	this->adjustSize();
-	maxHeight = (isEditorFullyDisplayed && isScrollAreaFullyDisplayed) ? sizeHint().height() : 800;
-	setMaximumHeight(maxHeight);
+	int currentMax  = ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 4 + scrollAreaHeight + PROPERTY_EDITOR_HEIGHT;
+	int maxHeight = currentMax < WINDOW_HEIGHT_LIMIT ? currentMax : WINDOW_HEIGHT_LIMIT;
+	QRect rect = geometry();
+	rect.setHeight(maxHeight);
+	setGeometry(rect);
 }
 
 void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
 {
 	QDialog::hideEvent(event);
-	if(entity)
+	if(entity && propEditor)
 	{
-		ui->propEditor->SetNode(NULL);
+		propEditor->SetNode(NULL);
 	}
 }
 
@@ -106,11 +118,13 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 		BeastSystem::SetDefaultPropertyValues(entity);
 			
 		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
-		PropertyEditor* pEditor = ui->propEditor;	
 
-		pEditor->SetNode(entity);
-		pEditor->expandAll();
-		PerformResize();
+		if(propEditor)
+		{
+			propEditor->SetNode(entity);
+			propEditor->expandAll();
+			PerformResize();
+		}
 	}
 }
 
@@ -173,3 +187,25 @@ void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 	}
 }
 
+void BaseAddEntityDialog::InitPropertyEditor()
+{
+	propEditor = new PropertyEditorDialog(this);
+	propEditor->setObjectName(QString::fromUtf8("propEditor"));
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sizePolicy.setHeightForWidth(propEditor->sizePolicy().hasHeightForWidth());
+	propEditor->setSizePolicy(sizePolicy);
+	propEditor->setMinimumSize(QSize(0, 0));
+	propEditor->setMaximumSize(QSize(16777215, 9999));
+	propEditor->setMouseTracking(false);
+	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	propEditor->setTabKeyNavigation(false);
+	propEditor->setAlternatingRowColors(true);
+	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	propEditor->setIndentation(16);
+	propEditor->setAnimated(false);
+	
+	ui->verticalLayout_4->addWidget(propEditor);
+	propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
+	
+}

@@ -34,6 +34,7 @@
 #include <QDialog.h>
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
+#include "DockProperties/PropertyEditorDialog.h"
 
 class DAVA::Entity;
 
@@ -63,6 +64,10 @@ public:
 	void SetEntity(DAVA::Entity* );
 	
 protected:
+
+	void showEvent ( QShowEvent * event );
+	
+	virtual void InitPropertyEditor();
 	
 	void PerformResize();
 	
@@ -75,6 +80,8 @@ protected:
 	void RemoveAllControlsFromUserContainer();
 
 	DAVA::Entity* entity;
+	
+	PropertyEditorDialog *propEditor;
 	
 	Ui::BaseAddEntityDialog *ui;
 	
