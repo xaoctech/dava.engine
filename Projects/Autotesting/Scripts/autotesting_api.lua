@@ -396,6 +396,25 @@ function WaitControl(name, time)
     return false
 end
 
+function WaitControlDisappeared(name, time)
+    local waitTime = time or TIMEOUT
+    --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+		coroutine.yield()
+        
+        if not autotestingSystem:FindControl(name) then
+            --Log("WaitControl found "..name, "DEBUG")
+            return true
+        end
+    end
+    
+    Log("WaitControl still on the screen: "..name, "DEBUG")
+    return false
+end
+
 function TouchDownPosition(position, touchId)
     local touchId = touchId or 1
     --print("TouchDownPosition position="..position.x..","..position.y.." touchId="..touchId)
