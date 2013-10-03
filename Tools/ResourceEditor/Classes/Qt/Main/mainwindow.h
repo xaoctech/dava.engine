@@ -189,6 +189,7 @@ protected:
 
 	void SetupMainMenu();
 	void SetupToolBars();
+	void SetupStatusBar();
 	void SetupDocks();
 	void SetupActions();
 	void SetupTitle();
@@ -199,7 +200,6 @@ protected:
     
     void CreateMaterialEditorIfNeed();
     
-    void UpdateStatusBar();
     void StartGlobalInvalidateTimer();
 
 	void RunBeast();
@@ -212,7 +212,6 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
     
 	void AddSwitchDialogFinished(int result);
 	void LandscapeDialogFinished(int result);
