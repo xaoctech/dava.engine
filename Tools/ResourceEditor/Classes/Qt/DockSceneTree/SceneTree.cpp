@@ -40,6 +40,9 @@
 #include "SceneEditor/SceneValidator.h"
 #include "Main/QTUtils.h"
 #include "Project/ProjectManager.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/System/SelectionSystem.h"
+
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -382,7 +385,15 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 			if(!ownerRef.IsEmpty())
 			{
-				QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+                const SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+                SceneSelectionSystem *selSystem = scene->selectionSystem;
+                
+                size_t selectionSize = selSystem->GetSelectionCount();
+                if(selectionSize == 1)
+                {
+                    QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+                }
+                
 				QAction *reloadModelAction = contextMenu.addAction("Reload Model", this, SLOT(ReloadModel()));
 				QAction *reloadModelLightmapsAction = contextMenu.addAction("Reload Model without Lightmaps", this, SLOT(ReloadModelWithoutLightmaps()));
 			}
