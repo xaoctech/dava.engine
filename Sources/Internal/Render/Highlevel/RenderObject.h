@@ -85,6 +85,7 @@ public:
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
 		VISIBLE_LOD = 1 << 2,
 		VISIBLE_SWITCH = 1 << 3,
+		ALWAYS_CLIPPING_VISIBLE = 1 << 4,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 

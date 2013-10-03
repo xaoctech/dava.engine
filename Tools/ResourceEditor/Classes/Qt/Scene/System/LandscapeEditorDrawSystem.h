@@ -99,6 +99,8 @@ public:
 
 	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
 
+	bool VerifyLandscape();
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;

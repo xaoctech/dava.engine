@@ -120,7 +120,7 @@ void LandscapeSettingsEditor::InitializeProperties(Entity* landscapeEntity)
 	size = DAVA::Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 	DAVA::AABBox3 bbox = landscape->GetBoundingBox();
 	DAVA::AABBox3 emptyBox;
-	if((emptyBox.min != bbox.min) && (emptyBox.max != bbox.max))
+	if(!bbox.GetSize().IsZero())
 	{
 		DAVA::AABBox3 transformedBox = bbox;
 		if(NULL != landscape->GetWorldTransformPtr())
@@ -214,10 +214,10 @@ void LandscapeSettingsEditor::HandleLandSize()
 	float newSize = senderContent.AsFloat();
 	size.x = newSize;
 	size.y = newSize;
-	AppleNewLandscapeSize();
+	ApplyNewLandscapeSize();
 }
 
-void LandscapeSettingsEditor::AppleNewLandscapeSize()
+void LandscapeSettingsEditor::ApplyNewLandscapeSize()
 {
 	AABBox3 bbox;
 	bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
@@ -238,7 +238,7 @@ void LandscapeSettingsEditor::HandleLandHeight()
 	GET_SENDER_CONTENT;
 	float newHeight = senderContent.AsFloat();
 	size.z = newHeight;
-	AppleNewLandscapeSize();
+	ApplyNewLandscapeSize();
 }
 
 void LandscapeSettingsEditor::HandleFogColor()

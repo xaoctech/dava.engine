@@ -125,9 +125,9 @@ void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &origin
     Scene * oldScene = CreateSceneFromSc2(originalPath);
     Scene * newScene = CreateSceneFromSc2(newPath);
     
+	CopyShadowSettings(oldScene, newScene);
     CopyMaterialsSettings(oldScene, newScene);
     CopyLODSettings(oldScene, newScene);
-	CopyShadowSettings(oldScene, newScene);
     
     newScene->Save(originalPath);
     
@@ -182,17 +182,33 @@ void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene,
     Vector<Material *> srcMaterials = CreateMaterialsVector(srcScene);
     Vector<Material *> dstMaterials = CreateMaterialsVector(dstScene);
     
-    if (srcMaterials.size() == dstMaterials.size())
-    {
-        uint32 count = srcMaterials.size();
-        for (uint32 i = 0; i < count; ++i)
-        {
-            if(srcMaterials[i]->GetName() == dstMaterials[i]->GetName())
-            {
-				dstMaterials[i]->CopySettings(srcMaterials[i]);
-            }
-        }
-    }
+	auto endItSrc = srcMaterials.end();
+	auto endItDst = dstMaterials.end();
+
+	auto itSrc = srcMaterials.begin();
+	auto itDst = dstMaterials.begin();
+
+	while( (itSrc != endItSrc) && (itDst != endItDst))
+	{
+		Material *src = *itSrc;
+		Material *dst = *itDst;
+
+		if(src->GetName() == dst->GetName())
+		{
+			dst->CopySettings(src);
+
+			++itSrc;
+			++itDst;
+		}
+		else if(src->GetName() < dst->GetName())
+		{
+			++itSrc;
+		}
+		else
+		{
+			++itDst;
+		}
+	}
 }
 
 DAVA::Vector<DAVA::Material *> DAEConvertWithSettingsAction::CreateMaterialsVector(DAVA::Scene *scene)
