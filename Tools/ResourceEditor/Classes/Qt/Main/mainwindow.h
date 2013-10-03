@@ -84,6 +84,7 @@ public:
 	bool BeastWaitCanceled();
 #endif //#if defined (__DAVAENGINE_BEAST__)
 
+	void OpenScene(const QString & path);
 
     
 signals:
