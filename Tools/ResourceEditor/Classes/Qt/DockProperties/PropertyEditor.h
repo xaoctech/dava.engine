@@ -63,6 +63,10 @@ public slots:
 	void actionShowAdvanced();
 	void EditActionComponent();
 
+    void EditSoundEvent();
+    void PlaySoundEvent();
+    void StopSoundEvent();
+
 protected:
 	bool advancedMode;
 	QtPosSaver posSaver;

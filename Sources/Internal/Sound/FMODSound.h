@@ -26,89 +26,71 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_FMOD_SOUND_H__
+#define __DAVAENGINE_FMOD_SOUND_H__
 
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
+#include "Base/EventDispatcher.h"
+#include "Sound/Sound.h"
 
+namespace FMOD
+{
+class Sound;
+class ChannelGroup;
+class Channel;
+};
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+class SoundSystem;
+class FMODSoundSystem;
+class FMODSound : public Sound
 {
-    SoundSystem::Init();
-}
+public:
+	virtual void SetVolume(float32 volume);
+	virtual float32	GetVolume();
 
-ApplicationCore::~ApplicationCore()
-{
-	SoundSystem::Release();
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
+	virtual void Play(const Message & msg = Message());
+	virtual void Pause(bool isPaused);
+	virtual bool IsPaused();
+	virtual void Stop();
 
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
-}
+	virtual void SetPosition(const Vector3 & position);
+	virtual void UpdateInstancesPosition();
 
-void ApplicationCore::BeginFrame()
-{
-	RenderManager::Instance()->BeginFrame();
+	virtual void SetLoopCount(int32 looping); // -1 = infinity
+	virtual int32 GetLoopCount();
 
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-}
+    //FMOD only
+    void PerformCallback(FMOD::Channel * instance);
 
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-}
+protected:
+	FMODSound(const FilePath & fileName, eType type, int32 priority);
+	virtual ~FMODSound();
 
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
+	static Sound * CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority = 128);
 
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
+	void SetSoundGroup(const FastName & groupName);
 
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
+	bool is3d;
+	Vector3 position;
 
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
-	
-void ApplicationCore::OnForeground()
-{
-	// Default implementation is empty.
-}
+	FilePath fileName;
+	int32 priority;
 
-#endif
+	FMOD::Sound * fmodSound;
+	FMOD::ChannelGroup * fmodInstanceGroup;
+
+    uint8 * soundData;
+
+    Map<FMOD::Channel *, Message> callbacks;
+
+friend class FMODSoundSystem;
+};
 
 };
+
+#endif //__DAVAENGINE_SOUND_H__

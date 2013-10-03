@@ -28,154 +28,71 @@
 
 #include "Base/FastName.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/SoundGroup.h"
-#include "Sound/SoundEvent.h"
-#include "Sound/SoundEventCategory.h"
 #include "Sound/VolumeAnimatedObject.h"
-#include "Sound/FMODUtils.h"
-
-#ifdef __DAVAENGINE_IPHONE__
-#include "fmodiphone.h"
-#endif
+#include "FMODSoundSystem.h"
 
 namespace DAVA
 {
+FilePath SoundSystem::soundsDir("~res:/Sfx/");
+SoundSystem::SoundSystemType SoundSystem::type = (SoundSystemType)0;
+SoundSystemInstance * SoundSystem::instance = 0;
 
-SoundSystem::SoundSystem(int32 maxChannels)
-{
-	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
-	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
-	FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
-    FMOD_VERIFY(fmodSystem->set3DSettings(1.f, 1.f, 0.4f));
-}
-
-SoundSystem::~SoundSystem()
-{
-	for(FastNameMap<SoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
-	{
-        SoundGroup * soundGroup = it.GetValue();
-		SafeRelease(soundGroup);
-	}
-    soundGroups.Clear();
-
-	FMOD_VERIFY(fmodSystem->release());
-}
-
-void SoundSystem::LoadFEV(const FilePath & filePath)
-{
-	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
-}
-
-SoundEvent * SoundSystem::CreateSoundEvent(const String & eventPath)
-{
-	FMOD::Event * fmodEvent = 0;
-	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
-	if(fmodEvent)
-		return new SoundEvent(fmodEvent);
-	else
-		return 0;
-}
-
-void SoundSystem::Update()
+void SoundSystemInstance::Update()
 {
     int32 size = animatedObjects.size();
     for(int32 i = 0; i < size; i++)
         animatedObjects[i]->Update();
-
-	fmodEventSystem->update();
-
-    size = soundsToReleaseOnUpdate.size();
-    for(int32 i = 0; i < size; i++)
-        SafeRelease(soundsToReleaseOnUpdate[i]);
-    soundsToReleaseOnUpdate.clear();
 }
 
-void SoundSystem::Suspend()
+void SoundSystemInstance::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
 {
-#ifdef __DAVAENGINE_ANDROID__
-	for(FastNameMap<SoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
-	{
-		SoundGroup * soundGroup = it.GetValue();
-		soundGroup->Stop();
-	}
-#endif
+    animatedObjects.push_back(object);
 }
 
-void SoundSystem::Resume()
+void SoundSystemInstance::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
 {
-#ifdef __DAVAENGINE_IPHONE__
-    FMOD_IPhone_RestoreAudioSession();
-#endif
+    Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
+    if(it != animatedObjects.end())
+        animatedObjects.erase(it);
 }
 
-void SoundSystem::SetListenerPosition(const Vector3 & position)
+SoundSystemInstance * SoundSystem::Instance()
 {
-	FMOD_VECTOR pos = {position.x, position.y, position.z};
-	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
+    DVASSERT(instance);
+    return instance;
 }
 
-void SoundSystem::SetListenerOrientation(const Vector3 & at, const Vector3 & left)
+void SoundSystem::Init()
 {
-	Vector3 atNorm = at;
-	atNorm.Normalize();
-	Vector3 upNorm = at.CrossProduct(left);
-	upNorm.Normalize();
+    DVASSERT(!instance);
 
-	FMOD_VECTOR fmodAt = {atNorm.x, atNorm.y, atNorm.z};
-	FMOD_VECTOR fmodUp = {upNorm.x, upNorm.y, upNorm.z};
-	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodAt, &fmodUp));
-}
-
-SoundGroup * SoundSystem::GetSoundGroup(const FastName & groupName)
-{
-	if(soundGroups.IsKey(groupName))
-		return soundGroups[groupName];
-    else
-        return 0;
-}
-
-SoundGroup * SoundSystem::CreateSoundGroup(const FastName & groupName)
-{
-	SoundGroup * group = 0;
-	if(soundGroups.IsKey(groupName))
-	{
-		group = soundGroups[groupName];
-	}
-    else
+    switch(type)
     {
-        group = new SoundGroup();
-        soundGroups.Insert(groupName, group);
+        case SOUNDSYSTEM_FMOD:
+            instance = new FMODSoundSystem();
+            break;
+        default:
+            break;
     }
-
-	return group;
 }
 
-ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & category)
+void SoundSystem::Release()
 {
-	FMOD::EventCategory * fmodCategory = 0;
-	FMOD_VERIFY(fmodEventSystem->getCategory(category.c_str(), &fmodCategory));
-
-	if(fmodCategory)
-		return ScopedPtr<SoundEventCategory>(new SoundEventCategory(fmodCategory));
-	else
-		return ScopedPtr<SoundEventCategory>(0);
+    if(instance)
+    {
+        delete instance;
+        instance = 0;
+    }
 }
 
-void SoundSystem::ReleaseOnUpdate(Sound * sound)
+const FilePath & SoundSystem::GetSoundsDirectory()
 {
-    soundsToReleaseOnUpdate.push_back(sound);
+    return soundsDir;
 }
 
-void SoundSystem::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
+void SoundSystem::SetSoundsDirectory(const FilePath & _soundsDir)
 {
-	animatedObjects.push_back(object);
-}
-
-void SoundSystem::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
-{
-	Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
-	if(it != animatedObjects.end())
-		animatedObjects.erase(it);
+    soundsDir = _soundsDir;
 }
 
 };

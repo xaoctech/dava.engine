@@ -33,8 +33,10 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
-#include "Sound/SoundEvent.h"
+#include "Scene3D/Components/FMODSoundComponent.h"
 #include "Sound/SoundSystem.h"
+#include "Sound/FMODSoundEvent.h"
+#include "Sound/FMODSoundSystem.h"
 
 namespace DAVA
 {
@@ -56,16 +58,19 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
-		SoundEvent * sEvent = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
-		sEvent->SetPosition(translation);
+		((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->SetPosition(translation);
 	}
 
 	if (event == EventSystem::SOUND_CHANGED)
 	{
-		SoundComponent * soundComponent = (SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
-		SoundEvent * sEvent = SoundSystem::Instance()->CreateSoundEvent(soundComponent->GetEventName());
-		soundComponent->SetSoundEvent(sEvent);
-		SafeRelease(sEvent);
+		FMODSoundComponent * soundComponent = (FMODSoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
+        if(soundComponent)
+        {
+            FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
+		    FMODSoundEvent * sEvent = soundSystem->CreateSoundEvent(soundComponent->GetEventName());
+		    soundComponent->SetSoundEvent(sEvent);
+		    SafeRelease(sEvent);
+        }
 	}
 }
     

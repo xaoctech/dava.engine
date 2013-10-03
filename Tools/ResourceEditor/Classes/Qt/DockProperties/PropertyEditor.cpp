@@ -44,8 +44,10 @@
 #include "Commands2/InspMemberModifyCommand.h"
 
 #include "PropertyEditorStateHelper.h"
+#include "Qt/Project/ProjectManager.h"
 
 #include "ActionComponentEditor.h"
+#include "SoundBrowser/FMODSoundBrowser.h"
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
@@ -107,7 +109,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
                 QtPropertyData *componentData = AppendIntrospectionInfo(component, component->GetTypeInfo());
 
 				if(NULL != componentData)
-				{
+                {
 					// Add optional button to track "remove this component" command
 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
 					removeButton->setFlat(true);
@@ -122,7 +124,25 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 						
 						componentData->AddOW(QtPropertyOW(editActions, true));
 						QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(EditActionComponent()));
-					}
+                    }
+
+                    if(component->GetType() == Component::SOUND_COMPONENT)
+                    {
+                        QPushButton * playBut = new QPushButton(QIcon(":/QtIcons/play.png"), "");
+                        QPushButton * stopBut = new QPushButton(QIcon(":/QtIcons/stop.png"), "");
+                        QPushButton *editEventBut = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
+                        playBut->setFlat(true);
+                        stopBut->setFlat(true);
+                        editEventBut->setFlat(true);
+
+                        componentData->AddOW(QtPropertyOW(editEventBut, true));
+                        componentData->AddOW(QtPropertyOW(stopBut, true));
+                        componentData->AddOW(QtPropertyOW(playBut, true));
+
+                        QObject::connect(playBut, SIGNAL(pressed()), this, SLOT(PlaySoundEvent()));
+                        QObject::connect(stopBut, SIGNAL(pressed()), this, SLOT(StopSoundEvent()));
+                        QObject::connect(editEventBut, SIGNAL(pressed()), this, SLOT(EditSoundEvent()));
+                    }
 				}
             }
         }
@@ -269,4 +289,35 @@ void PropertyEditor::EditActionComponent()
 			
 		editor.exec();
 	}	
+}
+
+void PropertyEditor::EditSoundEvent()
+{
+    if(curNode)
+    {
+        DAVA::FMODSoundComponent* component = (DAVA::FMODSoundComponent*)curNode->GetComponent(DAVA::Component::SOUND_COMPONENT);
+        if(component)
+        {
+            FMODSoundBrowser::Instance()->SetEditableComponent(component);
+            FMODSoundBrowser::Instance()->show();
+        }
+    }
+}
+
+void PropertyEditor::PlaySoundEvent()
+{
+    if(curNode)
+    {
+        DAVA::SoundComponent* component = (DAVA::SoundComponent*)curNode->GetComponent(DAVA::Component::SOUND_COMPONENT);
+        component->Play();
+    }
+}
+
+void PropertyEditor::StopSoundEvent()
+{
+    if(curNode)
+    {
+        DAVA::SoundComponent* component = (DAVA::SoundComponent*)curNode->GetComponent(DAVA::Component::SOUND_COMPONENT);
+        component->Stop();
+    }
 }

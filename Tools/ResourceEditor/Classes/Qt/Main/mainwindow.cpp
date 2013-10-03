@@ -39,6 +39,7 @@
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
+#include "SoundBrowser/FMODSoundBrowser.h"
 
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/EditorConfig.h"
@@ -137,6 +138,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	// create tool windows
 	new TextureBrowser(this);
 	waitDialog = new QtWaitDialog(this);
+    new FMODSoundBrowser(this);
 #if defined (__DAVAENGINE_BEAST__)
 	beastWaitDialog = new QtWaitDialog(this);
 #endif //#if defined (__DAVAENGINE_BEAST__)
@@ -562,6 +564,9 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
+
+    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
+    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -1948,6 +1953,44 @@ void QtMainWindow::OnRemoveActionComponent()
 
 		scene->EndBatch();
 	}
+}
+
+void QtMainWindow::OnAddSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Add Sound Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), ScopedPtr<SoundComponent> (new FMODSoundComponent())));
+        }
+
+        scene->EndBatch();
+    }
+}
+
+void QtMainWindow::OnRemoveSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Remove Sound Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), Component::SOUND_COMPONENT));
+        }
+
+        scene->EndBatch();
+    }
 }
 
 bool QtMainWindow::IsSavingAllowed()

@@ -125,7 +125,7 @@ protected:
 
 };
 
-#endif // __DAVAENGINE_SCENENODE_H__
+#endif // __DAVAENGINE_DATANODE_H__
 
 
 

@@ -132,7 +132,6 @@ void Core::CreateSingletons()
 	new AnimationManager();
 	new FontManager();
 	new UIControlSystem();
-	new SoundSystem(64);
 	new InputSystem();
 	new PerformanceSettings();
 	
@@ -169,7 +168,6 @@ void Core::ReleaseSingletons()
 	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
-	SoundSystem::Instance()->Release();
 	FontManager::Instance()->Release();
 	AnimationManager::Instance()->Release();
 	SystemTimer::Instance()->Release();

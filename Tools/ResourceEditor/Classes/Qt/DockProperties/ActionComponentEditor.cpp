@@ -218,7 +218,7 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 		{
 			QComboBox* combo = new QComboBox(parent);
 			combo->setFrame(false);
-			for(int i = 1; i < ACTION_NAME_COUNT - 1; ++i) //do not add sound aciton
+			for(int i = 1; i < ACTION_NAME_COUNT; ++i) //do not add sound aciton
 			{
 				combo->addItem(ACTION_TYPE_NAME[i]);
 			}

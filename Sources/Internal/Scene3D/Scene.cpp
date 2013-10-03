@@ -68,6 +68,7 @@
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Sound/SoundSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -515,6 +516,11 @@ void Scene::Update(float timeElapsed)
 		lodSystem->Process();
 	}
 	
+    if(currentCamera)
+    {
+        SoundSystem::Instance()->SetListenerPosition(currentCamera->GetPosition());
+        SoundSystem::Instance()->SetListenerOrientation(currentCamera->GetTarget(), currentCamera->GetLeft());
+    }
 
 	switchSystem->Process();
     
