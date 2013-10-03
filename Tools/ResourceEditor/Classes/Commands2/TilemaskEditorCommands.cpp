@@ -33,6 +33,7 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
 
 ActionEnableTilemaskEditor::ActionEnableTilemaskEditor(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_TILEMASK)
@@ -59,7 +60,7 @@ void ActionEnableTilemaskEditor::Redo()
 	
 	if (!success || !sceneEditor->tilemaskEditorSystem->EnableLandscapeEditing())
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::TILEMASK_EDITOR_ENABLE_ERROR);
 	}
 	
 	SceneSignals::Instance()->EmitTilemaskEditorToggled(sceneEditor);
@@ -87,7 +88,7 @@ void ActionDisableTilemaskEditor::Redo()
 	disabled = sceneEditor->tilemaskEditorSystem->DisableLandscapeEdititing();
 	if (!disabled)
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::TILEMASK_EDITOR_DISABLE_ERROR);
 	}
 	
 	SceneSignals::Instance()->EmitTilemaskEditorToggled(sceneEditor);

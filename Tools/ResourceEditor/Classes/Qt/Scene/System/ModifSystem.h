@@ -67,6 +67,8 @@ public:
 	bool InModifState() const;
 	bool InCloneState() const;
 
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;

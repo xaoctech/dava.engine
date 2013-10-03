@@ -801,3 +801,14 @@ void EntityModificationSystem::CloneEnd()
 
 	clonedEntities.clear();
 }
+
+void EntityModificationSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	if (GetLandscape(entity) != NULL)
+	{
+		SetLandscapeSnap(false);
+
+		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
+		SceneSignals::Instance()->EmitSnapToLandscapeChanged(sceneEditor, false);
+	}
+}

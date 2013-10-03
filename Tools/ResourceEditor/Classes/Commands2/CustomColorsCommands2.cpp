@@ -34,6 +34,8 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 ActionEnableCustomColors::ActionEnableCustomColors(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_CUSTOM_COLORS)
 ,	sceneEditor(forSceneEditor)
@@ -59,7 +61,7 @@ void ActionEnableCustomColors::Redo()
 
 	if (!success || !sceneEditor->customColorsSystem->EnableLandscapeEditing())
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_ENABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
@@ -87,7 +89,7 @@ void ActionDisableCustomColors::Redo()
 	disabled = sceneEditor->customColorsSystem->DisableLandscapeEdititing();
 	if (!disabled)
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_DISABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);

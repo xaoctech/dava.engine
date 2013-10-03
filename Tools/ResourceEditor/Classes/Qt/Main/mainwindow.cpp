@@ -560,6 +560,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(NotPassableTerrainToggled(SceneEditor2*)), this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
 
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
+					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
+
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
 
@@ -1111,6 +1114,13 @@ void QtMainWindow::OnPlaceOnLandscape()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
+		Entity *landscapeEntity = FindLandscapeEntity(scene);
+		if (landscapeEntity == NULL || GetLandscape(landscapeEntity) == NULL)
+		{
+			ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+			return;
+		}
+
 		EntityGroup selection = scene->selectionSystem->GetSelection();
 		scene->modifSystem->PlaceOnLandscape(selection);
 	}
@@ -1121,6 +1131,14 @@ void QtMainWindow::OnSnapToLandscape()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene)
 	{
+		Entity *landscapeEntity = FindLandscapeEntity(scene);
+		if (landscapeEntity == NULL || GetLandscape(landscapeEntity) == NULL)
+		{
+			ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+			ui->actionModifySnapToLandscape->setChecked(false);
+			return;
+		}
+
 		scene->modifSystem->SetLandscapeSnap(ui->actionModifySnapToLandscape->isChecked());
 		LoadModificationState(scene);
 	}
@@ -2058,4 +2076,14 @@ void QtMainWindow::OpenScene( const QString & path )
 
 		AddRecent(path);
 	}
+}
+
+void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
+{
+	if (GetCurrentScene() != scene)
+	{
+		return;
+	}
+
+	ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
 }
