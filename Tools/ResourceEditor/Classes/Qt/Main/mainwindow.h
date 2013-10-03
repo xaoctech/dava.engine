@@ -181,6 +181,7 @@ public slots:
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
+    void OnObjectsTypeChanged(int type);
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -239,6 +240,7 @@ private:
 	// <--
 
 	QtLabelWithActions *objectTypesLabel;
+    QComboBox *objectTypesWidget;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
@@ -250,11 +252,13 @@ private:
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
-	void LoadObjectTypesLabel(SceneEditor2 *scene);
+	void LoadObjectTypes(SceneEditor2 *scene);
 
     bool globalInvalidateTimeoutEnabled;
 
 	bool IsSavingAllowed();
+    
+    void CreateObjectTypesCombobox();
 };
 
 

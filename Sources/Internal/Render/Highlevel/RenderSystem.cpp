@@ -155,7 +155,7 @@ void RenderSystem::AddRenderObject(RenderObject * renderObject)
 
 	if (spatialTree&&!renderObject->GetBoundingBox().IsEmpty())
 	{
-		if (RenderObject::TYPE_SKYBOX != renderObject->GetType())
+		if (!(renderObject->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE))
 			spatialTree->AddObject(renderObject);
 	}
 	renderObject->SetRenderSystem(this);
@@ -230,7 +230,7 @@ void RenderSystem::CreateSpatialTree()
 	spatialTree = new QuadTree(worldBox, 10);	
 	for (uint32 pos = 0; pos < size; ++pos)
 	{
-		if (renderObjectArray[pos]->GetType()!=RenderObject::TYPE_SKYBOX)
+		if (!(renderObjectArray[pos]->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE))
 		{
 			spatialTree->AddObject(renderObjectArray[pos]);
 		}
@@ -289,7 +289,7 @@ void RenderSystem::ProcessClipping()
 		node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 		if (node->GetTreeNodeIndex()==INVALID_TREE_NODE_INDEX) //process clipping if not in spatial tree for some reason (eg. no SpatialTree)
 		{						
-			if (RenderObject::TYPE_SKYBOX == node->GetType() || frustum->IsInside(node->GetWorldBoundingBox()))
+			if ((RenderObject::ALWAYS_CLIPPING_VISIBLE&node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
 			{
 				node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			}
