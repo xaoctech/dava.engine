@@ -57,7 +57,6 @@ SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	headerLabels.append("Scene hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(StructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(this, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(ItemChanged(QStandardItem *)));
 }
 
@@ -85,10 +84,9 @@ void SceneTreeModel::SetScene(SceneEditor2 *scene)
 	if(NULL != curScene)
 	{
 		curScene->Retain();
-		ResyncStructure(invisibleRootItem(), curScene);
 	}
 
-	RebuildIndexesCache();
+	ResyncStructure(invisibleRootItem(), curScene);
 }
 
 SceneEditor2* SceneTreeModel::GetScene() const
@@ -449,11 +447,19 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 					for (int i = 0; i < entities->size(); ++i)
 					{
 						DAVA::Entity *entity = (DAVA::Entity *) entities->at(i);
+						QModelIndex entityIndex = GetIndex(entity);
 
 						// 2. we don't accept drops if it has locked items
+						if(NULL != entity && entity->GetLocked()) 
+						{
+							ret = false;
+							break;
+						}
+
 						// 3. or this is self-drop
-						if((NULL != entity && entity->GetLocked()) ||
-							parentEntity == entity)
+						if( parentEntity == entity || // dropping into
+							entityIndex == index(row, column, parent) || // dropping above
+							entityIndex == index(row - 1, column, parent)) // dropping below
 						{
 							ret = false;
 							break;
@@ -512,15 +518,6 @@ bool SceneTreeModel::DropAccepted() const
 	return dropAccepted;
 }
 
-void SceneTreeModel::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
-{
-	if(curScene == scene)
-	{
-		ResyncStructure(invisibleRootItem(), curScene);
-		RebuildIndexesCache();
-	}
-}
-
 void SceneTreeModel::ItemChanged(QStandardItem * item)
 {
 	SceneTreeItem *treeItem = dynamic_cast<SceneTreeItem *>(item);
@@ -540,6 +537,7 @@ void SceneTreeModel::ItemChanged(QStandardItem * item)
 void SceneTreeModel::ResyncStructure(QStandardItem *item, DAVA::Entity *entity)
 {
 	SceneTreeItemEntity::DoSync(item, entity);
+	RebuildIndexesCache();
 }
 
 void SceneTreeModel::RebuildIndexesCache()

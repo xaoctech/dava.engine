@@ -149,18 +149,7 @@ bool LandscapeEditorDrawSystem::IsNotPassableTerrainEnabled()
 
 bool LandscapeEditorDrawSystem::IsNotPassableTerrainCanBeEnabled()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-
-	bool canBeEnabled = true;
-	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-	
-	return canBeEnabled;
+	return VerifyLandscape();
 }
 
 bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
@@ -450,13 +439,13 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 
 bool LandscapeEditorDrawSystem::Init()
 {
-	//landscape initialization should be handled by AddEntity/RemoveEntity methods
-	if (!landscapeNode || !baseLandscape || !landscapeProxy)
-	{
-		return false;
-	}
 	if (!heightmapProxy)
 	{
+		Heightmap* heightmap = baseLandscape->GetHeightmap();
+		if (heightmap == NULL || heightmap->Size() == 0)
+		{
+			return false;
+		}
 		heightmapProxy = new HeightmapProxy(baseLandscape->GetHeightmap()->Clone(NULL));
 	}
 	if (!customColorsProxy)
@@ -544,6 +533,11 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		return;
 	}
 
+	if (!GetLandscapeProxy()->IsTilemaskChanged())
+	{
+		return;
+	}
+
 	Texture* texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
 
 	if (texture)
@@ -579,5 +573,57 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		}
 
 		SafeRelease(descriptor);
+
+		GetLandscapeProxy()->ResetTilemaskChanged();
 	}
+}
+
+Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
+{
+	return baseLandscape->GetTiledShaderMode();
+}
+
+bool LandscapeEditorDrawSystem::VerifyLandscape()
+{
+	//landscape initialization should be handled by AddEntity/RemoveEntity methods
+	if (!landscapeNode || !baseLandscape || !landscapeProxy)
+	{
+		return false;
+	}
+
+	if (landscapeProxy == NULL)
+	{
+		return false;
+	}
+
+	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	{
+		landscapeProxy->UpdateFullTiledTexture(true);
+	}
+
+	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK) == NULL ||
+		landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	{
+		return false;
+	}
+
+	if (baseLandscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK &&
+		baseLandscape->GetTexture(Landscape::TEXTURE_TILE0) == NULL)
+	{
+		return false;
+	}
+	else if (baseLandscape->GetTiledShaderMode() != Landscape::TILED_MODE_TILE_DETAIL_MASK)
+	{
+		bool ok = (baseLandscape->GetTexture(Landscape::TEXTURE_TILE0) != NULL) &&
+				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE1) != NULL) &&
+				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE2) != NULL) &&
+				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE3) != NULL);
+
+		if (!ok)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

@@ -61,6 +61,9 @@ public:
 	
 	Rect GetRect() const;
 
+	void SetVisibleFlag(bool value);
+	bool GetVisibleFlag() const;
+
 private:
 	void AddControlToParent();
 	

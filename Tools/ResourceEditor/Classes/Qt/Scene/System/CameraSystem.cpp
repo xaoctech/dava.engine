@@ -215,7 +215,7 @@ void SceneCameraSystem::Update(float timeElapsed)
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
-			curSceneCamera->SetAspect(1.0f);
+			curSceneCamera->SetAspect(viewportRect.dy / viewportRect.dx);
 			SafeRetain(curSceneCamera);
 
 			// recalc current view angles using new camera pos and direction

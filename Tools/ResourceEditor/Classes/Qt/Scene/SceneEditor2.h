@@ -55,6 +55,7 @@
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
+#include "Scene/System/BeastSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -92,16 +93,13 @@ public:
 	EditorLightSystem *editorLightSystem;
 	TextDrawSystem *textDrawSystem;
 	DebugDrawSystem *debugDrawSystem;
-
+	BeastSystem	*beastSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
-	bool Save(const DAVA::FilePath &path);
-	bool Save();
+    virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
+	SceneFileV2::eError Save();
 	bool Export(const DAVA::eGPUFamily newGPU);
-
-	void PopEditorEntities();
-	void PushEditorEntities();
 
 	DAVA::FilePath GetScenePath();
 	void SetScenePath(const DAVA::FilePath &newScenePath);
@@ -148,6 +146,7 @@ public:
 
 	virtual void Update(float timeElapsed);
 
+
 protected:
 	bool isLoaded;
 
@@ -160,6 +159,9 @@ protected:
 
 	virtual void EditorCommandProcess(const Command2 *command, bool redo);
 	virtual void Draw();
+
+    void ExtractEditorEntities();
+	void InjectEditorEntities();
 
 private:
 	friend struct EditorCommandNotify;

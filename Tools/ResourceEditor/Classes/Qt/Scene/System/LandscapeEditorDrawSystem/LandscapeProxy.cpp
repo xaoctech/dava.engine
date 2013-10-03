@@ -34,6 +34,7 @@
 LandscapeProxy::LandscapeProxy(Landscape* landscape)
 :	displayingTexture(0)
 ,	mode(MODE_CUSTOM_LANDSCAPE)
+,	tilemaskWasChanged(0)
 {
 	baseLandscape = SafeRetain(landscape);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
@@ -44,6 +45,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 
 	customLandscape = new CustomLandscape();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
+	customLandscape->SetAABBox(baseLandscape->GetBoundingBox());
 }
 
 LandscapeProxy::~LandscapeProxy()
@@ -306,6 +308,7 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 	if (force || mode == MODE_CUSTOM_LANDSCAPE)
 	{
 		uint32 state = RenderManager::Instance()->GetState();
+		baseLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, NULL);
 		baseLandscape->UpdateFullTiledTexture();
 		RenderManager::Instance()->SetState(state);
 
@@ -318,4 +321,24 @@ Vector3 LandscapeProxy::PlacePoint(const Vector3& point)
 	Vector3 landscapePoint;
 	bool res = baseLandscape->PlacePoint(point, landscapePoint);
 	return landscapePoint;
+}
+
+bool LandscapeProxy::IsTilemaskChanged()
+{
+	return (tilemaskWasChanged != 0);
+}
+
+void LandscapeProxy::ResetTilemaskChanged()
+{
+	tilemaskWasChanged = 0;
+}
+
+void LandscapeProxy::IncreaseTilemaskChanges()
+{
+	++tilemaskWasChanged;
+}
+
+void LandscapeProxy::DecreaseTilemaskChanges()
+{
+	--tilemaskWasChanged;
 }

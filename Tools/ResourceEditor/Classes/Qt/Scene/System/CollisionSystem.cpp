@@ -32,7 +32,7 @@
 #include "Scene/System/CollisionSystem/CollisionRenderObject.h"
 #include "Scene/System/CollisionSystem/CollisionLandscape.h"
 #include "Scene/System/CollisionSystem/CollisionParticleEmitter.h"
-#include "Scene/System/CollisionSystem/CollisionCamera.h"
+#include "Scene/System/CollisionSystem/CollisionBox.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/SceneEditor2.h"
@@ -478,7 +478,19 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == collObj && 
 		NULL != camera)
 	{
-		collObj = new CollisionCamera(entity, objectsCollWorld, camera);
+		collObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 0.75f);
+	}
+
+	// build simple collision box for all other entities, that has more than two components
+	if( NULL == collObj &&
+		NULL != entity)
+	{
+		if( NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT) ||
+			NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
+			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+		{
+			collObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 0.5f);
+		}
 	}
 
 	if(NULL != collObj)

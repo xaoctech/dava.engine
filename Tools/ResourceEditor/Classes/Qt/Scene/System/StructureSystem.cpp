@@ -47,11 +47,10 @@
 
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, lockedSignals(false)
+	, lockedSignals(true)
 {
     new DAVA::SwitchComponent();
     new DAVA::ActionComponent();
-    
 }
 
 StructureSystem::~StructureSystem()

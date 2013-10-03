@@ -30,7 +30,6 @@
 
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/SceneEditor2.h"
-#include "Scene/System/CollisionSystem.h"
 #include "Classes/SceneEditor/EditorConfig.h"
 
 using namespace DAVA;
@@ -40,26 +39,25 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	, objectType(ResourceEditor::ESOT_NONE)
     , objectTypeColor(Color::White())
 {
-    
+	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+
+	collSystem = sc->collisionSystem;
+	selSystem = sc->selectionSystem;
+
+	DVASSERT(NULL != collSystem);
+	DVASSERT(NULL != selSystem);
 }
 
 
 DebugDrawSystem::~DebugDrawSystem()
+{ }
+
+void DebugDrawSystem::SetRequestedObjectType(ResourceEditor::eSceneObjectType _objectType)
 {
-	drawEntities.clear();
-}
-
-
-void DebugDrawSystem::SetRequestedObjectType( ResourceEditor::eSceneObjectType _objectType )
-{
-	drawEntities.clear();
-
 	objectType = _objectType;
 
 	if(ResourceEditor::ESOT_NONE != objectType)
 	{
-		EnumerateEntitiesForDrawRecursive(GetScene());
-        
         const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("CollisionTypeColor");
         if(objectType < colors.size())
         {
@@ -80,47 +78,98 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
 
 void DebugDrawSystem::Draw()
 {
-	DrawObjectBoxesByType();
-}
-
-void DebugDrawSystem::DrawObjectBoxesByType()
-{
-	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
-	SceneCollisionSystem *collSystem = sc->collisionSystem;
-	SceneSelectionSystem *selSystem = sc->selectionSystem;
-
-	if(!collSystem || !selSystem) return;
-
 	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
+	DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
+	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 
-	DAVA::RenderManager::Instance()->SetColor(objectTypeColor);
+	Draw(GetScene());
 
-	auto endIt = drawEntities.end();
-	for(auto it = drawEntities.begin(); it != endIt; ++it)
-	{
-		AABBox3 worldBox = selSystem->GetSelectionAABox(*it, (*it)->GetWorldTransform());
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
-	}
-
+	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
 	DAVA::RenderManager::Instance()->ResetColor();
 	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
-void DebugDrawSystem::EnumerateEntitiesForDrawRecursive( DAVA::Entity *entity )
+void DebugDrawSystem::Draw(DAVA::Entity *entity)
 {
- 	KeyedArchive * customProperties = entity->GetCustomProperties();
- 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
- 	{
- 		drawEntities.push_back(entity);
- 	}
- 
- 	uint32 count = entity->GetChildrenCount();
- 	for(uint32 i = 0; i < count; ++i)
- 	{
- 		EnumerateEntitiesForDrawRecursive(entity->GetChild(i));
- 	}
+	if(NULL != entity)
+	{
+		DrawObjectBoxesByType(entity);
+		DrawUserNode(entity);
+		DrawLightNode(entity);
+		DrawSoundNode(entity);
+
+		for(size_t i = 0; i < entity->GetChildrenCount(); ++i)
+		{
+			Draw(entity->GetChild(i));
+		}
+	}
 }
 
+inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
+{
+	KeyedArchive * customProperties = entity->GetCustomProperties();
+	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
+	{
+		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
 
+		DAVA::RenderManager::Instance()->SetColor(objectTypeColor);
+		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+	}
+}
 
+inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
+{
+	if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+	{
+		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+		Matrix4 finalMatrix = entity->GetWorldTransform() * prevMatrix;
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+
+		AABBox3 worldBox = selSystem->GetSelectionAABox(entity);
+		DAVA::float32 delta = worldBox.GetSize().Length() / 4;
+
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.5f, 0.5f, 1.0f, 0.3f));
+		DAVA::RenderHelper::Instance()->FillBox(worldBox);
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.2f, 0.2f, 0.8f, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+
+		// axises
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(delta, 0, 0));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.7f, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, delta, 0));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0, 0.7f, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, delta));
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	}
+}
+
+inline void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
+{
+	if(NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+	{
+		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
+		DAVA::RenderHelper::Instance()->FillBox(worldBox);
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+	}
+}
+
+inline void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
+{
+	if(NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT))
+	{
+		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.3f));
+		DAVA::RenderHelper::Instance()->FillBox(worldBox);
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0, 0.3f, 0.8, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+	}
+}
