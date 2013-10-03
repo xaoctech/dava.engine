@@ -149,7 +149,7 @@ SceneFileV2::eError SceneFileV2::GetError()
     return lastError;
 }
 
-SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
+SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene, SceneFileV2::eFileType fileType)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
@@ -171,12 +171,16 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.version = 10;
     header.nodeCount = _scene->GetChildrenCount();
 	
+	descriptor.size = sizeof(descriptor.fileType); // + sizeof(descriptor.additionalField1) + sizeof(descriptor.additionalField1) +....
+	descriptor.fileType = fileType;
+	
 	serializationContext.SetRootNodePath(rootNodePathName);
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
 	serializationContext.SetScene(_scene);
     
     file->Write(&header, sizeof(Header));
+	WriteDescriptor(file, descriptor);
     
     // save data objects
     if(isDebugLogEnabled)
@@ -277,6 +281,11 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         return GetError();
     }
 	
+	if(header.version >= 10)
+	{
+		ReadDescriptor(file, descriptor);
+	}
+	
 	serializationContext.SetRootNodePath(rootNodePathName);
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
@@ -347,6 +356,27 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     SafeRelease(file);
     return GetError();
 }
+	
+void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
+{
+	file->Write(&descriptor.size, sizeof(descriptor.size));
+	file->Write(&descriptor.fileType, sizeof(descriptor.fileType));
+}
+	
+void SceneFileV2::ReadDescriptor(File* file, /*out*/ Descriptor& descriptor)
+{
+	file->Read(&descriptor.size, sizeof(descriptor.size));
+	DVASSERT(descriptor.size >= sizeof(descriptor.fileType));
+	
+	file->Read(&descriptor.fileType, sizeof(descriptor.fileType));
+	
+	if(descriptor.size > sizeof(descriptor.fileType))
+	{
+		//skip extra data probably added by future versions
+		file->Seek(descriptor.size - sizeof(descriptor.fileType), File::SEEK_FROM_CURRENT);
+	}
+}
+
 
 bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
@@ -760,138 +790,6 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     }
     return false;
 }
-	
-NMaterial* SceneFileV2::GetNewMaterial(SerializationContext* serializationContext, const String& name)
-{
-	return serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial(name.c_str());
-}
-
-void SceneFileV2::ConvertOldMaterialToNewMaterial(SerializationContext* serializationContext,
-												  Material * oldMaterial,
-												  InstanceMaterialState * oldMaterialState,
-                                                  NMaterial ** newMaterial)
-{
-    NMaterial * parentMaterial = 0;
-	
-	FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
-	parentMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial(newMaterialName);
-	DVASSERT(parentMaterial);
-	
-	/*RenderState& renderStateBlock = *oldMaterial->GetRenderState();
-	
-	if (oldMaterial->isTranslucent || oldMaterial->isTwoSided)
-	{
-		renderStateBlock.state &= ~RenderState::STATE_CULL;
-	}
-	else
-	{
-		renderStateBlock.state |= RenderState::STATE_CULL;
-	}
-	
-	
-	if(oldMaterial->isAlphablend)
-	{
-		renderStateBlock.state |= RenderState::STATE_BLEND;
-		//Dizz: temporary solution
-		renderStateBlock.state &= ~RenderState::STATE_DEPTH_WRITE;
-		
-		renderStateBlock.SetBlendMode((eBlendMode)oldMaterial->blendSrc, (eBlendMode)oldMaterial->blendDst);
-	}
-	else
-	{
-		//Dizz: temporary solution
-		renderStateBlock.state |= RenderState::STATE_DEPTH_WRITE;
-		renderStateBlock.state &= ~RenderState::STATE_BLEND;
-	}
-	
-	if(oldMaterial->isWireframe)
-	{
-		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
-	}
-	else
-	{
-		renderStateBlock.SetFillMode(FILLMODE_SOLID);
-	}
-
- 	FilePath fp = String("~res:/Materials/Legacy/RenderStates/") + newMaterialName.c_str() + String(".rs");
-	if(!fp.Exists())
-	{
-		oldMaterial->GetRenderState()->SaveToYamlFile(fp);
-	}*/
-
-	NMaterial* resultMaterial = parentMaterial->CreateChild();
-	
-	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
-	{
-		if(oldMaterialState)
-		{
-			resultMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
-		}
-    }
-	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
-    {
-		resultMaterial->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
-    }
-	else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
-	{
-		resultMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
-	}
-	
-	if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
-	{
-		resultMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
-	}
-	
-	if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-	{
-		if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
-		{
-			resultMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
-		}
-	}
-	
-	if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-	   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-	   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-	   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-	{
-		resultMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
-		
-		resultMaterial->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-		resultMaterial->SetPropertyValue("prop_diffuseColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-		resultMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
-	}
-			
-	resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-	resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
-	
-	if(oldMaterial->isFlatColorEnabled)
-	{
-		resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
-	}
-	
-	if(oldMaterial->isTexture0ShiftEnabled)
-	{
-		resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
-	}
-	
-	if(oldMaterialState)
-	{		
-		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
-		{
-			resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-			resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
-		}
-	}
-    
-    *newMaterial = resultMaterial;
-}
-
     
 bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 {
@@ -926,9 +824,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
             
-            NMaterial * nMaterial = 0;
 			Material* oldMaterial = group->GetMaterial();
-            ConvertOldMaterialToNewMaterial(&serializationContext, oldMaterial, 0, &nMaterial);
+            NMaterial* nMaterial = serializationContext.ConvertOldMaterialToNewMaterial(oldMaterial, 0);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             
@@ -1279,6 +1176,12 @@ void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializ
 		
 		FastName parentName = material->GetParentName();
 		NMaterial* parentMaterial = matSystem->GetMaterial(parentName);
+		
+		if(NULL == parentMaterial)
+		{
+			parentMaterial = matSystem->GetDefaultMaterial();
+		}
+		
 		material->SetParent(parentMaterial);
 		
 		//TODO: resolve situation when there's no parent material. Some kind of default material should be selected.
@@ -1288,102 +1191,5 @@ void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializ
 	
 	SafeRelease(matSystemArchive);
 }
-		
-String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
-{
-	String name = "Global";
-	
-	switch(mat->type)
-	{
-		case Material::MATERIAL_UNLIT_TEXTURE:
-		{
-			name += ".Textured";
-			break;
-		}
 			
-		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-		{
-			name += ".Textured.Lightmap";
-			break;
-		}
-			
-		case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
-		{
-			name += ".Textured.Decal";
-			break;
-		}
-			
-		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
-		{
-			name += ".Textured.Detail";
-			break;
-		}
-			
-		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
-		{
-			name += ".Textured.VertexLit";
-			break;
-		}
-			
-		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
-		{
-			name += ".Textured.PixelLit";
-			break;
-		}
-			
-		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
-		{
-			name += ".Textured.PixelLit.Specular";
-			break;
-		}
-			
-		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
-		{
-			name += ".Textured.PixelLit.Specular.Gloss";
-			break;
-		}
-			
-		case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
-		{
-			name += ".Textured.VertexColor";
-			break;
-		}
-			
-		case Material::MATERIAL_SKYBOX:
-		{
-			name = "Skybox";
-			break;
-		}
-			
-		default:
-			break;
-	};
-
-	if(mat->IsTextureShiftEnabled())
-	{
-		name += ".TextureShift";
-	}
-	
-	if(Material::MATERIAL_FLAT_COLOR == mat->type)
-	{
-		name += ".Flatcolor";
-	}
-		
-	if(mat->GetAlphablend() ||
-	   Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
-	{
-		name += ".Alphablend";
-	}
-	else if(mat->GetAlphatest())
-	{
-		name += ".Alphatest";
-	}
-	else
-	{
-		name += ".Opaque";
-	}
-	
-	return name;
-}
-	
 };

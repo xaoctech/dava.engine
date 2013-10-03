@@ -41,8 +41,15 @@
 namespace DAVA
 {
 	
+MaterialSystem::MaterialSystem()
+{
+	defaultMaterial = NULL;
+}
+	
 MaterialSystem::~MaterialSystem()
 {
+	SafeRelease(defaultMaterial);
+	
 	Clear();
 }
     
@@ -101,6 +108,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
         return false;
     }
 
+	String defaultParentName = "";
 	Map<String, Vector<MaterialData> > nodes;
 	int32 nodeCount = rootNode->GetCount();
 	for(int32 i = 0; i < nodeCount; ++i)
@@ -170,6 +178,29 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 				Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %d in the material configuration doesn't contain Name. Skipping...", i);
 			}
 		}
+		else if(materialNode->AsString() == "DefaultParent")
+		{
+			DVASSERT(defaultParentName.size() == 0);
+			
+			if(defaultParentName.size() == 0)
+			{
+				const YamlNode* nameNode = materialNode->Get("Name");
+				DVASSERT(nameNode);
+				
+				if(nameNode)
+				{
+					defaultParentName = nameNode->AsString();
+				}
+				else
+				{
+					Logger::Error("[MaterialSystem::LoadMaterialConfig] Default material has no name specified! Skipping...");
+				}
+			}
+			else
+			{
+				Logger::Error("[MaterialSystem::LoadMaterialConfig] Multiple default material names detected! Skipping...");
+			}
+		}
 	}
 	
 	SafeRelease(rootNode);
@@ -196,6 +227,9 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		return false;
 	}
 	
+	defaultMaterial = SafeRetain(GetMaterial(defaultParentName));
+	DVASSERT(defaultMaterial);
+	
 	return true;
 }
 	
@@ -211,7 +245,6 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	DVASSERT(result);
 	if(result)
 	{
-		material->SetName(name.c_str());
 		material->SetMaterialName(name.c_str());
 		AddMaterial(material);
 		material->Release(); //need to release material since material system took ownership
@@ -242,6 +275,31 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 {
 	DVASSERT(material);
 	SafeRetain(material);
+	
+	NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
+	DVASSERT(material != collisionMaterial); //something is wrong when adding same material several times
+	if(collisionMaterial != NULL &&
+	   collisionMaterial != material)
+	{
+		//need to resolve name collision
+		//just add some number to the end
+		uint32 i = 0;
+		String baseName = material->GetMaterialName().c_str();
+		while(true)
+		{
+			String uniqueName = Format("%s.%d", baseName.c_str(), i);
+			if(!materials.IsKey(uniqueName.c_str()))
+			{
+				material->SetMaterialName(uniqueName);
+				break;
+			}
+			
+			i++;
+			
+			DVASSERT(i <= 65536);//something is wrong when there's no unique name after 64K steps
+		}
+	}
+	
 	materials.Insert(material->GetMaterialName(), material);
 }
 

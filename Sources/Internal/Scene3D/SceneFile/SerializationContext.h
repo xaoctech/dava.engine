@@ -39,6 +39,9 @@ namespace DAVA
 	class Scene;
 	class DataNode;
 	class MaterialSystem;
+	class Material;
+	class InstanceMaterialState;
+	class NMaterial;
 	class SerializationContext
 	{
 	private:
@@ -124,7 +127,12 @@ namespace DAVA
 		inline uint32 GetLastError()
 		{
 			return lastError;
-		}		
+		}
+		
+		NMaterial* ConvertOldMaterialToNewMaterial(Material* oldMaterial,
+											InstanceMaterialState* oldMaterialState);
+		NMaterial* GetNewMaterial(const String& name);
+
 	};
 };
 

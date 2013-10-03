@@ -131,7 +131,7 @@ public:
     
 class Material : public DataNode
 {
-	friend class SceneFileV2;
+	friend class SerializationContext;
 	
 public:
     enum eType

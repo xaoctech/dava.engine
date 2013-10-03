@@ -110,7 +110,8 @@ void ParticleEmitterNode::Load(KeyedArchive * archive, SerializationContext * se
 
 void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	if(emitter)
+	//VI: NMaterial is not a DataNode anymore
+	/*if(emitter)
 	{
 		int32 layersCount = emitter->GetLayers().size();
 		for(int32 i = 0; i < layersCount; ++i)
@@ -118,7 +119,7 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 			ParticleLayer3D * layer = dynamic_cast<ParticleLayer3D*>(emitter->GetLayers()[i]);
 			dataNodes.insert(layer->GetMaterial());
 		}
-	}
+	}*/
 	
 
 	Entity::GetDataNodes(dataNodes);
