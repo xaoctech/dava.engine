@@ -51,6 +51,7 @@ class MaterialSystem
 {
 public:
 	
+	MaterialSystem();
 	~MaterialSystem();
 	
 	bool LoadMaterialConfig(const FilePath& filePath);
@@ -65,6 +66,8 @@ public:
 	void Clear();
 	
 	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
+	
+	inline NMaterial* GetDefaultMaterial() const {return defaultMaterial;}
 	
 private:
 	
@@ -87,6 +90,7 @@ private:
 private:
 	
     HashMap<FastName, NMaterial*> materials;
+	NMaterial* defaultMaterial;
 };
 
 };

@@ -180,10 +180,11 @@ void RenderBatch::SetSortingKey(uint32 _key)
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	if(material)
+	//VI: NMaterial is not a DataNode anymore
+	/*if(material)
 	{
 		InsertDataNode(material, dataNodes);
-	}
+	}*/
 
 	if(dataSource)
 	{
@@ -274,8 +275,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			
 			if(mat)
 			{
-				//TODO: move conversion and material creation to more appropiate place. RenderBatch shouldn't now about scene file
-				SceneFileV2::ConvertOldMaterialToNewMaterial(serializationContext, mat, oldMaterialInstance, &newMaterial);
+				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
 			}
 			
 			SafeRelease(oldMaterialInstance);
@@ -283,8 +283,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		else
 		{
 			String matName = archive->GetString("rb.nmatname");
-			//TODO: move conversion and material creation to more appropiate place. RenderBatch shouldn't now about scene file
-			newMaterial = SceneFileV2::GetNewMaterial(serializationContext, matName);
+			
+			newMaterial = serializationContext->GetNewMaterial(matName);
 		}
 
 		SetPolygonGroup(pg);

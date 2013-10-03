@@ -96,15 +96,6 @@ class NMaterial;
     
 class SceneFileV2 : public BaseObject
 {
-private:
-	
-	class MaterialNameMapper
-	{
-	public:
-		
-		static String MapName(Material* mat);
-	};
-	
 public: 
     enum eError{
         ERROR_NO_ERROR = 0,
@@ -112,12 +103,17 @@ public:
         ERROR_FAILED_TO_CREATE_FILE = 2,
         ERROR_FILE_WRITE_ERROR = 3,
     };
-    
+	
+	enum eFileType
+	{
+		SceneFile = 0,
+		ModelFile = 1
+	};
     
     SceneFileV2();
     virtual ~SceneFileV2();
     
-    eError SaveScene(const FilePath & filename, Scene * _scene);
+    eError SaveScene(const FilePath & filename, Scene * _scene, SceneFileV2::eFileType fileType = SceneFileV2::SceneFile);
     eError LoadScene(const FilePath & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
@@ -140,13 +136,7 @@ public:
     bool RemoveEmptyHierarchy(Entity * currentNode);
 	void ConvertShadows(Entity * rootNode);
     int32 removedNodeCount;
-    
-    static void ConvertOldMaterialToNewMaterial(SerializationContext* serializationContext,
-												Material * oldMaterial,
-												InstanceMaterialState * oldMaterialState,
-												NMaterial ** newMaterial);
-	static NMaterial* GetNewMaterial(SerializationContext* serializationContext, const String& name);
-	
+    	
 	Scene* GetScene() {return scene;}
 	
 private:
@@ -159,8 +149,14 @@ private:
         int32   nodeCount;
     };
     Header header;
-    //Map<uint64, DataNode*> dataNodes;
-    //Vector<Material*> materials;
+	
+	struct Descriptor
+	{
+		uint32 size;
+		uint32 fileType; //see enum SceneFileV2::eFileType
+	};
+	Descriptor descriptor;
+	
    // Vector<StaticMesh*> staticMeshes;
     
     bool SaveDataHierarchy(DataNode * node, File * file, int32 level);
@@ -179,6 +175,9 @@ private:
 	
 	void SaveMaterialSystem(File * file, SerializationContext* serializationContext);
 	void LoadMaterialSystem(File * file, SerializationContext* serializationContext);
+	
+	void WriteDescriptor(File* file, const Descriptor& descriptor) const;
+	void ReadDescriptor(File* file, /*out*/ Descriptor& descriptor);
 
     bool isDebugLogEnabled;
     bool isSaveForGame;

@@ -169,7 +169,7 @@ protected:
 
 class Camera;
 class SerializationContext;
-class NMaterial : public DataNode, public NMaterialState
+class NMaterial : public BaseObject, public NMaterialState
 {
 	friend class MaterialSystem;
 	
