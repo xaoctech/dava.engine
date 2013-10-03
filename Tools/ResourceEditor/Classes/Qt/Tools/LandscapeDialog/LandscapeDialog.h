@@ -55,15 +55,14 @@ public:
 	
 	void CleanupPathWidgets();
 
-	Entity* GetEntity()
-	{
-		return innerLandscapeEntity;
-	}
+	virtual	void SetEntity(DAVA::Entity* ){}
 	
 public slots:
 	
 	void reject();
 	
+	void accept();
+		
 protected slots:
 	
 	void ValueChanged(DAVA::String fileName);
@@ -73,15 +72,19 @@ protected slots:
 	void ActionButtonClicked();
 	
 protected:
-		
+	
+	void showEvent ( QShowEvent * event );
+
+	virtual void InitPropertyEditor();
+	
 	void SetLandscapeEntity(Entity* _landscapeEntity);
+	
+	void FillUIbyLandscapeEntity(Entity* _landscapeEntity);
 
 	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
 	
 	Landscape*				innerLandscape;
 	Entity*					innerLandscapeEntity;
-	Entity*					defaultLandscapeEntity;
-	
 	QPushButton*			actionButton;
 	
 	struct DefaultInfo

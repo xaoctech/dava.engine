@@ -114,8 +114,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 #endif //#if defined (__DAVAENGINE_BEAST__)
 
 	, materialEditor(NULL)
-	, addSwitchEntityDialog(NULL)
-	, landscapeDialog(NULL)
 	, globalInvalidateTimeoutEnabled(false)
 	, objectTypesLabel(NULL)
 {
@@ -763,49 +761,6 @@ void QtMainWindow::CreateMaterialEditorIfNeed()
 	}
 }
 
-void QtMainWindow::AddSwitchDialogFinished(int result)
-{
-	QObject::disconnect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
-
-	SceneEditor2* scene = GetCurrentScene();
-
-	Entity* switchEntity = addSwitchEntityDialog->GetEntity();
-
-	if(result != QDialog::Accepted || NULL == scene)
-	{
-		addSwitchEntityDialog->CleanupPathWidgets();
-		addSwitchEntityDialog->SetEntity(NULL);
-		addSwitchEntityDialog = NULL;
-		return;
-	}
-
-	Vector<Entity*> vector;
-	addSwitchEntityDialog->GetPathEntities(vector, scene);	
-	addSwitchEntityDialog->CleanupPathWidgets();
-	
-	Q_FOREACH(Entity* item, vector)
-	{
-		if(item)
-		{
-			Entity *e = item->Clone();
-			switchEntity->AddNode(e);
-			e->Release();
-		}
-	}
-	if(vector.size())
-	{
-		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
-		scene->Exec(command);
-		
-		Entity* affectedEntity = command->GetEntity();
-		scene->selectionSystem->SetSelection(affectedEntity);
-		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
-	}
-
-	addSwitchEntityDialog->SetEntity(NULL);
-	addSwitchEntityDialog = NULL;
-}
-
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
 	if(scene == GetCurrentScene())
@@ -1230,11 +1185,7 @@ void QtMainWindow::OnSetSkyboxNode()
 
 void QtMainWindow::OnSwitchEntityDialog()
 {
-	if(addSwitchEntityDialog!= NULL)//dialog is on screen, do nothing
-	{
-		return;
-	}
-	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+	AddSwitchEntityDialog* addSwitchEntityDialog = new AddSwitchEntityDialog( this);
 	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
@@ -1244,11 +1195,8 @@ void QtMainWindow::OnSwitchEntityDialog()
 	addSwitchEntityDialog->SetEntity(entityToAdd);
 	
 	SafeRelease(entityToAdd);
-	
-	QObject::connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
 	addSwitchEntityDialog->show();
 }
-
 
 void QtMainWindow::OnLandscapeDialog()
 {
@@ -1257,62 +1205,10 @@ void QtMainWindow::OnLandscapeDialog()
 	{
 		return;
 	}
-	if(landscapeDialog!= NULL)//dialog is on screen, do nothing
-	{
-		return;
-	}
-	
 	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	landscapeDialog = new LandscapeDialog(presentEntity, this);
+	LandscapeDialog* landscapeDialog = new LandscapeDialog(presentEntity, this);
 	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
-	
-	QObject::connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
 	landscapeDialog->show();
-}
-
-void QtMainWindow::LandscapeDialogFinished(int result)
-{
-	QObject::disconnect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(LandscapeDialogFinished(int)));
-
-	Entity *returnedEntity = NULL;
-	returnedEntity = landscapeDialog->GetEntity();
-	bool isOKpressed = landscapeDialog->result() == QDialog::Accepted;
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	if(!presentEntity)
-	{
-		if(isOKpressed)
-		{
-			AddEntityCommand* command = new AddEntityCommand(returnedEntity, sceneEditor);
-			sceneEditor->Exec(command);
-			sceneEditor->selectionSystem->SetSelection(returnedEntity);
-		}
-		else
-		{
-			SafeRelease(returnedEntity);
-		}
-	}
-	else
-	{
-		if(returnedEntity)
-		{
-			if(returnedEntity != presentEntity)
-			{
-				EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
-				sceneEditor->Exec(command);
-				AddEntityCommand* commandAdd = new AddEntityCommand(returnedEntity, sceneEditor);
-				sceneEditor->Exec(commandAdd);
-				sceneEditor->selectionSystem->SetSelection(returnedEntity);
-			}
-		}
-		else
-		{
-			EntityRemoveCommand * command = new EntityRemoveCommand(presentEntity);
-			sceneEditor->Exec(command);
-		}
-	}
-	
-	landscapeDialog = NULL;
 }
 
 void QtMainWindow::OnLightDialog()
