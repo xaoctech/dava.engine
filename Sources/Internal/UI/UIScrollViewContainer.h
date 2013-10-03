@@ -61,9 +61,6 @@ protected:
 
 	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
 
-	// Calculate the "out-of-bounds" offset for the container.
-	Vector2		CalculateOutboundsOffset();
-
 	enum
 	{
 		STATE_NONE = 0,
@@ -76,11 +73,10 @@ protected:
 	int32		state;
 	// Scroll information
 	Vector2		scrollStartInitialPosition;	// position of click
-
-	int32 		touchTreshold;
+	bool 		scrollStartMovement;	
 	bool		enableHorizontalScroll;
 	bool		enableVerticalScroll;
-	// Return to bounds speed, in pixels per second.
+	int32 		touchTreshold;
 	
 	int 		mainTouch;	
 	UIEvent		scrollTouch;

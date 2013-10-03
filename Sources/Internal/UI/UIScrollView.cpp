@@ -206,18 +206,12 @@ const Vector2 UIScrollView::GetPadding() const
 {
 	Rect contentRect = scrollContainer ? scrollContainer->GetRect() : Rect();
 	return Vector2(contentRect.x, contentRect.y);
-	//DVASSERT(scrollHorizontal);
-//	DVASSERT(scrollVertical);
-//	return Vector2(scrollHorizontal->GetPosition(), scrollVertical->GetPosition());
 }
 
 const Vector2 UIScrollView::GetContentSize() const
 {
 	Rect contentRect = scrollContainer ? scrollContainer->GetRect() : Rect();
 	return Vector2(contentRect.dx, contentRect.dy);
-	//DVASSERT(scrollHorizontal);
-	//DVASSERT(scrollVertical);
-	//return Vector2(scrollHorizontal->GetElementSize(), scrollVertical->GetElementSize());
 }
 		
 void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
@@ -268,11 +262,21 @@ void UIScrollView::RecalculateContentSize()
 	}
 }
 
-void UIScrollView::SetReturnSpeed(int32 speedInPixelsPerSec)
+void UIScrollView::SetReturnSpeed(float32 speedInSeconds)
 {
-	if (scrollContainer)
+	if (scrollHorizontal && scrollVertical)
 	{
-	//	scrollContainer->SetReturnSpeed(speedInPixelsPerSec);
+		scrollHorizontal->SetBorderMoveModifer(speedInSeconds);
+		scrollVertical->SetBorderMoveModifer(speedInSeconds);
+	}
+}
+
+void UIScrollView::SetScrollSpeed(float32 speedInSeconds)
+{
+	if (scrollHorizontal && scrollVertical)
+	{
+		scrollHorizontal->SetSlowDownTime(speedInSeconds);
+		scrollVertical->SetSlowDownTime(speedInSeconds);
 	}
 }
 
@@ -328,9 +332,7 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 	{
 		curContainerRect.y = -newPosition;
 	}
-	
-//	scrollContainer->SetRect(curContainerRect);
-//	scroll->SetPosition(Vector2(curContainerRect.x, curContainerRect.y));
+
 	scrollHorizontal->SetPosition(curContainerRect.x);
 	scrollVertical->SetPosition(curContainerRect.y);
 }
