@@ -216,35 +216,6 @@ FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 }
 
 
-void EditorBodyControl::PushEditorEntities()
-{
-	DVASSERT(poppedEditorEntitiesForSave.size() == 0);
-
-	Vector<Entity *>entities;
-	scene->GetChildNodes(entities);
-
-	uint32 count = entities.size();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		if(entities[i]->GetName().find("editor.") != String::npos)
-		{
-			poppedEditorEntitiesForSave.push_back(SafeRetain(entities[i]));
-			entities[i]->GetParent()->RemoveNode(entities[i]);
-		}
-	}
-}
-
-void EditorBodyControl::PopEditorEntities()
-{
-	uint32 count = poppedEditorEntitiesForSave.size();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		scene->AddEditorEntity(poppedEditorEntitiesForSave[i]);
-		SafeRelease(poppedEditorEntitiesForSave[i]);
-	}
-	
-	poppedEditorEntitiesForSave.clear();
-}
 
 void EditorBodyControl::CreateModificationPanel(void)
 {

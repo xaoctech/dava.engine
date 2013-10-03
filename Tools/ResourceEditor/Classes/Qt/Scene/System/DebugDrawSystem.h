@@ -34,6 +34,9 @@
 #include "DAVAEngine.h"
 #include "Classes/Constants.h"
 
+#include "Scene/System/CollisionSystem.h"
+#include "Scene/System/SelectionSystem.h"
+
 class Command2;
 class DebugDrawSystem : public DAVA::SceneSystem
 {
@@ -50,14 +53,16 @@ public:
 protected:
 
 	void Draw();
+	void Draw(DAVA::Entity *entity);
 
-	void DrawObjectBoxesByType();
-
-	void EnumerateEntitiesForDrawRecursive(DAVA::Entity *entity);
+	inline void DrawObjectBoxesByType(DAVA::Entity *entity);
+	inline void DrawUserNode(DAVA::Entity *entity);
+	inline void DrawLightNode(DAVA::Entity *entity);
+	inline void DrawSoundNode(DAVA::Entity *entity);
 
 private:
-
-	DAVA::List<DAVA::Entity *> drawEntities;
+	SceneCollisionSystem *collSystem;
+	SceneSelectionSystem *selSystem;
 
 	ResourceEditor::eSceneObjectType objectType;
     DAVA::Color objectTypeColor;

@@ -151,6 +151,7 @@ void InputTest::LoadResources()
 	passwordTextField->SetDelegate(new UITextFieldDelegate());
 	passwordTextField->SetIsPassword(true);
 	passwordTextField->SetDelegate(this);
+//	passwordTextField->SetInputEnabled(false, false);
 	AddControl(passwordTextField);
 	
 	textField = new UITextField(Rect(0, 600, 950, 40));

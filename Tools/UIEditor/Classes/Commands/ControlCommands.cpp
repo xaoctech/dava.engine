@@ -30,6 +30,7 @@
 
 #include "ControlCommands.h"
 #include "CommandsController.h"
+#include "AlignDistribute/AlignDistributeManager.h"
 
 using namespace DAVA;
 
@@ -106,4 +107,31 @@ void ControlResizeCommand::ApplyResize(const Rect& prevRect, const Rect& updated
     baseMetadata->ApplyResize(prevRect, updatedRect);
     
     SAFE_DELETE(baseMetadata);
+}
+
+ControlsAlignCommand::ControlsAlignCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType)
+{
+	this->selectedControls = controls;
+	this->selectedAlignType = alignType;
+}
+
+void ControlsAlignCommand::Execute()
+{
+	List<UIControl*> selectedUIControls;
+	for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = selectedControls.begin(); iter != selectedControls.end(); ++iter)
+	{
+		HierarchyTreeControlNode* control = (*iter);
+		UIControl* uiControl = control->GetUIObject();
+		if (uiControl)
+		{
+			selectedUIControls.push_back(uiControl);
+		}
+	}
+
+	this->prevPositionData = AlignDistributeManager::AlignControls(selectedUIControls, selectedAlignType);
+}
+
+void ControlsAlignCommand::Rollback()
+{
+	AlignDistributeManager::UndoAlignDistribute(prevPositionData);
 }

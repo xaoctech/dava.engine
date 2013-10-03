@@ -211,12 +211,20 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 	} 
 	else
 	{
-		if(scene->IsChanged())
+		// SZ: df-2128
+		// This check was removed until all editor actions will be done through commands
+		// because it's not possible to save scene if some thing changes without command
+		// 
+		//if(scene->IsChanged())
 		{
-			if(!scene->Save(scenePath))
+			if(DAVA::SceneFileV2::ERROR_NO_ERROR != scene->Save(scenePath))
 			{
 				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
 			}
+            else
+            {
+                sceneWasSaved = true;
+            }
 		}
 	}
 
@@ -226,11 +234,15 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
-	bool ret = false;
+	DAVA::SceneFileV2::eError ret = DAVA::SceneFileV2::ERROR_NO_ERROR;
 
 	if(NULL != scene)
 	{
-		DAVA::FilePath saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		DAVA::FilePath saveAsPath = scene->GetScenePath();
+		if(saveAsPath.IsEmpty())
+		{
+			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+		}
 
 		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
@@ -241,7 +253,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 				scene->SetScenePath(scenePath);
 				ret = scene->Save(scenePath);
 
-				if(!ret)
+				if(DAVA::SceneFileV2::ERROR_NO_ERROR != ret)
 				{
 					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. Please, see logs for more info.", QMessageBox::Ok);
 				}
@@ -253,7 +265,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 		}
 	}
 
-	return ret;
+	return (ret == DAVA::SceneFileV2::ERROR_NO_ERROR);
 }
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
@@ -402,6 +414,7 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionModifToolBar);
 	ui->menuToolbars->addAction(actionViewModeToolBar);
 	ui->menuToolbars->addAction(actionLandscapeToolbar);
+	ui->menuToolbars->addAction(ui->sceneToolBar->toggleViewAction());
 
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
@@ -417,6 +430,10 @@ void QtMainWindow::SetupToolBars()
 	ui->mainToolBar->addWidget(reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
+    
+    // adding reload textures actions
+    CreateObjectTypesCombobox();
+	ui->sceneToolBar->addWidget(objectTypesWidget);
 }
 
 void QtMainWindow::SetupDocks()
@@ -628,7 +645,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadEditorLightState(scene);
 	LoadShadowBlendModeState(scene);
 	LoadLandscapeEditorState(scene);
-	LoadObjectTypesLabel(scene);
+	LoadObjectTypes(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -721,6 +738,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuCreateNode->setEnabled(enable);
 	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
+    
+    ui->sceneToolBar->setEnabled(enable);
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()
@@ -882,9 +901,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	sceneSaver.SetOutFolder(folder);
 
 	Set<String> errorsLog;
-	scene->PopEditorEntities();
 	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
-	scene->PushEditorEntities();
 
 	ShowErrorDialog(errorsLog);
 }
@@ -1191,8 +1208,7 @@ void QtMainWindow::OnSetSkyboxNode()
 		return;
 	}
 	
-	AddSkyboxDialog dlg(this);
-	dlg.Show(scene);
+	AddSkyboxDialog::Show(this, scene);
 }
 
 void QtMainWindow::OnSwitchEntityDialog()
@@ -1252,7 +1268,7 @@ void QtMainWindow::LandscapeDialogFinished(int result)
 		{
 			AddEntityCommand* command = new AddEntityCommand(returnedEntity, sceneEditor);
 			sceneEditor->Exec(command);
-			sceneEditor->selectionSystem->SetSelection(command->GetEntity());
+			sceneEditor->selectionSystem->SetSelection(returnedEntity);
 		}
 		else
 		{
@@ -1269,7 +1285,7 @@ void QtMainWindow::LandscapeDialogFinished(int result)
 				sceneEditor->Exec(command);
 				AddEntityCommand* commandAdd = new AddEntityCommand(returnedEntity, sceneEditor);
 				sceneEditor->Exec(commandAdd);
-				sceneEditor->selectionSystem->SetSelection(commandAdd->GetEntity());
+				sceneEditor->selectionSystem->SetSelection(returnedEntity);
 			}
 		}
 		else
@@ -1647,25 +1663,35 @@ void QtMainWindow::OnConvertToShadow()
 	SceneSelectionSystem *ss = scene->selectionSystem;
     if(ss->GetSelectionCount() > 0)
     {
-        scene->BeginBatch("Convert To Shadow");
-
+        bool isRenderBatchFound = false;
         for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
         {
-            RenderObject * ro = GetRenderObject(ss->GetSelectionEntity(i));
-            if(!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch)))
+            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
             {
-                ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
-                scene->EndBatch();
-                return;
+                isRenderBatchFound = true;
+                break;
             }
         }
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
-        }
         
-        scene->EndBatch();
+        if(isRenderBatchFound)
+        {
+            scene->BeginBatch("Convert To Shadow");
+            
+            for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+            {
+                if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
+                {
+                    scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
+                }
+            }
+            
+            scene->EndBatch();
+        }
+        else
+        {
+            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+            return;
+        }
     }
 }
 
@@ -1749,6 +1775,8 @@ void QtMainWindow::RunBeast()
 	scene->Exec(new BeastAction(scene));
 
 	beastWaitDialog->Reset();
+
+	OnReloadTextures();
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
@@ -1977,7 +2005,24 @@ void QtMainWindow::OnObjectsTypeChanged( QAction *action )
 	{
 		scene->debugDrawSystem->SetRequestedObjectType(objectType);
 	}
+    
+    bool wasBlocked = objectTypesWidget->blockSignals(true);
+    objectTypesWidget->setCurrentIndex(objectType);
+    objectTypesWidget->blockSignals(wasBlocked);
 }
+
+void QtMainWindow::OnObjectsTypeChanged(int type)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType) type;
+	if(objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
+	{
+		scene->debugDrawSystem->SetRequestedObjectType(objectType);
+	}
+}
+
 
 void QtMainWindow::OnObjectsTypeMenuWillShow()
 {
@@ -1996,7 +2041,7 @@ void QtMainWindow::OnObjectsTypeMenuWillShow()
 	ui->actionInvisibleWall->setChecked(ResourceEditor::ESOT_INVISIBLE_WALL == objectType);
 }
 
-void QtMainWindow::LoadObjectTypesLabel( SceneEditor2 *scene )
+void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
 {
 	if(!scene) return;
 	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
@@ -2013,5 +2058,25 @@ void QtMainWindow::LoadObjectTypesLabel( SceneEditor2 *scene )
 			break;
 		}
 	}
+
+    objectTypesWidget->setCurrentIndex(objectType);
 }
 
+void QtMainWindow::CreateObjectTypesCombobox()
+{
+    objectTypesWidget = new QComboBox();
+	objectTypesWidget->setMaximumWidth(100);
+	objectTypesWidget->setMinimumWidth(100);
+
+    const QList<QAction *> actions = ui->menuObjectTypes->actions();
+
+    auto endIt = actions.end();
+    for(auto it = actions.begin(); it != endIt; ++it)
+    {
+        objectTypesWidget->addItem((*it)->icon(), (*it)->text());
+    }
+    
+    objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE);
+    
+    QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
+}

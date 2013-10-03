@@ -117,7 +117,6 @@ protected:
 
 protected slots:
 	void ItemChanged(QStandardItem * item);
-	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 };
 
 class SceneTreeFilteringModel : public QSortFilterProxyModel

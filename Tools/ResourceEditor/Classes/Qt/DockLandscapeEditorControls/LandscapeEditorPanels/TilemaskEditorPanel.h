@@ -75,6 +75,8 @@ private:
 
 	float32 StrengthUIToSystem(int32 uiValue);
 	int32 StrengthSystemToUI(float32 systemValue);
+
+	void SplitImageToChannels(Image* image, Image*& r, Image*& g, Image*& b, Image*& a);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORPANEL__) */

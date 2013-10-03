@@ -91,6 +91,11 @@ public:
 
 	Vector3 PlacePoint(const Vector3& point);
 
+	bool IsTilemaskChanged();
+	void ResetTilemaskChanged();
+	void IncreaseTilemaskChanges();
+	void DecreaseTilemaskChanges();
+
 protected:
 	enum eTextureType
 	{
@@ -104,6 +109,8 @@ protected:
 	
 	Texture* texturesToBlend[TEXTURE_TYPES_COUNT];
 	bool texturesEnabled[TEXTURE_TYPES_COUNT];
+
+	int32 tilemaskWasChanged;
 	
 	Texture* displayingTexture;
 	Landscape* baseLandscape;

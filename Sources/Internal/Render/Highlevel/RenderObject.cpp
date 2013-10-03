@@ -43,6 +43,7 @@ RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
     ,   flags(DEFAULT_FLAGS)
     ,   removeIndex(-1)
+	,   treeNodeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
 	,	renderSystem(0)
@@ -217,6 +218,12 @@ RenderSystem * RenderObject::GetRenderSystem()
 
 void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
 {
+}
+
+void RenderObject::RecalculateWorldBoundingBox()
+{
+	DVASSERT(!bbox.IsEmpty());
+	bbox.GetTransformedBox(*worldTransform, worldBBox);
 }
 
 };

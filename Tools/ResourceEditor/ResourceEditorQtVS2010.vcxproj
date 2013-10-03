@@ -482,9 +482,10 @@
     <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp" />
-    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
@@ -751,6 +752,7 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\AddSkyboxDialog\AddSkyboxDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
@@ -1168,10 +1170,11 @@
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />
-    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />

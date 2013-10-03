@@ -2088,7 +2088,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.cpp">
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.cpp">
       <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp">
@@ -2195,6 +2195,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtLabelWithActions\QtLabelWithActions_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\AddSkyboxDialog\AddSkyboxDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3734,7 +3740,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionCamera.h">
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBox.h">
       <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h">
@@ -3805,6 +3811,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h">
       <Filter>Classes\Qt\Tools\QtLabelWithActions</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

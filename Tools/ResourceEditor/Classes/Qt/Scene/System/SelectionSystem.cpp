@@ -285,15 +285,12 @@ void SceneSelectionSystem::Clear()
 {
 	if(!selectionLocked)
 	{
-		if(curSelections.Size() > 0)
+		while(curSelections.Size() > 0)
 		{
-			while(curSelections.Size() > 0)
-			{
-				DAVA::Entity *entity = curSelections.GetEntity(0);
-				curSelections.Rem(entity);
+			DAVA::Entity *entity = curSelections.GetEntity(0);
+			curSelections.Rem(entity);
 
-				SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
-			}
+			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
 		}
 	}
 }
@@ -439,7 +436,7 @@ DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) cons
 
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const
 {
-	DAVA::AABBox3 ret;
+	DAVA::AABBox3 ret = DAVA::AABBox3(DAVA::Vector3(0, 0, 0), 0);
 
 	if(NULL != entity)
 	{

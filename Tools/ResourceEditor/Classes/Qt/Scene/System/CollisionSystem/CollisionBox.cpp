@@ -28,17 +28,13 @@
 
 
 
-#include "Scene/System/CollisionSystem/CollisionCamera.h"
+#include "Scene/System/CollisionSystem/CollisionBox.h"
 
-const DAVA::float32 CollisionCamera::boxHalfSize = 0.75f;
-
-CollisionCamera::CollisionCamera(DAVA::Entity *entity, btCollisionWorld *word, DAVA::Camera *camera)
+CollisionBox::CollisionBox(DAVA::Entity *entity, btCollisionWorld *word,  DAVA::Vector3 position, DAVA::float32 boxHalfSize)
 	: CollisionBaseObject(entity, word)
 {
-	if(NULL != camera && NULL != word)
+	if(NULL != word)
 	{
-		DAVA::Vector3 pos = camera->GetPosition();
-
 		btObject = new btCollisionObject();
 		btShape = new btBoxShape(btVector3(boxHalfSize, boxHalfSize, boxHalfSize));
 
@@ -46,7 +42,7 @@ CollisionCamera::CollisionCamera(DAVA::Entity *entity, btCollisionWorld *word, D
 
 		btTransform trans;
 		trans.setIdentity();
-		trans.setOrigin(btVector3(pos.x, pos.y, pos.z));
+		trans.setOrigin(btVector3(position.x, position.y, position.z));
 		btObject->setWorldTransform(trans);
 
 		btWord->addCollisionObject(btObject);
@@ -55,7 +51,7 @@ CollisionCamera::CollisionCamera(DAVA::Entity *entity, btCollisionWorld *word, D
 	}
 }
 
-CollisionCamera::~CollisionCamera()
+CollisionBox::~CollisionBox()
 {
 	if(NULL != btObject)
 	{

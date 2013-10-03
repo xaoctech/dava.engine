@@ -81,6 +81,13 @@ bool ConvertToShadowCommand::IsEntityWithShadowVolume(const DAVA::Entity *entity
 	return (ro && ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume));
 }
 
+bool ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(const DAVA::Entity *entity)
+{
+    RenderObject * ro = GetRenderObject(entity);
+    return ((!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch))) == false);
+}
+
+
 DAVA::RenderBatch * ConvertToShadowCommand::ConvertToShadowVolume( DAVA::Entity *entity )
 {
 	RenderObject * ro = GetRenderObject(entity);

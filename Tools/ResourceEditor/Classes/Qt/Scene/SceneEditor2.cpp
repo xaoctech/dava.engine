@@ -30,13 +30,10 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "Scene/SceneHelper.h"
+
 #include "SceneEditor/EditorSettings.h"
-
-#include "Render/Highlevel/ShadowVolumeRenderPass.h"
-
-#include "Classes/SceneEditor/SceneValidator.h"
-#include "Classes/Qt/Scene/SceneHelper.h"
+#include "SceneEditor/SceneValidator.h"
 
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
@@ -45,8 +42,11 @@
 #include "Commands2/RulerToolActions.h"
 #include "Commands2/LandscapeEditorDrawSystemActions.h"
 
+#include "CommandLine/SceneExporter/SceneExporter.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 SceneEditor2::SceneEditor2()
 	: Scene()
@@ -106,9 +106,13 @@ SceneEditor2::SceneEditor2()
 
 	debugDrawSystem = new DebugDrawSystem(this);
 	AddSystem(debugDrawSystem, 0);
+	
+	beastSystem = new BeastSystem(this);
+	AddSystem(beastSystem, 0);
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
+	structureSystem->LockSignals(false);
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -132,11 +136,14 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 	structureSystem->LockSignals(true);
 
+	// make sure that there is no cached entities with such path
+	ReleaseRootNode(path);
+	
+	// load entity by specified path
 	Entity * rootNode = GetRootNode(path);
+
 	if(rootNode)
 	{
-		rootNode = rootNode->Clone();
-
 		ret = true;
 
 		DAVA::Vector<DAVA::Entity*> tmpEntities;
@@ -165,8 +172,6 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		isLoaded = true;
 
 		commandStack.SetClean(true);
-
-		rootNode->Release();
 	}
 
 	structureSystem->Init();
@@ -180,14 +185,13 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	return ret;
 }
 
-bool SceneEditor2::Save(const DAVA::FilePath &path)
+SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveForGame /*= false*/)
 {
-	PopEditorEntities();
+	structureSystem->LockSignals(true);
+	ExtractEditorEntities();
 
-	DAVA::SceneFileV2::eError err = SceneHelper::SaveScene(this, path);
-	bool ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
-
-	if(ret)
+	DAVA::SceneFileV2::eError err = Scene::Save(path, saveForGame);
+	if(DAVA::SceneFileV2::ERROR_NO_ERROR == err)
 	{
 		curScenePath = path;
 		isLoaded = true;
@@ -198,13 +202,16 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 
 	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
-	PushEditorEntities();
+	InjectEditorEntities();
+	structureSystem->LockSignals(false);
 
 	SceneSignals::Instance()->EmitSaved(this);
-	return ret;
+	//SceneSignals::Instance()->EmitStructureChanged(this, this);
+
+	return err;
 }
 
-void SceneEditor2::PopEditorEntities()
+void SceneEditor2::ExtractEditorEntities()
 {
 	DVASSERT(editorEntities.size() == 0);
 
@@ -224,9 +231,9 @@ void SceneEditor2::PopEditorEntities()
 	}
 }
 
-void SceneEditor2::PushEditorEntities()
+void SceneEditor2::InjectEditorEntities()
 {
-	for(DAVA::uint32 i = 0; i < editorEntities.size(); ++i)
+	for(DAVA::int32 i = editorEntities.size() - 1; i >= 0; i--)
 	{
 		AddEditorEntity(editorEntities[i]);
 		editorEntities[i]->Release();
@@ -236,7 +243,7 @@ void SceneEditor2::PushEditorEntities()
 }
 
 
-bool SceneEditor2::Save()
+SceneFileV2::eError SceneEditor2::Save()
 {
 	return Save(curScenePath);
 }
@@ -372,15 +379,14 @@ void SceneEditor2::Draw()
 	gridSystem->Draw();
 	cameraSystem->Draw();
 	collisionSystem->Draw();
-	selectionSystem->Draw();
 	modifSystem->Draw();
 	structureSystem->Draw();
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
-
 	debugDrawSystem->Draw();
 
 	// should be last
+	selectionSystem->Draw();
 	hoodSystem->Draw();
 	textDrawSystem->Draw();
 }

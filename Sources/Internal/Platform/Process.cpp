@@ -36,7 +36,7 @@ static const int BUF_SIZE = 512;
 namespace DAVA
 {
 	
-	Process::Process(FilePath path, const Vector<String>& args)
+	Process::Process(const FilePath& path, const Vector<String>& args)
 	{
 		pid = -1; //invalid pid
 		output = "[Process::Process] The program has not been started yet!";
@@ -52,23 +52,10 @@ namespace DAVA
 #endif
 	}
 	
-	
-#if defined (__DAVAENGINE_WIN32__)
 	Process::~Process()
 	{
-		CleanupIOHandles();
-		
-		if(pid != -1)
-		{
-			::CloseHandle((HANDLE)pid);
-		}
+		CleanupHandles();
 	}
-#else
-	Process::~Process()
-	{
-	}
-#endif
-	
 	
 	const String& Process::GetOutput() const
 	{
@@ -92,7 +79,7 @@ namespace DAVA
 
 #if defined (__DAVAENGINE_WIN32__)
 	
-	void Process::CleanupIOHandles()
+	void Process::CleanupHandles()
 	{
 		for(int i = 0; i < 2; ++i)
 		{
@@ -109,6 +96,12 @@ namespace DAVA
 		
 		childProcIn[0] = childProcIn[1] = 0;
 		childProcOut[0] = childProcOut[1] = 0;
+		
+		if(pid != -1)
+		{
+			::CloseHandle((HANDLE)pid);
+			pid = -1;
+		}
 	}
 	
 	bool Process::Run(bool showWindow)
@@ -121,7 +114,7 @@ namespace DAVA
 				
 		bool result = showWindow;
 		
-		CleanupIOHandles();
+		CleanupHandles();
 		
 		if(!showWindow)
 		{
@@ -185,11 +178,12 @@ namespace DAVA
 
 #if defined(UNICODE)
 
-			wchar_t* execPathW;
-			size_t execPathWLength;
-			wchar_t* execArgsW;
-			size_t execArgsWLength;
+			wchar_t* execPathW = NULL;
+			size_t execPathWLength = 0;
+			wchar_t* execArgsW = NULL;
+			size_t execArgsWLength = 0;
 
+			//VI: TODO: UNICODE: Use framework methods to convert to Unicode once it will be ready.
 			ConvertToWideChar(executablePath.GetAbsolutePathname(), &execPathW, &execPathWLength);
 			ConvertToWideChar(runArgsFlat, &execArgsW, &execArgsWLength);
 
@@ -207,15 +201,8 @@ namespace DAVA
 									 &piProcInfo);  // receives PROCESS_INFORMATION
 			}
 			
-			if(execPathW != NULL)
-			{
-				delete[] execPathW;
-			}
-
-			if(execArgsW != NULL)
-			{
-				delete[] execArgsW;
-			}
+			SafeDeleteArray(execPathW);
+			SafeDeleteArray(execArgsW);
 
 #else
 				bSuccess = CreateProcess(executablePath.GetAbsolutePathname().c_str(),
@@ -243,7 +230,7 @@ namespace DAVA
 		
 		if(!result)
 		{
-			CleanupIOHandles();
+			CleanupHandles();
 		}
 		
 		running = result;
@@ -275,9 +262,7 @@ namespace DAVA
 
 		::WaitForSingleObject((HANDLE)pid, INFINITE);
 		
-		CleanupIOHandles();
-		::CloseHandle((HANDLE)pid);
-		pid = -1;
+		CleanupHandles();
 	}
 
 #if defined(UNICODE)
@@ -399,10 +384,10 @@ namespace DAVA
 		}
 		//}
 		
-		CleanupIOHandles();
+		CleanupHandles();
 	}
 	
-	void Process::CleanupIOHandles()
+	void Process::CleanupHandles()
 	{
 		for(int i = 0; i < 2; ++i)
 		{

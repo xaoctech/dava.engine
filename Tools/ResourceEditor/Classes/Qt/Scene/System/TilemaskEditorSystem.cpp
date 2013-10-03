@@ -81,18 +81,7 @@ TilemaskEditorSystem::~TilemaskEditorSystem()
 
 bool TilemaskEditorSystem::IsCanBeEnabled()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-	
-	bool canBeEnabled = true;
-	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-	
-	return canBeEnabled;
+	return drawSystem->VerifyLandscape();
 }
 
 bool TilemaskEditorSystem::EnableLandscapeEditing()
