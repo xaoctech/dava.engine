@@ -129,6 +129,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	SetupMainMenu();
 	SetupToolBars();
+	SetupStatusBar();
 	SetupDocks();
 	SetupActions();
 	SetupShortCuts();
@@ -149,7 +150,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
@@ -435,6 +435,14 @@ void QtMainWindow::SetupToolBars()
 	ui->sceneToolBar->addWidget(objectTypesWidget);
 }
 
+void QtMainWindow::SetupStatusBar()
+{
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SceneActivated(SceneEditor2 *)), ui->statusBar, SLOT(SceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), ui->statusBar, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->statusBar, SLOT(UpdateByTimer()));
+}
+
+
 void QtMainWindow::SetupDocks()
 {
 	QObject::connect(ui->sceneTreeFilterClear, SIGNAL(pressed()), ui->sceneTreeFilterEdit, SLOT(clear()));
@@ -659,8 +667,6 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
         }
     }
 	// <---
-    
-    UpdateStatusBar();
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
@@ -1591,8 +1597,6 @@ void QtMainWindow::OnSaveTiledTexture()
 
 void QtMainWindow::OnGlobalInvalidateTimeout()
 {
-    UpdateStatusBar();
-    
     emit GlobalInvalidateTimeout();
     if(globalInvalidateTimeoutEnabled)
     {
@@ -1600,30 +1604,6 @@ void QtMainWindow::OnGlobalInvalidateTimeout()
     }
 }
 
-void QtMainWindow::UpdateStatusBar()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene)
-    {
-        ui->statusBar->ResetDistanceToCamera();
-        return;
-    }
-
-    if(scene->selectionSystem->GetSelectionCount() > 0)
-    {
-        float32 distanceToCamera = scene->cameraSystem->GetDistanceToCamera();
-        ui->statusBar->SetDistanceToCamera(distanceToCamera);
-    }
-    else
-    {
-        ui->statusBar->ResetDistanceToCamera();
-    }
-}
-
-void QtMainWindow::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
-{
-    UpdateStatusBar();
-}
 
 void QtMainWindow::EnableGlobalTimeout(bool enable)
 {

@@ -27,10 +27,12 @@
 =====================================================================================*/
 
 
-
-#include "DAVAEngine.h"
-
 #include "StatusBar.h"
+
+#include "Main/mainwindow.h"
+#include "Scene/EntityGroup.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/System/SelectionSystem.h"
 
 #include <QLabel>
 #include <QLayout>
@@ -40,9 +42,7 @@ StatusBar::StatusBar(QWidget *parent)
 {
     distanceToCamera = new QLabel(this);
     
-    
 	addPermanentWidget(distanceToCamera);
-
     
     setContentsMargins(0, 0, 0, 0);
     setStyleSheet("QStatusBar::item {border: none;}");
@@ -64,6 +64,41 @@ void StatusBar::SetDistanceToCamera(DAVA::float32 distance)
 void StatusBar::ResetDistanceToCamera()
 {
     distanceToCamera->setText(QString::fromStdString("Distance to selection: No selection"));
+}
+
+void StatusBar::UpdateDistanceToCamera()
+{
+	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
+	if(!scene)
+	{
+		ResetDistanceToCamera();
+		return;
+	}
+
+	if(scene->selectionSystem->GetSelectionCount() > 0)
+	{
+		float32 distanceToCamera = scene->cameraSystem->GetDistanceToCamera();
+		SetDistanceToCamera(distanceToCamera);
+	}
+	else
+	{
+		ResetDistanceToCamera();
+	}
+}
+
+void StatusBar::SceneActivated( SceneEditor2 *scene )
+{
+	UpdateDistanceToCamera();
+}
+
+void StatusBar::SceneSelectionChanged( SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected )
+{
+	UpdateDistanceToCamera();
+}
+
+void StatusBar::UpdateByTimer()
+{
+	UpdateDistanceToCamera();
 }
 
 
