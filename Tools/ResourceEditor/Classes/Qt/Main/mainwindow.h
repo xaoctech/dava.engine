@@ -220,6 +220,8 @@ protected slots:
 
 	void EditorLightEnabled(bool enabled);
 
+	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
+
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
