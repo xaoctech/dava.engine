@@ -30,6 +30,7 @@
 
 #include <QSet>
 #include "DockSceneTree/SceneTreeItem.h"
+#include "Commands2/ConvertToShadowCommand.h"
 
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
@@ -161,9 +162,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
-			DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
-			
-			if(ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume))
+			if(ConvertToShadowCommand::IsEntityWithShadowVolume(entity))
 			{
 				ret = shadowIcon;
 			}
