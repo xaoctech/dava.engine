@@ -140,8 +140,6 @@ protected:
 	FastName parentName;
 	FastName materialName;
 	
-	NMaterial* parent;
-	
 	FastNameSet layers;
 	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
 	FastNameSet nativeDefines;
@@ -151,6 +149,7 @@ protected:
     Vector<FastName> textureNamesArray;
 	Vector<int32> textureSlotArray;
 	
+	NMaterial* parent;
 	Vector<NMaterial*> children;
 	
 protected:
@@ -164,11 +163,14 @@ protected:
 	void AddChildToState(NMaterial* material);
 	void RemoveChildFromState(NMaterial* material);
 	
+	void CopyTo(NMaterialState* targetState);
+	
 };
 
 
 class Camera;
 class SerializationContext;
+class MaterialSystem;
 class NMaterial : public BaseObject, public NMaterialState
 {
 	friend class MaterialSystem;
@@ -217,6 +219,8 @@ public:
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 	
+	bool SwitchState(const FastName& stateName, MaterialSystem* materialSystem);
+	
 protected:
     
 	FastNameSet inheritedDefines;
@@ -234,6 +238,8 @@ protected:
 	bool ready;
 	
 	bool configMaterial;
+	
+	HashMap<FastName, NMaterialState*> states;
 	
 private:
 	
