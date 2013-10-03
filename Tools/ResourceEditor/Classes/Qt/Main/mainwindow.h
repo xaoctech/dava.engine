@@ -175,10 +175,11 @@ public slots:
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
 
-    
-	
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
+
+    void OnAddSoundComponent();
+    void OnRemoveSoundComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);

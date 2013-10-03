@@ -26,89 +26,60 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __SOUND_BROWSER_H__
+#define __SOUND_BROWSER_H__
 
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
+#include <QDialog>
+#include <QTreeWidgetItem>
+#include "DAVAEngine.h"
 
-
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
-{
-
-ApplicationCore::ApplicationCore()
-	: BaseObject()
-{
-    SoundSystem::Init();
+namespace Ui {
+class FMODSoundBrowser;
 }
 
-ApplicationCore::~ApplicationCore()
+class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser>
 {
-	SoundSystem::Release();
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
+    Q_OBJECT
+    
+public:
+    explicit FMODSoundBrowser(QWidget *parent = 0);
+    ~FMODSoundBrowser();
+    
+    void SetEditableComponent(DAVA::FMODSoundComponent * component);
 
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
-}
+private slots:
+    void OnEventSelected(QTreeWidgetItem * item, int column);
 
-void ApplicationCore::BeginFrame()
-{
-	RenderManager::Instance()->BeginFrame();
+    void OnSliderMoved(int value);
+    void OnSliderPressed();
 
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-}
+    void OnPlay();
+    void OnStop();
 
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-}
+    void OnProjectOpened(const QString & projectPath);
+    void OnProjectClosed();
 
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
+private:
+    struct ParamSliderData : public QObjectUserData
+    {
+        DAVA::String paramName;
+        DAVA::float32 minValue;
+        DAVA::float32 maxValue;
+    };
 
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
+    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
+    void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
+    void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
 
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
+    void AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param);
+    void ClearParamsFrame();
 
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
-	
-void ApplicationCore::OnForeground()
-{
-	// Default implementation is empty.
-}
+    void EventSelected(const DAVA::String & eventPath);
+    void FillEventParamsFrame();
 
-#endif
+    DAVA::FMODSoundComponent * component;
 
+    Ui::FMODSoundBrowser *ui;
 };
+
+#endif // SOUNDBROWSER_H

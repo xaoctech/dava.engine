@@ -26,51 +26,58 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __SOUND_BROWSER_H__
+#define __SOUND_BROWSER_H__
 
+#include <QDialog>
+#include <QTreeWidgetItem>
+#include "DAVAEngine.h"
 
-#include "Sound/SoundEventCategory.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/FMODUtils.h"
-
-namespace DAVA
-{
-
-SoundEventCategory::SoundEventCategory(FMOD::EventCategory * category) :
-	fmodEventCategory(category) 
-{
+namespace Ui {
+class SoundBrowser;
 }
 
-SoundEventCategory::~SoundEventCategory()
+class SoundBrowser : public QDialog
 {
-}
+    Q_OBJECT
+    
+public:
+    explicit SoundBrowser(const DAVA::FilePath & dirPath, DAVA::SoundComponent * editComponent, QWidget *parent = 0);
+    ~SoundBrowser();
+    
+private slots:
+    void OnEventDoubleClicked(QTreeWidgetItem * item, int column);
+    void OnEventSelected(QTreeWidgetItem * item, int column);
 
-void SoundEventCategory::SetVolume(float32 volume)
-{
-	FMOD_VERIFY(fmodEventCategory->setVolume(volume));
-}
+    void OnSliderMoved(int value);
+    void OnSliderPressed();
 
-float32 SoundEventCategory::GetVolume()
-{
-	float32 volume;
-	FMOD_VERIFY(fmodEventCategory->getVolume(&volume));
-	return volume;
-}
+    void OnPlay();
+    void OnStop();
+    void OnSetEvent();
 
-void SoundEventCategory::Stop()
-{
-	FMOD_VERIFY(fmodEventCategory->stopAllEvents());
-}
+private:
+    struct ParamSliderData : public QObjectUserData
+    {
+        DAVA::String paramName;
+        DAVA::float32 minValue;
+        DAVA::float32 maxValue;
+    };
 
-void SoundEventCategory::Pause(bool isPaused)
-{
-	FMOD_VERIFY(fmodEventCategory->setPaused(isPaused));
-}
+    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
+    void FillEventsTree(const DAVA::Vector<DAVA::String> & names, const DAVA::String & eventToSelect);
 
-bool SoundEventCategory::GetPaused()
-{
-	bool isPaused = false;
-	FMOD_VERIFY(fmodEventCategory->getPaused(&isPaused));
-	return isPaused;
-}
+    void AddSliderWidget(const DAVA::String & paramName, DAVA::float32 minValue, DAVA::float32 maxValue);
+    void ClearParamsFrame();
 
+    void EventSelected(const DAVA::String & eventPath);
+    void FillEventParamsFrame();
+
+    DAVA::SoundComponent * component;
+    DAVA::SoundEvent * selectedEvent;
+    DAVA::String selectedEventPath;
+
+    Ui::SoundBrowser *ui;
 };
+
+#endif // SOUNDBROWSER_H

@@ -28,38 +28,53 @@
 
 
 
-#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
-#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#ifndef __DAVAENGINE_SCENE3D_FMOD_SOUND_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_FMOD_SOUND_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Sound/VolumeAnimatedObject.h"
+#include "Scene3D/Components/SoundComponent.h"
 
-namespace FMOD
-{
-class EventCategory;
-};
-
-namespace DAVA
+namespace DAVA 
 {
 
-class SoundEventCategory : public VolumeAnimatedObject
+class Entity;
+class FMODSoundEvent;
+class SoundUpdateSystem;
+class FMODSoundComponent : public SoundComponent
 {
 public:
-	SoundEventCategory(FMOD::EventCategory * category);
-	~SoundEventCategory();
+	FMODSoundComponent();
+	virtual ~FMODSoundComponent();
 
-	void SetVolume(float32 volume);
-	float32	GetVolume();
+	FMODSoundEvent * GetSoundEvent();
+	const String & GetEventName();
+	void SetEventName(const String & eventName);
 
-	void Stop();
-	void Pause(bool isPaused);
-	bool GetPaused();
+	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+
+    virtual void Play();
+    virtual void Stop();
+    virtual void SetParameter(const String & paramName, float32 value);
+    virtual float32 GetParameter(const String & paramName);
+
+    virtual void SetPosition(const Vector3 & position);
 
 private:
-	FMOD::EventCategory * fmodEventCategory;
+	void SetSoundEvent(FMODSoundEvent * sEvent);
+
+	FMODSoundEvent * soundEvent;
+	String eventName;
+
+	friend class SoundUpdateSystem;
+
+public:
+	INTROSPECTION_EXTEND(FMODSoundComponent, SoundComponent,
+		PROPERTY("eventName", "eventName", GetEventName, SetEventName, I_SAVE | I_VIEW)
+		);
 };
 
 };
 
-#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#endif

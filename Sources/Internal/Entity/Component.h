@@ -38,8 +38,8 @@
 namespace DAVA 
 {
     
-class DataNode;
 class Entity;
+class DataNode;
 class Component : public Serializable, public BaseObject
 {
 public:

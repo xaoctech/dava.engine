@@ -27,88 +27,64 @@
 =====================================================================================*/
 
 
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
 
+#ifndef __DAVAENGINE_FMOD_SOUND_EVENT_H__
+#define __DAVAENGINE_FMOD_SOUND_EVENT_H__
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/EventDispatcher.h"
+#include "Scene3D/Components/FMODSoundComponent.h"
+#include "Sound/VolumeAnimatedObject.h"
 
-namespace DAVA 
+namespace FMOD
+{
+	class Event;
+};
+
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+class FMODSoundEvent : public VolumeAnimatedObject
 {
-    SoundSystem::Init();
-}
+public:
 
-ApplicationCore::~ApplicationCore()
-{
-	SoundSystem::Release();
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
+    struct SoundEventParameterInfo
+    {
+        String name;
+        float32 maxValue;
+        float32 minValue;
+        float32 currentValue;
+    };
 
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
-}
+	virtual void SetVolume(float32 volume);
+	virtual float32	GetVolume();
 
-void ApplicationCore::BeginFrame()
-{
-	RenderManager::Instance()->BeginFrame();
+	void Play();
+	void Pause(bool isPaused);
+	bool IsPaused();
+	void Stop();
 
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-}
+	void SetPosition(const Vector3 & position);
 
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-}
+    void KeyOffParameter(const String & paramName);
 
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
+    void SetParameterValue(const String & paramName, float32 value);
+    float32 GetParameterValue(const String & paramName);
+    
+    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & params);
 
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
+private:
+	FMODSoundEvent(FMOD::Event * fmodEvent);
+	~FMODSoundEvent();
 
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
+	FMOD::Event * fmodEvent;
 
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
-	
-void ApplicationCore::OnForeground()
-{
-	// Default implementation is empty.
-}
-
-#endif
+friend class SoundSystem;
+friend class FMODSoundComponent;
+friend class FMODSoundSystem;
+};
 
 };
+
+#endif

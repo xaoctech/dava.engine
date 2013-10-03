@@ -26,72 +26,78 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_FMOD_SOUND_SYSTEM_H__
+#define __DAVAENGINE_FMOD_SOUND_SYSTEM_H__
 
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
 #include "Base/FastNameMap.h"
-#include "FileSystem/FilePath.h"
-#include "Base/EventDispatcher.h"
 #include "Sound/Sound.h"
+#include "Sound/SoundSystem.h"
+#include "Sound/FMODSoundGroup.h"
+namespace FMOD
+{
+class System;
+class EventSystem;
+class EventGroup;
+};
 
 namespace DAVA
 {
-
-class Component;
-class SoundSystemInstance
+class FMODSound;
+class FMODSoundGroup;
+class FMODSoundEvent;
+class VolumeAnimatedObject;
+class FMODSoundSystem : public SoundSystemInstance
 {
 public:
-    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128) = 0;
-    virtual Sound * CreateSound3D(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128) = 0;
-    virtual Component * CreateSoundComponent() = 0;
+	FMODSoundSystem(int32 maxChannels = 64);
+	virtual ~FMODSoundSystem();
 
-    virtual void Update();
-    virtual void Suspend() = 0;
-    virtual void Resume() = 0;
+    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128);
+    virtual Sound * CreateSound3D(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128);
+    virtual Component * CreateSoundComponent();
 
-    virtual void SetListenerPosition(const Vector3 & position) = 0;
-    virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left) = 0;
+	virtual void Update();
+	virtual void Suspend();
+	virtual void Resume();
 
-    virtual void SetGroupVolume(const FastName & groupName, float32 volume) = 0;
-    virtual float32 GetGroupVolume(const FastName & groupName) = 0;
-    virtual void StopGroup(const FastName & groupName) = 0;
+	virtual void SetListenerPosition(const Vector3 & position);
+	virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+
+    virtual void SetGroupVolume(const FastName & groupName, float32 volume);
+    virtual float32 GetGroupVolume(const FastName & groupName);
+    virtual void StopGroup(const FastName & groupName);
+
+    //FMOD Only
+	FMODSoundEvent * CreateSoundEvent(const String & eventPath);
+
+    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
+
+	void LoadFEV(const FilePath & filePath);
+    void UnloadProjects();
+
+    void GetAllEventsNames(Vector<String> & names);
 
 protected:
-    void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-    void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
+    FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
+    FMODSoundGroup * GetSoundGroup(const FastName & groupName);
 
-    Vector<VolumeAnimatedObject*> animatedObjects;
+    void ReleaseOnUpdate(FMODSound * sound);
+    void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
 
+	FMOD::System * fmodSystem;
+	FMOD::EventSystem * fmodEventSystem;
+
+    Vector<FMODSound *> soundsToReleaseOnUpdate;
+    FastNameMap<FMODSoundGroup *> soundGroups;
+
+friend class FMODSoundGroup;
+friend class FMODSound;
 friend class VolumeAnimatedObject;
 };
 
-class SoundSystem
-{
-public:
-    enum SoundSystemType
-    {
-        SOUNDSYSTEM_FMOD = 0,
 
-        SOUNDSYSTEM_COUNT
-    };
-
-public:
-    static void Init();
-    static void Release();
-    static SoundSystemInstance * Instance();
-    static void SetSoundSystemType(SoundSystemType _type) {type = _type;};
-    static const FilePath & GetSoundsDirectory();
-    static void SetSoundsDirectory(const FilePath & soundsDir);
-
-private:
-    static SoundSystemType type;
-    static SoundSystemInstance * instance;
-
-    static FilePath soundsDir;
-};
 
 };
 

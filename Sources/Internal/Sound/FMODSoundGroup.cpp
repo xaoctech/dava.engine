@@ -27,88 +27,43 @@
 =====================================================================================*/
 
 
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
 
+#include "Sound/FMODSoundGroup.h"
+#include "Sound/Sound.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/FMODUtils.h"
+#include "Sound/FMODSoundSystem.h"
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+FMODSoundGroup::FMODSoundGroup()
 {
-    SoundSystem::Init();
+    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
+    if(soundSystem)
+	    FMOD_VERIFY(soundSystem->fmodSystem->createSoundGroup(0, &fmodSoundGroup));
 }
 
-ApplicationCore::~ApplicationCore()
+FMODSoundGroup::~FMODSoundGroup()
 {
-	SoundSystem::Release();
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
+	FMOD_VERIFY(fmodSoundGroup->release());
 }
 
-void ApplicationCore::Draw()
+void FMODSoundGroup::SetVolume(float32 volume)
 {
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
+	FMOD_VERIFY(fmodSoundGroup->setVolume(volume));
 }
 
-void ApplicationCore::BeginFrame()
+float32 FMODSoundGroup::GetVolume()
 {
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	float32 volume;
+	FMOD_VERIFY(fmodSoundGroup->getVolume(&volume));
+	return volume;
 }
 
-void ApplicationCore::EndFrame()
+void FMODSoundGroup::Stop()
 {
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
+	FMOD_VERIFY(fmodSoundGroup->stop());
 }
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
-	
-void ApplicationCore::OnForeground()
-{
-	// Default implementation is empty.
-}
-
-#endif
 
 };

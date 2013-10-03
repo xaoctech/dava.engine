@@ -31,6 +31,7 @@
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
 #include "Debug/DVAssert.h"
+#include "Sound/SoundSystem.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
@@ -42,7 +43,6 @@
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
-#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
@@ -80,7 +80,7 @@ Component * Component::CreateByType(uint32 componentType)
 		return new UserComponent();
 		break;
 	case SOUND_COMPONENT:
-		return new SoundComponent();
+		return SoundSystem::Instance()->CreateSoundComponent();
 		break;
 	case CUSTOM_PROPERTIES_COMPONENT:
 		return new CustomPropertiesComponent();

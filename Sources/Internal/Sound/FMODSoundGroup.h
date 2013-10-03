@@ -28,57 +28,39 @@
 
 
 
-#ifndef __DAVAENGINE_SOUND_EVENT_H__
-#define __DAVAENGINE_SOUND_EVENT_H__
+#ifndef __DAVAENGINE_FMOD_SOUND_GROUP_H__
+#define __DAVAENGINE_FMOD_SOUND_GROUP_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/EventDispatcher.h"
+#include "Base/BaseObject.h"
 #include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
-	class Event;
+class SoundGroup;
 };
 
 namespace DAVA
 {
-class SoundComponent;
-class SoundEvent : public VolumeAnimatedObject
+
+class FMODSound;
+class FMODSoundGroup : public VolumeAnimatedObject
 {
 public:
-	enum eEvent
-	{
-		EVENT_STARTED = 0,	//Called when an event is started. FMOD_EVENT_CALLBACKTYPE_EVENTSTARTED
-		EVENT_FINISHED,		//Called when an event is stopped for any reason. FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED
-		EVENT_SYNCPOINT,	//Called when a syncpoint is encountered. Can be from wav file markers. FMOD_EVENT_CALLBACKTYPE_SYNCPOINT
+	FMODSoundGroup();
+	~FMODSoundGroup();
 
-		EVENT_COUNT
-	};
+	virtual void SetVolume(float32 volume);
+	virtual float32	GetVolume();
 
-	void SetVolume(float32 volume);
-	float32	GetVolume();
-
-	void Play();
-	void Pause(bool isPaused);
-	bool IsPaused();
 	void Stop();
-	void PerformCallback(eEvent eventType);
-
-	void SetPosition(const Vector3 & position);
 
 private:
-	SoundEvent(FMOD::Event * fmodEvent);
-	~SoundEvent();
+	FMOD::SoundGroup * fmodSoundGroup;
 
-	FMOD::Event * fmodEvent;
-
-	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
-
-friend class SoundSystem;
-friend class SoundComponent;
+friend class FMODSound;
 };
 
 };
 
-#endif
+#endif //__DAVAENGINE_SOUND_GROUP_H__

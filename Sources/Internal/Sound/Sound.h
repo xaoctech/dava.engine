@@ -31,16 +31,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
 #include "Sound/VolumeAnimatedObject.h"
-
-namespace FMOD
-{
-class Sound;
-class ChannelGroup;
-class Channel;
-};
 
 namespace DAVA
 {
@@ -48,54 +40,33 @@ namespace DAVA
 class Sound : public VolumeAnimatedObject
 {
 public:
+    enum eType
+    {
+        TYPE_STATIC = 0,
+        TYPE_STREAMED
+    };
 
-	enum eType
-	{
-		TYPE_STATIC = 0,
-		TYPE_STREAMED
-	};
+    virtual void SetVolume(float32 volume) = 0;
+    virtual float32	GetVolume() = 0;
 
-	static Sound * Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
-	static Sound * Create3D(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
+    virtual void Play(const Message & msg = Message()) = 0;
+    virtual void Pause(bool isPaused) = 0;
+    virtual bool IsPaused() = 0;
+    virtual void Stop() = 0;
 
-	void SetVolume(float32 volume);
-	float32	GetVolume();
+    virtual void SetPosition(const Vector3 & position) = 0;
+    virtual void UpdateInstancesPosition() = 0;
 
-	void Play(const Message & msg = Message());
-	void Pause(bool isPaused);
-	bool IsPaused();
-	void Stop();
-    void PerformCallback(FMOD::Channel * instance);
+    virtual void SetLoopCount(int32 looping) = 0; // -1 = infinity
+    virtual int32 GetLoopCount() = 0;
 
-	void SetPosition(const Vector3 & position);
-	void UpdateInstancesPosition();
+    eType GetType() {return type;};
 
-	void SetLoopCount(int32 looping); // -1 = infinity
-	int32 GetLoopCount() const;
+protected:
+    Sound(eType _type) : type(_type) {};
+    virtual ~Sound() {};
 
-	eType GetType() const;
-
-private:
-	Sound(const FilePath & fileName, eType type, int32 priority);
-	~Sound();
-
-	static Sound * CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority = 128);
-
-	void SetSoundGroup(const FastName & groupName);
-
-	bool is3d;
-	Vector3 position;
-
-	FilePath fileName;
-	eType type;
-	int32 priority;
-
-	FMOD::Sound * fmodSound;
-	FMOD::ChannelGroup * fmodInstanceGroup;
-
-    uint8 * soundData;
-
-    Map<FMOD::Channel *, Message> callbacks;
+    eType type;
 };
 
 };

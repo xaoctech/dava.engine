@@ -28,100 +28,111 @@
 
 
 
-#include "Sound/SoundEvent.h"
+#include "Sound/FMODSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODUtils.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
-FMOD_RESULT F_CALLBACK SoundEventCallback(FMOD_EVENT *  event, FMOD_EVENT_CALLBACKTYPE  type, void *  param1, void *  param2, void *  userdata);
-
-SoundEvent::SoundEvent(FMOD::Event * _fmodEvent) :
+FMODSoundEvent::FMODSoundEvent(FMOD::Event * _fmodEvent) :
 	fmodEvent(_fmodEvent)
 {
-	FMOD_VERIFY(fmodEvent->setCallback(SoundEventCallback, this));
 }
 
-SoundEvent::~SoundEvent()
+FMODSoundEvent::~FMODSoundEvent()
 {
-	FMOD::EventGroup * parent = 0;
-	FMOD_VERIFY(fmodEvent->getParentGroup(&parent));
-	if(parent)
-	{
-		FMOD_VERIFY(parent->freeEventData(fmodEvent));
-	}
+    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+    FMOD_VERIFY(fmodEvent->stop());
 }
 
-void SoundEvent::Play()
+void FMODSoundEvent::Play()
 {
 	FMOD_VERIFY(fmodEvent->start());
 }
 
-void SoundEvent::Stop()
+void FMODSoundEvent::Stop()
 {
 	FMOD_VERIFY(fmodEvent->stop());
 }
 
-void SoundEvent::SetPosition(const Vector3 & position)
+void FMODSoundEvent::SetPosition(const Vector3 & position)
 {
 	FMOD_VECTOR pos = {position.x, position.y, position.z};
 	FMOD_VERIFY(fmodEvent->set3DAttributes(&pos, 0));
 }
 
-void SoundEvent::SetVolume(float32 volume)
+void FMODSoundEvent::SetVolume(float32 volume)
 {
 	FMOD_VERIFY(fmodEvent->setVolume(volume));
 }
 
-float32	SoundEvent::GetVolume()
+float32	FMODSoundEvent::GetVolume()
 {
 	float32 volume = 0;
 	FMOD_VERIFY(fmodEvent->getVolume(&volume));
 	return volume;
 }
 
-void SoundEvent::Pause(bool isPaused)
+void FMODSoundEvent::Pause(bool isPaused)
 {
 	FMOD_VERIFY(fmodEvent->setPaused(isPaused));
 }
 
-bool SoundEvent::IsPaused()
+bool FMODSoundEvent::IsPaused()
 {
 	bool isPaused = false;
 	FMOD_VERIFY(fmodEvent->getPaused(&isPaused));
 	return isPaused;
 }
 
-void SoundEvent::PerformCallback(eEvent eventType)
+void FMODSoundEvent::KeyOffParameter(const String & paramName)
 {
-	eventDispatcher.PerformEvent(eventType, this);
+    FMOD::EventParameter * param = 0;
+    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+    if(param)
+        FMOD_VERIFY(param->keyOff());
 }
 
-FMOD_RESULT F_CALLBACK SoundEventCallback(FMOD_EVENT * event, FMOD_EVENT_CALLBACKTYPE  type, void * param1, void * param2, void * userdata)
+void FMODSoundEvent::SetParameterValue(const String & paramName, float32 value)
 {
-	SoundEvent * soundEvent = (SoundEvent *)userdata;
-	switch(type)
-	{
-	case FMOD_EVENT_CALLBACKTYPE_EVENTSTARTED:
-		soundEvent->PerformCallback(SoundEvent::EVENT_STARTED);
-		break;
-	case FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED:
-		soundEvent->PerformCallback(SoundEvent::EVENT_FINISHED);
-		break;
-	case FMOD_EVENT_CALLBACKTYPE_SYNCPOINT:
-		soundEvent->PerformCallback(SoundEvent::EVENT_SYNCPOINT);
-		break;
-	case FMOD_EVENT_CALLBACKTYPE_SOUNDDEF_SELECTINDEX:
-		break;
-	case FMOD_EVENT_CALLBACKTYPE_SOUNDDEF_CREATE:
-		break;
-	case FMOD_EVENT_CALLBACKTYPE_SOUNDDEF_RELEASE:
-		break;
-	default:
-		break;
-	}
+    FMOD::EventParameter * param = 0;
+    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+    if(param)
+        FMOD_VERIFY(param->setValue(value));
+}
 
-	return FMOD_OK;
+float32 FMODSoundEvent::GetParameterValue(const String & paramName)
+{
+    float32 returnValue = 0.f;
+    FMOD::EventParameter * param = 0;
+    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+    if(param)
+        FMOD_VERIFY(param->getValue(&returnValue));
+    return returnValue;
+}
+
+void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo)
+{
+    int32 paramsCount = 0;
+    FMOD_VERIFY(fmodEvent->getNumParameters(&paramsCount));
+    for(int32 i = 0; i < paramsCount; i++)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(fmodEvent->getParameterByIndex(i, &param));
+        if(!param)
+            continue;
+
+        char * paramName = 0;
+        FMOD_VERIFY(param->getInfo(0, &paramName));
+
+        FMODSoundEvent::SoundEventParameterInfo pInfo;
+        pInfo.name = String(paramName);
+        FMOD_VERIFY(param->getRange(&pInfo.minValue, &pInfo.maxValue));
+        FMOD_VERIFY(param->getValue(&pInfo.currentValue));
+
+        paramsInfo.push_back(pInfo);
+    }
 }
 
 };

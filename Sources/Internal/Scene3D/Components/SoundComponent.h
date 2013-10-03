@@ -33,41 +33,24 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {
 
-class SoundEvent;
-class SoundUpdateSystem;
+class Entity;
 class SoundComponent : public Component
 {
 public:
-	SoundComponent();
-	virtual ~SoundComponent();
-
 	IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
 
-	SoundEvent * GetSoundEvent();
-	const String & GetEventName();
-	void SetEventName(const String & eventName);
+    virtual void Play() = 0;
+    virtual void Stop() = 0;
+    virtual void SetParameter(const String & paramName, float32 value) = 0;
+    virtual float32 GetParameter(const String & paramName) = 0;
 
-	virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+    virtual void SetPosition(const Vector3 & position) = 0;
 
-private:
-	void SetSoundEvent(SoundEvent * sEvent);
-
-	SoundEvent * soundEvent;
-	String eventName;
-
-	friend class SoundUpdateSystem;
-
-public:
-	INTROSPECTION_EXTEND(SoundComponent, Component,
-		PROPERTY("eventName", "eventName", GetEventName, SetEventName, I_SAVE | I_VIEW | I_EDIT)
-		);
+    INTROSPECTION_EXTEND(SoundComponent, Component, NULL);
 };
 
 };
