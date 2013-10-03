@@ -151,8 +151,7 @@ void LibraryView::OnModelEdit()
 	if(index.isValid())
 	{
 		QFileInfo fileInfo = libModel->fileInfo(index);
-		int tabId = QtMainWindow::Instance()->GetSceneWidget()->OpenTab(fileInfo.absoluteFilePath().toStdString());
-		QtMainWindow::Instance()->GetSceneWidget()->SetCurrentTab(tabId);
+		QtMainWindow::Instance()->OpenScene(fileInfo.absoluteFilePath());
 	}
 }
 

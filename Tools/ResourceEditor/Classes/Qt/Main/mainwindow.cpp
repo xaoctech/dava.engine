@@ -835,13 +835,7 @@ void QtMainWindow::OnSceneNew()
 void QtMainWindow::OnSceneOpen()
 {
 	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
-	if (!path.isEmpty())
-	{
-		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
-		ui->sceneTabWidget->SetCurrentTab(index);
-
-		AddRecent(path);
-	}
+	OpenScene(path);
 }
 
 void QtMainWindow::OnSceneSave()
@@ -2079,4 +2073,15 @@ void QtMainWindow::CreateObjectTypesCombobox()
     objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE);
     
     QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
+}
+
+void QtMainWindow::OpenScene( const QString & path )
+{
+	if (!path.isEmpty())
+	{
+		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+		ui->sceneTabWidget->SetCurrentTab(index);
+
+		AddRecent(path);
+	}
 }

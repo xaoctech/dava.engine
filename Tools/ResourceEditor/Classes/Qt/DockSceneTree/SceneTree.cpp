@@ -590,7 +590,6 @@ void SceneTree::EditModel()
 	if(NULL != sceneEditor)
 	{
 		SceneSelectionSystem *ss = sceneEditor->selectionSystem;
-		int tabIndex = -1;
 
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
@@ -601,12 +600,10 @@ void SceneTree::EditModel()
 				DAVA::FilePath entityRefPath = archive->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 				if(entityRefPath.Exists())
 				{
-					tabIndex = QtMainWindow::Instance()->GetSceneWidget()->OpenTab(entityRefPath);
+					QtMainWindow::Instance()->OpenScene(entityRefPath.GetAbsolutePathname().c_str());
 				}
 			}
 		}
-
-		QtMainWindow::Instance()->GetSceneWidget()->SetCurrentTab(tabIndex);
 	}
 }
 
