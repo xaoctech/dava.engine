@@ -97,7 +97,7 @@ protected slots:
 
 protected:
 
-	void AppleNewLandscapeSize();
+	void ApplyNewLandscapeSize();
 	
 	struct PropertyInfo
 	{
