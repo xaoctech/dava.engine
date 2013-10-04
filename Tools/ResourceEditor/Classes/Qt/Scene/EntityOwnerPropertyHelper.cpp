@@ -47,7 +47,7 @@ EntityOwnerPropertyHelper::~EntityOwnerPropertyHelper()
 void EntityOwnerPropertyHelper::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
 	int id = command->GetId();
-	if(id == CMDID_ADD_ENTITY || id == CMDID_ENTITY_MOVE|| id == CMDID_TRANSFORM)
+	if(id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_CHANGE_PARENT || id == CMDID_TRANSFORM)
 	{
 		KeyedArchive* properties = command->GetEntity()->GetCustomProperties();
 		if(NULL != properties)
