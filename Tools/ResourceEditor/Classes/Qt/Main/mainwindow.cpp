@@ -104,6 +104,7 @@
 #include <QKeySequence>
 
 #include "Scene3D/Components/ActionComponent.h"
+#include "Scene/EntityOwnerPropertyHelper.h"
 
 QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
@@ -162,6 +163,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
+	EntityOwnerPropertyHelper::Instance();
 }
 
 QtMainWindow::~QtMainWindow()
