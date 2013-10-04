@@ -29,8 +29,7 @@
 
 
 #include "EntityOwnerPropertyHelper.h"
-#include "EditorSettings.h"
-#include "CommandsManager.h"
+#include "SceneEditor/EditorSettings.h"
 
 const char* EntityOwnerPropertyHelper::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
 const char* EntityOwnerPropertyHelper::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
