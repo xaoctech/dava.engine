@@ -27,32 +27,40 @@
 =====================================================================================*/
 
 
-#ifndef __ENTITY_OWNER_PROPERTY_HELPER__
-#define __ENTITY_OWNER_PROPERTY_HELPER__
 
-#include "DAVAEngine.h"
+#include "Commands2/EntityAddCommand.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "Scene3D/Entity.h"
 
-namespace DAVA {
-	//entityOwnerPropertyHelper
 
-	
-class CustomPropertiesComponent;
-class EntityOwnerPropertyHelper: public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
+EntityAddCommand::EntityAddCommand(DAVA::Entity* _entityToAdd, DAVA::Entity* toParent)
+	: Command2(CMDID_ENTITY_ADD, "Add Entity")
+    , entityToAdd(_entityToAdd)
+    , parentToAdd(toParent)
 {
-public:
-	void UpdateEntityOwner(KeyedArchive *customProperties);
+	SafeRetain(entityToAdd);
+}
 
-	void SetDesignerName(KeyedArchive *customProperties, const String & name);
-	String GetDesignerName(KeyedArchive *customProperties);
+EntityAddCommand::~EntityAddCommand()
+{
+	SafeRelease(entityToAdd);
+}
 
-	void UpdateModificationTime(KeyedArchive *customProperties);
-	String GetModificationTime(KeyedArchive *customProperties);
+void EntityAddCommand::Undo()
+{
+    if(NULL != parentToAdd && NULL != entityToAdd)
+    {
+        parentToAdd->RemoveNode(entityToAdd);
+    }
+}
 
-	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
-	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
-};
+void EntityAddCommand::Redo()
+{
+    if(parentToAdd)
+        parentToAdd->AddNode(entityToAdd);
+}
 
-};
-
-#endif /* defined(__ENTITY_OWNER_PROPERTY_HELPER__) */
+Entity* EntityAddCommand::GetEntity() const
+{
+	return entityToAdd;
+}

@@ -39,7 +39,6 @@
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
 #include "../Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
 #include "../Qt/CubemapEditor/MaterialHelper.h"
