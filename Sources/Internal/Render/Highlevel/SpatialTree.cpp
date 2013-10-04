@@ -23,7 +23,9 @@ QuadTree::QuadTree(const AABBox3& _worldBox, int32 _maxTreeDepth): worldBox(_wor
 	
 	root.zMin = worldBox.min.z;
 	root.zMax = worldBox.max.z;
-	nodes.push_back(root);	
+	nodes.push_back(root);
+    
+    reversePath.reserve(maxTreeDepth);
 }
 
 bool QuadTree::CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax)
@@ -262,8 +264,8 @@ void QuadTree::ObjectUpdated(RenderObject *object)
 	DVASSERT(baseIndex!=INVALID_TREE_NODE_INDEX);		
 
 	//build reverse path;
-	Vector<int32> reversePath;
-	reversePath.reserve(16);
+	
+	reversePath.clear();
 	int32 reverseIndex = baseIndex;	
 	while (nodes[reverseIndex].parent!=INVALID_TREE_NODE_INDEX)//while we have parent - travel through it
 	{
