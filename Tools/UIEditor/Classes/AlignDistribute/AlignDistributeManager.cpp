@@ -42,6 +42,17 @@ ControlsPositionData AlignDistributeManager::AlignControls(const List<UIControl*
 	return resutlData;
 }
 
+ControlsPositionData AlignDistributeManager::DistributeControls(const List<UIControl*>& controlsList, eDistributeControlsType distributeType)
+{
+	BaseDistributeHandler* distributeHandler = CreateDistributeHandler(distributeType);
+	DVASSERT(distributeHandler);
+
+	ControlsPositionData resutlData = distributeHandler->Distribute(controlsList);
+	SafeDelete(distributeHandler);
+	
+	return resutlData;
+}
+
 void AlignDistributeManager::UndoAlignDistribute(const ControlsPositionData& positionData)
 {
 	for (Map<UIControl*, Rect>::const_iterator iter = positionData.GetControlPositions().begin();
@@ -100,4 +111,57 @@ BaseAlignHandler* AlignDistributeManager::CreateAlignHandler(eAlignControlsType 
 	}
 }
 
+BaseDistributeHandler* AlignDistributeManager::CreateDistributeHandler(eDistributeControlsType distributeType)
+{
+	switch (distributeType)
+	{
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_LEFT_EDGES:
+		{
+			return new DistributeEqualDistanceLeftEdgesHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X_CENTERS:
+		{
+			return new DistributeEqualDistanceXCentersHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_RIGHT_EDGES:
+		{
+			return new DistributeEqualDistanceRightEdgesHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X:
+		{
+			return new DistributeEqualDistanceXHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_TOP_EDGES:
+		{
+			return new DistributeEqualDistanceTopEdgesHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y_CENTERS:
+		{
+			return new DistributeEqualDistanceYCentersHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_BOTTOM_EDGES:
+		{
+			return new DistributeEqualDistanceBottomEdgesHandler();
+		}
+
+		case DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y:
+		{
+			return new DistributeEqualDistanceYHandler();
+		}
+
+		default:
+		{
+			Logger::Error("No Distribute Handler found for Distribute Type %i", distributeType);
+			DVASSERT(false);
+			return new DoNothingDistributeHandler();
+		}
+	}
 }
+
+};

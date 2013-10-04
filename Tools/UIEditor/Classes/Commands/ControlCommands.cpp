@@ -109,13 +109,21 @@ void ControlResizeCommand::ApplyResize(const Rect& prevRect, const Rect& updated
     SAFE_DELETE(baseMetadata);
 }
 
-ControlsAlignCommand::ControlsAlignCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType)
+ControlsAlignDistributeCommand::ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType)
 {
 	this->selectedControls = controls;
 	this->selectedAlignType = alignType;
+	this->commandMode = MODE_ALIGN;
 }
 
-void ControlsAlignCommand::Execute()
+ControlsAlignDistributeCommand::ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eDistributeControlsType distributeType)
+{
+	this->selectedControls = controls;
+	this->selectedDistributeType = distributeType;
+	this->commandMode = MODE_DISTRIBUTE;
+}
+
+void ControlsAlignDistributeCommand::Execute()
 {
 	List<UIControl*> selectedUIControls;
 	for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = selectedControls.begin(); iter != selectedControls.end(); ++iter)
@@ -128,10 +136,29 @@ void ControlsAlignCommand::Execute()
 		}
 	}
 
-	this->prevPositionData = AlignDistributeManager::AlignControls(selectedUIControls, selectedAlignType);
+	switch (this->commandMode)
+	{
+		case MODE_ALIGN:
+		{
+			this->prevPositionData = AlignDistributeManager::AlignControls(selectedUIControls, selectedAlignType);
+			break;
+		}
+
+		case MODE_DISTRIBUTE:
+		{
+			this->prevPositionData = AlignDistributeManager::DistributeControls(selectedUIControls, selectedDistributeType);
+			break;
+		}
+			
+		default:
+		{
+			DVASSERT_MSG(Format("Unknown Command Mode %i", this->commandMode), false);
+			break;
+		}
+	}
 }
 
-void ControlsAlignCommand::Rollback()
+void ControlsAlignDistributeCommand::Rollback()
 {
 	AlignDistributeManager::UndoAlignDistribute(prevPositionData);
 }
