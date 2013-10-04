@@ -117,9 +117,10 @@ public:
 	bool HasUnsavedChanges() const;
 
 	HierarchyTreeScreenNode* GetScreenNodeForNode(HierarchyTreeNode* node);
-	
+
 	// Align/Distribute logic.
 	void AlignSelectedControls(eAlignControlsType alignType);
+	void DistributeSelectedControls(eDistributeControlsType distributeType);
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
