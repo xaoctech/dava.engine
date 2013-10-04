@@ -40,7 +40,7 @@ class Job;
 class ThreadIdJobWaiter
 {
 public:
-	ThreadIdJobWaiter();
+	ThreadIdJobWaiter(Thread::ThreadId threadId = Thread::GetCurrentThreadId());
 	~ThreadIdJobWaiter();
 	void Wait();
 
