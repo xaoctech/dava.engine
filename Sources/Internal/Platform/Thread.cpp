@@ -125,6 +125,16 @@ void Thread::Broadcast(ConditionalVariable * cv)
         Logger::Debug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
 }
 
+void Thread::SetThreadId(const ThreadId & _threadId)
+{
+	threadId = _threadId;
+}
+
+Thread::ThreadId Thread::GetThreadId()
+{
+	return threadId;
+}
+
 #ifndef __DAVAENGINE_WIN32__
 void Thread::SleepThread(uint32 timeMS)
 {
@@ -138,6 +148,7 @@ void Thread::SleepThread(uint32 timeMS)
         req = rem;
     }
 }
+
 #endif
 
 };

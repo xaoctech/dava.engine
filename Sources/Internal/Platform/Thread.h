@@ -173,6 +173,9 @@ public:
 
 	static ThreadId GetCurrentThreadId();
 
+	void SetThreadId(const ThreadId & threadId);
+	ThreadId GetThreadId();
+
 private:
 	Thread() {};
 	Thread(const Thread& t);
@@ -182,6 +185,7 @@ private:
 	eThreadState state;
 	bool needCopyContext;
 
+	ThreadId threadId;
 	static ThreadId mainThreadId;
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)

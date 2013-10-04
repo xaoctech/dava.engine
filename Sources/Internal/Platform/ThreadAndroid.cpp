@@ -153,7 +153,7 @@ void * PthreadMain (void * param)
 	Logger::Info("[PthreadMain] param = %p", param);
 
 	Thread * t = (Thread*)param;
-
+	t->SetThreadId(Thread::GetCurrentThreadId());
 	if(t->needCopyContext)
     {
     	EGLConfig localConfig;

@@ -32,8 +32,8 @@
 namespace DAVA
 {
 
-ThreadIdJobWaiter::ThreadIdJobWaiter()
-:	threadId(Thread::GetCurrentThreadId())
+ThreadIdJobWaiter::ThreadIdJobWaiter(Thread::ThreadId _threadId/* = Thread::GetCurrentThreadId()*/)
+:	threadId(_threadId)
 {
 	
 

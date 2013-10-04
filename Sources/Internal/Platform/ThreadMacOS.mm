@@ -62,6 +62,7 @@ void * PthreadMain(void * param)
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
 	Thread * t = (Thread*)param;
+	t->SetThreadId(Thread::GetCurrentThreadId());
 	if(t->needCopyContext)
 	{
 #if defined(__DAVAENGINE_IPHONE__)
