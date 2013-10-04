@@ -647,7 +647,14 @@ HierarchyTreeScreenNode* HierarchyTreeController::GetScreenNodeForNode(Hierarchy
 
 void HierarchyTreeController::AlignSelectedControls(eAlignControlsType alignType)
 {
-	BaseCommand* command = new ControlsAlignCommand(activeControlNodes, alignType);
+	BaseCommand* command = new ControlsAlignDistributeCommand(activeControlNodes, alignType);
+    CommandsController::Instance()->ExecuteCommand(command);
+	SafeRelease(command);
+}
+
+void HierarchyTreeController::DistributeSelectedControls(eDistributeControlsType distributeType)
+{
+	BaseCommand* command = new ControlsAlignDistributeCommand(activeControlNodes, distributeType);
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
