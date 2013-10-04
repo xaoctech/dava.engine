@@ -33,7 +33,9 @@
 #include "DAVAEngine.h"
 #include "AlignDistributeEnums.h"
 #include "ControlsPositionData.h"
+
 #include "AlignHandlers.h"
+#include "DistributeHandlers.h"
 
 namespace DAVA {
 
@@ -44,15 +46,18 @@ public:
 	// Align controls according to the type passed, return previous position of the
 	// controls (needed for undo).
 	static ControlsPositionData AlignControls(const List<UIControl*>& controlsList, eAlignControlsType alingType);
-	
-	// TODO! distribute the controls.
-	
+
+	// Distribute controls according to the type passed, return previous position of the
+	// controls (needed for undo).
+	static ControlsPositionData DistributeControls(const List<UIControl*>& controlsList, eDistributeControlsType distributeType);
+
 	// Undo the alignment/distribution, return the controls back to their positions.
 	static void UndoAlignDistribute(const ControlsPositionData& positionData);
 	
 protected:
 	// Create the appropriate Align/Distribute Handler.
 	static BaseAlignHandler* CreateAlignHandler(eAlignControlsType alignType);
+	static BaseDistributeHandler* CreateDistributeHandler(eDistributeControlsType distributeType);
 };
 
 };

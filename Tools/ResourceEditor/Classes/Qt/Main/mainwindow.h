@@ -85,8 +85,6 @@ public:
 	bool BeastWaitCanceled();
 #endif //#if defined (__DAVAENGINE_BEAST__)
 
-
-    
 signals:
     void GlobalInvalidateTimeout();
 
@@ -141,7 +139,7 @@ public slots:
 	void OnUniteEntitiesWithLODs();
 	void OnAddEntityMenuAboutToShow();
 	void OnAddEntityFromSceneTree();
-	
+
 	void OnSetSkyboxNode();
 	
 	void OnShowSettings();
