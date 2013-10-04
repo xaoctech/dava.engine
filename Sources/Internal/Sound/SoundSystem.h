@@ -63,7 +63,7 @@ public:
     virtual float32 GetGroupVolume(const FastName & groupName) = 0;
 
     virtual void SetGlobalComponentsVolume(float32 volume) = 0;
-    virtual float32 GetGlobalComponentsVolume() = 0;
+    virtual float32 GetSoundComponentsVolume() = 0;
 
 protected:
     void AddVolumeAnimatedObject(VolumeAnimatedObject * object);

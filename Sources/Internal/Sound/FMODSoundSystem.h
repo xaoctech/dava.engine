@@ -72,7 +72,7 @@ public:
     virtual float32 GetGroupVolume(const FastName & groupName);
 
     virtual void SetGlobalComponentsVolume(float32 volume);
-    virtual float32 GetGlobalComponentsVolume();
+    virtual float32 GetSoundComponentsVolume();
 
     //FMOD Only
     static FMODSoundSystem * GetFMODSoundSystem();

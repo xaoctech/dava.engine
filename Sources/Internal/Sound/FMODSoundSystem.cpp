@@ -327,7 +327,7 @@ void FMODSoundSystem::SetGlobalComponentsVolume(float32 volume)
     }
 }
 
-float32 FMODSoundSystem::GetGlobalComponentsVolume()
+float32 FMODSoundSystem::GetSoundComponentsVolume()
 {
     return globalComponentsVolume;
 }
