@@ -53,14 +53,9 @@ void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loade
 	if (pathNode)
 	{
 		aggregatorPath = FilePath(pathNode->AsString());
-		String aggregatorFileName = aggregatorPath.GetFilename();
-
-		aggregatorPath = loader->GetCurrentPath() + aggregatorFileName;
-
+		// DF-2230 - Pass relative path to loader
 		UIYamlLoader loader;
 		loader.Load(this, aggregatorPath);
-
-		aggregatorPath = FilePath(aggregatorFileName);
 	}
 }
 
