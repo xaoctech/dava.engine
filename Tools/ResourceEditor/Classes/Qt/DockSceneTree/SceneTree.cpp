@@ -616,8 +616,20 @@ void SceneTree::ReloadModelAs()
 		if(NULL != entity)
 		{
 			DAVA::String ownerPath = entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
+			if(ownerPath.empty())
+			{
+				FilePath p = sceneEditor->GetScenePath().GetDirectory();
+				if(p.Exists() && sceneEditor->IsLoaded())
+				{
+					ownerPath = p.GetAbsolutePathname();
+				}
+				else
+				{
+					ownerPath = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
+				}
+			}
 
+			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->structureSystem->Reload(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
