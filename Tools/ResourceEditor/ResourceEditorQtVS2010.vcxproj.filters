@@ -1305,9 +1305,6 @@
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp">
-      <Filter>Classes\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClCompile>
@@ -2201,6 +2198,12 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.cpp">
+      <Filter>Classes\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\EntityOwnerPropertyHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3347,9 +3350,6 @@
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h">
-      <Filter>Classes\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClInclude>
@@ -3814,6 +3814,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.h">
+      <Filter>Classes\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
