@@ -339,7 +339,6 @@
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
     <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp" />
-    <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp" />
     <ClCompile Include="Classes\Commands2\BeastAction.cpp" />
@@ -352,7 +351,8 @@
     <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp" />
     <ClCompile Include="Classes\Commands2\CustomColorsCommands2.cpp" />
     <ClCompile Include="Classes\Commands2\DAEConvertAction.cpp" />
-    <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
@@ -1021,7 +1021,6 @@
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
     <ClInclude Include="Classes\Commands2\AddComponentCommand.h" />
-    <ClInclude Include="Classes\Commands2\AddEntityCommand.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h" />
     <ClInclude Include="Classes\Commands2\BeastAction.h" />
@@ -1035,7 +1034,8 @@
     <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h" />
     <ClInclude Include="Classes\Commands2\CustomColorsCommands2.h" />
     <ClInclude Include="Classes\Commands2\DAEConvertAction.h" />
-    <ClInclude Include="Classes\Commands2\EntityMoveCommand.h" />
+    <ClInclude Include="Classes\Commands2\EntityAddCommand.h" />
+    <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />

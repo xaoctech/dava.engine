@@ -1335,9 +1335,6 @@
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.cpp">
       <Filter>Classes\Qt\DockSceneTree</Filter>
     </ClCompile>
@@ -1956,9 +1953,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp">
       <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
     </ClCompile>
@@ -2204,6 +2198,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Scene\EntityOwnerPropertyHelper_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3386,9 +3386,6 @@
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\EntityMoveCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.h">
       <Filter>Classes\Qt\DockSceneTree</Filter>
     </ClInclude>
@@ -3632,9 +3629,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h">
       <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\AddEntityCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h">
       <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
     </ClInclude>
@@ -3817,6 +3811,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.h">
       <Filter>Classes\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
