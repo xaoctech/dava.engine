@@ -62,9 +62,11 @@ class QuadTree : public AbstractSpatialTree
 	void DebugDrawNode(uint32 nodeId, AABBox3 box);
 	void ProcessNodeClipping(uint32 nodeId, AABBox3& box, uint32 clippingFlags);	
 
-	void AddObjectToNode(uint32 baseNodeId, int32 baseDepth, const AABBox3& box, RenderObject *object);
+	uint32 FindObjectAddNode(uint32 startNodeId, int32 startDepth, const AABBox3& nodeBox, const AABBox3& objBox);
+	
 	static const int32 RECALCULATE_Z_PER_FRAME = 10;
 	void RecalculateNodeZLimits(uint32 nodeId);
+	void MarkNodeDirty(uint32 nodeId);
 
 public:
 	QuadTree(const AABBox3 &worldBox, int32 maxTreeDepth);
