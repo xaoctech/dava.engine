@@ -37,11 +37,9 @@
 namespace DAVA
 {
 
-FMODSoundGroup::FMODSoundGroup()
+FMODSoundGroup::FMODSoundGroup(FMOD::System * fmodSystem)
 {
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-    if(soundSystem)
-	    FMOD_VERIFY(soundSystem->fmodSystem->createSoundGroup(0, &fmodSoundGroup));
+	FMOD_VERIFY(fmodSystem->createSoundGroup(0, &fmodSoundGroup));
 }
 
 FMODSoundGroup::~FMODSoundGroup()

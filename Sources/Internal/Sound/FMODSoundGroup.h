@@ -38,6 +38,7 @@
 namespace FMOD
 {
 class SoundGroup;
+class System;
 };
 
 namespace DAVA
@@ -47,7 +48,7 @@ class FMODSound;
 class FMODSoundGroup : public VolumeAnimatedObject
 {
 public:
-	FMODSoundGroup();
+	FMODSoundGroup(FMOD::System * fmodSystem);
 	~FMODSoundGroup();
 
 	virtual void SetVolume(float32 volume);
@@ -59,6 +60,7 @@ private:
 	FMOD::SoundGroup * fmodSoundGroup;
 
 friend class FMODSound;
+friend class FMODSoundSystem;
 };
 
 };
