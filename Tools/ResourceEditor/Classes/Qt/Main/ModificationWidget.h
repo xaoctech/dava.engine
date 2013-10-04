@@ -60,8 +60,7 @@ public:
 private slots:
 	void OnSceneActivated(SceneEditor2 *scene);
 	void OnSceneDeactivated(SceneEditor2 *scene);
-	void OnSceneEntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void OnSceneEntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void OnSceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 	void OnSceneCommand(SceneEditor2 *scene, const Command2* command, bool redo);
 
 	void OnXChanged();

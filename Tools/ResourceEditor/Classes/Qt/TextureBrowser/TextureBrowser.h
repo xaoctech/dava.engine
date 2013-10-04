@@ -75,8 +75,7 @@ protected:
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
-	void sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
 private:
     Ui::TextureBrowser *ui;

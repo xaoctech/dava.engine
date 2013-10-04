@@ -46,6 +46,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
 	, selectionLocked(false)
+	, selectionHasChanges(false)
 {
 
 }
@@ -57,12 +58,26 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
+	ForceEmitSignals();
+
 	if (IsLocked())
 	{
 		return;
 	}
 
 	UpdateHoodPos();
+}
+
+void SceneSelectionSystem::ForceEmitSignals()
+{
+	if(selectionHasChanges)
+	{
+		// emit signals
+		SceneSignals::Instance()->EmitSelectionChanged((SceneEditor2 *) GetScene(), &curSelections, &curDeselections);
+
+		selectionHasChanges = false;
+		curDeselections.Clear();
+	}
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -220,28 +235,15 @@ void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
 	if(!selectionLocked)
 	{
-		DAVA::Entity *selectedEntity = NULL;
-
-		// emit deselection for current selected items
-		for(size_t i = 0; i < curSelections.Size(); ++i)
-		{
-			EntityGroupItem* selectedItem = curSelections.GetItem(i);
-			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectedItem->entity);
-		}
-
-		// clear current selection
-		curSelections.Clear();
+		Clear();
 
 		// add new selection
 		if(NULL != entity)
 		{
 			AddSelection(entity);
 		}
-		else
-		{
-			SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), NULL);
-			UpdateHoodPos();
-		}
+
+		UpdateHoodPos();
 	}
 }
 
@@ -259,7 +261,8 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 			if(!curSelections.HasEntity(entity))
 			{
 				curSelections.Add(selectableItem);
-				SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
+
+				selectionHasChanges = true;
 			}
 		}
 
@@ -274,7 +277,9 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 		if(curSelections.HasEntity(entity))
 		{
 			curSelections.Rem(entity);
-			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+			curDeselections.Add(entity);
+
+			selectionHasChanges = true;
 		}
 
 		UpdateHoodPos();
@@ -288,9 +293,11 @@ void SceneSelectionSystem::Clear()
 		while(curSelections.Size() > 0)
 		{
 			DAVA::Entity *entity = curSelections.GetEntity(0);
-			curSelections.Rem(entity);
 
-			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+			curSelections.Rem(entity);
+			curDeselections.Add(entity);
+
+			selectionHasChanges = true;
 		}
 	}
 }

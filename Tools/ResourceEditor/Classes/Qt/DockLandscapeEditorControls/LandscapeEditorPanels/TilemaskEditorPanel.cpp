@@ -204,7 +204,32 @@ void TilemaskEditorPanel::InitBrushImages()
 
 void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& g, Image*& b, Image*& a)
 {
-	DVASSERT(image->GetPixelFormat() == FORMAT_RGBA8888)
+	if (image->GetPixelFormat() != FORMAT_RGBA8888)
+	{
+		uint32 width = image->GetWidth();
+		uint32 height = image->GetHeight();
+
+		Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
+											 width, height, false);
+		Sprite* s = Sprite::CreateFromTexture(t, 0, 0, width, height);
+
+		Sprite* sprite = Sprite::CreateAsRenderTarget(width, height, FORMAT_RGBA8888);
+		RenderManager::Instance()->SetRenderTarget(sprite);
+		s->SetPosition(0.f, 0.f);
+		s->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+
+		image = sprite->GetTexture()->CreateImageFromMemory();
+		image->ResizeCanvas(width, height);
+
+		SafeRelease(sprite);
+		SafeRelease(s);
+		SafeRelease(t);
+	}
+	else
+	{
+		image->Retain();
+	}
 
 	const int32 CHANNELS_COUNT = 4;
 
@@ -232,6 +257,8 @@ void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& 
 	g = images[1];
 	b = images[2];
 	a = images[3];
+
+	image->Release();
 }
 
 void TilemaskEditorPanel::UpdateTileTextures()

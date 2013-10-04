@@ -173,10 +173,12 @@ bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 
 bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
+	// DF-2164 - Get proper relative path for aggregator
+	String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 	// Always update aggregator path if it is empty while save
 	if (this->path.IsEmpty())
 	{
-		this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+		this->path = aggregatorPath;
 	}
 	
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
@@ -188,8 +190,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		if (!aggregatorControl)
 			continue;
 
-		String aggregatorName = FilePath(path.toStdString()).GetFilename();
-		aggregatorControl->SetAggregatorPath(aggregatorName);
+		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	
 	node->Set(WIDTH_NODE, (int32)rect.dx);

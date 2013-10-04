@@ -639,7 +639,7 @@ DAVA::float32 EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 	{
 		DAVA::Matrix4 rotateModification;
 		rotateModification.Identity();
-		rotateModification.CreateRotation(rotateAround, rotateForce);
+		rotateModification.CreateRotation(rotateAround * modifEntities[i].inversedParentWorldTransform, rotateForce);
 
 		switch(modifPivotPoint)
 		{
@@ -675,7 +675,7 @@ DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 		{
 			DAVA::Matrix4 scaleModification;
 			scaleModification.Identity();
-			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce));
+			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce) * modifEntities[i].inversedParentWorldTransform);
 
 			switch(modifPivotPoint)
 			{
@@ -746,13 +746,7 @@ void EntityModificationSystem::CloneBegin()
 {
 	if(modifEntities.size() > 0)
 	{
-		StructureSystem *structureSystem = ((SceneEditor2 *) GetScene())->structureSystem;
-		SceneCollisionSystem *collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
-
-		structureSystem->LockSignals(true);
-		collisionSystem->LockCollisionObjects(true);
-
-		for(int i = 0; i < modifEntities.size(); ++i)
+		for(size_t i = 0; i < modifEntities.size(); ++i)
 		{
 			DAVA::Entity *origEntity = modifEntities[i].entity;
 			DAVA::Entity *newEntity = origEntity->Clone();
@@ -761,9 +755,6 @@ void EntityModificationSystem::CloneBegin()
 
 			clonedEntities.push_back(newEntity);
 		}
-
-		structureSystem->LockSignals(false);
-		collisionSystem->LockCollisionObjects(false);
 	}
 }
 
@@ -774,17 +765,15 @@ void EntityModificationSystem::CloneEnd()
 		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
 		StructureSystem *structureSystem = sceneEditor->structureSystem;
 		SceneSelectionSystem *selectionSystem = sceneEditor->selectionSystem;
-		SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
 
-		structureSystem->LockSignals(true);
-		collisionSystem->LockCollisionObjects(true);
+		selectionSystem->Clear();
 
 		sceneEditor->BeginBatch("Clone");
 
 		// we just moved original objects. Now we should return them back
 		// to there original positions and move cloned object to the new positions
 		// and only after that perform "add cloned entities to scene" commands
-		for(int i = 0; i < modifEntities.size(); ++i)
+		for(size_t i = 0; i < modifEntities.size(); ++i)
 		{
 			// remember new transform
 			Matrix4 newLocalTransform = modifEntities[i].entity->GetLocalTransform();
@@ -802,25 +791,24 @@ void EntityModificationSystem::CloneEnd()
 			// and add it once again with command
 			sceneEditor->Exec(new EntityMoveCommand(clonedEntities[i], cloneParent));
 
+			// make cloned entiti selected
+			selectionSystem->AddSelection(clonedEntities[i]);
 			SafeRelease(clonedEntities[i]);
 		}
 
 		sceneEditor->EndBatch();
-
-		// unlock system
-		collisionSystem->LockCollisionObjects(false);
-		structureSystem->LockSignals(false);
-		structureSystem->EmitChanged();
-
-		// rebuild physical object for cloned entities
-		// and make them selected
-		selectionSystem->Clear();
-		for(int i = 0; i < clonedEntities.size(); ++i)
-		{
-			collisionSystem->UpdateCollisionObject(clonedEntities[i]);
-			selectionSystem->AddSelection(clonedEntities[i]);
-		}
 	}
 
 	clonedEntities.clear();
+}
+
+void EntityModificationSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	if (GetLandscape(entity) != NULL)
+	{
+		SetLandscapeSnap(false);
+
+		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
+		SceneSignals::Instance()->EmitSnapToLandscapeChanged(sceneEditor, false);
+	}
 }

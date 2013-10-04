@@ -40,12 +40,10 @@ EditorLODData::EditorLODData()
     ,   forceLayer(DAVA::LodComponent::INVALID_LOD_LAYER)
     ,   activeScene(NULL)
 {
-    connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
-    connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-    
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+    connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
     connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
 }
@@ -152,21 +150,18 @@ DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::int32 layerNum) const
 }
 
 
-void EditorLODData::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
+void EditorLODData::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
     if(activeScene == scene)
     {
-        GetDataFromSelection();
+		for(int i = 0; i < deselected->Size(); ++i)
+		{
+			ResetForceState(deselected->GetEntity(i));
+		}
+
+		GetDataFromSelection();
         UpdateForceData();
     }
-}
-
-void EditorLODData::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
-{
-    ResetForceState(entity);
-
-    if(activeScene == scene)
-        GetDataFromSelection();
 }
 
 void EditorLODData::ResetForceState(DAVA::Entity *entity)

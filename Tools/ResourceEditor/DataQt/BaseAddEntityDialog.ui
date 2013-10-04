@@ -54,52 +54,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <widget class="PropertyEditorDialog" name="propEditor">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>9999</height>
-          </size>
-         </property>
-         <property name="mouseTracking">
-          <bool>false</bool>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAsNeeded</enum>
-         </property>
-         <property name="tabKeyNavigation">
-          <bool>false</bool>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="verticalScrollMode">
-          <enum>QAbstractItemView::ScrollPerItem</enum>
-         </property>
-         <property name="horizontalScrollMode">
-          <enum>QAbstractItemView::ScrollPerPixel</enum>
-         </property>
-         <property name="indentation">
-          <number>16</number>
-         </property>
-         <property name="animated">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -125,7 +79,7 @@
           <x>0</x>
           <y>0</y>
           <width>642</width>
-          <height>198</height>
+          <height>396</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -170,13 +124,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>PropertyEditorDialog</class>
-   <extends>QTreeView</extends>
-   <header>DockProperties/PropertyEditorDialog.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

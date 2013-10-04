@@ -112,7 +112,6 @@ SceneEditor2::SceneEditor2()
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
-	structureSystem->LockSignals(false);
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -133,8 +132,6 @@ SceneEditor2::~SceneEditor2()
 bool SceneEditor2::Load(const DAVA::FilePath &path)
 {
 	bool ret = false;
-
-	structureSystem->LockSignals(true);
 
 	// make sure that there is no cached entities with such path
 	ReleaseRootNode(path);
@@ -175,7 +172,6 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 	}
 
 	structureSystem->Init();
-	structureSystem->LockSignals(false);
 
 	UpdateShadowColorFromLandscape();
 
@@ -187,7 +183,6 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveForGame /*= false*/)
 {
-	structureSystem->LockSignals(true);
 	ExtractEditorEntities();
 
 	DAVA::SceneFileV2::eError err = Scene::Save(path, saveForGame);
@@ -203,10 +198,8 @@ SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveFor
 	landscapeEditorDrawSystem->SaveTileMaskTexture();
 
 	InjectEditorEntities();
-	structureSystem->LockSignals(false);
 
 	SceneSignals::Instance()->EmitSaved(this);
-	//SceneSignals::Instance()->EmitStructureChanged(this, this);
 
 	return err;
 }

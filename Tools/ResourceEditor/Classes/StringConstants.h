@@ -112,8 +112,8 @@ namespace ResourceEditor
 	static const String TILEMASK_EDITOR_STRENGTH_MIN		= "tilemask-editor.strength.min";
 	static const String TILEMASK_EDITOR_STRENGTH_MAX		= "tilemask-editor.strength.max";
 	static const String TILEMASK_EDITOR_TOOLS_PATH			= "~res:/LandscapeEditor/Tools/";
-	static const String TILEMASK_EDITOR_ERROR_CAPTION		= "Error enabling Tile Mask Editor";
-	static const String TILEMASK_EDITOR_ERROR_MESSAGE		= "Error enabling Tile Mask Editor. Make sure there is landscape in scene.";
+	static const String TILEMASK_EDITOR_ENABLE_ERROR		= "Error enabling Tile Mask Editor. Make sure there is valid landscape at the scene.";
+	static const String TILEMASK_EDITOR_DISABLE_ERROR		= "Error disabling Tile Mask Editor";
 
 	static const String CUSTOM_COLORS_BRUSH_SIZE_CAPTION	= "Brush size:";
 	static const String CUSTOM_COLORS_BRUSH_SIZE_MIN		= "custom-colors.brush-size.min";
@@ -123,14 +123,14 @@ namespace ResourceEditor
 	static const String CUSTOM_COLORS_SAVE_CAPTION			= "Save texture";
 	static const String CUSTOM_COLORS_LOAD_CAPTION			= "Load texture";
 	static const String CUSTOM_COLORS_FILE_FILTER			= "PNG image (*.png)";
-	static const String CUSTOM_COLORS_ERROR_CAPTION			= "Error enabling Custom Colors editor";
-	static const String CUSTOM_COLORS_ERROR_MESSAGE			= "Error enabling Custom Colors editor. Make sure there is landscape in scene.";
+	static const String CUSTOM_COLORS_ENABLE_ERROR			= "Error enabling Custom Colors editor. Make sure there is valid landscape at the scene.";
+	static const String CUSTOM_COLORS_DISABLE_ERROR			= "Error disabling Custom Colors editor.";
 
 	static const String VISIBILITY_TOOL_AREA_SIZE_CAPTION	= "Visibility Area Size:";
 	static const String VISIBILITY_TOOL_AREA_SIZE_MIN		= "visibility-tool.area-size.min";
 	static const String VISIBILITY_TOOL_AREA_SIZE_MAX		= "visibility-tool.area-size.max";
-	static const String VISIBILITY_TOOL_ERROR_CAPTION		= "Error enabling Visibility Check Tool";
-	static const String VISIBILITY_TOOL_ERROR_MESSAGE		= "Error enabling Visibility Check Tool. Make sure there is landscape in scene.";
+	static const String VISIBILITY_TOOL_ENABLE_ERROR		= "Error enabling Visibility Check Tool. Make sure there is valid landscape at the scene.";
+	static const String VISIBILITY_TOOL_DISABLE_ERROR		= "Error disabling Visibility Check Tool";
 	static const String VISIBILITY_TOOL_SAVE_CAPTION		= "Save visibility tool texture";
 	static const String VISIBILITY_TOOL_FILE_FILTER			= "PNG image (*.png)";
 	static const String VISIBILITY_TOOL_SET_AREA_CAPTION	= "Set Visibility Area";
@@ -140,8 +140,8 @@ namespace ResourceEditor
 	static const String RULER_TOOL_LINE_WIDTH_CAPTION		= "Line width:";
 	static const String RULER_TOOL_LENGTH_CAPTION			= "Length:";
 	static const String RULER_TOOL_PREVIEW_LENGTH_CAPTION	= "Preview length:";
-	static const String RULER_TOOL_ERROR_CAPTION			= "Error enabling Ruler Tool";
-	static const String RULER_TOOL_ERROR_MESSAGE			= "Error enabling Ruler Tool. Make sure there is landscape in scene.";
+	static const String RULER_TOOL_ENABLE_ERROR				= "Error enabling Ruler Tool. Make sure there is valid landscape at the scene.";
+	static const String RULER_TOOL_DISABLE_ERROR			= "Error disabling Ruler Tool";
 
 	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION			= "Brush size:";
 	static const String HEIGHTMAP_EDITOR_STRENGTH_CAPTION			= "Strength:";
@@ -152,8 +152,8 @@ namespace ResourceEditor
 	static const String HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN		= "heightmap-editor.average-strength.min";
 	static const String HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX		= "heightmap-editor.average-strength.max";
 	static const String HEIGHTMAP_EDITOR_TOOLS_PATH					= "~res:/LandscapeEditor/Tools/";
-	static const String HEIGHTMAP_EDITOR_ERROR_CAPTION				= "Error enabling Height Map editor";
-	static const String HEIGHTMAP_EDITOR_ERROR_MESSAGE				= "Error enabling Height Map editor. Make sure there is landscape in scene.";
+	static const String HEIGHTMAP_EDITOR_ENABLE_ERROR				= "Error enabling Height Map editor. Make sure there is valid landscape at the scene.";
+	static const String HEIGHTMAP_EDITOR_DISABLE_ERROR				= "Error disabling Height Map editor.";
 	static const String HEIGHTMAP_EDITOR_RADIO_COPY_PASTE			= "Copy/paste";
 	static const String HEIGHTMAP_EDITOR_RADIO_ABS_DROP				= "Abs & Drop";
 	static const String HEIGHTMAP_EDITOR_RADIO_ABSOLUTE				= "Absolute";
@@ -164,6 +164,8 @@ namespace ResourceEditor
 	static const String HEIGHTMAP_EDITOR_CHECKBOX_TILEMASK			= "Tile Mask";
 	static const String HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE			= "Brush\nimage:";
 	static const String HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT		= "Height:";
+
+	static const String NOT_PASSABLE_TERRAIN_ENABLE_ERROR			= "Error enabling Not Passable Terrain. Make sure there is valid landscape at the scene.";
 
 	static const String SHORTCUT_BRUSH_SIZE_INCREASE_SMALL			= "landscape-editor.brush-size.increase.small";
 	static const String SHORTCUT_BRUSH_SIZE_DECREASE_SMALL			= "landscape-editor.brush-size.decrease.small";
@@ -191,6 +193,8 @@ namespace ResourceEditor
 	static const String SHORTCUT_SET_DROPPER						= "heightmap-editor.set-dropper";
 	static const String SHORTCUT_COPY_PASTE_HEIGHTMAP				= "heightmap-editor.copy-paste.heightmap";
 	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "heightmap-editor.copy-paste.tilemask";
+
+	static const String NO_LANDSCAPE_ERROR_MESSAGE					= "Error. Check is there landscape at the scene.";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

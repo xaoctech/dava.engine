@@ -30,6 +30,7 @@
 
 #include <QSet>
 #include "DockSceneTree/SceneTreeItem.h"
+#include "Commands2/ConvertToShadowCommand.h"
 
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
@@ -137,6 +138,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
 	static QIcon cameraIcon(":/QtIcons/camera.png");
 	static QIcon lightIcon(":/QtIcons/light.png");
+	static QIcon shadowIcon(":/QtIcons/shadow.png");
 
 	QIcon ret;
 
@@ -160,7 +162,14 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
-			ret = renderobjIcon;
+			if(ConvertToShadowCommand::IsEntityWithShadowVolume(entity))
+			{
+				ret = shadowIcon;
+			}
+			else
+			{
+				ret = renderobjIcon;
+			}
 		}
 		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 		{
