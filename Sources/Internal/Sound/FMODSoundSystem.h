@@ -34,7 +34,8 @@
 #include "Base/FastNameMap.h"
 #include "Sound/Sound.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/FMODSoundGroup.h"
+#include "Sound/FMODSoundEvent.h"
+
 namespace FMOD
 {
 class System;
@@ -86,11 +87,14 @@ protected:
     void ReleaseOnUpdate(FMODSound * sound);
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
 
+    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
+
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
 
     Vector<FMODSound *> soundsToReleaseOnUpdate;
     FastNameMap<FMODSoundGroup *> soundGroups;
+    Map<FMODSoundEvent *, FMODSoundEvent::CallbackType> callbackOnUpdate;
 
 friend class FMODSoundGroup;
 friend class FMODSound;

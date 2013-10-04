@@ -30,10 +30,11 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/VolumeAnimatedObject.h"
 #include "FMODSoundSystem.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
-FilePath SoundSystem::soundsDir("~res:/Sfx/");
+FilePath SoundSystem::soundsDir(DEFAULT_SOUNDS_DIRECTORY);
 SoundSystem::SoundSystemType SoundSystem::type = (SoundSystemType)0;
 SoundSystemInstance * SoundSystem::instance = 0;
 
@@ -70,6 +71,7 @@ void SoundSystem::Init()
     {
         case SOUNDSYSTEM_FMOD:
             instance = new FMODSoundSystem();
+            ((FMODSoundSystem *)instance)->LoadAllFEVsRecursive(soundsDir);
             break;
         default:
             break;

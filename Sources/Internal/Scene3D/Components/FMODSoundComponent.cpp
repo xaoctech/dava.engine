@@ -37,11 +37,12 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Entity.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA 
 {
 
-FMOD_RESULT FMODComponentEventCallback (FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
+FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
 FMODSoundComponent::FMODSoundComponent() : fmodEvent(0)
 {
@@ -115,7 +116,7 @@ void FMODSoundComponent::Trigger()
         
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
         if(fmodEvent)
-            FMOD_VERIFY(fmodEvent->setCallback(&FMODComponentEventCallback, &fmodEvent));
+            FMOD_VERIFY(fmodEvent->setCallback(FMODComponentEventCallback, &fmodEvent));
     }
     if(fmodEvent)
     {
@@ -131,19 +132,25 @@ void FMODSoundComponent::Stop()
 
 void FMODSoundComponent::SetParameter(const String & paramName, float32 value)
 {
-    FMOD::EventParameter * param = 0;
-    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
-    if(param)
-        FMOD_VERIFY(param->setValue(value));
+    if(fmodEvent)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+        if(param)
+            FMOD_VERIFY(param->setValue(value));
+    }
 }
     
 float32 FMODSoundComponent::GetParameter(const String & paramName)
 {
     float32 returnValue = 0.f;
-    FMOD::EventParameter * param = 0;
-    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
-    if(param)
-        FMOD_VERIFY(param->getValue(&returnValue));
+    if(fmodEvent)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+        if(param)
+            FMOD_VERIFY(param->getValue(&returnValue));
+    }
     return returnValue;
 }
     
@@ -200,7 +207,7 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
     }
 }
     
-FMOD_RESULT FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
+FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
     if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN)
     {

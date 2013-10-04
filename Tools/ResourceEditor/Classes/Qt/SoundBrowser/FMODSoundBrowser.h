@@ -67,11 +67,10 @@ private:
         DAVA::float32 maxValue;
     };
 
-    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
     void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
     void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
 
-    void AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param);
+    void AddSliderWidget(const DAVA::FMODSoundComponent::SoundEventParameterInfo & param);
     void ClearParamsFrame();
 
     void EventSelected(const DAVA::String & eventPath);
