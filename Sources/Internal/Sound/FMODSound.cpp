@@ -30,6 +30,7 @@
 #include "Sound/FMODSoundSystem.h"
 #include "Sound/FMODSoundGroup.h"
 #include "Sound/FMODUtils.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {

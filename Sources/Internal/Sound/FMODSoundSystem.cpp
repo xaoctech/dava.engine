@@ -28,10 +28,11 @@
 
 #include "Base/FastName.h"
 #include "Sound/FMODSoundSystem.h"
+#include "Sound/FMODSoundGroup.h"
 #include "Scene3D/Components/FMODSoundComponent.h"
 #include "Sound/FMODUtils.h"
-#include "Sound/FMODSoundEvent.h"
 #include "Sound/FMODSound.h"
+#include "FileSystem/FileList.h"
 #include "Scene3D/Entity.h"
 
 #ifdef __DAVAENGINE_IPHONE__
@@ -76,6 +77,29 @@ Component * FMODSoundSystem::CreateSoundComponent()
     return new FMODSoundComponent();
 }
 
+void FMODSoundSystem::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
+{
+    DVASSERT(dirPath.IsDirectoryPathname());
+
+    DAVA::FileList list(dirPath);
+    DAVA::int32 entriesCount = list.GetCount();
+    for(DAVA::int32 i = 0; i < entriesCount; i++)
+    {
+        if(list.IsDirectory(i))
+        {
+            if(!list.IsNavigationDirectory(i))
+                LoadAllFEVsRecursive(list.GetPathname(i));
+        }
+        else
+        {
+            const DAVA::FilePath & filePath = list.GetPathname(i);
+
+            if(filePath.GetExtension() == ".fev")
+                LoadFEV(filePath);
+        }
+    }
+}
+
 void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 {
 	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
@@ -85,16 +109,6 @@ void FMODSoundSystem::UnloadProjects()
 {
     FMOD_VERIFY(fmodEventSystem->unload());
 }
-
-//FMODSoundEvent * FMODSoundSystem::CreateSoundEvent(const String & eventPath)
-//{
-//	FMOD::Event * fmodEvent = 0;
-//	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
-//	if(fmodEvent)
-//		return new FMODSoundEvent(fmodEvent);
-//	else
-//		return 0;
-//}
 
 void FMODSoundSystem::Update()
 {
@@ -108,6 +122,15 @@ void FMODSoundSystem::Update()
     for(int32 i = 0; i < size; i++)
         SafeRelease(soundsToReleaseOnUpdate[i]);
     soundsToReleaseOnUpdate.clear();
+
+    if(callbackOnUpdate.size())
+    {
+        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
+        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
+        for(; mapIt != endIt; ++mapIt)
+            mapIt->first->eventDispathcer.PerformEvent(mapIt->second);
+        callbackOnUpdate.clear();
+    }
 }
 
 void FMODSoundSystem::Suspend()
@@ -280,6 +303,11 @@ void FMODSoundSystem::StopGroup(const FastName & groupName)
     FMODSoundGroup * group = GetSoundGroup(groupName);
     if(group)
         return group->Stop();
+}
+
+void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)
+{
+    callbackOnUpdate[event] = type;
 }
 
 };

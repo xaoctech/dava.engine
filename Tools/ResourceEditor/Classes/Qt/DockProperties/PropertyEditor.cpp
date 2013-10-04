@@ -309,7 +309,7 @@ void PropertyEditor::PlaySoundEvent()
     if(curNode)
     {
         DAVA::SoundComponent* component = (DAVA::SoundComponent*)curNode->GetComponent(DAVA::Component::SOUND_COMPONENT);
-        component->Play();
+        component->Trigger();
     }
 }
 

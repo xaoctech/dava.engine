@@ -37,7 +37,7 @@
 namespace DAVA
 {
     
-FMOD_RESULT FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
+FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
 FMODSoundEvent::FMODSoundEvent(const String & eventName)
 {
@@ -52,7 +52,7 @@ FMODSoundEvent::~FMODSoundEvent()
     FMOD_VERIFY(fmodEvent->stop());
 }
 
-void FMODSoundEvent::Play()
+void FMODSoundEvent::Trigger()
 {
 	FMOD_VERIFY(fmodEvent->start());
 }
@@ -86,6 +86,17 @@ bool FMODSoundEvent::IsPaused()
 	return isPaused;
 }
 
+bool FMODSoundEvent::IsActive()
+{
+    if(fmodEvent)
+    {
+        FMOD_EVENT_STATE state;
+        FMOD_VERIFY(fmodEvent->getState(&state));
+        return (bool)(state & FMOD_EVENT_STATE_CHANNELSACTIVE);
+    }
+    return false;
+}
+
 void FMODSoundEvent::KeyOffParameter(const String & paramName)
 {
     FMOD::EventParameter * param = 0;
@@ -94,8 +105,22 @@ void FMODSoundEvent::KeyOffParameter(const String & paramName)
         FMOD_VERIFY(param->keyOff());
 }
 
-FMOD_RESULT FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
+void FMODSoundEvent::PerformCallback(CallbackType callbackType)
 {
+    FMODSoundSystem * system = (FMODSoundSystem *)SoundSystem::Instance();
+    DVASSERT(system);
+    system->PerformCallbackOnUpdate(this, callbackType);
+}
+
+FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
+{
+    if(type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
+    {
+        FMODSoundEvent * fevent = (FMODSoundEvent *)userdata;
+        if(fevent)
+            fevent->PerformCallback(FMODSoundEvent::EVENT_END);
+    }
+
     return FMOD_OK;
 }
     

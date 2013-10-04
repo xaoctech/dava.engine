@@ -48,20 +48,34 @@ namespace DAVA
 class FMODSoundEvent : public VolumeAnimatedObject
 {
 public:
+
+    enum CallbackType
+    {
+        EVENT_END,     /* Called when an event is stopped for any reason. */
+
+        EVENT_COUNT
+    };
+
     FMODSoundEvent(const String & eventName);
 	~FMODSoundEvent();
 
 	virtual void SetVolume(float32 volume);
 	virtual float32	GetVolume();
 
-	void Play();
+    void Trigger();
+    bool IsActive();
 	void Pause(bool isPaused);
 	bool IsPaused();
 	void Stop();
 
     void KeyOffParameter(const String & paramName);
 
+    void PerformCallback(CallbackType callbackType);
+
+private:
 	FMOD::Event * fmodEvent;
+
+    IMPLEMENT_EVENT_DISPATCHER(eventDispathcer);
 
 friend class FMODSoundSystem;
 };

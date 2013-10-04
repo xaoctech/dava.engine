@@ -93,7 +93,7 @@ void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
     soundsystem->UnloadProjects();
 
     DAVA::FilePath sfxPath = projectPath.toStdString() + "/Data/Sfx/";
-    LoadAllFEVsRecursive(sfxPath);
+    soundsystem->LoadAllFEVsRecursive(sfxPath);
 
     DAVA::Vector<DAVA::String> names;
     soundsystem->GetAllEventsNames(names);
@@ -131,7 +131,7 @@ void FMODSoundBrowser::EventSelected(const DAVA::String & eventPath)
 
 void FMODSoundBrowser::FillEventParamsFrame()
 {
-    if(!component || !component->GetSoundEvent())
+    if(!component)
         return;
 
     ui->eventNameLabel->setText(QString(component->GetEventName().c_str()));
@@ -139,12 +139,12 @@ void FMODSoundBrowser::FillEventParamsFrame()
     ui->playButton->setDisabled(false);
     ui->stopButton->setDisabled(false);
 
-    DAVA::Vector<DAVA::FMODSoundEvent::SoundEventParameterInfo> params;
-    component->GetSoundEvent()->GetEventParametersInfo(params);
+    DAVA::Vector<DAVA::FMODSoundComponent::SoundEventParameterInfo> params;
+    component->GetEventParametersInfo(params);
     DAVA::int32 paramsCount = params.size();
     for(DAVA::int32 i = 0; i < paramsCount; i++)
     {
-        DAVA::FMODSoundEvent::SoundEventParameterInfo & param = params[i];
+        DAVA::FMODSoundComponent::SoundEventParameterInfo & param = params[i];
         if(param.name != "(distance)")
             AddSliderWidget(param);
     }
@@ -152,7 +152,7 @@ void FMODSoundBrowser::FillEventParamsFrame()
 
 void FMODSoundBrowser::OnPlay()
 {
-    component->Play();
+    component->Trigger();
 }
 
 void FMODSoundBrowser::OnStop()
@@ -188,7 +188,7 @@ void FMODSoundBrowser::OnSliderMoved(int value)
         component->SetParameter(paramName, newParamValue);
 }
 
-void FMODSoundBrowser::AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param)
+void FMODSoundBrowser::AddSliderWidget(const DAVA::FMODSoundComponent::SoundEventParameterInfo & param)
 {
     QGridLayout * layout = dynamic_cast<QGridLayout *>(ui->paramsFrame->layout());
     
@@ -239,33 +239,6 @@ void FMODSoundBrowser::ClearParamsFrame()
     ui->stopButton->setDisabled(true);
 
     ui->eventNameLabel->clear();
-}
-
-void FMODSoundBrowser::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
-{
-    DVASSERT(dirPath.IsDirectoryPathname());
-
-    DAVA::FileList list(dirPath);
-    DAVA::int32 entriesCount = list.GetCount();
-    for(DAVA::int32 i = 0; i < entriesCount; i++)
-    {
-        if(list.IsDirectory(i))
-        {
-            if(!list.IsNavigationDirectory(i))
-                LoadAllFEVsRecursive(list.GetPathname(i));
-        }
-        else
-        {
-            const DAVA::FilePath & filePath = list.GetPathname(i);
-            
-            if(filePath.GetExtension() == ".fev")
-            {
-                DAVA::FMODSoundSystem * soundSystem = (DAVA::FMODSoundSystem *)DAVA::SoundSystem::Instance();
-                DVASSERT(soundSystem);
-                soundSystem->LoadFEV(filePath);
-            }
-        }
-    }
 }
 
 void FMODSoundBrowser::SelectItemAndExpandTreeByEventName(const DAVA::String & eventName)

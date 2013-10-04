@@ -37,6 +37,8 @@
 #include "Base/EventDispatcher.h"
 #include "Sound/Sound.h"
 
+#define DEFAULT_SOUNDS_DIRECTORY "~res:/Sfx/"
+
 namespace DAVA
 {
 

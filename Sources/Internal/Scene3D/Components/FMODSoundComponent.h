@@ -34,7 +34,11 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/Components/SoundComponent.h"
-#include "Sound/FMODUtils.h"
+
+namespace FMOD
+{
+class Event;
+};
 
 namespace DAVA 
 {
@@ -79,7 +83,7 @@ private:
 	String eventName;
     Vector3 position;
 
-	friend class SoundUpdateSystem;
+friend class SoundUpdateSystem;
     
 public:
 	INTROSPECTION_EXTEND(FMODSoundComponent, SoundComponent,
