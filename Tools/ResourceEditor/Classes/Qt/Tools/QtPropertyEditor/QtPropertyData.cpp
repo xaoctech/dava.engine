@@ -265,6 +265,7 @@ void QtPropertyData::AddOW(const QtPropertyOW &ow)
 	if(NULL != ow.widget)
 	{
 		ow.widget->setParent(optionalWidgetViewport);
+		ow.widget->hide();
 	}
 }
 
@@ -278,6 +279,18 @@ void QtPropertyData::RemOW(int index)
 		}
 
 		optionalWidgets.remove(index);
+	}
+}
+
+void QtPropertyData::RemOW(QWidget *widget)
+{
+	for(int i = 0; i < optionalWidgets.size(); ++i)
+	{
+		if(optionalWidgets[i].widget == widget)
+		{
+			RemOW(i);
+			break;
+		}
 	}
 }
 
