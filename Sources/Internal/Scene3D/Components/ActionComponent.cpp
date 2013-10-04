@@ -360,7 +360,7 @@ namespace DAVA
 			SoundComponent* component = static_cast<SoundComponent*>(target->GetComponent(Component::SOUND_COMPONENT));
 			if(component)
 			{
-				component->Play();
+				component->Trigger();
 			}
 
 		}

@@ -46,7 +46,7 @@ namespace DAVA
 {
 class FMODSound;
 class FMODSoundGroup;
-class FMODSoundEvent;
+class FMODSoundComponent;
 class VolumeAnimatedObject;
 class FMODSoundSystem : public SoundSystemInstance
 {
@@ -69,14 +69,14 @@ public:
     virtual float32 GetGroupVolume(const FastName & groupName);
     virtual void StopGroup(const FastName & groupName);
 
-    //FMOD Only
-	FMODSoundEvent * CreateSoundEvent(const String & eventPath);
-
     void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
 
 	void LoadFEV(const FilePath & filePath);
     void UnloadProjects();
 
+    void PreloadEventGroupData(const String & groupName);
+    void ReleaseEventGroupData(const String & groupName);
+    
     void GetAllEventsNames(Vector<String> & names);
 
 protected:
@@ -94,6 +94,8 @@ protected:
 
 friend class FMODSoundGroup;
 friend class FMODSound;
+friend class FMODSoundEvent;
+friend class FMODSoundComponent;
 friend class VolumeAnimatedObject;
 };
 

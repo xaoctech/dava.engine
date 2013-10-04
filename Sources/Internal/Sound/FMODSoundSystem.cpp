@@ -86,15 +86,15 @@ void FMODSoundSystem::UnloadProjects()
     FMOD_VERIFY(fmodEventSystem->unload());
 }
 
-FMODSoundEvent * FMODSoundSystem::CreateSoundEvent(const String & eventPath)
-{
-	FMOD::Event * fmodEvent = 0;
-	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
-	if(fmodEvent)
-		return new FMODSoundEvent(fmodEvent);
-	else
-		return 0;
-}
+//FMODSoundEvent * FMODSoundSystem::CreateSoundEvent(const String & eventPath)
+//{
+//	FMOD::Event * fmodEvent = 0;
+//	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+//	if(fmodEvent)
+//		return new FMODSoundEvent(fmodEvent);
+//	else
+//		return 0;
+//}
 
 void FMODSoundSystem::Update()
 {
@@ -243,6 +243,22 @@ void FMODSoundSystem::GetAllEventsNames(Vector<String> & names)
     }
 }
 
+void FMODSoundSystem::PreloadEventGroupData(const String & groupName)
+{
+    FMOD::EventGroup * eventGroup = 0;
+    FMOD_VERIFY(fmodEventSystem->getGroup(groupName.c_str(), true, &eventGroup));
+    if(eventGroup)
+        FMOD_VERIFY(eventGroup->loadEventData());
+}
+    
+void FMODSoundSystem::ReleaseEventGroupData(const String & groupName)
+{
+    FMOD::EventGroup * eventGroup = 0;
+    FMOD_VERIFY(fmodEventSystem->getGroup(groupName.c_str(), false, &eventGroup));
+    if(eventGroup)
+        FMOD_VERIFY(eventGroup->freeEventData());
+}
+    
 void FMODSoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
 {
     FMODSoundGroup * group = GetSoundGroup(groupName);

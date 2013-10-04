@@ -66,10 +66,7 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 		FMODSoundComponent * soundComponent = (FMODSoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
         if(soundComponent)
         {
-            FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-		    FMODSoundEvent * sEvent = soundSystem->CreateSoundEvent(soundComponent->GetEventName());
-		    soundComponent->SetSoundEvent(sEvent);
-		    SafeRelease(sEvent);
+            
         }
 	}
 }
