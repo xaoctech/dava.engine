@@ -57,9 +57,13 @@ public:
     virtual void SetListenerPosition(const Vector3 & position) = 0;
     virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left) = 0;
 
+    virtual void StopGroup(const FastName & groupName) = 0;
+
     virtual void SetGroupVolume(const FastName & groupName, float32 volume) = 0;
     virtual float32 GetGroupVolume(const FastName & groupName) = 0;
-    virtual void StopGroup(const FastName & groupName) = 0;
+
+    virtual void SetGlobalComponentsVolume(float32 volume) = 0;
+    virtual float32 GetGlobalComponentsVolume() = 0;
 
 protected:
     void AddVolumeAnimatedObject(VolumeAnimatedObject * object);

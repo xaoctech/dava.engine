@@ -67,8 +67,7 @@ Sound * FMODSound::CreateWithFlags(const FilePath & fileName, eType type, const 
     exInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
     exInfo.length = fileSize;
 
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-    DVASSERT(soundSystem);
+    FMODSoundSystem * soundSystem = FMODSoundSystem::GetFMODSoundSystem();
 
 	switch (type)
 	{
@@ -121,10 +120,7 @@ FMODSound::~FMODSound()
 
 void FMODSound::SetSoundGroup(const FastName & groupName)
 {
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-    DVASSERT(soundSystem);
-
-	FMODSoundGroup * soundGroup = soundSystem->CreateSoundGroup(groupName);
+	FMODSoundGroup * soundGroup = FMODSoundSystem::GetFMODSoundSystem()->CreateSoundGroup(groupName);
 	if(soundGroup)
 	{
 		FMOD_VERIFY(fmodSound->setSoundGroup(soundGroup->fmodSoundGroup));
@@ -133,11 +129,8 @@ void FMODSound::SetSoundGroup(const FastName & groupName)
 
 void FMODSound::Play(const Message & msg)
 {
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-    DVASSERT(soundSystem);
-
 	FMOD::Channel * fmodInstance = 0;
-	FMOD_VERIFY(soundSystem->fmodSystem->playSound(FMOD_CHANNEL_FREE, fmodSound, true, &fmodInstance)); //start sound paused
+	FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodSystem->playSound(FMOD_CHANNEL_FREE, fmodSound, true, &fmodInstance)); //start sound paused
 	FMOD_VECTOR pos = {position.x, position.y, position.z};
 	FMOD_VERIFY(fmodInstance->setPriority(priority));
 	FMOD_VERIFY(fmodInstance->setCallback(SoundInstanceEndPlaying));
@@ -226,10 +219,7 @@ void FMODSound::PerformCallback(FMOD::Channel * instance)
         callbacks.erase(it);
     }
 
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-    DVASSERT(soundSystem);
-
-    soundSystem->ReleaseOnUpdate(this);
+    FMODSoundSystem::GetFMODSoundSystem()->ReleaseOnUpdate(this);
 }
 
 FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2)

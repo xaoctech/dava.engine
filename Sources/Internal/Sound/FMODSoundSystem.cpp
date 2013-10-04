@@ -42,12 +42,14 @@
 namespace DAVA
 {
 
-FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */)
+FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */) : 
+globalComponentsVolume(1.f)
 {
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
 	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
 	FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED, 0));
     FMOD_VERIFY(fmodSystem->set3DSettings(1.f, 1.f, 0.4f));
+
 }
 
 FMODSoundSystem::~FMODSoundSystem()
@@ -108,6 +110,14 @@ void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 void FMODSoundSystem::UnloadProjects()
 {
     FMOD_VERIFY(fmodEventSystem->unload());
+}
+
+FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
+{
+    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
+    DVASSERT(soundSystem);
+
+    return soundSystem;
 }
 
 void FMODSoundSystem::Update()
@@ -186,7 +196,7 @@ FMODSoundGroup * FMODSoundSystem::CreateSoundGroup(const FastName & groupName)
 	}
     else
     {
-        group = new FMODSoundGroup();
+        group = new FMODSoundGroup(fmodSystem);
         soundGroups.Insert(groupName, group);
     }
 
@@ -303,6 +313,43 @@ void FMODSoundSystem::StopGroup(const FastName & groupName)
     FMODSoundGroup * group = GetSoundGroup(groupName);
     if(group)
         return group->Stop();
+}
+
+void FMODSoundSystem::SetGlobalComponentsVolume(float32 volume)
+{
+    globalComponentsVolume = Clamp(volume, 0.f, 1.f);
+    
+    Vector<FMOD::Event *>::iterator it = activeEvents.begin();
+    Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
+    for(; it != itEnd; ++it)
+    {
+        FMOD_VERIFY((*it)->setVolume(globalComponentsVolume));
+    }
+}
+
+float32 FMODSoundSystem::GetGlobalComponentsVolume()
+{
+    return globalComponentsVolume;
+}
+
+void FMODSoundSystem::AddActiveFMODEvent(FMOD::Event * event)
+{
+    FMOD_VERIFY(event->setVolume(globalComponentsVolume));
+    activeEvents.push_back(event);
+}
+
+void FMODSoundSystem::RemoveActiveFMODEvent(FMOD::Event * event)
+{
+    Vector<FMOD::Event *>::iterator it = activeEvents.begin();
+    Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
+    for(; it != itEnd; ++it)
+    {
+        if((*it) == event)
+        {
+            activeEvents.erase(it);
+            return;
+        }
+    }
 }
 
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)

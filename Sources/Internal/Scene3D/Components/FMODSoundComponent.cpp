@@ -51,7 +51,7 @@ FMODSoundComponent::FMODSoundComponent() : fmodEvent(0)
 
 FMODSoundComponent::~FMODSoundComponent()
 {
-    
+    FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
 }
 
 const String & FMODSoundComponent::GetEventName()
@@ -77,7 +77,9 @@ Component * FMODSoundComponent::Clone(Entity * toEntity)
     //TODO: Do not forget ot check what does it means.
     if(fmodEvent)
     {
-        FMOD_VERIFY(((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &component->fmodEvent));
+        FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &component->fmodEvent));
+        if(component->fmodEvent)
+            FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(component->fmodEvent);
     }
 	component->eventName = eventName;
     return component;
@@ -105,7 +107,7 @@ void FMODSoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFi
 
 void FMODSoundComponent::Trigger()
 {
-    FMOD::EventSystem * fmodEventSystem = ((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem;
+    FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
     
     if(!fmodEvent)
     {
@@ -116,7 +118,10 @@ void FMODSoundComponent::Trigger()
         
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
         if(fmodEvent)
+        {
             FMOD_VERIFY(fmodEvent->setCallback(FMODComponentEventCallback, &fmodEvent));
+            FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
+        }
     }
     if(fmodEvent)
     {
@@ -179,7 +184,7 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
 {
     paramsInfo.clear();
     
-    FMOD::EventSystem * fmodEventSystem = ((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem;
+    FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
     FMOD::Event * event = fmodEvent;
     if(!event)
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
@@ -213,9 +218,9 @@ FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_
     {
         FMOD::Event **event = (FMOD::Event **)userdata;
         (*event) = 0;
+        FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent((*event));
     }
     return FMOD_OK;
 }
-
     
 };

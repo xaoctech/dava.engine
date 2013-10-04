@@ -41,15 +41,19 @@ FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKT
     
 FMODSoundEvent::FMODSoundEvent(const String & eventName)
 {
-    FMOD_VERIFY(((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+    FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
     if(fmodEvent)
+    {
         FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
+        FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
+    }
 }
 
 FMODSoundEvent::~FMODSoundEvent()
 {
     FMOD_VERIFY(fmodEvent->setCallback(0, 0));
     FMOD_VERIFY(fmodEvent->stop());
+    FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
 }
 
 void FMODSoundEvent::Trigger()
@@ -92,7 +96,7 @@ bool FMODSoundEvent::IsActive()
     {
         FMOD_EVENT_STATE state;
         FMOD_VERIFY(fmodEvent->getState(&state));
-        return (bool)(state & FMOD_EVENT_STATE_CHANNELSACTIVE);
+        return (state & FMOD_EVENT_STATE_CHANNELSACTIVE) > 0;
     }
     return false;
 }
@@ -107,9 +111,7 @@ void FMODSoundEvent::KeyOffParameter(const String & paramName)
 
 void FMODSoundEvent::PerformCallback(CallbackType callbackType)
 {
-    FMODSoundSystem * system = (FMODSoundSystem *)SoundSystem::Instance();
-    DVASSERT(system);
-    system->PerformCallbackOnUpdate(this, callbackType);
+    FMODSoundSystem::GetFMODSoundSystem()->PerformCallbackOnUpdate(this, callbackType);
 }
 
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)

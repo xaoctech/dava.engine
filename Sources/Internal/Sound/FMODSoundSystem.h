@@ -66,9 +66,16 @@ public:
 	virtual void SetListenerPosition(const Vector3 & position);
 	virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
 
+    virtual void StopGroup(const FastName & groupName);
+
     virtual void SetGroupVolume(const FastName & groupName, float32 volume);
     virtual float32 GetGroupVolume(const FastName & groupName);
-    virtual void StopGroup(const FastName & groupName);
+
+    virtual void SetGlobalComponentsVolume(float32 volume);
+    virtual float32 GetGlobalComponentsVolume();
+
+    //FMOD Only
+    static FMODSoundSystem * GetFMODSoundSystem();
 
     void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
 
@@ -80,6 +87,9 @@ public:
     
     void GetAllEventsNames(Vector<String> & names);
 
+    void AddActiveFMODEvent(FMOD::Event * event);
+    void RemoveActiveFMODEvent(FMOD::Event * event);
+
 protected:
     FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
     FMODSoundGroup * GetSoundGroup(const FastName & groupName);
@@ -89,12 +99,15 @@ protected:
 
     void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
 
+    float32 globalComponentsVolume;
+
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
 
     Vector<FMODSound *> soundsToReleaseOnUpdate;
     FastNameMap<FMODSoundGroup *> soundGroups;
     Map<FMODSoundEvent *, FMODSoundEvent::CallbackType> callbackOnUpdate;
+    Vector<FMOD::Event *> activeEvents;
 
 friend class FMODSoundGroup;
 friend class FMODSound;
@@ -102,8 +115,6 @@ friend class FMODSoundEvent;
 friend class FMODSoundComponent;
 friend class VolumeAnimatedObject;
 };
-
-
 
 };
 
