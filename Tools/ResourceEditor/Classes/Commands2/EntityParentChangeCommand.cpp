@@ -28,26 +28,72 @@
 
 
 
-#ifndef __ENTITY_MOVE_COMMAND_H__
-#define __ENTITY_MOVE_COMMAND_H__
+#include "Commands2/EntityParentChangeCommand.h"
 
-#include "Commands2/Command2.h"
-
-class EntityMoveCommand : public Command2
+EntityParentChangeCommand::EntityParentChangeCommand(DAVA::Entity* _entity, DAVA::Entity *_newParent, DAVA::Entity *_newBefore /* = NULL */)
+	: Command2(CMDID_ENTITY_CHANGE_PARENT, "Move entity")
+	, entity(_entity)
+	, oldParent(NULL)
+	, oldBefore(NULL)
+	, newParent(_newParent)
+	, newBefore(_newBefore)
 {
-public:
-	EntityMoveCommand(DAVA::Entity* entity, DAVA::Entity *newParent, DAVA::Entity *newBefore = NULL);
-	~EntityMoveCommand();
+	SafeRetain(entity);
 
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
+	if(NULL != entity)
+	{
+		oldParent = entity->GetParent();
 
-	DAVA::Entity* entity;
-	DAVA::Entity* oldParent;
-	DAVA::Entity* oldBefore;
-	DAVA::Entity* newParent;
-	DAVA::Entity* newBefore;
-};
+		if(NULL != oldParent)
+		{
+			oldBefore = oldParent->GetNextChild(entity);
+		}
+	}
+}
 
-#endif // __ENTITY_MOVE_COMMAND_H__
+EntityParentChangeCommand::~EntityParentChangeCommand()
+{
+	SafeRelease(entity);
+}
+
+void EntityParentChangeCommand::Undo()
+{
+	if(NULL != entity)
+	{
+		if(NULL != oldParent)
+		{
+			if(NULL != oldBefore)
+			{
+				oldParent->InsertBeforeNode(entity, oldBefore);
+			}
+			else
+			{
+				oldParent->AddNode(entity);
+			}
+		}
+		else
+		{
+			newParent->RemoveNode(entity);
+		}
+	}
+}
+
+void EntityParentChangeCommand::Redo()
+{
+	if(NULL != entity && NULL != newParent)
+	{
+		if(NULL != newBefore)
+		{
+			newParent->InsertBeforeNode(entity, newBefore);
+		}
+		else
+		{
+			newParent->AddNode(entity);
+		}
+	}
+}
+
+DAVA::Entity* EntityParentChangeCommand::GetEntity() const
+{
+	return entity;
+}

@@ -58,7 +58,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../Tools/LandscapeDialog/LandscapeDialog.h"
 
-#include "Classes/Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/EntityAddCommand.h"
 #include "StringConstants.h"
 #include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
@@ -1294,7 +1294,7 @@ void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 	
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
-		AddEntityCommand* command = new AddEntityCommand(entity, sceneEditor);
+		EntityAddCommand* command = new EntityAddCommand(entity, sceneEditor);
 		sceneEditor->Exec(command);
 		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 	}
