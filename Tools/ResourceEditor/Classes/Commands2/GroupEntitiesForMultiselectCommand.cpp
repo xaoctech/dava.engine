@@ -142,6 +142,7 @@ void GroupEntitiesForMultiselectCommand::Redo()
 		UpdateTransformMatrixes(en, originalMatrixes[en]);
 	}
 	
+	complexEntity->SetSolid(true);
 	resultEntity = complexEntity;
 }
 
