@@ -30,29 +30,36 @@
 #ifndef __ENTITY_OWNER_PROPERTY_HELPER__
 #define __ENTITY_OWNER_PROPERTY_HELPER__
 
+#include <QObject>
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
+#include "Scene/SceneSignals.h"
 
-namespace DAVA {
-	//entityOwnerPropertyHelper
-
-	
 class CustomPropertiesComponent;
-class EntityOwnerPropertyHelper: public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
+class EntityOwnerPropertyHelper: public QObject, public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
 {
+	Q_OBJECT
+	
 public:
-	void UpdateEntityOwner(KeyedArchive *customProperties);
+	
+	EntityOwnerPropertyHelper();
+	
+	~EntityOwnerPropertyHelper();
+	
+	void UpdateEntityOwner(DAVA::KeyedArchive *customProperties);
 
-	void SetDesignerName(KeyedArchive *customProperties, const String & name);
-	String GetDesignerName(KeyedArchive *customProperties);
+	void SetDesignerName(DAVA::KeyedArchive *customProperties, const DAVA::String & name);
+	DAVA::String GetDesignerName(DAVA::KeyedArchive *customProperties);
 
-	void UpdateModificationTime(KeyedArchive *customProperties);
-	String GetModificationTime(KeyedArchive *customProperties);
+	void UpdateModificationTime(DAVA::KeyedArchive *customProperties);
+	DAVA::String GetModificationTime(DAVA::KeyedArchive *customProperties);
 
 	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
 	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
-};
-
+	
+public slots:
+	
+	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 };
 
 #endif /* defined(__ENTITY_OWNER_PROPERTY_HELPER__) */
