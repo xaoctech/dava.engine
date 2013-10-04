@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		022B568017FF11DA00693F31 /* FMODSoundBrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 022B567E17FF11DA00693F31 /* FMODSoundBrowser_moc.cpp */; };
 		024DF70917FDE5C600138748 /* FMODSoundBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 024DF70517FDE5C600138748 /* FMODSoundBrowser.cpp */; };
 		02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02714761176B50420011B24C /* TextureSquarenessChecker.cpp */; };
 		0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F30F170B403100627F78 /* MaterialViewOptions.cpp */; };
@@ -675,6 +676,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		022B567E17FF11DA00693F31 /* FMODSoundBrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundBrowser_moc.cpp; sourceTree = "<group>"; };
 		024DF70517FDE5C600138748 /* FMODSoundBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundBrowser.cpp; sourceTree = "<group>"; };
 		024DF70617FDE5C600138748 /* FMODSoundBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundBrowser.h; sourceTree = "<group>"; };
 		02714761176B50420011B24C /* TextureSquarenessChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSquarenessChecker.cpp; path = Classes/SceneEditor/TextureSquarenessChecker.cpp; sourceTree = "<group>"; };
@@ -1854,6 +1856,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		022B567D17FF11DA00693F31 /* SoundBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				022B567E17FF11DA00693F31 /* FMODSoundBrowser_moc.cpp */,
+			);
+			name = SoundBrowser;
+			path = _GeneratedQt/SoundBrowser;
+			sourceTree = "<group>";
+		};
 		024DF70417FDE5C600138748 /* SoundBrowser */ = {
 			isa = PBXGroup;
 			children = (
@@ -3830,6 +3841,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				022B567D17FF11DA00693F31 /* SoundBrowser */,
 				495A602517E6F8E000039A43 /* DockLandscapeEditorControls */,
 				499BD23417D8B2700035CF5F /* SliderWidget */,
 				62A43E0C17BCFEEA0003287B /* Settings */,
@@ -4869,6 +4881,7 @@
 				49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */,
 				A68290A517F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp in Build Sources */,
 				024DF70917FDE5C600138748 /* FMODSoundBrowser.cpp in Build Sources */,
+				022B568017FF11DA00693F31 /* FMODSoundBrowser_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
