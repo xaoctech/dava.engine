@@ -47,6 +47,7 @@ class QuadTree : public AbstractSpatialTree
 	Frustum *currFrustum;
 
 	List<int32> dirtyZNodes;
+    Vector<int32> reversePath; //for object updated
 	
 	/*to compare*/
 	int32 objFrustrumCalls;	
