@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		024DF70917FDE5C600138748 /* FMODSoundBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 024DF70517FDE5C600138748 /* FMODSoundBrowser.cpp */; };
 		02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02714761176B50420011B24C /* TextureSquarenessChecker.cpp */; };
 		0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F30F170B403100627F78 /* MaterialViewOptions.cpp */; };
 		0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */; };
@@ -674,6 +675,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		024DF70517FDE5C600138748 /* FMODSoundBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundBrowser.cpp; sourceTree = "<group>"; };
+		024DF70617FDE5C600138748 /* FMODSoundBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundBrowser.h; sourceTree = "<group>"; };
 		02714761176B50420011B24C /* TextureSquarenessChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSquarenessChecker.cpp; path = Classes/SceneEditor/TextureSquarenessChecker.cpp; sourceTree = "<group>"; };
 		02714762176B50420011B24C /* TextureSquarenessChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSquarenessChecker.h; path = Classes/SceneEditor/TextureSquarenessChecker.h; sourceTree = "<group>"; };
 		0297F30F170B403100627F78 /* MaterialViewOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions.cpp; sourceTree = "<group>"; };
@@ -1851,6 +1854,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		024DF70417FDE5C600138748 /* SoundBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				024DF70517FDE5C600138748 /* FMODSoundBrowser.cpp */,
+				024DF70617FDE5C600138748 /* FMODSoundBrowser.h */,
+			);
+			name = SoundBrowser;
+			path = Classes/Qt/SoundBrowser;
+			sourceTree = "<group>";
+		};
 		0297F30E170B403100627F78 /* DockMaterialViewOptions */ = {
 			isa = PBXGroup;
 			children = (
@@ -2595,6 +2608,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				024DF70417FDE5C600138748 /* SoundBrowser */,
 				49FE771217E349850010B8E1 /* DockLandscapeEditorControls */,
 				499BD24417D8C3490035CF5F /* SliderWidget */,
 				62A43E0417BCFCAF0003287B /* Settings */,
@@ -4854,6 +4868,7 @@
 				E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */,
 				49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */,
 				A68290A517F58E6D007BAFDC /* AddSkyboxDialog_moc.cpp in Build Sources */,
+				024DF70917FDE5C600138748 /* FMODSoundBrowser.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

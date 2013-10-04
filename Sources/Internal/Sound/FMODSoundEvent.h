@@ -48,14 +48,8 @@ namespace DAVA
 class FMODSoundEvent : public VolumeAnimatedObject
 {
 public:
-
-    struct SoundEventParameterInfo
-    {
-        String name;
-        float32 maxValue;
-        float32 minValue;
-        float32 currentValue;
-    };
+    FMODSoundEvent(const String & eventName);
+	~FMODSoundEvent();
 
 	virtual void SetVolume(float32 volume);
 	virtual float32	GetVolume();
@@ -65,23 +59,10 @@ public:
 	bool IsPaused();
 	void Stop();
 
-	void SetPosition(const Vector3 & position);
-
     void KeyOffParameter(const String & paramName);
-
-    void SetParameterValue(const String & paramName, float32 value);
-    float32 GetParameterValue(const String & paramName);
-    
-    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & params);
-
-private:
-	FMODSoundEvent(FMOD::Event * fmodEvent);
-	~FMODSoundEvent();
 
 	FMOD::Event * fmodEvent;
 
-friend class SoundSystem;
-friend class FMODSoundComponent;
 friend class FMODSoundSystem;
 };
 

@@ -43,7 +43,7 @@ class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser
     
 public:
     explicit FMODSoundBrowser(QWidget *parent = 0);
-    ~FMODSoundBrowser();
+    virtual ~FMODSoundBrowser();
     
     void SetEditableComponent(DAVA::FMODSoundComponent * component);
 

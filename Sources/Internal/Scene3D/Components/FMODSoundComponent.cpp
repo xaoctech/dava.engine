@@ -41,25 +41,16 @@
 namespace DAVA 
 {
 
-FMODSoundComponent::FMODSoundComponent()
+FMOD_RESULT FMODComponentEventCallback (FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
+    
+FMODSoundComponent::FMODSoundComponent() : fmodEvent(0)
 {
-    soundEvent = 0;
+    
 }
 
 FMODSoundComponent::~FMODSoundComponent()
 {
-    SafeRelease(soundEvent);
-}
     
-void FMODSoundComponent::SetSoundEvent(FMODSoundEvent * sEvent)
-{
-	SafeRelease(soundEvent);
-    soundEvent = SafeRetain(sEvent);
-}
-    
-FMODSoundEvent * FMODSoundComponent::GetSoundEvent()
-{
-    return soundEvent;
 }
 
 const String & FMODSoundComponent::GetEventName()
@@ -70,7 +61,7 @@ const String & FMODSoundComponent::GetEventName()
 void FMODSoundComponent::SetEventName(const String & _eventName)
 {
 	DVASSERT(_eventName != "");
-    if(eventName == _eventName && soundEvent)
+    if(eventName == _eventName)
         return;
 
 	eventName = _eventName;
@@ -83,11 +74,9 @@ Component * FMODSoundComponent::Clone(Entity * toEntity)
 	component->SetEntity(toEntity);
 
     //TODO: Do not forget ot check what does it means.
-    if(soundEvent)
+    if(fmodEvent)
     {
-        FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
-        DVASSERT(soundSystem);
-        component->soundEvent = soundSystem->CreateSoundEvent(eventName);
+        FMOD_VERIFY(((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &component->fmodEvent));
     }
 	component->eventName = eventName;
     return component;
@@ -113,33 +102,113 @@ void FMODSoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFi
 	SoundComponent::Deserialize(archive, sceneFile);
 }
 
-void FMODSoundComponent::Play()
+void FMODSoundComponent::Trigger()
 {
-    if(soundEvent)
-        soundEvent->Play();
+    FMOD::EventSystem * fmodEventSystem = ((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem;
+    
+    if(!fmodEvent)
+    {
+        FMOD::Event * fmodEventInfo = 0;
+        FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+        FMOD_VECTOR pos = {position.x, position.y, position.z};
+        FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0));
+        
+        FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+        if(fmodEvent)
+            FMOD_VERIFY(fmodEvent->setCallback(&FMODComponentEventCallback, &fmodEvent));
+    }
+    if(fmodEvent)
+    {
+        FMOD_VERIFY(fmodEvent->start());
+    }
 }
 
 void FMODSoundComponent::Stop()
 {
-    if(soundEvent)
-        soundEvent->Stop();
+    if(fmodEvent)
+        FMOD_VERIFY(fmodEvent->stop());
 }
 
 void FMODSoundComponent::SetParameter(const String & paramName, float32 value)
 {
-    if(soundEvent)
-        soundEvent->SetParameterValue(paramName, value);
+    FMOD::EventParameter * param = 0;
+    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+    if(param)
+        FMOD_VERIFY(param->setValue(value));
 }
+    
 float32 FMODSoundComponent::GetParameter(const String & paramName)
 {
-    if(soundEvent)
-        return soundEvent->GetParameterValue(paramName);
-    return 0.f;
+    float32 returnValue = 0.f;
+    FMOD::EventParameter * param = 0;
+    FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+    if(param)
+        FMOD_VERIFY(param->getValue(&returnValue));
+    return returnValue;
 }
-void FMODSoundComponent::SetPosition(const Vector3 & position)
+    
+void FMODSoundComponent::SetPosition(const Vector3 & _position)
 {
-    if(soundEvent)
-        soundEvent->SetPosition(position);
+    position = position;
+    if(fmodEvent)
+    {
+        FMOD_VECTOR pos = {position.x, position.y, position.z};
+        FMOD_VERIFY(fmodEvent->set3DAttributes(&pos, 0));
+    }
+}
+    
+void FMODSoundComponent::KeyOffParameter(const String & paramName)
+{
+    if(fmodEvent)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
+        if(param)
+            FMOD_VERIFY(param->keyOff());
+    }
+}
+    
+void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo)
+{
+    paramsInfo.clear();
+    
+    FMOD::EventSystem * fmodEventSystem = ((FMODSoundSystem *)SoundSystem::Instance())->fmodEventSystem;
+    FMOD::Event * event = fmodEvent;
+    if(!event)
+        FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
+    if(!event)
+        return;
+    
+    int32 paramsCount = 0;
+    FMOD_VERIFY(event->getNumParameters(&paramsCount));
+    for(int32 i = 0; i < paramsCount; i++)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(event->getParameterByIndex(i, &param));
+        if(!param)
+            continue;
+        
+        char * paramName = 0;
+        FMOD_VERIFY(param->getInfo(0, &paramName));
+        
+        SoundEventParameterInfo pInfo;
+        pInfo.name = String(paramName);
+        FMOD_VERIFY(param->getRange(&pInfo.minValue, &pInfo.maxValue));
+        FMOD_VERIFY(param->getValue(&pInfo.currentValue));
+            
+        paramsInfo.push_back(pInfo);
+    }
+}
+    
+FMOD_RESULT FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
+{
+    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN)
+    {
+        FMOD::Event **event = (FMOD::Event **)userdata;
+        (*event) = 0;
+    }
+    return FMOD_OK;
 }
 
+    
 };

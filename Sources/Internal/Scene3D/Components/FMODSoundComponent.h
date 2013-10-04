@@ -32,21 +32,29 @@
 #define __DAVAENGINE_SCENE3D_FMOD_SOUND_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 #include "Scene3D/Components/SoundComponent.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA 
 {
 
 class Entity;
-class FMODSoundEvent;
 class SoundUpdateSystem;
 class FMODSoundComponent : public SoundComponent
 {
 public:
+    struct SoundEventParameterInfo
+    {
+        String name;
+        float32 maxValue;
+        float32 minValue;
+        float32 currentValue;
+    };
+    
 	FMODSoundComponent();
 	virtual ~FMODSoundComponent();
 
-	FMODSoundEvent * GetSoundEvent();
 	const String & GetEventName();
 	void SetEventName(const String & eventName);
 
@@ -54,21 +62,25 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
-    virtual void Play();
+    virtual void Trigger();
     virtual void Stop();
     virtual void SetParameter(const String & paramName, float32 value);
     virtual float32 GetParameter(const String & paramName);
 
     virtual void SetPosition(const Vector3 & position);
 
+    //FMOD only
+    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
+    
+    void KeyOffParameter(const String & paramName);
+    
 private:
-	void SetSoundEvent(FMODSoundEvent * sEvent);
-
-	FMODSoundEvent * soundEvent;
+    FMOD::Event * fmodEvent;
 	String eventName;
+    Vector3 position;
 
 	friend class SoundUpdateSystem;
-
+    
 public:
 	INTROSPECTION_EXTEND(FMODSoundComponent, SoundComponent,
 		PROPERTY("eventName", "eventName", GetEventName, SetEventName, I_SAVE | I_VIEW)

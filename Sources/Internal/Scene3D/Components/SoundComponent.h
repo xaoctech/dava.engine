@@ -43,7 +43,7 @@ class SoundComponent : public Component
 public:
 	IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
 
-    virtual void Play() = 0;
+    virtual void Trigger() = 0;
     virtual void Stop() = 0;
     virtual void SetParameter(const String & paramName, float32 value) = 0;
     virtual float32 GetParameter(const String & paramName) = 0;
