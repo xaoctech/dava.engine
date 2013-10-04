@@ -34,6 +34,7 @@
 #include "Main/mainwindow.h"
 #include "SceneEditor/EditorSettings.h"
 #include <QLabel>
+#include "Classes/Commands2/AddEntityCommand.h"
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 		:BaseAddEntityDialog(parent)
@@ -87,6 +88,58 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 {
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
-		entities.push_back(widget->GetOutputEntity(editor));
+		Entity* entity = widget->GetOutputEntity(editor);
+		if(entity)
+		{
+			entities.push_back(entity);
+		}
 	}
+}
+
+void AddSwitchEntityDialog::accept()
+{
+	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
+	
+	Entity* switchEntity = GetEntity();
+	
+	if( NULL == scene)
+	{
+		CleanupPathWidgets();
+		SetEntity(NULL);
+		return;
+	}
+	
+	Vector<Entity*> vector;
+	GetPathEntities(vector, scene);
+	CleanupPathWidgets();
+	
+	Q_FOREACH(Entity* item, vector)
+	{
+		if(item)
+		{
+			Entity *e = item->Clone();
+			switchEntity->AddNode(e);
+			e->Release();
+		}
+	}
+	if(vector.size() > 0)
+	{
+		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
+		scene->Exec(command);
+		
+		Entity* affectedEntity = command->GetEntity();
+		scene->selectionSystem->SetSelection(affectedEntity);
+		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
+	}
+	
+	SetEntity(NULL);
+	
+	BaseAddEntityDialog::accept();
+}
+
+void AddSwitchEntityDialog::reject()
+{
+	CleanupPathWidgets();
+	SetEntity(NULL);
+	BaseAddEntityDialog::reject();
 }

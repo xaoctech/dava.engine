@@ -83,8 +83,7 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	// global scene manager signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	// convertor signals
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)));
@@ -968,14 +967,12 @@ void TextureBrowser::sceneDeactivated(SceneEditor2 *scene)
 	}
 }
 
-void TextureBrowser::sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity)
+void TextureBrowser::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
-	textureListModel->setHighlight(entity);
-}
-
-void TextureBrowser::sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
-{
-	textureListModel->setHighlight(NULL);
+	if(!isHidden())
+	{
+		textureListModel->setHighlight(selected);
+	}
 }
 
 void TextureBrowser::textureViewChanged(int index)

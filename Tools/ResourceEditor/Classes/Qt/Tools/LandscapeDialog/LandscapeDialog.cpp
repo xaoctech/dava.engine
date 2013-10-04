@@ -31,6 +31,9 @@
 #include <QMessageBox>
 #include "ui_BaseAddEntityDialog.h"
 #include "SceneEditor/EditorSettings.h"
+#include "Main/mainwindow.h"
+#include "Classes/Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 
 #define  INIT_PATH_WIDGET(widgetName, widgetNum, widgetTitle, fileFilter) SelectPathWidgetBase* widgetName = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);\
 	if(innerLandscape){\
@@ -69,17 +72,11 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	DAVA::List<DAVA::String> heightMapFormats;
 	heightMapFormats.push_back(".heightmap");
 
-	delete	ui->propEditor;
-	ui->propEditor = new LandscapeSettingsEditor(this);
-	connect(ui->propEditor, SIGNAL(TileModeChanged(int)), this, SLOT(TileModeChanged(int)));
-	ui->verticalLayout_4->addWidget(ui->propEditor);
-
-	innerLandscapeEntity = _landscapeEntity;
-	defaultLandscapeEntity = _landscapeEntity;
+	entity = SafeRetain(_landscapeEntity);// release in BaseAddEntityDialog::~BaseAddEntityDialog()
 	
+	innerLandscapeEntity = entity;
 	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
-
-
+	
 	DAVA::String resFolder = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
 	
 	INIT_PATH_WIDGET(colorTexutureWidget, Landscape::TEXTURE_COLOR, OPEN_TEXTURE_TITLE, TEXTURE_FILE_FILTER);
@@ -122,7 +119,6 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	ui->lowerLayOut->removeWidget(ui->buttonBox);
 	ui->lowerLayOut->addWidget(actionButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
-	SetLandscapeEntity(innerLandscapeEntity);
 }
 
 LandscapeDialog::~LandscapeDialog()
@@ -135,6 +131,19 @@ LandscapeDialog::~LandscapeDialog()
 	delete actionButton;
 }
 
+void LandscapeDialog::showEvent ( QShowEvent * event )
+{
+	BaseAddEntityDialog::showEvent(event);
+	SetLandscapeEntity(innerLandscapeEntity);
+}
+
+void LandscapeDialog::InitPropertyEditor()
+{
+	propEditor = new LandscapeSettingsEditor(this);
+	connect(propEditor, SIGNAL(TileModeChanged(int)), this, SLOT(TileModeChanged(int)));
+	ui->verticalLayout_4->addWidget(propEditor);
+}
+
 void LandscapeDialog::ActionButtonClicked()
 {
 	bool needToCreate = actionButton->text() == CREATE_TITLE;
@@ -145,44 +154,52 @@ void LandscapeDialog::ActionButtonClicked()
 		Entity* entityToProcess = new Entity();
 		Landscape* newLandscape = new Landscape();
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
-		entityToProcess->AddComponent(new RenderComponent(ScopedPtr<Landscape>(newLandscape)));
+		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
+		entityToProcess->AddComponent(component);
+		SafeRelease(component);
 		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
 		SetLandscapeEntity(entityToProcess);
 	}
 	else
 	{
-		if(innerLandscapeEntity != defaultLandscapeEntity)
+		actionButton->setText(CREATE_TITLE);
+		if(entity != innerLandscapeEntity)
 		{
-			Landscape* newLandscape = DAVA::GetLandscape(innerLandscapeEntity);
-			SafeRelease(newLandscape);
+			// release should be performed only for created in if(needToCreate){...} entity
+			innerLandscapeEntity->RemoveComponent(Component::RENDER_COMPONENT);
 			SafeRelease(innerLandscapeEntity);
 		}
-		
+
 		SetLandscapeEntity(NULL);
-		actionButton->setText(CREATE_TITLE);
 	}
 }
 
 void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
 {
 	innerLandscapeEntity = _landscapeEntity;
-	innerLandscape = innerLandscapeEntity== NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
-	LandscapeSettingsEditor* editor = dynamic_cast<LandscapeSettingsEditor*>(ui->propEditor);
-	DVASSERT(editor);
+	innerLandscape = innerLandscapeEntity == NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
+	FillUIbyLandscapeEntity(innerLandscapeEntity);
+}
+
+
+void LandscapeDialog::FillUIbyLandscapeEntity(Entity* _landscapeEntity)
+{
+	Landscape*	landscapeToProcess =  _landscapeEntity== NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
+	
 	for (DAVA::Map<SelectPathWidgetBase*,DefaultInfo>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
 	{
 		SelectPathWidgetBase* widget = it->first;
 		int32 info = it->second.specificInfo;
 		
-		if(innerLandscape)
+		if(landscapeToProcess)
 		{
 			if(info == HEIGHT_MAP_ID)
 			{
-				widget->setText(innerLandscape->GetHeightmapPathname().GetAbsolutePathname());
+				widget->setText(landscapeToProcess->GetHeightmapPathname().GetAbsolutePathname());
 			}
 			else
 			{
-				widget->setText(innerLandscape->GetTextureName((Landscape::eTextureLevel)info).GetAbsolutePathname());
+				widget->setText(landscapeToProcess->GetTextureName((Landscape::eTextureLevel)info).GetAbsolutePathname());
 			}
 		}
 		else
@@ -191,16 +208,16 @@ void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
 			widget->setText(DAVA::String(""));
 			widget->blockSignals(false);
 		}
-	
-		widget->setEnabled(innerLandscape);
+		
+		widget->setEnabled(landscapeToProcess);
 	}
 	
-	if(innerLandscape != NULL)
+	if(landscapeToProcess != NULL)
 	{
-		TileModeChanged((int)innerLandscape->GetTiledShaderMode());
+		TileModeChanged((int)landscapeToProcess->GetTiledShaderMode());
 	}
-	ui->propEditor->SetNode(innerLandscapeEntity);
-	ui->propEditor->expandAll();
+	propEditor->SetNode(_landscapeEntity);
+	propEditor->expandAll();
 	PerformResize();
 }
 
@@ -239,7 +256,6 @@ void LandscapeDialog::TileModeChanged(int newValue)
 		tileTexuture3Widget->setText(widgetMap[tileTexuture3Widget].path.GetAbsolutePathname());
 	}
 }
-
 
 SelectPathWidgetBase* LandscapeDialog::FindWidgetBySpecInfo(int value)
 {
@@ -297,30 +313,58 @@ void LandscapeDialog::ValueChanged(String fileName)
 
 void LandscapeDialog::reject()
 {
-	if(innerLandscapeEntity != defaultLandscapeEntity)
+	if(innerLandscapeEntity != entity)
 	{
+		innerLandscapeEntity->RemoveComponent(Component::RENDER_COMPONENT);
+		SafeRelease(innerLandscapeEntity);//release just created entity
+	}
+	
+	innerLandscape = DAVA::GetLandscape(entity);
+	
+	if(entity)
+	{
+		for (DAVA::Map<SelectPathWidgetBase*,DefaultInfo>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
+		{
+			String defaultValue(it->second.path.GetAbsolutePathname());
+			String present(it->first->getText());
+			if(present != defaultValue)
+			{
+				it->first->setText(defaultValue);
+			}
+		}
+		
+		propEditor->RestoreInitialSettings();
+	}
+	QDialog::reject();
+}
+
+
+void LandscapeDialog::accept()
+{
+	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+	
+	if(entity == NULL && innerLandscapeEntity != NULL)
+	{
+		AddEntityCommand* command = new AddEntityCommand(innerLandscapeEntity, sceneEditor);
+		sceneEditor->Exec(command);
+		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
 		SafeRelease(innerLandscapeEntity);
 	}
-	innerLandscapeEntity = defaultLandscapeEntity;
-	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
-	
-	if(!innerLandscape)
+	if(entity != NULL && innerLandscapeEntity != NULL  && (entity != innerLandscapeEntity))
 	{
-		QDialog::reject();
-		return;
+		EntityRemoveCommand * command = new EntityRemoveCommand(entity);
+		sceneEditor->Exec(command);
+		AddEntityCommand* commandAdd = new AddEntityCommand(innerLandscapeEntity, sceneEditor);
+		sceneEditor->Exec(commandAdd);
+		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
+		SafeRelease(innerLandscapeEntity);
 	}
 	
-	for (DAVA::Map<SelectPathWidgetBase*,DefaultInfo>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
+	if(entity != NULL && innerLandscapeEntity == NULL)
 	{
-		String defaultValue(it->second.path.GetAbsolutePathname());
-		String present(it->first->getText());
-		if(present != defaultValue)
-		{
-			it->first->setText(defaultValue);
-		}
+		EntityRemoveCommand * command = new EntityRemoveCommand(entity);
+		sceneEditor->Exec(command);
 	}
-
-	ui->propEditor->RestoreInitialSettings();
 	
-	QDialog::reject();
+	QDialog::accept();
 }

@@ -64,8 +64,7 @@ signals:
 	void ModifyStatusChanged(SceneEditor2 *scene, bool modified);
 
 	// entities
-	void Selected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void Deselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void SelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
 	// mouse
 	void MouseOver(SceneEditor2 *scene, const EntityGroup *entities);
@@ -98,6 +97,7 @@ signals:
 	void VisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state);
 	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
 	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
+	void SnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
 	void VisibilityToolToggled(SceneEditor2* scene);
 	void CustomColorsToggled(SceneEditor2* scene);
@@ -122,8 +122,7 @@ public:
 	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) { emit StructureChanged(scene, parent); }
 	void EmitModifyStatusChanged(SceneEditor2 *scene, bool modified) { emit ModifyStatusChanged(scene, modified); }
 
-	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }
-	void EmitDeselected(SceneEditor2 *scene, DAVA::Entity *entity)  { emit Deselected(scene, entity); }
+	void EmitSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected) { emit SelectionChanged(scene, selected, deselected); }
 
 	void EmitVisibilityToolToggled(SceneEditor2* scene) { emit VisibilityToolToggled(scene); }
 	void EmitCustomColorsToggled(SceneEditor2* scene) { emit CustomColorsToggled(scene); }
@@ -203,6 +202,11 @@ public:
 	void EmitEditorLightEnabled(bool enabled)
 	{
 		emit EditorLightEnabled(enabled);
+	}
+
+	void EmitSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
+	{
+		emit SnapToLandscapeChanged(scene, isSpanToLandscape);
 	}
 
 };

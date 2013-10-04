@@ -66,6 +66,7 @@ public:
 	SceneTabWidget* GetSceneWidget();
 	SceneEditor2* GetCurrentScene();
 
+    bool OpenScene(const QString & path);
 	bool SaveScene(SceneEditor2 *scene);
 	bool SaveSceneAs(SceneEditor2 *scene);
 
@@ -181,12 +182,14 @@ public slots:
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
+    void OnObjectsTypeChanged(int type);
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 
 	void SetupMainMenu();
 	void SetupToolBars();
+	void SetupStatusBar();
 	void SetupDocks();
 	void SetupActions();
 	void SetupTitle();
@@ -197,7 +200,6 @@ protected:
     
     void CreateMaterialEditorIfNeed();
     
-    void UpdateStatusBar();
     void StartGlobalInvalidateTimer();
 
 	void RunBeast();
@@ -210,15 +212,12 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
-    
-	void AddSwitchDialogFinished(int result);
-	void LandscapeDialogFinished(int result);
 
     void OnGlobalInvalidateTimeout();
 
 	void EditorLightEnabled(bool enabled);
+
+	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
 private:
 	Ui::MainWindow *ui;
@@ -232,14 +231,13 @@ private:
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
-	AddSwitchEntityDialog* addSwitchEntityDialog;
-	LandscapeDialog* landscapeDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
 	// <--
 
 	QtLabelWithActions *objectTypesLabel;
+    QComboBox *objectTypesWidget;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
@@ -251,11 +249,13 @@ private:
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
-	void LoadObjectTypesLabel(SceneEditor2 *scene);
+	void LoadObjectTypes(SceneEditor2 *scene);
 
     bool globalInvalidateTimeoutEnabled;
 
 	bool IsSavingAllowed();
+    
+    void CreateObjectTypesCombobox();
 };
 
 

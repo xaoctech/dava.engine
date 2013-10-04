@@ -35,13 +35,15 @@
 #include "DAVAEngine.h"
 
 class SceneEditor2;
+class EntityGroup;
 class Command2;
+
 class EditorLODData: public QObject
 {
     Q_OBJECT
     
 public:
-    
+
     EditorLODData();
     virtual ~EditorLODData();
 
@@ -74,16 +76,12 @@ signals:
     void DataChanged();
     
 protected slots:
-    
-    void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
-
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
-
     
 protected:
     

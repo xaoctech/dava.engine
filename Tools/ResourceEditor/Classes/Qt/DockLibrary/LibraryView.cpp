@@ -109,7 +109,7 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 			else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))
 			{
 				contextMenu.addAction("Convert", this, SLOT(OnDAEConvert()));
-				contextMenu.addAction("Convert with saved settings", this, SLOT(OnDAEConvertWithSavingOfSettings()));
+				contextMenu.addAction("Convert geometry", this, SLOT(OnDAEConvertWithSavingOfSettings()));
 			}
 
 			contextMenu.exec(mapToGlobal(point));
@@ -151,8 +151,7 @@ void LibraryView::OnModelEdit()
 	if(index.isValid())
 	{
 		QFileInfo fileInfo = libModel->fileInfo(index);
-		int tabId = QtMainWindow::Instance()->GetSceneWidget()->OpenTab(fileInfo.absoluteFilePath().toStdString());
-		QtMainWindow::Instance()->GetSceneWidget()->SetCurrentTab(tabId);
+		QtMainWindow::Instance()->OpenScene(fileInfo.absoluteFilePath());
 	}
 }
 
