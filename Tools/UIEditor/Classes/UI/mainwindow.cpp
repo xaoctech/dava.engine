@@ -630,7 +630,18 @@ void MainWindow::InitMenu()
 	connect(ui->actionAlign_Top, SIGNAL(triggered()), this, SLOT(OnAlignTop()));
 	connect(ui->actionAlign_Vert_Center, SIGNAL(triggered()), this, SLOT(OnAlignVertCenter()));
 	connect(ui->actionAlign_Bottom, SIGNAL(triggered()), this, SLOT(OnAlignBottom()));
-	
+
+	// Distribute.
+	connect(ui->actionEqualBetweenLeftEdges , SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenLeftEdges ()));
+	connect(ui->actionEqualBetweenXCenters, SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenXCenters()));
+	connect(ui->actionEqualBetweenRightEdges, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenRightEdges()));
+	connect(ui->actionEqualBetweenXObjects, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenX()));
+
+	connect(ui->actionEqualBetweenTopEdges , SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenTopEdges()));
+	connect(ui->actionEqualBetweenYCenters, SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenYCenters()));
+	connect(ui->actionEqualBetweenBottomEdges, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenBottomEdges()));
+	connect(ui->actionEqualBetweenYObjects, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenY()));
+
 	UpdateMenu();
 }
 
@@ -1072,4 +1083,44 @@ void MainWindow::OnAlignVertCenter()
 void MainWindow::OnAlignBottom()
 {
 	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_BOTTOM);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenLeftEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_LEFT_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenXCenters()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X_CENTERS);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenRightEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_RIGHT_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenX()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenTopEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_TOP_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenYCenters()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y_CENTERS);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenBottomEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_BOTTOM_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenY()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y);
 }
