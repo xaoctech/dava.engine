@@ -54,5 +54,10 @@ const Map<UIControl*, Rect>& ControlsPositionData::GetControlPositions() const
 {
 	return positions;
 }
-	
+
+int32 ControlsPositionData::GetItemsCount()
+{
+	return positions.size();
+}
+
 };
