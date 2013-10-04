@@ -29,12 +29,33 @@
 
 
 #include "EntityOwnerPropertyHelper.h"
-#include "EditorSettings.h"
-
-namespace DAVA {
+#include "SceneEditor/EditorSettings.h"
 
 const char* EntityOwnerPropertyHelper::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
 const char* EntityOwnerPropertyHelper::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
+
+EntityOwnerPropertyHelper::EntityOwnerPropertyHelper()
+{
+	connect(SceneSignals::Instance(),SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2* , bool )));
+}
+
+EntityOwnerPropertyHelper::~EntityOwnerPropertyHelper()
+{
+	disconnect(SceneSignals::Instance(),SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2* , bool )));
+}
+
+void EntityOwnerPropertyHelper::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+	int id = command->GetId();
+	if(id == CMDID_ADD_ENTITY || id == CMDID_ENTITY_MOVE|| id == CMDID_TRANSFORM)
+	{
+		KeyedArchive* properties = command->GetEntity()->GetCustomProperties();
+		if(NULL != properties)
+		{
+			UpdateEntityOwner(properties);
+		}
+	}
+}
 
 void EntityOwnerPropertyHelper::UpdateEntityOwner(KeyedArchive *customProperties)
 {
@@ -42,7 +63,7 @@ void EntityOwnerPropertyHelper::UpdateEntityOwner(KeyedArchive *customProperties
 	UpdateModificationTime(customProperties);
 }
 
-void EntityOwnerPropertyHelper::SetDesignerName(KeyedArchive *customProperties, const String & name)
+void EntityOwnerPropertyHelper::SetDesignerName(DAVA::KeyedArchive *customProperties, const String & name)
 {
 	customProperties->SetString(SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, name);
 }
@@ -64,9 +85,8 @@ void EntityOwnerPropertyHelper::UpdateModificationTime(KeyedArchive *customPrope
 	customProperties->SetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
 }
 
-String EntityOwnerPropertyHelper::GetModificationTime(KeyedArchive *customProperties)
+String EntityOwnerPropertyHelper::GetModificationTime(DAVA::KeyedArchive *customProperties)
 {
 	return customProperties->GetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
 }
 
-};
