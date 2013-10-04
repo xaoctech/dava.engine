@@ -176,6 +176,7 @@ QtMainWindow::~QtMainWindow()
         HintManager::Instance()->Release();
 	
     TextureBrowser::Instance()->Release();
+    FMODSoundBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
 

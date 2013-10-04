@@ -117,11 +117,7 @@ void FMODSoundEvent::PerformCallback(CallbackType callbackType)
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
     if(type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
-    {
-        FMODSoundEvent * fevent = (FMODSoundEvent *)userdata;
-        if(fevent)
-            fevent->PerformCallback(FMODSoundEvent::EVENT_END);
-    }
+        ((FMODSoundEvent *)userdata)->PerformCallback(FMODSoundEvent::EVENT_END);
 
     return FMOD_OK;
 }

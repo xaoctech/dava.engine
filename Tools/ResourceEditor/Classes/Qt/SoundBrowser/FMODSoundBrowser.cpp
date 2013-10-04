@@ -65,9 +65,7 @@ FMODSoundBrowser::FMODSoundBrowser(QWidget *parent) :
 
 FMODSoundBrowser::~FMODSoundBrowser()
 {
-    DAVA::FMODSoundSystem * soundsystem = (DAVA::FMODSoundSystem *)DAVA::SoundSystem::Instance();
-    DVASSERT(soundsystem);
-    soundsystem->UnloadProjects();
+    DAVA::FMODSoundSystem::GetFMODSoundSystem()->UnloadProjects();
 
     delete ui;
 }
@@ -87,8 +85,7 @@ void FMODSoundBrowser::SetEditableComponent(DAVA::FMODSoundComponent * editCompo
 
 void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
 {
-    DAVA::FMODSoundSystem * soundsystem = (DAVA::FMODSoundSystem *)DAVA::SoundSystem::Instance();
-    DVASSERT(soundsystem);
+    DAVA::FMODSoundSystem * soundsystem = DAVA::FMODSoundSystem::GetFMODSoundSystem();
     
     soundsystem->UnloadProjects();
 
@@ -103,9 +100,7 @@ void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
 
 void FMODSoundBrowser::OnProjectClosed()
 {
-    DAVA::FMODSoundSystem * soundsystem = (DAVA::FMODSoundSystem *)DAVA::SoundSystem::Instance();
-    DVASSERT(soundsystem);
-    soundsystem->UnloadProjects();
+    DAVA::FMODSoundSystem::GetFMODSoundSystem()->UnloadProjects();
 
     ui->treeWidget->clear();
 }

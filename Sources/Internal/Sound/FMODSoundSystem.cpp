@@ -114,7 +114,7 @@ void FMODSoundSystem::UnloadProjects()
 
 FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
 {
-    FMODSoundSystem * soundSystem = (FMODSoundSystem *)SoundSystem::Instance();
+    FMODSoundSystem * soundSystem = DynamicTypeCheck<FMODSoundSystem*>(SoundSystem::Instance());
     DVASSERT(soundSystem);
 
     return soundSystem;
