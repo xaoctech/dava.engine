@@ -161,7 +161,7 @@ float32 FMODSoundComponent::GetParameter(const String & paramName)
     
 void FMODSoundComponent::SetPosition(const Vector3 & _position)
 {
-    position = position;
+    position = _position;
     if(fmodEvent)
     {
         FMOD_VECTOR pos = {position.x, position.y, position.z};
