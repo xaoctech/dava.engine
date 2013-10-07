@@ -1314,6 +1314,12 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\MovieViewControlStub.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2321,8 +2327,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2339,6 +2343,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
       <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp">
+      <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

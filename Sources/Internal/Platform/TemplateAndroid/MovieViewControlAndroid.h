@@ -26,48 +26,82 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_UIMOVIEVIEW__H__
-#define __DAVAENGINE_UIMOVIEVIEW__H__
 
-#include "DAVAEngine.h"
-#include "IMovieViewControl.h"
+#ifndef __DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__
+#define __DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__
 
-namespace DAVA {
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-// The purpose of UIMovieView class is to display movies.
-class UIMovieView : public UIControl
+#include "UI/IMovieViewControl.h"
+#include "JniExtensions.h"
+
+namespace DAVA
+{
+
+class JniMovieViewControl: public JniExtension
 {
 public:
-	UIMovieView(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-	virtual ~UIMovieView();
+	JniMovieViewControl(uint32 id);
+	void Initialize(const Rect& rect);
+	void Uninitialize();
 
-	// Open the Movie.
+	void SetRect(const Rect& rect);
+	void SetVisible(bool isVisible);
+
 	void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
 
-	// Overloaded virtual methods.
-	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
-	virtual void SetSize(const Vector2 &newSize);
-	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
-	virtual void SystemDraw(const UIGeometricData &geometricData);
-
-	// Start/stop the video playback.
 	void Play();
 	void Stop();
-
-	// Pause/resume the playback.
 	void Pause();
 	void Resume();
-	
-	// Whether the movie is being played?
 	bool IsPlaying();
 
 protected:
-	// Platform-specific implementation of the Movie Control.
-	IMovieViewControl* movieViewControl;
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+
+private:
+	uint32 id;
 };
 
+class MovieViewControl : public IMovieViewControl
+{
+public:
+	MovieViewControl();
+	virtual ~MovieViewControl();
+
+	// Initialize the control.
+	virtual void Initialize(const Rect& rect);
+
+	// Position/visibility.
+	virtual void SetRect(const Rect& rect);
+	virtual void SetVisible(bool isVisible);
+
+	// Open the Movie.
+	virtual void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
+
+	// Start/stop the video playback.
+	virtual void Play();
+	virtual void Stop();
+	
+	// Pause/resume the playback.
+	virtual void Pause();
+	virtual void Resume();
+	
+	// Whether the movie is being played?
+	virtual bool IsPlaying();
+
+private:
+	JniMovieViewControl jniMovieViewControl;
+};
+	
 };
 
+#endif //__DAVAENGINE_ANDROID__
 
-#endif /* defined(__DAVAENGINE_UIMOVIEVIEW__H__) */
+#endif /* defined(__DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__) */
