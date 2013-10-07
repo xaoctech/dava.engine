@@ -63,6 +63,8 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 	SafeRelease(customColorsProxy);
 	SafeRelease(visibilityToolProxy);
 	SafeRelease(rulerToolProxy);
+
+	SafeDelete(notPassableTerrainProxy);
 }
 
 LandscapeProxy* LandscapeEditorDrawSystem::GetLandscapeProxy()
