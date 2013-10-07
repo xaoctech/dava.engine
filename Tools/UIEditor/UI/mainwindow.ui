@@ -248,6 +248,14 @@
    <addaction name="actionAlign_Vert_Center"/>
    <addaction name="actionAlign_Bottom"/>
    <addaction name="separator"/>
+   <addaction name="actionEqualBetweenLeftEdges"/>
+   <addaction name="actionEqualBetweenXCenters"/>
+   <addaction name="actionEqualBetweenRightEdges"/>
+   <addaction name="actionEqualBetweenXObjects"/>
+   <addaction name="actionEqualBetweenTopEdges"/>
+   <addaction name="actionEqualBetweenYCenters"/>
+   <addaction name="actionEqualBetweenBottomEdges"/>
+   <addaction name="actionEqualBetweenYObjects"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="propertiesDockWidget">
@@ -567,6 +575,49 @@
    </property>
    <property name="text">
     <string>Align Bottom</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenLeftEdges">
+   <property name="text">
+    <string>Eq Left</string>
+   </property>
+   <property name="toolTip">
+    <string>Equal Distance between Left Edges</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenXCenters">
+   <property name="text">
+    <string>Eq X Centers</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenRightEdges">
+   <property name="text">
+    <string>Eq Right</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenXObjects">
+   <property name="text">
+    <string>Eq X</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenTopEdges">
+   <property name="text">
+    <string>Eq Top</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenYCenters">
+   <property name="text">
+    <string>Eq Y Centers</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenBottomEdges">
+   <property name="text">
+    <string>Eq Bottom</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenYObjects">
+   <property name="text">
+    <string>Eq Y</string>
    </property>
   </action>
  </widget>

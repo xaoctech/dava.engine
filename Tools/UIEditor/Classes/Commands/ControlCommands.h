@@ -77,11 +77,12 @@ private:
 	Rect newRect;
 };
 
-// Align the controls.
-class ControlsAlignCommand : public BaseCommand
+// Align/distribute the controls.
+class ControlsAlignDistributeCommand : public BaseCommand
 {
 public:
-	ControlsAlignCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType);
+	ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eAlignControlsType alignType);
+	ControlsAlignDistributeCommand(const HierarchyTreeController::SELECTEDCONTROLNODES& controls, eDistributeControlsType distributeType);
 
 	virtual void Execute();
 	virtual void Rollback();
@@ -89,12 +90,21 @@ public:
 	virtual bool IsUndoRedoSupported() {return true;};
 
 protected:
+	// Command mode.
+	enum eCommandMode
+	{
+		MODE_ALIGN = 0,
+		MODE_DISTRIBUTE
+	};
 
+	eCommandMode commandMode;
+	
 	// List of selected controls and align type.
 	HierarchyTreeController::SELECTEDCONTROLNODES selectedControls;
 	eAlignControlsType selectedAlignType;
+	eDistributeControlsType selectedDistributeType;
 
-	// Alignment result - needed for Undo.
+	// Alignment/distribution result - needed for Undo.
 	ControlsPositionData prevPositionData;
 };
 
