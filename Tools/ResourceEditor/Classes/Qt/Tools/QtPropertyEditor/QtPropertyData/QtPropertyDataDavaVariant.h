@@ -31,12 +31,12 @@
 #ifndef __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 #define __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 
-#include <QComboBox>
-
 #include "Base/Introspection.h"
 #include "Base/EnumMap.h"
 
 #include "../QtPropertyData.h"
+
+class QToolButton;
 
 class QtPropertyDataDavaVariant : public QtPropertyData
 {
@@ -78,7 +78,8 @@ protected:
 protected slots:
 	void ColorOWPressed();
 	void FilePathOWPressed();
-	//void ComboIndexChanged(int index);
+	void AllowedOWPressed();
+	void AllowedSelected(int index);
 
 private:
 	struct AllowedValue
@@ -87,16 +88,20 @@ private:
 		QVariant visibleValue;
 	};
 
+	bool processingChilds;
+	bool processingParent;
+
 	QVector<AllowedValue> allowedValues;
 	bool allowedValuesLocked;
+	QToolButton *allowedButton;
 
 	bool iconCacheIsValid;
 	QIcon iconCache;
 
+	void InitFlags();
 	void ChildsCreate();
 	void ChildsSetFromMe();
 	void MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData);
-
 
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive);
 	QVariant FromVector4(const DAVA::Vector4 &vector);
@@ -118,8 +123,9 @@ private:
 	void ToColor(const QVariant &value);
 	void ToAABBox3(const QVariant &value);
 
-	QComboBox* CreateAllowedValuesComboBox(QWidget *parent);
-	void SetAllowedValueFromComboBox(QComboBox *combobox);
+	QWidget* CreateAllowedValuesEditor(QWidget *parent);
+	void SetAllowedValueEditorData(QWidget *editorWidget);
+	void ApplyAllowedValueFromEditor(QWidget *editorWidget);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_VARIANT_H__
