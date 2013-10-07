@@ -122,7 +122,7 @@ void QtPropertyModel::OnItemChanged(QStandardItem* item)
 	{
 		if(propItem->isCheckable())
 		{
-			propItem->GetPropertyData()->SetValue(QVariant(propItem->checkState() == Qt::Checked));
+			propItem->GetPropertyData()->SetValue(QVariant(propItem->checkState() == Qt::Checked), QtPropertyData::VALUE_SET);
 		}
 	}
 }
