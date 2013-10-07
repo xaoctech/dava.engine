@@ -230,7 +230,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 						curArchive->DeleteKey(child.first.toStdString());
 						ChildsSync();
 
-						emit ValueChanged();
+						emit ValueChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
 				}
@@ -256,7 +256,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 
 		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
 
-		emit ValueChanged();
+		emit ValueChanged(QtPropertyData::VALUE_EDITED);
 	}
 }
 
