@@ -131,6 +131,9 @@ protected slots:
 
 	void OnRefreshTimeout();
 
+	void OnFindSameEntity();
+
+
 protected:
 	// Helpers for Particles.
 	// Get the default path to Particles Config.
