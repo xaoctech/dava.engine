@@ -49,6 +49,9 @@ public:
 	// Access to the controls positions.
 	const Map<UIControl*, Rect>& GetControlPositions() const;
 
+	// Get the items count.
+	int32 GetItemsCount();
+
 protected:
 	// The storage itself.
 	Map<UIControl*, Rect> positions;

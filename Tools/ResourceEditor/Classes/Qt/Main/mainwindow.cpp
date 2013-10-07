@@ -58,7 +58,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../Tools/LandscapeDialog/LandscapeDialog.h"
 
-#include "Classes/Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/EntityAddCommand.h"
 #include "StringConstants.h"
 #include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
@@ -104,6 +104,7 @@
 #include <QKeySequence>
 
 #include "Scene3D/Components/ActionComponent.h"
+#include "Scene/EntityOwnerPropertyHelper.h"
 
 QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
@@ -162,6 +163,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
+	EntityOwnerPropertyHelper::Instance();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -236,10 +238,12 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 	if(NULL != scene)
 	{
 		DAVA::FilePath saveAsPath = scene->GetScenePath();
-		if(saveAsPath.IsEmpty())
+		if(!saveAsPath.Exists())
 		{
-			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+			saveAsPath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "/" + scene->GetScenePath().GetFilename();
+//			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
 		}
+
 
 		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
@@ -1294,7 +1298,7 @@ void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 	
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
-		AddEntityCommand* command = new AddEntityCommand(entity, sceneEditor);
+		EntityAddCommand* command = new EntityAddCommand(entity, sceneEditor);
 		sceneEditor->Exec(command);
 		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 	}
@@ -1991,3 +1995,5 @@ void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLa
 
 	ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
 }
+
+

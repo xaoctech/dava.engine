@@ -32,7 +32,7 @@
 #include "ui_BaseAddEntityDialog.h"
 #include "SceneEditor/EditorSettings.h"
 #include "Main/mainwindow.h"
-#include "Classes/Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/EntityAddCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 
 #define  INIT_PATH_WIDGET(widgetName, widgetNum, widgetTitle, fileFilter) SelectPathWidgetBase* widgetName = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);\
@@ -345,7 +345,7 @@ void LandscapeDialog::accept()
 	
 	if(entity == NULL && innerLandscapeEntity != NULL)
 	{
-		AddEntityCommand* command = new AddEntityCommand(innerLandscapeEntity, sceneEditor);
+		EntityAddCommand* command = new EntityAddCommand(innerLandscapeEntity, sceneEditor);
 		sceneEditor->Exec(command);
 		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
 		SafeRelease(innerLandscapeEntity);
@@ -354,7 +354,7 @@ void LandscapeDialog::accept()
 	{
 		EntityRemoveCommand * command = new EntityRemoveCommand(entity);
 		sceneEditor->Exec(command);
-		AddEntityCommand* commandAdd = new AddEntityCommand(innerLandscapeEntity, sceneEditor);
+		EntityAddCommand* commandAdd = new EntityAddCommand(innerLandscapeEntity, sceneEditor);
 		sceneEditor->Exec(commandAdd);
 		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
 		SafeRelease(innerLandscapeEntity);

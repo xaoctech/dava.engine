@@ -38,7 +38,7 @@
 #include "Scene/SceneEditor2.h"
 
 #include "Commands2/EntityRemoveCommand.h"
-#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityParentChangeCommand.h"
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -392,9 +392,9 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		case CMDID_TRANSFORM:
 			UpdateCollisionObject(entity);
 			break;
-		case CMDID_ENTITY_MOVE:
+		case CMDID_ENTITY_CHANGE_PARENT:
 			{
-				EntityMoveCommand *cmd = (EntityMoveCommand *) command;
+				EntityParentChangeCommand *cmd = (EntityParentChangeCommand *) command;
 				if(redo)
 				{
 					if(NULL != cmd->newParent)

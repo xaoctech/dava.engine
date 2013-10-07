@@ -34,7 +34,7 @@
 #include "Main/mainwindow.h"
 #include "SceneEditor/EditorSettings.h"
 #include <QLabel>
-#include "Classes/Commands2/AddEntityCommand.h"
+#include "Classes/Commands2/EntityAddCommand.h"
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 		:BaseAddEntityDialog(parent)
@@ -124,7 +124,7 @@ void AddSwitchEntityDialog::accept()
 	}
 	if(vector.size() > 0)
 	{
-		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
+		EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
 		scene->Exec(command);
 		
 		Entity* affectedEntity = command->GetEntity();

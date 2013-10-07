@@ -344,6 +344,12 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 {
 	if(NULL != entity)
 	{
+		//Get selection size to show different menues
+		const SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+		SceneSelectionSystem *selSystem = scene->selectionSystem;
+		size_t selectionSize = selSystem->GetSelectionCount();
+
+
 		QMenu contextMenu;
 
 		// look at
@@ -385,10 +391,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 			if(!ownerRef.IsEmpty())
 			{
-                const SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
-                SceneSelectionSystem *selSystem = scene->selectionSystem;
-                
-                size_t selectionSize = selSystem->GetSelectionCount();
                 if(selectionSize == 1)
                 {
                     QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
@@ -437,6 +439,12 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 				contextMenu.addSeparator();
 				contextMenu.addAction("Group to entity with merged LODs", QtMainWindow::Instance(), SLOT(OnUniteEntitiesWithLODs()));
 			}
+		}
+
+		if(selectionSize == 1)
+		{
+			contextMenu.addSeparator();
+			contextMenu.addAction("Find same entities",this, SLOT(OnFindSameEntity()));
 		}
 
 		contextMenu.exec(pos);
@@ -608,8 +616,20 @@ void SceneTree::ReloadModelAs()
 		if(NULL != entity)
 		{
 			DAVA::String ownerPath = entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
+			if(ownerPath.empty())
+			{
+				FilePath p = sceneEditor->GetScenePath().GetDirectory();
+				if(p.Exists() && sceneEditor->IsLoaded())
+				{
+					ownerPath = p.GetAbsolutePathname();
+				}
+				else
+				{
+					ownerPath = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
+				}
+			}
 
+			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->structureSystem->Reload(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
@@ -1237,4 +1257,16 @@ void SceneTree::CleanupParticleEditorSelectedItems()
 void SceneTree::OnRefreshTimeout()
 {
 	dataChanged(QModelIndex(), QModelIndex());
+}
+
+void SceneTree::OnFindSameEntity()
+{
+	SceneEditor2 *scene = treeModel->GetScene();
+	if(!scene) return;
+
+	EntityGroup selection = scene->selectionSystem->GetSelection();
+	if(selection.Size() != 1) return;
+
+	Entity *entity = selection.GetEntity(0);
+	QtMainWindow::Instance()->GetUI()->sceneTreeFilterEdit->setText(entity->GetName().c_str());
 }

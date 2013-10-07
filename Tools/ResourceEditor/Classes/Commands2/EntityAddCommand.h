@@ -28,38 +28,25 @@
 
 
 
-#include "Commands2/AddEntityCommand.h"
-#include "../Qt/Scene/SceneDataManager.h"
-#include "Scene3D/Entity.h"
+#ifndef __ENTITY_ADD_COMMAND_H__
+#define __ENTITY_ADD_COMMAND_H__
 
+#include "Commands2/Command2.h"
 
-AddEntityCommand::AddEntityCommand(DAVA::Entity* _entityToAdd, DAVA::Scene* _scene)
-	: Command2(CMDID_ADD_ENTITY, "Add Entity")
-    , entityToAdd(_entityToAdd)
-    , scene(_scene)
+class EntityAddCommand : public Command2
 {
-	SafeRetain(entityToAdd);
-}
+public:
+	EntityAddCommand(DAVA::Entity* entityToAdd, DAVA::Entity* toParent);
+	~EntityAddCommand();
 
-AddEntityCommand::~AddEntityCommand()
-{
-	SafeRelease(entityToAdd);
-}
+	virtual void Undo();
+	virtual void Redo();
 
-void AddEntityCommand::Undo()
-{
-    if(NULL != scene && NULL != entityToAdd)
-    {
-        scene->RemoveNode(entityToAdd);
-    }
-}
+	virtual DAVA::Entity* GetEntity() const;
 
-void AddEntityCommand::Redo()
-{
-	scene->AddNode(entityToAdd);
-}
+	DAVA::Entity* entityToAdd;
+	DAVA::Entity* parentToAdd;
+	
+};
 
-Entity* AddEntityCommand::GetEntity() const
-{
-	return entityToAdd;
-}
+#endif // __ENTITY_ADD_COMMAND_H__
