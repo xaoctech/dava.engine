@@ -49,6 +49,7 @@
 #include "UI/UITextFieldAndroid.h"
 #include "Platform/TemplateAndroid/DPIHelperAndroid.h"
 #include "Platform/TemplateAndroid/AndroidCrashReport.h"
+#include "Platform/TemplateAndroid/MovieViewControlAndroid.h"
 
 extern "C"
 {
@@ -112,6 +113,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIDpiHelper", &DAVA::JniDpiHelper::gJavaClass, &DAVA::JniDpiHelper::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNICrashReporter", &DAVA::JniCrashReporter::gJavaClass, &DAVA::JniCrashReporter::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "java/lang/String", &DAVA::JniCrashReporter::gStringClass, NULL);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIMovieViewControl", &DAVA::JniMovieViewControl::gJavaClass, &DAVA::JniMovieViewControl::gJavaClassName);
 
 	androidDelegate = new AndroidDelegate(vm);
 

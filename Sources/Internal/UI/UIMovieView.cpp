@@ -28,13 +28,16 @@
 
 #include "UIMovieView.h"
 
-// TODO! for now - for iOS only!
 #if defined(__DAVAENGINE_IPHONE__)
 #include "../Platform/TemplateIOS/MovieViewControliOS.h"
 #elif defined(__DAVAENGINE_MACOS__)
 #include "../Platform/TemplateMacOS/MovieViewControlMacOS.h"
+#elif defined(__DAVAENGINE_ANDROID__)
+#include "../Platform/TemplateAndroid/MovieViewControlAndroid.h"
 #else
-#pragma error UIMovieView control is not implemented for this platform yet!
+// UIMovieView is not implemented for this platform yet, using stub one.
+#define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
+#include "../Platform/MovieViewControlStub.h"
 #endif
 
 namespace DAVA {
@@ -101,6 +104,27 @@ void UIMovieView::Resume()
 bool UIMovieView::IsPlaying()
 {
 	return movieViewControl->IsPlaying();
+}
+
+void UIMovieView::SystemDraw(const UIGeometricData &geometricData)
+{
+	UIControl::SystemDraw(geometricData);
+
+#ifdef DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
+	Color curDebugDrawColor = GetDebugDrawColor();
+	RenderManager::Instance()->ClipPush();
+
+	RenderManager::Instance()->SetColor(Color(1.0f, 0.4f, 0.8f, 1.0f));
+	RenderHelper::Instance()->DrawRect(GetRect());
+
+	float32 minRadius = Min(GetSize().x, GetSize().y);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 2);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 3);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 4);
+
+	RenderManager::Instance()->ClipPop();
+	SetDebugDrawColor(curDebugDrawColor);
+#endif
 }
 
 };

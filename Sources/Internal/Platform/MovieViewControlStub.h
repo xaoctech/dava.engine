@@ -26,48 +26,47 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_UIMOVIEVIEW__H__
-#define __DAVAENGINE_UIMOVIEVIEW__H__
 
-#include "DAVAEngine.h"
-#include "IMovieViewControl.h"
+#ifndef __DAVAENGINE_MOVIEVIEWCONTROL_STUB_H__
+#define __DAVAENGINE_MOVIEVIEWCONTROL_STUB_H__
+
+#include "Base/BaseTypes.h"
+#include "../UI/IMovieViewControl.h"
 
 namespace DAVA {
 
-// The purpose of UIMovieView class is to display movies.
-class UIMovieView : public UIControl
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)
+
+class MovieViewControl : public IMovieViewControl
 {
 public:
-	UIMovieView(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-	virtual ~UIMovieView();
+	MovieViewControl();
+	virtual ~MovieViewControl();
+
+	// Initialize the control.
+	virtual void Initialize(const Rect& rect);
 
 	// Open the Movie.
-	void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
+	virtual void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
 
-	// Overloaded virtual methods.
-	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
-	virtual void SetSize(const Vector2 &newSize);
-	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
-	virtual void SystemDraw(const UIGeometricData &geometricData);
+	// Position/visibility.
+	virtual void SetRect(const Rect& rect);
+	virtual void SetVisible(bool isVisible);
 
 	// Start/stop the video playback.
-	void Play();
-	void Stop();
+	virtual void Play();
+	virtual void Stop();
 
 	// Pause/resume the playback.
-	void Pause();
-	void Resume();
-	
+	virtual void Pause();
+	virtual void Resume();
+
 	// Whether the movie is being played?
-	bool IsPlaying();
-
-protected:
-	// Platform-specific implementation of the Movie Control.
-	IMovieViewControl* movieViewControl;
+	virtual bool IsPlaying();
 };
 
+#endif //!defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) && !defined(__DAVAENGINE_MACOS__)
+	
 };
 
-
-#endif /* defined(__DAVAENGINE_UIMOVIEVIEW__H__) */
+#endif /* defined(__DAVAENGINE_MOVIEVIEWCONTROL_STUB_H__) */

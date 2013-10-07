@@ -31,6 +31,8 @@
 #define __DAVAENGINE_IMOVIEVIEWCONTROL__H__
 
 #include "FileSystem/FilePath.h"
+#include "Math/Vector.h"
+#include "Math/Rect.h"
 
 namespace DAVA {
 
