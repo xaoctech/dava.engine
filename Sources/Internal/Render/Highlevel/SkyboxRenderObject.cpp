@@ -116,17 +116,17 @@ namespace DAVA
 		}
 		
 		Vector3 cubeTexCoords[SKYBOX_VERTEX_COUNT] = {
-			Vector3(-1, -1, 1), Vector3(-1, -1, -1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, -1, -1), Vector3(1, -1, -1),
-			Vector3(1, -1, 1), Vector3(1, -1, -1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, -1, -1), Vector3(1, 1, -1),
-			Vector3(1, 1, 1), Vector3(1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, 1, 1), Vector3(1, 1, -1), Vector3(-1, 1, -1),
-			Vector3(-1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(-1, 1, -1), Vector3(-1, -1, -1),
-			Vector3(1, -1, 1), Vector3(1, 1, 1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(1, 1, 1), Vector3(-1, 1, 1)
+			Vector3(1, 1, -1), Vector3(-1, 1, -1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, 1, 1),
+			Vector3(1, -1, -1), Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, -1), Vector3(1, 1, 1),
+			Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(1, -1, -1), Vector3(1, -1, 1),
+			Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(-1, 1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Vector3(-1, -1, 1),
+			Vector3(1, 1, 1), Vector3(-1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, 1)
 		};
 		
 		PolygonGroup* polygonGroup = new PolygonGroup();
 		polygonGroup->AllocateData(EVF_VERTEX | EVF_CUBETEXCOORD0, SKYBOX_VERTEX_COUNT, SKYBOX_VERTEX_COUNT);
 		
-		//face 0
+		//face 0 (right)+
 		polygonGroup->SetCoord(0, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
 		polygonGroup->SetCoord(1, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(2, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
@@ -134,7 +134,7 @@ namespace DAVA
 		polygonGroup->SetCoord(4, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(5, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		
-		//face 1
+		//face 1 (front)+
 		polygonGroup->SetCoord(6, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
 		polygonGroup->SetCoord(7, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(8, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
@@ -142,7 +142,7 @@ namespace DAVA
 		polygonGroup->SetCoord(10, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(11, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 
-		//face 2
+		//face 2 (left)
 		polygonGroup->SetCoord(12, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
 		polygonGroup->SetCoord(13, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(14, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
@@ -150,7 +150,7 @@ namespace DAVA
 		polygonGroup->SetCoord(16, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(17, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
 				
-		//face 3
+		//face 3 (back)
 		polygonGroup->SetCoord(18, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
 		polygonGroup->SetCoord(19, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(20, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
