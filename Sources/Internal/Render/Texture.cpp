@@ -876,7 +876,7 @@ void Texture::HWglCreateFBOBuffers()
 	
 void Texture::DumpTextures()
 {
-	int32 allocSize = 0;
+	uint32 allocSize = 0;
 	int32 cnt = 0;
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
@@ -889,10 +889,10 @@ void Texture::DumpTextures()
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
         if(FORMAT_INVALID != t->format)
         {
-            allocSize += t->width * t->height * GetPixelFormatSizeInBytes(t->format);
+            allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->format);
         }
 	}
-	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize);
+	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize/8);
 	Logger::FrameworkDebug("============================================================");
 }
 	

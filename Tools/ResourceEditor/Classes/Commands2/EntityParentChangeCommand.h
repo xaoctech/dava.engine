@@ -28,72 +28,26 @@
 
 
 
-#include "Commands2/EntityMoveCommand.h"
+#ifndef __ENTITY_PARENT_CHANGE_COMMAND_H__
+#define __ENTITY_PARENT_CHANGE_COMMAND_H__
 
-EntityMoveCommand::EntityMoveCommand(DAVA::Entity* _entity, DAVA::Entity *_newParent, DAVA::Entity *_newBefore /* = NULL */)
-	: Command2(CMDID_ENTITY_MOVE, "Move entity")
-	, entity(_entity)
-	, oldParent(NULL)
-	, oldBefore(NULL)
-	, newParent(_newParent)
-	, newBefore(_newBefore)
+#include "Commands2/Command2.h"
+
+class EntityParentChangeCommand : public Command2
 {
-	SafeRetain(entity);
+public:
+	EntityParentChangeCommand(DAVA::Entity* entity, DAVA::Entity *newParent, DAVA::Entity *newBefore = NULL);
+	~EntityParentChangeCommand();
 
-	if(NULL != entity)
-	{
-		oldParent = entity->GetParent();
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
 
-		if(NULL != oldParent)
-		{
-			oldBefore = oldParent->GetNextChild(entity);
-		}
-	}
-}
+	DAVA::Entity* entity;
+	DAVA::Entity* oldParent;
+	DAVA::Entity* oldBefore;
+	DAVA::Entity* newParent;
+	DAVA::Entity* newBefore;
+};
 
-EntityMoveCommand::~EntityMoveCommand()
-{
-	SafeRelease(entity);
-}
-
-void EntityMoveCommand::Undo()
-{
-	if(NULL != entity)
-	{
-		if(NULL != oldParent)
-		{
-			if(NULL != oldBefore)
-			{
-				oldParent->InsertBeforeNode(entity, oldBefore);
-			}
-			else
-			{
-				oldParent->AddNode(entity);
-			}
-		}
-		else
-		{
-			newParent->RemoveNode(entity);
-		}
-	}
-}
-
-void EntityMoveCommand::Redo()
-{
-	if(NULL != entity && NULL != newParent)
-	{
-		if(NULL != newBefore)
-		{
-			newParent->InsertBeforeNode(entity, newBefore);
-		}
-		else
-		{
-			newParent->AddNode(entity);
-		}
-	}
-}
-
-DAVA::Entity* EntityMoveCommand::GetEntity() const
-{
-	return entity;
-}
+#endif // __ENTITY_PARENT_CHANGE_COMMAND_H__

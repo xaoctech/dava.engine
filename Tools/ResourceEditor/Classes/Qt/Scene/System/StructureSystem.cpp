@@ -33,7 +33,8 @@
 #include "Scene/SceneSignals.h"
 #include "Scene/SceneEditor2.h"
 
-#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/EntityAddCommand.h"
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/ParticleLayerMoveCommand.h"
 #include "Commands2/ParticleLayerRemoveCommand.h"
@@ -84,7 +85,7 @@ void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newPare
 
 		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityMoveCommand(entityGroup.GetEntity(i), newParent, newBefore));
+			sceneEditor->Exec(new EntityParentChangeCommand(entityGroup.GetEntity(i), newParent, newBefore));
 		}
 
 		if(entityGroup.Size() > 1)
@@ -275,7 +276,7 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
                         CopyLightmapSettings(origEntity, newEntity);
                     }
 					
-					sceneEditor->Exec(new EntityMoveCommand(newEntity, origEntity->GetParent(), before));
+					sceneEditor->Exec(new EntityParentChangeCommand(newEntity, origEntity->GetParent(), before));
 					sceneEditor->Exec(new EntityRemoveCommand(origEntity));
 
 					newEntity->Release();
@@ -321,7 +322,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
-			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
+			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
 			// -->

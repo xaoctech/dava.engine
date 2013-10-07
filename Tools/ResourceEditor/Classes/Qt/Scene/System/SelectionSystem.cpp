@@ -214,12 +214,12 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 	if(NULL != command)
 	{
-		if(command->GetId() == CMDID_ENTITY_REMOVE)
+		if((command->GetId() == CMDID_ENTITY_REMOVE) || (command->GetId() == CMDID_ENTITY_ADD && !redo))
 		{
 			// remove from selection entity that was removed by command
 			RemSelection(command->GetEntity());
 		}
-		else if(command->GetId() == CMDID_ENTITY_MOVE ||
+		else if(command->GetId() == CMDID_ENTITY_CHANGE_PARENT ||
 				command->GetId() == CMDID_TRANSFORM)
 		{
 			for(size_t i = 0; i < curSelections.Size(); ++i)

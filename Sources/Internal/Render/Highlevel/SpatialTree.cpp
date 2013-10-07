@@ -14,6 +14,7 @@ QuadTree::QuadTreeNode::QuadTreeNode()
 	startClipPlane = 0;
 	zMin = AABBOX_INFINITY;
 	zMax = -AABBOX_INFINITY;
+	dirtyZ = false; //z becomes dirty only when objects are removed from box;
 }
 
 QuadTree::QuadTree(const AABBox3& _worldBox, int32 _maxTreeDepth): worldBox(_worldBox), maxTreeDepth(_maxTreeDepth)
@@ -22,7 +23,9 @@ QuadTree::QuadTree(const AABBox3& _worldBox, int32 _maxTreeDepth): worldBox(_wor
 	
 	root.zMin = worldBox.min.z;
 	root.zMax = worldBox.max.z;
-	nodes.push_back(root);	
+	nodes.push_back(root);
+    
+    reversePath.reserve(maxTreeDepth);
 }
 
 bool QuadTree::CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax)
@@ -33,19 +36,24 @@ bool QuadTree::CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, floa
 	return true;
 }
 
+bool QuadTree::CheckObjectFitNode(const AABBox3& objBox, const AABBox3& nodeBox)
+{
+	return (objBox.min.x>=nodeBox.min.x)&&(objBox.min.y>=nodeBox.min.y)&&(objBox.max.x<=nodeBox.max.x)&&(objBox.max.y<=nodeBox.max.y);
+}
+
 bool QuadTree::CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& nodeBox, QuadTreeNode::eNodeType nodeType)
 {
 	//note - this code assumes box already intersects parent
 	switch (nodeType)
 	{
 	case QuadTreeNode::NODE_LB:
-		return !((((nodeBox.min.x+nodeBox.max.x)*0.5f)<objBox.min.x)||(((nodeBox.min.y+nodeBox.max.y)*0.5)<objBox.min.y));
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)>=objBox.min.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)>=objBox.min.y);		
 	case QuadTreeNode::NODE_RB:
-		return !((((nodeBox.min.x+nodeBox.max.x)*0.5f)>objBox.max.x)||(((nodeBox.min.y+nodeBox.max.y)*0.5)<objBox.min.y));
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)>=objBox.min.y);		
 	case QuadTreeNode::NODE_LT:
-		return !((((nodeBox.min.x+nodeBox.max.x)*0.5f)<objBox.min.x)||(((nodeBox.min.y+nodeBox.max.y)*0.5)>objBox.max.y));
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)>=objBox.min.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
 	case QuadTreeNode::NODE_RT:
-		return !((((nodeBox.min.x+nodeBox.max.x)*0.5f)>objBox.max.x)||(((nodeBox.min.y+nodeBox.max.y)*0.5)>objBox.max.y));
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
 	}			
 	return false;
 }
@@ -96,69 +104,108 @@ void QuadTree::UpdateParentBox(AABBox3 &childtBox, QuadTreeNode::eNodeType child
 	}
 }
 
-void QuadTree::AddObjectToNode(uint32 baseNodeId, int32 baseDepth, const AABBox3& box, RenderObject *object)
+uint32 QuadTree::FindObjectAddNode(uint32 startNodeId, int32 startDepth, const AABBox3& nodeBox, const AABBox3& objBox)
 {
-	uint32 currIndex = baseNodeId;	
-	const AABBox3& objBox = object->GetWorldBoundingBox();
-		
-	
+	uint32 currIndex = startNodeId;				
+	int32 currDepth = startDepth;
 	float32 zMin = objBox.min.z;
 	float32 zMax = objBox.max.z;		
-	if (zMin<nodes[currIndex].zMin)
-		nodes[currIndex].zMin = zMin;
-	if (zMax>nodes[currIndex].zMax)
-		nodes[currIndex].zMax = zMax;	
 
-	bool placeHere = (baseDepth == maxTreeDepth);
-	QuadTreeNode::eNodeType fitNode = QuadTreeNode::NODE_NONE;
-	if (!placeHere)
+	AABBox3 currBox = nodeBox;
+
+	bool placeHere = false;
+
+	do 
 	{
-		for (int32 i=0; i<QuadTreeNode::NODE_NONE; i++)
+		QuadTreeNode & currNode = nodes[currIndex];
+		currNode.zMin = Min(currNode.zMin, zMin);
+		currNode.zMax = Max(currNode.zMax, zMax);		
+		placeHere = (currDepth >= maxTreeDepth);
+
+		QuadTreeNode::eNodeType fitNode = QuadTreeNode::NODE_NONE;
+		if (!placeHere)
 		{
-			if (CheckBoxIntersectChild(objBox, box, QuadTreeNode::eNodeType(i)))
+		
+			/*for (int32 i=0; i<QuadTreeNode::NODE_NONE; i++)
 			{
-				if (fitNode==QuadTreeNode::NODE_NONE)
-					fitNode=QuadTreeNode::eNodeType(i);
-				else
+				if (CheckBoxIntersectChild(objBox, currBox, QuadTreeNode::eNodeType(i)))
 				{
-					placeHere = true;
-					break;
+					if (fitNode==QuadTreeNode::NODE_NONE)
+						fitNode=QuadTreeNode::eNodeType(i);
+					else
+					{
+						placeHere = true;
+						break;
+					}
 				}
+			}*/
+			//loop unrolled for optimization purpose
+			if ((0.5f*(currBox.min.x+currBox.max.x)>=objBox.min.x)&&(0.5f*(currBox.min.y+currBox.max.y)>=objBox.min.y))
+				fitNode = QuadTreeNode::NODE_LB;			
+			if ((0.5f*(currBox.min.x+currBox.max.x)<=objBox.max.x)&&(0.5f*(currBox.min.y+currBox.max.y)>=objBox.min.y))	
+			{
+				if (fitNode == QuadTreeNode::NODE_NONE)
+					fitNode = QuadTreeNode::NODE_RB;
+				else 
+					placeHere = true;
+			}
+			if ((!placeHere)&&(0.5f*(currBox.min.x+currBox.max.x)>=objBox.min.x)&&(0.5f*(currBox.min.y+currBox.max.y)<=objBox.max.y))
+			{
+				if (fitNode == QuadTreeNode::NODE_NONE)
+					fitNode = QuadTreeNode::NODE_LT;
+				else 
+					placeHere = true;
+			}
+			if ((!placeHere)&&(0.5f*(currBox.min.x+currBox.max.x)<=objBox.max.x)&&(0.5f*(currBox.min.y+currBox.max.y)<=objBox.max.y))
+			{
+				if (fitNode == QuadTreeNode::NODE_NONE)
+					fitNode = QuadTreeNode::NODE_RT;
+				else 
+					placeHere = true;									
 			}
 		}
-	}
-	
-	if (placeHere)
-	{
-		nodes[currIndex].objects.push_back(object);
-		object->SetTreeNodeIndex(currIndex);	
-	}
-	else
-	{
-		if (nodes[currIndex].children[fitNode]==INVALID_TREE_NODE_INDEX) //set child node if not exist
+		
+
+		if (!placeHere) //continue downwards
 		{
-			int32 newNodeIndex;
-			if (emptyNodes.size()) //take from empty
+			if (currNode.children[fitNode]==INVALID_TREE_NODE_INDEX) //set child node if not exist
 			{
-				newNodeIndex = emptyNodes.back();
-				emptyNodes.pop_back();
-				nodes[newNodeIndex] = QuadTreeNode(); //reset it here
-			}
-			else //or create new node
-			{
-				newNodeIndex = nodes.size();
-				nodes.resize(newNodeIndex+1);				
-			}
-			nodes[newNodeIndex].parent = currIndex;
+				int32 newNodeIndex;
+				if (emptyNodes.size()) //take from empty
+				{
+					newNodeIndex = emptyNodes.back();
+					emptyNodes.pop_back();
+					nodes[newNodeIndex] = QuadTreeNode(); //reset it here
+				}
+				else //or create new node
+				{
+					newNodeIndex = nodes.size();
+					nodes.resize(newNodeIndex+1);				//starting from here currNode may be invalid
+				} 
+				nodes[newNodeIndex].parent = currIndex;
 
-			nodes[currIndex].children[fitNode] = newNodeIndex;
-			nodes[currIndex].numChildNodes++;
+				nodes[currIndex].children[fitNode] = newNodeIndex;
+				nodes[currIndex].numChildNodes++;
 
-		}
-		AABBox3 childBox = box;
-		UpdateChildBox(childBox, fitNode);
-		AddObjectToNode(nodes[currIndex].children[fitNode], baseDepth+1, childBox, object);		
-	}		
+			}		
+			UpdateChildBox(currBox, fitNode);
+			currDepth++;
+			currIndex = nodes[currIndex].children[fitNode];
+		}		
+	} while (!placeHere);
+
+	
+	return currIndex;
+	
+}
+
+void QuadTree::MarkNodeDirty(uint32 nodeId)
+{
+	if (!nodes[nodeId].dirtyZ)
+	{		
+		nodes[nodeId].dirtyZ = true;
+		dirtyZNodes.push_back(nodeId);		
+	}
 }
 
 void QuadTree::RecalculateNodeZLimits(uint32 nodeId)
@@ -176,7 +223,7 @@ void QuadTree::RecalculateNodeZLimits(uint32 nodeId)
 				currNode.zMax = nodes[currNode.children[i]].zMax;
 		}
 	}
-	for (int32 i=0; i<currNode.objects.size(); i++)
+	for (int32 i=0, size = currNode.objects.size(); i<size; i++)
 	{
 		const AABBox3 &objBox = currNode.objects[i]->GetWorldBoundingBox();
 		if (objBox.min.z<currNode.zMin)
@@ -184,6 +231,7 @@ void QuadTree::RecalculateNodeZLimits(uint32 nodeId)
 		if (objBox.max.z>currNode.zMax)
 			currNode.zMax = objBox.max.z;
 	}
+	currNode.dirtyZ = false;
 }
 
 void QuadTree::AddObject(RenderObject *object)
@@ -199,7 +247,9 @@ void QuadTree::AddObject(RenderObject *object)
 		object->SetTreeNodeIndex(0);
 		return;
 	}
-	AddObjectToNode(0, 0, worldBox, object);			
+	uint32 nodeToAdd = FindObjectAddNode(0, 0, worldBox, object->GetWorldBoundingBox());			
+	nodes[nodeToAdd].objects.push_back(object);
+	object->SetTreeNodeIndex(nodeToAdd);
 }
 
 void QuadTree::RemoveObject(RenderObject *object)
@@ -223,15 +273,15 @@ void QuadTree::RemoveObject(RenderObject *object)
 			(currNode.children[2]==INVALID_TREE_NODE_INDEX)&&
 			(currNode.children[3]==INVALID_TREE_NODE_INDEX))
 		{ //empty node - just remove it from tree
-			emptyNodes.push_back(currIndex);
+			emptyNodes.push_back(currIndex);			
 			for (int32 i=0; i<4; i++)
 				if (nodes[currNode.parent].children[i]==currIndex)
 					nodes[currNode.parent].children[i]=INVALID_TREE_NODE_INDEX;
 			nodes[currNode.parent].numChildNodes--;
 		}		
 		else
-		{			
-			RecalculateNodeZLimits(currIndex);
+		{				
+			MarkNodeDirty(currIndex);
 		}
 		currIndex = currNode.parent;
 		
@@ -240,49 +290,96 @@ void QuadTree::RemoveObject(RenderObject *object)
 
 
 void QuadTree::ObjectUpdated(RenderObject *object)
-{	
-	//for now just simple remove and add
-	RemoveObject(object);
-	AddObject(object);
-	return;
-	//return back here once through with everything else
-	/*uint32 currIndex = object->GetTreeNodeIndex();
-	DVASSERT(currIndex!=INVALID_TREE_NODE_INDEX);	
-	//for now just simple remove and add
-	object->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);
-	Vector<RenderObject*>::iterator it = std::find(nodes[currIndex].objects.begin(), nodes[currIndex].objects.end(), object);
-	DVASSERT(it!=nodes[currIndex].objects.end());
-	nodes[currIndex].objects.erase(it);		
+{		
+	//remove object from its current tree node
+	uint32 baseIndex = object->GetTreeNodeIndex();
+	DVASSERT(baseIndex!=INVALID_TREE_NODE_INDEX);		
+
+	//build reverse path;
 	
-	//climb up
-	//update tree branch info	
-	while(currIndex!=0) 
+	reversePath.clear();
+	int32 reverseIndex = baseIndex;	
+	while (nodes[reverseIndex].parent!=INVALID_TREE_NODE_INDEX)//while we have parent - travel through it
 	{
-		QuadTreeNode& currNode = nodes[currIndex];
+		 int32 newIndex = nodes[reverseIndex].parent;
+		 int32 i;
+		 for (i=0; i<QuadTreeNode::NODE_NONE; i++)
+			 if (nodes[newIndex].children[i] == reverseIndex)
+			 {
+				 reversePath.push_back(i);
+				 break;
+			 }
+		DVASSERT(i!=QuadTreeNode::NODE_NONE); //not found in parent!
+		reverseIndex = newIndex;
+	} 
+	int32 reversePathSize = reversePath.size();
+	//compute current bbox with reverse path
+	AABBox3 currBox = worldBox;
+	for (int32 i = reversePathSize-1; i>=0; i--)
+		UpdateChildBox(currBox, (QuadTreeNode::eNodeType)reversePath[i]);
+	//climb up
+	const AABBox3& objBox = object->GetWorldBoundingBox();
+	int32 upDist = 0;
+	reverseIndex = baseIndex;
+	while ((!CheckObjectFitNode(objBox, currBox))&&(upDist<reversePathSize))
+	{
+		QuadTreeNode& currNode = nodes[reverseIndex];		
+		reverseIndex = currNode.parent;
+		UpdateParentBox(currBox, (QuadTreeNode::eNodeType)reversePath[upDist]);
+		upDist++;
+	}
 
-		//if node
+	//climb down
+	uint32 targetIndex = FindObjectAddNode(reverseIndex, reversePathSize-upDist, currBox, object->GetWorldBoundingBox());
 
-		if ((currIndex!=0)&& //do not remove root node anyway
-			currNode.objects.empty()&&
-			(currNode.children[0]==INVALID_TREE_NODE_INDEX)&&
-			(currNode.children[1]==INVALID_TREE_NODE_INDEX)&&
-			(currNode.children[2]==INVALID_TREE_NODE_INDEX)&&
-			(currNode.children[3]==INVALID_TREE_NODE_INDEX))
-		{ //empty node - just remove it from tree
-			emptyNodes.push_back(currIndex);
-			for (int32 i=0; i<4; i++)
-				if (nodes[currNode.parent].children[i]==currIndex)
-					nodes[currNode.parent].children[i]=INVALID_TREE_NODE_INDEX;
-		}		
-		else
-		{			
-			RecalculateNodeZLimits(currIndex);
+	if (targetIndex!=baseIndex)
+	{
+		//remove from base
+		int32 objectsSize = nodes[baseIndex].objects.size();
+		int32 objIndex = 0;
+		for (; objIndex<objectsSize; ++objIndex)
+		{
+			if (nodes[baseIndex].objects[objIndex]==object) break;
 		}
-		currIndex = currNode.parent;
+		DVASSERT(objIndex<objectsSize);
+		if (objectsSize>1)
+			nodes[baseIndex].objects[objIndex] = nodes[baseIndex].objects[objectsSize-1];
+		nodes[baseIndex].objects.resize(objectsSize-1);
+		//and add to target
+		nodes[targetIndex].objects.push_back(object);
+		object->SetTreeNodeIndex(targetIndex);
 
-	}*/
-	
-	
+		/*only now we can climb back and remove/mark nodes*/
+		uint32 currIndex = baseIndex;
+		while (currIndex!=reverseIndex)
+		{
+			QuadTreeNode& currNode = nodes[currIndex];
+
+			if ((currIndex!=0)&& //do not remove root node anyway
+				currNode.objects.empty()&&
+				(currNode.children[0]==INVALID_TREE_NODE_INDEX)&&
+				(currNode.children[1]==INVALID_TREE_NODE_INDEX)&&
+				(currNode.children[2]==INVALID_TREE_NODE_INDEX)&&
+				(currNode.children[3]==INVALID_TREE_NODE_INDEX))
+			{ //empty node - just remove it from tree
+				emptyNodes.push_back(currIndex);			
+				for (int32 i=0; i<4; i++)
+					if (nodes[currNode.parent].children[i]==currIndex)
+						nodes[currNode.parent].children[i]=INVALID_TREE_NODE_INDEX;
+				nodes[currNode.parent].numChildNodes--;
+			}		
+			else
+			{	
+				MarkNodeDirty(currIndex);			
+			}
+			currIndex = currNode.parent;			
+		}
+	}
+	else
+	{
+		MarkNodeDirty(baseIndex);
+	}
+
 }
 
 void QuadTree::ProcessNodeClipping(uint32 nodeId, AABBox3& box, uint32 clippingFlags)
@@ -355,7 +452,12 @@ void QuadTree::ProcessClipping(Frustum *frustum)
 }
 void QuadTree::UpdateTree()
 {		
-
+	int32 count = 0;
+	for (List<int32>::iterator it = dirtyZNodes.begin(), e=dirtyZNodes.end(); (it!=e)&&(count<RECALCULATE_Z_PER_FRAME); ++count)
+	{
+		RecalculateNodeZLimits(*it);
+		it = dirtyZNodes.erase(it);
+	}
 }
 
 void QuadTree::DebugDraw()
