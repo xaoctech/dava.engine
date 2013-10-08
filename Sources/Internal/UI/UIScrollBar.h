@@ -47,19 +47,35 @@ public:
         ,	ORIENTATION_HORIZONTAL
     };
     
-    UIScrollBar();
-    UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientation, bool rectInAbsoluteCoordinates = false);
-    
+    UIScrollBar(const Rect &rect = Rect(), eScrollOrientation requiredOrientation = ORIENTATION_VERTICAL,
+				bool rectInAbsoluteCoordinates = false);
     virtual ~UIScrollBar();
-    
+
     void SetDelegate(UIScrollBarDelegate *newDelegate);
     UIControl *GetSlider();
     
     virtual void Draw(const UIGeometricData &geometricData);
-
+	virtual void AddControl(UIControl *control);
+	virtual UIControl *Clone();
+	virtual void CopyDataFrom(UIControl *srcControl);
+	
+	virtual List<UIControl* >& GetRealChildren();
+	virtual List<UIControl* > GetSubcontrols();
+	
+	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNodeCompleted();
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	
     void Input(UIEvent *currentInput);
 
-    
+	eScrollOrientation GetOrientation() const;
+	void SetOrientation(eScrollOrientation value);
+
+protected:
+	// Calculate the start offset based on the initial click point.
+	void CalculateStartOffset(const Vector2& inputPoint);
+	void InitControls(const Rect &rect = Rect());
+
 private:
     int32 orientation;
     UIScrollBarDelegate *delegate;
@@ -67,7 +83,11 @@ private:
     UIControl *slider;
     
     bool resizeSliderProportionally;
-    
+
+	Vector2 startPoint;
+	Vector2 startOffset;
+	
+	float32 GetValidSliderSize(float32 size);
 };
 
 

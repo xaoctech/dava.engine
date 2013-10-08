@@ -43,12 +43,14 @@ float GetUITextViewSizeDivider()
 @public
 	UITextField * textField;
 	DAVA::UITextField * cppTextField;
+	BOOL textInputAllowed;
 }
 - (id) init : (DAVA::UITextField  *) tf;
 - (void) dealloc;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField;
 - (BOOL)textField:(UITextField *)_textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
 - (void)setIsPassword:(bool)isPassword;
+- (void)setTextInputAllowed:(bool)value;
 
 - (void)setupTraits;
 
@@ -72,8 +74,9 @@ float GetUITextViewSizeDivider()
 		self.transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
 		self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider);
 		self.center = CGPointMake(DAVA::Core::Instance()->GetPhysicalScreenWidth()/2/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/2/divider);	
-		self.userInteractionEnabled = FALSE;
-		
+		self.userInteractionEnabled = TRUE;
+		textInputAllowed = YES;
+
 		cppTextField = tf;
 		DAVA::Rect rect = tf->GetRect();
 		textField = [[UITextField alloc] initWithFrame: CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) 
@@ -94,6 +97,12 @@ float GetUITextViewSizeDivider()
 	return self;
 }
 
+-(id)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    id hitView = [super hitTest:point withEvent:event];
+    if (hitView == self) return nil;
+    else return hitView;
+}
 
 - (void) dealloc
 {
@@ -134,9 +143,19 @@ float GetUITextViewSizeDivider()
 	return TRUE;
 }
 
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+	return textInputAllowed;
+}
+
 - (void)setIsPassword:(bool)isPassword
 {
 	[textField setSecureTextEntry:isPassword ? YES: NO];
+}
+
+- (void)setTextInputAllowed:(bool)value
+{
+	textInputAllowed = (value == true);
 }
 
 - (void) setupTraits
@@ -543,8 +562,13 @@ namespace DAVA
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
 		[textFieldHolder setIsPassword: isPassword];
 	}
-	
-	
+
+	void UITextFieldiPhone::SetInputEnabled(bool value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		[textFieldHolder setTextInputAllowed:value];
+	}
+
 	void UITextFieldiPhone::SetAutoCapitalizationType(DAVA::int32 value)
 	{
 		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;

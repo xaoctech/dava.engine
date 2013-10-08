@@ -24,7 +24,7 @@ namespace DAVA
 
 class UIScrollViewContainer;
 
-class UIScrollView : public UIControl
+class UIScrollView : public UIControl, public UIScrollBarDelegate
 {
 public:
 	UIScrollView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
@@ -33,6 +33,14 @@ public:
 	virtual void AddControl(UIControl *control);
 	virtual List<UIControl* >& GetRealChildren();
     virtual List<UIControl* > GetSubcontrols();
+
+	// Add the control directly to the Scroll View Container.
+	void AddControlToContainer(UIControl* control);
+
+	// Access to the Scroll View Container.
+	UIScrollViewContainer* GetContainer();
+	ScrollHelper* GetHorizontalScroll();
+	ScrollHelper* GetVerticalScroll();
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
@@ -46,6 +54,18 @@ public:
 	const Vector2 GetContentSize() const;
 	
 	void RecalculateContentSize();
+	
+	//Sets how fast scroll container will return to its bounds
+	void SetReturnSpeed(float32 speedInSeconds);
+	//Sets how fast scroll speed will be reduced
+	void SetScrollSpeed(float32 speedInSeconds);
+
+	// UIScrollBarDelegate implementation.
+	virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
+    virtual float32 TotalAreaSize(UIScrollBar *forScrollBar);
+    virtual float32 ViewPosition(UIScrollBar *forScrollBar);
+    virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition);
+	
 protected:
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
@@ -53,7 +73,12 @@ protected:
 
 	Vector2 GetMaxSize(UIControl *control, Vector2 currentMaxSize, Vector2 parentShift);
 
+	// Get the X or Y parameter from the vector depending on the scrollbar orientation.
+	float32 GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam);
+
 	UIScrollViewContainer *scrollContainer;
+	ScrollHelper *scrollHorizontal;
+	ScrollHelper *scrollVertical;
 
 private:
 	void FindRequiredControls();

@@ -572,17 +572,8 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
-		YamlNode * textColorNode = node->Get("textcolor");
 		YamlNode * shadowColorNode = node->Get("shadowcolor");
 		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
-		YamlNode * textAlignNode = node->Get("textalign");
-		
-		if(textColorNode)
-		{
-			Vector4 c = textColorNode->AsVector4();
-			SetTextColor(Color(c.x, c.y, c.z, c.w));
-		}
-
 		if(shadowColorNode)
 		{
 			Vector4 c = shadowColorNode->AsVector4();
@@ -593,12 +584,21 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
 		}
+	}
 
-		if(textAlignNode)
-		{
-			SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
-		}
-    }
+	YamlNode * textColorNode = node->Get("textcolor");
+	YamlNode * textAlignNode = node->Get("textalign");
+
+	if(textColorNode)
+	{
+		Vector4 c = textColorNode->AsVector4();
+		SetTextColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(textAlignNode)
+	{
+		SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
+	}
     //InitAfterYaml();
 
 #if 0
@@ -832,7 +832,14 @@ void UITextField::SetEnableReturnKeyAutomatically(bool value)
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetEnableReturnKeyAutomatically(value);
 #endif
+}
 
+void UITextField::SetInputEnabled(bool isEnabled, bool hierarchic)
+{
+	UIControl::SetInputEnabled(isEnabled, hierarchic);
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetInputEnabled(isEnabled);
+#endif
 }
 
 }; // namespace

@@ -118,7 +118,7 @@ WebViewControl::WebViewControl()
 {
     CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
     UIWebView* innerWebView = [[UIWebView alloc] initWithFrame:emptyRect];
-    innerWebView.scrollView.bounces = NO;
+    SetBounces(false);
     webViewPtr = innerWebView;
 
     UIWebView* localWebView = (UIWebView*)webViewPtr;
@@ -303,6 +303,23 @@ void WebViewControl::RestoreSubviewImages()
 		[view release];
 	}
 	subviewVisibilityMap.clear();
+}
+
+bool WebViewControl::GetBounces() const
+{
+	if (!webViewPtr)
+	{
+		return false;
+	}
+
+	UIWebView* localWebView = (UIWebView*)webViewPtr;
+	return (localWebView.scrollView.bounces == YES);
+}
+	
+void WebViewControl::SetBounces(bool value)
+{
+	UIWebView* localWebView = (UIWebView*)webViewPtr;
+	localWebView.scrollView.bounces = (value == true);
 }
     
 };

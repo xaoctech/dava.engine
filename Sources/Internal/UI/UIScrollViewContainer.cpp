@@ -21,11 +21,18 @@ namespace DAVA
 	
 REGISTER_CLASS(UIScrollViewContainer);
 
-const float32 SCROLL_BEGIN_PIXELS = 8.0f;
+const int32 DEFAULT_TOUCH_TRESHOLD = 15;  // Default value for finger touch tresshold
 
 UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
-	scrollOrigin(0, 0)
+	mainTouch(-1),
+	touchTreshold(DEFAULT_TOUCH_TRESHOLD),
+	enableHorizontalScroll(true),
+	enableVerticalScroll(true),
+	newPos(0.f, 0.f),
+	oldPos(0.f, 0.f),
+	lockTouch(false),
+	state(STATE_NONE)
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
@@ -45,58 +52,29 @@ UIControl* UIScrollViewContainer::Clone()
 void UIScrollViewContainer::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
+}
+
+void UIScrollViewContainer::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
+{
+	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
 	
-	UIScrollViewContainer* t = (UIScrollViewContainer*) srcControl;
-		
-	scrollOrigin = t->scrollOrigin;
-}
-
-void UIScrollViewContainer::StartScroll(Vector2 _startScrollPosition)
-{
-	scrollStartInitialPosition = _startScrollPosition;
-	scrollStartPosition = _startScrollPosition;
-	scrollCurrentPosition = _startScrollPosition;
-	scrollStartMovement = false;
-}
-
-void UIScrollViewContainer::ProcessScroll(Vector2 _currentScrollPosition)
-{
-	scrollCurrentPosition = _currentScrollPosition;
-
-	//	This check is required on iPhone, to avoid bugs in movement.	
-#if defined(__DAVAENGINE_IPHONE__)
-	Vector2 lineLenght = scrollCurrentPosition - scrollStartInitialPosition;
-
-	if (lineLenght.Length() >= SCROLL_BEGIN_PIXELS)
-#endif
+	UIControl *parent = this->GetParent();
+	if (parent)
 	{
-		//touchStartTime = 0;
-		if (!scrollStartMovement) scrollStartPosition = scrollCurrentPosition;
-		scrollCurrentShift = Vector2((scrollCurrentPosition.x - scrollStartPosition.x),  (scrollCurrentPosition.y - scrollStartPosition.y));
-		scrollStartMovement = true;
+		Rect parentRect = parent->GetRect();
+		// We should not allow scrolling when content rect is less than or is equal ScrollView "window"
+		enableHorizontalScroll = rect.dx > parentRect.dx;
+		enableVerticalScroll = rect.dy > parentRect.dy;
 	}
-
-	ScrollToPosition(scrollCurrentShift);
 }
 
-void UIScrollViewContainer::EndScroll()
+void UIScrollViewContainer::SetTouchTreshold(int32 holdDelta)
 {
-	if (scrollStartMovement)
-	{
-		scrollOrigin.x = scrollCurrentShift.x;
-		scrollOrigin.y = scrollCurrentShift.y;
-	}
-
-	scrollCurrentShift.x = 0;
-	scrollCurrentShift.y = 0;
+	touchTreshold = holdDelta;
 }
-
-void UIScrollViewContainer::ScrollToPosition(const DAVA::Vector2 &position)
+int32 UIScrollViewContainer::GetTouchTreshold()
 {
-	Rect rect = this->GetRect();	
-	rect.x = scrollOrigin.x + position.x;
-	rect.y = scrollOrigin.y + position.y;	
-	this->SetRect(rect);
+	return touchTreshold;
 }
 
 void UIScrollViewContainer::Input(UIEvent *currentTouch)
@@ -105,15 +83,18 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 	
 	if(1 == touches.size())
 	{
+		newPos = currentTouch->point;
+		
 		switch(currentTouch->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
 			{
 				scrollTouch = *currentTouch;
-				
-				Vector2 start = currentTouch->point;
-				StartScroll(start);
+				scrollStartInitialPosition = currentTouch->point;
+				scrollStartMovement = false;
 				state = STATE_SCROLL;
+				lockTouch = true;
+				oldPos = newPos;
 			}
 			break;
 			case UIEvent::PHASE_DRAG:
@@ -122,26 +103,59 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				{
 					if(currentTouch->tid == scrollTouch.tid)
 					{
-						// perform scrolling
-						ProcessScroll(currentTouch->point);
+						scrollStartMovement = true;
 					}
 				}
 			}
-				break;
+			break;
 			case UIEvent::PHASE_ENDED:
 			{
-				if(state == STATE_SCROLL)
-				{
-					if(currentTouch->tid == scrollTouch.tid)
-					{
-						EndScroll();
-						state = STATE_DECCELERATION;
-					}
-				}
+				lockTouch = false;
+				state = STATE_DECCELERATION;
 			}
-				break;
+			break;
 		}
 	}
+}
+
+bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
+{
+	if(!inputEnabled || !visible || controlState & STATE_DISABLED)
+	{
+		return false;
+	}
+	
+	if(currentTouch->phase == UIEvent::PHASE_BEGAN)
+	{
+		if(IsPointInside(currentTouch->point))
+		{
+			mainTouch = currentTouch->tid;
+			PerformEvent(EVENT_TOUCH_DOWN);
+			Input(currentTouch);
+		}
+	}
+	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_DRAG)
+	{
+		// Don't scroll if touchTreshold is not exceeded 
+		if ((abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
+			(abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
+		{
+			UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
+			Input(currentTouch);
+		}
+	}
+	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_ENDED)
+	{
+		Input(currentTouch);
+		mainTouch = -1;
+	}
+
+	if (scrollStartMovement && currentTouch->tid == mainTouch)
+	{
+		return true;
+	}
+	
+	return UIControl::SystemInput(currentTouch);
 }
 
 void UIScrollViewContainer::Update(float32 timeElapsed)
@@ -150,41 +164,32 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	{
 		return;
 	}
+	
+	UIScrollView *scrollView = dynamic_cast<UIScrollView*>(this->GetParent());
+	if (scrollView)
+	{
+		Rect contentRect = this->GetRect();
+	
+		Vector2 posDelta = newPos - oldPos;
+		oldPos = newPos;
+	
+		ScrollHelper *horizontalScroll = scrollView->GetHorizontalScroll();
+		ScrollHelper *verticalScroll = scrollView->GetVerticalScroll();
+		// Get scrolls positions and change scroll container relative position
+		if (horizontalScroll && enableHorizontalScroll)
+		{
+			contentRect.x = horizontalScroll->GetPosition(posDelta.x, SystemTimer::FrameDelta(), lockTouch);
+		}
+		if (verticalScroll && enableVerticalScroll)
+		{
+			contentRect.y = verticalScroll->GetPosition(posDelta.y, SystemTimer::FrameDelta(), lockTouch);
+		}
 
-	if(state == STATE_DECCELERATION)
-	{
-		Rect contentRect = this->GetRect();
-		scrollOrigin = Vector2(contentRect.x, contentRect.y);
-	}
-	
-	if(state != STATE_ZOOM && state != STATE_SCROLL) 
-	{
-		Rect contentRect = this->GetRect();
-		Rect parentRect = this->GetParent()->GetRect();
-	
-		float32 shiftSizeX = abs(contentRect.x) + parentRect.dx;
-		float32 shiftSizeY = abs(contentRect.y) + parentRect.dy;
-	
-		if (contentRect.x > 0)
+		this->SetRect(contentRect);
+		// Change state when scrolling is not active
+		if (!lockTouch && (horizontalScroll->GetCurrentSpeed() == 0) && (verticalScroll->GetCurrentSpeed() == 0))
 		{
-			contentRect.x -= 1;
-			this->SetRect(contentRect);
-		}
-		else if (shiftSizeX > contentRect.dx)
-		{
-			contentRect.x += 1;
-			this->SetRect(contentRect);
-		}
-	
-		if (contentRect.y > 0)
-		{
-			contentRect.y -=  1;
-			this->SetRect(contentRect);
-		}
-		else if (shiftSizeY > contentRect.dy)
-		{
-			contentRect.y += 1;
-			this->SetRect(contentRect);
+			state = STATE_NONE;
 		}
 	}
 }
@@ -196,24 +201,22 @@ YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
     // Control Type
 	SetPreferredNodeType(node, "UIScrollViewContainer");
 	// Save scroll view container childs including all sub-childs
-	SaveChilds(this, loader, node);
+	SaveChildren(this, loader, node);
     
     return node;
 }
 
-void UIScrollViewContainer::SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
+void UIScrollViewContainer::SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
 {
 	List<UIControl*> childslist = parent->GetRealChildren();
 	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
     {
        	UIControl *childControl = (UIControl*)(*it);
-	   	if (!childControl)
-	   		continue;
 
-		YamlNode* childNode = childControl->SaveToYamlNode(loader);		
+		YamlNode* childNode = childControl->SaveToYamlNode(loader);
 		parentNode->AddNodeToMap(childControl->GetName(), childNode);
 		// Save sub-childs
-		SaveChilds(childControl, loader, childNode);
+		SaveChildren(childControl, loader, childNode);
 	}
 }
 
