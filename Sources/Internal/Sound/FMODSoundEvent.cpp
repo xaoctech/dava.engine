@@ -45,6 +45,7 @@ FMODSoundEvent::FMODSoundEvent(const String & eventName)
     if(fmodEvent)
     {
         FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
+        FMOD_VERIFY(fmodEvent->setUserData(this));
         FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
     }
 }
