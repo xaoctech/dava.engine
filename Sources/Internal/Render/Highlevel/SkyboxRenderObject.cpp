@@ -196,14 +196,10 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath);
+			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, NULL);
 			
-			if(tx && DAVA::Texture::TEXTURE_2D == tx->textureType)
-			{
-				//this count happen when pink texture were returned
-				SafeRelease(tx);
-			}
-			
+			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
+						
 			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
 			SafeRelease(tx);
 		}

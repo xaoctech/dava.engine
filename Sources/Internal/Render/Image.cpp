@@ -48,6 +48,9 @@ Image::Image()
 Image::~Image()
 {
 	SafeDeleteArray(data);
+	
+	width = 0;
+	height = 0;
 }
 
 Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
