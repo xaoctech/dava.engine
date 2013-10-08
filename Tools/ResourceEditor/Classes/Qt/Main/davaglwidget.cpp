@@ -270,8 +270,6 @@ void DavaGLWidget::Render()
 		waitUntilNextFrameMs = 1;
 	}
 
-    QWidget::paintEvent(new QPaintEvent(rect()));
-
 	QTimer::singleShot(waitUntilNextFrameMs, this, SLOT(Render()));
 }
 
