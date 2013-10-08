@@ -221,11 +221,11 @@ void Entity::AddNode(Entity * node)
 	if (node)
     {
         node->Retain();
-        children.push_back(node);
         if (node->parent)
         {
             node->parent->RemoveNode(node);
         }
+		children.push_back(node);
 		node->SetParent(this);
         node->SetScene(GetScene());
     }
