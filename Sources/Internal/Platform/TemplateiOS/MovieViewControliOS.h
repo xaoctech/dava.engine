@@ -67,6 +67,9 @@ public:
 protected:
 	// Get the platform scale divider.
 	float GetScaleDivider();
+	
+	// Convert the DAVA Scaling Mode to platform-specific (iOS) one.
+	int ConvertScalingModeToPlatform(eMovieScalingMode scalingMode);
 
 private:
 	// Pointer to iOS movie player.
