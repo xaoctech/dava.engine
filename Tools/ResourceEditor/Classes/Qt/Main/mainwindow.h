@@ -217,6 +217,7 @@ protected slots:
 
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
+	void UnmodalDialogFinished(int);
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
@@ -237,6 +238,9 @@ private:
 	QtLabelWithActions *objectTypesLabel;
     QComboBox *objectTypesWidget;
 
+	AddSwitchEntityDialog*	addSwitchEntityDialog;
+	LandscapeDialog*		landscapeDialog;
+
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 
@@ -254,6 +258,8 @@ private:
 	bool IsSavingAllowed();
     
     void CreateObjectTypesCombobox();
+
+
 };
 
 

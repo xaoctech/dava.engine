@@ -117,6 +117,8 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	, materialEditor(NULL)
 	, globalInvalidateTimeoutEnabled(false)
 	, objectTypesLabel(NULL)
+	, landscapeDialog(NULL)
+	, addSwitchEntityDialog(NULL)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -182,6 +184,14 @@ QtMainWindow::~QtMainWindow()
 
 	ProjectManager::Instance()->Release();
 	SettingsManager::Instance()->Release();
+	if( NULL != addSwitchEntityDialog)
+	{
+		delete addSwitchEntityDialog;
+	}
+	if(NULL != landscapeDialog)
+	{
+		delete addSwitchEntityDialog;
+	}
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -1195,7 +1205,11 @@ void QtMainWindow::OnSetSkyboxNode()
 
 void QtMainWindow::OnSwitchEntityDialog()
 {
-	AddSwitchEntityDialog* addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+	if(NULL != addSwitchEntityDialog)
+	{
+		return;
+	}
+	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
 	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
@@ -1206,6 +1220,22 @@ void QtMainWindow::OnSwitchEntityDialog()
 	
 	SafeRelease(entityToAdd);
 	addSwitchEntityDialog->show();
+	connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
+}
+
+
+void QtMainWindow::UnmodalDialogFinished(int)
+{
+	QObject* sender = QObject::sender();
+	disconnect(sender, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
+	if(sender == addSwitchEntityDialog)
+	{
+		addSwitchEntityDialog = NULL;
+	}
+	else if(sender == landscapeDialog)
+	{
+		landscapeDialog = NULL;
+	}
 }
 
 void QtMainWindow::OnLandscapeDialog()
@@ -1215,10 +1245,16 @@ void QtMainWindow::OnLandscapeDialog()
 	{
 		return;
 	}
+
+	if( NULL != landscapeDialog )
+	{
+		return;
+	}
 	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	LandscapeDialog* landscapeDialog = new LandscapeDialog(presentEntity, this);
+	landscapeDialog = new LandscapeDialog(presentEntity, this);
 	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	landscapeDialog->show();
+	connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
 }
 
 void QtMainWindow::OnLightDialog()
