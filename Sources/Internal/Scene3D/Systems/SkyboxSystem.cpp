@@ -102,7 +102,7 @@ namespace DAVA
 			
 			AABBox3 box = AABBox3(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
 			skyboxRenderObject->Initialize(box); //first time initialization
-			skyboxRenderObject->SetTexture("~res:/3d/Skybox/skystub.tex");
+			skyboxRenderObject->SetTexture("~res:/");
 			
 			RenderComponent* renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(skyboxRenderObject);
