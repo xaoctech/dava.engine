@@ -29,7 +29,8 @@ class QuadTree : public AbstractSpatialTree
 		enum eNodeType {NODE_LB=0, NODE_RB=1, NODE_LT=2, NODE_RT=3, NODE_NONE = 4};
 		uint32 parent;
 		uint32 children[4]; //think about allocating and freeing at groups of for
-		float32 zMin, zMax;		
+		AABBox3 bbox;
+		int32 depth;
 		int32 numChildNodes; 
 		uint32 startClipPlane;
 		bool dirtyZ;
@@ -46,8 +47,7 @@ class QuadTree : public AbstractSpatialTree
 	int32 maxTreeDepth;
 	Frustum *currFrustum;
 
-	List<int32> dirtyZNodes;
-    Vector<int32> reversePath; //for object updated
+	List<int32> dirtyZNodes;    
 	
 	/*to compare*/
 	int32 objFrustrumCalls;	
@@ -56,14 +56,14 @@ class QuadTree : public AbstractSpatialTree
 	
 	bool CheckObjectFitNode(const AABBox3& objBox, const AABBox3& nodeBox);
 	bool CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax);		
-	bool CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& nodeBoxe, QuadTreeNode::eNodeType nodeType); //assuming it already fit parent!
+	bool CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& nodeBox, QuadTreeNode::eNodeType nodeType); //assuming it already fit parent!
 	void UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childType);
 	void UpdateParentBox(AABBox3 &childBox, QuadTreeNode::eNodeType childType);	
 	
-	void DebugDrawNode(uint32 nodeId, AABBox3 box);
-	void ProcessNodeClipping(uint32 nodeId, AABBox3& box, uint32 clippingFlags);	
+	void DebugDrawNode(uint32 nodeId);
+	void ProcessNodeClipping(uint32 nodeId, uint32 clippingFlags);	
 
-	uint32 FindObjectAddNode(uint32 startNodeId, int32 startDepth, const AABBox3& nodeBox, const AABBox3& objBox);
+	uint32 FindObjectAddNode(uint32 startNodeId, const AABBox3& objBox);
 	
 	static const int32 RECALCULATE_Z_PER_FRAME = 10;
 	void RecalculateNodeZLimits(uint32 nodeId);
