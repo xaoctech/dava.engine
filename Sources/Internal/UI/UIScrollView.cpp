@@ -331,6 +331,7 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 	
 	scrollHorizontal->SetPosition(curContainerRect.x);
 	scrollVertical->SetPosition(curContainerRect.y);
+	scrollContainer->SetRect(curContainerRect);
 }
 
 float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam)
