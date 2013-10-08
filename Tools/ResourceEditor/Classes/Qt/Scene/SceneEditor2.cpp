@@ -34,7 +34,6 @@
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
-
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Commands2/HeightmapEditorCommands2.h"
@@ -117,14 +116,7 @@ SceneEditor2::SceneEditor2()
 
 SceneEditor2::~SceneEditor2()
 {
-    RemoveSystem(editorLightSystem);
-    SafeDelete(editorLightSystem);
-
-    RemoveSystem(structureSystem);
-    SafeDelete(structureSystem);
-
-	RemoveSystem(landscapeEditorDrawSystem);
-	SafeDelete(landscapeEditorDrawSystem);
+	RemoveSystems();
     
 	SceneSignals::Instance()->EmitClosed(this);
 }
@@ -195,7 +187,8 @@ SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveFor
 		commandStack.SetClean(true);
 	}
 
-	landscapeEditorDrawSystem->SaveTileMaskTexture();
+	if(landscapeEditorDrawSystem)
+		landscapeEditorDrawSystem->SaveTileMaskTexture();
 
 	InjectEditorEntities();
 
@@ -252,11 +245,15 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
 	exporter.SetGPUForExporting(newGPU);
 	Set<String> errorLog;
-	exporter.ExportScene(this, GetScenePath(), errorLog);
+
+	SceneEditor2 *clonedScene = CreateCopyForExport();
+	exporter.ExportScene(clonedScene, GetScenePath(), errorLog);
 	for (Set<String>::iterator iter = errorLog.begin(); iter != errorLog.end(); ++iter)
 	{
 		Logger::Error("Export error: %s", iter->c_str());
 	}
+
+	clonedScene->Release();
 	return (errorLog.size() == 0);
 }
 
@@ -325,27 +322,39 @@ void SceneEditor2::Update(float timeElapsed)
 	Scene::Update(timeElapsed);
 	gridSystem->Update(timeElapsed);
 	cameraSystem->Update(timeElapsed);
-	collisionSystem->Update(timeElapsed);
+	
+	if(collisionSystem)
+		collisionSystem->Update(timeElapsed);
+
 	hoodSystem->Update(timeElapsed);
 	selectionSystem->Update(timeElapsed);
 	modifSystem->Update(timeElapsed);
-	landscapeEditorDrawSystem->Update(timeElapsed);
+
+	if(landscapeEditorDrawSystem)
+		landscapeEditorDrawSystem->Update(timeElapsed);
+
 	heightmapEditorSystem->Update(timeElapsed);
 	tilemaskEditorSystem->Update(timeElapsed);
 	customColorsSystem->Update(timeElapsed);
 	visibilityToolSystem->Update(timeElapsed);
 	rulerToolSystem->Update(timeElapsed);
-	structureSystem->Update(timeElapsed);
+	
+	if(structureSystem)
+		structureSystem->Update(timeElapsed);
+	
 	particlesSystem->Update(timeElapsed);
 	textDrawSystem->Update(timeElapsed);
-	editorLightSystem->Process();
+	
+	if(editorLightSystem)
+		editorLightSystem->Process();
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 {
 	gridSystem->ProcessUIEvent(event);
 	cameraSystem->ProcessUIEvent(event);
-	collisionSystem->ProcessUIEvent(event);
+	if(collisionSystem)
+		collisionSystem->ProcessUIEvent(event);
 	hoodSystem->ProcessUIEvent(event);
 	selectionSystem->ProcessUIEvent(event);
 	modifSystem->ProcessUIEvent(event);
@@ -354,7 +363,10 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
 	rulerToolSystem->ProcessUIEvent(event);
-	structureSystem->ProcessUIEvent(event);
+
+	if(structureSystem)
+		structureSystem->ProcessUIEvent(event);
+
 	particlesSystem->ProcessUIEvent(event);
 }
 
@@ -371,9 +383,15 @@ void SceneEditor2::Draw()
 
 	gridSystem->Draw();
 	cameraSystem->Draw();
-	collisionSystem->Draw();
+
+	if(collisionSystem)
+		collisionSystem->Draw();
+
 	modifSystem->Draw();
-	structureSystem->Draw();
+
+	if(structureSystem)
+		structureSystem->Draw();
+
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
 	debugDrawSystem->Draw();
@@ -388,13 +406,21 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 {
 	gridSystem->ProcessCommand(command, redo);
 	cameraSystem->ProcessCommand(command, redo);
-	collisionSystem->ProcessCommand(command, redo);
+
+	if(collisionSystem)
+		collisionSystem->ProcessCommand(command, redo);
+
 	selectionSystem->ProcessCommand(command, redo);
 	hoodSystem->ProcessCommand(command, redo);
 	modifSystem->ProcessCommand(command, redo);
-	structureSystem->ProcessCommand(command, redo);
+	
+	if(structureSystem)
+		structureSystem->ProcessCommand(command, redo);
+
 	particlesSystem->ProcessCommand(command, redo);
-	editorLightSystem->ProcessCommand(command, redo);
+
+	if(editorLightSystem)
+		editorLightSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )
@@ -594,4 +620,51 @@ int32 SceneEditor2::GetEnabledTools()
 	}
 	
 	return toolFlags;
+}
+
+Entity* SceneEditor2::Clone( Entity *dstNode /*= NULL*/ )
+{
+	if(!dstNode)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<SceneEditor2>(this), "Can clone only SceneEditor2");
+		dstNode = new SceneEditor2();
+	}
+	
+	return Scene::Clone(dstNode);
+}
+
+SceneEditor2 * SceneEditor2::CreateCopyForExport()
+{
+	SceneEditor2 *clonedScene = new SceneEditor2();
+	clonedScene->RemoveSystems();
+
+	return (SceneEditor2 *)Clone(clonedScene);
+}
+
+void SceneEditor2::RemoveSystems()
+{
+	if(editorLightSystem)
+	{
+		RemoveSystem(editorLightSystem);
+		SafeDelete(editorLightSystem);
+	}
+
+	if(structureSystem)
+	{
+		RemoveSystem(structureSystem);
+		SafeDelete(structureSystem);
+	}
+
+	if(landscapeEditorDrawSystem)
+	{
+		RemoveSystem(landscapeEditorDrawSystem);
+		SafeDelete(landscapeEditorDrawSystem);
+	}
+
+	if(collisionSystem)
+	{
+		RemoveSystem(collisionSystem);
+		SafeDelete(collisionSystem);
+	}
+	
 }
