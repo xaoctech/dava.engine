@@ -190,7 +190,6 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 					CreateMaskTexture();
 					UpdateToolImage();
 					ResetAccumulatorRect();
-//					StoreOriginalState();
 					editingIsEnabled = true;
 				}
 				break;
@@ -204,6 +203,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 					needCreateUndo = true;
 					editingIsEnabled = false;
 				}
+				prevCursorPos = Vector2(-1.f, -1.f);
 				break;
 		}
 	}
