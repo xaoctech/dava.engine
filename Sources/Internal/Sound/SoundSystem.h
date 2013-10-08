@@ -46,16 +46,15 @@ class Component;
 class SoundSystemInstance
 {
 public:
-    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128) = 0;
-    virtual Sound * CreateSound3D(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128) = 0;
+    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
     virtual Component * CreateSoundComponent() = 0;
 
-    virtual void Update();
+    virtual void Update(float32 timeElapsed);
     virtual void Suspend() = 0;
     virtual void Resume() = 0;
 
     virtual void SetListenerPosition(const Vector3 & position) = 0;
-    virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left) = 0;
+    virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left) = 0;
 
     virtual void StopGroup(const FastName & groupName) = 0;
 
@@ -64,6 +63,9 @@ public:
 
     virtual void SetGlobalComponentsVolume(float32 volume) = 0;
     virtual float32 GetSoundComponentsVolume() = 0;
+
+    virtual void SetMaxDistance(float32 distance) = 0;
+    virtual float32 GetMaxDistance() = 0;
 
 protected:
     void AddVolumeAnimatedObject(VolumeAnimatedObject * object);

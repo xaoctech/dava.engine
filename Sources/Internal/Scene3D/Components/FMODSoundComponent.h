@@ -66,7 +66,7 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
-    virtual void Trigger();
+    virtual bool Trigger();
     virtual void Stop();
     virtual void SetParameter(const String & paramName, float32 value);
     virtual float32 GetParameter(const String & paramName);

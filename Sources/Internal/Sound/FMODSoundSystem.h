@@ -36,6 +36,8 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundEvent.h"
 
+#define SOUND_DISTANCE_UPDATE_TIME_SEC 1.0f
+
 namespace FMOD
 {
 class System;
@@ -55,16 +57,15 @@ public:
 	FMODSoundSystem(int32 maxChannels = 64);
 	virtual ~FMODSoundSystem();
 
-    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128);
-    virtual Sound * CreateSound3D(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority = 128);
+    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128);
     virtual Component * CreateSoundComponent();
 
-	virtual void Update();
+	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();
 	virtual void Resume();
 
 	virtual void SetListenerPosition(const Vector3 & position);
-	virtual void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+	virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left);
 
     virtual void StopGroup(const FastName & groupName);
 
@@ -90,6 +91,9 @@ public:
     void AddActiveFMODEvent(FMOD::Event * event);
     void RemoveActiveFMODEvent(FMOD::Event * event);
 
+    void SetMaxDistance(float32 distance);
+    float32 GetMaxDistance();
+
 protected:
     FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
     FMODSoundGroup * GetSoundGroup(const FastName & groupName);
@@ -108,6 +112,13 @@ protected:
     FastNameMap<FMODSoundGroup *> soundGroups;
     Map<FMODSoundEvent *, FMODSoundEvent::CallbackType> callbackOnUpdate;
     Vector<FMOD::Event *> activeEvents;
+    Vector<FMOD::Event *> removeActiveEventsOnUpdate;
+
+    float32 maxDistanceSq;
+    Vector3 listenerPosition;
+    Vector3 lastListenerPosition;
+
+    float32 distanceUpdateTime;
 
 friend class FMODSoundGroup;
 friend class FMODSound;

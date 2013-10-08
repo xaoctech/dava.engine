@@ -38,7 +38,7 @@ FilePath SoundSystem::soundsDir(DEFAULT_SOUNDS_DIRECTORY);
 SoundSystem::SoundSystemType SoundSystem::type = (SoundSystemType)0;
 SoundSystemInstance * SoundSystem::instance = 0;
 
-void SoundSystemInstance::Update()
+void SoundSystemInstance::Update(float32 timeElapsed)
 {
     int32 size = animatedObjects.size();
     for(int32 i = 0; i < size; i++)

@@ -43,13 +43,18 @@ namespace DAVA
 {
 
 FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */) : 
-globalComponentsVolume(1.f)
+globalComponentsVolume(1.f),
+maxDistanceSq(150.f * 150.f),
+distanceUpdateTime(.0f)
 {
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
 	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
-	FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED, 0));
+#ifdef DAVA_DEBUG
+    FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, 0));
+#else
+    FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
+#endif
     FMOD_VERIFY(fmodSystem->set3DSettings(1.f, 1.f, 0.4f));
-
 }
 
 FMODSoundSystem::~FMODSoundSystem()
@@ -64,14 +69,12 @@ FMODSoundSystem::~FMODSoundSystem()
 	FMOD_VERIFY(fmodSystem->release());
 }
 
-Sound * FMODSoundSystem::CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority /*  = 128 */)
+Sound * FMODSoundSystem::CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D /* = false */, int32 priority /*  = 128 */)
 {
-    return FMODSound::CreateWithFlags(fileName, type, groupName, 0, priority);
-}
-
-Sound * FMODSoundSystem::CreateSound3D(const FilePath & fileName, Sound::eType type, const FastName & groupName, int32 priority /*  = 128 */)
-{
-    return FMODSound::CreateWithFlags(fileName, type, groupName, FMOD_3D, priority);
+    int32 flags = FMOD_DEFAULT;
+    if(is3D)
+        flags |= FMOD_3D;
+    return FMODSound::CreateWithFlags(fileName, type, groupName, flags, priority);
 }
 
 Component * FMODSoundSystem::CreateSoundComponent()
@@ -120,11 +123,28 @@ FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
     return soundSystem;
 }
 
-void FMODSoundSystem::Update()
+void FMODSoundSystem::Update(float32 timeElapsed)
 {
-    int32 size = animatedObjects.size();
-    for(int32 i = 0; i < size; i++)
-        animatedObjects[i]->Update();
+    SoundSystemInstance::Update(timeElapsed);
+
+    int32 size = removeActiveEventsOnUpdate.size();
+    if(size)
+    {
+        for(int32 i = 0; i < size; i++)
+        {
+            Vector<FMOD::Event *>::iterator it = activeEvents.begin();
+            Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
+            for(; it != itEnd; ++it)
+            {
+                if((*it) == removeActiveEventsOnUpdate[i])
+                {
+                    activeEvents.erase(it);
+                    break;
+                }
+            }
+        }
+        removeActiveEventsOnUpdate.clear();
+    }
 
 	fmodEventSystem->update();
 
@@ -140,6 +160,32 @@ void FMODSoundSystem::Update()
         for(; mapIt != endIt; ++mapIt)
             mapIt->first->eventDispathcer.PerformEvent(mapIt->second);
         callbackOnUpdate.clear();
+    }
+
+    distanceUpdateTime += timeElapsed;
+    if(distanceUpdateTime > SOUND_DISTANCE_UPDATE_TIME_SEC)
+    {
+        distanceUpdateTime = 0.f;
+
+        Vector<FMOD::Event *>::iterator it = activeEvents.begin();
+        while(it != activeEvents.end())
+        {
+            void * userData = 0;
+            FMOD_VERIFY((*it)->getUserData(&userData));
+            if(!userData) // don't check events from FMODSoundEvent
+            {
+                FMOD_VECTOR pos;
+                FMOD_VERIFY((*it)->get3DAttributes(&pos, 0));
+                Vector3 soundPosition(pos.x, pos.y, pos.z);
+                if((listenerPosition - soundPosition).SquareLength() > maxDistanceSq)
+                {
+                    FMOD_VERIFY((*it)->stop());
+                    it = activeEvents.erase(it);
+                    continue;
+                }
+            }
+            ++it;
+        }
     }
 }
 
@@ -163,20 +209,24 @@ void FMODSoundSystem::Resume()
 
 void FMODSoundSystem::SetListenerPosition(const Vector3 & position)
 {
-	FMOD_VECTOR pos = {position.x, position.y, position.z};
-	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
+    if(listenerPosition != position)
+    {
+        listenerPosition = position;
+        FMOD_VECTOR pos = {listenerPosition.x, listenerPosition.y, listenerPosition.z};
+        FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
+    }
 }
 
-void FMODSoundSystem::SetListenerOrientation(const Vector3 & at, const Vector3 & left)
+void FMODSoundSystem::SetListenerOrientation(const Vector3 & forward, const Vector3 & left)
 {
-	Vector3 atNorm = at;
-	atNorm.Normalize();
-	Vector3 upNorm = at.CrossProduct(left);
+	Vector3 forwardNorm = forward;
+	forwardNorm.Normalize();
+	Vector3 upNorm = forwardNorm.CrossProduct(left);
 	upNorm.Normalize();
 
-	FMOD_VECTOR fmodAt = {atNorm.x, atNorm.y, atNorm.z};
+	FMOD_VECTOR fmodForward = {forwardNorm.x, forwardNorm.y, forwardNorm.z};
 	FMOD_VECTOR fmodUp = {upNorm.x, upNorm.y, upNorm.z};
-	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodAt, &fmodUp));
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodForward, &fmodUp));
 }
 
 FMODSoundGroup * FMODSoundSystem::GetSoundGroup(const FastName & groupName)
@@ -206,6 +256,16 @@ FMODSoundGroup * FMODSoundSystem::CreateSoundGroup(const FastName & groupName)
 void FMODSoundSystem::ReleaseOnUpdate(FMODSound * sound)
 {
     soundsToReleaseOnUpdate.push_back(sound);
+}
+
+void FMODSoundSystem::SetMaxDistance(float32 distance)
+{
+    maxDistanceSq = distance * distance;
+}
+
+float32 FMODSoundSystem::GetMaxDistance()
+{
+    return pow(maxDistanceSq, .5f);
 }
 
 void FMODSoundSystem::GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names)
@@ -340,16 +400,7 @@ void FMODSoundSystem::AddActiveFMODEvent(FMOD::Event * event)
 
 void FMODSoundSystem::RemoveActiveFMODEvent(FMOD::Event * event)
 {
-    Vector<FMOD::Event *>::iterator it = activeEvents.begin();
-    Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
-    for(; it != itEnd; ++it)
-    {
-        if((*it) == event)
-        {
-            activeEvents.erase(it);
-            return;
-        }
-    }
+    removeActiveEventsOnUpdate.push_back(event);
 }
 
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)

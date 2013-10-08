@@ -51,6 +51,8 @@ FMODSoundComponent::FMODSoundComponent() : fmodEvent(0)
 
 FMODSoundComponent::~FMODSoundComponent()
 {
+    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+    FMOD_VERIFY(fmodEvent->stop());
     FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
 }
 
@@ -65,7 +67,11 @@ void FMODSoundComponent::SetEventName(const String & _eventName)
     if(eventName == _eventName)
         return;
 
-	eventName = _eventName;
+    if(_eventName[0] == '/')
+        eventName = _eventName.substr(1);
+    else
+	    eventName = _eventName;
+
 	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::SOUND_CHANGED);
 }
 
@@ -105,10 +111,13 @@ void FMODSoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFi
 	SoundComponent::Deserialize(archive, sceneFile);
 }
 
-void FMODSoundComponent::Trigger()
+bool FMODSoundComponent::Trigger()
 {
     FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
     
+    if((position - FMODSoundSystem::GetFMODSoundSystem()->listenerPosition).SquareLength() > FMODSoundSystem::GetFMODSoundSystem()->maxDistanceSq)
+        return false;
+
     if(!fmodEvent)
     {
         FMOD::Event * fmodEventInfo = 0;
@@ -126,13 +135,18 @@ void FMODSoundComponent::Trigger()
     if(fmodEvent)
     {
         FMOD_VERIFY(fmodEvent->start());
+        return true;
     }
+
+    return false;
 }
 
 void FMODSoundComponent::Stop()
 {
     if(fmodEvent)
+    {
         FMOD_VERIFY(fmodEvent->stop());
+    }
 }
 
 void FMODSoundComponent::SetParameter(const String & paramName, float32 value)
@@ -184,12 +198,19 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
 {
     paramsInfo.clear();
     
+    bool isEventInfoOnly = false;
+
     FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
     FMOD::Event * event = fmodEvent;
     if(!event)
+    {
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
+        isEventInfoOnly = true;
+    }
     if(!event)
+    {
         return;
+    }
     
     int32 paramsCount = 0;
     FMOD_VERIFY(event->getNumParameters(&paramsCount));
@@ -206,19 +227,21 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
         SoundEventParameterInfo pInfo;
         pInfo.name = String(paramName);
         FMOD_VERIFY(param->getRange(&pInfo.minValue, &pInfo.maxValue));
-        FMOD_VERIFY(param->getValue(&pInfo.currentValue));
+
+        if(!isEventInfoOnly)
+            FMOD_VERIFY(param->getValue(&pInfo.currentValue));
             
         paramsInfo.push_back(pInfo);
     }
 }
-    
+
 FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
-    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN)
+    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN || type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
     {
         FMOD::Event **event = (FMOD::Event **)userdata;
-        (*event) = 0;
         FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent((*event));
+        (*event) = 0;
     }
     return FMOD_OK;
 }
