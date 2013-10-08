@@ -46,12 +46,9 @@ QtPropertyData::QtPropertyData(const QVariant &value)
 
 QtPropertyData::~QtPropertyData() 
 {
-	QHashIterator<QString, QtPropertyData*> i = QHashIterator<QString, QtPropertyData*>(children);
-	while(i.hasNext())
+	for(int i = 0; i < childrenData.size(); ++i)
 	{
-		i.next();
-
-		QtPropertyData *data = i.value();
+		QtPropertyData *data = childrenData.at(i);
 		if(NULL != data)
 		{
 			delete data;
@@ -74,6 +71,8 @@ QVariant QtPropertyData::GetValue()
 	if(internalValue != curValue)
 	{
 		curValue = internalValue;
+		emit ValueChanged(VALUE_SOURCE_CHANGED);
+
 		ChildNeedUpdate();
 	}
 
@@ -82,10 +81,14 @@ QVariant QtPropertyData::GetValue()
 
 QVariant QtPropertyData::GetAlias()
 {
+	// this will force update internalValue if 
+	// it source was changed 
+	GetValue();
+
 	return GetValueAlias();
 }
 
-void QtPropertyData::SetValue(const QVariant &value)
+void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 {
 	QVariant oldValue = curValue;
 
@@ -94,7 +97,7 @@ void QtPropertyData::SetValue(const QVariant &value)
 
 	if(curValue != oldValue)
 	{
-		emit ValueChanged();
+		emit ValueChanged(reason);
 	}
 
 	// change signal going down to childs
@@ -147,8 +150,12 @@ void QtPropertyData::ParentUpdate()
 {
 	if(NULL != parent)
 	{
-		parent->ChildChanged(parent->children.key(this), this);
-		parent->ParentUpdate();
+		int myIndex = parent->childrenData.indexOf(this);
+		if(-1 != myIndex)
+		{
+			parent->ChildChanged(parent->childrenNames.at(myIndex), parent->childrenData.at(myIndex));
+			parent->ParentUpdate();
+		}
 	}
 }
 
@@ -156,11 +163,9 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 {
 	if(NULL != data && !key.isEmpty())
 	{
-		int sz = children.size();
-        
-        children.insert(key, data);
-        childrenOrder.insert(key, sz);
-
+		childrenNames.append(key);
+		childrenData.append(data);
+	    
 		data->parent = this;
 
 		emit ChildAdded(key, data);
@@ -174,17 +179,17 @@ void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
 
 int QtPropertyData::ChildCount()
 {
-	return children.size();
+	return childrenData.size();
 }
 
 QPair<QString, QtPropertyData*> QtPropertyData::ChildGet(int i)
 {
 	QPair<QString, QtPropertyData*> p("", NULL);
 
-	if(i >= 0 && i < children.size())
+	if(i >= 0 && i < childrenData.size())
 	{
-		p.first = childrenOrder.key(i);
-		p.second = children[p.first];
+		p.first = childrenNames.at(i);
+		p.second = childrenData.at(i);
 	}
 
 	return p;
@@ -194,9 +199,10 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 {
 	QtPropertyData *data = NULL;
 
-	if(children.contains(key))
+	int index = childrenNames.indexOf(key);
+	if(-1 != index)
 	{
-		data = children[key];
+		data = childrenData.at(index);
 	}
 
 	return data;
@@ -204,40 +210,29 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 
 void QtPropertyData::ChildRemove(const QString &key)
 {
-	QtPropertyData *data = ChildGet(key);
-
-	if(NULL != data)
-	{
-		emit ChildRemoving(key, data);
-
-		children.remove(key);
-		childrenOrder.remove(key);
-
-		delete data;
-	}
-}
-
-void QtPropertyData::ChildRemove(int i)
-{
-	QPair<QString, QtPropertyData*> pair = ChildGet(i);
-
-	if(!pair.first.isEmpty() && NULL != pair.second)
-	{
-		emit ChildRemoving(pair.first, pair.second);
-
-		children.remove(pair.first);
-		childrenOrder.remove(pair.first);
-
-		delete pair.second;
-	}
+	int index = childrenNames.indexOf(key);
+	ChildRemove(index);
 }
 
 void QtPropertyData::ChildRemove(QtPropertyData *data)
 {
-	QString key = children.key(data, "");
-	if(!key.isEmpty())
+	int index = childrenData.indexOf(data);
+	ChildRemove(index);
+}
+
+void QtPropertyData::ChildRemove(int index)
+{
+	if(index >= 0 && index < childrenData.size())
 	{
-		ChildRemove(key);
+		QtPropertyData *data = childrenData.at(index);
+
+		emit ChildRemoving(childrenNames.at(index), data);
+
+		childrenData.removeAt(index);
+		childrenNames.removeAt(index);
+
+		delete data;
+		data = NULL;
 	}
 }
 
@@ -265,6 +260,7 @@ void QtPropertyData::AddOW(const QtPropertyOW &ow)
 	if(NULL != ow.widget)
 	{
 		ow.widget->setParent(optionalWidgetViewport);
+		ow.widget->hide();
 	}
 }
 
@@ -278,6 +274,18 @@ void QtPropertyData::RemOW(int index)
 		}
 
 		optionalWidgets.remove(index);
+	}
+}
+
+void QtPropertyData::RemOW(QWidget *widget)
+{
+	for(int i = 0; i < optionalWidgets.size(); ++i)
+	{
+		if(optionalWidgets[i].widget == widget)
+		{
+			RemOW(i);
+			break;
+		}
 	}
 }
 
@@ -298,11 +306,10 @@ void QtPropertyData::SetOWViewport(QWidget *viewport)
 		}
 	}
 
-	QHashIterator<QString, QtPropertyData*> i(children);
-	while (i.hasNext()) 
+	
+	for (int i = 0; i < childrenData.size(); i++)
 	{
-		i.next();
-		i.value()->SetOWViewport(viewport);
+		childrenData.at(i)->SetOWViewport(viewport);
 	}
 }
 
