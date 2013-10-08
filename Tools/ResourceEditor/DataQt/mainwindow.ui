@@ -423,6 +423,7 @@
     <addaction name="menuBeast"/>
     <addaction name="separator"/>
     <addaction name="menuObjectTypes"/>
+    <addaction name="actionHangingObjects"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -819,6 +820,7 @@
    <addaction name="actionSetShadowColor"/>
    <addaction name="actionLandscape"/>
    <addaction name="actionSkyboxEditor"/>
+   <addaction name="actionHangingObjects"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1627,6 +1629,14 @@
    </property>
    <property name="text">
     <string>Invisible Wall</string>
+   </property>
+  </action>
+  <action name="actionHangingObjects">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hanging Objects</string>
    </property>
   </action>
  </widget>
