@@ -854,6 +854,10 @@ void QtMainWindow::OnSceneSaveToFolder()
 	if(path.isEmpty())
 		return;
 
+
+	WaitStart("Save with Children", "Please wait...");
+
+
 	FilePath folder = PathnameToDAVAStyle(path);
 	folder.MakeDirectoryPathname();
 
@@ -862,7 +866,12 @@ void QtMainWindow::OnSceneSaveToFolder()
 	sceneSaver.SetOutFolder(folder);
 
 	Set<String> errorsLog;
-	sceneSaver.SaveScene(scene, scene->GetScenePath(), errorsLog);
+
+	SceneEditor2 *sceneForSaving = scene->CreateCopyForExport();
+	sceneSaver.SaveScene(sceneForSaving, scene->GetScenePath(), errorsLog);
+	sceneForSaving->Release();
+
+	WaitStop();
 
 	ShowErrorDialog(errorsLog);
 }
@@ -923,11 +932,15 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
     
+	WaitStart("Export", "Please wait...");
+
     eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
     if (!scene->Export(gpuFamily))
     {
         QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
     }
+
+	WaitStop();
 }
 
 void QtMainWindow::OnImportSpeedTreeXML()

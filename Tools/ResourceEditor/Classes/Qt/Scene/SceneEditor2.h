@@ -146,6 +146,8 @@ public:
 
 	virtual void Update(float timeElapsed);
 
+	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
+	virtual Entity* Clone(Entity *dstNode = NULL);
 
 protected:
 	bool isLoaded;
@@ -162,6 +164,8 @@ protected:
 
     void ExtractEditorEntities();
 	void InjectEditorEntities();
+
+	void RemoveSystems();
 
 private:
 	friend struct EditorCommandNotify;
