@@ -102,8 +102,6 @@ protected:
 	eBlendMode dstBlendMode;
 	Shader* tileMaskEditorShader;
 
-	Image* originalMask;
-
 	bool needCreateUndo;
 	
 	void UpdateCursorPosition();
@@ -119,7 +117,6 @@ protected:
 	void CreateMaskFromTexture(Texture* texture);
 
 	void CreateUndoPoint();
-	void StoreOriginalState();
 
 	bool IsCanBeEnabled();
 };

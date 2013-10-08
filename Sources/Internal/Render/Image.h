@@ -96,6 +96,12 @@ public:
 								  uint32 xOffset = 0, uint32 yOffset = 0);
 	static Image* CopyImageRegion(const Image* imageToCopy, const Rect& rect);
 
+	void InsertImage(const Image* image, uint32 dstX, uint32 dstY,
+					 uint32 srcX = 0, uint32 srcY = 0,
+					 uint32 srcWidth = -1, uint32 srcHeight = -1);
+	void InsertImage(const Image* image, const Vector2& dstPos,
+					 const Rect& srcRect);
+
     // changes size of image canvas to square
     void ResizeToSquare();
 

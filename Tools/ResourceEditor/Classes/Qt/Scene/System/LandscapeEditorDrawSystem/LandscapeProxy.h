@@ -96,6 +96,8 @@ public:
 	void IncreaseTilemaskChanges();
 	void DecreaseTilemaskChanges();
 
+	Image* GetTilemaskImageCopy();
+
 protected:
 	enum eTextureType
 	{
@@ -109,6 +111,8 @@ protected:
 	
 	Texture* texturesToBlend[TEXTURE_TYPES_COUNT];
 	bool texturesEnabled[TEXTURE_TYPES_COUNT];
+
+	Image* tilemaskImageCopy;
 
 	int32 tilemaskWasChanged;
 	

@@ -95,11 +95,13 @@ void ActionDisableTilemaskEditor::Redo()
 }
 
 
-ModifyTilemaskCommand::ModifyTilemaskCommand(Image* originalMask, LandscapeProxy* landscapeProxy, const Rect& updatedRect)
+ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, const Rect& updatedRect)
 :	Command2(CMDID_MODIFY_TILEMASK, "Tile Mask Modification")
 {
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
+
+	Image* originalMask = landscapeProxy->GetTilemaskImageCopy();
 
 	undoImageMask = Image::CopyImageRegion(originalMask, updatedRect);
 
@@ -127,6 +129,10 @@ void ModifyTilemaskCommand::Undo()
 
 	landscapeProxy->UpdateFullTiledTexture();
 	landscapeProxy->DecreaseTilemaskChanges();
+
+	Rect r = Rect(Vector2(0, 0), Vector2(undoImageMask->GetWidth(), undoImageMask->GetHeight()));
+	Image* mask = landscapeProxy->GetTilemaskImageCopy();
+	mask->InsertImage(undoImageMask, updatedRect.GetPosition(), r);
 }
 
 void ModifyTilemaskCommand::Redo()
@@ -141,6 +147,10 @@ void ModifyTilemaskCommand::Redo()
 
 	landscapeProxy->UpdateFullTiledTexture();
 	landscapeProxy->IncreaseTilemaskChanges();
+
+	Rect r = Rect(Vector2(0, 0), Vector2(redoImageMask->GetWidth(), redoImageMask->GetHeight()));
+	Image* mask = landscapeProxy->GetTilemaskImageCopy();
+	mask->InsertImage(redoImageMask, updatedRect.GetPosition(), r);
 }
 
 Entity* ModifyTilemaskCommand::GetEntity() const

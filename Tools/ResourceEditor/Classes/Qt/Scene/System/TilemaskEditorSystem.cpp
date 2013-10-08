@@ -55,7 +55,6 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	toolSpriteUpdated(false)
 ,	needCreateUndo(false)
-,	originalMask(NULL)
 ,	toolImageIndex(0)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
@@ -111,7 +110,7 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	drawSystem->SetCursorSize(cursorSize);
 	
 	CreateMaskTexture();
-	
+
 	enabled = true;
 	return enabled;
 }
@@ -191,7 +190,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 					CreateMaskTexture();
 					UpdateToolImage();
 					ResetAccumulatorRect();
-					StoreOriginalState();
+//					StoreOriginalState();
 					editingIsEnabled = true;
 				}
 				break;
@@ -472,17 +471,7 @@ void TilemaskEditorSystem::CreateUndoPoint()
 {
 	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
 	DVASSERT(scene);
-	scene->Exec(new ModifyTilemaskCommand(originalMask, drawSystem->GetLandscapeProxy(), GetUpdatedRect()));
-
-	SafeRelease(originalMask);
-}
-
-void TilemaskEditorSystem::StoreOriginalState()
-{
-	DVASSERT(originalMask == NULL);
-
-	LandscapeProxy* lp = drawSystem->GetLandscapeProxy();
-	originalMask = lp->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	scene->Exec(new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), GetUpdatedRect()));
 }
 
 int32 TilemaskEditorSystem::GetBrushSize()

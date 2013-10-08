@@ -66,7 +66,7 @@ protected:
 class ModifyTilemaskCommand: public Command2
 {
 public:
-	ModifyTilemaskCommand(Image* originalMask, LandscapeProxy* landscapeProxy,
+	ModifyTilemaskCommand(LandscapeProxy* landscapeProxy,
 						  const Rect& updatedRect);
 	~ModifyTilemaskCommand();
 
