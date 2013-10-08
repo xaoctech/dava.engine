@@ -35,10 +35,15 @@
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QColorDialog>
+#include <QListWidget>
+#include <QComboBox>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QToolButton>
 #include <QPainter>
 #include <QLineEdit>
+#include <QCoreApplication>
+#include <QKeyEvent>
 
 #include "SceneEditor/EditorSettings.h"
 
@@ -46,41 +51,11 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	: curVariantValue(value)
 	, iconCacheIsValid(false)
 	, allowedValuesLocked(false)
+	, allowedButton(NULL)
+	, processingChilds(false)
+	, processingParent(false)
 {
-	// set special flags
-	switch(curVariantValue.type)
-	{
-	case DAVA::VariantType::TYPE_BOOLEAN:
-		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
-		break;
-	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
-	case DAVA::VariantType::TYPE_BYTE_ARRAY:
-		SetFlags(FLAG_IS_DISABLED);
-		break;
-            
-    case DAVA::VariantType::TYPE_MATRIX2:
-    case DAVA::VariantType::TYPE_MATRIX3:
-    case DAVA::VariantType::TYPE_MATRIX4:
-	case DAVA::VariantType::TYPE_AABBOX3:
-        SetFlags(FLAG_IS_NOT_EDITABLE);
-        break;
-            
-	case DAVA::VariantType::TYPE_FLOAT:
-	case DAVA::VariantType::TYPE_INT32:
-	case DAVA::VariantType::TYPE_INT64:
-	case DAVA::VariantType::TYPE_UINT32:
-	case DAVA::VariantType::TYPE_UINT64:
-	case DAVA::VariantType::TYPE_STRING:
-	case DAVA::VariantType::TYPE_VECTOR2:
-	case DAVA::VariantType::TYPE_VECTOR3:
-	case DAVA::VariantType::TYPE_VECTOR4:
-    case DAVA::VariantType::TYPE_COLOR:
-    case DAVA::VariantType::TYPE_FASTNAME:
-	case DAVA::VariantType::TYPE_FILEPATH:
-	default:
-		break;
-	}
-
+	InitFlags();
 	ChildsCreate();
 
 	// ensure data is fully initialized (icons set)
@@ -93,6 +68,43 @@ QtPropertyDataDavaVariant::~QtPropertyDataDavaVariant()
 const DAVA::VariantType& QtPropertyDataDavaVariant::GetVariantValue() const
 {
 	return curVariantValue;
+}
+
+void QtPropertyDataDavaVariant::InitFlags()
+{
+	// set special flags
+	switch(curVariantValue.type)
+	{
+	case DAVA::VariantType::TYPE_BOOLEAN:
+		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
+		break;
+	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
+	case DAVA::VariantType::TYPE_BYTE_ARRAY:
+		SetFlags(FLAG_IS_DISABLED);
+		break;
+
+	case DAVA::VariantType::TYPE_MATRIX2:
+	case DAVA::VariantType::TYPE_MATRIX3:
+	case DAVA::VariantType::TYPE_MATRIX4:
+	case DAVA::VariantType::TYPE_AABBOX3:
+		SetFlags(FLAG_IS_NOT_EDITABLE);
+		break;
+
+	case DAVA::VariantType::TYPE_FLOAT:
+	case DAVA::VariantType::TYPE_INT32:
+	case DAVA::VariantType::TYPE_INT64:
+	case DAVA::VariantType::TYPE_UINT32:
+	case DAVA::VariantType::TYPE_UINT64:
+	case DAVA::VariantType::TYPE_STRING:
+	case DAVA::VariantType::TYPE_VECTOR2:
+	case DAVA::VariantType::TYPE_VECTOR3:
+	case DAVA::VariantType::TYPE_VECTOR4:
+	case DAVA::VariantType::TYPE_COLOR:
+	case DAVA::VariantType::TYPE_FASTNAME:
+	case DAVA::VariantType::TYPE_FILEPATH:
+	default:
+		break;
+	}
 }
 
 void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
@@ -109,6 +121,7 @@ void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 
 	if(needChildCreate)
 	{
+		InitFlags();
 		ChildsCreate();
 	}
 }
@@ -116,6 +129,17 @@ void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue /*= QVariant()*/)
 {
 	AllowedValue av;
+
+	if(NULL == allowedButton)
+	{
+		allowedButton = new QToolButton();
+		allowedButton->setArrowType(Qt::DownArrow);
+		allowedButton->setAutoRaise(true);
+		allowedButton->setDisabled(true);
+
+		AddOW(QtPropertyOW(allowedButton, true));
+		QObject::connect(allowedButton, SIGNAL(pressed()), this, SLOT(AllowedOWPressed()));	
+	}
 
 	av.realValue = realValue;
 	av.visibleValue = visibleValue;
@@ -126,6 +150,12 @@ void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realVal
 void QtPropertyDataDavaVariant::ClearAllowedValues()
 {
 	allowedValues.clear();
+
+	if(NULL != allowedButton)
+	{
+		RemOW(allowedButton);
+		allowedButton = NULL;
+	}
 }
 
 QVariant QtPropertyDataDavaVariant::GetValueInternal()
@@ -230,12 +260,22 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ChildChanged(const QString &key, QtPropertyData *data)
 {
-	MeSetFromChilds(key, data);
+	if(!processingParent)
+	{
+		processingParent = true;
+		MeSetFromChilds(key, data);
+		processingParent = false;
+	}
 }
 
 void QtPropertyDataDavaVariant::ChildNeedUpdate()
 {
-	ChildsSetFromMe();
+	if(!processingChilds)
+	{
+		processingChilds = true;
+		ChildsSetFromMe();
+		processingChilds = false;
+	}
 }
 
 void QtPropertyDataDavaVariant::ChildsCreate()
@@ -401,7 +441,12 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			DAVA::Vector2 vec;
 			vec.x = ChildGet("X")->GetValue().toFloat();
 			vec.y = ChildGet("Y")->GetValue().toFloat();
-			curVariantValue.SetVector2(vec);
+
+			if(curVariantValue.AsVector2() != vec)
+			{
+				curVariantValue.SetVector2(vec);
+				SetValue(FromVector2(vec), QtPropertyData::VALUE_EDITED);
+			}
 		}
 		break;
 	case DAVA::VariantType::TYPE_VECTOR3:
@@ -410,7 +455,12 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			vec.x = ChildGet("X")->GetValue().toFloat();
 			vec.y = ChildGet("Y")->GetValue().toFloat();
 			vec.z = ChildGet("Z")->GetValue().toFloat();
-			curVariantValue.SetVector3(vec);
+
+			if(curVariantValue.AsVector3() != vec)
+			{
+				curVariantValue.SetVector3(vec);
+				SetValue(FromVector3(vec), QtPropertyData::VALUE_EDITED);
+			}
 		}
 		break;
 	case DAVA::VariantType::TYPE_VECTOR4:
@@ -420,20 +470,15 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			vec.y = ChildGet("Y")->GetValue().toFloat();
 			vec.z = ChildGet("Z")->GetValue().toFloat();
 			vec.w = ChildGet("W")->GetValue().toFloat();
-			curVariantValue.SetVector4(vec);
+
+			if(curVariantValue.AsVector4() != vec)
+			{
+				curVariantValue.SetVector4(vec);
+				SetValue(FromVector4(vec), QtPropertyData::VALUE_EDITED);
+			}
 		}
 		break;
-    case DAVA::VariantType::TYPE_COLOR:
-		{
-//			DAVA::Color color;
-//			color.r = ChildGet("R")->GetValue().toFloat();
-//			color.g = ChildGet("G")->GetValue().toFloat();
-//			color.b = ChildGet("B")->GetValue().toFloat();
-//			color.a = ChildGet("A")->GetValue().toFloat();
-//			curVariantValue.SetColor(color);
-		}
-        break;
-        case DAVA::VariantType::TYPE_AABBOX3:
+    case DAVA::VariantType::TYPE_AABBOX3:
         {
             DAVA::AABBox3 box;
             
@@ -447,9 +492,13 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
             box.max.y = max->ChildGet("Y")->GetValue().toFloat();
             box.max.z = max->ChildGet("Z")->GetValue().toFloat();
             
-            curVariantValue.SetAABBox3(box);
+			if(curVariantValue.AsAABBox3().min != box.min || curVariantValue.AsAABBox3().max != box.max)
+			{
+				curVariantValue.SetAABBox3(box);
+				SetValue(FromAABBox3(box), QtPropertyData::VALUE_EDITED);
+			}
         }
-            break;
+        break;
 	}
 }
 
@@ -678,14 +727,14 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
 {
 	QWidget* ret = NULL;
 
-	// shouldn't add allowedValues during edit process
+	// user shouldn't add allowedValues during edit process
 	allowedValuesLocked = true;
 
 	// if there is allowedValues we should show them in combobox
 	// user will only be able to select values from combobox
 	if(allowedValues.size() > 0)
 	{
-		ret = CreateAllowedValuesComboBox(parent);
+		ret = CreateAllowedValuesEditor(parent);
 	}
 	// check types and create our own widgets for edit
 	// if we don't create - Qt will create standard editing widget for QVariant
@@ -707,27 +756,7 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 	// if we have valueItems, so that means combobox was created
 	if(allowedValues.size())
 	{
-		QComboBox *comboBox = dynamic_cast<QComboBox *>(editor);
-		if(NULL != comboBox)
-		{
-			int index = -1;
-
-			// we should set combobox current index,
-			// that matches current value
-			for(int i = 0; i < allowedValues.size(); ++i)
-			{
-				if(allowedValues[i].realValue == curVariantValue)
-				{
-					index = i;
-					break;
-				}
-			}
-
-			comboBox->setCurrentIndex(index);
-			//comboBox->showPopup(); // Qt BUG: showing popup whis will cause artifacts on combobox destoy
-
-			ret = true;
-		}
+		SetAllowedValueEditorData(editor);
 	}
 	else
 	{
@@ -750,7 +779,7 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 	// if we have allowedValues - that means combobox was created
 	if(allowedValues.size())
 	{
-		SetAllowedValueFromComboBox(dynamic_cast<QComboBox *>(editor));
+		ApplyAllowedValueFromEditor(editor);
 		ret = true;
 	}
 	else
@@ -758,7 +787,7 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-			SetValue(colorLineEdit->GetColor());
+			SetValue(colorLineEdit->GetColor(), QtPropertyData::VALUE_EDITED);
 			ret = true;
 		}
 	}
@@ -777,7 +806,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 	QColor c = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), NULL, "Select color", QColorDialog::ShowAlphaChannel);
 	if(c.isValid())
 	{
-		SetValue(c);
+		SetValue(c, QtPropertyData::VALUE_EDITED);
 		iconCacheIsValid = false;
 	}
 }
@@ -787,10 +816,23 @@ void QtPropertyDataDavaVariant::FilePathOWPressed()
 	QString path = QFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
 	if(!path.isEmpty())
 	{
-		SetValue(path);
+		SetValue(path, QtPropertyData::VALUE_EDITED);
 	}
 }
 
+void QtPropertyDataDavaVariant::AllowedOWPressed()
+{
+
+}
+
+void QtPropertyDataDavaVariant::AllowedSelected(int index)
+{
+	QComboBox *allowedWidget = dynamic_cast<QComboBox *>(QObject::sender());
+	if(NULL != allowedWidget)
+	{
+		QCoreApplication::postEvent(allowedWidget, new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier));
+	}
+}
 
 QIcon QtPropertyDataDavaVariant::GetIcon()
 {
@@ -838,13 +880,13 @@ void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
 	QtPropertyData::SetIcon(icon);
 }
 
-QComboBox* QtPropertyDataDavaVariant::CreateAllowedValuesComboBox(QWidget *parent)
+QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent)
 {
-	QComboBox *comboBox = NULL;
+	QComboBox *allowedWidget = NULL;
 
 	if(allowedValues.size() > 0)
 	{
-		comboBox = new QComboBox(parent);
+		allowedWidget = new QComboBox(parent);
 
 		for(int i = 0; i < allowedValues.size(); ++i)
 		{
@@ -862,23 +904,51 @@ QComboBox* QtPropertyDataDavaVariant::CreateAllowedValuesComboBox(QWidget *paren
 				text = FromDavaVariant(curVariantValue).toString();
 			}
 
-			comboBox->addItem(text);
+			allowedWidget->addItem(text);
 		}
+
+		QObject::connect(allowedWidget, SIGNAL(activated(int)), this, SLOT(AllowedSelected(int)));
 	}
 
-	return comboBox;
+	return allowedWidget;
 }
 
-void QtPropertyDataDavaVariant::SetAllowedValueFromComboBox(QComboBox *comboBox)
+void QtPropertyDataDavaVariant::SetAllowedValueEditorData(QWidget *editorWidget)
 {
-	if(NULL != comboBox)
+	QComboBox *allowedWidget = dynamic_cast<QComboBox*>(editorWidget);
+
+	if(NULL != allowedWidget)
 	{
-		int index = comboBox->currentIndex();
+		int index = -1;
+
+		// we should set combobox current index,
+		// that matches current value
+		for(int i = 0; i < allowedValues.size(); ++i)
+		{
+			if(allowedValues[i].realValue == curVariantValue)
+			{
+				index = i;
+				break;
+			}
+		}
+
+		allowedWidget->setCurrentIndex(index);
+		allowedWidget->showPopup();
+	}
+}
+
+void QtPropertyDataDavaVariant::ApplyAllowedValueFromEditor(QWidget *editorWidget)
+{
+	QComboBox *allowedWidget = dynamic_cast<QComboBox*>(editorWidget);
+
+	if(NULL != allowedWidget)
+	{
+		int index = allowedWidget->currentIndex();
 		if(index >= 0 && index < allowedValues.size())
 		{
 			if(curVariantValue != allowedValues[index].realValue)
 			{
-				SetValue(FromDavaVariant(allowedValues[index].realValue));
+				SetValue(FromDavaVariant(allowedValues[index].realValue), QtPropertyData::VALUE_EDITED);
 			}
 		}
 	}

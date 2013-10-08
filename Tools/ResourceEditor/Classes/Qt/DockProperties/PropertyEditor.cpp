@@ -111,7 +111,6 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 					// Add optional button to track "remove this component" command
 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
 					removeButton->setFlat(true);
-
 					componentData->AddOW(QtPropertyOW(removeButton, true));
 					
 					if(component->GetType() == Component::ACTION_COMPONENT)
@@ -235,14 +234,8 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	if(command->GetEntity() == curNode)
-	{
-		if( command->GetId() == CMDID_ADD_COMPONENT ||
-			command->GetId() == CMDID_REMOVE_COMPONENT)
-		{
-			SetNode(curNode);
-		}
-	}
+	// Force refresh in 100 ms
+	FireRefreshTimeout(100);
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

@@ -59,7 +59,7 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 
 		QObject::connect(data, SIGNAL(ChildRemoving(const QString &, QtPropertyData *)), this, SLOT(DataChildRemoving(const QString &, QtPropertyData *)));
 		QObject::connect(data, SIGNAL(ChildAdded(const QString &, QtPropertyData *)), this, SLOT(DataChildAdded(const QString &, QtPropertyData *)));
-		QObject::connect(data, SIGNAL(ValueChanged()), this, SLOT(DataValueChanged()));
+		QObject::connect(data, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(DataValueChanged(QtPropertyData::ValueChangeReason)));
 		QObject::connect(data, SIGNAL(FlagsChanged()), this, SLOT(DataFlagsChanged()));
 	}
 }
@@ -140,7 +140,7 @@ void QtPropertyItem::setData(const QVariant & value, int role)
 	case Qt::EditRole:
 		if(NULL != itemData)
 		{
-			itemData->SetValue(value);
+			itemData->SetValue(value, QtPropertyData::VALUE_EDITED);
 		}
 		break;
 	default:
@@ -249,10 +249,15 @@ void QtPropertyItem::DataFlagsChanged()
 	ApplyDataFlags();
 }
 
-void QtPropertyItem::DataValueChanged()
+void QtPropertyItem::DataValueChanged(QtPropertyData::ValueChangeReason reason)
 {
-	emitDataChanged();
-
-	QtPropertyModel *propModel = (QtPropertyModel *) model();
-	propModel->EmitDataEdited(this);
+	if(reason == QtPropertyData::VALUE_EDITED)
+	{
+		QtPropertyModel *propModel = (QtPropertyModel *) model();
+		propModel->EmitDataEdited(this);
+	}
+	else
+	{
+		emitDataChanged();
+	}
 }

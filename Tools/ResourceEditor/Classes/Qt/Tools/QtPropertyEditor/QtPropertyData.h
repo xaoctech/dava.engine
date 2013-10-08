@@ -67,13 +67,20 @@ public:
 		FLAG_IS_NOT_EDITABLE	= 0x4,
 	};
 
+	enum ValueChangeReason
+	{
+		VALUE_SOURCE_CHANGED,
+		VALUE_SET,
+		VALUE_EDITED
+	};
+
 	QtPropertyData();
 	QtPropertyData(const QVariant &value);
 	virtual ~QtPropertyData() ;
 
 	QVariant GetValue();
 	QVariant GetAlias();
-	void SetValue(const QVariant &value);
+	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 
 	virtual QIcon GetIcon();
 	virtual void SetIcon(const QIcon &icon);
@@ -97,7 +104,7 @@ public:
 	virtual void* CreateLastCommand() const;
 
 signals:
-	void ValueChanged();
+	void ValueChanged(QtPropertyData::ValueChangeReason reason);
 	void FlagsChanged();
 	void ChildAdded(const QString &key, QtPropertyData *data);
 	void ChildRemoving(const QString &key, QtPropertyData *data);
@@ -108,8 +115,9 @@ protected:
 	int curFlags;
 
 	QtPropertyData *parent;
-	QHash<QString, QtPropertyData *> children;
-	QHash<QString, int> childrenOrder;
+
+	QList<QString> childrenNames;
+	QList<QtPropertyData*> childrenData;
 
 	void ParentUpdate();
 
@@ -129,6 +137,7 @@ public:
 	const QtPropertyOW* GetOW(int index = 0);
 	void AddOW(const QtPropertyOW &ow);
 	void RemOW(int index);
+	void RemOW(QWidget *widget);
 
 	QWidget* GetOWViewport();
 	void SetOWViewport(QWidget *viewport);

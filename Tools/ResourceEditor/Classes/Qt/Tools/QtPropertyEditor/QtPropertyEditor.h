@@ -60,6 +60,7 @@ public:
 	void Expand(QtPropertyItem *);
 
 	void SetRefreshTimeout(int ms);
+	void FireRefreshTimeout(int ms);
 	int GetRefreshTimeout();
 
 	QtPropertyItem* AddHeader(const char *text);

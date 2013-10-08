@@ -31,6 +31,7 @@
 #include <QMouseEvent>
 #include <QHeaderView>
 #include <QPainter>
+#include <QWindowsStyle>
 
 #include "QtPropertyEditor.h"
 #include "QtPropertyModel.h"
@@ -123,6 +124,11 @@ void QtPropertyEditor::SetRefreshTimeout(int ms)
 	}
 }
 
+void QtPropertyEditor::FireRefreshTimeout(int ms)
+{
+	refreshTimer.start(ms);
+}
+
 int QtPropertyEditor::GetRefreshTimeout()
 {
 	return refreshTimeout;
@@ -194,6 +200,8 @@ void QtPropertyEditor::OnRefreshTimeout()
 	{
 		curModel->RefreshAll();
 	}
+
+	SetRefreshTimeout(refreshTimeout);
 }
 
 void QtPropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
