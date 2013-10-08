@@ -34,20 +34,20 @@ public:
 public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Input(UIEvent *currentTouch);
-	
+	virtual bool SystemInput(UIEvent *currentInput);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 
-	Vector2		scrollOrigin;
+	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
+	void SetTouchTreshold(int32 holdDelta);
+	int32 GetTouchTreshold();
+
 
 protected:
 
-	void		StartScroll(Vector2 startScrollPosition);
-	void		ProcessScroll(Vector2 currentScrollPosition);
-	void		EndScroll();
-	void		ScrollToPosition(const Vector2& position);
-	void   		SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
 
-	enum 
+	enum
 	{
 		STATE_NONE = 0,
 		STATE_SCROLL,
@@ -57,13 +57,19 @@ protected:
 	};
 
 	int32		state;
-	Vector2		scrollCurrentShift;
 	// Scroll information
 	Vector2		scrollStartInitialPosition;	// position of click
-	Vector2		scrollStartPosition;		// position related to current scroll start pos, can be different from scrollStartInitialPosition
-	Vector2		scrollCurrentPosition;	// scroll current position
-	bool		scrollStartMovement;
+	bool 		scrollStartMovement;
+	bool		enableHorizontalScroll;
+	bool		enableVerticalScroll;
+	int32		touchTreshold;
+	
+	int 		mainTouch;	
 	UIEvent		scrollTouch;
+	
+	Vector2 	oldPos;
+	Vector2		newPos;
+	bool 		lockTouch;
 };
 };
 

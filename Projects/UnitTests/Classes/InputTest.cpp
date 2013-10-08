@@ -94,6 +94,7 @@ void InputTest::LoadResources()
 	passwordTextField->SetDelegate(new UITextFieldDelegate());
 	passwordTextField->SetIsPassword(true);
 	passwordTextField->SetDelegate(this);
+//	passwordTextField->SetInputEnabled(false, false);
 	AddControl(passwordTextField);
 	
 	textField = new UITextField(Rect(600, 10, 100, 100));
@@ -150,6 +151,7 @@ void InputTest::LoadResources()
     webView2->SetVisible(false);
     webView2->SetDelegate((UIWebViewDelegate*)delegate);
 	webView2->OpenURL("http://www.apple.com");
+	webView2->SetBounces(true);
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");

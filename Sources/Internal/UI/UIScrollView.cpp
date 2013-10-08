@@ -28,7 +28,9 @@ static const String UISCROLL_VIEW_CONTAINER_NAME = "scrollContainerControl";
 
 UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
-	scrollContainer(new UIScrollViewContainer())
+	scrollContainer(new UIScrollViewContainer()),
+	scrollHorizontal(new ScrollHelper()),
+	scrollVertical(new ScrollHelper())
 {
 	inputEnabled = true;
 	multiInput = true;
@@ -36,18 +38,22 @@ UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	
 	scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
 	// Scroll container is a child of ScrollView
-	UIControl::AddControl(scrollContainer);
+	AddControl(scrollContainer);
 }
 
 UIScrollView::~UIScrollView()
 {
 	SafeRelease(scrollContainer);
+	SafeRelease(scrollHorizontal);
+	SafeRelease(scrollVertical);
 }
 
 void UIScrollView::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 {
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-	
+
+	scrollHorizontal->SetViewSize(rect.dx);
+	scrollVertical->SetViewSize(rect.dy);
 	RecalculateContentSize();
 }
 
@@ -55,19 +61,17 @@ void UIScrollView::SetSize(const DAVA::Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
 
+	scrollHorizontal->SetViewSize(newSize.x);
+	scrollVertical->SetViewSize(newSize.y);
 	RecalculateContentSize();
 }
 
 void UIScrollView::AddControl(UIControl *control)
 {
-	// Put new control into scroll container instead adding it as ScrollView child
-	if (scrollContainer)
+	UIControl::AddControl(control);
+	if (control->GetName() == UISCROLL_VIEW_CONTAINER_NAME)
 	{
- 		scrollContainer->AddControl(control);
-	}
-	else
-	{
-		UIControl::AddControl(control);
+		scrollContainer = (UIScrollViewContainer*)control;
 	}
 	
 	RecalculateContentSize();
@@ -127,11 +131,9 @@ List<UIControl* >& UIScrollView::GetRealChildren()
 List<UIControl* > UIScrollView::GetSubcontrols()
 {
 	List<UIControl* > subControls;
-	if (scrollContainer)
-	{
-		subControls = scrollContainer->GetRealChildren();
-	}
-
+	
+	AddControlToList(subControls, UISCROLL_VIEW_CONTAINER_NAME);
+	
 	return subControls;
 }
 
@@ -146,24 +148,14 @@ void UIScrollView::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
 	
-	if (scrollContainer)
-	{
-		UIControl* scrollContainerClone = scrollContainer->Clone();
+	RemoveControl(scrollContainer);
+  	SafeRelease(scrollContainer);
 	
-		// Get rect value from original scroll container
-		UIScrollView* scrScrollView = (UIScrollView*) srcControl;
-		Rect srcContentRect = scrScrollView->scrollContainer->GetRect();
-		scrollContainerClone->SetRect(srcContentRect);
-	
-		// Release and delete default scroll container - it has to be copied from srcControl
-  	  	RemoveControl(scrollContainer);
-  	  	SafeRelease(scrollContainer);	
-	
-		AddControl(scrollContainerClone);
-		SafeRelease(scrollContainerClone);
-	
-		FindRequiredControls();
-	}
+	UIScrollView* t = (UIScrollView*) srcControl;
+		
+	this->scrollContainer = static_cast<UIScrollViewContainer*>(t->scrollContainer->Clone());
+		
+	AddControl(scrollContainer);
 }
 
 void UIScrollView::FindRequiredControls()
@@ -176,9 +168,11 @@ void UIScrollView::FindRequiredControls()
 
 void UIScrollView::SetPadding(const Vector2 & padding)
 {
-	if (!scrollContainer)
+	if (!scrollHorizontal || !scrollVertical || !scrollContainer)
+	{
 		return;
-
+	}
+	
 	Rect parentRect = this->GetRect();
 	Rect contentRect = scrollContainer->GetRect();
 	
@@ -194,6 +188,8 @@ void UIScrollView::SetPadding(const Vector2 & padding)
 	}
 	
 	scrollContainer->SetRect(contentRect);
+	scrollHorizontal->SetPosition(contentRect.x);
+	scrollVertical->SetPosition(contentRect.y);
 }
 
 const Vector2 UIScrollView::GetPadding() const
@@ -239,19 +235,141 @@ YamlNode * UIScrollView::SaveToYamlNode(UIYamlLoader * loader)
 
 void UIScrollView::RecalculateContentSize()
 {
+	if (!scrollHorizontal || !scrollVertical || !scrollContainer)
+	{
+		return;
+	}
+	
+	Rect contentRect = scrollContainer->GetRect();
+	Rect parentRect = this->GetRect();
+		
+	// Get max size of content - all childrens
+	Vector2 maxSize = GetMaxSize(scrollContainer,
+									Vector2(parentRect.dx + abs(contentRect.x), parentRect.dy + abs(contentRect.y)),
+									Vector2(0, 0));
+
+	// Update scroll view content size
+	scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, maxSize.x, maxSize.y));
+	scrollHorizontal->SetElementSize(maxSize.x);
+	scrollVertical->SetElementSize(maxSize.y);
+}
+
+void UIScrollView::SetReturnSpeed(float32 speedInSeconds)
+{
+	if (!scrollHorizontal || !scrollVertical)
+	{
+		return;
+	}
+	
+	scrollHorizontal->SetBorderMoveModifer(speedInSeconds);
+	scrollVertical->SetBorderMoveModifer(speedInSeconds);
+}
+
+void UIScrollView::SetScrollSpeed(float32 speedInSeconds)
+{
+	if (!scrollHorizontal || !scrollVertical)
+	{
+		return;
+	}
+	
+	scrollHorizontal->SetSlowDownTime(speedInSeconds);
+	scrollVertical->SetSlowDownTime(speedInSeconds);
+}
+
+float32 UIScrollView::VisibleAreaSize(UIScrollBar *forScrollBar)
+{
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
+	{
+		return 0.0f;
+	}
+
+	// Visible area is our rect.
+	Vector2 visibleAreaSize(scrollHorizontal->GetViewSize(), scrollVertical->GetViewSize());
+	return GetParameterForScrollBar(forScrollBar, visibleAreaSize);
+}
+
+float32 UIScrollView::TotalAreaSize(UIScrollBar *forScrollBar)
+{
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
+	{
+		return 0.0f;
+	}
+
+	// Total area is the rect of the container.
+	Vector2 totalAreaSize(scrollHorizontal->GetElementSize(), scrollVertical->GetElementSize());
+	return GetParameterForScrollBar(forScrollBar, totalAreaSize);
+}
+
+float32 UIScrollView::ViewPosition(UIScrollBar *forScrollBar)
+{
+	if (!forScrollBar || !scrollHorizontal || !scrollVertical)
+	{
+		return 0.0f;
+	}
+
+	// View position is the position of the scroll container in relation to us.
+	Vector2 viewPosition = Vector2(scrollHorizontal->GetPosition(), scrollVertical->GetPosition());
+	return GetParameterForScrollBar(forScrollBar, viewPosition);
+}
+ 
+void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition)
+{
+	if (!byScrollBar || !scrollContainer || !scrollHorizontal || !scrollVertical)
+	{
+		return;
+	}
+
+	Rect curContainerRect = scrollContainer->GetRect();
+	if (byScrollBar->GetOrientation() == UIScrollBar::ORIENTATION_HORIZONTAL)
+	{
+		curContainerRect.x = -newPosition;
+	}
+	else if (byScrollBar->GetOrientation() == UIScrollBar::ORIENTATION_VERTICAL)
+	{
+		curContainerRect.y = -newPosition;
+	}
+	
+	scrollHorizontal->SetPosition(curContainerRect.x);
+	scrollVertical->SetPosition(curContainerRect.y);
+	scrollContainer->SetRect(curContainerRect);
+}
+
+float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam)
+{
+	if (forScrollBar->GetOrientation() == UIScrollBar::ORIENTATION_HORIZONTAL)
+	{
+		return vectorParam.x;
+	}
+	else if (forScrollBar->GetOrientation() == UIScrollBar::ORIENTATION_VERTICAL)
+	{
+		return vectorParam.y;
+	}
+
+	DVASSERT_MSG(false, "Unknown orientation!")
+	return 0.0f;
+}
+
+void UIScrollView::AddControlToContainer(UIControl* control)
+{
 	if (scrollContainer)
 	{
-		Rect contentRect = scrollContainer->GetRect();
-		Rect parentRect = this->GetRect();
-		
-		// Get max size of content - all childrens
-		Vector2 maxSize = GetMaxSize(scrollContainer,
-										Vector2(parentRect.dx + abs(contentRect.x), parentRect.dy + abs(contentRect.y)),
-										Vector2(0, 0));
-
-		// Update scroll view content size
-		scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, maxSize.x, maxSize.y));
+		scrollContainer->AddControl(control);
 	}
 }
-
+	
+UIScrollViewContainer* UIScrollView::GetContainer()
+{
+	return scrollContainer;
 }
+
+ScrollHelper* UIScrollView::GetHorizontalScroll()
+{
+	return scrollHorizontal;
+}
+
+ScrollHelper* UIScrollView::GetVerticalScroll()
+{
+	return scrollVertical;
+}
+
+};
