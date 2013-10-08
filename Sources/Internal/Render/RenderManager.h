@@ -517,10 +517,10 @@ public:
     void HWglBindBuffer(GLenum target, GLuint  	buffer);
     GLuint bufferBindingId[2];
     
-    int32 HWglGetLastTextureID();
-	uint32 HWglGetLastTextureType();
-    void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
-    int32 lastBindedTexture;
+    int32 HWglGetLastTextureID(int textureType);
+	void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
+	void HWglForceBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
+    int32 lastBindedTexture[Texture::TEXTURE_TYPE_COUNT];
 	uint32 lastBindedTextureType;
 
     
