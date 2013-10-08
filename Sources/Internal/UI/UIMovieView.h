@@ -38,7 +38,7 @@ namespace DAVA {
 class UIMovieView : public UIControl
 {
 public:
-	UIMovieView(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+	UIMovieView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 	virtual ~UIMovieView();
 
 	// Open the Movie.

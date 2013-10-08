@@ -63,7 +63,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 :BaseAddEntityDialog(parent)
 {
 	setWindowTitle("Landscape Settings");
-	setAcceptDrops(false);
+	setAcceptDrops(true);
 
 	DAVA::List<DAVA::String> textureFormats;
 	textureFormats.push_back(".tex");

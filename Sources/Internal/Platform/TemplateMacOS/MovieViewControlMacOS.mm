@@ -60,6 +60,7 @@ void MovieViewControl::OpenMovie(const FilePath& moviePath, const OpenMovieParam
 	QTMovie* movie = [QTMovie movieWithURL:movieURL error:nil];
 	
 	QTMovieView* player = (QTMovieView*)movieView;
+	[player setPreservesAspectRatio: params.scalingMode == scalingModeAspectFit];
 	[player setMovie:movie];
 }
 	

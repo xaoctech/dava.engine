@@ -39,7 +39,7 @@
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 		:BaseAddEntityDialog(parent)
 {
-	setAcceptDrops(false);
+	setAcceptDrops(true);
 	
 	FilePath defaultPath(EditorSettings::Instance()->GetProjectPath().GetAbsolutePathname() + "/DataSource/3d");
 	
