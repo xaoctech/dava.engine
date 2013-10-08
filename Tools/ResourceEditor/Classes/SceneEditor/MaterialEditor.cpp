@@ -39,6 +39,7 @@
 #include "../EditorScene.h"
 
 #include "../Qt/CubemapEditor/MaterialHelper.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
@@ -529,6 +530,15 @@ void MaterialEditor::OnSetupColor(BaseObject * object, void * userData, void * c
 
 void MaterialEditor::NodesPropertyChanged(const String &)
 {
+	if(workingScene)
+	{
+		SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(workingScene);
+		if(sc)
+		{
+			sc->MarkAsChanged();
+		}
+	}
+
     RefreshList();
 }
 
