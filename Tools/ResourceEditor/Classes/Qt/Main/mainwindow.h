@@ -184,6 +184,8 @@ public slots:
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
+	void closeEvent(QCloseEvent * e);
+
 
 	void SetupMainMenu();
 	void SetupToolBars();
@@ -202,6 +204,8 @@ protected:
 
 	void RunBeast();
 
+
+	bool IsAnySceneChanged();
 
 protected slots:
 	void ProjectOpened(const QString &path);

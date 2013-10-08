@@ -2009,4 +2009,38 @@ void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLa
 	ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
 }
 
+void QtMainWindow::closeEvent( QCloseEvent * e )
+{
+	bool changed = IsAnySceneChanged();
+	if(changed)
+	{
+		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to quit anyway?",
+			QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+		if(answer == QMessageBox::No)
+		{
+			e->ignore();
+			return;
+		}
+	}
+
+	e->accept();
+	QMainWindow::closeEvent(e);
+}
+
+bool QtMainWindow::IsAnySceneChanged()
+{
+	int count = ui->sceneTabWidget->GetTabCount();
+	for(int i = 0; i < count; ++i)
+	{
+		SceneEditor2 *scene = ui->sceneTabWidget->GetTabScene(i);
+		if(scene->IsChanged())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 

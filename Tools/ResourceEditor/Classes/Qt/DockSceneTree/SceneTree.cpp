@@ -527,6 +527,8 @@ void SceneTree::LockEntities()
 		{
 			ss->GetSelectionEntity(i)->SetLocked(true);
 		}
+
+		sceneEditor->MarkAsChanged();
 	}
 }
 
@@ -540,6 +542,7 @@ void SceneTree::UnlockEntities()
 		{
 			ss->GetSelectionEntity(i)->SetLocked(false);
 		}
+		sceneEditor->MarkAsChanged();
 	}
 }
 

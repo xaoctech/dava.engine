@@ -112,6 +112,8 @@ SceneEditor2::SceneEditor2()
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
+
+	wasChanged = false;
 }
 
 SceneEditor2::~SceneEditor2()
@@ -184,6 +186,7 @@ SceneFileV2::eError SceneEditor2::Save(const DAVA::FilePath & path, bool saveFor
 		isLoaded = true;
 
 		// mark current position in command stack as clean
+		wasChanged = false;
 		commandStack.SetClean(true);
 	}
 
@@ -309,7 +312,7 @@ bool SceneEditor2::IsLoaded() const
 
 bool SceneEditor2::IsChanged() const
 {
-	return (!commandStack.IsClean());
+	return ((!commandStack.IsClean()) || wasChanged);
 }
 
 void SceneEditor2::SetChanged(bool changed)
@@ -667,4 +670,13 @@ void SceneEditor2::RemoveSystems()
 		SafeDelete(collisionSystem);
 	}
 	
+}
+
+void SceneEditor2::MarkAsChanged()
+{
+	if(!wasChanged)
+	{
+		wasChanged = true;
+		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
+	}
 }
