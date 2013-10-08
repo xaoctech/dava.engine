@@ -134,9 +134,14 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
     
-    lastBindedTexture = 0;
-    lastBindedFBO = 0;
+	for(uint32 i  = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
+	{
+		lastBindedTexture[i] = 0;
+	}
 	lastBindedTextureType = Texture::TEXTURE_2D;
+	
+    lastBindedFBO = 0;
+	
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
 	cursor = 0;
@@ -326,8 +331,9 @@ void RenderManager::ResetColor()
 	
 	
 void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
-{
+{	
     currentState.SetTexture(texture, textureLevel);
+	
 /*  DVASSERT(textureLevel < MAX_TEXTURE_LEVELS);
 	if(texture != currentTexture[textureLevel])
 	{
