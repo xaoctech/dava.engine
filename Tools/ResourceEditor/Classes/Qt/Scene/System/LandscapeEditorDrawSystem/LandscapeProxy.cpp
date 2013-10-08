@@ -35,13 +35,18 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 :	displayingTexture(0)
 ,	mode(MODE_CUSTOM_LANDSCAPE)
 ,	tilemaskWasChanged(0)
+,	tilemaskImageCopy(NULL)
 {
+	DVASSERT(landscape != NULL);
+
 	baseLandscape = SafeRetain(landscape);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
 	{
 		texturesToBlend[i] = NULL;
 		texturesEnabled[i] = false;
 	}
+
+	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 
 	customLandscape = new CustomLandscape();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
@@ -53,6 +58,7 @@ LandscapeProxy::~LandscapeProxy()
 	SafeRelease(baseLandscape);
 	SafeRelease(displayingTexture);
 	SafeRelease(customLandscape);
+	SafeRelease(tilemaskImageCopy);
 }
 
 void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode mode)
@@ -341,4 +347,9 @@ void LandscapeProxy::IncreaseTilemaskChanges()
 void LandscapeProxy::DecreaseTilemaskChanges()
 {
 	--tilemaskWasChanged;
+}
+
+Image* LandscapeProxy::GetTilemaskImageCopy()
+{
+	return tilemaskImageCopy;
 }
