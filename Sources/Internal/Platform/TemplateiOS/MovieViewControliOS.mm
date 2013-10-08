@@ -74,7 +74,8 @@ void MovieViewControl::OpenMovie(const FilePath& moviePath, const OpenMovieParam
 	NSURL* movieURL = [NSURL fileURLWithPath:[NSString stringWithCString:moviePath.GetAbsolutePathname().c_str() encoding:NSASCIIStringEncoding]];
 
 	MPMoviePlayerController* player = (MPMoviePlayerController*)moviePlayerController;
-	[player setContentURL:movieURL];
+	[player setScalingMode: (MPMovieScalingMode)ConvertScalingModeToPlatform(params.scalingMode)];
+	[player setContentURL: movieURL];
 }
 
 void MovieViewControl::SetRect(const Rect& rect)
@@ -193,6 +194,33 @@ float MovieViewControl::GetScaleDivider()
 	}
 		
 	return scaleDivider;
+}
+
+int MovieViewControl::ConvertScalingModeToPlatform(eMovieScalingMode scalingMode)
+{
+	switch (scalingMode)
+	{
+		case scalingModeFill:
+		{
+			return MPMovieScalingModeFill;
+		}
+
+		case scalingModeAspectFill:
+		{
+			return MPMovieScalingModeAspectFill;
+		}
+
+		case scalingModeAspectFit:
+		{
+			return MPMovieScalingModeAspectFit;
+		}
+		
+		case scalingModeNone:
+		default:
+		{
+			return MPMovieScalingModeNone;
+		}
+	}
 }
 
 }
