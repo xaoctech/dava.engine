@@ -432,8 +432,8 @@ namespace DAVA
 	void AutotestingDB::UploadScreenshot(const String & name, Image *image)
 	{
 		#if defined(__DAVAENGINE_ANDROID__)
-			image->ResizeImage(1024, 768);
-			image->ResizeCanvas(1024, 768);
+			image->ResizeImage(1280, 752);
+			image->ResizeCanvas(1280, 752);
 		#else
 			image->ResizeImage(1024, 768);
 			image->ResizeCanvas(1024, 768);
