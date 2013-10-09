@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "../LandscapeEditorShortcutManager.h"
+#include "TileTexturePreviewWidget.h"
 
 #include <QLayout>
 #include <QComboBox>
@@ -14,7 +15,6 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 ,	sliderWidgetBrushSize(NULL)
 ,	sliderWidgetStrength(NULL)
 ,	comboBrushImage(NULL)
-,	comboTileTexture(NULL)
 {
 	InitUI();
 	ConnectToSignals();
@@ -34,7 +34,7 @@ void TilemaskEditorPanel::SetWidgetsState(bool enabled)
 	sliderWidgetBrushSize->setEnabled(enabled);
 	sliderWidgetStrength->setEnabled(enabled);
 	comboBrushImage->setEnabled(enabled);
-	comboTileTexture->setEnabled(enabled);
+	tileTexturePreviewWidget->setEnabled(enabled);
 }
 
 void TilemaskEditorPanel::BlockAllSignals(bool block)
@@ -42,7 +42,7 @@ void TilemaskEditorPanel::BlockAllSignals(bool block)
 	sliderWidgetBrushSize->blockSignals(block);
 	sliderWidgetStrength->blockSignals(block);
 	comboBrushImage->blockSignals(block);
-	comboTileTexture->blockSignals(block);
+	tileTexturePreviewWidget->blockSignals(block);
 }
 
 void TilemaskEditorPanel::InitUI()
@@ -52,28 +52,26 @@ void TilemaskEditorPanel::InitUI()
 	sliderWidgetBrushSize = new SliderWidget(this);
 	sliderWidgetStrength = new SliderWidget(this);
 	comboBrushImage = new QComboBox(this);
-	comboTileTexture = new QComboBox(this);
+	tileTexturePreviewWidget = new TileTexturePreviewWidget(this);
 
 	QLabel* labelBrushImageDesc = new QLabel(this);
 	QLabel* labelTileTextureDesc = new QLabel(this);
 	QFrame* frameBrushImage = new QFrame(this);
-	QFrame* frameTileTexture = new QFrame(this);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
 	QHBoxLayout* layoutBrushImage = new QHBoxLayout();
-	QHBoxLayout* layoutTileTexture = new QHBoxLayout();
+	QVBoxLayout* layoutTileTexture = new QVBoxLayout();
 
 	layoutBrushImage->addWidget(labelBrushImageDesc);
 	layoutBrushImage->addWidget(comboBrushImage);
 	layoutTileTexture->addWidget(labelTileTextureDesc);
-	layoutTileTexture->addWidget(comboTileTexture);
+	layoutTileTexture->QLayout::addWidget(tileTexturePreviewWidget);
 
 	frameBrushImage->setLayout(layoutBrushImage);
-	frameTileTexture->setLayout(layoutTileTexture);
 
 	layout->addWidget(sliderWidgetBrushSize);
 	layout->addWidget(frameBrushImage);
 	layout->addWidget(sliderWidgetStrength);
-	layout->addWidget(frameTileTexture);
+	layout->addLayout(layoutTileTexture);
 	layout->addSpacerItem(spacer);
 
 	setLayout(layout);
@@ -82,7 +80,6 @@ void TilemaskEditorPanel::InitUI()
 	BlockAllSignals(true);
 
 	comboBrushImage->setMinimumHeight(44);
-	comboTileTexture->setMinimumHeight(44);
 	labelBrushImageDesc->setText(ResourceEditor::TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION.c_str());
 	labelBrushImageDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	labelTileTextureDesc->setText(ResourceEditor::TILEMASK_EDITOR_TILE_TEXTURE_CAPTION.c_str());
@@ -107,7 +104,9 @@ void TilemaskEditorPanel::ConnectToSignals()
 	connect(sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
 	connect(comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
-	connect(comboTileTexture, SIGNAL(currentIndexChanged(int)), this, SLOT(SetDrawTexture(int)));
+	connect(tileTexturePreviewWidget, SIGNAL(SelectionChanged(int)), this, SLOT(SetDrawTexture(int)));
+	connect(tileTexturePreviewWidget, SIGNAL(TileColorChanged(int32, Color)),
+			this, SLOT(OnTileColorChanged(int32, Color)));
 }
 
 void TilemaskEditorPanel::StoreState()
@@ -161,8 +160,10 @@ void TilemaskEditorPanel::RestoreState()
 	sliderWidgetStrength->SetRangeMax(strRangeMax);
 	sliderWidgetStrength->SetValue(strength);
 
-	comboTileTexture->setCurrentIndex(tileTexture);
+	UpdateTileTextures();
+	tileTexturePreviewWidget->SetSelectedTexture(tileTexture);
 	comboBrushImage->setCurrentIndex(toolImage);
+
 	BlockAllSignals(!enabled);
 }
 
@@ -263,24 +264,31 @@ void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& 
 
 void TilemaskEditorPanel::UpdateTileTextures()
 {
+	tileTexturePreviewWidget->Clear();
+
 	SceneEditor2* sceneEditor = GetActiveScene();
 
-	comboTileTexture->clear();
-
-	QSize iconSize = comboTileTexture->iconSize();
-	iconSize = iconSize.expandedTo(QSize(150, 32));
-	comboTileTexture->setIconSize(iconSize);
+	QSize iconSize = QSize(TileTexturePreviewWidget::TEXTURE_PREVIEW_WIDTH,
+						   TileTexturePreviewWidget::TEXTURE_PREVIEW_HEIGHT);
 
 	int32 count = (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount();
 	Image** images = new Image*[count];
 
+	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+
 	if (sceneEditor->landscapeEditorDrawSystem->GetLandscapeTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
 	{
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 		Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
+
 		image->ResizeCanvas(iconSize.width(), iconSize.height());
 
 		SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
 		SafeRelease(image);
+
+		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITH_COLORS);
 	}
 	else
 	{
@@ -290,14 +298,16 @@ void TilemaskEditorPanel::UpdateTileTextures()
 			images[i] = texture->CreateImageFromMemory();
 			images[i]->ResizeCanvas(iconSize.width(), iconSize.height());
 		}
+		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITHOUT_COLORS);
 	}
+
+	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 
 	for (int32 i = 0; i < count; ++i)
 	{
-		QImage img = TextureConvertor::FromDavaImage(images[i]);
-		QIcon icon = QIcon(QPixmap::fromImage(img));
+		Color color = sceneEditor->tilemaskEditorSystem->GetTileColor(i);
 
-		comboTileTexture->addItem(icon, "");
+		tileTexturePreviewWidget->AddTexture(images[i], color);
 
 		SafeRelease(images[i]);
 	}
@@ -477,19 +487,21 @@ void TilemaskEditorPanel::DecreaseStrengthLarge()
 
 void TilemaskEditorPanel::PrevTexture()
 {
-	int32 curIndex = comboTileTexture->currentIndex();
+	int32 curIndex = tileTexturePreviewWidget->GetSelectedTexture();
 	if (curIndex)
 	{
-		comboTileTexture->setCurrentIndex(curIndex - 1);
+		tileTexturePreviewWidget->SetSelectedTexture(curIndex - 1);
 	}
 }
 
 void TilemaskEditorPanel::NextTexture()
 {
-	int32 curIndex = comboTileTexture->currentIndex();
-	if (curIndex < comboTileTexture->count() - 1)
+	SceneEditor2* sceneEditor = GetActiveScene();
+
+	int32 curIndex = tileTexturePreviewWidget->GetSelectedTexture();
+	if (curIndex < sceneEditor->tilemaskEditorSystem->GetTileTextureCount() - 1)
 	{
-		comboTileTexture->setCurrentIndex(curIndex + 1);
+		tileTexturePreviewWidget->SetSelectedTexture(curIndex + 1);
 	}
 }
 
@@ -509,4 +521,10 @@ void TilemaskEditorPanel::NextTool()
 	{
 		comboBrushImage->setCurrentIndex(curIndex + 1);
 	}
+}
+
+void TilemaskEditorPanel::OnTileColorChanged(int32 tileNumber, Color color)
+{
+	SceneEditor2* sceneEditor = GetActiveScene();
+	sceneEditor->tilemaskEditorSystem->SetTileColor(tileNumber, color);
 }
