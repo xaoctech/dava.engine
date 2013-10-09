@@ -225,8 +225,8 @@ void RenderSystem::CreateSpatialTree()
 			worldBox = renderObjectArray[pos]->GetWorldBoundingBox();*/
 		renderObjectArray[pos]->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);		
 	}	
-	if (worldBox.min.z>0)
-		worldBox.min.z = 0;
+	if (worldBox.IsEmpty())
+		worldBox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
 	spatialTree = new QuadTree(worldBox, 10);	
 	for (uint32 pos = 0; pos < size; ++pos)
 	{

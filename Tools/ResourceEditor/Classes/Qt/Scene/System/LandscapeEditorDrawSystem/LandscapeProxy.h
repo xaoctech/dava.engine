@@ -98,6 +98,7 @@ public:
 	void IncreaseTilemaskChanges();
 	void DecreaseTilemaskChanges();
 
+	void InitTilemaskImageCopy();
 	Image* GetTilemaskImageCopy();
 
 protected:
