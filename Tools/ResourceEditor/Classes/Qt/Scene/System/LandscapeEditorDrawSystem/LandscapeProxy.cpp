@@ -46,12 +46,6 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 		texturesEnabled[i] = false;
 	}
 
-	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
-	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-
 	customLandscape = new CustomLandscape();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 	customLandscape->SetAABBox(baseLandscape->GetBoundingBox());
@@ -369,6 +363,18 @@ void LandscapeProxy::IncreaseTilemaskChanges()
 void LandscapeProxy::DecreaseTilemaskChanges()
 {
 	--tilemaskWasChanged;
+}
+
+void LandscapeProxy::InitTilemaskImageCopy()
+{
+	if (tilemaskImageCopy == NULL)
+	{
+		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	}
 }
 
 Image* LandscapeProxy::GetTilemaskImageCopy()

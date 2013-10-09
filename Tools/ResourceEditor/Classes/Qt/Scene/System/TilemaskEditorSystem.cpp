@@ -108,6 +108,8 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
 	
 	CreateMaskTexture();
 
