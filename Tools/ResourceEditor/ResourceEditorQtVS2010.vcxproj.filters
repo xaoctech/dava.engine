@@ -82,9 +82,6 @@
     <Filter Include="Classes\Qt\DockSceneGraph">
       <UniqueIdentifier>{39430818-6e4e-42bf-bbd9-946b83c94b54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\DockHangingObjects">
-      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\DockMaterialViewOptions">
       <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
     </Filter>
@@ -1161,12 +1158,6 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Classes\LandscapeEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp">
       <Filter>Classes\Qt\DockSceneGraph</Filter>
     </ClCompile>
@@ -1555,12 +1546,6 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
@@ -3199,12 +3184,6 @@
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
       <Filter>Classes\LandscapeEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h">
       <Filter>Classes\Qt\DockSceneGraph</Filter>

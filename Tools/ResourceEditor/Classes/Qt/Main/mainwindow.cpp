@@ -392,7 +392,6 @@ void QtMainWindow::SetupMainMenu()
 {
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
 	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
-	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
@@ -405,7 +404,6 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionProperties);
 	ui->menuView->addAction(actionParticleEditor);
 	ui->menuView->addAction(actionParticleEditorTimeLine);
-	ui->menuView->addAction(actionHangingObjects);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
@@ -595,6 +593,8 @@ void QtMainWindow::SetupActions()
 	ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
 	QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
 	QObject::connect(ui->menuObjectTypes, SIGNAL(aboutToShow()), this, SLOT(OnObjectsTypeMenuWillShow()));
+
+	QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -668,6 +668,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadShadowBlendModeState(scene);
 	LoadLandscapeEditorState(scene);
 	LoadObjectTypes(scene);
+	LoadHangingObjects(scene);
 
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
@@ -752,6 +753,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionDynamicBlendModeAlpha->setEnabled(enable);
 	ui->actionDynamicBlendModeMultiply->setEnabled(enable);
 	ui->actionSetShadowColor->setEnabled(enable);
+
+	ui->actionHangingObjects->setEnabled(enable);
 
 	ui->menuExport->setEnabled(enable);
 	ui->menuEdit->setEnabled(enable);
@@ -2077,6 +2080,19 @@ bool QtMainWindow::IsAnySceneChanged()
 	}
 
 	return false;
+}
+
+void QtMainWindow::OnHangingObjects()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	scene->debugDrawSystem->EnableHangingObjectsMode(ui->actionHangingObjects->isChecked());
+}
+
+void QtMainWindow::LoadHangingObjects( SceneEditor2 * scene )
+{
+	ui->actionHangingObjects->setChecked(scene->debugDrawSystem->HangingObjectsModeEnabled());
 }
 
 

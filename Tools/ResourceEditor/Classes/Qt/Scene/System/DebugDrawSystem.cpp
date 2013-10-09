@@ -31,6 +31,7 @@
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/SceneEditor2.h"
 #include "Classes/SceneEditor/EditorConfig.h"
+#include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 
 using namespace DAVA;
 
@@ -38,6 +39,7 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, objectType(ResourceEditor::ESOT_NONE)
     , objectTypeColor(Color::White())
+	, hangingObjectsModeEnabled(false)
 {
 	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
 
@@ -59,7 +61,7 @@ void DebugDrawSystem::SetRequestedObjectType(ResourceEditor::eSceneObjectType _o
 	if(ResourceEditor::ESOT_NONE != objectType)
 	{
         const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("CollisionTypeColor");
-        if(objectType < colors.size())
+        if((uint32)objectType < (uint32)colors.size())
         {
             objectTypeColor = colors[objectType];
         }
@@ -99,8 +101,9 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 		DrawUserNode(entity);
 		DrawLightNode(entity);
 		DrawSoundNode(entity);
+		DrawHangingObjects(entity);
 
-		for(size_t i = 0; i < entity->GetChildrenCount(); ++i)
+		for(int32 i = 0; i < entity->GetChildrenCount(); ++i)
 		{
 			Draw(entity->GetChild(i));
 		}
@@ -112,10 +115,7 @@ inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 	KeyedArchive * customProperties = entity->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
 	{
-		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
-
-		DAVA::RenderManager::Instance()->SetColor(objectTypeColor);
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+		DrawEntityBox(entity, objectTypeColor);
 	}
 }
 
@@ -169,7 +169,79 @@ inline void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
 
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.3f));
 		DAVA::RenderHelper::Instance()->FillBox(worldBox);
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0, 0.3f, 0.8, 1.0f));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
 	}
 }
+
+void DebugDrawSystem::DrawEntityBox( DAVA::Entity *entity, const DAVA::Color &color )
+{
+	AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+
+	DAVA::RenderManager::Instance()->SetColor(color);
+	DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+}
+
+void DebugDrawSystem::EnableHangingObjectsMode( bool enabled )
+{
+	hangingObjectsModeEnabled = enabled;
+}
+
+bool DebugDrawSystem::HangingObjectsModeEnabled() const
+{
+	return hangingObjectsModeEnabled;
+}
+
+void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
+{
+	if(!hangingObjectsModeEnabled)
+		return;
+
+	if (entity->GetParent() != GetScene())
+		return;
+
+	if(!IsObjectHanging(entity, 0.f))
+		return;
+
+	DrawEntityBox(entity, Color(1.f, 0.f, 0.f, 1.f));
+}
+
+bool DebugDrawSystem::IsObjectHanging(Entity * entity, float32 height)
+{
+	AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z) 
+		return false;
+
+	float32 xStep = Max((worldBox.max.x - worldBox.min.x) / 10.f, 1.f);
+	float32 yStep = Max((worldBox.max.y - worldBox.min.y) / 10.f, 1.f);
+
+	for(float32 y = worldBox.min.y; y <= worldBox.max.y; y += yStep)
+	{
+		for(float32 x = worldBox.min.x; x <= worldBox.max.x; x += xStep)
+		{
+			Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(x, y));
+			if((worldBox.min.z - landscapePoint.z) > height)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+
+Vector3 DebugDrawSystem::GetLandscapePointAtCoordinates(const Vector2 & centerXY)
+{
+	LandscapeEditorDrawSystem *landSystem = ((SceneEditor2 *)GetScene())->landscapeEditorDrawSystem;
+	LandscapeProxy* landscape = landSystem->GetLandscapeProxy();
+
+	if(landscape)
+	{
+		return landscape->PlacePoint(Vector3(centerXY));
+	}
+
+	return Vector3();
+}
+
+
