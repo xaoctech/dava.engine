@@ -90,6 +90,8 @@ void TilemaskEditorPanel::InitUI()
 	sliderWidgetStrength->Init(ResourceEditor::TILEMASK_EDITOR_STRENGTH_CAPTION.c_str(),
 							   false, DEF_STRENGTH_MAX_VALUE, DEF_STRENGTH_MIN_VALUE, DEF_STRENGTH_MIN_VALUE);
 
+	tileTexturePreviewWidget->setMaximumHeight(160);
+
 	layoutBrushImage->setContentsMargins(0, 0, 0, 0);
 	layoutTileTexture->setContentsMargins(0, 0, 0, 0);
 
