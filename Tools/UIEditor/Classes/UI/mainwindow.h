@@ -100,6 +100,25 @@ private slots:
 
 	void OnUnsavedChangesNumberChanged();
 
+	// Align block.
+	void OnAlignLeft();
+	void OnAlignHorzCenter();
+	void OnAlignRight();
+	void OnAlignTop();
+	void OnAlignVertCenter();
+	void OnAlignBottom();
+
+	// Distribute blocks.
+	void OnDistributeEqualDistanceBetweenLeftEdges();
+	void OnDistributeEqualDistanceBetweenXCenters();
+	void OnDistributeEqualDistanceBetweenRightEdges();
+	void OnDistributeEqualDistanceBetweenX();
+
+	void OnDistributeEqualDistanceBetweenTopEdges();
+	void OnDistributeEqualDistanceBetweenYCenters();
+	void OnDistributeEqualDistanceBetweenBottomEdges();
+	void OnDistributeEqualDistanceBetweenY();
+
 private:
 	bool CloseProject();
 

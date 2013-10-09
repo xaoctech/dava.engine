@@ -708,6 +708,10 @@ public:
 	 */
 	virtual void RemoveControl(UIControl *control);
 	/**
+	 \brief Remove this control from its parent, if any.
+	 */
+	virtual void RemoveFromParent();
+	/**
 	 \brief Removes all children from the control.
 	 */
 	virtual void RemoveAllControls();
@@ -1154,6 +1158,10 @@ public:
 	int32 GetInitialState() const;
 	void SetInitialState(int32 newState);
 
+	// Get/set visible flag for UI editor. Should not be serialized.
+	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
+	void SetVisibleForUIEditor(bool value) { visibleForUIEditor = value; };
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1179,6 +1187,7 @@ protected:
 //	Rect absoluteRect;
 	int32 controlState;
 	bool visible;
+	bool visibleForUIEditor;
 	bool inputEnabled;
 	bool clipContents;
 

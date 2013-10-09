@@ -458,7 +458,7 @@ const Matrix4 & Camera::GetMatrix() const
 
 void Camera::RebuildCameraFromValues()
 {
-//    Logger::Debug("camera rebuild: pos(%0.2f %0.2f %0.2f) target(%0.2f %0.2f %0.2f) up(%0.2f %0.2f %0.2f)",
+//    Logger::FrameworkDebug("camera rebuild: pos(%0.2f %0.2f %0.2f) target(%0.2f %0.2f %0.2f) up(%0.2f %0.2f %0.2f)",
 //                  position.x, position.y, position.z, target.x, target.y, target.z, up.x, up.y, up.z);
     
     flags &= ~REQUIRE_REBUILD; 

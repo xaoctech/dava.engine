@@ -234,7 +234,7 @@ void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * para
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
-//    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+//    Logger::FrameworkDebug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
 #endif
@@ -255,7 +255,7 @@ void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * para
 //
 //void RenderDataObject::Lost()
 //{
-////    Logger::Debug("[RenderDataObject::Lost]");
+////    Logger::FrameworkDebug("[RenderDataObject::Lost]");
 //    //    vboBuffer = 0;
 //#if defined(__DAVAENGINE_OPENGL__)
 //#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
@@ -280,7 +280,7 @@ void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * para
 //
 //void RenderDataObject::Invalidate()
 //{
-////    Logger::Debug("[RenderDataObject::Invalidate]");
+////    Logger::FrameworkDebug("[RenderDataObject::Invalidate]");
 //
 //    if(isLost)
 //    {

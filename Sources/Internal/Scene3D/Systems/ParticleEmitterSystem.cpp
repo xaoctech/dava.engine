@@ -91,7 +91,7 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
         if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
         {
             emitters[i]->Update(effectTime);
-			requireUpdate = !emitters[i]->IsPaused();
+			requireUpdate = true;
         }
 		else
 		{

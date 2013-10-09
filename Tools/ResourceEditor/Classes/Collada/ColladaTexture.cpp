@@ -147,7 +147,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
                 if (opacityFound)break;
             }
         }
-        Logger::Debug("Image opened: %s - %d x %d - opacity: %s", fileName.c_str(), geo.width(), geo.height(), (opacityFound) ? ("yes"):("no"));
+        Logger::FrameworkDebug("Image opened: %s - %d x %d - opacity: %s", fileName.c_str(), geo.width(), geo.height(), (opacityFound) ? ("yes"):("no"));
 		
 	}
 	catch( Magick::Exception &error_ )

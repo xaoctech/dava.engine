@@ -383,35 +383,6 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 {
-//    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-//    if (proxyNode)
-//    {
-//        return proxyNode->GetNode();
-//    }
-//    
-//    String ext = FileSystem::Instance()->GetExtension(rootNodePath);
-//    if(ext == ".sce")
-//    {
-//        SceneFile *file = new SceneFile();
-//        file->SetDebugLog(true);
-//        file->LoadScene(rootNodePath, this);
-//        SafeRelease(file);
-//    }
-//    else if(ext == ".sc2")
-//    {
-//        SceneFileV2 *file = new SceneFileV2();
-//        file->EnableDebugLog(true);
-//        file->LoadScene(rootNodePath.c_str(), this);
-//        SafeRelease(file);
-//    }
-//
-//    proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-//    if (proxyNode)
-//    {
-//        return proxyNode->GetNode();
-//    }
-//    return 0;
-    
 	Map<String, ProxyNode*>::const_iterator it;
 	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
 	if (it != rootNodes.end())
@@ -436,7 +407,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         SafeRelease(file);
 				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
-        Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
+        Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
 	it = rootNodes.find(rootNodePath.GetAbsolutePathname());

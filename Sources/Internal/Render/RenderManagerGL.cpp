@@ -122,7 +122,7 @@ bool IsGLExtensionSupported(const String &extension)
     if(String::npos != spacePosition || extension.empty())
     {
         /* Extension names should not have spaces. */
-        Logger::Info("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
+        Logger::FrameworkDebug("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
         return false;
     }
     
@@ -227,12 +227,12 @@ void RenderManager::PrepareRealMatrix()
         
         glTranslate = glScale * glTranslate;
         SetMatrix(MATRIX_MODELVIEW, glTranslate);
-//        Logger::Info("2D matricies recalculated");
+//        Logger::FrameworkDebug("2D matricies recalculated");
 //        Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-//        Logger::Info("Model matrix");
+//        Logger::FrameworkDebug("Model matrix");
 //        modelViewSave.Dump();
 //        Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-//        Logger::Info("Proj matrix");
+//        Logger::FrameworkDebug("Proj matrix");
 //        projectionSave.Dump();
     }
 }
@@ -257,7 +257,7 @@ void RenderManager::EndFrame()
     
 void RenderManager::MakeGLScreenShot()
 {
-    Logger::Debug("RenderManager::MakeGLScreenShot");
+    Logger::FrameworkDebug("RenderManager::MakeGLScreenShot");
 #if defined(__DAVAENGINE_OPENGL__)
     
 
@@ -266,7 +266,7 @@ void RenderManager::MakeGLScreenShot()
     
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     
-    Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
+    Logger::FrameworkDebug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
     
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
@@ -665,7 +665,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
+		Logger::FrameworkDebug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 
     RENDER_VERIFY(glDrawArrays(mode, first, count));
@@ -709,7 +709,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 	
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
+		Logger::FrameworkDebug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 #if defined(__DAVAENGINE_IPHONE__)
 #if not defined(GL_UNSIGNED_INT)
@@ -888,7 +888,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();
-//		Logger::Info("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
+//		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}
 	
@@ -950,7 +950,7 @@ void RenderManager::AttachRenderData()
         {
             for (int32 p = 0; p < enabledAttribCount; ++p)
             {
-                if (DEBUG)Logger::Debug("!shader glDisableVertexAttribArray: %d", p);
+                if (DEBUG)Logger::FrameworkDebug("!shader glDisableVertexAttribArray: %d", p);
                 RENDER_VERIFY(glDisableVertexAttribArray(p));
             }
             enabledAttribCount = 0;
@@ -965,26 +965,26 @@ void RenderManager::AttachRenderData()
             switch(stream->formatMark)
             {
                 case EVF_VERTEX:
-                    if (DEBUG)Logger::Debug("!shader SetVertexPointer");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetVertexPointer");
 
                     SetVertexPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_VERTEX;
                     break;
                 case EVF_NORMAL:
-                    if (DEBUG)Logger::Debug("!shader SetNormalPointer");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetNormalPointer");
 
                     SetNormalPointer(stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_NORMAL;
                     break;
                 case EVF_TEXCOORD0:
-                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 0");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetTexCoordPointer 0");
 
                     glClientActiveTexture(GL_TEXTURE0);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_TEXCOORD0;
                     break;
                 case EVF_TEXCOORD1:
-                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 1");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetTexCoordPointer 1");
 
                     glClientActiveTexture(GL_TEXTURE1);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
@@ -999,25 +999,25 @@ void RenderManager::AttachRenderData()
         
         if (difference & EVF_VERTEX)
         {
-            if (DEBUG)Logger::Debug("!shader EnableVertexArray: %d", (pointerArraysCurrentState & EVF_VERTEX) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableVertexArray: %d", (pointerArraysCurrentState & EVF_VERTEX) != 0);
 
             EnableVertexArray((pointerArraysCurrentState & EVF_VERTEX) != 0);
         }
         if (difference & EVF_NORMAL)
         {
-            if (DEBUG)Logger::Debug("!shader EnableNormalArray: %d", (pointerArraysCurrentState & EVF_NORMAL) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableNormalArray: %d", (pointerArraysCurrentState & EVF_NORMAL) != 0);
 
             EnableNormalArray((pointerArraysCurrentState & EVF_NORMAL) != 0);
         }
         if (difference & EVF_TEXCOORD0)
         {
-            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-0: %d", (pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableTextureCoordArray-0: %d", (pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
 
             EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0, 0);
         }
         if (difference & EVF_TEXCOORD1)
         {
-            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-1: %d", (pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableTextureCoordArray-1: %d", (pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
 
             EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD1) != 0, 1);
         }
@@ -1077,12 +1077,12 @@ void RenderManager::AttachRenderData()
 					normalized = GL_TRUE;
 				}
                 RENDER_VERIFY(glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer));
-                if (DEBUG)Logger::Debug("shader glVertexAttribPointer: %d", attribIndex);
+                if (DEBUG)Logger::FrameworkDebug("shader glVertexAttribPointer: %d", attribIndex);
 
                 if (attribIndex >= enabledAttribCount)  // enable only if it was not enabled on previous step
                 {
                     RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
-                    if (DEBUG)Logger::Debug("shader glEnableVertexAttribArray: %d", attribIndex);
+                    if (DEBUG)Logger::FrameworkDebug("shader glEnableVertexAttribArray: %d", attribIndex);
                 }
                 if (attribIndex + 1 > currentEnabledAttribCount)
                     currentEnabledAttribCount = attribIndex + 1;    // count of enabled attributes
@@ -1093,7 +1093,7 @@ void RenderManager::AttachRenderData()
         
         for (int32 p = currentEnabledAttribCount; p < enabledAttribCount; ++p)
         {
-            if (DEBUG)Logger::Debug("shader glDisableVertexAttribArray: %d", p);
+            if (DEBUG)Logger::FrameworkDebug("shader glDisableVertexAttribArray: %d", p);
 
             RENDER_VERIFY(glDisableVertexAttribArray(p));
         }
@@ -1138,7 +1138,7 @@ int32 RenderManager::HWglGetLastTextureID()
 //    glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
 //    //    GLenum err = glGetError();
 //    //    if (err != GL_NO_ERROR)
-//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
+//    //        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
 //    return saveId;
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
@@ -1156,7 +1156,7 @@ void RenderManager::HWglBindTexture(int32 tId, uint32 textureType)
         
         //		GLenum err = glGetError();
         //		if (err != GL_NO_ERROR)
-        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+        //			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
         
         lastBindedTexture = tId;
 		lastBindedTextureType = textureType;
@@ -1176,7 +1176,7 @@ int32 RenderManager::HWglGetLastFBO()
 //    
 //    //    GLenum err = glGetError();
 //    //    if (err != GL_NO_ERROR)
-//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
+//    //        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
 //    
 //#endif //PLATFORMS
 //    
@@ -1196,7 +1196,7 @@ void RenderManager::HWglBindFBO(const int32 fbo)
         
         //		GLenum err = glGetError();
         //		if (err != GL_NO_ERROR)
-        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
+        //			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
         
         
         lastBindedFBO = fbo;

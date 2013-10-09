@@ -73,7 +73,7 @@ void DynamicVertexBuffer::Invalidate()
 
 	if (!FAILED(hr))
 	{
-		Logger::Debug(Format("[DynamicVertexBuffer] created >> elementsize(%d) buffersize(%d)", vertexSize, vertexCount));
+		Logger::FrameworkDebug(Format("[DynamicVertexBuffer] created >> elementsize(%d) buffersize(%d)", vertexSize, vertexCount));
 	}
 }
 
@@ -83,7 +83,7 @@ DynamicVertexBuffer::~DynamicVertexBuffer()
 	Unlock();
 
 	D3DSafeRelease(vertexBuffer);
-	Logger::Debug("[DynamicVertexBuffer] released");
+	Logger::FrameworkDebug("[DynamicVertexBuffer] released");
 }
 
 void			* DynamicVertexBuffer::Lock(const int32 lockVertexCount, int32 & startVertex)

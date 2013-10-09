@@ -377,7 +377,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
         }
     }
     
-	Logger::Debug("MongodbClient::SaveObject status = %d", status);
+	Logger::FrameworkDebug("MongodbClient::SaveObject status = %d", status);
     return (MONGO_OK == status);
 }
 
@@ -411,7 +411,7 @@ bool MongodbClient::SaveObject(MongodbObject *newObject, MongodbObject *oldObjec
     
 void MongodbClient::DumpDB()
 {
-    Logger::Debug("***** MONGO DUMP *******");
+    Logger::FrameworkDebug("***** MONGO DUMP *******");
 
     bson query;
     bson_empty(&query);
@@ -422,7 +422,7 @@ void MongodbClient::DumpDB()
     {
         const bson *currentObject = mongo_cursor_bson(cursor);
         
-        Logger::Debug(Format("BSON[%d]:", count));
+        Logger::FrameworkDebug(Format("BSON[%d]:", count));
         bson_print(currentObject);
         
         ++count;
@@ -430,8 +430,8 @@ void MongodbClient::DumpDB()
 
     mongo_cursor_destroy(cursor);
     
-    Logger::Debug("Count: %d", count);
-    Logger::Debug("************************");
+    Logger::FrameworkDebug("Count: %d", count);
+    Logger::FrameworkDebug("************************");
 }
     
 bool MongodbClient::KeyedArchiveToDBObject(KeyedArchive* archive, MongodbObject* outObject)

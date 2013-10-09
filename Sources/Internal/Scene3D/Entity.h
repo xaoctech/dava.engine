@@ -171,7 +171,7 @@ public:
         If you dont want to modify matrix call GetLocalTransform().
      */
 	Matrix4 & ModifyLocalTransform(); 
-    const Matrix4 & GetWorldTransform();
+    const Matrix4 & GetWorldTransform() const;
     const Matrix4 & GetDefaultLocalTransform(); 
     
     void SetLocalTransform(const Matrix4 & newMatrix);

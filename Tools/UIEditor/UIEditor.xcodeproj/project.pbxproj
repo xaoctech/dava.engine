@@ -101,12 +101,17 @@
 		1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1712331D1741118F0051D960 /* PropertyNames.cpp */; };
 		1719682217CE4BD400053905 /* ScaleSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719682017CE4BD400053905 /* ScaleSlider.cpp */; };
 		1719682617CE4C2900053905 /* ScaleSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719682517CE4C2900053905 /* ScaleSlider_moc.cpp */; };
+		171FA7F117C4A48B00C7F7F2 /* AlignDistributeManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */; };
+		171FA7F817C4A7F400C7F7F2 /* ControlsPositionData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */; };
+		171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */; };
 		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
 		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
 		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
 		173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */; };
 		173AC3441630285B00A773F5 /* PropertyGridWidgetsFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3421630285A00A773F5 /* PropertyGridWidgetsFactory.cpp */; };
 		173AC3471631458000A773F5 /* PropertyGridWidgetData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */; };
+		174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */; };
+		174E1FC617F3485A00C7EC10 /* regexpinputdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */; };
 		17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */; };
 		17607FEF16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */; };
 		1767C4301636C8F5008D25BD /* UIStaticTextMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */; };
@@ -131,6 +136,7 @@
 		17DF04DA16368040001F7ED2 /* ScreenMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04D716368040001F7ED2 /* ScreenMetadata.cpp */; };
 		17DF04EB1636850C001F7ED2 /* platformpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */; };
 		17DF04EC1636850C001F7ED2 /* screenpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */; };
+		17E1927617FDB39E002E1506 /* DistributeHandlers.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */; };
 		17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */; };
 		17F6F49E1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */; };
 		17FBCE46163A7ED100FD96C0 /* UIControlStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */; };
@@ -426,6 +432,12 @@
 		1719682017CE4BD400053905 /* ScaleSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider.cpp; sourceTree = "<group>"; };
 		1719682117CE4BD400053905 /* ScaleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleSlider.h; sourceTree = "<group>"; };
 		1719682517CE4C2900053905 /* ScaleSlider_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider_moc.cpp; sourceTree = "<group>"; };
+		171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignDistributeManager.cpp; path = AlignDistribute/AlignDistributeManager.cpp; sourceTree = "<group>"; };
+		171FA7F017C4A48B00C7F7F2 /* AlignDistributeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignDistributeManager.h; path = AlignDistribute/AlignDistributeManager.h; sourceTree = "<group>"; };
+		171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControlsPositionData.cpp; path = AlignDistribute/ControlsPositionData.cpp; sourceTree = "<group>"; };
+		171FA7F717C4A7F400C7F7F2 /* ControlsPositionData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlsPositionData.h; path = AlignDistribute/ControlsPositionData.h; sourceTree = "<group>"; };
+		171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignHandlers.cpp; path = AlignDistribute/AlignHandlers.cpp; sourceTree = "<group>"; };
+		171FA7FA17C4AE5D00C7F7F2 /* AlignHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignHandlers.h; path = AlignDistribute/AlignHandlers.h; sourceTree = "<group>"; };
 		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
 		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
 		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
@@ -438,6 +450,9 @@
 		173AC3431630285A00A773F5 /* PropertyGridWidgetsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetsFactory.h; path = PropertyGridWidgets/PropertyGridWidgetsFactory.h; sourceTree = "<group>"; };
 		173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyGridWidgetData.cpp; path = PropertyGridWidgets/PropertyGridWidgetData.cpp; sourceTree = "<group>"; };
 		173AC3461631458000A773F5 /* PropertyGridWidgetData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetData.h; path = PropertyGridWidgets/PropertyGridWidgetData.h; sourceTree = "<group>"; };
+		174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = regexpinputdialog.cpp; path = Dialogs/regexpinputdialog.cpp; sourceTree = "<group>"; };
+		174E1FBE17F3483600C7EC10 /* regexpinputdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = regexpinputdialog.h; path = Dialogs/regexpinputdialog.h; sourceTree = "<group>"; };
+		174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = regexpinputdialog_moc.cpp; sourceTree = "<group>"; };
 		175313CF16381155000B08FD /* BaseMetadataParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMetadataParams.h; path = Metadata/BaseMetadataParams.h; sourceTree = "<group>"; };
 		1759BE26164A89A80067F498 /* PropertyNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyNames.h; path = Metadata/PropertyNames.h; sourceTree = "<group>"; };
 		17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalizationSystemHelper.cpp; path = Helpers/LocalizationSystemHelper.cpp; sourceTree = "<group>"; };
@@ -469,6 +484,7 @@
 		176D3960162C3E890099AACF /* UIControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlMetadata.h; path = Metadata/UIControlMetadata.h; sourceTree = "<group>"; };
 		178F303C165677BF008678AD /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtils.cpp; sourceTree = "<group>"; };
 		178F303D165677BF008678AD /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
+		179D0ECB17C5F65B006F59CA /* AlignDistributeEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlignDistributeEnums.h; path = AlignDistribute/AlignDistributeEnums.h; sourceTree = "<group>"; };
 		17AB665116EDF86B00634657 /* UIListMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListMetadata.cpp; path = Metadata/UIListMetadata.cpp; sourceTree = "<group>"; };
 		17AB665216EDF86B00634657 /* UIListMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListMetadata.h; path = Metadata/UIListMetadata.h; sourceTree = "<group>"; };
 		17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = spinnerpropertygridwidget.ui; sourceTree = "<group>"; };
@@ -486,6 +502,8 @@
 		17DF04E81636850C001F7ED2 /* platformpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platformpropertygridwidget.h; path = PropertyGridWidgets/platformpropertygridwidget.h; sourceTree = "<group>"; };
 		17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenpropertygridwidget.cpp; path = PropertyGridWidgets/screenpropertygridwidget.cpp; sourceTree = "<group>"; };
 		17DF04EA1636850C001F7ED2 /* screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screenpropertygridwidget.h; path = PropertyGridWidgets/screenpropertygridwidget.h; sourceTree = "<group>"; };
+		17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DistributeHandlers.cpp; path = AlignDistribute/DistributeHandlers.cpp; sourceTree = "<group>"; };
+		17E1927517FDB39E002E1506 /* DistributeHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DistributeHandlers.h; path = AlignDistribute/DistributeHandlers.h; sourceTree = "<group>"; };
 		17E897C9162EE92C00A2A946 /* propertygridcontainerwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = propertygridcontainerwidget.h; path = PropertyGridWidgets/propertygridcontainerwidget.h; sourceTree = "<group>"; };
 		17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetadataFactory.cpp; path = Metadata/MetadataFactory.cpp; sourceTree = "<group>"; };
 		17E897F2162FEB3600A2A946 /* MetadataFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetadataFactory.h; path = Metadata/MetadataFactory.h; sourceTree = "<group>"; };
@@ -802,6 +820,7 @@
 		02D69C6F16F08CED00F3803F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				174E1FC517F3485A00C7EC10 /* regexpinputdialog_moc.cpp */,
 				497774C1170DB80F004CE2FB /* importdialog_moc.cpp */,
 				C18593F816F314F1005D30E2 /* createaggregatordlg_moc.cpp */,
 				02D69C7016F08CED00F3803F /* localizationeditordialog_moc.cpp */,
@@ -929,6 +948,22 @@
 				178F303D165677BF008678AD /* StringUtils.h */,
 			);
 			name = Helpers;
+			sourceTree = "<group>";
+		};
+		171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */ = {
+			isa = PBXGroup;
+			children = (
+				171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */,
+				171FA7FA17C4AE5D00C7F7F2 /* AlignHandlers.h */,
+				17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */,
+				17E1927517FDB39E002E1506 /* DistributeHandlers.h */,
+				171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */,
+				171FA7F017C4A48B00C7F7F2 /* AlignDistributeManager.h */,
+				171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */,
+				171FA7F717C4A7F400C7F7F2 /* ControlsPositionData.h */,
+				179D0ECB17C5F65B006F59CA /* AlignDistributeEnums.h */,
+			);
+			name = AlignDistribute;
 			sourceTree = "<group>";
 		};
 		176D3941162C2F5D0099AACF /* Models */ = {
@@ -1080,6 +1115,8 @@
 		17FF15FD16400A41001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				174E1FBD17F3483600C7EC10 /* regexpinputdialog.cpp */,
+				174E1FBE17F3483600C7EC10 /* regexpinputdialog.h */,
 				49B0264F170AC25C001E28CC /* importdialog.cpp */,
 				49B02650170AC25C001E28CC /* importdialog.h */,
 				C18593F316F30D74005D30E2 /* createaggregatordlg.cpp */,
@@ -1199,6 +1236,7 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
@@ -1687,6 +1725,12 @@
 				749B309417E0BF7100900A2E /* UIAggregatorMetadata_moc.cpp in Build Sources */,
 				749B309517E0BF7100900A2E /* UIScrollBarMetadata_moc.cpp in Build Sources */,
 				7499C4BC17E1C99E00B49B83 /* ScrollPropertyGridWidgetHelper.cpp in Build Sources */,
+				174E1FBF17F3483600C7EC10 /* regexpinputdialog.cpp in Build Sources */,
+				174E1FC617F3485A00C7EC10 /* regexpinputdialog_moc.cpp in Build Sources */,
+				171FA7F117C4A48B00C7F7F2 /* AlignDistributeManager.cpp in Build Sources */,
+				171FA7F817C4A7F400C7F7F2 /* ControlsPositionData.cpp in Build Sources */,
+				171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */,
+				17E1927617FDB39E002E1506 /* DistributeHandlers.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

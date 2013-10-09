@@ -70,6 +70,8 @@
 #include <QDesktopServices>
 #include <QColorDialog>
 
+#include "Scene3D/Components/ActionComponent.h"
+
 QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -459,6 +461,9 @@ void QtMainWindow::SetupActions()
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
+	
+	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
+	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
 }
 
 void QtMainWindow::InitRecent()
@@ -1470,3 +1475,42 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
+
+void QtMainWindow::OnAddActionComponent()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+	
+	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
+	
+	if(selectedEntity)
+	{
+		//need to remove component at first in order to clean ActionUpdateSystem
+		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+		
+		ActionComponent* actionComponent = new ActionComponent();
+		selectedEntity->AddComponent(actionComponent);
+		
+		scene->selectionSystem->SetSelection(NULL);
+		scene->selectionSystem->SetSelection(selectedEntity);
+	}
+}
+
+void QtMainWindow::OnRemoveActionComponent()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+	
+	DAVA::Entity *selectedEntity = scene->selectionSystem->GetSelection()->GetEntity(0);
+	
+	if(selectedEntity)
+	{
+		//need to remove component at first in order to clean ActionUpdateSystem
+		selectedEntity->RemoveComponent(Component::ACTION_COMPONENT);
+				
+		scene->selectionSystem->SetSelection(NULL);
+		scene->selectionSystem->SetSelection(selectedEntity);
+	}
+
+}
+

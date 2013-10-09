@@ -63,7 +63,7 @@ GameObject	* GameObject::Create(Sprite * sprite, int32 frame)
 	
 GameObject::GameObject()
 {
-	//Logger::Debug("[GameObject] ctor");
+	//Logger::FrameworkDebug("[GameObject] ctor");
 	//AnimationManager::Instance()->AddObject(this);
 	visible = true;
 	dead = false;
@@ -89,7 +89,7 @@ GameObject::~GameObject()
 {
 	SafeRelease(collision);
 	SafeRelease(sprite);
-	//Logger::Debug("[GameObject] destructor");
+	//Logger::FrameworkDebug("[GameObject] destructor");
 	//AnimationManager::Instance()->RemoveObject(this);
 }
 	

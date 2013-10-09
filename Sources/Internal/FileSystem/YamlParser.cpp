@@ -78,6 +78,7 @@ YamlNode::YamlNode(eType _type)
 	type = _type;
 	mapIndex = 0;
 	mapCount = 0;
+	isWideString = false;
 }
 
 YamlNode::~YamlNode()
@@ -759,6 +760,7 @@ void  YamlNode::InitFromVariantType(VariantType* varType)
 void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
 {
     type = TYPE_STRING;
+	isWideString = false;
     char str[30];
     str[0]='\0';
     switch(varType->type)
@@ -791,6 +793,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
         {
             stringValue = L'"' + varType->AsWideString() +L'"';
             nwStringValue = WStringToString(stringValue);
+			isWideString = true;
         }
             break;
         case VariantType::TYPE_UINT32:
@@ -1076,13 +1079,13 @@ bool YamlParser::Parse(const FilePath & pathName)
 		
 		/*if (event.encoding != YAML_UTF8_ENCODING)
 		{
-			Logger::Debug("wrong encoding");
+			Logger::FrameworkDebug("wrong encoding");
 		}*/
 		
 		switch(event.type)
 		{
 		case YAML_ALIAS_EVENT:
-			Logger::Debug("alias: %s", event.data.alias.anchor);
+			Logger::FrameworkDebug("alias: %s", event.data.alias.anchor);
 			break;
 		
 		case YAML_SCALAR_EVENT:
@@ -1132,7 +1135,7 @@ bool YamlParser::Parse(const FilePath & pathName)
 				
 //				NSLog()
 //				wprintf(L"scalar: %s %S\n", event.data.scalar.value, node->stringValue.c_str());
-//				Logger::Debug("scalar: %s %d", event.data.scalar.value, length);
+//				Logger::FrameworkDebug("scalar: %s %d", event.data.scalar.value, length);
 //				CFIndex length = CFStringGetLength(s);
 //				UniChar *buffer = malloc(length * sizeof(UniChar));
 //				CFStringGetCharacters(str, CFRangeMake(0, length), buffer);
@@ -1144,11 +1147,11 @@ bool YamlParser::Parse(const FilePath & pathName)
 			break;
 		
 		case YAML_DOCUMENT_START_EVENT:
-			//Logger::Debug("document start:");
+			//Logger::FrameworkDebug("document start:");
 			break;
 		
 		case YAML_DOCUMENT_END_EVENT:
-			//Logger::Debug("document end:");
+			//Logger::FrameworkDebug("document end:");
 			break;
 
 		case YAML_SEQUENCE_START_EVENT:
@@ -1360,25 +1363,16 @@ bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& no
 	const char16* NAME_VALUE_DELIMITER = L"\": ";
 	WideString resultString = L"\"";
 
-	// String nodes must be enquoted.
-	resultString += StringToWString(nodeName);
-
+	// String nodes must be enquoted and contains no "\n" chars.
+	resultString += ReplaceLineEndings(StringToWString(nodeName));
 	resultString += NAME_VALUE_DELIMITER;
 
-	WideString nodeValue = currentNode->AsWString();
-	
-	size_t pos = WideString::npos;
-	while ((pos = nodeValue.find(L"\n")) != WideString::npos)
-	{
-		nodeValue.replace(pos, WideString(L"\n").length(), L"\\n");
-	}
-
-	resultString += nodeValue;
+	resultString += ReplaceLineEndings(currentNode->AsWString());
 	resultString += L"\n";
 
 	return WriteStringToYamlFile(fileToSave, resultString);
 }
-	
+
 void YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<YamlNodeKeyValuePair> &sortedChildren ) const
 {
     // Order the map nodes by the "Relative Depth".
@@ -1396,7 +1390,7 @@ void YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, V
     std::sort(sortedChildren.begin(), sortedChildren.end());
 }
 
-bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth) const
+bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const YamlNode* currentNode, int16 depth) const
 {
     if (nodeName.compare(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME) == 0)
     {
@@ -1404,13 +1398,22 @@ bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeN
         return true;
     }
 
-    const char8* NAME_VALUE_DELIMITER = ": ";
-    String resultString = PrepareIdentedString(depth);
+    const char16* NAME_VALUE_DELIMITER = L": ";
+    WideString resultString = StringToWString(PrepareIdentedString(depth));
 
-    resultString += nodeName;
+    resultString += StringToWString(nodeName);
     resultString += NAME_VALUE_DELIMITER;
-    resultString += nodeValue;
-    resultString += '\n';
+
+	// For WideString nodes take their value as-is, otherwise convert the string representation to wide.
+	if (currentNode->IsWideString())
+	{
+		resultString += currentNode->AsWString();
+	}
+	else
+	{
+		resultString += StringToWString(currentNode->AsString());
+	}
+    resultString += L'\n';
  
     return WriteStringToYamlFile(fileToSave, resultString);
 }
@@ -1544,6 +1547,18 @@ String YamlParser::PrepareIdentedString(int16 depth) const
     return resultString;
 }
 
+WideString YamlParser::ReplaceLineEndings(const WideString& rawString) const
+{
+	WideString resultString = rawString;
+	size_t pos = WideString::npos;
+	while ((pos = resultString.find(L"\n")) != WideString::npos)
+	{
+		resultString.replace(pos, WideString(L"\n").length(), L"\\n");
+	}
+
+	return resultString;
+}
+
 bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
                                    const YamlNode* currentNode, int16 depth) const
 {
@@ -1552,7 +1567,7 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
         case YamlNode::TYPE_STRING:
         {
             // Just write Node Name and Value.
-            return WriteScalarNodeToYamlFile(fileToSave, nodeName, currentNode->AsString(), depth);
+            return WriteScalarNodeToYamlFile(fileToSave, nodeName, currentNode, depth);
         }
 
         case YamlNode::TYPE_ARRAY:

@@ -606,7 +606,7 @@ void UIHierarchy::OnOpenPressedEvent(BaseObject *pCaller, void *pUserData, void 
         CorrectOpenedInParent(c->node->parent, -c->node->openedChildrenCount);
         Refresh();
     }
-    Logger::Info("Elements count = %d", baseNode->openedChildrenCount);
+    Logger::FrameworkDebug("Elements count = %d", baseNode->openedChildrenCount);
 }
 
 

@@ -724,7 +724,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
             
             if(sceneFile->DebugLogEnabled())
-                Logger::Debug("--- save material texture: %s", filename.c_str());
+                Logger::FrameworkDebug("--- save material texture: %s", filename.c_str());
         }
     }
 
@@ -783,7 +783,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             
             if(sceneFile->DebugLogEnabled())
-            	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
+            	Logger::FrameworkDebug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
             
             //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
             textures[k] = Texture::CreateFromFile(names[k]);

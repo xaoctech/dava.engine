@@ -142,7 +142,7 @@ void AutotestingSystemYaml::AddActionsFromYamlNode(YamlNode* actionsNode)
             if(actionNode && actionNameNode)
             {                        
                 String actionName = actionNameNode->AsString();
-                //Logger::Debug("AddActionsFromYamlNode action=%s", actionName.c_str());
+                //Logger::FrameworkDebug("AddActionsFromYamlNode action=%s", actionName.c_str());
                 if(actionName == "ExecuteYaml")
                 {
                     YamlNode* pathNode = actionNode->Get("path");

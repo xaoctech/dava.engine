@@ -84,7 +84,7 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 {
 	FilePath outputName = (descriptor.IsCubeMap()) ? PrepareCubeMapForPvrConvert(descriptor) : FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 	String command = GetCommandLinePVR(descriptor, outputName, gpuFamily);
-    Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
+    Logger::FrameworkDebug("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
 	if(!command.empty())
 	{
