@@ -33,6 +33,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include "HierarchyTreeController.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
@@ -312,6 +313,14 @@ void HierarchyTreeControl::HandleDragEnterHierarchyMimeData(QDragEnterEvent *eve
 {
 	HierarchyTreeNode * selectedTreeNode = HierarchyTreeController::Instance()->GetTree().GetNode(*(mimeData->GetItems().begin()));
 	HierarchyTreeControlNode * selectedControlNode =  dynamic_cast<HierarchyTreeControlNode*>(selectedTreeNode);
+
+	HierarchyTreeAggregatorNode * aggregatorNode =  dynamic_cast<HierarchyTreeAggregatorNode*>(selectedControlNode);
+	if (aggregatorNode)
+	{
+		// Don't allow to drop anything to aggregator.
+		return;
+	}
+
 	if(selectedControlNode)
 	{
 		if(SubcontrolsHelper::ControlIsSubcontrol(selectedControlNode->GetUIObject()))
@@ -365,9 +374,10 @@ void HierarchyTreeControl::HandleDragMoveControlMimeData(QDragMoveEvent *event, 
 	
 	// Handle specific types of nodes.
 	HierarchyTreeNode* nodeToInsertControlTo = HierarchyTreeController::Instance()->GetTree().GetNode(insertInto);
-	if (dynamic_cast<HierarchyTreePlatformNode*>(nodeToInsertControlTo))
+	if (dynamic_cast<HierarchyTreePlatformNode*>(nodeToInsertControlTo) ||
+		dynamic_cast<HierarchyTreeAggregatorControlNode*>(nodeToInsertControlTo))
 	{
-		// Don't allow to drop the controls directly to Platform.
+		// Don't allow to drop the controls directly to Platform or Aggregator.
 		HierarchyTreeController::Instance()->ResetSelectedControl();
 		return;
 	}
@@ -389,7 +399,6 @@ void HierarchyTreeControl::HandleDragMoveControlMimeData(QDragMoveEvent *event, 
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 			HierarchyTreeController::Instance()->SelectControl(controlNode);
 		}
-
 	}
 
 	event->accept();
@@ -406,6 +415,13 @@ void HierarchyTreeControl::HandleDragMoveHierarchyMimeData(QDragMoveEvent *event
 	if (!node)
 	{
 		node = (HierarchyTreeNode*) HierarchyTreeController::Instance()->GetTree().GetRootNode();
+	}
+
+	HierarchyTreeAggregatorControlNode* aggregatorControlNode = dynamic_cast<HierarchyTreeAggregatorControlNode*>(node);
+	if (aggregatorControlNode)
+	{
+		// Don't allow to drop controls to aggregator controls.
+		return;
 	}
 
 	if (mimeData->IsDropEnable(node))
