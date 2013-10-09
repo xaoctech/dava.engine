@@ -423,6 +423,7 @@ public:
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 	bool		randomFrameOnStart;
+	bool		loopSpriteAnimation;
 
 	//for long particles
 	float32 scaleVelocityBase;

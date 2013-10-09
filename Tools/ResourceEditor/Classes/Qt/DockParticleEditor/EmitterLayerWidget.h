@@ -161,6 +161,7 @@ private:
 	QSpinBox* frameOverlifeFPSSpin;
 	QLabel* frameOverlifeFPSLabel;
 	QCheckBox* randomFrameOnStartCheckBox;
+	QCheckBox* loopSpriteAnimationCheckBox;
 
 	QCheckBox* randomSpinDirectionCheckBox;
 
