@@ -15,7 +15,7 @@ class TilemaskEditorPanel: public LandscapeEditorBasePanel
 	Q_OBJECT
 
 public:
-	static const int DEF_BRUSH_MIN_SIZE = 3;
+	static const int DEF_BRUSH_MIN_SIZE = 1;
 	static const int DEF_BRUSH_MAX_SIZE = 40;
 	static const int DEF_STRENGTH_MIN_VALUE = 0;
 	static const int DEF_STRENGTH_MAX_VALUE = 60;
