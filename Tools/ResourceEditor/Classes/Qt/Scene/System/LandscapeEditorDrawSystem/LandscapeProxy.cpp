@@ -33,7 +33,7 @@
 
 LandscapeProxy::LandscapeProxy(Landscape* landscape)
 :	displayingTexture(0)
-,	mode(MODE_CUSTOM_LANDSCAPE)
+,	mode(MODE_ORIGINAL_LANDSCAPE)
 ,	tilemaskWasChanged(0)
 ,	tilemaskImageCopy(NULL)
 {
@@ -339,7 +339,15 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 Vector3 LandscapeProxy::PlacePoint(const Vector3& point)
 {
 	Vector3 landscapePoint;
-	bool res = baseLandscape->PlacePoint(point, landscapePoint);
+	if (mode == MODE_ORIGINAL_LANDSCAPE)
+	{
+		baseLandscape->PlacePoint(point, landscapePoint);
+	}
+	else if (mode == MODE_CUSTOM_LANDSCAPE)
+	{
+		customLandscape->PlacePoint(point, landscapePoint);
+	}
+
 	return landscapePoint;
 }
 
