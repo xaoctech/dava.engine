@@ -630,3 +630,8 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 
 	return true;
 }
+
+Landscape * LandscapeEditorDrawSystem::GetBaseLandscape() const
+{
+	return baseLandscape;
+}

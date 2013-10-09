@@ -28,64 +28,55 @@
 
 
 
-#include "HangingObjectsView.h"
-#include "ui_HangingObjectsView.h"
-#include <stdlib.h> 
-#include "Project/ProjectManager.h"
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EditorConfig.h"
+#include "Commands2/DynamicShadowCommands.h"
+#include "Scene/SceneEditor2.h"
 
-HangingObjectsView::HangingObjectsView(QWidget* parent)
-:	QWidget(parent),
-	ui(new Ui::HangingObjectsView)
+using namespace DAVA;
+
+ChangeDynamicShadowColorCommand::ChangeDynamicShadowColorCommand(SceneEditor2 *_scene, const DAVA::Color & color)
+	: Command2(CMDID_CHANGE_DYNAMIC_SHADOW_COLOR, "Change Dynamic Shadow Color")
+	, scene(_scene)
+	, newColor(color)
 {
-	ui->setupUi(this);
-	
-	Init();
+	oldColor = scene->GetShadowColor();
 }
 
-HangingObjectsView::~HangingObjectsView()
+void ChangeDynamicShadowColorCommand::Undo()
 {
-	delete ui;
+	scene->SetShadowColor(newColor);
 }
 
-void HangingObjectsView::Init()
+void ChangeDynamicShadowColorCommand::Redo()
 {
-	// TODO: mainwindow
-	/*
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(this, SIGNAL(Clicked(float,bool)), handler, SLOT(ToggleHangingObjects(float,bool)));
-	connect(ui->btnUpdate, SIGNAL(clicked()), this, SLOT(Clicked()));
-	connect(ui->checkBoxEnable, SIGNAL(stateChanged(int)), this, SLOT(CheckBoxChangeState(int )));
-	
-	ui->btnUpdate->blockSignals(true);
-	QtMainWindowHandler::Instance()->RegisterHangingObjectsWidgets(ui->checkBoxEnable,
-		ui->doubleSpinBoxHeight,
-		ui->btnUpdate);
+	scene->SetShadowColor(oldColor);
+}
 
-	handler->SetHangingObjectsWidgetsState(false);
-	ui->checkBoxEnable->setEnabled(true);
-	*/
+Entity* ChangeDynamicShadowColorCommand::GetEntity() const
+{
+	return NULL;
 }
 
 
-void HangingObjectsView::Clicked()
+
+ChangeDynamicShadowModeCommand::ChangeDynamicShadowModeCommand(SceneEditor2 *_scene, DAVA::ShadowVolumeRenderPass::eBlend mode)
+	: Command2(CMDID_CHANGE_DYNAMIC_SHADOW_MODE, "Change Dynamic Shadow Mode")
+	, scene(_scene)
+	, newMode(mode)
 {
-	float value = (float)ui->doubleSpinBoxHeight->value();
-	emit Clicked(value, ui->checkBoxEnable->isChecked());
+	oldMode = scene->GetShadowBlendMode();
 }
 
-void HangingObjectsView::CheckBoxChangeState(int newState)
+void ChangeDynamicShadowModeCommand::Undo()
 {
-	if(newState == Qt::Unchecked)
-	{
-		ui->doubleSpinBoxHeight->setEnabled(false);
-		ui->btnUpdate->setEnabled(false);
-	}
-	if(newState == Qt::Checked)
-	{
-		ui->doubleSpinBoxHeight->setEnabled(true);
-		ui->btnUpdate->setEnabled(true);
-	}
-	this->Clicked();
+	scene->SetShadowBlendMode(newMode);
+}
+
+void ChangeDynamicShadowModeCommand::Redo()
+{
+	scene->SetShadowBlendMode(oldMode);
+}
+
+Entity* ChangeDynamicShadowModeCommand::GetEntity() const
+{
+	return NULL;
 }

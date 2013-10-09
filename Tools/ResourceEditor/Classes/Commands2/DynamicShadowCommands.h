@@ -28,37 +28,47 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__HANGING_OBJECTS_VIEW_H__
-#define __RESOURCEEDITORQT__HANGING_OBJECTS_VIEW_H__
+#ifndef __DYNAMIC_SHADOW_COMMANDS_H__
+#define __DYNAMIC_SHADOW_COMMANDS_H__
 
-#include <QWidget>
-#include "Base/BaseTypes.h"
-//#include "Classes/Commands/SetSwitchIndexCommands.h"
+#include "Commands2/Command2.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
-namespace Ui
+class SceneEditor2;
+class ChangeDynamicShadowColorCommand : public Command2
 {
-	class HangingObjectsView;
-}
-
-class HangingObjectsView: public QWidget
-{
-	Q_OBJECT
-
 public:
-	explicit HangingObjectsView(QWidget* parent = 0);
-	~HangingObjectsView();
+	ChangeDynamicShadowColorCommand(SceneEditor2 *scene, const DAVA::Color & color);
 
-	void Init();
-	
-signals:
-	void Clicked(float value, bool isEnabled);
+	virtual void Undo();
+	virtual void Redo();
 
-private slots:
-	void Clicked();
-	void CheckBoxChangeState(int);
+	virtual DAVA::Entity* GetEntity() const;
 
 private:
-	Ui::HangingObjectsView *ui;
+
+	DAVA::Color oldColor;
+	DAVA::Color newColor;
+	SceneEditor2 *scene;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__HANGING_OBJECTS_VIEW_H__) */
+
+class ChangeDynamicShadowModeCommand : public Command2
+{
+public:
+	ChangeDynamicShadowModeCommand(SceneEditor2 *scene, DAVA::ShadowVolumeRenderPass::eBlend mode);
+
+	virtual void Undo();
+	virtual void Redo();
+
+	virtual DAVA::Entity* GetEntity() const;
+
+private:
+
+	DAVA::ShadowVolumeRenderPass::eBlend oldMode;
+	DAVA::ShadowVolumeRenderPass::eBlend newMode;
+	SceneEditor2 *scene;
+};
+
+
+#endif // __DYNAMIC_SHADOW_COMMANDS_H__

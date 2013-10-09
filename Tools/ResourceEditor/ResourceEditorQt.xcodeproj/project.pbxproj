@@ -100,8 +100,6 @@
 		4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */; };
 		4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */; };
 		4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */; };
-		4FAD0CDB1785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */; };
-		4FAD0CDC1785EC6E00B05A35 /* HangingObjectsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */; };
 		4FAD0CDD1785EC6E00B05A35 /* LibraryModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C481785EC6E00B05A35 /* LibraryModel_moc.cpp */; };
 		4FAD0CDE1785EC6E00B05A35 /* LibraryView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C491785EC6E00B05A35 /* LibraryView_moc.cpp */; };
 		4FAD0CDF1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C4B1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp */; };
@@ -459,8 +457,6 @@
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
-		84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */; };
-		84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A662EDCC17E0D37800AF2135 /* AddSkyboxDialog.cpp */; };
@@ -587,6 +583,7 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */; };
 		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
 		E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */; };
 		E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */; };
@@ -850,8 +847,6 @@
 		4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandSignals_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsHelper_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsView_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C481785EC6E00B05A35 /* LibraryModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C491785EC6E00B05A35 /* LibraryView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryView_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C4B1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions_moc.cpp; sourceTree = "<group>"; };
@@ -1556,10 +1551,6 @@
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
 		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
-		84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsHelper.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.cpp; sourceTree = "<group>"; };
-		84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsHelper.h; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.h; sourceTree = "<group>"; };
-		84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsView.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsView.cpp; sourceTree = "<group>"; };
-		84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsView.h; path = Classes/Qt/DockHangingObjects/HangingObjectsView.h; sourceTree = "<group>"; };
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
@@ -1789,6 +1780,8 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicShadowCommands.cpp; sourceTree = "<group>"; };
+		E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicShadowCommands.h; sourceTree = "<group>"; };
 		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
 		E8DADC0517E75A0B00561D52 /* BeastAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastAction.h; sourceTree = "<group>"; };
 		E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
@@ -2148,16 +2141,6 @@
 			);
 			name = DockConsole;
 			path = _GeneratedQt/DockConsole;
-			sourceTree = "<group>";
-		};
-		4FAD0C441785EC6E00B05A35 /* DockHangingObjects */ = {
-			isa = PBXGroup;
-			children = (
-				4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */,
-				4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */,
-			);
-			name = DockHangingObjects;
-			path = _GeneratedQt/DockHangingObjects;
 			sourceTree = "<group>";
 		};
 		4FAD0C471785EC6E00B05A35 /* DockLibrary */ = {
@@ -2537,6 +2520,8 @@
 				E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */,
 				4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */,
 				4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */,
+				E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */,
+				E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */,
 				E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */,
 				E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */,
 				E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */,
@@ -2617,7 +2602,6 @@
 				494A7CDA172A92C0005D7C7F /* Commands */,
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
 				0297F30E170B403100627F78 /* DockMaterialViewOptions */,
-				84221F0716F8AF77000E7D74 /* DockHangingObjects */,
 				841703FF16CBCE9700F1023D /* SpritesPacker */,
 				E838D4D916AFFED4006F1721 /* DockLibrary */,
 				E838D4DE16AFFED4006F1721 /* DockParticleEditor */,
@@ -3446,17 +3430,6 @@
 			name = SpritesPacker;
 			sourceTree = "<group>";
 		};
-		84221F0716F8AF77000E7D74 /* DockHangingObjects */ = {
-			isa = PBXGroup;
-			children = (
-				84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */,
-				84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */,
-				84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */,
-				84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */,
-			);
-			name = DockHangingObjects;
-			sourceTree = "<group>";
-		};
 		A662EDCB17E0D37800AF2135 /* AddSkyboxDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -3839,7 +3812,6 @@
 				A69AA3A81796F1A60008B683 /* CubemapEditor */,
 				4FAD0C3D1785EC6E00B05A35 /* Commands */,
 				4FAD0C3F1785EC6E00B05A35 /* DockConsole */,
-				4FAD0C441785EC6E00B05A35 /* DockHangingObjects */,
 				4FAD0C471785EC6E00B05A35 /* DockLibrary */,
 				4FAD0C4A1785EC6E00B05A35 /* DockMaterialViewOptions */,
 				4FAD0C4C1785EC6E00B05A35 /* DockParticleEditor */,
@@ -4570,8 +4542,6 @@
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
 				CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */,
-				84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */,
-				84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */,
 				50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */,
 				50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */,
 				4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */,
@@ -4620,6 +4590,7 @@
 				4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */,
 				4FFE5C84176B37B600728624 /* CommandNotify.cpp in Build Sources */,
 				4FFE5C85176B37B600728624 /* CommandStack.cpp in Build Sources */,
+				E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */,
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
@@ -4652,8 +4623,6 @@
 				4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */,
 				4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */,
 				4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */,
-				4FAD0CDB1785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp in Build Sources */,
-				4FAD0CDC1785EC6E00B05A35 /* HangingObjectsView_moc.cpp in Build Sources */,
 				4FAD0CDD1785EC6E00B05A35 /* LibraryModel_moc.cpp in Build Sources */,
 				4FAD0CDE1785EC6E00B05A35 /* LibraryView_moc.cpp in Build Sources */,
 				4FAD0CDF1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp in Build Sources */,
