@@ -97,6 +97,14 @@ float GetUITextViewSizeDivider()
 	return self;
 }
 
+-(void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if (cppTextField)
+    {
+        DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField, false);
+    }
+}
+
 -(id)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     id hitView = [super hitTest:point withEvent:event];
