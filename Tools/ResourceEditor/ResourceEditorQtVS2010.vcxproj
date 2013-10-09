@@ -417,8 +417,6 @@
     <ClCompile Include="Classes\Qt\CubemapEditor\MaterialHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\Console.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp" />
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp" />
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorControlsPlaceholder.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\CustomColorsPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\HeightmapEditorPanel.cpp" />
@@ -640,8 +638,6 @@
     <ClCompile Include="_GeneratedQt\CubemapEditor\MaterialHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorControlsPlaceholder_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\CustomColorsPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\HeightmapEditorPanel_moc.cpp" />
@@ -1105,8 +1101,6 @@
     <ClInclude Include="Classes\Qt\CubemapEditor\MaterialHelper.h" />
     <ClInclude Include="Classes\Qt\DockConsole\Console.h" />
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h" />
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h" />
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorControlsPlaceholder.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\CustomColorsPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\HeightmapEditorPanel.h" />
