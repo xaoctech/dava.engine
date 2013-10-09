@@ -387,10 +387,10 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 	
 	GLint glWrapS = HWglConvertWrapMode(wrapS);
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapS));
+	RENDER_VERIFY(glTexParameteri((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, glWrapS));
 	
 	GLint glWrapT = HWglConvertWrapMode(wrapT);
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapT));
+	RENDER_VERIFY(glTexParameteri((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, glWrapT));
 
 	if (saveId != 0)
 	{
@@ -414,14 +414,16 @@ void Texture::GenerateMipmaps()
 	RenderManager::Instance()->LockNonMain();
     
 #if defined(__DAVAENGINE_OPENGL__)
-
+    
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID(textureType);
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 	
-    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	uint32 nativeType = (Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
+	
+    RENDER_VERIFY(glGenerateMipmap(nativeType));
+    RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	if (saveId != 0)
 	{
@@ -445,8 +447,10 @@ void Texture::GeneratePixelesation()
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 	
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+	uint32 nativeType = (Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
+	
+	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     
 	if (saveId != 0)
 	{
