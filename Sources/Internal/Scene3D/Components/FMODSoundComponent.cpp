@@ -51,9 +51,12 @@ FMODSoundComponent::FMODSoundComponent() : fmodEvent(0)
 
 FMODSoundComponent::~FMODSoundComponent()
 {
-    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
-    FMOD_VERIFY(fmodEvent->stop());
-    FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
+    if(fmodEvent)
+    {
+        FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+        FMOD_VERIFY(fmodEvent->stop());
+        FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
+    }
 }
 
 const String & FMODSoundComponent::GetEventName()
