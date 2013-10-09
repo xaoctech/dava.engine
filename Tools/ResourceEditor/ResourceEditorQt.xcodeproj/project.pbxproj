@@ -47,6 +47,8 @@
 		495A604017E7679F00039A43 /* HeightmapEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 495A603F17E7679F00039A43 /* HeightmapEditorPanel_moc.cpp */; };
 		496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A416BBBAA100C21DB0 /* TilemapEditorCommands.cpp */; };
 		496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */; };
+		4969B7BC1800904D00658A3B /* TileTexturePreviewWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */; };
+		4969B7C51800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */; };
 		497DB3DA17D9DCD000E6A643 /* RulerToolActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */; };
 		497DB3E417D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */; };
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
@@ -744,6 +746,9 @@
 		496566A516BBBAA200C21DB0 /* TilemapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemapEditorCommands.h; path = Classes/Commands/TilemapEditorCommands.h; sourceTree = "<group>"; };
 		496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorCommands.cpp; path = Classes/Commands/HeightmapEditorCommands.cpp; sourceTree = "<group>"; };
 		496566A816BBCDA400C21DB0 /* HeightmapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapEditorCommands.h; path = Classes/Commands/HeightmapEditorCommands.h; sourceTree = "<group>"; };
+		4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TileTexturePreviewWidget.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget.cpp; sourceTree = "<group>"; };
+		4969B7BB1800904D00658A3B /* TileTexturePreviewWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TileTexturePreviewWidget.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget.h; sourceTree = "<group>"; };
+		4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TileTexturePreviewWidget_moc.cpp; path = _GeneratedQt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget_moc.cpp; sourceTree = "<group>"; };
 		497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RulerToolActions.cpp; sourceTree = "<group>"; };
 		497DB3D917D9DCD000E6A643 /* RulerToolActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulerToolActions.h; sourceTree = "<group>"; };
 		497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorDrawSystemActions.cpp; sourceTree = "<group>"; };
@@ -1932,6 +1937,7 @@
 		495A602617E6F91100039A43 /* LandscapeEditorPanels */ = {
 			isa = PBXGroup;
 			children = (
+				4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */,
 				495A603F17E7679F00039A43 /* HeightmapEditorPanel_moc.cpp */,
 				495A603A17E7502E00039A43 /* TilemaskEditorPanel_moc.cpp */,
 				495A603517E7339E00039A43 /* VisibilityToolPanel_moc.cpp */,
@@ -1995,6 +2001,8 @@
 		49FE771D17E34B720010B8E1 /* LandscapeEditorPanels */ = {
 			isa = PBXGroup;
 			children = (
+				4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */,
+				4969B7BB1800904D00658A3B /* TileTexturePreviewWidget.h */,
 				49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */,
 				49FE771F17E34B8C0010B8E1 /* LandscapeEditorBasePanel.h */,
 				495A601B17E6F15E00039A43 /* CustomColorsPanel.cpp */,
@@ -4547,6 +4555,7 @@
 				E838D5AE16AFFED4006F1721 /* TextureList.cpp in Build Sources */,
 				E838D5AF16AFFED4006F1721 /* TextureListDelegate.cpp in Build Sources */,
 				E838D5B016AFFED4006F1721 /* TextureListModel.cpp in Build Sources */,
+				4969B7BC1800904D00658A3B /* TileTexturePreviewWidget.cpp in Build Sources */,
 				E838D5B116AFFED4006F1721 /* TextureProperties.cpp in Build Sources */,
 				E838D5B216AFFED4006F1721 /* TextureScrollArea.cpp in Build Sources */,
 				E838D84F16B0059F006F1721 /* PropertyEditor.cpp in Build Sources */,
@@ -4651,6 +4660,7 @@
 				4FAD0CE01785EC6E00B05A35 /* BaseParticleEditorContentWidget_moc.cpp in Build Sources */,
 				4FAD0CE11785EC6E00B05A35 /* EmitterLayerWidget_moc.cpp in Build Sources */,
 				4FAD0CE21785EC6E00B05A35 /* GradientPickerWidget_moc.cpp in Build Sources */,
+				4969B7C51800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp in Build Sources */,
 				4FAD0CE31785EC6E00B05A35 /* LayerForceWidget_moc.cpp in Build Sources */,
 				4FAD0CE41785EC6E00B05A35 /* ParticleEditorWidget_moc.cpp in Build Sources */,
 				4FAD0CE51785EC6E00B05A35 /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,

@@ -105,7 +105,7 @@ namespace ResourceEditor
 
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush size:";
 	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
-	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile\ntexture:";
+	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile texture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MIN		= "tilemask-editor.brush-size.min";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MAX		= "tilemask-editor.brush-size.max";

@@ -101,6 +101,16 @@ Texture* LandscapeProxy::GetLandscapeTexture(Landscape::eTextureLevel level)
 	return baseLandscape->GetTexture(level);
 }
 
+Color LandscapeProxy::GetLandscapeTileColor(Landscape::eTextureLevel level)
+{
+	return baseLandscape->GetTileColor(level);
+}
+
+void LandscapeProxy::SetLandscapeTileColor(Landscape::eTextureLevel level, const Color& color)
+{
+	baseLandscape->SetTileColor(level, color);
+}
+
 void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 {
 	FilePath texturePathname = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
