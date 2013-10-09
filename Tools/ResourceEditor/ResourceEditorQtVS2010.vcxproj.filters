@@ -2205,6 +2205,12 @@
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3817,6 +3823,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

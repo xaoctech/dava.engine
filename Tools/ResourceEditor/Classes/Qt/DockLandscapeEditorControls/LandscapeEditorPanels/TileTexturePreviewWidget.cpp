@@ -1,6 +1,6 @@
 #include "TileTexturePreviewWidget.h"
 #include "TextureBrowser/TextureConvertor.h"
-#include "QtUtils.h"
+#include "../../Main/QtUtils.h"
 
 #include <QHeaderView>
 #include <QToolButton>
@@ -36,7 +36,7 @@ void TileTexturePreviewWidget::Clear()
 {
 	clear();
 
-	for (int32 i = 0; i < images.size(); ++i)
+	for (int32 i = 0; i < (int32)images.size(); ++i)
 	{
 		SafeRelease(images[i]);
 	}
@@ -140,7 +140,7 @@ int32 TileTexturePreviewWidget::GetSelectedTexture()
 
 void TileTexturePreviewWidget::SetSelectedTexture(int32 number)
 {
-	if (number < 0 || number >= images.size())
+	if (number < 0 || number >= (int32)images.size())
 	{
 		return;
 	}
@@ -153,7 +153,7 @@ void TileTexturePreviewWidget::SetSelectedTexture(int32 number)
 
 void TileTexturePreviewWidget::UpdateImage(int32 number)
 {
-	DVASSERT(number >= 0 && number < images.size());
+	DVASSERT(number >= 0 && number < (int32)images.size());
 
 	QTreeWidgetItem* item = topLevelItem(number);
 
@@ -184,7 +184,7 @@ void TileTexturePreviewWidget::UpdateImage(int32 number)
 
 void TileTexturePreviewWidget::UpdateColor(int32 number)
 {
-	DVASSERT(number >= 0 && number < images.size());
+	DVASSERT(number >= 0 && number < (int32)images.size());
 
 	QTreeWidgetItem* item = topLevelItem(number);
 	QColor color = ColorToQColor(colors[number]);
@@ -202,7 +202,7 @@ void TileTexturePreviewWidget::UpdateColor(int32 number)
 
 void TileTexturePreviewWidget::UpdateSelection()
 {
-	for (int32 i = 0; i < images.size(); ++i)
+	for (int32 i = 0; i < (int32)images.size(); ++i)
 	{
 		QTreeWidgetItem* item = topLevelItem(i);
 		item->setCheckState(0, (i == selectedTexture ? Qt::Checked : Qt::Unchecked));
@@ -253,7 +253,7 @@ void TileTexturePreviewWidget::OnPickColorButton()
 {
 	QObject* source = sender();
 
-	for (int32 i = 0; i < images.size(); ++i)
+	for (int32 i = 0; i < (int32)images.size(); ++i)
 	{
 		if (source == buttons[i])
 		{
