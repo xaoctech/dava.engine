@@ -74,6 +74,9 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	SetPixelFormat( hDC, iFormat, &pfd );
 
 	hRC = wglCreateContext(hDC);
+
+	renderContextId = (uint64)hRC;
+	
 	Thread::secondaryContext = wglCreateContext(hDC);
 	Thread::currentDC = hDC;
 

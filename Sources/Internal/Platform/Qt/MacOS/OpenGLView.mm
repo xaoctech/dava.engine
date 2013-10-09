@@ -74,6 +74,8 @@
 	GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 	
+	DAVA::RenderManager::Instance()->SetRenderContextId((uint64)CGLGetCurrentContext());
+	
 //	activeCursor = 0;
     
     //RenderManager::Create(Core::RENDERER_OPENGL);
