@@ -144,6 +144,9 @@ public slots:
     void OnSaveTiledTexture();
     
     void OnConvertToShadow();
+	
+	void OnAddActionComponent();
+	void OnRemoveActionComponent();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

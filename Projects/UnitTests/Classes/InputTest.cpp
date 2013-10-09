@@ -117,6 +117,7 @@ InputTest::InputTest() :
 	passwordTextField = NULL;
 	staticText = NULL;
 	testButton = NULL;
+	removeFromParentButton = NULL;
 	
 	onScreenTime = 0.0f;
 	testFinished = false;
@@ -150,6 +151,7 @@ void InputTest::LoadResources()
 	passwordTextField->SetDelegate(new UITextFieldDelegate());
 	passwordTextField->SetIsPassword(true);
 	passwordTextField->SetDelegate(this);
+//	passwordTextField->SetInputEnabled(false, false);
 	AddControl(passwordTextField);
 	
 	textField = new UITextField(Rect(0, 600, 950, 40));
@@ -183,6 +185,13 @@ void InputTest::LoadResources()
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
+
+	removeFromParentButton = new UIButton(Rect(320, 300, 300, 30));
+	removeFromParentButton->SetStateFont(0xFF, font);
+	removeFromParentButton->SetStateFontColor(0xFF, Color::White());
+	removeFromParentButton->SetStateText(0xFF, L"Remove From Parent Test");
+	removeFromParentButton->SetDebugDraw(true);
+	removeFromParentButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
 	testButton = new UIButton(Rect(0, 300, 300, 30));
 	testButton->SetStateFont(0xFF, font);
@@ -231,7 +240,8 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
-    
+	AddControl(removeFromParentButton);
+
     SafeRelease(spr);
     SafeRelease(texture);
 
@@ -250,6 +260,7 @@ void InputTest::UnloadResources()
 	RemoveAllControls();
 
 	SafeRelease(testButton);
+	SafeRelease(removeFromParentButton);
 	SafeRelease(textField);
 	SafeRelease(staticText);
 	
@@ -291,7 +302,14 @@ bool InputTest::RunTest(int32 testNum)
 
 void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
-	testFinished = true;
+	if (obj == testButton)
+	{
+		testFinished = true;
+	}
+	else if (obj == removeFromParentButton)
+	{
+		removeFromParentButton->RemoveFromParent();
+	}
 }
 
 bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)

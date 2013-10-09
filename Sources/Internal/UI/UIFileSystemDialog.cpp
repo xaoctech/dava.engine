@@ -340,7 +340,7 @@ void UIFileSystemDialog::RefreshList()
     SafeRelease(files);
     lastSelected = NULL;
     lastSelectedIndex = -1;
-    Logger::Debug("Cur Dir: %s", currentDir.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("Cur Dir: %s", currentDir.GetAbsolutePathname().c_str());
     if (currentDir.IsEmpty())
     {
         currentDir += "/";

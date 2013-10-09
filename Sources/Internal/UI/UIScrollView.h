@@ -47,6 +47,14 @@ public:
 	virtual void AddControl(UIControl *control);
 	virtual List<UIControl* >& GetRealChildren();
     virtual List<UIControl* > GetSubcontrols();
+
+	// Add the control directly to the Scroll View Container.
+	void AddControlToContainer(UIControl* control);
+
+	// Access to the Scroll View Container.
+	UIScrollViewContainer* GetContainer();
+	ScrollHelper* GetHorizontalScroll();
+	ScrollHelper* GetVerticalScroll();
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
@@ -61,8 +69,10 @@ public:
 	
 	void RecalculateContentSize();
 	
-	// Set the speed of returning scroll container to bounds.
-	void SetReturnSpeed(int32 speedInPixelsPerSec);
+	//Sets how fast scroll container will return to its bounds
+	void SetReturnSpeed(float32 speedInSeconds);
+	//Sets how fast scroll speed will be reduced
+	void SetScrollSpeed(float32 speedInSeconds);
 
 	// UIScrollBarDelegate implementation.
 	virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
@@ -81,6 +91,8 @@ protected:
 	float32 GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam);
 
 	UIScrollViewContainer *scrollContainer;
+	ScrollHelper *scrollHorizontal;
+	ScrollHelper *scrollVertical;
 
 private:
 	void FindRequiredControls();

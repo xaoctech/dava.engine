@@ -435,7 +435,7 @@ bool SceneGraphModel::removeRows(int row, int count, const QModelIndex &parent/*
 //        {
 //            Entity *removedNode = parentNode->GetChild(i);
 //            parentNode->RemoveNode(removedNode);
-//            Logger::Debug("[%d] Remove %s from %s", i, removedNode->GetName().c_str(), parentNode->GetName().c_str());
+//            Logger::FrameworkDebug("[%d] Remove %s from %s", i, removedNode->GetName().c_str(), parentNode->GetName().c_str());
 //        }
 //        
 //        int32 lastItemRow = Min(lastRow, parentItem->ChildrenCount() - 1);

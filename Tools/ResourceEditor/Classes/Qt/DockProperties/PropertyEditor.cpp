@@ -43,6 +43,7 @@
 #include "PropertyEditorStateHelper.h"
 
 #include "ActionComponentEditor.h"
+
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
 	, advancedMode(false)
@@ -105,6 +106,16 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 					removeButton->setFlat(true);
 
 					componentData->AddOW(QtPropertyOW(removeButton, true));
+					
+					if(component->GetType() == Component::ACTION_COMPONENT)
+					{
+						// Add optional button to edit action collection
+						QPushButton *editActions = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
+						editActions->setFlat(true);
+						
+						componentData->AddOW(QtPropertyOW(editActions, true));
+						QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(EditActionComponent()));
+					}
 				}
             }
         }
@@ -211,4 +222,15 @@ void PropertyEditor::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 void PropertyEditor::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
 
+}
+
+void PropertyEditor::EditActionComponent()
+{
+	if(curNode)
+	{
+		ActionComponentEditor editor;
+		editor.SetComponent((DAVA::ActionComponent*)curNode->GetComponent(DAVA::Component::ACTION_COMPONENT));
+			
+		editor.exec();
+	}	
 }

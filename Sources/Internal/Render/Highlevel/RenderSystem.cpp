@@ -242,7 +242,7 @@ void RenderSystem::ProcessClipping()
 		}
 
         node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
+        //Logger::FrameworkDebug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
         if (RenderObject::TYPE_SKYBOX != node->GetType() &&
 			!frustum->IsInside(node->GetWorldBoundingBox()))
         {

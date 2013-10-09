@@ -107,3 +107,14 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     
     Save();
 }
+
+void EditorSettings::SetUIEditorVersion(const String& editorVersion)
+{
+	settings->SetString("editor.version", editorVersion);
+	Save();
+}
+
+String EditorSettings::GetUIEditorVersion()
+{
+	return settings->GetString("editor.version");
+}

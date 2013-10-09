@@ -64,7 +64,7 @@ void SceneSaver::SetOutFolder(const FilePath &folderPathname)
 
 void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneSaver::SaveFile] %s", fileName.c_str());
+    Logger::FrameworkDebug("[SceneSaver::SaveFile] %s", fileName.c_str());
     
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
 
@@ -97,7 +97,7 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 {
-	Logger::Info("[SceneSaver::ResaveFile] %s", fileName.c_str());
+	Logger::FrameworkDebug("[SceneSaver::ResaveFile] %s", fileName.c_str());
 
 	FilePath sc2Filename = sceneUtils.dataSourceFolder + fileName;
 

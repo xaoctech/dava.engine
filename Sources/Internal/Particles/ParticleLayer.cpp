@@ -251,7 +251,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 bool ParticleLayer::IsLodActive(int32 lod)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		return activeLODS[lod];
 	
 	return false;
@@ -259,7 +259,7 @@ bool ParticleLayer::IsLodActive(int32 lod)
 
 void ParticleLayer::SetLodActive(int32 lod, bool active)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		activeLODS[lod] = active;
 }
 
@@ -745,7 +745,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
 	if (this->emitter&&!inheritPosition) //just generate at correct position
 	{		
-		particle->position += emitter->GetPosition();
+		particle->position += emitter->GetPosition()-emitter->GetInitialTranslationVector();
 	}
 
 	//particle->angle += alignToMotion;

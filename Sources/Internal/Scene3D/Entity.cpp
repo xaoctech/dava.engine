@@ -67,7 +67,7 @@ Entity::Entity()
     , tag(0)
 	, entity(0)
 {
-//    Logger::Debug("Entity: %p", this);
+//    Logger::FrameworkDebug("Entity: %p", this);
     componentFlags = 0;
 
 	components.resize(Component::COMPONENT_COUNT);
@@ -107,7 +107,7 @@ Entity::~Entity()
 		}
 	}
 
-//  Logger::Debug("~Entity: %p", this);
+//  Logger::FrameworkDebug("~Entity: %p", this);
 }
     
 void Entity::AddComponent(Component * component)
@@ -124,18 +124,20 @@ void Entity::AddComponent(Component * component)
     componentFlags |= 1 << component->GetType();
 }
 
-void Entity::RemoveComponent(Component * component)
-{
-	component->SetEntity(0);
-
-    components[component->GetType()] = 0;
-    if (scene)
-        scene->RemoveComponent(this, component);
-    // SHOULD BE DONE AFTER scene->RemoveComponent
-    componentFlags &= ~(1 << component->GetType());
-	delete(component);
-}
-    
+	void Entity::RemoveComponent(Component * component)
+	{
+		if (scene)
+		{
+			scene->RemoveComponent(this, component);
+		}
+		
+		component->SetEntity(0);
+		components[component->GetType()] = 0;
+		
+		// SHOULD BE DONE AFTER scene->RemoveComponent
+		componentFlags &= ~(1 << component->GetType());
+		delete(component);
+	}
 void Entity::RemoveComponent(uint32 componentType)
 {
     if (components[componentType])
@@ -1029,7 +1031,7 @@ const Matrix4 & Entity::GetLocalTransform()
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform();
 }
 
-const Matrix4 & Entity::GetWorldTransform()
+const Matrix4 & Entity::GetWorldTransform() const
 {
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }

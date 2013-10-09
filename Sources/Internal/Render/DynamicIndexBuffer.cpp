@@ -72,7 +72,7 @@ void DynamicIndexBuffer::Invalidate()
 
 	if (!FAILED(hr))
 	{
-		Logger::Debug(Format("[DynamicIndexBuffer] created >> elementsize(%d) buffersize(%d)", indexSize, indexCount));
+		Logger::FrameworkDebug(Format("[DynamicIndexBuffer] created >> elementsize(%d) buffersize(%d)", indexSize, indexCount));
 	}
 }
 
@@ -80,7 +80,7 @@ DynamicIndexBuffer::~DynamicIndexBuffer()
 {
 	Unlock();
 	D3DSafeRelease(indexBuffer);
-	Logger::Debug("[DynamicIndexBuffer] released");
+	Logger::FrameworkDebug("[DynamicIndexBuffer] released");
 }
 
 void * DynamicIndexBuffer::Lock(const int32 lockIndexCount, int32 & startIndex)
