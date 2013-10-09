@@ -41,15 +41,16 @@ ChangeDynamicShadowColorCommand::ChangeDynamicShadowColorCommand(SceneEditor2 *_
 	oldColor = scene->GetShadowColor();
 }
 
-void ChangeDynamicShadowColorCommand::Undo()
+void ChangeDynamicShadowColorCommand::Redo()
 {
 	scene->SetShadowColor(newColor);
 }
 
-void ChangeDynamicShadowColorCommand::Redo()
+void ChangeDynamicShadowColorCommand::Undo()
 {
 	scene->SetShadowColor(oldColor);
 }
+
 
 Entity* ChangeDynamicShadowColorCommand::GetEntity() const
 {
@@ -66,15 +67,16 @@ ChangeDynamicShadowModeCommand::ChangeDynamicShadowModeCommand(SceneEditor2 *_sc
 	oldMode = scene->GetShadowBlendMode();
 }
 
-void ChangeDynamicShadowModeCommand::Undo()
+void ChangeDynamicShadowModeCommand::Redo()
 {
 	scene->SetShadowBlendMode(newMode);
 }
 
-void ChangeDynamicShadowModeCommand::Redo()
+void ChangeDynamicShadowModeCommand::Undo()
 {
 	scene->SetShadowBlendMode(oldMode);
 }
+
 
 Entity* ChangeDynamicShadowModeCommand::GetEntity() const
 {

@@ -140,7 +140,7 @@ void EditorLightSystem::AddEntity( DAVA::Entity * entity )
 
 void EditorLightSystem::RemoveEntity( DAVA::Entity * entity )
 {
-	if(isEnabled && (entity == cameraLight))
+	if(isEnabled && (entity == cameraLight) && (lightCountOnScene == 0))
 	{
 		SetCameraLightEnabled(false);
 		return;

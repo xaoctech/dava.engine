@@ -549,7 +549,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
+	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeWillShow()));
 
+    
 	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
     
@@ -1490,6 +1492,14 @@ void QtMainWindow::OnSetShadowColor()
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
 
 	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
+}
+
+void QtMainWindow::OnShadowBlendModeWillShow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    LoadShadowBlendModeState(scene);
 }
 
 void QtMainWindow::OnShadowBlendModeAlpha()
