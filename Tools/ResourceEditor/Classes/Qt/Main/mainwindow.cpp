@@ -92,6 +92,7 @@
 #include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
+#include "Classes/Commands2/DynamicShadowCommands.h"
 
 #include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 
@@ -1487,7 +1488,8 @@ void QtMainWindow::OnSetShadowColor()
     if(!scene) return;
     
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
-    scene->SetShadowColor(QColorToColor(color));
+
+	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
 }
 
 void QtMainWindow::OnShadowBlendModeAlpha()
@@ -1495,15 +1497,14 @@ void QtMainWindow::OnShadowBlendModeAlpha()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_ALPHA));
 }
 
 void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
-
-	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY));
 }
 
 void QtMainWindow::OnSaveHeightmapToPNG()
