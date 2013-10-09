@@ -8,6 +8,7 @@ using namespace DAVA;
 
 class QComboBox;
 class SliderWidget;
+class TileTexturePreviewWidget;
 
 class TilemaskEditorPanel: public LandscapeEditorBasePanel
 {
@@ -27,6 +28,7 @@ private slots:
 	void SetToolImage(int imageIndex);
 	void SetStrength(int strength);
 	void SetDrawTexture(int textureIndex);
+	void OnTileColorChanged(int32 tileNumber, Color color);
 
 	void IncreaseBrushSize();
 	void DecreaseBrushSize();
@@ -65,7 +67,7 @@ private:
 	SliderWidget* sliderWidgetBrushSize;
 	SliderWidget* sliderWidgetStrength;
 	QComboBox* comboBrushImage;
-	QComboBox* comboTileTexture;
+	TileTexturePreviewWidget* tileTexturePreviewWidget;
 
 	void InitBrushImages();
 	void UpdateTileTextures();

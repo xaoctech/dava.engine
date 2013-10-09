@@ -64,7 +64,9 @@ public:
 
 	uint32 GetTileTextureCount() const;
 	Texture* GetTileTexture(int32 index);
-	
+	Color GetTileColor(int32 index);
+	void SetTileColor(int32 index, const Color& color);
+
 protected:
 	bool enabled;
 	
