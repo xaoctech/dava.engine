@@ -1551,6 +1551,12 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
+	if (!scene->landscapeEditorDrawSystem->VerifyLandscape())
+	{
+		ShowErrorDialog(ResourceEditor::INVALID_LANDSCAPE_MESSAGE);
+		return;
+	}
+
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
 	landscape->UpdateFullTiledTexture();
