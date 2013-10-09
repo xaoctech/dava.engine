@@ -583,6 +583,7 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */; };
 		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
 		E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */; };
 		E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */; };
@@ -1779,6 +1780,8 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicShadowCommands.cpp; sourceTree = "<group>"; };
+		E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicShadowCommands.h; sourceTree = "<group>"; };
 		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
 		E8DADC0517E75A0B00561D52 /* BeastAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastAction.h; sourceTree = "<group>"; };
 		E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
@@ -2517,6 +2520,8 @@
 				E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */,
 				4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */,
 				4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */,
+				E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */,
+				E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */,
 				E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */,
 				E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */,
 				E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */,
@@ -4585,6 +4590,7 @@
 				4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */,
 				4FFE5C84176B37B600728624 /* CommandNotify.cpp in Build Sources */,
 				4FFE5C85176B37B600728624 /* CommandStack.cpp in Build Sources */,
+				E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */,
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,

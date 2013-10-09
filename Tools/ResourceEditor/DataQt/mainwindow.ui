@@ -398,7 +398,7 @@
     </widget>
     <widget class="QMenu" name="menuObjectTypes">
      <property name="title">
-      <string>Object Types</string>
+      <string>Collision Type</string>
      </property>
      <addaction name="actionNoObject"/>
      <addaction name="actionTree"/>
@@ -1532,7 +1532,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>No Object</string>
+    <string>No Collision</string>
    </property>
   </action>
   <action name="actionTree">

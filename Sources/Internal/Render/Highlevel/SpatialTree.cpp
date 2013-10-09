@@ -283,7 +283,11 @@ void QuadTree::ObjectUpdated(RenderObject *object)
 	}
 
 	//climb down
-	uint32 targetIndex = FindObjectAddNode(reverseIndex, object->GetWorldBoundingBox());
+	uint32 targetIndex;
+	if (!reverseIndex && !worldBox.IsInside(objBox))
+		targetIndex = 0; //object felt out of world
+	else
+		targetIndex = FindObjectAddNode(reverseIndex, object->GetWorldBoundingBox());
 
 	if (targetIndex!=baseIndex)
 	{
