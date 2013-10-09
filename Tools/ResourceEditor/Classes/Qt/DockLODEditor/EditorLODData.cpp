@@ -154,7 +154,7 @@ void EditorLODData::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup
 {
     if(activeScene == scene)
     {
-		for(int i = 0; i < deselected->Size(); ++i)
+		for(size_t i = 0; i < deselected->Size(); ++i)
 		{
 			ResetForceState(deselected->GetEntity(i));
 		}
