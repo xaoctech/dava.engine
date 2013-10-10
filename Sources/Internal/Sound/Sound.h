@@ -47,6 +47,8 @@ public:
 		EVENT_SOUND_COMPLETED = 1 //!< Event is performed when sound playback is completed.
 	};
 
+    virtual int32 Release();
+
 	static Sound * Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
 	static Sound * Create3D(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
 
