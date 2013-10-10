@@ -85,7 +85,6 @@ protected:
 	Texture* crossTexture;
 	uint32 cursorSize;
 	uint32 curToolSize;
-	Sprite* toolImageSprite;
 
 	int32 landscapeSize;
 	bool isIntersectsLandscape;
@@ -108,9 +107,7 @@ protected:
 	Vector2 visibilityPoint;
 
 	void UpdateCursorPosition(int32 landscapeSize);
-	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool(float32 timeElapsed);
-	Image* CreateToolImage(int32 sideSize, const FilePath& filePath);
 
 	void AddRectToAccumulator(const Rect& rect);
 	void ResetAccumulatorRect();
