@@ -375,7 +375,7 @@
     <property name="title">
      <string>Scene</string>
     </property>
-    <widget class="QMenu" name="menuDynamicShadowBlendMode_2">
+    <widget class="QMenu" name="menuDynamicShadowBlendMode">
      <property name="title">
       <string>Dynamic Shadow Blend Mode</string>
      </property>
@@ -398,7 +398,7 @@
     </widget>
     <widget class="QMenu" name="menuObjectTypes">
      <property name="title">
-      <string>Object Types</string>
+      <string>Collision Type</string>
      </property>
      <addaction name="actionNoObject"/>
      <addaction name="actionTree"/>
@@ -413,7 +413,7 @@
     <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
     <addaction name="actionSetShadowColor"/>
-    <addaction name="menuDynamicShadowBlendMode_2"/>
+    <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
     <addaction name="actionLandscape"/>
     <addaction name="menuLandscape_2"/>
@@ -487,46 +487,6 @@
    <addaction name="separator"/>
    <addaction name="actionManualModifMode"/>
    <addaction name="actionModifyReset"/>
-  </widget>
-  <widget class="QDockWidget" name="dockHangingObjects">
-   <property name="maximumSize">
-    <size>
-     <width>524287</width>
-     <height>70</height>
-    </size>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="windowTitle">
-    <string>Hanging Objects</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_13">
-    <property name="maximumSize">
-     <size>
-      <width>16777215</width>
-      <height>70</height>
-     </size>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_14">
-     <property name="margin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="HangingObjectsView" name="hangingObjectsView" native="true">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>70</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QToolBar" name="viewModeToolBar">
    <property name="windowTitle">
@@ -1572,7 +1532,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>No Object</string>
+    <string>No Collision</string>
    </property>
   </action>
   <action name="actionTree">
@@ -1635,6 +1595,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/hangingobjects.png</normaloff>:/QtIcons/hangingobjects.png</iconset>
+   </property>
    <property name="text">
     <string>Hanging Objects</string>
    </property>
@@ -1666,11 +1630,6 @@
    <extends>QWidget</extends>
    <header>DockParticleEditor/particletimelinewidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>HangingObjectsView</class>
-   <extends>QWidget</extends>
-   <header>DockHangingObjects/HangingObjectsView.h</header>
   </customwidget>
   <customwidget>
    <class>MaterialViewOptions</class>

@@ -26,82 +26,28 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#ifndef __ADD_SKYBOX_COMMAND_H__
+#define __ADD_SKYBOX_COMMAND_H__
 
-#ifndef __DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__
-#define __DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__
+#include "Commands2/Command2.h"
+#include "Scene3D/Scene.h"
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-
-#include "UI/IMovieViewControl.h"
-#include "JniExtensions.h"
-
-namespace DAVA
+class AddSkyboxCommand : public Command2
 {
-
-class JniMovieViewControl: public JniExtension
-{
-public:
-	JniMovieViewControl(uint32 id);
-	void Initialize(const Rect& rect);
-	void Uninitialize();
-
-	void SetRect(const Rect& rect);
-	void SetVisible(bool isVisible);
-
-	void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
-
-	void Play();
-	void Stop();
-	void Pause();
-	void Resume();
-	bool IsPlaying();
-
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
-
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-
 private:
-	uint32 id;
-};
-
-class MovieViewControl : public IMovieViewControl
-{
+	
+	DAVA::Scene* scene;
+	DAVA::Entity* skybox;
+	
 public:
-	MovieViewControl();
-	virtual ~MovieViewControl();
-
-	// Initialize the control.
-	virtual void Initialize(const Rect& rect);
-
-	// Position/visibility.
-	virtual void SetRect(const Rect& rect);
-	virtual void SetVisible(bool isVisible);
-
-	// Open the Movie.
-	virtual void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
-
-	// Start/stop the video playback.
-	virtual void Play();
-	virtual void Stop();
 	
-	// Pause/resume the playback.
-	virtual void Pause();
-	virtual void Resume();
+	AddSkyboxCommand(DAVA::Scene* targetScene);
+	~AddSkyboxCommand();
 	
-	// Whether the movie is being played?
-	virtual bool IsPlaying();
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
 
-private:
-	JniMovieViewControl jniMovieViewControl;
-};
-	
 };
 
-#endif //__DAVAENGINE_ANDROID__
-
-#endif /* defined(__DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__) */
+#endif /* defined(__ADD_SKYBOX_COMMAND_H__) */

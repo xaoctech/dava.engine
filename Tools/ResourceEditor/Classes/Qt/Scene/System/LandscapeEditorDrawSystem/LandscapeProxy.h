@@ -60,7 +60,9 @@ public:
 
 	AABBox3 GetLandscapeBoundingBox();
 	Texture* GetLandscapeTexture(Landscape::eTextureLevel level);
-	
+	Color GetLandscapeTileColor(Landscape::eTextureLevel level);
+	void SetLandscapeTileColor(Landscape::eTextureLevel level, const Color& color);
+
 	void SetTilemaskTexture(Texture* texture);
 	void SetTilemaskTextureEnabled(bool enabled);
 
@@ -96,6 +98,7 @@ public:
 	void IncreaseTilemaskChanges();
 	void DecreaseTilemaskChanges();
 
+	void InitTilemaskImageCopy();
 	Image* GetTilemaskImageCopy();
 
 protected:

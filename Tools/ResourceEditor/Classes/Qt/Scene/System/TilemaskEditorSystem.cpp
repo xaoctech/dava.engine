@@ -108,6 +108,8 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
 	
 	CreateMaskTexture();
 
@@ -402,6 +404,30 @@ Texture* TilemaskEditorSystem::GetTileTexture(int32 index)
 	Texture* texture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(level);
 	
 	return texture;
+}
+
+Color TilemaskEditorSystem::GetTileColor(int32 index)
+{
+	if (index < 0 || index >= (int32)GetTileTextureCount())
+	{
+		return Color::Black();
+	}
+
+	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
+	Color color = drawSystem->GetLandscapeProxy()->GetLandscapeTileColor(level);
+	
+	return color;
+}
+
+void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
+{
+	if (index < 0 || index >= (int32)GetTileTextureCount())
+	{
+		return;
+	}
+
+	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
+	drawSystem->GetLandscapeProxy()->SetLandscapeTileColor(level, color);
 }
 
 void TilemaskEditorSystem::CreateMaskTexture()

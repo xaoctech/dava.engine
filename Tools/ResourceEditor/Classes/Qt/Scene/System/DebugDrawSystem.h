@@ -50,6 +50,9 @@ public:
 	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
 	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
 
+	void EnableHangingObjectsMode(bool enabled);
+	bool HangingObjectsModeEnabled() const;
+
 protected:
 
 	void Draw();
@@ -59,6 +62,14 @@ protected:
 	inline void DrawUserNode(DAVA::Entity *entity);
 	inline void DrawLightNode(DAVA::Entity *entity);
 	inline void DrawSoundNode(DAVA::Entity *entity);
+	inline void DrawHangingObjects(DAVA::Entity *entity);
+
+
+	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
+
+	//hanging objects 
+	bool IsObjectHanging(DAVA::Entity * entity, DAVA::float32 height);
+	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
 
 private:
 	SceneCollisionSystem *collSystem;
@@ -66,6 +77,8 @@ private:
 
 	ResourceEditor::eSceneObjectType objectType;
     DAVA::Color objectTypeColor;
+
+	bool hangingObjectsModeEnabled;
 };
 
 

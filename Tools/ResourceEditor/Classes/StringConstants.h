@@ -105,7 +105,7 @@ namespace ResourceEditor
 
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush size:";
 	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
-	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile\ntexture:";
+	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile texture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MIN		= "tilemask-editor.brush-size.min";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MAX		= "tilemask-editor.brush-size.max";
@@ -195,6 +195,7 @@ namespace ResourceEditor
 	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "heightmap-editor.copy-paste.tilemask";
 
 	static const String NO_LANDSCAPE_ERROR_MESSAGE					= "Error. Check is there landscape at the scene.";
+	static const String INVALID_LANDSCAPE_MESSAGE					= "Error. Check if all necessary properties of the landscape are set.";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

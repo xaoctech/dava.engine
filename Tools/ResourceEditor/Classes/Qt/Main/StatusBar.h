@@ -53,6 +53,7 @@ public slots:
 
 	void UpdateByTimer();
 
+	void OnSceneGeometryChaged(int width, int height);
 
 protected:
 	void UpdateDistanceToCamera();
@@ -62,6 +63,7 @@ protected:
 
 
     QLabel * distanceToCamera;
+	QLabel * sceneGeometry;
 };
 
 #endif // __STATUS_BAR_H__

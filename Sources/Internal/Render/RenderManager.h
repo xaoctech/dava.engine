@@ -185,6 +185,8 @@ protected:
     int32 statsFrameCountToShowDebug;
     int32 frameToShowDebugStats;
     Core::eRenderer renderer;
+	
+	uint64 renderContextId;
     
 public:
     
@@ -468,7 +470,9 @@ public:
     virtual void PushMappingMatrix();
 	virtual void PopMappingMatrix();
     
-    
+    void SetRenderContextId(uint64 contextId);
+	uint64 GetRenderContextId();
+	void VerifyRenderContext();
     
     /*  
         Matrix support

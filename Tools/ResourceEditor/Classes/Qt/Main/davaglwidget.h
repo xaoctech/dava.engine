@@ -79,6 +79,8 @@ public:
 
 signals:
 	void OnDrop(const QMimeData *mimeData);
+	void Resized(int width, int height);
+
 
 protected slots:
 	void Render();
