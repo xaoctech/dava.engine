@@ -69,7 +69,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
 	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
 
-	SetRefreshTimeout(5000);
+	SetUpdateTimeout(5000);
 	SetEditTracking(true);
 }
 
@@ -234,7 +234,7 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	ForceRefreshTimeout(100);
+	Update();
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

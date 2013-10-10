@@ -34,9 +34,10 @@ protected:
 
 	KeyeadArchiveSetValueCommand* lastCommand;
 
-	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
+	virtual bool UpdateValueInternal();
 	virtual bool EditorDoneInternal(QWidget *editor);
+
 	virtual void* CreateLastCommand() const;
 };
 

@@ -139,27 +139,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int 
 
 QVariant QtPropertyDataIntrospection::GetValueInternal()
 {
-	ChildNeedUpdate();
 	return QVariant(info->Name());
-}
-
-void QtPropertyDataIntrospection::ChildNeedUpdate()
-{
-	QMapIterator<QtPropertyDataDavaVariant*, const DAVA::InspMember *> i = QMapIterator<QtPropertyDataDavaVariant*, const DAVA::InspMember *>(childVariantMembers);
-
-	while(i.hasNext())
-	{
-		i.next();
-
-		QtPropertyDataDavaVariant *childData = i.key();
-		DAVA::VariantType childCurValue = i.value()->Value(object);
-
-		if(childCurValue != childData->GetVariantValue())
-		{
-			childData->SetVariantValue(childCurValue);
-		}
-
-	}
 }
 
 void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()

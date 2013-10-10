@@ -54,6 +54,7 @@ public slots:
 	void collapse(const QModelIndex & index);
 	void expand(const QModelIndex & index);
 	bool helpEvent(QHelpEvent * event, QAbstractItemView * view, const QStyleOptionViewItem & option, const QModelIndex & index);
+	bool editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index);
 
 protected:
 	QStyle *childWidgetsStyle;
