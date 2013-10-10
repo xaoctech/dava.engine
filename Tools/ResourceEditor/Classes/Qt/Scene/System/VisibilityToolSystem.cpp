@@ -148,7 +148,6 @@ void VisibilityToolSystem::Update(DAVA::float32 timeElapsed)
 	{
 		if (prevCursorPos != cursorPosition)
 		{
-			UpdateBrushTool(timeElapsed);
 			prevCursorPos = cursorPosition;
 		}
 	}
@@ -233,10 +232,6 @@ void VisibilityToolSystem::UpdateCursorPosition(int32 landscapeSize)
 
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
-}
-
-void VisibilityToolSystem::UpdateBrushTool(float32 timeElapsed)
-{
 }
 
 void VisibilityToolSystem::ResetAccumulatorRect()
