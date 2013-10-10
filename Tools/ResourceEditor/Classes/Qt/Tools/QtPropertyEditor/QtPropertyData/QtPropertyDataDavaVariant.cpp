@@ -33,6 +33,7 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaVariant.h"
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
+#include "../QtPropertyWidgets/QtComboFake.h"
 
 #include <QColorDialog>
 #include <QListWidget>
@@ -124,6 +125,10 @@ void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 		InitFlags();
 		ChildsCreate();
 	}
+	else
+	{
+		ChildNeedUpdate(QtPropertyData::VALUE_SOURCE_CHANGED);
+	}
 }
 
 void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue /*= QVariant()*/)
@@ -132,10 +137,9 @@ void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realVal
 
 	if(NULL == allowedButton)
 	{
-		allowedButton = new QToolButton();
+		allowedButton = new QtComboFake();
 		allowedButton->setArrowType(Qt::DownArrow);
 		allowedButton->setAutoRaise(true);
-		allowedButton->setDisabled(true);
 
 		AddOW(QtPropertyOW(allowedButton, true));
 		QObject::connect(allowedButton, SIGNAL(pressed()), this, SLOT(AllowedOWPressed()));	
@@ -258,22 +262,22 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 	}
 }
 
-void QtPropertyDataDavaVariant::ChildChanged(const QString &key, QtPropertyData *data)
+void QtPropertyDataDavaVariant::ChildChanged(const QString &key, QtPropertyData *data, ValueChangeReason reason)
 {
 	if(!processingParent)
 	{
 		processingParent = true;
-		MeSetFromChilds(key, data);
+		MeSetFromChilds(key, data, reason);
 		processingParent = false;
 	}
 }
 
-void QtPropertyDataDavaVariant::ChildNeedUpdate()
+void QtPropertyDataDavaVariant::ChildNeedUpdate(ValueChangeReason reason)
 {
 	if(!processingChilds)
 	{
 		processingChilds = true;
-		ChildsSetFromMe();
+		ChildsSetFromMe(reason);
 		processingChilds = false;
 	}
 }
@@ -355,7 +359,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 	}
 }
 
-void QtPropertyDataDavaVariant::ChildsSetFromMe()
+void QtPropertyDataDavaVariant::ChildsSetFromMe(ValueChangeReason reason)
 {
 	switch(curVariantValue.type)
 	{
@@ -374,25 +378,25 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 	case DAVA::VariantType::TYPE_VECTOR2:
 		{
 			DAVA::Vector2 vec = curVariantValue.AsVector2();
-			ChildGet("X")->SetValue(vec.x);
-			ChildGet("Y")->SetValue(vec.y);
+			ChildGet("X")->SetValue(vec.x, reason);
+			ChildGet("Y")->SetValue(vec.y, reason);
 		}
 		break;
 	case DAVA::VariantType::TYPE_VECTOR3:
 		{
 			DAVA::Vector3 vec = curVariantValue.AsVector3();
-			ChildGet("X")->SetValue(vec.x);
-			ChildGet("Y")->SetValue(vec.y);
-			ChildGet("Z")->SetValue(vec.z);
+			ChildGet("X")->SetValue(vec.x, reason);
+			ChildGet("Y")->SetValue(vec.y, reason);
+			ChildGet("Z")->SetValue(vec.z, reason);
 		}
 		break;
 	case DAVA::VariantType::TYPE_VECTOR4:
 		{
 			DAVA::Vector4 vec = curVariantValue.AsVector4();
-			ChildGet("X")->SetValue(vec.x);
-			ChildGet("Y")->SetValue(vec.y);
-			ChildGet("Z")->SetValue(vec.z);
-			ChildGet("W")->SetValue(vec.w);
+			ChildGet("X")->SetValue(vec.x, reason);
+			ChildGet("Y")->SetValue(vec.y, reason);
+			ChildGet("Z")->SetValue(vec.z, reason);
+			ChildGet("W")->SetValue(vec.w, reason);
 		}
 		break;
     case DAVA::VariantType::TYPE_COLOR:
@@ -410,21 +414,21 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
             
             QtPropertyData* min = ChildGet("min");
 			min->SetValue(FromVector3(box.min));
-			min->ChildGet("X")->SetValue(box.min.x);
-			min->ChildGet("Y")->SetValue(box.min.y);
-			min->ChildGet("Z")->SetValue(box.min.z);
+			min->ChildGet("X")->SetValue(box.min.x, reason);
+			min->ChildGet("Y")->SetValue(box.min.y, reason);
+			min->ChildGet("Z")->SetValue(box.min.z, reason);
             
             QtPropertyData* max = ChildGet("max");
 			max->SetValue(FromVector3(box.max));
-			max->ChildGet("X")->SetValue(box.max.x);
-			max->ChildGet("Y")->SetValue(box.max.y);
-			max->ChildGet("Z")->SetValue(box.max.z);
+			max->ChildGet("X")->SetValue(box.max.x, reason);
+			max->ChildGet("Y")->SetValue(box.max.y, reason);
+			max->ChildGet("Z")->SetValue(box.max.z, reason);
         }
         break;
 	}
 }
 
-void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData)
+void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData, ValueChangeReason reason)
 {
 	switch(curVariantValue.type)
 	{
@@ -445,7 +449,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			if(curVariantValue.AsVector2() != vec)
 			{
 				curVariantValue.SetVector2(vec);
-				SetValue(FromVector2(vec), QtPropertyData::VALUE_EDITED);
+				SetValue(FromVector2(vec), reason);
 			}
 		}
 		break;
@@ -459,7 +463,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			if(curVariantValue.AsVector3() != vec)
 			{
 				curVariantValue.SetVector3(vec);
-				SetValue(FromVector3(vec), QtPropertyData::VALUE_EDITED);
+				SetValue(FromVector3(vec), reason);
 			}
 		}
 		break;
@@ -474,7 +478,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			if(curVariantValue.AsVector4() != vec)
 			{
 				curVariantValue.SetVector4(vec);
-				SetValue(FromVector4(vec), QtPropertyData::VALUE_EDITED);
+				SetValue(FromVector4(vec), reason);
 			}
 		}
 		break;
@@ -495,7 +499,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			if(curVariantValue.AsAABBox3().min != box.min || curVariantValue.AsAABBox3().max != box.max)
 			{
 				curVariantValue.SetAABBox3(box);
-				SetValue(FromAABBox3(box), QtPropertyData::VALUE_EDITED);
+				SetValue(FromAABBox3(box), reason);
 			}
         }
         break;
