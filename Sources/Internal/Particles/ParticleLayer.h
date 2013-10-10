@@ -304,7 +304,7 @@ protected:
 	void RemoveFromList(Particle * particle);
 	
 	void RunParticle(Particle * particle);
-	void ProcessParticle(Particle * particle);
+	void ProcessParticle(Particle * particle, float32 timeElapsed);	
 	
     void SaveForcesToYamlNode(YamlNode* layerNode);
 
@@ -402,6 +402,8 @@ public:
 
 	RefPtr< PropertyLine<float32> > angle;				// sprite angle in degrees
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
+
+	RefPtr< PropertyLine<float32> > animSpeedOverLife;	
 
 	float32		alignToMotion;
 

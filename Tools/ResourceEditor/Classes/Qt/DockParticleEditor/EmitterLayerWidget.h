@@ -155,6 +155,7 @@ private:
 	TimeLineWidget* velocityOverLifeTimeLine;
 	TimeLineWidget* spinTimeLine;
 	TimeLineWidget* spinOverLifeTimeLine;
+	
 
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
@@ -162,6 +163,7 @@ private:
 	QLabel* frameOverlifeFPSLabel;
 	QCheckBox* randomFrameOnStartCheckBox;
 	QCheckBox* loopSpriteAnimationCheckBox;
+	TimeLineWidget* animSpeedOverLifeTimeLine;
 
 	QCheckBox* randomSpinDirectionCheckBox;
 
