@@ -503,6 +503,11 @@ void SceneTabWidget::AddTopToolWidget(QWidget *widget)
     }
 }
 
+DavaGLWidget * SceneTabWidget::GetDavaWidget() const
+{
+	return davaWidget;
+}
+
 
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 	: QTabBar(parent)

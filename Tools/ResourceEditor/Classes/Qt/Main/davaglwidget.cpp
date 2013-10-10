@@ -120,6 +120,8 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e);
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
+
+	emit Resized(e->size().width(), e->size().height());
 }
 
 void DavaGLWidget::changeEvent(QEvent * event)
