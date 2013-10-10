@@ -63,6 +63,7 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 	SafeRelease(customColorsProxy);
 	SafeRelease(visibilityToolProxy);
 	SafeRelease(rulerToolProxy);
+	SafeRelease(cursorTexture);
 
 	SafeDelete(notPassableTerrainProxy);
 }
