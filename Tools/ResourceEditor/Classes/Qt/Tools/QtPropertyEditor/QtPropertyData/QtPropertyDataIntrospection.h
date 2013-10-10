@@ -53,7 +53,6 @@ protected:
 	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
 
 	virtual QVariant GetValueInternal();
-	virtual void ChildNeedUpdate();
 
 	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
 

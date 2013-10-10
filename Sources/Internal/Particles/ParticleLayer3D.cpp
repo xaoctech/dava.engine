@@ -289,10 +289,14 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			//frame blending
 			if (enableFrameBlend)
 			{
-				int nextFrame = current->frame+1;
+				int32 nextFrame = current->frame+1;
 				if (nextFrame >= sprite->GetFrameCount())
 				{
-					nextFrame = 0;
+					if (loopSpriteAnimation)
+						nextFrame = 0;
+					else
+						nextFrame = sprite->GetFrameCount()-1;
+					
 				}
 				pT = sprite->GetTextureVerts(nextFrame);
 				textures2[texturesCount2] = pT[0];
@@ -314,17 +318,15 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 				texturesCount2 ++;
 				textures2[texturesCount2] = pT[7];
 				texturesCount2 ++;
+				
 
-
-				float32 time = (current->life - current->frameLastUpdateTime) * frameOverLifeFPS;
-
-				times[timesCount] = time;
+				times[timesCount] = current->animTime;
 				timesCount++;
-				times[timesCount] = time;
+				times[timesCount] = current->animTime;
 				timesCount++;
-				times[timesCount] = time;
+				times[timesCount] = current->animTime;
 				timesCount++;
-				times[timesCount] = time;
+				times[timesCount] = current->animTime;
 				timesCount++;
 			}
 			

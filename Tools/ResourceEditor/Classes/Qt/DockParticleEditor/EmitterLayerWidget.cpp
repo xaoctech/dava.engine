@@ -334,6 +334,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(loopSpriteAnimationCheckBox, SIGNAL(stateChanged(int)),
 		this, SLOT(OnValueChanged()));
 	mainBox->addWidget(loopSpriteAnimationCheckBox);
+
+	animSpeedOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(animSpeedOverLifeTimeLine);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -727,6 +730,10 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
 	randomFrameOnStartCheckBox->setChecked(layer->randomFrameOnStart);
 	loopSpriteAnimationCheckBox->setChecked(layer->loopSpriteAnimation);
+
+	animSpeedOverLifeTimeLine->Init(0, 1, updateMinimized);
+	animSpeedOverLifeTimeLine->SetMinLimits(0);
+	animSpeedOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->animSpeedOverLife).GetProps(), Qt::blue, "anim speed over life");
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -789,6 +796,7 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE"));//todo
 	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
 	spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
+	animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
 	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
@@ -834,6 +842,10 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	props->DeleteAllKeys();
 	spinOverLifeTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
+	
+	props->DeleteAllKeys();
+	animSpeedOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS", props);
 
 	props->DeleteAllKeys();
 	alphaOverLifeTimeLine->GetVisualState(props);
@@ -938,6 +950,9 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propSpinOverLife;
 	spinOverLifeTimeLine->GetValue(0, propSpinOverLife.GetPropsPtr());
 
+	PropLineWrapper<float32> propAnimSpeedOverLife;
+	animSpeedOverLifeTimeLine->GetValue(0, propAnimSpeedOverLife.GetPropsPtr());
+
 	PropLineWrapper<Color> propColorRandom;
 	colorRandomGradient->GetValues(propColorRandom.GetPropsPtr());
 
@@ -1016,6 +1031,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)frameOverlifeFPSSpin->value(),
 						 randomFrameOnStartCheckBox->isChecked(),
 						 loopSpriteAnimationCheckBox->isChecked(),
+						 propAnimSpeedOverLife.GetPropLine(),
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
@@ -1138,6 +1154,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
 	randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
 	loopSpriteAnimationCheckBox->setVisible(!isSuperemitter);
+	animSpeedOverLifeTimeLine->setVisible(!isSuperemitter);
 
 	// The Pivot Point must be hidden for Superemitter mode.
 	pivotPointLabel->setVisible(!isSuperemitter);

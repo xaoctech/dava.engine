@@ -149,6 +149,18 @@ void QtPropertyItem::setData(const QVariant & value, int role)
 	}
 }
 
+bool QtPropertyItem::Update()
+{
+	bool ret = false;
+
+	if(NULL != itemData)
+	{
+		return itemData->UpdateValue();
+	}
+
+	return ret;
+}
+
 void QtPropertyItem::ChildAdd(const QString &key, QtPropertyData* data)
 {
 	if(NULL != parentName)
@@ -217,9 +229,16 @@ void QtPropertyItem::ApplyDataFlags()
 		}
 			
 		setCheckable(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE);
-		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE && itemData->GetValue().toBool())
+		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE)
 		{
-			setCheckState(Qt::Checked);
+			if(itemData->GetValue().toBool())
+			{
+				setCheckState(Qt::Checked);
+			}
+			else
+			{
+				setCheckState(Qt::Unchecked);
+			}
 		}
 
 		if(NULL != model())
@@ -251,6 +270,8 @@ void QtPropertyItem::DataFlagsChanged()
 
 void QtPropertyItem::DataValueChanged(QtPropertyData::ValueChangeReason reason)
 {
+	ApplyDataFlags();
+
 	if(reason == QtPropertyData::VALUE_EDITED)
 	{
 		QtPropertyModel *propModel = (QtPropertyModel *) model();
