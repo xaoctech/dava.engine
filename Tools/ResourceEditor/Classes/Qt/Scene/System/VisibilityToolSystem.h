@@ -107,7 +107,6 @@ protected:
 	Vector2 visibilityPoint;
 
 	void UpdateCursorPosition(int32 landscapeSize);
-	void UpdateBrushTool(float32 timeElapsed);
 
 	void AddRectToAccumulator(const Rect& rect);
 	void ResetAccumulatorRect();
