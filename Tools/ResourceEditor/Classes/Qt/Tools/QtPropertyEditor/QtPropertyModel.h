@@ -57,19 +57,17 @@ public:
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
 
-	void RefreshAll();
+	void UpdateStructure(const QModelIndex &parent = QModelIndex());
 
 signals:
 	void ItemEdited(const QString &name, QtPropertyData *data);
 	void ItemChanged(const QString &name, QtPropertyData *data);
 
-protected slots:
-	void OnItemChanged(QStandardItem * item);
-
 protected:
 	bool trackEdit;
 
 	void EmitDataEdited(QtPropertyItem *item);
+	void UpdateStructureInternal(const QModelIndex &i);
 };
 
 #endif // __QT_PROPERTY_MODEL_H__

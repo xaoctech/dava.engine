@@ -56,10 +56,9 @@ protected:
 	int lastAddedType;
 
 	virtual QVariant GetValueInternal();
-	virtual void SetValueInternal(const QVariant &value);
+	virtual bool UpdateValueInternal();
 
 private:
-	void ChildsSync();
 	void ChildCreate(const QString &key, DAVA::VariantType *value);
 
 protected slots:

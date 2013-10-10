@@ -73,6 +73,7 @@ ParticleLayer::ParticleLayer()
 	spin = 0;			
 	spinVariation = 0;
 	spinOverLife = 0;
+	animSpeedOverLife = 0;
 	randomSpinDirection = false;
 
 	motionRandom = 0;		
@@ -197,6 +198,9 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (spinOverLife)
 		dstLayer->spinOverLife.Set(spinOverLife->Clone());
 	dstLayer->randomSpinDirection = randomSpinDirection;
+
+	if (animSpeedOverLife)
+		dstLayer->animSpeedOverLife.Set(animSpeedOverLife->Clone());
 
 	
 	if (motionRandom)
@@ -601,7 +605,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 					count--;
 				}else
 				{
-					ProcessParticle(current);
+					ProcessParticle(current, timeElapsed);
 					prev = current;
 				}
 
@@ -679,7 +683,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 				}
 				else
 				{
-					ProcessParticle(head);
+					ProcessParticle(head, timeElapsed);
 				}
             }
 			
@@ -852,19 +856,22 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
     
 	particle->frame = 0;
+	particle->animTime = 0;
 	if (randomFrameOnStart&&sprite)
 	{
 		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
 	}	
 	
 	// process it to fill first life values
-	ProcessParticle(particle);
+	ProcessParticle(particle, 0);
 
 	// go to life
 	RunParticle(particle);
 }
 
-void ParticleLayer::ProcessParticle(Particle * particle)
+
+
+void ParticleLayer::ProcessParticle(Particle * particle, float32 timeElapsed)
 {
 	float32 t = particle->life / particle->lifeTime;
 	if (sizeOverLifeXY)
@@ -888,13 +895,15 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		particle->drawColor = particle->color*emitter->ambientColor;
 	}
 
-	// Frame Overlife FPS defines how many frames should be displayed in a second.
-	// This property is cycled - if we reached the last frame, we'll update to the new one.
-	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
+	// Frame Overlife FPS defines how many frames should be displayed in a second.	
+	if (frameOverLifeEnabled)
 	{
-		//float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
-		float32 frameTime = 1.0f / frameOverLifeFPS;
-		while ((particle->life - particle->frameLastUpdateTime) > frameTime)
+		float32 animDelta = timeElapsed*frameOverLifeFPS;
+		if (animSpeedOverLife)
+			animDelta*=animSpeedOverLife->GetValue(t);
+		particle->animTime+=animDelta;
+
+		while (particle->animTime>1.0f)
 		{
 			particle->frame ++;
 			// Spright might not be loaded (see please DF-1661).
@@ -907,7 +916,7 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 					
 			}
 
-			particle->frameLastUpdateTime += frameTime;
+			particle->animTime -= 1.0f;
 		}
 	}
     
@@ -1132,6 +1141,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
 	spinVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinVariation");	
 	spinOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinOverLife");	
+	animSpeedOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "animSpeedOverLife");	
 	const YamlNode* randomSpinDirectionNode = node->Get("randomSpinDirection");
 	if (randomSpinDirectionNode)
 	{
@@ -1304,6 +1314,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spin", this->spin);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinVariation", this->spinVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinOverLife", this->spinOverLife);
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "animSpeedOverLife", this->animSpeedOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomSpinDirection", this->randomSpinDirection);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandom", this->motionRandom);

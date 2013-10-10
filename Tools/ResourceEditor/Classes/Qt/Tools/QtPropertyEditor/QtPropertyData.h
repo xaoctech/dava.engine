@@ -79,8 +79,10 @@ public:
 	virtual ~QtPropertyData() ;
 
 	QVariant GetValue();
-	QVariant GetAlias();
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
+	bool UpdateValue();
+
+	QVariant GetAlias();
 
 	virtual QIcon GetIcon();
 	virtual void SetIcon(const QIcon &icon);
@@ -113,24 +115,25 @@ protected:
 	QVariant curValue;
 	QIcon curIcon;
 	int curFlags;
-
+	bool updatingValue;
+	
 	QtPropertyData *parent;
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;
 
-	void ParentUpdate();
+	virtual void UpdateUp();
+	virtual void UpdateDown();
 
 	// Functions should be re-implemented by sub-class
 	virtual QVariant GetValueInternal();
 	virtual QVariant GetValueAlias();
 	virtual void SetValueInternal(const QVariant &value);
+	virtual bool UpdateValueInternal();
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
 	virtual bool EditorDoneInternal(QWidget *editor);
 	virtual bool SetEditorDataInternal(QWidget *editor);
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	virtual void ChildNeedUpdate();
-	
+
 public:
 	// Option widgets
 	int GetOWCount();
