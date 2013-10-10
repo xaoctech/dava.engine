@@ -61,7 +61,7 @@ const int AlignTest::alignTypesData[] =
 };
 
 AlignTest::AlignTest():
-TestTemplate<AlignTest>("SplitTest"),
+TestTemplate<AlignTest>("AlignTest"),
 	currentAlignIndex(0),
 	currenTestIndex(0),
 	data(NULL)
