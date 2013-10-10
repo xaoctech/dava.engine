@@ -114,6 +114,20 @@ void FMODSoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFi
 	SoundComponent::Deserialize(archive, sceneFile);
 }
 
+void FMODSoundComponent::ApplyParamsToEvent(FMOD::Event *event)
+{
+    FastNameMap<float32>::Iterator it = paramsValues.Begin();
+    FastNameMap<float32>::Iterator itEnd = paramsValues.End();
+    while(it != itEnd)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(event->getParameter(it.GetKey().c_str(), &param));
+        if(param)
+            FMOD_VERIFY(param->setValue(it.GetValue()));
+        ++it;
+    }
+}
+    
 bool FMODSoundComponent::Trigger()
 {
     FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
@@ -127,10 +141,12 @@ bool FMODSoundComponent::Trigger()
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
         FMOD_VECTOR pos = {position.x, position.y, position.z};
         FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0));
+        ApplyParamsToEvent(fmodEventInfo);
         
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
         if(fmodEvent)
         {
+            ApplyParamsToEvent(fmodEvent);
             FMOD_VERIFY(fmodEvent->setCallback(FMODComponentEventCallback, &fmodEvent));
             FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
         }
@@ -159,7 +175,14 @@ void FMODSoundComponent::SetParameter(const String & paramName, float32 value)
         FMOD::EventParameter * param = 0;
         FMOD_VERIFY(fmodEvent->getParameter(paramName.c_str(), &param));
         if(param)
+        {
+            FastName fastParamName(paramName.c_str());
+            if(paramsValues.IsKey(fastParamName))
+                paramsValues.Remove(fastParamName);
+            paramsValues.Insert(fastParamName, value);
+            
             FMOD_VERIFY(param->setValue(value));
+        }
     }
 }
     

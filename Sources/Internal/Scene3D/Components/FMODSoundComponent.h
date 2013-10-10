@@ -33,6 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/FastNameMap.h"
 #include "Scene3D/Components/SoundComponent.h"
 
 namespace FMOD
@@ -79,9 +80,13 @@ public:
     void KeyOffParameter(const String & paramName);
     
 private:
+    void ApplyParamsToEvent(FMOD::Event * event);
+    
     FMOD::Event * fmodEvent;
 	String eventName;
     Vector3 position;
+    
+    FastNameMap<float32> paramsValues;
 
 friend class SoundUpdateSystem;
     
