@@ -65,6 +65,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 CustomColorsSystem::~CustomColorsSystem()
 {
 	SafeRelease(cursorTexture);
+	SafeRelease(toolImageSprite);
 }
 
 bool CustomColorsSystem::IsLandscapeEditingEnabled() const
