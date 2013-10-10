@@ -246,6 +246,7 @@ public:
 			  float32 frameOverLifeFPS,
 			  bool randomFrameOnStart,
 			  bool loopSpriteAnimation,
+			  RefPtr< PropertyLine<float32> > animSpeedOverLife,
 
 			  float32 pivotPointX,
 			  float32 pivotPointY);
@@ -300,6 +301,7 @@ protected:
 	float32 frameOverLifeFPS;
 	bool randomFrameOnStart;
 	bool loopSpriteAnimation;
+	RefPtr< PropertyLine<float32> > animSpeedOverLife;
 
 	float32 pivotPointX;
 	float32 pivotPointY;
