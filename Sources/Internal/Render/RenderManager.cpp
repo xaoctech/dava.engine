@@ -156,6 +156,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+	
+	renderContextId = 0;
 }
 	
 RenderManager::~RenderManager()
@@ -872,5 +874,42 @@ uint32 RenderManager::GetFBOViewFramebuffer() const
     return fboViewFramebuffer;
 }
 
-    
+void RenderManager::SetRenderContextId(uint64 contextId)
+{
+	renderContextId = contextId;
+}
+	
+uint64 RenderManager::GetRenderContextId()
+{
+	return renderContextId;
+}
+	
+void RenderManager::VerifyRenderContext()
+{
+	
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__))
+	
+#if defined(__DAVAENGINE_WIN32__)
+	uint64 curRenderContext = (uint64)wglGetCurrentContext();
+#elif defined(__DAVAENGINE_MACOS__)
+	uint64 curRenderContext = (uint64)CGLGetCurrentContext();
+#endif
+	
+	//VI: if you see this assert then something wrong happened to
+	//opengl context and current context doesn't match the one that was
+	//stored as a reference context.
+	//It may happen in several cases:
+	//1. This check was performed in another thread without prior updating renderContextId
+	//2. OpenGL context was invalidated and recreated without updating renderContextId
+	//3. Something really bad happened and opengl context was set to thread local storage by external forces
+	//In order to deal with cases 1) and 2) just check app logic and update renderContextId when it's appropriate.
+	//In order to deal with 3) seek for the solution. For example on MacOSX 10.8 NSOpenPanel runs in another process.
+	//And after returning from file selection dialog the opengl context is completely wrong until the end of current event loop.
+	//In order to fix call QApplication::processEvents in case of Qt or equivalent in case of native app or
+	//postpone result processing via delayed selector execution.
+	DVASSERT(curRenderContext == renderContextId);
+	
+#endif
+}
+	
 };

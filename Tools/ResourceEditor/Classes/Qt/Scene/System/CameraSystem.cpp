@@ -45,6 +45,8 @@
 
 #include "../StringConstants.h"
 
+#include "../../Main/QtUtils.h"
+
 SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	: SceneSystem(scene)
 	, curSceneCamera(NULL)
@@ -334,7 +336,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 	{
 		DAVA::float32 moveSpeed = curSpeed * timeElapsed;        
 
-		if(1) // TODO: check for key modifiers
+		if(!IsKeyModificatorPressed(DVKEY_ALT)) // TODO: check for key modifiers
 		{
 			DAVA::KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
 

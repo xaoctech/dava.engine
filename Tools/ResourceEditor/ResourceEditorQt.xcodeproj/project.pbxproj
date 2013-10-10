@@ -47,6 +47,8 @@
 		495A604017E7679F00039A43 /* HeightmapEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 495A603F17E7679F00039A43 /* HeightmapEditorPanel_moc.cpp */; };
 		496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A416BBBAA100C21DB0 /* TilemapEditorCommands.cpp */; };
 		496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */; };
+		4969B7BC1800904D00658A3B /* TileTexturePreviewWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */; };
+		4969B7C51800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */; };
 		497DB3DA17D9DCD000E6A643 /* RulerToolActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */; };
 		497DB3E417D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */; };
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
@@ -98,8 +100,6 @@
 		4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */; };
 		4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */; };
 		4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */; };
-		4FAD0CDB1785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */; };
-		4FAD0CDC1785EC6E00B05A35 /* HangingObjectsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */; };
 		4FAD0CDD1785EC6E00B05A35 /* LibraryModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C481785EC6E00B05A35 /* LibraryModel_moc.cpp */; };
 		4FAD0CDE1785EC6E00B05A35 /* LibraryView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C491785EC6E00B05A35 /* LibraryView_moc.cpp */; };
 		4FAD0CDF1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0C4B1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp */; };
@@ -457,8 +457,6 @@
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
-		84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */; };
-		84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A662EDCE17E0D37800AF2135 /* AddSkyboxDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A662EDCC17E0D37800AF2135 /* AddSkyboxDialog.cpp */; };
@@ -585,6 +583,7 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */; };
 		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
 		E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */; };
 		E8DADC3017E9ED3C00561D52 /* RemoveComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */; };
@@ -744,6 +743,9 @@
 		496566A516BBBAA200C21DB0 /* TilemapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemapEditorCommands.h; path = Classes/Commands/TilemapEditorCommands.h; sourceTree = "<group>"; };
 		496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorCommands.cpp; path = Classes/Commands/HeightmapEditorCommands.cpp; sourceTree = "<group>"; };
 		496566A816BBCDA400C21DB0 /* HeightmapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapEditorCommands.h; path = Classes/Commands/HeightmapEditorCommands.h; sourceTree = "<group>"; };
+		4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TileTexturePreviewWidget.cpp; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget.cpp; sourceTree = "<group>"; };
+		4969B7BB1800904D00658A3B /* TileTexturePreviewWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TileTexturePreviewWidget.h; path = Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget.h; sourceTree = "<group>"; };
+		4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TileTexturePreviewWidget_moc.cpp; path = _GeneratedQt/DockLandscapeEditorControls/LandscapeEditorPanels/TileTexturePreviewWidget_moc.cpp; sourceTree = "<group>"; };
 		497DB3D817D9DCD000E6A643 /* RulerToolActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RulerToolActions.cpp; sourceTree = "<group>"; };
 		497DB3D917D9DCD000E6A643 /* RulerToolActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulerToolActions.h; sourceTree = "<group>"; };
 		497DB3E217D9DEE100E6A643 /* LandscapeEditorDrawSystemActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorDrawSystemActions.cpp; sourceTree = "<group>"; };
@@ -845,8 +847,6 @@
 		4FAD0C3E1785EC6E00B05A35 /* CommandSignals_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandSignals_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C401785EC6E00B05A35 /* Console_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C411785EC6E00B05A35 /* ConsoleView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsHelper_moc.cpp; sourceTree = "<group>"; };
-		4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsView_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C481785EC6E00B05A35 /* LibraryModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C491785EC6E00B05A35 /* LibraryView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryView_moc.cpp; sourceTree = "<group>"; };
 		4FAD0C4B1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions_moc.cpp; sourceTree = "<group>"; };
@@ -1551,10 +1551,6 @@
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
 		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
-		84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsHelper.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.cpp; sourceTree = "<group>"; };
-		84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsHelper.h; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.h; sourceTree = "<group>"; };
-		84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsView.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsView.cpp; sourceTree = "<group>"; };
-		84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsView.h; path = Classes/Qt/DockHangingObjects/HangingObjectsView.h; sourceTree = "<group>"; };
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
@@ -1784,6 +1780,8 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicShadowCommands.cpp; sourceTree = "<group>"; };
+		E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicShadowCommands.h; sourceTree = "<group>"; };
 		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
 		E8DADC0517E75A0B00561D52 /* BeastAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastAction.h; sourceTree = "<group>"; };
 		E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddComponentCommand.cpp; sourceTree = "<group>"; };
@@ -1932,6 +1930,7 @@
 		495A602617E6F91100039A43 /* LandscapeEditorPanels */ = {
 			isa = PBXGroup;
 			children = (
+				4969B7C41800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp */,
 				495A603F17E7679F00039A43 /* HeightmapEditorPanel_moc.cpp */,
 				495A603A17E7502E00039A43 /* TilemaskEditorPanel_moc.cpp */,
 				495A603517E7339E00039A43 /* VisibilityToolPanel_moc.cpp */,
@@ -1995,6 +1994,8 @@
 		49FE771D17E34B720010B8E1 /* LandscapeEditorPanels */ = {
 			isa = PBXGroup;
 			children = (
+				4969B7BA1800904D00658A3B /* TileTexturePreviewWidget.cpp */,
+				4969B7BB1800904D00658A3B /* TileTexturePreviewWidget.h */,
 				49FE771E17E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp */,
 				49FE771F17E34B8C0010B8E1 /* LandscapeEditorBasePanel.h */,
 				495A601B17E6F15E00039A43 /* CustomColorsPanel.cpp */,
@@ -2140,16 +2141,6 @@
 			);
 			name = DockConsole;
 			path = _GeneratedQt/DockConsole;
-			sourceTree = "<group>";
-		};
-		4FAD0C441785EC6E00B05A35 /* DockHangingObjects */ = {
-			isa = PBXGroup;
-			children = (
-				4FAD0C451785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp */,
-				4FAD0C461785EC6E00B05A35 /* HangingObjectsView_moc.cpp */,
-			);
-			name = DockHangingObjects;
-			path = _GeneratedQt/DockHangingObjects;
 			sourceTree = "<group>";
 		};
 		4FAD0C471785EC6E00B05A35 /* DockLibrary */ = {
@@ -2529,6 +2520,8 @@
 				E845520C17E0C0360041F0B1 /* ChangeLODDistanceCommand.h */,
 				4FFA515017DF49B9008B6A1E /* KeyedArchiveCommand.cpp */,
 				4FFA515117DF49B9008B6A1E /* KeyedArchiveCommand.h */,
+				E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */,
+				E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */,
 				E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */,
 				E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */,
 				E84551E917DF48A70041F0B1 /* ConvertToShadowCommand.cpp */,
@@ -2609,7 +2602,6 @@
 				494A7CDA172A92C0005D7C7F /* Commands */,
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
 				0297F30E170B403100627F78 /* DockMaterialViewOptions */,
-				84221F0716F8AF77000E7D74 /* DockHangingObjects */,
 				841703FF16CBCE9700F1023D /* SpritesPacker */,
 				E838D4D916AFFED4006F1721 /* DockLibrary */,
 				E838D4DE16AFFED4006F1721 /* DockParticleEditor */,
@@ -3438,17 +3430,6 @@
 			name = SpritesPacker;
 			sourceTree = "<group>";
 		};
-		84221F0716F8AF77000E7D74 /* DockHangingObjects */ = {
-			isa = PBXGroup;
-			children = (
-				84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */,
-				84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */,
-				84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */,
-				84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */,
-			);
-			name = DockHangingObjects;
-			sourceTree = "<group>";
-		};
 		A662EDCB17E0D37800AF2135 /* AddSkyboxDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -3831,7 +3812,6 @@
 				A69AA3A81796F1A60008B683 /* CubemapEditor */,
 				4FAD0C3D1785EC6E00B05A35 /* Commands */,
 				4FAD0C3F1785EC6E00B05A35 /* DockConsole */,
-				4FAD0C441785EC6E00B05A35 /* DockHangingObjects */,
 				4FAD0C471785EC6E00B05A35 /* DockLibrary */,
 				4FAD0C4A1785EC6E00B05A35 /* DockMaterialViewOptions */,
 				4FAD0C4C1785EC6E00B05A35 /* DockParticleEditor */,
@@ -4547,6 +4527,7 @@
 				E838D5AE16AFFED4006F1721 /* TextureList.cpp in Build Sources */,
 				E838D5AF16AFFED4006F1721 /* TextureListDelegate.cpp in Build Sources */,
 				E838D5B016AFFED4006F1721 /* TextureListModel.cpp in Build Sources */,
+				4969B7BC1800904D00658A3B /* TileTexturePreviewWidget.cpp in Build Sources */,
 				E838D5B116AFFED4006F1721 /* TextureProperties.cpp in Build Sources */,
 				E838D5B216AFFED4006F1721 /* TextureScrollArea.cpp in Build Sources */,
 				E838D84F16B0059F006F1721 /* PropertyEditor.cpp in Build Sources */,
@@ -4561,8 +4542,6 @@
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
 				CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */,
-				84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */,
-				84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */,
 				50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */,
 				50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */,
 				4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */,
@@ -4611,6 +4590,7 @@
 				4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */,
 				4FFE5C84176B37B600728624 /* CommandNotify.cpp in Build Sources */,
 				4FFE5C85176B37B600728624 /* CommandStack.cpp in Build Sources */,
+				E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */,
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
@@ -4643,14 +4623,13 @@
 				4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */,
 				4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */,
 				4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */,
-				4FAD0CDB1785EC6E00B05A35 /* HangingObjectsHelper_moc.cpp in Build Sources */,
-				4FAD0CDC1785EC6E00B05A35 /* HangingObjectsView_moc.cpp in Build Sources */,
 				4FAD0CDD1785EC6E00B05A35 /* LibraryModel_moc.cpp in Build Sources */,
 				4FAD0CDE1785EC6E00B05A35 /* LibraryView_moc.cpp in Build Sources */,
 				4FAD0CDF1785EC6E00B05A35 /* MaterialViewOptions_moc.cpp in Build Sources */,
 				4FAD0CE01785EC6E00B05A35 /* BaseParticleEditorContentWidget_moc.cpp in Build Sources */,
 				4FAD0CE11785EC6E00B05A35 /* EmitterLayerWidget_moc.cpp in Build Sources */,
 				4FAD0CE21785EC6E00B05A35 /* GradientPickerWidget_moc.cpp in Build Sources */,
+				4969B7C51800C9E400658A3B /* TileTexturePreviewWidget_moc.cpp in Build Sources */,
 				4FAD0CE31785EC6E00B05A35 /* LayerForceWidget_moc.cpp in Build Sources */,
 				4FAD0CE41785EC6E00B05A35 /* ParticleEditorWidget_moc.cpp in Build Sources */,
 				4FAD0CE51785EC6E00B05A35 /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,

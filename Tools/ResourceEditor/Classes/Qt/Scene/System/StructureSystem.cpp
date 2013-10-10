@@ -303,7 +303,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
 
-			if(entityPos.IsZero())
+			if(entityPos.IsZero() && FindLandscape(loadedEntity) == NULL)
 			{
 				SceneCameraSystem *cameraSystem = sceneEditor->cameraSystem;
 

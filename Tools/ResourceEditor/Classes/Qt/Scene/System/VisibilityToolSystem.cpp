@@ -148,7 +148,6 @@ void VisibilityToolSystem::Update(DAVA::float32 timeElapsed)
 	{
 		if (prevCursorPos != cursorPosition)
 		{
-			UpdateBrushTool(timeElapsed);
 			prevCursorPos = cursorPosition;
 		}
 	}
@@ -184,7 +183,6 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			case UIEvent::PHASE_BEGAN:
 				if (isIntersectsLandscape)
 				{
-					UpdateToolImage();
 					StoreOriginalState();
 					editingIsEnabled = true;
 				}
@@ -234,31 +232,6 @@ void VisibilityToolSystem::UpdateCursorPosition(int32 landscapeSize)
 
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
-}
-
-void VisibilityToolSystem::UpdateToolImage(bool force)
-{
-}
-
-Image* VisibilityToolSystem::CreateToolImage(int32 sideSize, const FilePath& filePath)
-{
-	Texture* toolTexture = Texture::CreateFromFile(filePath);
-	if (!toolTexture)
-	{
-		return NULL;
-	}
-
-	SafeRelease(toolImageSprite);
-	toolImageSprite = Sprite::CreateFromTexture(toolTexture, 0.f, 0.f, sideSize, sideSize);
-	toolImageSprite->GetTexture()->GeneratePixelesation();
-
-	SafeRelease(toolTexture);
-
-	return NULL;
-}
-
-void VisibilityToolSystem::UpdateBrushTool(float32 timeElapsed)
-{
 }
 
 void VisibilityToolSystem::ResetAccumulatorRect()

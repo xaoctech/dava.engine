@@ -332,6 +332,12 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				{
 					koef = -koef;
 				}
+
+				if (IsKeyModificatorPressed(DVKEY_ALT))
+				{
+					koef = -koef;
+				}
+
 				editorHeightmap->DrawRelativeRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
 				break;
 			}

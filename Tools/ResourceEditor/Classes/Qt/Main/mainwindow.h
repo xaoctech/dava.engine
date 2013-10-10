@@ -146,6 +146,7 @@ public slots:
 	void OnOpenHelp();
 
 	void OnSetShadowColor();
+	void OnShadowBlendModeWillShow();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
 
@@ -181,6 +182,8 @@ public slots:
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
+
+	void OnHangingObjects();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -256,13 +259,13 @@ private:
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 	void LoadObjectTypes(SceneEditor2 *scene);
+	void LoadHangingObjects(SceneEditor2 *scene);
 
     bool globalInvalidateTimeoutEnabled;
 
 	bool IsSavingAllowed();
     
     void CreateObjectTypesCombobox();
-
 
 };
 

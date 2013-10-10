@@ -659,8 +659,8 @@ void SceneTree::SaveEntityAs()
 		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
 		if(selection.Size() > 0)
 		{
-			DAVA::FilePath scenePath = sceneEditor->GetScenePath();
-			if(scenePath.IsEmpty())
+			DAVA::FilePath scenePath = sceneEditor->GetScenePath().GetDirectory();
+			if(!scenePath.Exists() || !sceneEditor->IsLoaded())
 			{
 				scenePath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
 			}

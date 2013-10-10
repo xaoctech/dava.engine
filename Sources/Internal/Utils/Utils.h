@@ -132,6 +132,8 @@ T ParseStringTo(const String & str)
     stream >> result;
     return result;
 }
+	
+uint64 eglGetCurrentContext();
 
 };
 
