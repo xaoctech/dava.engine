@@ -234,8 +234,7 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	// Force refresh in 100 ms
-	FireRefreshTimeout(100);
+	ForceRefreshTimeout(100);
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
