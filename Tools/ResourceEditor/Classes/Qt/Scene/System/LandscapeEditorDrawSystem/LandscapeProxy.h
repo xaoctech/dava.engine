@@ -41,6 +41,14 @@ class CustomLandscape;
 class LandscapeProxy: public BaseObject
 {
 public:
+	enum eTilemaskSprites
+	{
+		TILEMASK_SPRITE_SOURCE = 0,
+		TILEMASK_SPRITE_DESTINATION,
+		
+		TILEMASK_SPRITES_COUNT
+	};
+
 	enum eLandscapeMode
 	{
 		MODE_CUSTOM_LANDSCAPE = 0,
@@ -101,6 +109,10 @@ public:
 	void InitTilemaskImageCopy();
 	Image* GetTilemaskImageCopy();
 
+	void InitTilemaskSprites();
+	Sprite* GetTilemaskSprite(int32 number);
+	void SwapTilemaskSprites();
+
 protected:
 	enum eTextureType
 	{
@@ -116,6 +128,7 @@ protected:
 	bool texturesEnabled[TEXTURE_TYPES_COUNT];
 
 	Image* tilemaskImageCopy;
+	Sprite* tilemaskSprites[TILEMASK_SPRITES_COUNT];
 
 	int32 tilemaskWasChanged;
 	
