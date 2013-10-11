@@ -436,6 +436,127 @@ namespace DAVA
 			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
 		}
 	}
+	
+	bool NMaterialState::LoadFromYamlNode(const YamlNode* stateNode)
+	{
+		bool result = false;
+		
+		const YamlNode * parentNameNode = stateNode->Get("Parent");
+		if (parentNameNode)
+		{
+			parentName = parentNameNode->AsString();
+		}
+
+		
+		const YamlNode * layersNode = stateNode->Get("Layers");
+		if (layersNode)
+		{
+			int32 count = layersNode->GetCount();
+			for (int32 k = 0; k < count; ++k)
+			{
+				const YamlNode * singleLayerNode = layersNode->Get(k);
+				layers.Insert(FastName(singleLayerNode->AsString()));
+			}
+		}
+		
+		const YamlNode * uniformsNode = stateNode->Get("Uniforms");
+		if (uniformsNode)
+		{
+			uint32 count = uniformsNode->GetCount();
+			for (uint32 k = 0; k < count; ++k)
+			{
+				const YamlNode * uniformNode = uniformsNode->Get(k);
+				if (uniformNode)
+				{
+					AddMaterialProperty(uniformsNode->GetItemKeyName(k), uniformNode);
+				}
+			}
+		}
+		
+		const YamlNode * materialDefinesNode = stateNode->Get("MaterialDefines");
+		if (materialDefinesNode)
+		{
+			uint32 count = materialDefinesNode->GetCount();
+			for (uint32 k = 0; k < count; ++k)
+			{
+				const YamlNode * defineNode = materialDefinesNode->Get(k);
+				if (defineNode)
+				{
+					nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
+				}
+			}
+		}
+		
+		for (int32 k = 0; k < stateNode->GetCount(); ++k)
+		{
+			const YamlNode * renderStepNode = stateNode->Get(k);
+			
+			if (renderStepNode->AsString() == "RenderPass")
+			{
+				Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
+				const YamlNode * shaderNode = renderStepNode->Get("Shader");
+				const YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
+				
+				if (!shaderNode && !shaderGraphNode)
+				{
+					Logger::Error("RenderPass:%s does not have shader or shader graph", renderStepNode->AsString().c_str());
+					break;
+				}
+				
+				FastName shaderName;
+				if (shaderNode)
+				{
+					shaderName = FastName(shaderNode->AsString().c_str());
+				}
+				
+				if (shaderGraphNode)
+				{
+					String shaderGraphPathname = shaderGraphNode->AsString();
+					MaterialGraph * graph = new MaterialGraph();
+					graph->LoadFromFile(shaderGraphPathname);
+					
+					MaterialCompiler * compiler = new MaterialCompiler();
+					compiler->Compile(graph, 0, 4, 0);
+										
+					SafeRelease(compiler);
+					SafeRelease(graph);
+				}
+				
+				FastNameSet definesSet;
+				const YamlNode * definesNode = renderStepNode->Get("UniqueDefines");
+				if (definesNode)
+				{
+					int32 count = definesNode->GetCount();
+					for (int32 k = 0; k < count; ++k)
+					{
+						const YamlNode * singleDefineNode = definesNode->Get(k);
+						definesSet.Insert(FastName(singleDefineNode->AsString().c_str()));
+					}
+				}
+				
+				RenderState * renderState = new RenderState();
+				//const YamlNode * renderStateNode = renderStepNode->Get("RenderState");
+				if (renderStepNode)
+				{
+					renderState->LoadFromYamlNode(renderStepNode);
+				}
+				
+				const YamlNode * renderPassNameNode = renderStepNode->Get("Name");
+				FastName renderPassName;
+				if (renderPassNameNode)
+				{
+					renderPassName = renderPassNameNode->AsString();
+				}
+				
+				MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
+				AddMaterialTechnique(renderPassName, technique);
+			}
+		}
+		
+		result = true;
+		
+		return result;
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -458,136 +579,92 @@ namespace DAVA
     
 	bool NMaterial::LoadFromFile(const String & pathname)
 	{
+		bool result = false;
 		YamlParser * parser = YamlParser::Create(pathname);
 		if (!parser)
 		{
 			Logger::Error("Can't load requested material: %s", pathname.c_str());
-			return false;
+			return result;
 		}
+		
 		YamlNode * rootNode = parser->GetRootNode();
 		
 		if (!rootNode)
 		{
 			SafeRelease(rootNode);
 			SafeRelease(parser);
-			return false;
+			return result;
 		}
 		
 		const YamlNode * materialNode = rootNode->Get("Material");
 		
-		const YamlNode * layersNode = materialNode->Get("Layers");
-		if (layersNode)
+		uint32 materialStateCount = 0;
+		for(uint32 i = 0; i < materialNode->GetCount(); ++i)
 		{
-			int32 count = layersNode->GetCount();
-			for (int32 k = 0; k < count; ++k)
-			{
-				const YamlNode * singleLayerNode = layersNode->Get(k);
-				layers.Insert(FastName(singleLayerNode->AsString()));
-			}
-		}
-		effectiveLayers.Combine(layers);
-		
-		const YamlNode * uniformsNode = materialNode->Get("Uniforms");
-		if (uniformsNode)
-		{
-			uint32 count = uniformsNode->GetCount();
-			for (uint32 k = 0; k < count; ++k)
-			{
-				const YamlNode * uniformNode = uniformsNode->Get(k);
-				if (uniformNode)
-				{
-					AddMaterialProperty(uniformsNode->GetItemKeyName(k), uniformNode);
-				}
-			}
-		}
-		
-		const YamlNode * materialDefinesNode = materialNode->Get("MaterialDefines");
-		if (materialDefinesNode)
-		{
-			uint32 count = materialDefinesNode->GetCount();
-			for (uint32 k = 0; k < count; ++k)
-			{
-				const YamlNode * defineNode = materialDefinesNode->Get(k);
-				if (defineNode)
-				{
-					nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
-				}
-			}
-		}
-		
-		for (int32 k = 0; k < rootNode->GetCount(); ++k)
-		{
-			const YamlNode * renderStepNode = rootNode->Get(k);
+			const YamlNode* materialStateNode = materialNode->Get(i);
 			
-			if (renderStepNode->AsString() == "RenderPass")
+			if (materialStateNode->AsString() == "MaterialState")
 			{
-				Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
-				const YamlNode * shaderNode = renderStepNode->Get("Shader");
-				const YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
-				
-				if (!shaderNode && !shaderGraphNode)
-				{
-					Logger::Error("Material:%s RenderPass:%s does not have shader or shader graph", pathname.c_str(), renderStepNode->AsString().c_str());
-					SafeRelease(parser);
-					return false;
-				}
-				
-				FastName shaderName;
-				if (shaderNode)
-				{
-					shaderName = FastName(shaderNode->AsString().c_str());
-				}
-				
-				if (shaderGraphNode)
-				{
-					String shaderGraphPathname = shaderGraphNode->AsString();
-					MaterialGraph * graph = new MaterialGraph();
-					graph->LoadFromFile(shaderGraphPathname);
-					
-					MaterialCompiler * compiler = new MaterialCompiler();
-					compiler->Compile(graph, 0, 4, 0);
-					
-					//vertexShader = compiler->GetCompiledVertexShaderPathname();
-					//fragmentShader = compiler->GetCompiledFragmentShaderPathname();
-					
-					SafeRelease(compiler);
-					SafeRelease(graph);
-				}
-				
-				FastNameSet definesSet;
-				const YamlNode * definesNode = renderStepNode->Get("UniqueDefines");
-				if (definesNode)
-				{
-					int32 count = definesNode->GetCount();
-					for (int32 k = 0; k < count; ++k)
-					{
-						const YamlNode * singleDefineNode = definesNode->Get(k);
-						definesSet.Insert(FastName(singleDefineNode->AsString().c_str()));
-					}
-				}
-				
-				RenderState * renderState = new RenderState();
-				const YamlNode * renderStateNode = renderStepNode->Get("RenderState");
-				if (renderStepNode)
-				{
-					renderState->LoadFromYamlNode(renderStepNode);
-				}
-				
-				
-				const YamlNode * renderPassNameNode = renderStepNode->Get("Name");
-				FastName renderPassName;
-				if (renderPassNameNode)
-				{
-					renderPassName = renderPassNameNode->AsString();
-				}
-				
-				MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
-				AddMaterialTechnique(renderPassName, technique);
+				materialStateCount++;
 			}
 		}
 		
+		for(uint32 i = 0; i < materialNode->GetCount(); ++i)
+		{
+			const YamlNode* materialStateNode = materialNode->Get(i);
+			
+			if (materialStateNode->AsString() == "MaterialState")
+			{
+				const YamlNode* materialStateNameNode = materialStateNode->Get("Name");
+				
+				if(materialStateNameNode)
+				{
+					String materialStateName = materialStateNameNode->AsString();
+					
+					if(!states.IsKey(materialStateName))
+					{
+						if(materialStateCount > 1)
+						{
+							NMaterialState* materialState = new NMaterialState();
+							if(materialState->LoadFromYamlNode(materialStateNode))
+							{
+								states.Insert(materialStateName, materialState);
+							}
+							else
+							{
+								Logger::Error("[NMaterial::LoadFromFile] Failed to load a material state %s in file %s!",
+											  materialStateName.c_str(),
+											  pathname.c_str());
+								
+								DVASSERT(false);
+							}
+						}
+						else
+						{
+							LoadFromYamlNode(materialStateNode);
+						}
+					}
+					else
+					{
+						Logger::Error("[NMaterial::LoadFromFile] Duplicate material state %s found in file %s!",
+									  materialStateName.c_str(),
+									  pathname.c_str());
+						
+						DVASSERT(false);
+					}
+					
+				}
+				else
+				{
+					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.c_str());
+					DVASSERT(false);
+				}
+			}
+		}
+				
+		result = true;
 		SafeRelease(parser);
-		return true;
+		return result;
 	}
 	
 	void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* camera)
@@ -1153,5 +1230,10 @@ namespace DAVA
 		}
 		
 		return (state != NULL);
+	}
+	
+	bool NMaterial::IsSwitchable() const
+	{
+		return (states.Size() > 0);
 	}
 };

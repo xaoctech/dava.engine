@@ -1,8 +1,10 @@
 Material:
-    MaterialDefines: ["MATERIAL_DECAL"]
-    Uniforms:
-        decal: 1
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["MATERIAL_DECAL"]
+        Uniforms:
+            decal: 1
 
-RenderPass:
-    Name: "ForwardPass"
-    Shader: "~res:/Materials/Shaders/Old/materials"
+        RenderPass:
+            Name: "ForwardPass"
+            Shader: "~res:/Materials/Shaders/Old/materials"

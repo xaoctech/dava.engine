@@ -134,6 +134,8 @@ public:
 	
 	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
+	
+	bool LoadFromYamlNode(const YamlNode* stateNode);
 			
 protected:
 	
@@ -220,6 +222,8 @@ public:
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 	
 	bool SwitchState(const FastName& stateName, MaterialSystem* materialSystem);
+	
+	bool IsSwitchable() const;
 	
 protected:
     

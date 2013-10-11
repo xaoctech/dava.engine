@@ -1,6 +1,8 @@
 Material:
-    MaterialDefines: ["FLATCOLOR"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["FLATCOLOR"]
 
-RenderPass:
-    Name: "ForwardPass"
-    Shader: "~res:/Materials/Shaders/Old/materials"
+        RenderPass:
+            Name: "ForwardPass"
+            Shader: "~res:/Materials/Shaders/Old/materials"
