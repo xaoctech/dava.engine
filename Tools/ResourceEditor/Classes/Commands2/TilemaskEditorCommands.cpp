@@ -124,6 +124,8 @@ ModifyTilemaskCommand::~ModifyTilemaskCommand()
 
 void ModifyTilemaskCommand::Undo()
 {
+	ApplyImageToSprite(undoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
+
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
 	Sprite* sprite;
@@ -138,12 +140,12 @@ void ModifyTilemaskCommand::Undo()
 	Rect r = Rect(Vector2(0, 0), Vector2(undoImageMask->GetWidth(), undoImageMask->GetHeight()));
 	Image* mask = landscapeProxy->GetTilemaskImageCopy();
 	mask->InsertImage(undoImageMask, updatedRect.GetPosition(), r);
-
-	ApplyImageToSprite(undoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 }
 
 void ModifyTilemaskCommand::Redo()
 {
+	ApplyImageToSprite(redoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
+
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
 	Sprite* sprite;
@@ -158,8 +160,6 @@ void ModifyTilemaskCommand::Redo()
 	Rect r = Rect(Vector2(0, 0), Vector2(redoImageMask->GetWidth(), redoImageMask->GetHeight()));
 	Image* mask = landscapeProxy->GetTilemaskImageCopy();
 	mask->InsertImage(redoImageMask, updatedRect.GetPosition(), r);
-
-	ApplyImageToSprite(redoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 }
 
 Entity* ModifyTilemaskCommand::GetEntity() const
