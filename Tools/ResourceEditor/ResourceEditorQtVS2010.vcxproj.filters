@@ -2196,6 +2196,12 @@
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp">
       <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
     </ClCompile>
@@ -3823,6 +3829,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h">
       <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>

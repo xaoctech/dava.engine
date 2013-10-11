@@ -26,62 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __QT_COMBO_FAKE_H__
+#define __QT_COMBO_FAKE_H__
 
+#include <QWidget>
+#include <QToolButton>
+#include <QAbstractItemDelegate>
 
-#ifndef __RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__
-#define __RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__
-
-#include "Commands2/Command2.h"
-#include "Commands2/CommandAction.h"
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-class LandscapeProxy;
-class SceneEditor2;
-
-class ActionEnableTilemaskEditor: public CommandAction
+class QtComboFake : public QToolButton
 {
-public:
-	ActionEnableTilemaskEditor(SceneEditor2* forSceneEditor);
-	
-protected:
-	SceneEditor2* sceneEditor;
-	
-	virtual void Redo();
-};
-
-class ActionDisableTilemaskEditor: public CommandAction
-{
-public:
-	ActionDisableTilemaskEditor(SceneEditor2* forSceneEditor);
-	
-protected:
-	SceneEditor2* sceneEditor;
-	
-	virtual void Redo();
-};
-
-
-class ModifyTilemaskCommand: public Command2
-{
-public:
-	ModifyTilemaskCommand(LandscapeProxy* landscapeProxy,
-						  const Rect& updatedRect);
-	~ModifyTilemaskCommand();
-
-	virtual void Undo();
-	virtual void Redo();
-	virtual Entity* GetEntity() const;
+	Q_OBJECT
 
 protected:
-	Image* undoImageMask;
-	Image* redoImageMask;
-	LandscapeProxy* landscapeProxy;
-	Rect updatedRect;
-
-	Sprite* ApplyImageToTexture(Image* image, Texture* texture);
-	void ApplyImageToSprite(Image* image, Sprite* dstSprite);
+	virtual bool event(QEvent * event)
+	{
+		QToolButton::event(event);
+		return false;
+	}
 };
 
-#endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__) */
+#endif // __QT_COMBO_FAKE_H__

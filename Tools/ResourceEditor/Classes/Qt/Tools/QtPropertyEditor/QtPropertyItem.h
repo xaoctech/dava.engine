@@ -57,6 +57,8 @@ public:
 	int	type() const;
 	QVariant data(int role) const;
 	void setData(const QVariant & value, int role);
+
+	bool Update();
 	
 protected:
 	QtPropertyData* itemData;

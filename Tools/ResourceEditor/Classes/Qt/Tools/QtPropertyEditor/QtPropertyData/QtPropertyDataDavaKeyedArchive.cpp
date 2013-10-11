@@ -54,13 +54,14 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 	}
 
 	SetFlags(FLAG_IS_DISABLED);
-	ChildsSync();
 
 	// add optional widget (button) to add new key
 	QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
 	addButton->setIconSize(QSize(12, 12));
 	AddOW(QtPropertyOW(addButton));
 	QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddKeyedArchiveField()));
+
+	UpdateValue();
 }
 
 QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
@@ -80,8 +81,6 @@ QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 {
 	QVariant v;
 
-	ChildsSync();
-
 	if(NULL != curArchive)
 	{
 		v = QString("KeyedArchive");
@@ -94,54 +93,56 @@ QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 	return v;
 }
 
-void QtPropertyDataDavaKeyedArcive::SetValueInternal(const QVariant &value)
-{ }
-
-void QtPropertyDataDavaKeyedArcive::ChildsSync()
+bool QtPropertyDataDavaKeyedArcive::UpdateValueInternal()
 {
-	QSet<QtPropertyData *> dataToRemove;
-
-	// at first step of sync we mark (placing to vector) items to remove
-	for(int i = 0; i < ChildCount(); ++i)
+	// update children
 	{
-		QPair<QString, QtPropertyData *> pair = ChildGet(i);
-		if(NULL != pair.second)
+		QSet<QtPropertyData *> dataToRemove;
+
+		// at first step of sync we mark (placing to vector) items to remove
+		for(int i = 0; i < ChildCount(); ++i)
 		{
-			dataToRemove.insert(pair.second);
+			QPair<QString, QtPropertyData *> pair = ChildGet(i);
+			if(NULL != pair.second)
+			{
+				dataToRemove.insert(pair.second);
+			}
+		}
+
+		// as second step we go throught keyed archive and add new data items,
+		// and remove deleting mark from items that are still in archive
+		if(NULL != curArchive)
+		{
+			DAVA::Map<DAVA::String, DAVA::VariantType*> data = curArchive->GetArchieveData();
+			DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
+
+			for(; i != data.end(); ++i)
+			{
+				QtPropertyData *childData = ChildGet(i->first.c_str());
+
+				// this key already in items list
+				if(NULL != childData)
+				{
+					// remove deleting mark
+					dataToRemove.remove(childData);
+				}
+				// create new child data
+				else
+				{
+					ChildCreate(i->first.c_str(), i->second);
+				}
+			}
+		}
+
+		// delete all marked items
+		QSetIterator<QtPropertyData *> it(dataToRemove);
+		while(it.hasNext())
+		{
+			ChildRemove(it.next());
 		}
 	}
 
-	// as second step we go throught keyed archive and add new data items,
-	// and remove deleting mark from items that are still in archive
-	if(NULL != curArchive)
-	{
-		DAVA::Map<DAVA::String, DAVA::VariantType*> data = curArchive->GetArchieveData();
-		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
-
-		for(; i != data.end(); ++i)
-		{
-			QtPropertyData *childData = ChildGet(i->first.c_str());
-
-			// this key already in items list
-			if(NULL != childData)
-			{
-				// remove deleting mark
-				dataToRemove.remove(childData);
-			}
-			// create new child data
-			else
-			{
-				ChildCreate(i->first.c_str(), i->second);
-			}
-		}
-	}
-
-	// delete all marked items
-	QSetIterator<QtPropertyData *> it(dataToRemove);
-	while(it.hasNext())
-	{
-		ChildRemove(it.next());
-	}
+	return false;
 }
 
 void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::VariantType *value)
@@ -162,9 +163,9 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 			if(value->type == presetValueType)
 			{
 				const DAVA::Vector<DAVA::String>& allowedValues = EditorConfig::Instance()->GetComboPropertyValues(key.toStdString());
-				for(int i = 0; i < allowedValues.size(); ++i)
+				for(size_t i = 0; i < allowedValues.size(); ++i)
 				{
-					((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType(i), allowedValues[i].c_str());
+					((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), allowedValues[i].c_str());
 				}
 			}
 		}
@@ -228,7 +229,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, child.first.toStdString());
 
 						curArchive->DeleteKey(child.first.toStdString());
-						ChildsSync();
+						//ChildsSync();
 
 						emit ValueChanged(QtPropertyData::VALUE_EDITED);
 						break;
@@ -247,7 +248,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 	{
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
-		ChildsSync();
+		//ChildsSync();
 
 		if(NULL != lastCommand)
 		{
