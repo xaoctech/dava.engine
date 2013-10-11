@@ -92,6 +92,14 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 
 bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 {
+	if(!currentMaterialQuality.IsValid())
+	{
+		Logger::Error("[MaterialSystem::LoadMaterialConfig] Material quality was not set prior loading material system description. Cannot load the material system!");
+		DVASSERT(false);
+		
+		return false;
+	}
+	
 	YamlParser * parser = YamlParser::Create(filePath);
     if (!parser)
     {
@@ -277,7 +285,7 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 	SafeRetain(material);
 	
 	NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
-	DVASSERT(material != collisionMaterial); //something is wrong when adding same material several times
+	DVASSERT(material != collisionMaterial); //should not add same material several times
 	if(collisionMaterial != NULL &&
 	   collisionMaterial != material)
 	{
@@ -301,6 +309,11 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 	}
 	
 	materials.Insert(material->GetMaterialName(), material);
+	
+	if(material->IsSwitchable())
+	{
+		material->SwitchState(currentMaterialQuality, this);
+	}
 }
 
 void MaterialSystem::RemoveMaterial(NMaterial* material)
@@ -326,6 +339,47 @@ void MaterialSystem::Clear()
 	
 	DVASSERT(materials.Size() == 0);
 }
+	
+	void MaterialSystem::SetDefaultMaterialQuality(const FastName& qualityLevelName)
+	{
+		defaultMaterialQuality = qualityLevelName;
+		
+		if(!currentMaterialQuality.IsValid())
+		{
+			currentMaterialQuality = defaultMaterialQuality;
+		}
+	}
+	
+	const FastName& MaterialSystem::GetDefaultMaterialQuality() const
+	{
+		return defaultMaterialQuality;
+	}
+	
+	const FastName& MaterialSystem::GetCurrentMaterialQuality() const
+	{
+		return currentMaterialQuality;
+	}
 
+	
+void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
+{
+	Vector<NMaterial*> materialList;
+	BuildMaterialList(NULL, materialList);
+	
+	currentMaterialQuality = qualityLevelName;
+	
+	for(Vector<NMaterial*>::iterator it = materialList.begin();
+		it != materialList.end();
+		++it)
+	{
+		NMaterial* mat = *it;
+		
+		if(mat->IsSwitchable())
+		{
+			mat->SwitchState(qualityLevelName, this);
+		}
+	}
+}
+	
 };
 

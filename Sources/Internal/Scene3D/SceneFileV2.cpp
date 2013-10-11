@@ -1141,8 +1141,6 @@ void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializ
 		DVASSERT(materialArchive->Count() > 0);
 		material->Load(materialArchive, serializationContext);
 		
-		//TODO: apply default LOD here. Material parent will depend on its LOD level since each LOD 
-		
 		matSystem->AddMaterial(material);
 		
 		FastName parentName = material->GetParentName();
@@ -1154,8 +1152,6 @@ void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializ
 		}
 		
 		material->SetParent(parentMaterial);
-		
-		//TODO: resolve situation when there's no parent material. Some kind of default material should be selected.
 		
 		SafeRelease(material);
 	}

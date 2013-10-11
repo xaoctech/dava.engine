@@ -1,2 +1,4 @@
 Material:
-    MaterialDefines: ["MATERIAL_VIEW_TEXTURE_ONLY"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["MATERIAL_VIEW_TEXTURE_ONLY"]

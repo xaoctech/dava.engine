@@ -69,6 +69,11 @@ public:
 	
 	inline NMaterial* GetDefaultMaterial() const {return defaultMaterial;}
 	
+	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
+	const FastName& GetDefaultMaterialQuality() const;
+	const FastName& GetCurrentMaterialQuality() const;
+	void SwitchMaterialQuality(const FastName& qualityLevelName);
+	
 private:
 	
 	friend class NMaterial;
@@ -90,7 +95,11 @@ private:
 private:
 	
     HashMap<FastName, NMaterial*> materials;
+	HashMap<FastName, NMaterial*> switchableTemplates;
 	NMaterial* defaultMaterial;
+	
+	FastName currentMaterialQuality;
+	FastName defaultMaterialQuality;
 };
 
 };

@@ -1,2 +1,4 @@
 Material:
-    MaterialDefines: ["SETUP_LIGHTMAP"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["SETUP_LIGHTMAP"]

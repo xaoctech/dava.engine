@@ -1,2 +1,4 @@
 Material:
-    MaterialDefines: ["VERTEX_COLOR"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["VERTEX_COLOR"]

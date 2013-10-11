@@ -1,2 +1,4 @@
 Material:
-    MaterialDefines: ["TEXTURE0_SHIFT_ENABLED"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["TEXTURE0_SHIFT_ENABLED"]

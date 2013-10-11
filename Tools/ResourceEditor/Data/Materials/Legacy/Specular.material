@@ -1,6 +1,8 @@
 Material:
-    MaterialDefines: ["SPECULAR"]
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["SPECULAR"]
 
-RenderPass:
-    Name: "ForwardPass"
-    Shader: "~res:/Materials/Shaders/Old/materials"
+        RenderPass:
+            Name: "ForwardPass"
+            Shader: "~res:/Materials/Shaders/Old/materials"

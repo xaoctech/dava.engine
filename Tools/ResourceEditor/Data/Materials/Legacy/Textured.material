@@ -1,4 +1,6 @@
 Material:
-    MaterialDefines: ["MATERIAL_TEXTURE"]
-    Uniforms:
-        albedo: 0
+    MaterialState:
+        Name: "Default"
+        MaterialDefines: ["MATERIAL_TEXTURE"]
+        Uniforms:
+            albedo: 0
