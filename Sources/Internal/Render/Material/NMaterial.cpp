@@ -399,6 +399,8 @@ namespace DAVA
 	
 	void NMaterialState::ShallowCopyTo(NMaterialState* targetState)
 	{
+		DVASSERT(this != targetState);
+		
 		targetState->nativeDefines.Clear();
 		targetState->layers.Clear();
 		targetState->textures.Clear();
@@ -488,6 +490,7 @@ namespace DAVA
 			}
 		}
 		
+		uint32 techniqueCount = 0;
 		for (int32 k = 0; k < stateNode->GetCount(); ++k)
 		{
 			const YamlNode * renderStepNode = stateNode->Get(k);
@@ -551,9 +554,11 @@ namespace DAVA
 				
 				MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
 				AddMaterialTechnique(renderPassName, technique);
+				
+				techniqueCount++;
 			}
 		}
-		
+				
 		result = true;
 		
 		return result;
@@ -561,6 +566,8 @@ namespace DAVA
 	
 	void NMaterialState::DeepCopyTo(NMaterialState* targetState)
 	{
+		DVASSERT(this != targetState);
+		
 		targetState->nativeDefines.Clear();
 		targetState->layers.Clear();
 		targetState->textures.Clear();
@@ -705,6 +712,7 @@ namespace DAVA
 						else
 						{
 							LoadFromYamlNode(materialStateNode);
+							currentStateName = materialStateName;
 						}
 					}
 					else
@@ -1266,6 +1274,11 @@ namespace DAVA
 	
 	bool NMaterial::SwitchState(const FastName& stateName, MaterialSystem* materialSystem)
 	{
+		if(stateName == currentStateName)
+		{
+			return true;
+		}
+		
 		NMaterialState* state = states.GetValue(stateName);
 		
 		if(state != NULL)
@@ -1285,6 +1298,14 @@ namespace DAVA
 			activeTechnique = NULL;
 			ready = false;
 
+			if(currentStateName.IsValid())
+			{
+				NMaterialState* prevState = states.GetValue(currentStateName);
+				DVASSERT(prevState);
+				
+				ShallowCopyTo(prevState);
+			}
+			
 			state->ShallowCopyTo(this);
 			
 			NMaterial* newParent = materialSystem->GetMaterial(parentName);
@@ -1295,6 +1316,28 @@ namespace DAVA
 			}
 			
 			SetParent(newParent);
+			
+			currentStateName = stateName;
+			
+			if(techniqueForRenderPass.Size() == 0)
+			{
+				//VI: try to copy renderpasses from corresponding parent material when there's no own renderpasses
+				HashMap<FastName, MaterialTechnique *>::Iterator iter = newParent->techniqueForRenderPass.Begin();
+				while(iter != newParent->techniqueForRenderPass.End())
+				{
+					MaterialTechnique* technique = iter.GetValue();
+					
+					RenderState* newRenderState = new RenderState();
+					technique->GetRenderState()->CopyTo(newRenderState);
+					MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
+																					  technique->GetUniqueDefineSet(),
+																					  newRenderState);
+					AddMaterialTechnique(iter.GetKey(), materialTechnique);
+					
+					++iter;
+				}
+
+			}
 		}
 		
 		return (state != NULL);

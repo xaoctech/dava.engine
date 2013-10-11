@@ -123,6 +123,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 
 	String defaultParentName = "";
 	Map<String, Vector<MaterialData> > nodes;
+	Vector<MaterialData> lodNodes;
 	int32 nodeCount = rootNode->GetCount();
 	for(int32 i = 0; i < nodeCount; ++i)
 	{
@@ -161,17 +162,24 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 								data.parent = parentNode->AsString();
 							}
 							
-							Map<String, Vector<MaterialData> >::iterator iter = nodes.find(data.parent);
-							if(iter != nodes.end())
+							if(data.isLod)
 							{
-								Vector<MaterialData>& dataList = iter->second;
-								dataList.push_back(data);
+								lodNodes.push_back(data);
 							}
 							else
 							{
-								Vector<MaterialData> dataList;
-								dataList.push_back(data);
-								nodes[data.parent] = dataList;
+								Map<String, Vector<MaterialData> >::iterator iter = nodes.find(data.parent);
+								if(iter != nodes.end())
+								{
+									Vector<MaterialData>& dataList = iter->second;
+									dataList.push_back(data);
+								}
+								else
+								{
+									Vector<MaterialData> dataList;
+									dataList.push_back(data);
+									nodes[data.parent] = dataList;
+								}
 							}
 						}
 						else
@@ -234,6 +242,16 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		for(size_t i = 0; i < rootCount; ++i)
 		{
 			MaterialData& currentData = roots[i];
+			LoadMaterial(currentData.name,
+						 currentData.path,
+						 NULL,
+						 currentData.isLod,
+						 nodes);
+		}
+		
+		for(size_t i = 0; i < lodNodes.size(); ++i)
+		{
+			MaterialData& currentData = lodNodes[i];
 			LoadMaterial(currentData.name,
 						 currentData.path,
 						 NULL,

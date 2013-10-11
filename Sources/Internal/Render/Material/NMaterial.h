@@ -274,6 +274,7 @@ protected:
 	
 	bool configMaterial;
 	
+	FastName  currentStateName;
 	HashMap<FastName, NMaterialState*> states;
 	
 	static uint64 uniqueIdSequence;
