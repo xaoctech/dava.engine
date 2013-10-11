@@ -110,7 +110,10 @@ float GetUITextViewSizeDivider()
 {
     if (cppTextField)
     {
-        DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField, false);
+        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != cppTextField)
+        {
+            DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField, false);
+        }
     }
 }
 
