@@ -359,17 +359,19 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 	if(NULL != table && szTable > 0)
 	{
 		for (uint32 k = 0; k < szTable; ++k)
+		{
 			if (table[k] != 0)
 			{
 				current_item = table[k];
 				current_index = k;
 				break;
 			}
+		}
 
-			if(NULL == current_item)
-			{
-				GoEnd();
-			}
+		if(NULL == current_item)
+		{
+			GoEnd();
+		}
 	}
 }
 
