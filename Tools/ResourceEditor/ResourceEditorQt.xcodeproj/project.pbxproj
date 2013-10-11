@@ -593,6 +593,10 @@
 		E8EBEDFE17CF92B400104156 /* StatusBar.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEDFC17CF92B400104156 /* StatusBar.cpp */; };
 		E8EBEE0417CF943300104156 /* StatusBar_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EBEE0317CF943300104156 /* StatusBar_moc.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
+		E8EF3BD5180832A300494E24 /* ToolButtonWithWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EF3BD3180832A300494E24 /* ToolButtonWithWidget.cpp */; };
+		E8EF3BE0180832AA00494E24 /* HangingObjectsHeight.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EF3BDE180832AA00494E24 /* HangingObjectsHeight.cpp */; };
+		E8EF3BE5180832EA00494E24 /* HangingObjectsHeight_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EF3BE2180832EA00494E24 /* HangingObjectsHeight_moc.cpp */; };
+		E8EF3BE6180832EA00494E24 /* ToolButtonWithWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EF3BE4180832EA00494E24 /* ToolButtonWithWidget_moc.cpp */; };
 		E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F020C916103E84000969AF /* RulerToolLandscape.cpp */; };
 		E8F799C01797D6F400E7C3C8 /* MimeDataHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F799BF1797D6F400E7C3C8 /* MimeDataHelper_moc.cpp */; };
 		E8F799D9179830D500E7C3C8 /* TextureDescriptorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F799D5179830D500E7C3C8 /* TextureDescriptorTool.cpp */; };
@@ -1800,6 +1804,12 @@
 		E8EBEE0317CF943300104156 /* StatusBar_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StatusBar_moc.cpp; sourceTree = "<group>"; };
 		E8EE7E57160DBCA000645405 /* RulerTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerTool.cpp; path = Classes/RulerTool/RulerTool.cpp; sourceTree = "<group>"; };
 		E8EE7E58160DBCA000645405 /* RulerTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerTool.h; path = Classes/RulerTool/RulerTool.h; sourceTree = "<group>"; };
+		E8EF3BD3180832A300494E24 /* ToolButtonWithWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ToolButtonWithWidget.cpp; sourceTree = "<group>"; };
+		E8EF3BD4180832A300494E24 /* ToolButtonWithWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolButtonWithWidget.h; sourceTree = "<group>"; };
+		E8EF3BDE180832AA00494E24 /* HangingObjectsHeight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsHeight.cpp; sourceTree = "<group>"; };
+		E8EF3BDF180832AA00494E24 /* HangingObjectsHeight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HangingObjectsHeight.h; sourceTree = "<group>"; };
+		E8EF3BE2180832EA00494E24 /* HangingObjectsHeight_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HangingObjectsHeight_moc.cpp; sourceTree = "<group>"; };
+		E8EF3BE4180832EA00494E24 /* ToolButtonWithWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ToolButtonWithWidget_moc.cpp; sourceTree = "<group>"; };
 		E8F020C916103E84000969AF /* RulerToolLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolLandscape.cpp; path = Classes/LandscapeEditor/RulerToolLandscape.cpp; sourceTree = "<group>"; };
 		E8F020CA16103E84000969AF /* RulerToolLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolLandscape.h; path = Classes/LandscapeEditor/RulerToolLandscape.h; sourceTree = "<group>"; };
 		E8F799BF1797D6F400E7C3C8 /* MimeDataHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MimeDataHelper_moc.cpp; sourceTree = "<group>"; };
@@ -2373,6 +2383,8 @@
 		4FAD0CAF1785EC6E00B05A35 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E8EF3BE1180832EA00494E24 /* HangingObjectsHeight */,
+				E8EF3BE3180832EA00494E24 /* ToolButtonWithWidget */,
 				A68290A317F58E6D007BAFDC /* AddSkyboxDialog */,
 				E846D4BF17F32B72007383E3 /* QtLabelWithActions */,
 				62AC3F0617E0B7A3008F8299 /* LandscapeDialog */,
@@ -3318,6 +3330,8 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E8EF3BDD180832AA00494E24 /* HangingObjectsHeight */,
+				E8EF3BD2180832A300494E24 /* ToolButtonWithWidget */,
 				E846D4B417F32B4D007383E3 /* QtLabelWithActions */,
 				A662EDCB17E0D37800AF2135 /* AddSkyboxDialog */,
 				62AC3EF417E0B0CB008F8299 /* LandscapeDialog */,
@@ -3940,6 +3954,42 @@
 			name = RulerTool;
 			sourceTree = "<group>";
 		};
+		E8EF3BD2180832A300494E24 /* ToolButtonWithWidget */ = {
+			isa = PBXGroup;
+			children = (
+				E8EF3BD3180832A300494E24 /* ToolButtonWithWidget.cpp */,
+				E8EF3BD4180832A300494E24 /* ToolButtonWithWidget.h */,
+			);
+			name = ToolButtonWithWidget;
+			path = Classes/Qt/Tools/ToolButtonWithWidget;
+			sourceTree = "<group>";
+		};
+		E8EF3BDD180832AA00494E24 /* HangingObjectsHeight */ = {
+			isa = PBXGroup;
+			children = (
+				E8EF3BDE180832AA00494E24 /* HangingObjectsHeight.cpp */,
+				E8EF3BDF180832AA00494E24 /* HangingObjectsHeight.h */,
+			);
+			name = HangingObjectsHeight;
+			path = Classes/Qt/Tools/HangingObjectsHeight;
+			sourceTree = "<group>";
+		};
+		E8EF3BE1180832EA00494E24 /* HangingObjectsHeight */ = {
+			isa = PBXGroup;
+			children = (
+				E8EF3BE2180832EA00494E24 /* HangingObjectsHeight_moc.cpp */,
+			);
+			path = HangingObjectsHeight;
+			sourceTree = "<group>";
+		};
+		E8EF3BE3180832EA00494E24 /* ToolButtonWithWidget */ = {
+			isa = PBXGroup;
+			children = (
+				E8EF3BE4180832EA00494E24 /* ToolButtonWithWidget_moc.cpp */,
+			);
+			path = ToolButtonWithWidget;
+			sourceTree = "<group>";
+		};
 		E8F799BE1797D6F400E7C3C8 /* MimeDataHelper */ = {
 			isa = PBXGroup;
 			children = (
@@ -4360,6 +4410,7 @@
 				5C574E3E15C9463C0015537A /* btDispatcher.cpp in Build Sources */,
 				5C574E3F15C9463C0015537A /* btMultiSapBroadphase.cpp in Build Sources */,
 				5C574E4015C9463C0015537A /* btOverlappingPairCache.cpp in Build Sources */,
+				E8EF3BE0180832AA00494E24 /* HangingObjectsHeight.cpp in Build Sources */,
 				5C574E4115C9463C0015537A /* btQuantizedBvh.cpp in Build Sources */,
 				5C574E4215C9463C0015537A /* btSimpleBroadphase.cpp in Build Sources */,
 				5C574E4315C9463C0015537A /* btActivatingCollisionAlgorithm.cpp in Build Sources */,
@@ -4459,6 +4510,7 @@
 				5C574E9F15C9463C0015537A /* btSolve2LinearConstraint.cpp in Build Sources */,
 				5C574EA015C9463C0015537A /* btTypedConstraint.cpp in Build Sources */,
 				5C574EA115C9463C0015537A /* btUniversalConstraint.cpp in Build Sources */,
+				E8EF3BD5180832A300494E24 /* ToolButtonWithWidget.cpp in Build Sources */,
 				5C574EA215C9463C0015537A /* btDiscreteDynamicsWorld.cpp in Build Sources */,
 				5C574EA315C9463C0015537A /* btRigidBody.cpp in Build Sources */,
 				5C574EA415C9463C0015537A /* btSimpleDynamicsWorld.cpp in Build Sources */,
@@ -4610,6 +4662,7 @@
 				4FFE5CAB1779DA3E00728624 /* CollisionParticleEmitter.cpp in Build Sources */,
 				4FFE5CB51779E38300728624 /* SceneTreeDelegate.cpp in Build Sources */,
 				626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */,
+				E8EF3BE5180832EA00494E24 /* HangingObjectsHeight_moc.cpp in Build Sources */,
 				E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */,
 				62661AB817FDC11C005718A7 /* EntityOwnerPropertyHelper.cpp in Build Sources */,
 				E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */,
@@ -4754,6 +4807,7 @@
 				A69AA3B01796F1A60008B683 /* CubeListItemDelegate_moc.cpp in Build Sources */,
 				A69AA3B11796F1A60008B683 /* CubemapEditorDialog_moc.cpp in Build Sources */,
 				A69AA3B21796F1A60008B683 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
+				E8EF3BE6180832EA00494E24 /* ToolButtonWithWidget_moc.cpp in Build Sources */,
 				A69AA3B31796F1A60008B683 /* CubemapUtils_moc.cpp in Build Sources */,
 				A69AA3B41796F1A60008B683 /* MaterialHelper_moc.cpp in Build Sources */,
 				176D7F0E179D5C6800795610 /* ParticleEditorCommands.cpp in Build Sources */,
