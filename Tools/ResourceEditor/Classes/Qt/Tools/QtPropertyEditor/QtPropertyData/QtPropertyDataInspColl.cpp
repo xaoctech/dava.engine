@@ -90,6 +90,5 @@ QtPropertyDataInspColl::~QtPropertyDataInspColl()
 
 QVariant QtPropertyDataInspColl::GetValueInternal()
 {
-	ChildNeedUpdate();
 	return QString().sprintf("Collection, size %d", collection->Size(object));
 }

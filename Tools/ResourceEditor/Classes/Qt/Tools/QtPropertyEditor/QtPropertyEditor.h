@@ -59,9 +59,10 @@ public:
 
 	void Expand(QtPropertyItem *);
 
-	void SetRefreshTimeout(int ms);
-	void FireRefreshTimeout(int ms);
-	int GetRefreshTimeout();
+	void Update();
+
+	void SetUpdateTimeout(int ms);
+	int GetUpdateTimeout();
 
 	QtPropertyItem* AddHeader(const char *text);
 
@@ -72,14 +73,17 @@ signals:
 protected:
 	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;
-	int refreshTimeout;
-	QTimer refreshTimer;
+	
+	int updateTimeout;
+	QTimer updateTimer;
+	bool doUpdateOnPaintEvent;
 
+	virtual void paintEvent(QPaintEvent * event);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
-	virtual void OnRefreshTimeout();
+	virtual void OnUpdateTimeout();
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
 };
 

@@ -38,8 +38,25 @@ QtPropertyKeyedArchiveMember::~QtPropertyKeyedArchiveMember()
 	DAVA::SafeDelete(lastCommand);
 }
 
-QVariant QtPropertyKeyedArchiveMember::GetValueInternal()
+void QtPropertyKeyedArchiveMember::SetValueInternal(const QVariant &value)
 {
+	QtPropertyDataDavaVariant::SetValueInternal(value);
+	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
+
+	// also save value to meta-object
+	if(NULL != archive && archive->IsKeyExists(key))
+	{
+		DAVA::SafeDelete(lastCommand);
+		lastCommand = new KeyeadArchiveSetValueCommand(archive, key, newValue);
+
+		archive->SetVariant(key, newValue);
+	}
+}
+
+bool QtPropertyKeyedArchiveMember::UpdateValueInternal()
+{
+	bool ret = false;
+
 	// get current value from introspection member
 	// we should do this because member may change at any time
 	if(NULL != archive)
@@ -54,27 +71,12 @@ QVariant QtPropertyKeyedArchiveMember::GetValueInternal()
 			if(v != GetVariantValue())
 			{
 				QtPropertyDataDavaVariant::SetVariantValue(v);
+				ret = true;
 			}
 		}
 	}
 
-	// return current variant value, converted to QVariant
-	return QtPropertyDataDavaVariant::GetValueInternal();
-}
-
-void QtPropertyKeyedArchiveMember::SetValueInternal(const QVariant &value)
-{
-	QtPropertyDataDavaVariant::SetValueInternal(value);
-	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
-
-	// also save value to meta-object
-	if(NULL != archive && archive->IsKeyExists(key))
-	{
-		DAVA::SafeDelete(lastCommand);
-		lastCommand = new KeyeadArchiveSetValueCommand(archive, key, newValue);
-
-		archive->SetVariant(key, newValue);
-	}
+	return ret;
 }
 
 bool QtPropertyKeyedArchiveMember::EditorDoneInternal(QWidget *editor)

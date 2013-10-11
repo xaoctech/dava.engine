@@ -39,7 +39,8 @@
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	: QTreeView(parent)
-	, refreshTimeout(0)
+	, updateTimeout(0)
+	, doUpdateOnPaintEvent(false)
 {
 	curModel = new QtPropertyModel();
 	setModel(curModel);
@@ -51,7 +52,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
 	QObject::connect(curModel, SIGNAL(ItemEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)));
-	QObject::connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(OnRefreshTimeout()));
+	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -110,28 +111,39 @@ void QtPropertyEditor::Expand(QtPropertyItem *item)
 	expand(curModel->indexFromItem(item));
 }
 
-void QtPropertyEditor::SetRefreshTimeout(int ms)
+void QtPropertyEditor::SetUpdateTimeout(int ms)
 {
-	refreshTimeout = ms;
+	updateTimeout = ms;
 
-	if(0 != refreshTimeout)
+	if(0 != updateTimeout)
 	{
-		refreshTimer.start(refreshTimeout);
+		updateTimer.start(updateTimeout);
 	}
 	else
 	{
-		refreshTimer.stop();
+		updateTimer.stop();
 	}
 }
 
-void QtPropertyEditor::FireRefreshTimeout(int ms)
+int QtPropertyEditor::GetUpdateTimeout()
 {
-	refreshTimer.start(ms);
+	return updateTimeout;
 }
 
-int QtPropertyEditor::GetRefreshTimeout()
+void QtPropertyEditor::Update()
 {
-	return refreshTimeout;
+	OnUpdateTimeout();
+}
+
+void QtPropertyEditor::OnUpdateTimeout()
+{
+	if(state() != QAbstractItemView::EditingState)
+	{
+		doUpdateOnPaintEvent = false;
+		curModel->UpdateStructure();
+	}
+
+	SetUpdateTimeout(updateTimeout);
 }
 
 QtPropertyItem* QtPropertyEditor::AddHeader(const char *text)
@@ -185,6 +197,11 @@ void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &o
 	}
 }
 
+void QtPropertyEditor::paintEvent(QPaintEvent * event)
+{
+	QTreeView::paintEvent(event);
+}
+
 void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 {
 	QStandardItem *item = curModel->itemFromIndex(index);
@@ -192,16 +209,6 @@ void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 	{
 		edit(index, QAbstractItemView::DoubleClicked, NULL);
 	}
-}
-
-void QtPropertyEditor::OnRefreshTimeout()
-{
-	if(state() != QAbstractItemView::EditingState)
-	{
-		curModel->RefreshAll();
-	}
-
-	SetRefreshTimeout(refreshTimeout);
 }
 
 void QtPropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

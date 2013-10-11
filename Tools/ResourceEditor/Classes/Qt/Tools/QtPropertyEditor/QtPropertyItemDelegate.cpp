@@ -87,6 +87,25 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
     return editWidget;
 }
 
+bool QtPropertyItemDelegate::editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index)
+{
+	bool ret = QStyledItemDelegate::editorEvent(event, model, option, index);
+
+	const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
+	if(NULL != propertyModel)
+	{
+		QtPropertyItem* item = (QtPropertyItem*) propertyModel->itemFromIndex(index);
+		QtPropertyData* data = item->GetPropertyData();
+
+		if(NULL != data && NULL != item && item->isCheckable())
+		{
+			data->SetValue((item->checkState() == Qt::Checked), QtPropertyData::VALUE_EDITED);
+		}
+	}
+
+	return ret;
+}
+
 void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
 	bool doneByInternalEditor = false;

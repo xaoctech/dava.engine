@@ -35,6 +35,7 @@ QtPropertyData::QtPropertyData()
 	: curFlags(0)
 	, parent(NULL)
 	, optionalWidgetViewport(NULL)
+	, updatingValue(false)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value)
@@ -42,6 +43,7 @@ QtPropertyData::QtPropertyData(const QVariant &value)
 	, curFlags(0)
 	, parent(NULL)
 	, optionalWidgetViewport(NULL)
+	, updatingValue(false)
 { }
 
 QtPropertyData::~QtPropertyData() 
@@ -66,26 +68,16 @@ QtPropertyData::~QtPropertyData()
 
 QVariant QtPropertyData::GetValue()
 {
-	QVariant internalValue = GetValueInternal();
-
-	if(internalValue != curValue)
+	if(curValue.isNull() || !curValue.isValid())
 	{
-		curValue = internalValue;
-		emit ValueChanged(VALUE_SOURCE_CHANGED);
-
-		ChildNeedUpdate();
+		curValue = GetValueInternal();
+	}
+	else
+	{
+		UpdateValue();
 	}
 
 	return curValue;
-}
-
-QVariant QtPropertyData::GetAlias()
-{
-	// this will force update internalValue if 
-	// it source was changed 
-	GetValue();
-
-	return GetValueAlias();
 }
 
 void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
@@ -97,14 +89,42 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 
 	if(curValue != oldValue)
 	{
+		UpdateDown();
+		UpdateUp();
+
 		emit ValueChanged(reason);
 	}
+}
 
-	// change signal going down to childs
-	ChildNeedUpdate();
+bool QtPropertyData::UpdateValue()
+{
+	bool ret = false;
 
-	// change signal going up to parents
-	ParentUpdate();
+	if(!updatingValue)
+	{
+		updatingValue = true;
+
+		if(UpdateValueInternal())
+		{
+			curValue = GetValueInternal();
+			emit ValueChanged(VALUE_SOURCE_CHANGED);
+
+			ret = true;
+		}
+
+		updatingValue = false;
+	}
+
+	return ret;
+}
+
+QVariant QtPropertyData::GetAlias()
+{
+	// this will force update internalValue if 
+	// it source was changed 
+	GetValue();
+
+	return GetValueAlias();
 }
 
 void QtPropertyData::SetIcon(const QIcon &icon)
@@ -146,15 +166,24 @@ bool QtPropertyData::SetEditorData(QWidget *editor)
     return SetEditorDataInternal(editor);
 }
 
-void QtPropertyData::ParentUpdate()
+void QtPropertyData::UpdateUp()
 {
 	if(NULL != parent)
 	{
-		int myIndex = parent->childrenData.indexOf(this);
-		if(-1 != myIndex)
+		parent->UpdateValue();
+		parent->UpdateUp();
+	}
+}
+
+void QtPropertyData::UpdateDown()
+{
+	for(int i = 0; i < childrenData.size(); ++i)
+	{
+		QtPropertyData *child = childrenData.at(i);
+		if(NULL != child)
 		{
-			parent->ChildChanged(parent->childrenNames.at(myIndex), parent->childrenData.at(myIndex));
-			parent->ParentUpdate();
+			child->UpdateValue();
+			child->UpdateDown();
 		}
 	}
 }
@@ -327,6 +356,11 @@ QVariant QtPropertyData::GetValueInternal()
 	return curValue;
 }
 
+bool QtPropertyData::UpdateValueInternal()
+{
+	return false;
+}
+
 QVariant QtPropertyData::GetValueAlias()
 {
 	// should be re-implemented by sub-class
@@ -360,13 +394,14 @@ bool QtPropertyData::SetEditorDataInternal(QWidget *editor)
 	return false;
 }
 
-void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)
+/*
+void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data, ValueChangeReason reason)
 {
 	// should be re-implemented by sub-class
 }
 
-void QtPropertyData::ChildNeedUpdate()
+void QtPropertyData::ChildNeedUpdate(ValueChangeReason reason)
 {
 	// should be re-implemented by sub-class
 }
-
+*/

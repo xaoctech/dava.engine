@@ -318,7 +318,6 @@ void SceneCameraSystem::AddEntity(DAVA::Entity * entity)
 	if(NULL != camera)
 	{
 		sceneCameras.insert(entity);
-		GetScene()->AddCamera(camera);
 	}
 }
 
