@@ -81,6 +81,7 @@ protected:
 	Rect updatedRect;
 
 	Sprite* ApplyImageToTexture(Image* image, Texture* texture);
+	void ApplyImageToSprite(Image* image, Sprite* dstSprite);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__) */

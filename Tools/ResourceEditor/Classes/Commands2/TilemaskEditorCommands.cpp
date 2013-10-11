@@ -105,7 +105,12 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 
 	undoImageMask = Image::CopyImageRegion(originalMask, updatedRect);
 
+	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 	Image* currentImageMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+
 	redoImageMask = Image::CopyImageRegion(currentImageMask, updatedRect);
 	SafeRelease(currentImageMask);
 }
@@ -133,6 +138,8 @@ void ModifyTilemaskCommand::Undo()
 	Rect r = Rect(Vector2(0, 0), Vector2(undoImageMask->GetWidth(), undoImageMask->GetHeight()));
 	Image* mask = landscapeProxy->GetTilemaskImageCopy();
 	mask->InsertImage(undoImageMask, updatedRect.GetPosition(), r);
+
+	ApplyImageToSprite(undoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 }
 
 void ModifyTilemaskCommand::Redo()
@@ -151,6 +158,8 @@ void ModifyTilemaskCommand::Redo()
 	Rect r = Rect(Vector2(0, 0), Vector2(redoImageMask->GetWidth(), redoImageMask->GetHeight()));
 	Image* mask = landscapeProxy->GetTilemaskImageCopy();
 	mask->InsertImage(redoImageMask, updatedRect.GetPosition(), r);
+
+	ApplyImageToSprite(redoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 }
 
 Entity* ModifyTilemaskCommand::GetEntity() const
@@ -194,4 +203,33 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	return resSprite;
+}
+
+void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
+{
+	RenderManager::Instance()->SetRenderTarget(dstSprite);
+	RenderManager::Instance()->ClipPush();
+	RenderManager::Instance()->SetClip(updatedRect);
+	
+	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	
+	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
+											   image->GetWidth(), image->GetHeight(), false);
+	Sprite* srcSprite = Sprite::CreateFromTexture(texture, 0, 0, image->GetWidth(), image->GetHeight());
+	
+	srcSprite->SetPosition(updatedRect.x, updatedRect.y);
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	srcSprite->Draw();
+
+	dstSprite->GetTexture()->GenerateMipmaps();
+
+	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	
+	RenderManager::Instance()->ClipPop();
+	RenderManager::Instance()->RestoreRenderTarget();
+	
+	SafeRelease(texture);
+	SafeRelease(srcSprite);
 }
