@@ -192,10 +192,7 @@ void CustomColorsPanel::SaveTexture()
 	
 	FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
 
-	bool pathExists = FileSystem::Instance()->IsDirectory(selectedPathname) ||
-					  FileSystem::Instance()->IsFile(selectedPathname);
-
-	if (selectedPathname.IsEmpty() || !pathExists)
+	if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
 	{
 		selectedPathname = sceneEditor->GetScenePath().GetDirectory();
 	}
@@ -217,10 +214,7 @@ void CustomColorsPanel::LoadTexture()
 	
 	FilePath currentPath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
 
-	bool pathExists = FileSystem::Instance()->IsDirectory(currentPath) ||
-					  FileSystem::Instance()->IsFile(currentPath);
-
-	if (currentPath.IsEmpty() || !pathExists)
+	if (currentPath.IsEmpty() || !currentPath.Exists())
 	{
 		currentPath = sceneEditor->GetScenePath().GetDirectory();
 	}
