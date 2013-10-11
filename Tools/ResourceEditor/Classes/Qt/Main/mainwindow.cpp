@@ -159,9 +159,6 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	LoadGPUFormat();
 
-    
-	LoadGPUFormat();
-
     EnableGlobalTimeout(enableGlobalTimeout);
 
 	EnableProjectActions(false);
