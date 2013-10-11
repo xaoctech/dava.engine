@@ -80,6 +80,8 @@ static GLuint CUBE_FACE_GL_NAMES[] =
 	GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
+	
+#define SELECT_GL_TEXTURE_TYPE(__engineTextureType__) ((Texture::TEXTURE_CUBE == __engineTextureType__) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D)
 #endif //#if defined __DAVAENGINE_OPENGL__
 	
 static int32 CUBE_FACE_MAPPING[] =
@@ -387,10 +389,10 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 	
 	GLint glWrapS = HWglConvertWrapMode(wrapS);
-	RENDER_VERIFY(glTexParameteri((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, glWrapS));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, glWrapS));
 	
 	GLint glWrapT = HWglConvertWrapMode(wrapT);
-	RENDER_VERIFY(glTexParameteri((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, glWrapT));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, glWrapT));
 
 	if (saveId != 0)
 	{
@@ -418,12 +420,10 @@ void Texture::GenerateMipmaps()
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID(textureType);
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
-	
-	uint32 nativeType = (Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
-	
-    RENDER_VERIFY(glGenerateMipmap(nativeType));
-    RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		
+    RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	if (saveId != 0)
 	{
@@ -446,11 +446,9 @@ void Texture::GeneratePixelesation()
 	int saveId = RenderManager::Instance()->HWglGetLastTextureID(textureType);
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
-	
-	uint32 nativeType = (Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP;
-	
-	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	RENDER_VERIFY(glTexParameteri(nativeType, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     
 	if (saveId != 0)
 	{
@@ -584,21 +582,20 @@ void Texture::FlushDataToRenderer()
 
 #if defined(__DAVAENGINE_OPENGL__)
 
-	GLenum nativeTextureType = (Texture::TEXTURE_CUBE == textureType) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID(textureType);
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeS)));
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeT)));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeS)));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeT)));
 
 	if(needGenerateMipMaps)
 	{
-		RENDER_VERIFY(glGenerateMipmap(nativeTextureType));
+		RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
 	}
 
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
-	RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
