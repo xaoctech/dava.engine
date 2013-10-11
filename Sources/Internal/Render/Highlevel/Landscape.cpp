@@ -1421,8 +1421,9 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 	
 	if(NULL == tileMaskMaterial)
 	{
-		tileMaskMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
-		fullTiledMaterial = serializationContext->GetScene()->renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+		MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
+		tileMaskMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.TileMask"));
+		fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
 		
 #ifdef LANDSCAPE_SPECULAR_LIT
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
@@ -1876,8 +1877,10 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 	
 	if(NULL == tileMaskMaterial)
 	{
-		tileMaskMaterial = _renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
-		fullTiledMaterial = _renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+		MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
+		
+		tileMaskMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.TileMask"));
+		fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
 		
 #ifdef LANDSCAPE_SPECULAR_LIT
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");

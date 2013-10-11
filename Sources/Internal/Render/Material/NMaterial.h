@@ -78,6 +78,34 @@ public:
     Shader::eUniformType type;
     uint32 size;
     void * data;
+	
+public:
+	
+	~NMaterialProperty()
+	{
+		if(GetDataSize())
+		{
+			SafeDeleteArray(data);
+		}
+	}
+	
+	inline uint32 GetDataSize()
+	{
+		return Shader::GetUniformTypeSize(type) * size;
+	}
+	
+	NMaterialProperty* Clone()
+	{
+		NMaterialProperty* prop = new NMaterialProperty();
+		prop->type = type;
+		prop->size = size;
+		
+		uint32 propDataSize = GetDataSize();
+		prop->data = new uint8[propDataSize];
+		memcpy(prop->data, data, propDataSize);
+		
+		return prop;
+	}
 };
 	
     
@@ -136,6 +164,8 @@ public:
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
 	
 	bool LoadFromYamlNode(const YamlNode* stateNode);
+	
+	NMaterialState* CloneState();
 			
 protected:
 	
@@ -165,8 +195,8 @@ protected:
 	void AddChildToState(NMaterial* material);
 	void RemoveChildFromState(NMaterial* material);
 	
-	void CopyTo(NMaterialState* targetState);
-	
+	void ShallowCopyTo(NMaterialState* targetState);
+	void DeepCopyTo(NMaterialState* targetState);
 };
 
 
@@ -190,7 +220,6 @@ public:
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
-	NMaterial* CreateChild();
 	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild
@@ -225,6 +254,8 @@ public:
 	
 	bool IsSwitchable() const;
 	
+	NMaterial* Clone();
+	
 protected:
     
 	FastNameSet inheritedDefines;
@@ -245,7 +276,9 @@ protected:
 	
 	HashMap<FastName, NMaterialState*> states;
 	
-private:
+	static uint64 uniqueIdSequence;
+	
+protected:
 	
 	void ResetParent();
 	
@@ -264,6 +297,8 @@ private:
 	
 	void SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive);
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
+	
+	NMaterial* CreateChild();
 
 //public:
     //INTROSPECTION_EXTEND(NMaterial, DataNode,

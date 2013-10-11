@@ -55,7 +55,12 @@ MaterialSystem::~MaterialSystem()
     
 NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
-	NMaterial* material = materials.GetValue(name);
+	NMaterial* material = switchableTemplates.GetValue(name);
+	
+	if(!material)
+	{
+		material = materials.GetValue(name);
+	}
 	
 	DVASSERT(material);
 	
@@ -122,9 +127,12 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 	for(int32 i = 0; i < nodeCount; ++i)
 	{
 		const YamlNode* materialNode = rootNode->Get(i);
-		if(materialNode->AsString() == "Material")
+		String nodeName = materialNode->AsString();
+		if(nodeName == "Material" ||
+		   nodeName == "LodMaterial")
 		{
 			MaterialData data;
+			data.isLod = (nodeName == "LodMaterial");
 			
 			const YamlNode* nameNode = materialNode->Get("Name");
 			DVASSERT(nameNode);
@@ -226,7 +234,11 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		for(size_t i = 0; i < rootCount; ++i)
 		{
 			MaterialData& currentData = roots[i];
-			LoadMaterial(currentData.name, currentData.path, NULL, nodes);
+			LoadMaterial(currentData.name,
+						 currentData.path,
+						 NULL,
+						 currentData.isLod,
+						 nodes);
 		}
 	}
 	else
@@ -244,6 +256,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 										const FilePath& filePath,
 										NMaterial* parentMaterial,
+										bool isLod,
 										Map<String, Vector<MaterialData> >& nodes)
 {
 	NMaterial* material = new NMaterial();
@@ -266,7 +279,11 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			for(size_t i = 0; i < materialCount; ++i)
 			{
 				MaterialData& currentData = materials[i];
-				LoadMaterial(currentData.name, currentData.path, material, nodes);
+				LoadMaterial(currentData.name,
+							 currentData.path,
+							 material,
+							 currentData.isLod,
+							 nodes);
 			}
 		}
 	}
@@ -284,35 +301,43 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 	DVASSERT(material);
 	SafeRetain(material);
 	
-	NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
-	DVASSERT(material != collisionMaterial); //should not add same material several times
-	if(collisionMaterial != NULL &&
-	   collisionMaterial != material)
+	if(material->IsConfigMaterial() &&
+	   material->IsSwitchable())
 	{
-		//need to resolve name collision
-		//just add some number to the end
-		uint32 i = 0;
-		String baseName = material->GetMaterialName().c_str();
-		while(true)
-		{
-			String uniqueName = Format("%s.%d", baseName.c_str(), i);
-			if(!materials.IsKey(uniqueName.c_str()))
-			{
-				material->SetMaterialName(uniqueName);
-				break;
-			}
-			
-			i++;
-			
-			DVASSERT(i <= 65536);//something is wrong when there's no unique name after 64K steps
-		}
+		switchableTemplates.Insert(material->GetMaterialName(), material);
 	}
-	
-	materials.Insert(material->GetMaterialName(), material);
-	
-	if(material->IsSwitchable())
+	else
 	{
-		material->SwitchState(currentMaterialQuality, this);
+		NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
+		DVASSERT(material != collisionMaterial); //should not add same material several times
+		if(collisionMaterial != NULL &&
+		   collisionMaterial != material)
+		{
+			//need to resolve name collision
+			//just add some number to the end
+			uint32 i = 0;
+			String baseName = material->GetMaterialName().c_str();
+			while(true)
+			{
+				String uniqueName = Format("%s.%d", baseName.c_str(), i);
+				if(!materials.IsKey(uniqueName.c_str()))
+				{
+					material->SetMaterialName(uniqueName);
+					break;
+				}
+				
+				i++;
+				
+				DVASSERT(i <= 65536);//something is wrong when there's no unique name after 64K steps
+			}
+		}
+		
+		materials.Insert(material->GetMaterialName(), material);
+		
+		if(material->IsSwitchable())
+		{
+			material->SwitchState(currentMaterialQuality, this);
+		}
 	}
 }
 
@@ -379,6 +404,22 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 			mat->SwitchState(qualityLevelName, this);
 		}
 	}
+}
+	
+NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
+{
+	NMaterial* child = parent->CreateChild();
+	
+	if(parent->IsSwitchable())
+	{
+		child->SwitchState(currentMaterialQuality, this);
+	}
+	else
+	{
+		child->SetParent(parent);
+	}
+	
+	return child;
 }
 	
 };

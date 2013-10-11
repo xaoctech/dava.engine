@@ -407,8 +407,8 @@ void ParticleLayer3D::CreateInnerEmitter()
 	
 void ParticleLayer3D::MaterialSystemReady(MaterialSystem* materialSystem)
 {
-	regularMaterial = SafeRetain(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesBlend")->CreateChild());
-	additiveMaterial = SafeRetain(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesAdditive")->CreateChild());
+	regularMaterial = SafeRetain(materialSystem->CreateChild(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesBlend")));
+	additiveMaterial = SafeRetain(materialSystem->CreateChild(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesAdditive")));
     
 	renderBatch->SetMaterial(regularMaterial);		
 }
