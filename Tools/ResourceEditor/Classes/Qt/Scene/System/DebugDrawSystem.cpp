@@ -35,6 +35,8 @@
 
 using namespace DAVA;
 
+float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.2f;
+
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, objectType(ResourceEditor::ESOT_NONE)
@@ -200,13 +202,13 @@ void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 	if (entity->GetParent() != GetScene())
 		return;
 
-	if(!IsObjectHanging(entity, 0.f))
-		return;
-
-	DrawEntityBox(entity, Color(1.f, 0.f, 0.f, 1.f));
+	if(IsObjectHanging(entity))
+	{
+		DrawEntityBox(entity, Color(1.f, 0.f, 0.f, 1.f));
+	}
 }
 
-bool DebugDrawSystem::IsObjectHanging(Entity * entity, float32 height)
+bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 {
 	AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
 	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z) 
@@ -220,7 +222,7 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity, float32 height)
 		for(float32 x = worldBox.min.x; x <= worldBox.max.x; x += xStep)
 		{
 			Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(x, y));
-			if((worldBox.min.z - landscapePoint.z) > height)
+			if((worldBox.min.z - landscapePoint.z) > HANGING_OBJECTS_HEIGHT)
 			{
 				return true;
 			}
@@ -243,5 +245,3 @@ Vector3 DebugDrawSystem::GetLandscapePointAtCoordinates(const Vector2 & centerXY
 
 	return Vector3();
 }
-
-
