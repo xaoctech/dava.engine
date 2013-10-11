@@ -66,7 +66,13 @@ FMODSoundSystem::~FMODSoundSystem()
 	}
     soundGroups.Clear();
 
-	FMOD_VERIFY(fmodSystem->release());
+    uint32 mem = 0;
+    FMOD_VERIFY(fmodEventSystem->getMemoryInfo(0, FMOD_MEMBITS_ALL, &mem, 0));
+    Logger::Debug("[FMODSoundSystem] sounds mem usage: %d bytes", mem);
+    FMOD_VERIFY(fmodEventSystem->getMemoryInfo(0, FMOD_EVENT_MEMBITS_ALL, &mem, 0));
+    Logger::Debug("[FMODSoundSystem] events mem usage: %d bytes", mem);
+
+	FMOD_VERIFY(fmodEventSystem->release());
 }
 
 Sound * FMODSoundSystem::CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D /* = false */, int32 priority /*  = 128 */)
@@ -400,7 +406,8 @@ void FMODSoundSystem::AddActiveFMODEvent(FMOD::Event * event)
 
 void FMODSoundSystem::RemoveActiveFMODEvent(FMOD::Event * event)
 {
-    removeActiveEventsOnUpdate.push_back(event);
+    if(event)
+        removeActiveEventsOnUpdate.push_back(event);
 }
 
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)

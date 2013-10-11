@@ -75,6 +75,8 @@ void FMODSoundComponent::SetEventName(const String & _eventName)
     else
 	    eventName = _eventName;
 
+    paramsValues.Clear();
+
 	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::SOUND_CHANGED);
 }
 
@@ -83,7 +85,6 @@ Component * FMODSoundComponent::Clone(Entity * toEntity)
     FMODSoundComponent * component = new FMODSoundComponent();
 	component->SetEntity(toEntity);
 
-    //TODO: Do not forget ot check what does it means.
     if(fmodEvent)
     {
         FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &component->fmodEvent));
@@ -220,7 +221,7 @@ void FMODSoundComponent::KeyOffParameter(const String & paramName)
     }
 }
     
-void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo)
+bool FMODSoundComponent::GetEventParametersInfo( Vector<SoundEventParameterInfo> & paramsInfo )
 {
     paramsInfo.clear();
     
@@ -235,7 +236,7 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
     }
     if(!event)
     {
-        return;
+        return false;
     }
     
     int32 paramsCount = 0;
@@ -255,10 +256,18 @@ void FMODSoundComponent::GetEventParametersInfo(Vector<SoundEventParameterInfo> 
         FMOD_VERIFY(param->getRange(&pInfo.minValue, &pInfo.maxValue));
 
         if(!isEventInfoOnly)
+        {
             FMOD_VERIFY(param->getValue(&pInfo.currentValue));
+        }
+        else
+        {
+            pInfo.currentValue = paramsValues[FastName(paramName)];
+        }
             
         paramsInfo.push_back(pInfo);
     }
+
+    return !isEventInfoOnly;
 }
 
 FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
