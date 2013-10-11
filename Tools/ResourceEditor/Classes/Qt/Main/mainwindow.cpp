@@ -96,6 +96,8 @@
 
 #include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 
+#include "Tools/HangingObjectsHeight/HangingObjectsHeight.h"
+#include "Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -120,6 +122,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	, objectTypesLabel(NULL)
 	, landscapeDialog(NULL)
 	, addSwitchEntityDialog(NULL)
+	, hangingObjectsWidget(NULL)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -413,6 +416,7 @@ void QtMainWindow::SetupMainMenu()
 	InitRecent();
 }
 
+
 void QtMainWindow::SetupToolBars()
 {
 	QAction *actionMainToolBar = ui->mainToolBar->toggleViewAction();
@@ -441,8 +445,21 @@ void QtMainWindow::SetupToolBars()
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
     
-    // adding reload textures actions
-    CreateObjectTypesCombobox();
+
+	//hanging objects	
+	HangingObjectsHeight *hangingObjectsWidget = new HangingObjectsHeight(this);
+	QObject::connect(hangingObjectsWidget, SIGNAL(HeightChanged(double)), this, SLOT(OnHangingObjectsHeight(double)));
+
+	ToolButtonWithWidget *hangingBtn = new ToolButtonWithWidget();
+	hangingBtn->setDefaultAction(ui->actionHangingObjects);
+	hangingBtn->SetWidget(hangingObjectsWidget);
+	hangingBtn->setMaximumWidth(40);
+	hangingBtn->setMinimumWidth(40);
+	ui->sceneToolBar->addSeparator();
+	ui->sceneToolBar->addWidget(hangingBtn);
+
+	// adding reload textures actions
+	CreateObjectTypesCombobox();
 	ui->sceneToolBar->addWidget(objectTypesWidget);
 }
 
@@ -2112,6 +2129,15 @@ void QtMainWindow::OnHangingObjects()
 void QtMainWindow::LoadHangingObjects( SceneEditor2 * scene )
 {
 	ui->actionHangingObjects->setChecked(scene->debugDrawSystem->HangingObjectsModeEnabled());
+	if(hangingObjectsWidget)
+	{
+		hangingObjectsWidget->SetHeight(DebugDrawSystem::HANGING_OBJECTS_HEIGHT);
+	}
+}
+
+void QtMainWindow::OnHangingObjectsHeight( double value)
+{
+	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
 }
 
 

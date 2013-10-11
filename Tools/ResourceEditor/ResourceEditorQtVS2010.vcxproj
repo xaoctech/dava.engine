@@ -536,6 +536,7 @@
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.cpp" />
     <ClCompile Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp" />
@@ -562,6 +563,7 @@
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
@@ -756,6 +758,7 @@
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\HangingObjectsHeight\HangingObjectsHeight_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\LabeledSlider\LabeledSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp" />
@@ -780,6 +783,7 @@
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
@@ -1225,6 +1229,7 @@
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
+    <ClInclude Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.h" />
     <ClInclude Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h" />
@@ -1251,6 +1256,7 @@
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />
+    <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />

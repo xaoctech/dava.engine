@@ -226,6 +226,12 @@
     <Filter Include="Classes\Qt\Tools\QtLabelWithActions">
       <UniqueIdentifier>{f45b0c79-9408-4fd0-9fe0-45f7474237de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\HangingObjectsHeight">
+      <UniqueIdentifier>{dd963721-b170-45e4-8709-701ee3388a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\ToolButtonWithWidget">
+      <UniqueIdentifier>{ea518442-bcb2-4598-a8b0-f59de80f1624}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2199,6 +2205,18 @@
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.cpp">
+      <Filter>Classes\Qt\Tools\HangingObjectsHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\HangingObjectsHeight\HangingObjectsHeight_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp">
+      <Filter>Classes\Qt\Tools\ToolButtonWithWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3811,6 +3829,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.h">
+      <Filter>Classes\Qt\Tools\HangingObjectsHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h">
+      <Filter>Classes\Qt\Tools\ToolButtonWithWidget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
