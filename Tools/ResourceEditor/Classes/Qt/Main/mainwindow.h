@@ -49,7 +49,7 @@ class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
-
+class HangingObjectsHeight;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -184,6 +184,7 @@ public slots:
     void OnObjectsTypeChanged(int type);
 
 	void OnHangingObjects();
+	void OnHangingObjectsHeight(double value);
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -247,6 +248,8 @@ private:
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
 	LandscapeDialog*		landscapeDialog;
+
+	HangingObjectsHeight *hangingObjectsWidget;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);

@@ -27,64 +27,27 @@
 =====================================================================================*/
 
 
+#include "ToolButtonWithWidget.h"
 
-#ifndef __DEBUG_DRAW_SYSTEM_H__
-#define __DEBUG_DRAW_SYSTEM_H__
+#include <QWidgetAction>
+#include <QMenu>
 
-#include "DAVAEngine.h"
-#include "Classes/Constants.h"
-
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/SelectionSystem.h"
-
-class Command2;
-class DebugDrawSystem : public DAVA::SceneSystem
+ToolButtonWithWidget::ToolButtonWithWidget(QWidget *parent /*= 0*/)
+	: QToolButton(parent)
 {
-	friend class SceneEditor2;
-	friend class EditorScene;
+	setPopupMode(QToolButton::MenuButtonPopup);
+	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	setAutoRaise(false);
+}
 
-public:
+void ToolButtonWithWidget::SetWidget( QWidget *widget )
+{
+	QWidgetAction *wa = new QWidgetAction(this);
+	wa->setDefaultWidget(widget);
+	QMenu *m = new QMenu(this);
+	m->addAction(wa);
 
-	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
-
-public:
-	DebugDrawSystem(DAVA::Scene * scene);
-	virtual ~DebugDrawSystem();
-
-	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
-	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
-
-	void EnableHangingObjectsMode(bool enabled);
-	bool HangingObjectsModeEnabled() const;
-
-protected:
-
-	void Draw();
-	void Draw(DAVA::Entity *entity);
-
-	inline void DrawObjectBoxesByType(DAVA::Entity *entity);
-	inline void DrawUserNode(DAVA::Entity *entity);
-	inline void DrawLightNode(DAVA::Entity *entity);
-	inline void DrawSoundNode(DAVA::Entity *entity);
-	inline void DrawHangingObjects(DAVA::Entity *entity);
+	setMenu(m);
+}
 
 
-	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
-
-	//hanging objects 
-	bool IsObjectHanging(DAVA::Entity * entity);
-	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
-
-private:
-	SceneCollisionSystem *collSystem;
-	SceneSelectionSystem *selSystem;
-
-	ResourceEditor::eSceneObjectType objectType;
-    DAVA::Color objectTypeColor;
-
-	bool hangingObjectsModeEnabled;
-};
-
-
-
-#endif // __DEBUG_DRAW_SYSTEM_H__

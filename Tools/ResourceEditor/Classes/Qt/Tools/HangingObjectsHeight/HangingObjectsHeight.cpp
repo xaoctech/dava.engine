@@ -27,64 +27,48 @@
 =====================================================================================*/
 
 
+#include "HangingObjectsHeight.h"
 
-#ifndef __DEBUG_DRAW_SYSTEM_H__
-#define __DEBUG_DRAW_SYSTEM_H__
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Constants.h"
 
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/SelectionSystem.h"
+#include <QObject>
+#include <QHBoxLayout>
 
-class Command2;
-class DebugDrawSystem : public DAVA::SceneSystem
+using namespace DAVA;
+
+HangingObjectsHeight::HangingObjectsHeight(QWidget *parent /*= 0*/)
+	: QWidget(parent)
 {
-	friend class SceneEditor2;
-	friend class EditorScene;
-
-public:
-
-	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
-
-public:
-	DebugDrawSystem(DAVA::Scene * scene);
-	virtual ~DebugDrawSystem();
-
-	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
-	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
-
-	void EnableHangingObjectsMode(bool enabled);
-	bool HangingObjectsModeEnabled() const;
-
-protected:
-
-	void Draw();
-	void Draw(DAVA::Entity *entity);
-
-	inline void DrawObjectBoxesByType(DAVA::Entity *entity);
-	inline void DrawUserNode(DAVA::Entity *entity);
-	inline void DrawLightNode(DAVA::Entity *entity);
-	inline void DrawSoundNode(DAVA::Entity *entity);
-	inline void DrawHangingObjects(DAVA::Entity *entity);
+	heightValue = new EventFilterDoubleSpinBox(this);
+	heightValue->setToolTip("Height for hanging objects");
+	heightValue->setMinimum(-100);
+	heightValue->setMaximum(100);	
+	heightValue->setSingleStep(0.1);
+	heightValue->setDecimals(2);
 
 
-	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
+	QHBoxLayout *layout = new QHBoxLayout(this);
+	layout->setMargin(0);
+	layout->setContentsMargins(0, 0, 0, 0);
 
-	//hanging objects 
-	bool IsObjectHanging(DAVA::Entity * entity);
-	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
+	setLayout(layout);
 
-private:
-	SceneCollisionSystem *collSystem;
-	SceneSelectionSystem *selSystem;
+	layout->addWidget(heightValue);
 
-	ResourceEditor::eSceneObjectType objectType;
-    DAVA::Color objectTypeColor;
+	QObject::connect(heightValue, SIGNAL(valueChanged(double)), this, SLOT(ValueChanged(double)));
+}
 
-	bool hangingObjectsModeEnabled;
-};
+void HangingObjectsHeight::SetHeight( DAVA::float32 value )
+{
+	heightValue->setValue(value);
+}
+
+void HangingObjectsHeight::ValueChanged( double value )
+{
+	emit HeightChanged(value);
+}
 
 
 
-#endif // __DEBUG_DRAW_SYSTEM_H__

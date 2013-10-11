@@ -28,63 +28,19 @@
 
 
 
-#ifndef __DEBUG_DRAW_SYSTEM_H__
-#define __DEBUG_DRAW_SYSTEM_H__
+#ifndef __TOOL_BUTTON_WITH_WIDGET_H__
+#define __TOOL_BUTTON_WITH_WIDGET_H__
 
-#include "DAVAEngine.h"
-#include "Classes/Constants.h"
+#include <QToolButton>
 
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/SelectionSystem.h"
-
-class Command2;
-class DebugDrawSystem : public DAVA::SceneSystem
+class ToolButtonWithWidget: public QToolButton
 {
-	friend class SceneEditor2;
-	friend class EditorScene;
+	Q_OBJECT
 
 public:
+	ToolButtonWithWidget(QWidget *parent = 0);
 
-	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
-
-public:
-	DebugDrawSystem(DAVA::Scene * scene);
-	virtual ~DebugDrawSystem();
-
-	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
-	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
-
-	void EnableHangingObjectsMode(bool enabled);
-	bool HangingObjectsModeEnabled() const;
-
-protected:
-
-	void Draw();
-	void Draw(DAVA::Entity *entity);
-
-	inline void DrawObjectBoxesByType(DAVA::Entity *entity);
-	inline void DrawUserNode(DAVA::Entity *entity);
-	inline void DrawLightNode(DAVA::Entity *entity);
-	inline void DrawSoundNode(DAVA::Entity *entity);
-	inline void DrawHangingObjects(DAVA::Entity *entity);
-
-
-	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
-
-	//hanging objects 
-	bool IsObjectHanging(DAVA::Entity * entity);
-	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
-
-private:
-	SceneCollisionSystem *collSystem;
-	SceneSelectionSystem *selSystem;
-
-	ResourceEditor::eSceneObjectType objectType;
-    DAVA::Color objectTypeColor;
-
-	bool hangingObjectsModeEnabled;
+	void SetWidget(QWidget *widget);
 };
 
-
-
-#endif // __DEBUG_DRAW_SYSTEM_H__
+#endif // __TOOL_BUTTON_WITH_WIDGET_H__
