@@ -96,8 +96,6 @@ protected:
 	bool editingIsEnabled;
 	
 	Sprite* toolSprite;
-	Sprite* maskSprite;
-	Sprite* oldMaskSprite;
 	bool toolSpriteUpdated;
 
 	eBlendMode srcBlendMode;
@@ -121,6 +119,8 @@ protected:
 	void CreateUndoPoint();
 
 	bool IsCanBeEnabled();
+
+	void InitSprites();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */
