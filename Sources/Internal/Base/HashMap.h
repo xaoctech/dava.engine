@@ -402,7 +402,7 @@ typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operato
 		else
 		{
 			current_item = NULL;
-			while((current_index < (szTable - 1)) && (current_item == NULL))
+			while(((current_index + 1) < szTable)) && (current_item == NULL))
 			{
 				current_item = table[++current_index];
 			}
