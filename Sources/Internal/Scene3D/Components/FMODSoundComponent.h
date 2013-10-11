@@ -75,7 +75,7 @@ public:
     virtual void SetPosition(const Vector3 & position);
 
     //FMOD only
-    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
+    bool GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
     
     void KeyOffParameter(const String & paramName);
     
