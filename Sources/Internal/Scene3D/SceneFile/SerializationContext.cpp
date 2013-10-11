@@ -155,11 +155,12 @@ namespace DAVA
 	{
 		NMaterial * parentMaterial = 0;
 		
+		MaterialSystem* matSystem = scene->renderSystem->GetMaterialSystem();
 		FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
-		parentMaterial = scene->renderSystem->GetMaterialSystem()->GetMaterial(newMaterialName);
+		parentMaterial = matSystem->GetMaterial(newMaterialName);
 		DVASSERT(parentMaterial);
 				
-		NMaterial* resultMaterial = parentMaterial->CreateChild();
+		NMaterial* resultMaterial = matSystem->CreateChild(parentMaterial);
 		
 		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 		{

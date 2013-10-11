@@ -95,7 +95,8 @@ namespace DAVA
 			skyboxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
 			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;*/
 			
-			NMaterial* skyboxMaterial = renderSystem->GetMaterialSystem()->GetMaterial("Skybox")->CreateChild();
+			MaterialSystem* matSystem = renderSystem->GetMaterialSystem();
+			NMaterial* skyboxMaterial = matSystem->CreateChild(matSystem->GetMaterial("Skybox"));
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
 			skyboxRenderBatch->SetRenderDataObject(renderDataObj);

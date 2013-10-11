@@ -397,15 +397,20 @@ namespace DAVA
 		nativeDefines.Remove(defineName);
 	}
 	
-	void NMaterialState::CopyTo(NMaterialState* targetState)
+	void NMaterialState::ShallowCopyTo(NMaterialState* targetState)
 	{
+		targetState->nativeDefines.Clear();
+		targetState->layers.Clear();
+		targetState->textures.Clear();
+		targetState->texturesArray.clear();
+		targetState->textureNamesArray.clear();
+		targetState->textureSlotArray.clear();
+
 		targetState->parentName = parentName;
 		targetState->materialName = materialName;
 		
-		targetState->layers.Clear();
 		targetState->layers.Combine(layers);
 		
-		targetState->nativeDefines.Clear();
 		targetState->nativeDefines.Combine(nativeDefines);
 		
 		targetState->techniqueForRenderPass.Clear();
@@ -424,10 +429,6 @@ namespace DAVA
 			targetState->materialProperties.Insert(it.GetKey(), it.GetValue());
 		}
 
-		targetState->textures.Clear();
-		targetState->texturesArray.clear();
-		targetState->textureNamesArray.clear();
-		targetState->textureSlotArray.clear();
 		
 		for(HashMap<FastName, TextureBucket *>::Iterator it = textures.Begin();
 			it != textures.End();
@@ -557,9 +558,71 @@ namespace DAVA
 		
 		return result;
 	}
+	
+	void NMaterialState::DeepCopyTo(NMaterialState* targetState)
+	{
+		targetState->nativeDefines.Clear();
+		targetState->layers.Clear();
+		targetState->textures.Clear();
+		targetState->texturesArray.clear();
+		targetState->textureNamesArray.clear();
+		targetState->textureSlotArray.clear();
+
+		targetState->parentName = parentName;
+		targetState->materialName = materialName;
+		targetState->layers.Combine(layers);
+		targetState->nativeDefines.Combine(nativeDefines);
+		
+		for(HashMap<FastName, TextureBucket *>::Iterator it = textures.Begin();
+			it != textures.End();
+			++it)
+		{
+			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
+		}
+		
+		for(Vector<NMaterial*>::iterator it = children.begin();
+			it != children.end();
+			++it)
+		{
+			targetState->children.push_back(SafeRetain(*it));
+		}
+		
+		HashMap<FastName, MaterialTechnique *>::Iterator techIter = techniqueForRenderPass.Begin();
+		while(techIter != techniqueForRenderPass.End())
+		{
+			MaterialTechnique* technique = techIter.GetValue();
+			
+			RenderState* newRenderState = new RenderState();
+			technique->GetRenderState()->CopyTo(newRenderState);
+			MaterialTechnique* childMaterialTechnique = new MaterialTechnique(technique->GetShaderName(),
+																			  technique->GetUniqueDefineSet(),
+																			  newRenderState);
+			targetState->AddMaterialTechnique(techIter.GetKey(), childMaterialTechnique);
+			
+			++techIter;
+		}
+		
+		HashMap<FastName, NMaterialProperty*>::Iterator propIter = materialProperties.Begin();
+		while(propIter != materialProperties.End())
+		{
+			targetState->materialProperties.Insert(propIter.GetKey(), propIter.GetValue()->Clone());
+			
+			++propIter;
+		}
+	}
+	
+	NMaterialState* NMaterialState::CloneState()
+	{
+		NMaterialState* clonedState = new NMaterialState();
+				
+		DeepCopyTo(clonedState);
+		
+		return clonedState;
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	uint64 NMaterial::uniqueIdSequence = 0;
 	
 	NMaterial::NMaterial() : NMaterialState()
 	{
@@ -949,29 +1012,34 @@ namespace DAVA
 	
 	NMaterial* NMaterial::CreateChild()
 	{
-		NMaterial* childMaterial = new NMaterial();
+		String childName = Format("%s.%lu", materialName.c_str(), uniqueIdSequence++);
 		
-		HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
-		while(iter != techniqueForRenderPass.End())
+		NMaterial* childMaterial = NULL;
+		
+		if(!IsSwitchable())
 		{
-			MaterialTechnique* technique = iter.GetValue();
+			childMaterial = new NMaterial();
+			HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
+			while(iter != techniqueForRenderPass.End())
+			{
+				MaterialTechnique* technique = iter.GetValue();
+				
+				RenderState* newRenderState = new RenderState();
+				technique->GetRenderState()->CopyTo(newRenderState);
+				MaterialTechnique* childMaterialTechnique = new MaterialTechnique(technique->GetShaderName(),
+																				  technique->GetUniqueDefineSet(),
+																				  newRenderState);
+				childMaterial->AddMaterialTechnique(iter.GetKey(), childMaterialTechnique);
+				
+				++iter;
+			}
 			
-			RenderState* newRenderState = new RenderState();
-			technique->GetRenderState()->CopyTo(newRenderState);
-			MaterialTechnique* childMaterialTechnique = new MaterialTechnique(technique->GetShaderName(),
-																			  technique->GetUniqueDefineSet(),
-																			  newRenderState);
-			childMaterial->AddMaterialTechnique(iter.GetKey(), childMaterialTechnique);
-			
-			++iter;
+			childMaterial->SetMaterialName(childName);
 		}
-		
-		char uniqueName[16];
-		snprintf(uniqueName, 16, ".%lu", NMaterialState::children.size());
-		String childName = String(this->GetMaterialName().c_str()) + uniqueName;
-		
-		childMaterial->SetMaterialName(childName);
-		childMaterial->SetParent(this);
+		else
+		{
+			childMaterial = Clone();
+		}
 		
 		return childMaterial;
 	}
@@ -1043,7 +1111,7 @@ namespace DAVA
 		{
 			NMaterialProperty* property = it.GetValue();
 			
-			uint32 propDataSize = Shader::GetUniformTypeSize(property->type) * property->size;
+			uint32 propDataSize = property->GetDataSize();
 			uint8* propertyStorage = new uint8[propDataSize + sizeof(uint32) + sizeof(uint32)];
 			
 			uint32 uniformType = property->type; //make sure uniform type is always uint32
@@ -1217,7 +1285,7 @@ namespace DAVA
 			activeTechnique = NULL;
 			ready = false;
 
-			state->CopyTo(this);
+			state->ShallowCopyTo(this);
 			
 			NMaterial* newParent = materialSystem->GetMaterial(parentName);
 			DVASSERT(newParent);
@@ -1235,5 +1303,28 @@ namespace DAVA
 	bool NMaterial::IsSwitchable() const
 	{
 		return (states.Size() > 0);
+	}
+	
+	NMaterial* NMaterial::Clone()
+	{
+		NMaterial* clonedMaterial = new NMaterial();
+		
+		if(this->IsSwitchable())
+		{
+			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+			while(stateIter != states.End())
+			{
+				clonedMaterial->states.Insert(stateIter.GetKey(),
+											  stateIter.GetValue()->CloneState());
+				
+				stateIter++;
+			}
+		}
+		else
+		{
+			DeepCopyTo(clonedMaterial);
+		}
+		
+		return clonedMaterial;
 	}
 };

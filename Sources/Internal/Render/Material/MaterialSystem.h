@@ -74,6 +74,8 @@ public:
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName);
 	
+	NMaterial* CreateChild(NMaterial* parent);
+	
 private:
 	
 	friend class NMaterial;
@@ -83,6 +85,7 @@ private:
 		String name;
 		String path;
 		String parent;
+		bool isLod;
 	};
 	
 private:
@@ -90,6 +93,7 @@ private:
 	NMaterial* LoadMaterial(const FastName& name,
 							const FilePath& filePath,
 							NMaterial* parentMaterial,
+							bool isLod,
 							Map<String, Vector<MaterialData> >& nodes);
 	
 private:
