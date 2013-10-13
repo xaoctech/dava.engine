@@ -121,6 +121,11 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
+    
+    if(optimizeOnExport)
+    {
+        RemoveEditorCustomProperties(scene);
+    }
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
@@ -180,6 +185,59 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 		}
     }
 }
+
+void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
+{
+    Vector<Entity *> scenenodes;
+    rootNode->GetChildNodes(scenenodes);
+    
+//    "editor.dynamiclight.enable";
+//    "editor.donotremove";
+//    
+//    "editor.referenceToOwner";
+//    "editor.isSolid";
+//    "editor.isLocked";
+//    "editor.designerName"
+//    "editor.modificationData"
+//    "editor.staticlight.enable";
+//    "editor.staticlight.used"
+//    "editor.staticlight.castshadows";
+//    "editor.staticlight.receiveshadows";
+//    "editor.staticlight.falloffcutoff"
+//    "editor.staticlight.falloffexponent"
+//    "editor.staticlight.shadowangle"
+//    "editor.staticlight.shadowsamples"
+//    "editor.staticlight.shadowradius"
+//    "editor.dynamiclight.enable"
+//    "editor.intensity"
+    
+    Vector<Entity *>::const_iterator endIt = scenenodes.end();
+    for (Vector<Entity *>::iterator it = scenenodes.begin(); it != endIt; ++it)
+    {
+        Entity * node = *it;
+
+        if(node->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT))
+        {
+            KeyedArchive *props = node->GetCustomProperties();
+            const Map<String, VariantType*> propsMap = props->GetArchieveData();
+            
+            auto endIt = propsMap.end();
+            for(auto it = propsMap.begin(); it != endIt; ++it)
+            {
+                String key = it->first;
+                
+                if(key.find(ResourceEditor::EDITOR_BASE) == 0)
+                {
+                    if((key != ResourceEditor::EDITOR_DO_NOT_REMOVE) && (key != ResourceEditor::EDITOR_DYNAMIC_LIGHT_ENABLE))
+                    {
+                        props->DeleteKey(key);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
