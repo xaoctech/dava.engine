@@ -30,9 +30,7 @@
 
 #include "EntityOwnerPropertyHelper.h"
 #include "SceneEditor/EditorSettings.h"
-
-const char* EntityOwnerPropertyHelper::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
-const char* EntityOwnerPropertyHelper::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
+#include "Classes/StringConstants.h"
 
 EntityOwnerPropertyHelper::EntityOwnerPropertyHelper()
 {
@@ -65,12 +63,12 @@ void EntityOwnerPropertyHelper::UpdateEntityOwner(KeyedArchive *customProperties
 
 void EntityOwnerPropertyHelper::SetDesignerName(DAVA::KeyedArchive *customProperties, const String & name)
 {
-	customProperties->SetString(SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, name);
+	customProperties->SetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, name);
 }
 
 String EntityOwnerPropertyHelper::GetDesignerName(KeyedArchive *customProperties)
 {
-	return customProperties->GetString(SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, "nobody");
+	return customProperties->GetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, "nobody");
 }
 
 void EntityOwnerPropertyHelper::UpdateModificationTime(KeyedArchive *customProperties)
@@ -82,11 +80,11 @@ void EntityOwnerPropertyHelper::UpdateModificationTime(KeyedArchive *customPrope
 							   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
 							   utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
 
-	customProperties->SetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
+	customProperties->SetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
 }
 
 String EntityOwnerPropertyHelper::GetModificationTime(DAVA::KeyedArchive *customProperties)
 {
-	return customProperties->GetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
+	return customProperties->GetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
 }
 

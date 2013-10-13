@@ -69,6 +69,7 @@ namespace ResourceEditor
 	static const String EDITOR_REFERENCE_TO_OWNER = "editor.referenceToOwner";
 	static const String EDITOR_IS_LOCKED = "editor.isLocked";
 	static const String EDITOR_DO_NOT_REMOVE = "editor.donotremove";
+    static const String EDITOR_DYNAMIC_LIGHT_ENABLE = "editor.dynamiclight.enable";
 
     //Documentation
     static const String DOCUMENTATION_PATH = "~doc:/ResourceEditorHelp/";
@@ -196,6 +197,10 @@ namespace ResourceEditor
 
 	static const String NO_LANDSCAPE_ERROR_MESSAGE					= "Error. Check is there landscape at the scene.";
 	static const String INVALID_LANDSCAPE_MESSAGE					= "Error. Check if all necessary properties of the landscape are set.";
+    
+    static const String SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
+	static const String SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
+
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__
