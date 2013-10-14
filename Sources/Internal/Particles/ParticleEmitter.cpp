@@ -778,12 +778,7 @@ bool ParticleEmitter::IsPaused()
 	return isPaused;
 }
 
-void ParticleEmitter::SetAutorestart(bool _isAutorestart)
-{
-	isAutorestart = _isAutorestart;
-}
-
-bool ParticleEmitter::GetAutorestart()
+bool ParticleEmitter::GetAutoRestart()
 {
 	return isAutorestart;
 }

@@ -300,6 +300,28 @@ void RenderSystem::ProcessClipping()
     }
 	if (spatialTree)
 		spatialTree->ProcessClipping(frustum);
+	
+
+	//spatial tree validation test
+	/*int32 mismatchCount = 0;
+	for (uint32 pos = 0; pos < size; ++pos)
+	{
+		RenderObject * node = renderObjectArray[pos];
+
+		if ((node->GetFlags()&RenderObject::CLIPPING_VISIBILITY_CRITERIA) != RenderObject::CLIPPING_VISIBILITY_CRITERIA)
+		{
+			continue;
+		}
+		if (RenderObject::ALWAYS_CLIPPING_VISIBLE&node->GetFlags())	
+			continue;			
+		bool treeClippingResult = node->GetFlags()&RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
+		bool frustumClippingResult = frustum->IsInside(node->GetWorldBoundingBox());
+		if (treeClippingResult!=frustumClippingResult)
+		{
+			mismatchCount++;
+		}		
+
+	}*/
 }
 
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
