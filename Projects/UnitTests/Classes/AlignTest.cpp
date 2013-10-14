@@ -195,11 +195,9 @@ void AlignTest::VerifyTestImage(Image *testImage)
 		TextureUtils::CompareResult result = TextureUtils::CompareImages(testImage,
 																	referenceImage, FORMAT_RGBA8888);
 				
-		Logger::Error("TEST #%d, DIFRESULT = %f", currenTestIndex, (float32)result.difference);
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
 
-	Logger::Error("TEST #%d, DIFINPERSENT = %f", currenTestIndex, differencePersentage);
 	// Verify compare results
 	if (data)
 	{
