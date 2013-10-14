@@ -205,9 +205,6 @@
     <Filter Include="Classes\Qt\Settings">
       <UniqueIdentifier>{0c11ce84-cd79-4a91-8ae8-eb63aca96f0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\SliderWidget">
-      <UniqueIdentifier>{d95815db-d6ea-44d1-82b0-73a7f1f5a5d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
@@ -231,6 +228,9 @@
     </Filter>
     <Filter Include="Classes\Qt\Tools\ToolButtonWithWidget">
       <UniqueIdentifier>{ea518442-bcb2-4598-a8b0-f59de80f1624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\SliderWidget">
+      <UniqueIdentifier>{77209fd5-5cd1-4465-9f21-223b539f5da1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2052,12 +2052,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\SliderWidget\SliderWidget_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp">
-      <Filter>Classes\Qt\SliderWidget</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\RulerToolActions.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2222,6 +2216,18 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3731,9 +3737,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h">
-      <Filter>Classes\Qt\SliderWidget</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\RulerToolActions.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3844,6 +3847,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h">
       <Filter>Classes\Qt\Tools\ToolButtonWithWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

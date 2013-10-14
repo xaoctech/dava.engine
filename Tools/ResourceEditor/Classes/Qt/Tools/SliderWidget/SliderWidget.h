@@ -32,7 +32,9 @@ public:
 	explicit SliderWidget(QWidget* parent = 0);
 	~SliderWidget();
 
-	void Init(const QString caption, bool symmetric, int max, int min, int value);
+	void Init(bool symmetric, int max, int min, int value);
+
+	void SetRange(int min, int max);
 
 	void SetRangeMax(int max);
 	int GetRangeMax();
@@ -49,32 +51,46 @@ public:
 	void SetRangeChangingBlocked(bool blocked);
 	bool IsRangeChangingBlocked();
 
-	void SetCaption(const QString& caption);
-	QString GetCaption();
+	void SetRangeVisible(bool visible);
+	bool IsRangeVisible();
+
+	void SetCurValueVisible(bool visible);
+	bool IsCurValueVisible();
+
+	void SetRangeBoundaries(int min, int max);
+
+protected:
+	virtual bool eventFilter(QObject* obj, QEvent* ev);
 
 signals:
 	void ValueChanged(int newValue);
 
 private slots:
 	void SliderValueChanged(int newValue);
-	void RangeChanged(int newMaxValue);
-	void EditValueChanged();
+	void RangeChanged(int newMinValue, int newMaxValue);
+	void SpinValueChanged(int newValue);
+
+	void OnValueReady(const QWidget* widget, int value);
 
 private:
-	QSlider* sliderValue;
-	QLineEdit* editValue;
-	QLineEdit* editMinValue;
-	QSpinBox* spinMaxValue;
-	QLabel* labelCaption;
+	static const int DEF_LOWEST_VALUE;
+	static const int DEF_HIGHEST_VALUE;
 
-	QString caption;
+	QLabel* labelMinValue;
+	QLabel* labelMaxValue;
+	QSpinBox* spinCurValue;
+	QSlider* sliderValue;
 
 	bool isSymmetric;
 	bool isRangeChangingBlocked;
+	bool isRangeVisible;
 
 	int minValue;
 	int maxValue;
 	int currentValue;
+
+	int rangeBoundMin;
+	int rangeBoundMax;
 
 	void EmitValueChanged();
 	void ConnectToSignals();
