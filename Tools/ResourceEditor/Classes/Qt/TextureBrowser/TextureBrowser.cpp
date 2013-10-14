@@ -142,6 +142,11 @@ void TextureBrowser::Close()
 	TextureCache::Instance()->clearAll();
 }
 
+void TextureBrowser::Update()
+{
+	setScene(curScene);
+}
+
 void TextureBrowser::closeEvent(QCloseEvent * e)
 {
 	QDialog::closeEvent(e);
@@ -958,6 +963,10 @@ void TextureBrowser::sceneActivated(SceneEditor2 *scene)
 	if(curScene != scene)
 	{
 		setScene(scene);
+	}
+	else
+	{
+		Update();
 	}
 }
 
