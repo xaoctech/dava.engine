@@ -411,7 +411,7 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 	currentMode.height = GetModeHeight(displayMode);
 	
 	NSLog(@"[CoreMacOSPlatform] init internal renderer: %d x %d", currentMode.width, currentMode.height);
-
+	
 	RenderManager::Instance()->Init(currentMode.width, currentMode.height);
 	UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
 	Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
