@@ -73,8 +73,8 @@ private slots:
 	void OnValueReady(const QWidget* widget, int value);
 
 private:
-	const int DEF_LOWEST_VALUE = -999;
-	const int DEF_HIGHEST_VALUE = 999;
+	static const int DEF_LOWEST_VALUE = -999;
+	static const int DEF_HIGHEST_VALUE = 999;
 
 	QLabel* labelMinValue;
 	QLabel* labelMaxValue;
