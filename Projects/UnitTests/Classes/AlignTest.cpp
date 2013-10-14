@@ -195,11 +195,10 @@ void AlignTest::VerifyTestImage(Image *testImage)
 		TextureUtils::CompareResult result = TextureUtils::CompareImages(testImage,
 																	referenceImage, FORMAT_RGBA8888);
 				
-		GameCore::Instance()->LogMessage(Format("TEST #%d, DIFRESULT1 = %f", currenTestIndex, (float32)result.difference));
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
 
-	GameCore::Instance()->LogMessage(Format("TEST #%d, DIFRESULT2 = %f", currenTestIndex, differencePersentage));
+	GameCore::Instance()->RegisterError(Format("TEST #%d, DIFRESULT2 = %f", currenTestIndex, differencePersentage), __FILE__, __LINE__, &data->testData);
 	// Verify compare results
 	if (data)
 	{
