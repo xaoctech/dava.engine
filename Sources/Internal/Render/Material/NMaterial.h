@@ -156,7 +156,7 @@ public:
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
 	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
 	
-	void SetMaterialName(const String& name);
+	virtual void SetMaterialName(const String& name);
 	FastName GetMaterialName();
 	FastName GetParentName();
 	
@@ -172,10 +172,18 @@ protected:
 	FastName parentName;
 	FastName materialName;
 	
+    //TODO: init layers size to sane value such as 4
 	FastNameSet layers;
+    
+    //TODO: init techniques size to sane value such as 8
 	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
+    //TODO: init native defines size to sane value such as 16
 	FastNameSet nativeDefines;
+    
+    //TODO: init properties size to sane value such as 32
 	HashMap<FastName, NMaterialProperty*> materialProperties;
+    
+    //TODO: init textures size to sane value such as 8
 	HashMap<FastName, TextureBucket*> textures;
 	Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
@@ -255,10 +263,14 @@ public:
 	bool IsSwitchable() const;
 	
 	NMaterial* Clone();
+    
+    virtual void SetMaterialName(const String& name);
 	
 protected:
     
+    //TODO: init inherited defines size to sane value such as 16 or 32
 	FastNameSet inheritedDefines;
+    //TODO: init inherited defines size to sane value such as 4 or 8
 	FastNameSet effectiveLayers;
 	
 	//{TODO: these should be removed and changed to a generic system
@@ -275,6 +287,7 @@ protected:
 	bool configMaterial;
 	
 	FastName  currentStateName;
+    //TODO: init states size to sane value such as 4
 	HashMap<FastName, NMaterialState*> states;
 	
 	static uint64 uniqueIdSequence;

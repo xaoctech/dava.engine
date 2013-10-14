@@ -198,5 +198,15 @@ void FastName::RemRef(int i) const
 		}
 	}
 }
+    
+void FastName::Reset()
+{
+    if(IsValid())
+    {
+        RemRef(index);
+    }
+    
+    index = -1;
+}
 
 };
