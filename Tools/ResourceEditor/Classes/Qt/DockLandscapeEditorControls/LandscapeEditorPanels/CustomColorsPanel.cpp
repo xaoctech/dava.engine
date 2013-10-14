@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QSpacerItem>
 #include <QFileDialog>
+#include <QLabel>
 
 CustomColorsPanel::CustomColorsPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
@@ -97,9 +98,15 @@ void CustomColorsPanel::InitUI()
 	buttonSaveTexture = new QPushButton(this);
 	buttonLoadTexture = new QPushButton(this);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	
+
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetBrushSize);
+
 	layout->addWidget(comboColor);
-	layout->addWidget(sliderWidgetBrushSize);
+	layout->addLayout(layoutBrushSize);
 	layout->addWidget(buttonLoadTexture);
 	layout->addWidget(buttonSaveTexture);
 	layout->addSpacerItem(spacer);
@@ -109,8 +116,8 @@ void CustomColorsPanel::InitUI()
 	SetWidgetsState(false);
 	BlockAllSignals(true);
 	
-	sliderWidgetBrushSize->Init(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str(),
-								false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
 	buttonSaveTexture->setText(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str());
 	buttonLoadTexture->setText(ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION.c_str());
 }

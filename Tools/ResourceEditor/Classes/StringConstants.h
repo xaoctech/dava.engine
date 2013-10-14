@@ -104,7 +104,7 @@ namespace ResourceEditor
 	
 	static const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 
-	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush size:";
+	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush\nsize:";
 	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
 	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile texture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
@@ -116,7 +116,7 @@ namespace ResourceEditor
 	static const String TILEMASK_EDITOR_ENABLE_ERROR		= "Error enabling Tile Mask Editor. Make sure there is valid landscape at the scene.";
 	static const String TILEMASK_EDITOR_DISABLE_ERROR		= "Error disabling Tile Mask Editor";
 
-	static const String CUSTOM_COLORS_BRUSH_SIZE_CAPTION	= "Brush size:";
+	static const String CUSTOM_COLORS_BRUSH_SIZE_CAPTION	= "Brush\nsize:";
 	static const String CUSTOM_COLORS_BRUSH_SIZE_MIN		= "custom-colors.brush-size.min";
 	static const String CUSTOM_COLORS_BRUSH_SIZE_MAX		= "custom-colors.brush-size.max";
 	static const String CUSTOM_COLORS_PROPERTY_COLORS		= "LandscapeCustomColors";
@@ -138,15 +138,15 @@ namespace ResourceEditor
 	static const String VISIBILITY_TOOL_SET_POINT_CAPTION	= "Set Visibility Point";
 	static const String VISIBILITY_TOOL_SAVE_TEXTURE_CAPTION= "Save Texture";
 
-	static const String RULER_TOOL_LINE_WIDTH_CAPTION		= "Line width:";
+	static const String RULER_TOOL_LINE_WIDTH_CAPTION		= "Line\nwidth:";
 	static const String RULER_TOOL_LENGTH_CAPTION			= "Length:";
 	static const String RULER_TOOL_PREVIEW_LENGTH_CAPTION	= "Preview length:";
 	static const String RULER_TOOL_ENABLE_ERROR				= "Error enabling Ruler Tool. Make sure there is valid landscape at the scene.";
 	static const String RULER_TOOL_DISABLE_ERROR			= "Error disabling Ruler Tool";
 
-	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION			= "Brush size:";
+	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION			= "Brush\nsize:";
 	static const String HEIGHTMAP_EDITOR_STRENGTH_CAPTION			= "Strength:";
-	static const String HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION	= "Average strength:";
+	static const String HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION	= "Average\nstrength:";
 	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN				= "heightmap-editor.brush-size.min";
 	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX				= "heightmap-editor.brush-size.max";
 	static const String HEIGHTMAP_EDITOR_STRENGTH_MAX				= "heightmap-editor.strength.max";
@@ -201,6 +201,8 @@ namespace ResourceEditor
     static const String SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
 	static const String SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
 
+	static const String SLIDER_WIDGET_CHANGE_VALUE_TOOLTIP			= "Double click to change value";
+	static const String SLIDER_WIDGET_CURRENT_VALUE					= "Current value";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__
