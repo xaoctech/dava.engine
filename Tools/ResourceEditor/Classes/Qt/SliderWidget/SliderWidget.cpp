@@ -333,5 +333,5 @@ void SliderWidget::SetCurValueVisible(bool visible)
 
 bool SliderWidget::IsCurValueVisible()
 {
-	spinCurValue->isVisible();
+	return spinCurValue->isVisible();
 }
