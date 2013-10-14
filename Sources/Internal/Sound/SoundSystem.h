@@ -46,6 +46,8 @@ class Component;
 class SoundSystemInstance
 {
 public:
+    virtual ~SoundSystemInstance() {};
+    
     virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
     virtual Component * CreateSoundComponent() = 0;
 

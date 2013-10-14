@@ -49,7 +49,7 @@ distanceUpdateTime(.0f)
 {
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
 	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
-#ifdef DAVA_DEBUG
+#ifdef DAVA_FMOD_PROFILE
     FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, 0));
 #else
     FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
@@ -65,12 +65,6 @@ FMODSoundSystem::~FMODSoundSystem()
 		SafeRelease(soundGroup);
 	}
     soundGroups.Clear();
-
-    uint32 mem = 0;
-    FMOD_VERIFY(fmodEventSystem->getMemoryInfo(0, FMOD_MEMBITS_ALL, &mem, 0));
-    Logger::Debug("[FMODSoundSystem] sounds mem usage: %d bytes", mem);
-    FMOD_VERIFY(fmodEventSystem->getMemoryInfo(0, FMOD_EVENT_MEMBITS_ALL, &mem, 0));
-    Logger::Debug("[FMODSoundSystem] events mem usage: %d bytes", mem);
 
 	FMOD_VERIFY(fmodEventSystem->release());
 }
