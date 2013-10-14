@@ -75,6 +75,8 @@
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
 		49CAAF7A17A65FA400C91496 /* RulerToolSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7817A65FA400C91496 /* RulerToolSystem.cpp */; };
 		49CAAF8117A65FB200C91496 /* RulerToolProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49CAAF7F17A65FB200C91496 /* RulerToolProxy.cpp */; };
+		49DB8AD01809D3E0002E51BB /* PopupEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB8ACE1809D3E0002E51BB /* PopupEditorDialog.cpp */; };
+		49DB8AD91809D844002E51BB /* PopupEditorDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB8AD81809D844002E51BB /* PopupEditorDialog_moc.cpp */; };
 		49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F26F1C1771D67D008012B5 /* CommandAction.cpp */; };
 		49F546F917E89B5E0084015D /* LandscapeEditorShortcutManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F546F717E89B5E0084015D /* LandscapeEditorShortcutManager.cpp */; };
 		49FE771C17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FE771A17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp */; };
@@ -803,6 +805,9 @@
 		49CAAF7917A65FA400C91496 /* RulerToolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RulerToolSystem.h; sourceTree = "<group>"; };
 		49CAAF7F17A65FB200C91496 /* RulerToolProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolProxy.cpp; path = LandscapeEditorDrawSystem/RulerToolProxy.cpp; sourceTree = "<group>"; };
 		49CAAF8017A65FB200C91496 /* RulerToolProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolProxy.h; path = LandscapeEditorDrawSystem/RulerToolProxy.h; sourceTree = "<group>"; };
+		49DB8ACE1809D3E0002E51BB /* PopupEditorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PopupEditorDialog.cpp; path = Classes/Qt/SliderWidget/PopupEditorDialog.cpp; sourceTree = "<group>"; };
+		49DB8ACF1809D3E0002E51BB /* PopupEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PopupEditorDialog.h; path = Classes/Qt/SliderWidget/PopupEditorDialog.h; sourceTree = "<group>"; };
+		49DB8AD81809D844002E51BB /* PopupEditorDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PopupEditorDialog_moc.cpp; path = _GeneratedQt/SliderWidget/PopupEditorDialog_moc.cpp; sourceTree = "<group>"; };
 		49EF1C7A1726A68800B899E6 /* CommandList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandList.h; path = Classes/Commands/CommandList.h; sourceTree = "<group>"; };
 		49F26F1C1771D67D008012B5 /* CommandAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAction.cpp; sourceTree = "<group>"; };
 		49F26F1D1771D67D008012B5 /* CommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandAction.h; sourceTree = "<group>"; };
@@ -1959,6 +1964,7 @@
 		499BD23417D8B2700035CF5F /* SliderWidget */ = {
 			isa = PBXGroup;
 			children = (
+				49DB8AD81809D844002E51BB /* PopupEditorDialog_moc.cpp */,
 				499BD23F17D8B2980035CF5F /* SliderWidget_moc.cpp */,
 			);
 			name = SliderWidget;
@@ -1969,6 +1975,8 @@
 			children = (
 				499BD24517D8C35E0035CF5F /* SliderWidget.cpp */,
 				499BD24617D8C35E0035CF5F /* SliderWidget.h */,
+				49DB8ACE1809D3E0002E51BB /* PopupEditorDialog.cpp */,
+				49DB8ACF1809D3E0002E51BB /* PopupEditorDialog.h */,
 			);
 			name = SliderWidget;
 			sourceTree = "<group>";
@@ -4732,6 +4740,7 @@
 				4FAD0D0B1785EC6E00B05A35 /* MaterialView_moc.cpp in Build Sources */,
 				4FAD0D0C1785EC6E00B05A35 /* MaterialViewModel_moc.cpp in Build Sources */,
 				4FAD0D0D1785EC6E00B05A35 /* MaterialEditor_moc.cpp in Build Sources */,
+				49DB8AD91809D844002E51BB /* PopupEditorDialog_moc.cpp in Build Sources */,
 				4FAD0D0E1785EC6E00B05A35 /* ProjectManager_moc.cpp in Build Sources */,
 				4FAD0D0F1785EC6E00B05A35 /* QtIcons_qrc.cpp in Build Sources */,
 				4FAD0D101785EC6E00B05A35 /* EntityGroup_moc.cpp in Build Sources */,
@@ -4771,6 +4780,7 @@
 				4FAD0D321785EC6E00B05A35 /* AddSwitchEntityDialog_moc.cpp in Build Sources */,
 				4FAD0D331785EC6E00B05A35 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */,
 				4FAD0D351785EC6E00B05A35 /* QResourceEditorProgressDialog_moc.cpp in Build Sources */,
+				49DB8AD01809D3E0002E51BB /* PopupEditorDialog.cpp in Build Sources */,
 				4FAD0D361785EC6E00B05A35 /* QtPosSaver_moc.cpp in Build Sources */,
 				4FAD0D371785EC6E00B05A35 /* QtPropertyData_moc.cpp in Build Sources */,
 				4FAD0D381785EC6E00B05A35 /* QtPropertyEditor_moc.cpp in Build Sources */,

@@ -19,6 +19,7 @@ public:
 	static const int DEF_BRUSH_MAX_SIZE = 40;
 	static const int DEF_STRENGTH_MIN_VALUE = 0;
 	static const int DEF_STRENGTH_MAX_VALUE = 60;
+	static const int STRENGTH_MAX_BOUNDARY = 999;
 
 	explicit TilemaskEditorPanel(QWidget* parent = 0);
 	virtual ~TilemaskEditorPanel();
