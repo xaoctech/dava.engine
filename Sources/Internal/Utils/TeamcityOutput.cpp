@@ -30,7 +30,9 @@
 
 #include "Utils/TeamcityOutput.h"
 #include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
+
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+
 
 namespace DAVA
 {
@@ -53,7 +55,8 @@ void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
             break;
     }
 
-	Logger::Instance()->PlatformLog(ll, Format("##teamcity[message text=\'%s\' errorDetails=\'\' status=\'%s\']\n", outStr.c_str(), status.c_str()));
+    String output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
+    PlatformOutput(output);
 }
 
 void TeamcityOutput::Output(Logger::eLogLevel ll, const char16 *text) const
@@ -82,5 +85,14 @@ String TeamcityOutput::NormalizeString(const char8 *text) const
     return str;
 }
 	
+#if defined (__DAVAENGINE_WIN32__)
+void TeamcityOutput::PlatformOutput(const String &text) const
+{
+    OutputDebugStringA(text.c_str());
+}
+#endif //#if defined (__DAVAENGINE_WIN32__)
     
 }; // end of namespace DAVA
+
+#endif //#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+
