@@ -291,7 +291,7 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 	return Classify(box.min, box.max);
 }
 
-
+#define DISTANCE_TO_PLANE(p, vx, vy, vz) ((p.n.x)*(vx)+(p.n.y)*(vy)+(p.n.z)*(vz)+(p.d))
 uint32 Frustum::planeCalls;
 Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const
 {
@@ -303,9 +303,11 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 	if (k&planeMask)
 	{
 		planeCalls++;
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)		
+		//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)		
+		if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			return EFR_OUTSIDE;		
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
+		//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
+		if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
 			result = EFR_INTERSECT;
 		else
 			planeMask^=k; //plane is inside
@@ -315,12 +317,14 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 		if ((k&planeMask)&&(plane!=startId))
 		{
 			planeCalls++;
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+			//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+			if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			{
 				startId = plane;
 				return EFR_OUTSIDE;
 			}
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
+			//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
+			if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
 				result = EFR_INTERSECT;
 			else
 				planeMask^=k; //plane is inside
@@ -339,7 +343,8 @@ bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippin
 	if (k&planeMask)
 	{
 		planeCalls++;
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+		//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+		if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			return false;
 	}
 	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
@@ -347,7 +352,8 @@ bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippin
 		if ((k&planeMask)&&(plane!=startClippingPlane))
 		{
 			planeCalls++;
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+			//if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
+			if (DISTANCE_TO_PLANE(planeArray[plane], verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			{
 				startClippingPlane = plane;
 				return false;
