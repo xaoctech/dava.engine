@@ -278,6 +278,8 @@ void HashMap<K, V>::Clear()
 			item = next;
 		}
 	}
+	
+	sz = 0;
 }
 
 template <typename K, typename V>

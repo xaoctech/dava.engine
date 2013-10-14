@@ -129,7 +129,12 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
-	NMaterialState::NMaterialState()
+	NMaterialState::NMaterialState() :
+	layers(4),
+	techniqueForRenderPass(8),
+	nativeDefines(16),
+	materialProperties(32),
+	textures(8)
 	{
 		parent = NULL;
 	}
@@ -628,10 +633,13 @@ namespace DAVA
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+		
 	uint64 NMaterial::uniqueIdSequence = 0;
 	
-	NMaterial::NMaterial() : NMaterialState()
+	NMaterial::NMaterial() : NMaterialState(),
+	inheritedDefines(16),
+	effectiveLayers(8),
+	states(4)
 	{
 		activeTechnique = 0;
 		ready = false;
@@ -1085,14 +1093,54 @@ namespace DAVA
 	
 	void NMaterial::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 	{
-		//VI: TODO: serialize multiple states per single LOD material
-		Serialize(*this, archive, serializationContext);
+		if(!IsSwitchable())
+		{
+			KeyedArchive* defaultStateArchive = new KeyedArchive();
+			Serialize(*this, defaultStateArchive, serializationContext);
+			archive->SetArchive("__defaultState__", defaultStateArchive);
+			SafeRelease(defaultStateArchive);
+		}
+		else
+		{
+			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+			while(stateIter != states.End())
+			{
+				KeyedArchive* stateArchive = new KeyedArchive();
+				Serialize(*stateIter.GetValue(), stateArchive, serializationContext);
+				archive->SetArchive(stateIter.GetKey().c_str(), stateArchive);
+				SafeRelease(stateArchive);
+				
+				++stateIter;
+			}
+		}
 	}
 	
 	void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 	{
-		//VI: TODO: deserialize multiple states per single LOD material
-		Deserialize(*this, archive, serializationContext);
+		//TODO: add code allowing to transition from switchable to non-switchable materials and vice versa
+		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
+		
+		if(archive->Count() > 1)
+		{
+			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
+				it != archiveData.end();
+				++it)
+			{
+				if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
+				{
+					NMaterialState* matState = new NMaterialState();
+					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
+					states.Insert(it->first, matState);
+				}
+			}
+			
+			SetMaterialName(states.Begin().GetValue()->GetMaterialName().c_str());
+		}
+		else
+		{
+			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
+			Deserialize(*this, stateArchive, serializationContext);
+		}
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
@@ -1272,9 +1320,11 @@ namespace DAVA
 		}
 	}
 	
-	bool NMaterial::SwitchState(const FastName& stateName, MaterialSystem* materialSystem)
+	bool NMaterial::SwitchState(const FastName& stateName,
+								MaterialSystem* materialSystem,
+								bool forceSwitch)
 	{
-		if(stateName == currentStateName)
+		if(!forceSwitch && (stateName == currentStateName))
 		{
 			return true;
 		}
@@ -1298,7 +1348,7 @@ namespace DAVA
 			activeTechnique = NULL;
 			ready = false;
 
-			if(currentStateName.IsValid())
+			if(currentStateName.IsValid() && !forceSwitch)
 			{
 				NMaterialState* prevState = states.GetValue(currentStateName);
 				DVASSERT(prevState);
@@ -1385,4 +1435,28 @@ namespace DAVA
         
         NMaterialState::SetMaterialName(name);
     }
+	
+	uint32 NMaterial::GetStateCount() const
+	{
+		return states.Size();
+	}
+	
+	NMaterialState* NMaterial::GetState(uint32 index)
+	{
+		NMaterialState* matState = NULL;
+		
+		uint32 curIndex = 0;
+		HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+		while(stateIter != states.End() &&
+			  curIndex < index)
+		{
+			++curIndex;
+			++stateIter;
+		}
+		
+		matState = stateIter.GetValue();
+
+		return matState;
+	}
+
 };

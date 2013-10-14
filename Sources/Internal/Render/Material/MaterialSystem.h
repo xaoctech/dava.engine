@@ -72,7 +72,7 @@ public:
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
-	void SwitchMaterialQuality(const FastName& qualityLevelName);
+	void SwitchMaterialQuality(const FastName& qualityLevelName, bool forceSwitch = false);
 	
 	NMaterial* CreateChild(NMaterial* parent);
 	

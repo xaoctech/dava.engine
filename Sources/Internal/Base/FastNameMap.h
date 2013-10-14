@@ -53,6 +53,10 @@ class FastNameSet : public HashMap<FastName, int>
 {
 public:
 	
+	FastNameSet(int size = 128) : HashMap<FastName, int>(size)
+	{
+	}
+	
 	void Insert(const char *name)
 	{
 		HashMap<FastName, int>::Insert(FastName(name), 0);

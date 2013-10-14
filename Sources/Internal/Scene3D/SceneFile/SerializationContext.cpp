@@ -283,75 +283,82 @@ namespace DAVA
 		DVASSERT(parentMaterial);
 				
 		NMaterial* resultMaterial = matSystem->CreateChild(parentMaterial);
+		uint32 materialStateCount = resultMaterial->GetStateCount();
 		
-		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+		uint32 materialMultiplexStepCount = (0 == materialStateCount) ? 1 : materialStateCount;
+		for(uint32 i = 0; i < materialMultiplexStepCount; ++i)
 		{
-			if(oldMaterialState)
-			{
-				resultMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
-			}
-		}
-		else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
-		{
-			resultMaterial->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
-		}
-		else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
-		{
-			resultMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
-		}
-		
-		if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
-		{
-			resultMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
-		}
-		
-		if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-		{
-			if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
-			{
-				resultMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
-			}
-		}
-		
-		if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-		{
-			resultMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+			NMaterialState* targetState = (0 == materialStateCount) ? resultMaterial : resultMaterial->GetState(i);
 			
-			resultMaterial->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-			resultMaterial->SetPropertyValue("prop_diffuseColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-			resultMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
-		}
-		
-		resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-		resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
-		
-		if(oldMaterial->isFlatColorEnabled)
-		{
-			resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
-		}
-		
-		if(oldMaterial->isTexture0ShiftEnabled)
-		{
-			resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
-		}
-		
-		if(oldMaterialState)
-		{
 			if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 			{
-				resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-				resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+				if(oldMaterialState)
+				{
+					targetState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+				}
+			}
+			else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
+			{
+				targetState->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
+			}
+			else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
+			{
+				targetState->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
+			}
+			
+			if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
+			{
+				targetState->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+			}
+			
+			if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
+				{
+					targetState->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
+				}
+			}
+			
+			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				targetState->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+				
+				targetState->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+				targetState->SetPropertyValue("prop_diffuseColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+				targetState->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
+			}
+			
+			targetState->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
+			targetState->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
+			
+			if(oldMaterial->isFlatColorEnabled)
+			{
+				targetState->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
+			}
+			
+			if(oldMaterial->isTexture0ShiftEnabled)
+			{
+				targetState->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+			}
+			
+			if(oldMaterialState)
+			{
+				if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+				{
+					targetState->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+					targetState->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+				}
 			}
 		}
-		
+				
 		return resultMaterial;
 	}
 	
