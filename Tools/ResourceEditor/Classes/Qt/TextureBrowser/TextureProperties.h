@@ -107,11 +107,11 @@ protected:
 	void SaveCurSizeFromProp();
 
 protected slots:
-	void PropMipMapChanged();
-	void PropFormatChanged();
-	void PropFilterChanged();
-	void PropWrapChanged();
-	void PropSizeChanged();
+	void PropMipMapChanged(QtPropertyData::ValueChangeReason reason);
+	void PropFormatChanged(QtPropertyData::ValueChangeReason reason);
+	void PropFilterChanged(QtPropertyData::ValueChangeReason reason);
+	void PropWrapChanged(QtPropertyData::ValueChangeReason reason);
+	void PropSizeChanged(QtPropertyData::ValueChangeReason reason);
 };
 
 #endif // __TEXTURE_PROPERTIES_H__
