@@ -1195,6 +1195,20 @@ protected:
 	bool debugDrawEnabled : 1;
 	bool multiInput : 1;
 
+	bool visibleForUIEditor : 1;
+
+	// Enable align options
+	bool _leftAlignEnabled : 1;
+	bool _hcenterAlignEnabled : 1;
+	bool _rightAlignEnabled : 1;
+	bool _topAlignEnabled : 1;
+	bool _vcenterAlignEnabled : 1;
+	bool _bottomAlignEnabled : 1;
+	
+	bool isUpdated : 1;
+	bool isIteratorCorrupted : 1;
+
+
 	int32 currentInputID;
 	int32 touchesInside;
 	int32 totalTouches;
@@ -1237,20 +1251,6 @@ protected:
 #endif
 	
 private:
-	// Boolean flags are grouped here to pack them together (see please DF-2149).
-	bool visibleForUIEditor : 1;
-	
-	// Enable align options
-	bool _leftAlignEnabled : 1;
-	bool _hcenterAlignEnabled : 1;
-	bool _rightAlignEnabled : 1;
-	bool _topAlignEnabled : 1;
-	bool _vcenterAlignEnabled : 1;
-	bool _bottomAlignEnabled : 1;
-
-	bool isUpdated : 1;
-	bool isIteratorCorrupted : 1;
-
 	String	name;
 	int32	tag;
 
