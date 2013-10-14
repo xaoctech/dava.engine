@@ -260,7 +260,6 @@ private:
 	void LoadShadowBlendModeState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
-	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
 
