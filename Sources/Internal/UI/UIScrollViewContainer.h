@@ -73,9 +73,6 @@ protected:
 	int32		state;
 	// Scroll information
 	Vector2		scrollStartInitialPosition;	// position of click
-	bool 		scrollStartMovement;
-	bool		enableHorizontalScroll;
-	bool		enableVerticalScroll;
 	int32		touchTreshold;
 	
 	int 		mainTouch;	
@@ -83,7 +80,12 @@ protected:
 	
 	Vector2 	oldPos;
 	Vector2		newPos;
-	bool 		lockTouch;
+
+	// All boolean variables are grouped together because of DF-2149.
+	bool 		lockTouch : 1;
+	bool 		scrollStartMovement : 1;
+	bool		enableHorizontalScroll : 1;
+	bool		enableVerticalScroll : 1;
 };
 };
 
