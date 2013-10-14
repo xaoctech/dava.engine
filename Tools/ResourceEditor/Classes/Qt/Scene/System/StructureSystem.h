@@ -51,7 +51,7 @@ public:
 	StructureSystem(DAVA::Scene * scene);
 	~StructureSystem();
 
-	void Init();
+	bool Init(const DAVA::FilePath & path);
 
 	void Move(const EntityGroup& entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
 	void Remove(const EntityGroup& entityGroup);
