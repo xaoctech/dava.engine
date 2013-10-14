@@ -404,7 +404,8 @@ void MaterialSystem::Clear()
 	}
 
 	
-void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
+void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
+										   bool forceSwitch)
 {
 	Vector<NMaterial*> materialList;
 	BuildMaterialList(NULL, materialList);
@@ -417,9 +418,9 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 	{
 		NMaterial* mat = *it;
 		
-		if(mat->IsSwitchable())
+		if(mat->IsSwitchable() && !mat->IsConfigMaterial())
 		{
-			mat->SwitchState(qualityLevelName, this);
+			mat->SwitchState(qualityLevelName, this, forceSwitch);
 		}
 	}
 }

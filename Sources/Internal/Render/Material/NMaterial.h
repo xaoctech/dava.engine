@@ -172,18 +172,13 @@ protected:
 	FastName parentName;
 	FastName materialName;
 	
-    //TODO: init layers size to sane value such as 4
 	FastNameSet layers;
     
-    //TODO: init techniques size to sane value such as 8
 	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
-    //TODO: init native defines size to sane value such as 16
 	FastNameSet nativeDefines;
     
-    //TODO: init properties size to sane value such as 32
 	HashMap<FastName, NMaterialProperty*> materialProperties;
     
-    //TODO: init textures size to sane value such as 8
 	HashMap<FastName, TextureBucket*> textures;
 	Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
@@ -258,7 +253,8 @@ public:
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 	
-	bool SwitchState(const FastName& stateName, MaterialSystem* materialSystem);
+	bool SwitchState(const FastName& stateName, MaterialSystem* materialSystem,
+					 bool forceSwitch = false);
 	
 	bool IsSwitchable() const;
 	
@@ -266,12 +262,15 @@ public:
     
     virtual void SetMaterialName(const String& name);
 	
+	//VI: these 2 methods ar used for old maerial conversion only
+	//VI: need to multiplex single old state to LOD states
+	uint32 GetStateCount() const;
+	NMaterialState* GetState(uint32 index);
+	
 protected:
     
-    //TODO: init inherited defines size to sane value such as 16 or 32
-	FastNameSet inheritedDefines;
-    //TODO: init inherited defines size to sane value such as 4 or 8
-	FastNameSet effectiveLayers;
+ 	FastNameSet inheritedDefines;
+ 	FastNameSet effectiveLayers;
 	
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
@@ -287,8 +286,7 @@ protected:
 	bool configMaterial;
 	
 	FastName  currentStateName;
-    //TODO: init states size to sane value such as 4
-	HashMap<FastName, NMaterialState*> states;
+ 	HashMap<FastName, NMaterialState*> states;
 	
 	static uint64 uniqueIdSequence;
 	

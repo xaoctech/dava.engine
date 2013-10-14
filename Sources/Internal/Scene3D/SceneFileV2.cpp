@@ -322,6 +322,9 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     OptimizeScene(rootNode);
 	StopParticleEffectComponents(rootNode);
     
+	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
+	serializationContext.GetScene()->renderSystem->GetMaterialSystem()->SwitchMaterialQuality(qualityLod, true);
+	
 	rootNode->SceneDidLoaded();
     
     if (GetError() == ERROR_NO_ERROR)
