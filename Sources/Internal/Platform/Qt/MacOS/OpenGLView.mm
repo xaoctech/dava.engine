@@ -192,7 +192,7 @@
         [[self openGLContext] flushBuffer];
     }
 	DAVA::RenderManager::Instance()->Unlock();
-//	Logger::Debug("drawRect ended");
+//	Logger::FrameworkDebug("drawRect ended");
 
 }
 
@@ -463,7 +463,7 @@ static int32 oldModifersFlags = 0;
     if(keyboardLocked)
     {
         {
-            //		Logger::Debug("glview keypress!");
+            //		Logger::FrameworkDebug("glview keypress!");
             unichar c = [[event characters] characterAtIndex:0];
             
             Vector<DAVA::UIEvent> touches;

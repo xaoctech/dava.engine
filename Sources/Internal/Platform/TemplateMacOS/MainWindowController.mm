@@ -312,11 +312,11 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 	if (exactMatch)
 	{
 		CGDisplaySwitchToMode (kCGDirectMainDisplay,  displayMode);
-		Logger::Debug("[CoreMacOSPlatform] switch to %d x %d x %d fullscreen mode", width, height, bpp);
+		Logger::FrameworkDebug("[CoreMacOSPlatform] switch to %d x %d x %d fullscreen mode", width, height, bpp);
 	}else 
 	{
 		CGDisplaySwitchToMode (kCGDirectMainDisplay,  displayMode);
-		Logger::Debug("[CoreMacOSPlatform] switch to closes mode to %d x %d x %d fullscreen mode", width, height, bpp);
+		Logger::FrameworkDebug("[CoreMacOSPlatform] switch to closes mode to %d x %d x %d fullscreen mode", width, height, bpp);
 	}
 
     // Pixel Format Attributes for the FullScreen NSOpenGLContext
@@ -873,7 +873,7 @@ void CoreMacOSPlatform::SwitchScreenToMode(eScreenMode screenMode)
 		}
 	}else
 	{
-		Logger::Debug("[CoreMacOSPlatform::SwitchScreenToMode] Current screen mode is the same as previous. Do nothing");
+		Logger::FrameworkDebug("[CoreMacOSPlatform::SwitchScreenToMode] Current screen mode is the same as previous. Do nothing");
 	}
 }
 
