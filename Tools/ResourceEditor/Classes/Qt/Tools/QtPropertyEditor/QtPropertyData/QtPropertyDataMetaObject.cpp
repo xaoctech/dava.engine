@@ -56,7 +56,7 @@ void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
 
 bool QtPropertyDataMetaObject::UpdateValueInternal()
 {
-	bool ret = true;
+	bool ret = false;
 
 	// load current value from meta-object
 	// we should do this because meta-object may change at any time 
