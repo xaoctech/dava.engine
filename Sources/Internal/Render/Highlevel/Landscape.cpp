@@ -903,7 +903,7 @@ float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const Landscap
 	return dist0;
 }
 	
-void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint32 clippingFlags)
+void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;

@@ -310,7 +310,7 @@ protected:
         int8    lod;
         int16   rdoQuad;
         AABBox3 bbox;
-		uint32 startClipPlane;
+		uint8 startClipPlane;
         uint32  frame;
     };
    
@@ -328,7 +328,7 @@ protected:
     void UnbindMaterial();
     
     void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
-    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint32 clippingFlags);
+    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags);
     void DrawFans();
 
     Texture * CreateTexture(eTextureLevel level, const FilePath & textureName);
