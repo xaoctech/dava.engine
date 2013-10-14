@@ -1,7 +1,7 @@
 #include "TilemaskEditorPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "../LandscapeEditorShortcutManager.h"
@@ -513,7 +513,7 @@ void TilemaskEditorPanel::NextTexture()
 	SceneEditor2* sceneEditor = GetActiveScene();
 
 	int32 curIndex = tileTexturePreviewWidget->GetSelectedTexture();
-	if (curIndex < sceneEditor->tilemaskEditorSystem->GetTileTextureCount() - 1)
+	if (curIndex < (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount() - 1)
 	{
 		tileTexturePreviewWidget->SetSelectedTexture(curIndex + 1);
 	}
