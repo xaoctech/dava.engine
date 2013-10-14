@@ -98,6 +98,11 @@ public:
 	//! \param box bounding box
 	bool IsInside(const AABBox3 * box)const;
 
+	//! \brief Check axial aligned bounding box visibility with plane mask and prefferd plane
+	//! \param box bounding box
+	// unlike Classify this function do not modify plane masking as, though still modify startClippingPlane
+	bool IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippingPlane)const;
+
     //! \brief Check axial aligned bounding box visibility
 	//! \param box bounding box
 	bool IsFullyInside(const AABBox3 & box)const;
@@ -121,7 +126,7 @@ public:
 	//checks only planes mentioned in [io]planeMask starting with [io]startId
 	//if box is completely inside planes subspace - plane is removed from planeMask
 	//if box is clipped by plane startId is set to this plane
-	eFrustumResult Classify(const AABBox3 & box, uint32 &planeMask, uint32 &startId) const;
+	eFrustumResult Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const;
 
 	//! \brief check bounding sphere visibility against frustum
 	//! \param point sphere center point
