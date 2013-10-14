@@ -1,7 +1,7 @@
 #include "VisibilityToolPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
 #include "../LandscapeEditorShortcutManager.h"
