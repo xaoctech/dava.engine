@@ -520,7 +520,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
-    <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -564,6 +563,8 @@
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
@@ -743,7 +744,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\VisibilityToolSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\SliderWidget\SliderWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
@@ -785,6 +785,8 @@
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
@@ -1215,7 +1217,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
-    <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
@@ -1259,6 +1260,8 @@
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
