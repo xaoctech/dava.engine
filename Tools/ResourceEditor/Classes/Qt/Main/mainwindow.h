@@ -57,7 +57,7 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 protected:
     
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
-    
+
 public:
 	explicit QtMainWindow(bool enableGlobalTimeout, QWidget *parent = 0);
 	~QtMainWindow();
