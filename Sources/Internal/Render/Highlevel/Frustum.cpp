@@ -295,7 +295,7 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 uint32 Frustum::planeCalls;
 Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const
 {
-	Vector3 verts[2] = {box.min, box.max};
+	const float32* verts[2] = {&box.min.data[0], &box.max.data[0]};
 	Frustum::eFrustumResult result = EFR_INSIDE;	
 	uint8 plane, k;
 	plane = startId;
@@ -303,9 +303,9 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 	if (k&planeMask)
 	{
 		planeCalls++;
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)		
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)		
 			return EFR_OUTSIDE;		
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx].x, verts[planeAccesArray[plane].maxy].y, verts[planeAccesArray[plane].maxz].z) >= 0.0f)
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
 			result = EFR_INTERSECT;
 		else
 			planeMask^=k; //plane is inside
@@ -315,12 +315,12 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 		if ((k&planeMask)&&(plane!=startId))
 		{
 			planeCalls++;
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			{
 				startId = plane;
 				return EFR_OUTSIDE;
 			}
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx].x, verts[planeAccesArray[plane].maxy].y, verts[planeAccesArray[plane].maxz].z) >= 0.0f)
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)
 				result = EFR_INTERSECT;
 			else
 				planeMask^=k; //plane is inside
@@ -332,14 +332,14 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 
 bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippingPlane)const
 {
-	Vector3 verts[2] = {box.min, box.max};
+	const float32* verts[2] = {&box.min.data[0], &box.max.data[0]};
 	uint8 plane, k;
 	plane = startClippingPlane;
 	k=1<<plane;
 	if (k&planeMask)
 	{
 		planeCalls++;
-		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			return false;
 	}
 	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
@@ -347,7 +347,7 @@ bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippin
 		if ((k&planeMask)&&(plane!=startClippingPlane))
 		{
 			planeCalls++;
-			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)
 			{
 				startClippingPlane = plane;
 				return false;
