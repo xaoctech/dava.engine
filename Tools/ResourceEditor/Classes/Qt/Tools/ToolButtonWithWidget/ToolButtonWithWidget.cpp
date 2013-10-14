@@ -27,66 +27,27 @@
 =====================================================================================*/
 
 
+#include "ToolButtonWithWidget.h"
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#include <QWidgetAction>
+#include <QMenu>
 
-#include "DAVAEngine.h"
-
-namespace DAVA 
+ToolButtonWithWidget::ToolButtonWithWidget(QWidget *parent /*= 0*/)
+	: QToolButton(parent)
 {
+	setPopupMode(QToolButton::MenuButtonPopup);
+	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	setAutoRaise(false);
+}
 
-class UIScrollViewContainer : public UIControl
+void ToolButtonWithWidget::SetWidget( QWidget *widget )
 {
-public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	virtual bool SystemInput(UIEvent *currentInput);
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+	QWidgetAction *wa = new QWidgetAction(this);
+	wa->setDefaultWidget(widget);
+	QMenu *m = new QMenu(this);
+	m->addAction(wa);
 
-	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
-	void SetTouchTreshold(int32 holdDelta);
-	int32 GetTouchTreshold();
+	setMenu(m);
+}
 
 
-protected:
-
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
-
-	enum
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
-
-	int32		state;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	int32		touchTreshold;
-	
-	int 		mainTouch;	
-	UIEvent		scrollTouch;
-	
-	Vector2 	oldPos;
-	Vector2		newPos;
-
-	// All boolean variables are grouped together because of DF-2149.
-	bool 		lockTouch : 1;
-	bool 		scrollStartMovement : 1;
-	bool		enableHorizontalScroll : 1;
-	bool		enableVerticalScroll : 1;
-};
-};
-
-#endif /* defined(__Framework__UIScrollViewContainer__) */

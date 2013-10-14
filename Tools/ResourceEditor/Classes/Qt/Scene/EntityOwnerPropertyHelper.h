@@ -54,9 +54,6 @@ public:
 	void UpdateModificationTime(DAVA::KeyedArchive *customProperties);
 	DAVA::String GetModificationTime(DAVA::KeyedArchive *customProperties);
 
-	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
-	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
-	
 public slots:
 	
 	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);

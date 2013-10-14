@@ -64,7 +64,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 {
 	setWindowTitle("Landscape Settings");
 	setAcceptDrops(true);
-
+	setAttribute( Qt::WA_DeleteOnClose, true );
 	DAVA::List<DAVA::String> textureFormats;
 	textureFormats.push_back(".tex");
 	textureFormats.push_back(".png");

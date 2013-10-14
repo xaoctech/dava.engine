@@ -36,11 +36,13 @@
 #include <QLabel>
 #include "Classes/Commands2/EntityAddCommand.h"
 
+#include "ui_BaseAddEntityDialog.h"
+
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 		:BaseAddEntityDialog(parent)
 {
 	setAcceptDrops(true);
-	
+	setAttribute( Qt::WA_DeleteOnClose, true );
 	FilePath defaultPath(EditorSettings::Instance()->GetProjectPath().GetAbsolutePathname() + "/DataSource/3d");
 	
 	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
@@ -64,12 +66,19 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
+
+	Entity* entityToAdd = new Entity();
+	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
+	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
+	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+	SetEntity(entityToAdd);
+	SafeRelease(entityToAdd);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {
 	RemoveAllControlsFromUserContainer();
-	
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
 		delete widget;
@@ -100,12 +109,11 @@ void AddSwitchEntityDialog::accept()
 {
 	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
 	
-	Entity* switchEntity = GetEntity();
+	Entity* switchEntity = entity;
 	
 	if( NULL == scene)
 	{
 		CleanupPathWidgets();
-		SetEntity(NULL);
 		return;
 	}
 	
@@ -132,14 +140,11 @@ void AddSwitchEntityDialog::accept()
 		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
 	}
 	
-	SetEntity(NULL);
-	
 	BaseAddEntityDialog::accept();
 }
 
 void AddSwitchEntityDialog::reject()
 {
 	CleanupPathWidgets();
-	SetEntity(NULL);
 	BaseAddEntityDialog::reject();
 }
