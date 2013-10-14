@@ -109,6 +109,8 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene/EntityOwnerPropertyHelper.h"
 
+#include "Classes/Constants.h"
+
 QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -438,8 +440,8 @@ void QtMainWindow::SetupToolBars()
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
 	reloadTexturesBtn->setPopupMode(QToolButton::MenuButtonPopup);
 	reloadTexturesBtn->setDefaultAction(ui->actionReloadTextures);
-	reloadTexturesBtn->setMaximumWidth(100);
-	reloadTexturesBtn->setMinimumWidth(100);
+	reloadTexturesBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+	reloadTexturesBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 	ui->mainToolBar->addSeparator();
 	ui->mainToolBar->addWidget(reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -453,8 +455,8 @@ void QtMainWindow::SetupToolBars()
 	ToolButtonWithWidget *hangingBtn = new ToolButtonWithWidget();
 	hangingBtn->setDefaultAction(ui->actionHangingObjects);
 	hangingBtn->SetWidget(hangingObjectsWidget);
-	hangingBtn->setMaximumWidth(40);
-	hangingBtn->setMinimumWidth(40);
+	hangingBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
+	hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
 	ui->sceneToolBar->addSeparator();
 	ui->sceneToolBar->addWidget(hangingBtn);
 
@@ -2026,8 +2028,8 @@ void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
 void QtMainWindow::CreateObjectTypesCombobox()
 {
     objectTypesWidget = new QComboBox();
-	objectTypesWidget->setMaximumWidth(100);
-	objectTypesWidget->setMinimumWidth(100);
+	objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+	objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 
     const QList<QAction *> actions = ui->menuObjectTypes->actions();
 
