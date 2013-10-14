@@ -125,47 +125,15 @@ SceneEditor2::~SceneEditor2()
 
 bool SceneEditor2::Load(const DAVA::FilePath &path)
 {
-	bool ret = false;
-
-	// make sure that there is no cached entities with such path
-	ReleaseRootNode(path);
-	
-	// load entity by specified path
-	Entity * rootNode = GetRootNode(path);
-
-	if(rootNode)
-	{
-		ret = true;
-
-		DAVA::Vector<DAVA::Entity*> tmpEntities;
-		int entitiesCount = rootNode->GetChildrenCount();
-
-		// optimize scene
-		SceneFileV2 *sceneFile = new SceneFileV2();
-		sceneFile->OptimizeScene(rootNode);
-		sceneFile->Release();
-
-		// remember all child pointers, but don't add them to scene in this cycle
-		// because when entity is adding it is automatically removing from its old hierarchy
-		tmpEntities.reserve(entitiesCount);
-		for (DAVA::int32 i = 0; i < entitiesCount; ++i)
-		{
-			tmpEntities.push_back(rootNode->GetChild(i));
-		}
-
-		// now we can safely add entities into our hierarchy
-		for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
-		{
-			AddNode(tmpEntities[i]);
-		}
-
-		curScenePath = path;
+	bool ret = structureSystem->Init(path);
+    
+    if(ret)
+    {
+        curScenePath = path;
 		isLoaded = true;
-
+        
 		commandStack.SetClean(true);
-	}
-
-	structureSystem->Init();
+    }
 
 	UpdateShadowColorFromLandscape();
 
