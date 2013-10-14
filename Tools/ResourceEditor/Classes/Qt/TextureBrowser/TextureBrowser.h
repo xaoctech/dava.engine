@@ -61,6 +61,7 @@ public:
     ~TextureBrowser();
 
 	void Close();
+	void Update();
 
 	static QColor gpuColor_PVR_ISO;
 	static QColor gpuColor_PVR_Android;
