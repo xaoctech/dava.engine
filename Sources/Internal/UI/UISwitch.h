@@ -99,8 +99,9 @@ protected:
     UIButton * buttonRight;
     UIButton * toggle;
 
-    bool switchOnTapBesideToggle;
-    bool isLeftSelected;
+	// Boolean variables are grouped together because of DF-2149.
+    bool switchOnTapBesideToggle : 1;
+    bool isLeftSelected : 1;
 };
 
 }
