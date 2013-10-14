@@ -61,6 +61,18 @@ void TilemaskEditorPanel::InitUI()
 	QHBoxLayout* layoutBrushImage = new QHBoxLayout();
 	QVBoxLayout* layoutTileTexture = new QVBoxLayout();
 
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::TILEMASK_EDITOR_BRUSH_SIZE_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetBrushSize);
+
+	QHBoxLayout* layoutStrength = new QHBoxLayout();
+	QLabel* labelStrength = new QLabel();
+	labelStrength->setText(ResourceEditor::TILEMASK_EDITOR_STRENGTH_CAPTION.c_str());
+	layoutStrength->addWidget(labelStrength);
+	layoutStrength->addWidget(sliderWidgetStrength);
+
 	layoutBrushImage->addWidget(labelBrushImageDesc);
 	layoutBrushImage->addWidget(comboBrushImage);
 	layoutTileTexture->addWidget(labelTileTextureDesc);
@@ -68,9 +80,9 @@ void TilemaskEditorPanel::InitUI()
 
 	frameBrushImage->setLayout(layoutBrushImage);
 
-	layout->addWidget(sliderWidgetBrushSize);
+	layout->addLayout(layoutBrushSize);
 	layout->addWidget(frameBrushImage);
-	layout->addWidget(sliderWidgetStrength);
+	layout->addLayout(layoutStrength);
 	layout->addLayout(layoutTileTexture);
 	layout->addSpacerItem(spacer);
 
@@ -85,10 +97,10 @@ void TilemaskEditorPanel::InitUI()
 	labelTileTextureDesc->setText(ResourceEditor::TILEMASK_EDITOR_TILE_TEXTURE_CAPTION.c_str());
 	labelTileTextureDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-	sliderWidgetBrushSize->Init(ResourceEditor::TILEMASK_EDITOR_BRUSH_SIZE_CAPTION.c_str(),
-								false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
-	sliderWidgetStrength->Init(ResourceEditor::TILEMASK_EDITOR_STRENGTH_CAPTION.c_str(),
-							   false, DEF_STRENGTH_MAX_VALUE, DEF_STRENGTH_MIN_VALUE, DEF_STRENGTH_MIN_VALUE);
+	sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
+	sliderWidgetStrength->Init(false, DEF_STRENGTH_MAX_VALUE, DEF_STRENGTH_MIN_VALUE, DEF_STRENGTH_MIN_VALUE);
+	sliderWidgetStrength->SetRangeBoundaries(DEF_STRENGTH_MIN_VALUE, STRENGTH_MAX_BOUNDARY);
 
 	tileTexturePreviewWidget->setMaximumHeight(160);
 
