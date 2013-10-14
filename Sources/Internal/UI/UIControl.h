@@ -1186,13 +1186,15 @@ protected:
 	UIControlBackground *background;
 //	Rect absoluteRect;
 	int32 controlState;
-	bool visible;
-	bool visibleForUIEditor;
-	bool inputEnabled;
-	bool clipContents;
 
-	bool multiInput;
-	bool exclusiveInput;
+	// boolean flags are grouped here to pack them together (see please DF-2149).
+	bool inputEnabled : 1;
+	bool exclusiveInput : 1;
+	bool visible : 1;
+	bool clipContents : 1;
+	bool debugDrawEnabled : 1;
+	bool multiInput : 1;
+
 	int32 currentInputID;
 	int32 touchesInside;
 	int32 totalTouches;
@@ -1205,14 +1207,6 @@ protected:
 	int32 _vcenterAlign;
 	int32 _bottomAlign;
 
-	// Enable align options
-	bool _leftAlignEnabled;
-	bool _hcenterAlignEnabled;
-	bool _rightAlignEnabled;
-	bool _topAlignEnabled;
-	bool _vcenterAlignEnabled;
-	bool _bottomAlignEnabled;
-	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
 
@@ -1220,7 +1214,6 @@ protected:
 	
 	bool needToRecalcFromAbsoluteCoordinates;
 	
-	bool debugDrawEnabled;
 	Color debugDrawColor;
 
 	eDebugDrawPivotMode drawPivotPointMode;
@@ -1244,8 +1237,20 @@ protected:
 #endif
 	
 private:
-	bool isUpdated;
-	bool isIteratorCorrupted;
+	// Boolean flags are grouped here to pack them together (see please DF-2149).
+	bool visibleForUIEditor : 1;
+	
+	// Enable align options
+	bool _leftAlignEnabled : 1;
+	bool _hcenterAlignEnabled : 1;
+	bool _rightAlignEnabled : 1;
+	bool _topAlignEnabled : 1;
+	bool _vcenterAlignEnabled : 1;
+	bool _bottomAlignEnabled : 1;
+
+	bool isUpdated : 1;
+	bool isIteratorCorrupted : 1;
+
 	String	name;
 	int32	tag;
 
