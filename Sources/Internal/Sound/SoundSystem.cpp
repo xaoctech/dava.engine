@@ -58,7 +58,7 @@ SoundSystem::~SoundSystem()
 	}
     soundGroups.Clear();
 
-	FMOD_VERIFY(fmodSystem->release());
+	FMOD_VERIFY(fmodEventSystem->release());
 }
 
 void SoundSystem::LoadFEV(const FilePath & filePath)

@@ -1,7 +1,7 @@
 #include "RulerToolPanel.h"
 #include "../../Scene/SceneEditor2.h"
 #include "../../Scene/SceneSignals.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "../LandscapeEditorShortcutManager.h"
 #include "Constants.h"
 

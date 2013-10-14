@@ -59,18 +59,33 @@ StructureSystem::~StructureSystem()
 
 }
 
-void StructureSystem::Init()
+bool StructureSystem::Init(const DAVA::FilePath & path)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor)
-	{
-		// mark solid all entities, that has childs as solid
-		for(DAVA::int32 i = 0; i < sceneEditor->GetChildrenCount(); ++i)
-		{
-			CheckAndMarkSolid(sceneEditor->GetChild(i));
-			CheckAndMarkLocked(sceneEditor->GetChild(i));
-		}
-	}
+	if(NULL == sceneEditor) return false;
+
+	Entity * rootNode = Load(path);
+	if(!rootNode) return false;
+    
+    DAVA::Vector<DAVA::Entity*> tmpEntities;
+    int entitiesCount = rootNode->GetChildrenCount();
+    
+    // remember all child pointers, but don't add them to scene in this cycle
+    // because when entity is adding it is automatically removing from its old hierarchy
+    tmpEntities.reserve(entitiesCount);
+    for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+    {
+        tmpEntities.push_back(rootNode->GetChild(i));
+    }
+    
+    // now we can safely add entities into our hierarchy
+    for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+    {
+        sceneEditor->AddNode(tmpEntities[i]);
+    }
+
+    rootNode->Release();
+    return true;
 }
 
 void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
@@ -323,8 +338,6 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			loadedEntity->SetLocalTransform(transform);
 
             
-            CheckAndMarkLocked(loadedEntity);
-            CheckAndMarkSolid(loadedEntity);
 			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
@@ -453,6 +466,7 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
+        sceneEditor->ReleaseRootNode(sc2path);
         Entity *rootNode = sceneEditor->GetRootNode(sc2path);
         if(rootNode)
         {
@@ -469,6 +483,9 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 				loadedEntity = parentForOptimize->GetChild(0);
 				loadedEntity->SetSolid(true);
 				loadedEntity->Retain();
+                
+                CheckAndMarkLocked(loadedEntity);
+                CheckAndMarkSolid(loadedEntity);
 			}
 
 			parentForOptimize->Release();

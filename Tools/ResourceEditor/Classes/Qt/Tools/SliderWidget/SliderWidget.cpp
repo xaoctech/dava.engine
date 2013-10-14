@@ -28,6 +28,9 @@
 #include "DAVAEngine.h"
 #include "StringConstants.h"
 
+const int SliderWidget::DEF_LOWEST_VALUE = -999;
+const int SliderWidget::DEF_HIGHEST_VALUE = 999;
+
 SliderWidget::SliderWidget(QWidget* parent)
 :	QWidget(parent)
 ,	isRangeChangingBlocked(true)

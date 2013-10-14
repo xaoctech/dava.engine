@@ -36,7 +36,7 @@ ToolButtonWithWidget::ToolButtonWithWidget(QWidget *parent /*= 0*/)
 	: QToolButton(parent)
 {
 	setPopupMode(QToolButton::MenuButtonPopup);
-	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	setToolButtonStyle(Qt::ToolButtonIconOnly);
 	setAutoRaise(false);
 }
 

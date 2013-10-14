@@ -43,6 +43,8 @@
 #include "CubemapEditor/CubemapUtils.h"
 #include "ImageTools/ImageTools.h"
 
+#include "Classes/Constants.h"
+
 #include "ui_texturebrowser.h"
 
 #include <QComboBox>
@@ -469,7 +471,7 @@ void TextureBrowser::setupTextureToolbar()
 	toolbarZoomSlider = new QSlider();
 	toolbarZoomSliderValue = new QLabel();
 	toolbarZoomSlider->setOrientation(Qt::Horizontal);
-	toolbarZoomSlider->setMaximumWidth(100);
+	toolbarZoomSlider->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 	toolbarZoomSlider->setTracking(true);
 	toolbarZoomSlider->setRange(-90, 90);
 	toolbarZoomSlider->setTickPosition(QSlider::TicksBelow);
