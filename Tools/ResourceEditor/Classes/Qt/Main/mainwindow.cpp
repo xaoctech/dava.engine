@@ -1235,15 +1235,6 @@ void QtMainWindow::OnSwitchEntityDialog()
 		return;
 	}
 	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
-	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
-	Entity* entityToAdd = new Entity();
-	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
-	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-	addSwitchEntityDialog->SetEntity(entityToAdd);
-	
-	SafeRelease(entityToAdd);
 	addSwitchEntityDialog->show();
 	connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
 }
@@ -1266,18 +1257,11 @@ void QtMainWindow::UnmodalDialogFinished(int)
 void QtMainWindow::OnLandscapeDialog()
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(!sceneEditor)
+	if(!sceneEditor || NULL != landscapeDialog)
 	{
 		return;
 	}
-
-	if( NULL != landscapeDialog )
-	{
-		return;
-	}
-	Entity *presentEntity = FindLandscapeEntity(sceneEditor);
-	landscapeDialog = new LandscapeDialog(presentEntity, this);
-	landscapeDialog->setAttribute( Qt::WA_DeleteOnClose, true );
+	landscapeDialog = new LandscapeDialog(FindLandscapeEntity(sceneEditor), this);
 	landscapeDialog->show();
 	connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
 }
@@ -1287,7 +1271,13 @@ void QtMainWindow::OnLightDialog()
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(ScopedPtr<LightComponent> (new LightComponent(ScopedPtr<Light>(new Light))));
 	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
+	SafeRelease(sceneNode);
 }
 
 void QtMainWindow::OnCameraDialog()
@@ -1303,7 +1293,13 @@ void QtMainWindow::OnCameraDialog()
 
 	sceneNode->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(camera)));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
+	SafeRelease(sceneNode);
 	SafeRelease(camera);
 }
 
@@ -1311,7 +1307,13 @@ void QtMainWindow::OnImposterDialog()
 {
 	Entity* sceneNode = new ImposterNode();
 	sceneNode->SetName(ResourceEditor::IMPOSTER_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
+	SafeRelease(sceneNode);
 }
 
 void QtMainWindow::OnUserNodeDialog()
@@ -1319,7 +1321,13 @@ void QtMainWindow::OnUserNodeDialog()
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
 	sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
+	SafeRelease(sceneNode);
 }
 
 void QtMainWindow::OnParticleEffectDialog()
@@ -1327,7 +1335,13 @@ void QtMainWindow::OnParticleEffectDialog()
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
-	CreateAndDisplayAddEntityDialog(sceneNode);
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
+	SafeRelease(sceneNode);
 }
 
 void QtMainWindow::OnUniteEntitiesWithLODs()
@@ -1360,26 +1374,6 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 void QtMainWindow::OnAddEntityFromSceneTree()
 {
 	ui->menuAdd->exec(QCursor::pos());
-}
-
-void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
-{
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(this);
-
-	dlg->SetEntity(entity);
-	dlg->exec();
-	
-	if(dlg->result() == QDialog::Accepted && sceneEditor)
-	{
-		EntityAddCommand* command = new EntityAddCommand(entity, sceneEditor);
-		sceneEditor->Exec(command);
-		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
-	}
-	
-	SafeRelease(entity);
-	
-	delete dlg;
 }
 
 void QtMainWindow::OnShowSettings()
