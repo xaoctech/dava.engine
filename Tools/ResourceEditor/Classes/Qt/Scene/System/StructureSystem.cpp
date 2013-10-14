@@ -322,6 +322,8 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
+            
+            CheckAndMarkLocked(loadedEntity);
 			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
