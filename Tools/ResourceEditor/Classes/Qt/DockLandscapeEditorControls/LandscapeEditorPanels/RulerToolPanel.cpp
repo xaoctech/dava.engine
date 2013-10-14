@@ -60,6 +60,12 @@ void RulerToolPanel::InitUI()
 	QFormLayout* frameLayout = new QFormLayout(frame);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::RULER_TOOL_LINE_WIDTH_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetLineWidth);
+
 	frameLayout->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	frameLayout->setFormAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	frameLayout->setContentsMargins(0, 0, 0, 0);
@@ -68,7 +74,7 @@ void RulerToolPanel::InitUI()
 	frameLayout->addRow(labelPreviewDesc, labelPreview);
 
 	layout->addWidget(frame);
-	layout->addWidget(sliderWidgetLineWidth);
+	layout->addLayout(layoutBrushSize);
 	layout->addSpacerItem(spacer);
 
 	setLayout(layout);
@@ -79,8 +85,7 @@ void RulerToolPanel::InitUI()
 	int32 lineWidthMin = 1;
 	int32 lineWidthMax = 1;
 	RenderHelper::Instance()->GetLineWidthRange(lineWidthMin, lineWidthMax);
-	sliderWidgetLineWidth->Init(ResourceEditor::RULER_TOOL_LINE_WIDTH_CAPTION.c_str(),
-								false, lineWidthMax, lineWidthMin, lineWidthMin);
+	sliderWidgetLineWidth->Init(false, lineWidthMax, lineWidthMin, lineWidthMin);
 	sliderWidgetLineWidth->SetRangeChangingBlocked(true);
 	labelLength->setNum(0);
 	labelPreview->setNum(0);
