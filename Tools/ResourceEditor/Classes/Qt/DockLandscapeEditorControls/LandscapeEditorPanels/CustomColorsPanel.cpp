@@ -1,7 +1,7 @@
 #include "CustomColorsPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "../../../SceneEditor/EditorConfig.h"
 #include "Project/ProjectManager.h"
 #include "Constants.h"

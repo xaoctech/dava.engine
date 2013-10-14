@@ -1,7 +1,7 @@
 #include "HeightmapEditorPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "../LandscapeEditorShortcutManager.h"
