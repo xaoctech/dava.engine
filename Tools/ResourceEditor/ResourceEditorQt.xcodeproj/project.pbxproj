@@ -451,19 +451,6 @@
 		8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8463A51D1745309E00F2398F /* EntityOwnerPropertyHelper.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
-		A634038417D78C89008DD382 /* InspMemebrModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038317D78C89008DD382 /* InspMemebrModifyCommand.cpp */; };
-		A634039117D78D1E008DD382 /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038517D78D1E008DD382 /* QtPropertyDataDavaKeyedArchive.cpp */; };
-		A634039217D78D1E008DD382 /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038717D78D1E008DD382 /* QtPropertyDataDavaVariant.cpp */; };
-		A634039317D78D1E008DD382 /* QtPropertyDataInspColl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038917D78D1E008DD382 /* QtPropertyDataInspColl.cpp */; };
-		A634039417D78D1E008DD382 /* QtPropertyDataInspMember.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038B17D78D1E008DD382 /* QtPropertyDataInspMember.cpp */; };
-		A634039517D78D1E008DD382 /* QtPropertyDataIntrospection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038D17D78D1E008DD382 /* QtPropertyDataIntrospection.cpp */; };
-		A634039617D78D1E008DD382 /* QtPropertyDataMetaObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634038F17D78D1E008DD382 /* QtPropertyDataMetaObject.cpp */; };
-		A634039E17D79013008DD382 /* QtPropertyDataDavaKeyedArchive_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039817D79013008DD382 /* QtPropertyDataDavaKeyedArchive_moc.cpp */; };
-		A634039F17D79013008DD382 /* QtPropertyDataDavaVariant_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039917D79013008DD382 /* QtPropertyDataDavaVariant_moc.cpp */; };
-		A63403A017D79013008DD382 /* QtPropertyDataInspColl_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039A17D79013008DD382 /* QtPropertyDataInspColl_moc.cpp */; };
-		A63403A117D79013008DD382 /* QtPropertyDataInspMember_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039B17D79013008DD382 /* QtPropertyDataInspMember_moc.cpp */; };
-		A63403A217D79013008DD382 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039C17D79013008DD382 /* QtPropertyDataIntrospection_moc.cpp */; };
-		A63403A317D79013008DD382 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A634039D17D79013008DD382 /* QtPropertyDataMetaObject_moc.cpp */; };
 		A69AA39C1796EDE80008B683 /* ClickableQLabel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */; };
 		A69AA39D1796EDE80008B683 /* CubeListItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3941796EDE80008B683 /* CubeListItemDelegate.cpp */; };
 		A69AA39E1796EDE80008B683 /* CubemapEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3961796EDE80008B683 /* CubemapEditorDialog.cpp */; };
@@ -2415,7 +2402,6 @@
 		4FAD0CBA1785EC6E00B05A35 /* QtPropertyEditor */ = {
 			isa = PBXGroup;
 			children = (
-				A634039717D79013008DD382 /* QtPropertyData */,
 				4FAD0CBB1785EC6E00B05A35 /* QtPropertyData_moc.cpp */,
 				4FAD0CBC1785EC6E00B05A35 /* QtPropertyEditor_moc.cpp */,
 				4FAD0CBD1785EC6E00B05A35 /* QtPropertyItem_moc.cpp */,
@@ -4878,7 +4864,43 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					/Library/Frameworks/QtNetwork.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					/Library/Frameworks/QtOpenGL.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
@@ -4891,8 +4913,44 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					/Library/Frameworks/QtNetwork.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					/Library/Frameworks/QtOpenGL.framework/Versions/4/Headers,
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",

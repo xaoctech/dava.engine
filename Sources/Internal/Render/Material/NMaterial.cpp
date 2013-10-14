@@ -575,8 +575,8 @@ namespace DAVA
 		targetState->textureNamesArray.clear();
 		targetState->textureSlotArray.clear();
 
-		targetState->parentName = parentName;
-		targetState->materialName = materialName;
+        if(parentName.IsValid()) targetState->parentName = parentName;
+		if(materialName.IsValid()) targetState->materialName = materialName;
 		targetState->layers.Combine(layers);
 		targetState->nativeDefines.Combine(nativeDefines);
 		
@@ -1041,13 +1041,13 @@ namespace DAVA
 				
 				++iter;
 			}
-			
-			childMaterial->SetMaterialName(childName);
 		}
 		else
 		{
 			childMaterial = Clone();
 		}
+        
+        childMaterial->SetMaterialName(childName);
 		
 		return childMaterial;
 	}
@@ -1294,7 +1294,7 @@ namespace DAVA
 			materialDynamicLit = false;
 			//}END TODO
 			
-			activeTechniqueName = NULL;
+			activeTechniqueName.Reset();
 			activeTechnique = NULL;
 			ready = false;
 
@@ -1360,7 +1360,7 @@ namespace DAVA
 				clonedMaterial->states.Insert(stateIter.GetKey(),
 											  stateIter.GetValue()->CloneState());
 				
-				stateIter++;
+				++stateIter;
 			}
 		}
 		else
@@ -1370,4 +1370,19 @@ namespace DAVA
 		
 		return clonedMaterial;
 	}
+    
+    void NMaterial::SetMaterialName(const String& name)
+    {
+        if(IsSwitchable())
+        {
+            HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+			while(stateIter != states.End())
+			{
+				stateIter.GetValue()->SetMaterialName(name);
+				++stateIter;
+			}
+        }
+        
+        NMaterialState::SetMaterialName(name);
+    }
 };

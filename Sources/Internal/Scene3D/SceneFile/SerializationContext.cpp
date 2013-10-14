@@ -40,7 +40,8 @@ namespace DAVA
 	class MaterialNameMapper
 	{
 	public:
-		
+
+/*
 		static FastName MapName(Material* mat)
 		{
 			String name = "Global";
@@ -138,7 +139,128 @@ namespace DAVA
 			FastName fastName = name;
 			return fastName;
 		}
+ */
+        
+		static FastName MapName(Material* mat)
+		{
+			FastName name;
+			
+			switch(mat->type)
+			{
+				case Material::MATERIAL_UNLIT_TEXTURE:
+				{
+					if(mat->GetAlphablend() ||
+                       Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
+                    {
+                        name = "LodAlphablend";
+                    }
+                    else if(mat->GetAlphatest())
+                    {
+                        name = "LodAlphatest";
+                    }
+                    else
+                    {
+                        name = "LodTextured";
+                    }
+                    
+					break;
+				}
+					
+				case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+				{
+					if(mat->GetAlphatest())
+                    {
+                        name = "LodLightmapAlphatest";
+                    }
+                    else
+                    {
+                        name = "LodLightmap";
+                    }
+
+					break;
+				}
+					
+				case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
+				{
+					if(mat->GetAlphablend() ||
+                       Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
+                    {
+                        name = "LodDecalAlphablend";
+                    }
+                    else if(mat->GetAlphatest())
+                    {
+                        name = "LodDecalAlphatest";
+                    }
+
+					break;
+				}
+					
+				case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
+				{
+					if(mat->GetAlphatest())
+                    {
+                        name = "LodDetailAlphatest";
+                    }
+                    else
+                    {
+                        name = "LodDetail";
+                    }
+                    
+					break;
+				}
+					
+				case Material::MATERIAL_VERTEX_LIT_TEXTURE:
+				{
+					if(mat->GetAlphatest())
+                    {
+                        name = "LodVertexLitAlphatest";
+                    }
+                    else
+                    {
+                        name = "LodVertexLit";
+                    }
+					break;
+				}
+					
+				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+				{
+					name = "LodTextured";
+					break;
+				}
+					
+				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+				{
+					name = "LodTextured";
+					break;
+				}
+					
+				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+				{
+					name = "LodTextured";
+					break;
+				}
+					
+				case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
+				{
+					name = "LodTextured";
+					break;
+				}
+					
+				case Material::MATERIAL_SKYBOX:
+				{
+					name = "Skybox";
+					break;
+				}
+					
+				default:
+					break;
+			};
+			
+			return name;
+		}
+        
 	};
+
 
 	SerializationContext::~SerializationContext()
 	{
