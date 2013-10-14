@@ -28,65 +28,32 @@
 
 
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#ifndef __QT_HANGING_OBJECTS_HEIGHT_H__
+#define __QT_HANGING_OBJECTS_HEIGHT_H__
 
+#include <QWidget>
 #include "DAVAEngine.h"
 
-namespace DAVA 
+class EventFilterDoubleSpinBox;
+class HangingObjectsHeight: public QWidget
 {
+	Q_OBJECT
 
-class UIScrollViewContainer : public UIControl
-{
 public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	virtual bool SystemInput(UIEvent *currentInput);
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+	HangingObjectsHeight(QWidget *parent = 0);
 
-	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
-	void SetTouchTreshold(int32 holdDelta);
-	int32 GetTouchTreshold();
+	void SetHeight(DAVA::float32 value);
 
+signals:
+	void HeightChanged(double value);
+
+protected slots:
+
+	void ValueChanged(double value);
 
 protected:
 
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
-
-	enum
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
-
-	int32		state;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	int32		touchTreshold;
-	
-	int 		mainTouch;	
-	UIEvent		scrollTouch;
-	
-	Vector2 	oldPos;
-	Vector2		newPos;
-
-	// All boolean variables are grouped together because of DF-2149.
-	bool 		lockTouch : 1;
-	bool 		scrollStartMovement : 1;
-	bool		enableHorizontalScroll : 1;
-	bool		enableVerticalScroll : 1;
-};
+	EventFilterDoubleSpinBox *heightValue;
 };
 
-#endif /* defined(__Framework__UIScrollViewContainer__) */
+#endif // __QT_HANGING_OBJECTS_HEIGHT_H__

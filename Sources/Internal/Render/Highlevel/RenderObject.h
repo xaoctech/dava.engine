@@ -99,8 +99,8 @@ public:
     inline void SetRemoveIndex(uint32 removeIndex);
     inline uint32 GetRemoveIndex();
 
-	inline void SetTreeNodeIndex(uint32 index);
-	inline uint32 GetTreeNodeIndex();
+	inline void SetTreeNodeIndex(uint16 index);
+	inline uint16 GetTreeNodeIndex();
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
@@ -139,6 +139,8 @@ public:
 	virtual ShadowVolume * CreateShadow() {return 0;}
 
 	virtual void RecalculateWorldBoundingBox();
+
+	uint8 startClippingPlane;
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
@@ -148,7 +150,7 @@ protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
-	uint32 treeNodeIndex;
+	uint16 treeNodeIndex;
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
@@ -183,11 +185,11 @@ inline void RenderObject::SetRemoveIndex(uint32 _removeIndex)
     removeIndex = _removeIndex;
 }
 
-inline void RenderObject::SetTreeNodeIndex(uint32 index)
+inline void RenderObject::SetTreeNodeIndex(uint16 index)
 {
 	treeNodeIndex = index;
 }
-inline uint32 RenderObject::GetTreeNodeIndex()
+inline uint16 RenderObject::GetTreeNodeIndex()
 {
 	return treeNodeIndex;
 }

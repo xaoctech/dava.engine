@@ -44,6 +44,10 @@ class DebugDrawSystem : public DAVA::SceneSystem
 	friend class EditorScene;
 
 public:
+
+	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
+
+public:
 	DebugDrawSystem(DAVA::Scene * scene);
 	virtual ~DebugDrawSystem();
 
@@ -68,7 +72,7 @@ protected:
 	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
 
 	//hanging objects 
-	bool IsObjectHanging(DAVA::Entity * entity, DAVA::float32 height);
+	bool IsObjectHanging(DAVA::Entity * entity);
 	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
 
 private:

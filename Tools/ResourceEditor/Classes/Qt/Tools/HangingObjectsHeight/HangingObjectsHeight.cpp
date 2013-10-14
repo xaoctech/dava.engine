@@ -27,66 +27,48 @@
 =====================================================================================*/
 
 
+#include "HangingObjectsHeight.h"
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include "DAVAEngine.h"
 
-namespace DAVA 
+#include <QObject>
+#include <QHBoxLayout>
+
+using namespace DAVA;
+
+HangingObjectsHeight::HangingObjectsHeight(QWidget *parent /*= 0*/)
+	: QWidget(parent)
 {
+	heightValue = new EventFilterDoubleSpinBox(this);
+	heightValue->setToolTip("Height for hanging objects");
+	heightValue->setMinimum(-100);
+	heightValue->setMaximum(100);	
+	heightValue->setSingleStep(0.1);
+	heightValue->setDecimals(2);
 
-class UIScrollViewContainer : public UIControl
+
+	QHBoxLayout *layout = new QHBoxLayout(this);
+	layout->setMargin(0);
+	layout->setContentsMargins(0, 0, 0, 0);
+
+	setLayout(layout);
+
+	layout->addWidget(heightValue);
+
+	QObject::connect(heightValue, SIGNAL(valueChanged(double)), this, SLOT(ValueChanged(double)));
+}
+
+void HangingObjectsHeight::SetHeight( DAVA::float32 value )
 {
-public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	virtual bool SystemInput(UIEvent *currentInput);
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+	heightValue->setValue(value);
+}
 
-	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
-	void SetTouchTreshold(int32 holdDelta);
-	int32 GetTouchTreshold();
+void HangingObjectsHeight::ValueChanged( double value )
+{
+	emit HeightChanged(value);
+}
 
 
-protected:
 
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
-
-	enum
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
-
-	int32		state;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	int32		touchTreshold;
-	
-	int 		mainTouch;	
-	UIEvent		scrollTouch;
-	
-	Vector2 	oldPos;
-	Vector2		newPos;
-
-	// All boolean variables are grouped together because of DF-2149.
-	bool 		lockTouch : 1;
-	bool 		scrollStartMovement : 1;
-	bool		enableHorizontalScroll : 1;
-	bool		enableVerticalScroll : 1;
-};
-};
-
-#endif /* defined(__Framework__UIScrollViewContainer__) */

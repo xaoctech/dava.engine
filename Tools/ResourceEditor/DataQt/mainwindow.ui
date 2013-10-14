@@ -317,21 +317,11 @@
      <addaction name="separator"/>
      <addaction name="actionReloadPNG"/>
     </widget>
-    <widget class="QMenu" name="menuViewPort">
-     <property name="title">
-      <string>View Port</string>
-     </property>
-     <addaction name="actionIPhone"/>
-     <addaction name="actionRetina"/>
-     <addaction name="actionIPad"/>
-     <addaction name="actionDefault"/>
-    </widget>
     <widget class="QMenu" name="menuToolbars">
      <property name="title">
       <string>Toolbars</string>
      </property>
     </widget>
-    <addaction name="menuViewPort"/>
     <addaction name="menuTexturesForGPU"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
@@ -780,7 +770,6 @@
    <addaction name="actionSetShadowColor"/>
    <addaction name="actionLandscape"/>
    <addaction name="actionSkyboxEditor"/>
-   <addaction name="actionHangingObjects"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -965,11 +954,6 @@
    </property>
    <property name="visible">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionRestoreViews">
-   <property name="text">
-    <string>Restore Views</string>
    </property>
   </action>
   <action name="actionShowSettings">

@@ -293,12 +293,11 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 
 
 uint32 Frustum::planeCalls;
-Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint32 &planeMask, uint32 &startId) const
+Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const
 {
-
-	Frustum::eFrustumResult result = EFR_INSIDE;
 	Vector3 verts[2] = {box.min, box.max};
-	uint32 plane, k;
+	Frustum::eFrustumResult result = EFR_INSIDE;	
+	uint8 plane, k;
 	plane = startId;
 	k=1<<startId;
 	if (k&planeMask)
@@ -329,6 +328,33 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint32 &planeMask
 		
 	}	
 	return result;
+}
+
+bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippingPlane)const
+{
+	Vector3 verts[2] = {box.min, box.max};
+	uint8 plane, k;
+	plane = startClippingPlane;
+	k=1<<plane;
+	if (k&planeMask)
+	{
+		planeCalls++;
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)
+			return false;
+	}
+	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
+	{		
+		if ((k&planeMask)&&(plane!=startClippingPlane))
+		{
+			planeCalls++;
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx].x, verts[planeAccesArray[plane].miny].y, verts[planeAccesArray[plane].minz].z) > 0.0f)
+			{
+				startClippingPlane = plane;
+				return false;
+			}
+		}
+	}		
+	return true;	
 }
 
 //! \brief check bounding sphere visibility against frustum

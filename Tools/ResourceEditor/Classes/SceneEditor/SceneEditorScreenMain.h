@@ -43,7 +43,6 @@
 
 using namespace DAVA;
 
-class ScenePreviewDialog;
 class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;

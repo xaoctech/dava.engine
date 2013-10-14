@@ -220,10 +220,10 @@ void TileTexturePreviewWidget::OnCurrentItemChanged(QTreeWidgetItem* current, QT
 
 void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 {
+	int32 index = indexOfTopLevelItem(item);
+
 	if (mode == MODE_WITH_COLORS)
 	{
-		int32 index = indexOfTopLevelItem(item);
-
 		int32 len = 0;
 		QString str = item->text(0);
 		QValidator::State state = validator->validate(str, len);
@@ -236,7 +236,7 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 				Color c = QColorToColor(color);
 				if (c != colors[index])
 				{
-					colors[index] = QColorToColor(color);
+					colors[index] = c;
 
 					emit TileColorChanged(index, colors[index]);
 
@@ -246,7 +246,10 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 		}
 	}
 
-	UpdateSelection();
+	if (item->checkState(0) == Qt::Checked)
+	{
+		SetSelectedTexture(index);
+	}
 }
 
 void TileTexturePreviewWidget::OnPickColorButton()
