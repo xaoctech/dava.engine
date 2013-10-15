@@ -137,7 +137,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 	UpdateShadowColorFromLandscape();
 
-    SceneValidator::Instance()->ValidateSceneAndShowErrors(this);
+    SceneValidator::Instance()->ValidateSceneAndShowErrors(this, path);
     
 	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;

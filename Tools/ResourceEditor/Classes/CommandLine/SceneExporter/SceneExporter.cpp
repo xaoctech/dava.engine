@@ -128,7 +128,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     }
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
-    SceneValidator::Instance()->ValidateScene(scene, errorLog);
+    SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportDescriptors(scene, errorLog);
