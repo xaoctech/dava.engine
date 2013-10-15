@@ -50,7 +50,7 @@ public:
 	
 	void RestoreInitialSettings();
 	
-	void SetNode(Entity* landscapeEntity);
+	virtual void SetEntities(const EntityGroup *landscapeEntities);
 	
 signals:
 	
