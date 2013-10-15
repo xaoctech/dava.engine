@@ -127,17 +127,22 @@ DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const D
 
 bool CubemapUtils::CubemapTextureValidator::IsValid(const DAVA::FilePath& filePath)
 {
-	DAVA::TextureDescriptor descriptor;
-	bool result = descriptor.Load(filePath);
+	bool result = true;
 	
-	if(result)
+	if(filePath.Exists())
 	{
-		result = descriptor.IsCubeMap();
-	}
-	
-	if(!result)
-	{
-		ShowErrorDialog(QString("%1\nseems to be not a valid cubemap texture. Please verify it or select another file.").arg(filePath.GetAbsolutePathname().c_str()).toStdString());
+		DAVA::TextureDescriptor descriptor;
+		result = descriptor.Load(filePath);
+		
+		if(result)
+		{
+			result = descriptor.IsCubeMap();
+		}
+		
+		if(!result)
+		{
+			ShowErrorDialog(QString("%1\nseems to be not a valid cubemap texture. Please verify it or select another file.").arg(filePath.GetAbsolutePathname().c_str()).toStdString());
+		}
 	}
 	
 	return result;

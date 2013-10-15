@@ -188,4 +188,31 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 }
 
 
+
+Entity * FindLandscapeEntity(Entity * rootEntity)
+{
+	if(GetLandscape(rootEntity))
+	{
+		return rootEntity;
+	}
+
+	DAVA::int32 count = rootEntity->GetChildrenCount();
+	for(DAVA::int32 i = 0; i < count; ++i)
+	{
+		Entity *landscapeEntity = FindLandscapeEntity(rootEntity->GetChild(i));
+		if(landscapeEntity)
+		{
+			return landscapeEntity;
+		}
+	}
+
+	return NULL;
+}
+
+Landscape * FindLandscape(Entity * rootEntity)
+{
+	Entity *entity = FindLandscapeEntity(rootEntity);
+	return GetLandscape(entity);
+}
+
 }

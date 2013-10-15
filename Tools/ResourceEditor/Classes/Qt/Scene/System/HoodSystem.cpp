@@ -116,6 +116,8 @@ void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 
 void HoodSystem::SetModifOffset(const DAVA::Vector3 &offset)
 {
+	moveHood.modifOffset = offset;
+
 	if(modifOffset != offset)
 	{
 		modifOffset = offset;
@@ -130,23 +132,17 @@ void HoodSystem::SetModifOffset(const DAVA::Vector3 &offset)
 
 void HoodSystem::SetModifRotate(const DAVA::float32 &angle)
 {
-	if(curHood == &rotateHood)
-	{
-		rotateHood.modifRotate = angle;
-	}
+	rotateHood.modifRotate = angle;
 }
 
 void HoodSystem::SetModifScale(const DAVA::float32 &scale)
 {
-	if(curHood == &scaleHood)
-	{
-		scaleHood.modifScale = scale;
-	}
+	scaleHood.modifScale = scale;
 }
 
 void HoodSystem::SetScale(DAVA::float32 scale)
 {
-	if(curScale != scale)
+	if(curScale != scale && 0 != scale)
 	{
 		curScale = scale;
 
@@ -255,38 +251,41 @@ void HoodSystem::Update(float timeElapsed)
 
 void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
-	// before checking result mark that there is no hood axis under mouse
-	if(!lockedScale)
+	if(!event->point.IsZero())
 	{
-		moseOverAxis = ST_AXIS_NONE;
-	}
-	
-	// if is visible and not locked check mouse over status
-	if(visible && !lockedScale && !lockedModif && NULL != curHood)
-	{
-		// get intersected items in the line from camera to current mouse position
-		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
-		DAVA::Vector3 camToPointDirection = cameraSystem->GetPointDirection(event->point);
-		DAVA::Vector3 traceTo = camPosition + camToPointDirection * 1000.0f;
-
-		btVector3 btFrom(camPosition.x, camPosition.y, camPosition.z);
-		btVector3 btTo(traceTo.x, traceTo.y, traceTo.z);
-
-		btCollisionWorld::AllHitsRayResultCallback btCallback(btFrom, btTo);
-		collWorld->rayTest(btFrom, btTo, btCallback);
-
-		if(btCallback.hasHit())
+		// before checking result mark that there is no hood axis under mouse
+		if(!lockedScale)
 		{
-			const DAVA::Vector<HoodCollObject*>* curHoodObjects = &curHood->collObjects;
-			for(size_t i = 0; i < curHoodObjects->size(); ++i)
-			{
-				HoodCollObject *hObj = curHoodObjects->operator[](i);
+			moseOverAxis = ST_AXIS_NONE;
 
-				if(hObj->btObject == btCallback.m_collisionObjects[0])
+			// if is visible and not locked check mouse over status
+			if(visible && !lockedModif && NULL != curHood)
+			{
+				// get intersected items in the line from camera to current mouse position
+				DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
+				DAVA::Vector3 camToPointDirection = cameraSystem->GetPointDirection(event->point);
+				DAVA::Vector3 traceTo = camPosition + camToPointDirection * 1000.0f;
+
+				btVector3 btFrom(camPosition.x, camPosition.y, camPosition.z);
+				btVector3 btTo(traceTo.x, traceTo.y, traceTo.z);
+
+				btCollisionWorld::AllHitsRayResultCallback btCallback(btFrom, btTo);
+				collWorld->rayTest(btFrom, btTo, btCallback);
+
+				if(btCallback.hasHit())
 				{
-					// mark that mouse is over one of hood axis
-					moseOverAxis = hObj->axis;
-					break;
+					const DAVA::Vector<HoodCollObject*>* curHoodObjects = &curHood->collObjects;
+					for(size_t i = 0; i < curHoodObjects->size(); ++i)
+					{
+						HoodCollObject *hObj = curHoodObjects->operator[](i);
+
+						if(hObj->btObject == btCallback.m_collisionObjects[0])
+						{
+							// mark that mouse is over one of hood axis
+							moseOverAxis = hObj->axis;
+							break;
+						}
+					}
 				}
 			}
 		}

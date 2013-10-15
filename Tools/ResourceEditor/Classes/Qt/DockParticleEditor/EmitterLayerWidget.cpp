@@ -52,6 +52,18 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
+const EmitterLayerWidget::BlendPreset EmitterLayerWidget::blendPresetsMap[]=
+{
+	{BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA, "Alpha blend"},
+	{BLEND_ONE, BLEND_ONE, "Additive"},
+	{BLEND_SRC_ALPHA, BLEND_ONE, "Alpha additive"},
+	{BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE, "Soft additive"},
+	{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
+	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}
+};
+
+
+
 EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	QWidget(parent),
 	BaseParticleEditorContentWidget()
@@ -101,15 +113,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
-	
-	
-	additiveCheckBox = new QCheckBox("Additive");
-	mainBox->addWidget(additiveCheckBox);
-	connect(additiveCheckBox,
-			SIGNAL(stateChanged(int)),
-			this,
-			SLOT(OnValueChanged()));
-
+		
 
 	inheritPostionCheckBox = new QCheckBox("Inherit Position");
 	mainBox->addWidget(inheritPostionCheckBox);
@@ -118,13 +122,34 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 		this,
 		SLOT(OnValueChanged()));
 
+	QHBoxLayout *longLayout = new QHBoxLayout();
 	isLongCheckBox = new QCheckBox("Long");
-	mainBox->addWidget(isLongCheckBox);
+	longLayout->addWidget(isLongCheckBox);
 	connect(isLongCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
-
+	
+	scaleVelocityBaseSpinBox = new EventFilterDoubleSpinBox();
+	scaleVelocityBaseSpinBox->setMinimum(-100);
+	scaleVelocityBaseSpinBox->setMaximum(100);	
+	scaleVelocityBaseSpinBox->setSingleStep(0.1);
+	scaleVelocityBaseSpinBox->setDecimals(3);
+	
+	scaleVelocityFactorSpinBox = new EventFilterDoubleSpinBox();
+	scaleVelocityFactorSpinBox->setMinimum(-100);
+	scaleVelocityFactorSpinBox->setMaximum(100);	
+	scaleVelocityFactorSpinBox->setSingleStep(0.1);
+	scaleVelocityFactorSpinBox->setDecimals(3);
+	scaleVelocityBaseLabel = new QLabel("Velocity scale base: ");
+	scaleVelocityFactorLabel = new QLabel("Velocity scale factor: ");
+	longLayout->addWidget(scaleVelocityBaseLabel);
+	longLayout->addWidget(scaleVelocityBaseSpinBox);
+	longLayout->addWidget(scaleVelocityFactorLabel);
+	longLayout->addWidget(scaleVelocityFactorSpinBox);
+	connect(scaleVelocityBaseSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	connect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	mainBox->addLayout(longLayout);	
 	
 	QHBoxLayout* spriteHBox = new QHBoxLayout;
 	spriteLabel = new QLabel(this);
@@ -181,6 +206,76 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	pivotPointLayout->addLayout(pivotPointInnerLayout);
 	mainBox->addLayout(pivotPointLayout);
+	
+
+	frameBlendingCheckBox = new QCheckBox("Enable frame blending");	
+	connect(frameBlendingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	mainBox->addWidget(frameBlendingCheckBox);
+
+	//particle orieantation
+	QVBoxLayout* orientationLayout = new QVBoxLayout();	
+	particleOrientationLabel = new QLabel("Particle Orientation");
+	orientationLayout->addWidget(particleOrientationLabel);
+	QHBoxLayout* facingLayout = new QHBoxLayout();
+	
+	cameraFacingCheckBox = new QCheckBox("Camera Facing");
+	facingLayout->addWidget(cameraFacingCheckBox);
+	connect(cameraFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));		
+
+	xFacingCheckBox = new QCheckBox("X-Facing");
+	facingLayout->addWidget(xFacingCheckBox);
+	connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	yFacingCheckBox = new QCheckBox("Y-Facing");
+	facingLayout->addWidget(yFacingCheckBox);
+	connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	zFacingCheckBox = new QCheckBox("Z-Facing");
+	facingLayout->addWidget(zFacingCheckBox);
+	connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	orientationLayout->addLayout(facingLayout);
+
+	worldAlignCheckBox = new QCheckBox("World Align");
+	orientationLayout->addWidget(worldAlignCheckBox);
+	connect(worldAlignCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+	mainBox->addLayout(orientationLayout);
+
+	blendOptionsLabel = new QLabel("Blending Options");
+	mainBox->addWidget(blendOptionsLabel);	
+	
+	presetLabel = new QLabel("Preset");
+	srcFactorLabel = new QLabel("SRC Factor");
+	dstFactorLabel = new QLabel("DST Factor");	
+	presetComboBox = new QComboBox();
+	srcFactorComboBox = new QComboBox();
+	dstFactorComboBox = new QComboBox();	
+	FillBlendCombos();
+	
+	QHBoxLayout *blendLayout = new QHBoxLayout();
+	QVBoxLayout *presetLayout = new QVBoxLayout();
+	QVBoxLayout *srcLayout = new QVBoxLayout();
+	QVBoxLayout *dstLayout = new QVBoxLayout();
+
+	presetLayout->addWidget(presetLabel);
+	presetLayout->addWidget(presetComboBox);
+	srcLayout->addWidget(srcFactorLabel);
+	srcLayout->addWidget(srcFactorComboBox);
+	dstLayout->addWidget(dstFactorLabel);
+	dstLayout->addWidget(dstFactorComboBox);
+	
+	blendLayout->addLayout(presetLayout);
+	blendLayout->addLayout(srcLayout);
+	blendLayout->addLayout(dstLayout);
+	mainBox->addLayout(blendLayout);
+	
+	connect(presetComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnPresetChanged()));
+	connect(srcFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+	connect(dstFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+
+	
+	fogCheckBox = new QCheckBox("Enable fog");	
+	connect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	mainBox->addWidget(fogCheckBox);
+
 
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
@@ -200,6 +295,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	InitWidget(spinTimeLine);
 	spinOverLifeTimeLine = new TimeLineWidget(this);
 	InitWidget(spinOverLifeTimeLine);
+		
+	randomSpinDirectionCheckBox = new QCheckBox("random spin direction", this);
+	connect(randomSpinDirectionCheckBox, SIGNAL(stateChanged(int)),
+			this, SLOT(OnValueChanged()));
+	mainBox->addWidget(randomSpinDirectionCheckBox);
 
 	colorRandomGradient = new GradientPickerWidget(this);
 	InitWidget(colorRandomGradient);
@@ -230,6 +330,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(randomFrameOnStartCheckBox, SIGNAL(stateChanged(int)),
 		this, SLOT(OnValueChanged()));
 	mainBox->addWidget(randomFrameOnStartCheckBox);
+	loopSpriteAnimationCheckBox = new QCheckBox("loop sprite animation", this);
+	connect(loopSpriteAnimationCheckBox, SIGNAL(stateChanged(int)),
+		this, SLOT(OnValueChanged()));
+	mainBox->addWidget(loopSpriteAnimationCheckBox);
+
+	animSpeedOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(animSpeedOverLifeTimeLine);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -343,11 +450,7 @@ EmitterLayerWidget::~EmitterLayerWidget()
 	disconnect(enableCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
-			SLOT(OnValueChanged()));
-	disconnect(additiveCheckBox,
-			SIGNAL(stateChanged(int)),
-			this,
-			SLOT(OnValueChanged()));
+			SLOT(OnValueChanged()));	
 	disconnect(inheritPostionCheckBox,
 		SIGNAL(stateChanged(int)),
 		this,
@@ -396,6 +499,14 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		SIGNAL(stateChanged(int)),
 		this,
 		SLOT(OnValueChanged()));
+	disconnect(loopSpriteAnimationCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
+	disconnect(randomSpinDirectionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));	
 	disconnect(pivotPointXSpinBox,
 			   SIGNAL(valueChanged(int)),
 			   this,
@@ -411,6 +522,36 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			this,
 			SLOT(OnLodsChanged()));		
 	}
+	
+	disconnect(cameraFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(xFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(yFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(zFacingCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+	disconnect(worldAlignCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnLodsChanged()));		
+
+	disconnect(presetComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnPresetChanged()));
+	disconnect(srcFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+	disconnect(dstFactorComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+	disconnect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+	disconnect(frameBlendingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+	disconnect(scaleVelocityBaseSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	disconnect(scaleVelocityFactorSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -439,10 +580,19 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
-	enableCheckBox->setChecked(!layer->GetDisabled());
-	additiveCheckBox->setChecked(layer->GetAdditive());
+	enableCheckBox->setChecked(!layer->GetDisabled());	
 	inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+	
 	isLongCheckBox->setChecked(layer->IsLong());
+	scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
+	scaleVelocityFactorSpinBox->setValue((double)layer->scaleVelocityFactor);
+
+	bool scaleVelocityVisible = layer->IsLong();
+	scaleVelocityBaseLabel->setVisible(scaleVelocityVisible);
+	scaleVelocityBaseSpinBox->setVisible(scaleVelocityVisible);
+	scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
+	scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
+
 	isLoopedCheckBox->setChecked(layer->GetLooped());
 
 	for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
@@ -473,6 +623,33 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 		spriteName = QString::fromStdString(sprite->GetRelativePathname().GetAbsolutePathname());
 	}
 	spritePathLabel->setText(spriteName);
+
+	//particle orientation
+	cameraFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
+	xFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING);
+	yFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Y_FACING);
+	zFacingCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Z_FACING);
+	worldAlignCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
+
+	//blend and fog
+	eBlendMode sFactor = layer->GetBlendSrcFactor();
+	eBlendMode dFactor = layer->GetBlendDstFactor();
+	//-1 as we don't have BLEND_NONE
+	srcFactorComboBox->setCurrentIndex(sFactor-1);
+	dstFactorComboBox->setCurrentIndex(dFactor-1);
+	int32 presetsCount = sizeof(blendPresetsMap)/sizeof(BlendPreset);
+	int32 presetId;
+	for (presetId=0; presetId<presetsCount; presetId++)
+	{
+		if ((blendPresetsMap[presetId].srcFactor == sFactor)&&(blendPresetsMap[presetId].dstFactor == dFactor))
+			break;
+	}
+	presetComboBox->setCurrentIndex(presetId);
+
+	fogCheckBox->setChecked(layer->IsFogEnabled());
+
+	frameBlendingCheckBox->setChecked(layer->IsFrameBlendEnabled());
+	
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
 	lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -533,6 +710,8 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	//LAYER_SPIN_OVER_LIFE,
 	spinOverLifeTimeLine->Init(0, 1, updateMinimized);
 	spinOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::blue, "spin over life");
+	
+	randomSpinDirectionCheckBox->setChecked(layer->randomSpinDirection);
 
 	//LAYER_COLOR_RANDOM, LAYER_ALPHA_OVER_LIFE, LAYER_COLOR_OVER_LIFE,
 	colorRandomGradient->Init(0, 1, "random color");
@@ -550,6 +729,11 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
 	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
 	randomFrameOnStartCheckBox->setChecked(layer->randomFrameOnStart);
+	loopSpriteAnimationCheckBox->setChecked(layer->loopSpriteAnimation);
+
+	animSpeedOverLifeTimeLine->Init(0, 1, updateMinimized);
+	animSpeedOverLifeTimeLine->SetMinLimits(0);
+	animSpeedOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->animSpeedOverLife).GetProps(), Qt::blue, "anim speed over life");
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -612,6 +796,7 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE"));//todo
 	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
 	spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
+	animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
 	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
@@ -657,6 +842,10 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	props->DeleteAllKeys();
 	spinOverLifeTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
+	
+	props->DeleteAllKeys();
+	animSpeedOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS", props);
 
 	props->DeleteAllKeys();
 	alphaOverLifeTimeLine->GetVisualState(props);
@@ -705,6 +894,22 @@ void EmitterLayerWidget::OnSpriteBtn()
 	OnValueChanged();
 }
 
+void EmitterLayerWidget::OnPresetChanged()
+{
+	if (blockSignals)
+		return;	
+	int32 presetsCount = sizeof(blendPresetsMap)/sizeof(BlendPreset);
+	int32 presetId = presetComboBox->currentIndex();
+	if (presetId>=presetsCount) //custom was selected
+		return;
+	blockSignals = true;
+	//-1 is because we don't even show blend none
+	srcFactorComboBox->setCurrentIndex(blendPresetsMap[presetId].srcFactor-1);
+	dstFactorComboBox->setCurrentIndex(blendPresetsMap[presetId].dstFactor-1);
+	blockSignals = false;
+	OnValueChanged();
+}
+
 void EmitterLayerWidget::OnValueChanged()
 {
 	if (blockSignals)
@@ -745,6 +950,9 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propSpinOverLife;
 	spinOverLifeTimeLine->GetValue(0, propSpinOverLife.GetPropsPtr());
 
+	PropLineWrapper<float32> propAnimSpeedOverLife;
+	animSpeedOverLifeTimeLine->GetValue(0, propAnimSpeedOverLife.GetPropsPtr());
+
 	PropLineWrapper<Color> propColorRandom;
 	colorRandomGradient->GetValues(propColorRandom.GetPropsPtr());
 
@@ -761,15 +969,37 @@ void EmitterLayerWidget::OnValueChanged()
 
 	ParticleLayer::eType propLayerType = layerTypeMap[layerTypeComboBox->currentIndex()].layerType;
 
+	//+1 is because we dont even show blend none
+	eBlendMode srcFactor = (eBlendMode)(srcFactorComboBox->currentIndex()+1);
+	eBlendMode dstFactor = (eBlendMode)(dstFactorComboBox->currentIndex()+1);
+
+	int32 particleOrientation = 0;
+	if (cameraFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING;
+	if (xFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_X_FACING;
+	if (yFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_Y_FACING;
+	if (zFacingCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_Z_FACING;
+	if (worldAlignCheckBox->isChecked())
+		particleOrientation+=ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
 	updateLayerCmd->Init(layerNameLineEdit->text().toStdString(),
 						 propLayerType,
-						 !enableCheckBox->isChecked(),
-						 additiveCheckBox->isChecked(),
+						 !enableCheckBox->isChecked(),						 
 						 inheritPostionCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
+						 scaleVelocityBaseSpinBox->value(),
+						 scaleVelocityFactorSpinBox->value(),
 						 isLoopedCheckBox->isChecked(),
 						 sprite,
+						 srcFactor,
+						 dstFactor,
+						 fogCheckBox->isChecked(),
+						 frameBlendingCheckBox->isChecked(),
+						 particleOrientation,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
 						 propNumber.GetPropLine(),
@@ -783,6 +1013,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propSpin.GetPropLine(),
 						 propSpinVariation.GetPropLine(),
 						 propSpinOverLife.GetPropLine(),
+						 randomSpinDirectionCheckBox->isChecked(),
 
 						 propColorRandom.GetPropLine(),
 						 propAlphaOverLife.GetPropLine(),
@@ -799,6 +1030,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value(),
 						 randomFrameOnStartCheckBox->isChecked(),
+						 loopSpriteAnimationCheckBox->isChecked(),
+						 propAnimSpeedOverLife.GetPropLine(),
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
@@ -874,6 +1107,22 @@ void EmitterLayerWidget::FillLayerTypes()
 	}
 }
 
+void EmitterLayerWidget::FillBlendCombos()
+{
+	int32 presetsCount = sizeof(blendPresetsMap)/sizeof(BlendPreset);
+	for (int32 i=0; i<presetsCount; i++)
+	{
+		presetComboBox->addItem(blendPresetsMap[i].presetName);
+	}
+	presetComboBox->addItem("Custom");
+
+	for (int32 i = 1; i<BLEND_MODE_COUNT; i++) //start from 1 to avoid none
+	{
+		srcFactorComboBox->addItem(BLEND_MODE_NAMES[i].c_str());
+		dstFactorComboBox->addItem(BLEND_MODE_NAMES[i].c_str());
+	}
+}
+
 int32 EmitterLayerWidget::LayerTypeToIndex(ParticleLayer::eType layerType)
 {
 	int32 layerTypes = sizeof(layerTypeMap) / sizeof(*layerTypeMap);
@@ -895,8 +1144,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	spriteLabel->setVisible(!isSuperemitter);
 	spritePathLabel->setVisible(!isSuperemitter);
 	
-	// The same is for "Additive" flag, Color, Alpha and Frame.
-	additiveCheckBox->setVisible(!isSuperemitter);
+	// The same is for "Additive" flag, Color, Alpha and Frame.	
 	colorRandomGradient->setVisible(!isSuperemitter);
 	colorOverLifeGradient->setVisible(!isSuperemitter);
 	alphaOverLifeTimeLine->setVisible(!isSuperemitter);
@@ -905,6 +1153,8 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
 	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
 	randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
+	loopSpriteAnimationCheckBox->setVisible(!isSuperemitter);
+	animSpeedOverLifeTimeLine->setVisible(!isSuperemitter);
 
 	// The Pivot Point must be hidden for Superemitter mode.
 	pivotPointLabel->setVisible(!isSuperemitter);
@@ -913,6 +1163,25 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	pivotPointYSpinBox->setVisible(!isSuperemitter);
 	pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
 	pivotPointResetButton->setVisible(!isSuperemitter);
+
+	//particle orientation would be set up in inner emitter layers
+	particleOrientationLabel->setVisible(!isSuperemitter);
+	cameraFacingCheckBox->setVisible(!isSuperemitter);
+	xFacingCheckBox->setVisible(!isSuperemitter);
+	yFacingCheckBox->setVisible(!isSuperemitter);
+	zFacingCheckBox->setVisible(!isSuperemitter);
+	worldAlignCheckBox->setVisible(!isSuperemitter);
+
+	//blend and fog settings are set in inner emitter layers
+	blendOptionsLabel->setVisible(!isSuperemitter);
+	presetLabel->setVisible(!isSuperemitter);
+	presetComboBox->setVisible(!isSuperemitter);
+	srcFactorLabel->setVisible(!isSuperemitter);
+	srcFactorComboBox->setVisible(!isSuperemitter);
+	dstFactorLabel->setVisible(!isSuperemitter);
+	dstFactorComboBox->setVisible(!isSuperemitter);
+	fogCheckBox->setVisible(!isSuperemitter);
+	frameBlendingCheckBox->setVisible(!isSuperemitter);
 
 	// Some controls are however specific for this mode only - display and update them.
 	innerEmitterLabel->setVisible(isSuperemitter);

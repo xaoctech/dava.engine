@@ -303,7 +303,10 @@ bool Landscape::BuildHeightmap()
     }
 	else if(!heightmapPath.IsEmpty())
 	{
-		DVASSERT(false && "wrong extension");
+		// SZ: don't assert here, and it will be possible to load landscape in editor and 
+		// fix wrong path to heightmap
+		// 
+		//DVASSERT(false && "wrong extension");
 	}
 
     return retValue;
@@ -903,14 +906,15 @@ float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const Landscap
 	return dist0;
 }
 	
-void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
+void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
     Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
     
     if (currentNode->data.size >= 2)
-        frustumRes = frustum->Classify(currentNode->data.bbox);
+		if (clippingFlags)
+			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);		
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
@@ -925,7 +929,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
             for (int32 index = 0; index < 4; ++index)
             {
                 LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                Draw(child); 
+                Draw(child, clippingFlags); 
             }
         }
         return;
@@ -1079,7 +1083,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
             for (int32 index = 0; index < 4; ++index)
             {
                 LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                Draw(child); 
+                Draw(child, clippingFlags); 
             }
         }
         /* EXPERIMENTAL => reduce level of quadtree, results was not successfull 
@@ -1295,7 +1299,7 @@ void Landscape::Draw(Camera * camera)
 		lod0quads.clear();
 		lodNot0quads.clear();
 
-		Draw(&quadTreeHead);
+		Draw(&quadTreeHead, 0x3f);
 	}
     
     BindMaterial(nearLodIndex);
@@ -1336,19 +1340,14 @@ void Landscape::Draw(Camera * camera)
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
-		fans.clear();
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);		
 		cursor->Prepare();
 		ClearQueue();
 
         
 #if defined (DRAW_OLD_STYLE)    
         Draw(&quadTreeHead);
-#else //#if defined (DRAW_OLD_STYLE)    
-        lod0quads.clear();
-        lodNot0quads.clear();
-        
-        Draw(&quadTreeHead);
+#else //#if defined (DRAW_OLD_STYLE)            
         
         if(nearLodIndex != farLodIndex)     
 		{
@@ -1473,10 +1472,11 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         heightmapPath.ReplaceExtension(Heightmap::FileExtension());
-        heightmap->Save(heightmapPath);
     }
     //
-    
+
+	heightmap->Save(heightmapPath);
+
     archive->SetString("hmap", heightmapPath.GetRelativePathname(sceneFile->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
@@ -1728,7 +1728,7 @@ FilePath Landscape::SaveFullTiledTexture()
                 SafeRelease(image);
             }
         }
-        else 
+        else
         {
             pathToSave = textureNames[TEXTURE_TILE_FULL];
         }
@@ -1842,6 +1842,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         newLandscape->textureNames[k] = textureNames[k];
+		SafeRelease(newLandscape->textures[k]);
         newLandscape->textures[k] = SafeRetain(textures[k]);
         newLandscape->textureTiling[k] = textureTiling[k];
         newLandscape->tileColor[k] = tileColor[k];

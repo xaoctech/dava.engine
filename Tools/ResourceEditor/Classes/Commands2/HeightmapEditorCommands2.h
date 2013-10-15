@@ -32,12 +32,37 @@
 #define __RESOURCEEDITORQT__HEIGHTMAPEDITORCOMMANDS2__
 
 #include "Commands2/Command2.h"
+#include "Commands2/CommandAction.h"
 #include "DAVAEngine.h"
 
 using namespace DAVA;
 
 class HeightmapProxy;
 class LandscapeProxy;
+class SceneEditor2;
+
+class ActionEnableHeightmapEditor: public CommandAction
+{
+public:
+	ActionEnableHeightmapEditor(SceneEditor2* forSceneEditor);
+	
+protected:
+	SceneEditor2* sceneEditor;
+	
+	virtual void Redo();
+};
+
+class ActionDisableHeightmapEditor: public CommandAction
+{
+public:
+	ActionDisableHeightmapEditor(SceneEditor2* forSceneEditor);
+	
+protected:
+	SceneEditor2* sceneEditor;
+	
+	virtual void Redo();
+};
+
 
 class ModifyHeightmapCommand: public Command2
 {

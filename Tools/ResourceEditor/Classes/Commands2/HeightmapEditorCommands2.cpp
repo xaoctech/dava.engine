@@ -31,6 +31,70 @@
 #include "HeightmapEditorCommands2.h"
 #include "../Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "../Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "../Qt/Scene/SceneEditor2.h"
+#include "../Qt/Scene/SceneSignals.h"
+
+#include "../Qt/Main/QtUtils.h"
+
+ActionEnableHeightmapEditor::ActionEnableHeightmapEditor(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_ENABLE_HEIGHTMAP)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionEnableHeightmapEditor::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool enabled = sceneEditor->heightmapEditorSystem->IsLandscapeEditingEnabled();
+	if (enabled)
+	{
+		return;
+	}
+	
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN);
+
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN);
+
+	if (!success || !sceneEditor->heightmapEditorSystem->EnableLandscapeEditing())
+	{
+		ShowErrorDialog(ResourceEditor::HEIGHTMAP_EDITOR_ENABLE_ERROR);
+	}
+
+	SceneSignals::Instance()->EmitHeightmapEditorToggled(sceneEditor);
+}
+
+ActionDisableHeightmapEditor::ActionDisableHeightmapEditor(SceneEditor2* forSceneEditor)
+:	CommandAction(CMDID_DISABLE_HEIGHTMAP)
+,	sceneEditor(forSceneEditor)
+{
+}
+
+void ActionDisableHeightmapEditor::Redo()
+{
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	bool disabled = !sceneEditor->heightmapEditorSystem->IsLandscapeEditingEnabled();
+	if (disabled)
+	{
+		return;
+	}
+
+	disabled = sceneEditor->heightmapEditorSystem->DisableLandscapeEdititing();
+	if (!disabled)
+	{
+		ShowErrorDialog(ResourceEditor::HEIGHTMAP_EDITOR_DISABLE_ERROR);
+	}
+
+	SceneSignals::Instance()->EmitHeightmapEditorToggled(sceneEditor);
+}
+
 
 ModifyHeightmapCommand::ModifyHeightmapCommand(HeightmapProxy* heightmapProxy,
 											   Heightmap* originalHeightmap,

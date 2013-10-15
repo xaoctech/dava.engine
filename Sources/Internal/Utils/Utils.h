@@ -90,7 +90,7 @@ inline void StringReplace(String & repString,const String & needle, const String
 	while ((thispos = repString.find(needle, lastpos)) != String::npos)
 	{
 		repString.replace(thispos, needle.length(), s);
-		lastpos = thispos + 1;
+		lastpos = thispos + s.length();
 	}
 }
 
@@ -132,6 +132,8 @@ T ParseStringTo(const String & str)
     stream >> result;
     return result;
 }
+	
+uint64 EglGetCurrentContext();
 
 };
 

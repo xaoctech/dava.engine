@@ -35,6 +35,8 @@
 #include <QFileDialog>
 #include "ui_cubemapeditordialog.h"
 
+#include <QMouseEvent>
+
 const String CUBEMAP_LAST_FACE_DIR_KEY = "cubemap_last_face_dir";
 
 CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
@@ -42,6 +44,8 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
     ui(new Ui::CubemapEditorDialog)
 {
     ui->setupUi(this);
+	
+	ui->lblSaving->setVisible(false);
 	
 	faceHeight = -1.0f;
 	faceWidth = -1.0f;
@@ -54,6 +58,8 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
 	faceChanged = false;
 	
 	ConnectSignals();
+
+	setMouseTracking(true);
 }
 
 CubemapEditorDialog::~CubemapEditorDialog()
@@ -484,9 +490,21 @@ void CubemapEditorDialog::OnSave()
 		return;
 	}
 	
+	ui->lblSaving->setVisible(true);
+	
+	this->paintEvent(NULL);
+	ui->lblSaving->update();
+	QApplication::processEvents();
+	QApplication::flush();
+	
+	this->setUpdatesEnabled(false);
+	
 	SaveCubemap(targetFile.GetAbsolutePathname().c_str());
 	
 	faceChanged = false;
+	
+	this->setUpdatesEnabled(true);
+	ui->lblSaving->setVisible(false);
 	
 	EditorSettings::Instance()->Save();
 	close();
@@ -542,5 +560,25 @@ bool CubemapEditorDialog::IsCubemapEdited()
 void CubemapEditorDialog::OnRotationChanged()
 {
 	UpdateButtonState();
+}
+
+void CubemapEditorDialog::mouseMoveEvent(QMouseEvent *ev)
+{
+	ClickableQLabel* labels[] =
+	{
+		ui->labelPX,
+		ui->labelNX,
+		ui->labelPY,
+		ui->labelNY,
+		ui->labelPZ,
+		ui->labelNZ
+	};
+
+	for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
+	{
+		labels[i]->OnParentMouseMove(ev);
+	}
+
+	QDialog::mouseMoveEvent(ev);
 }
 

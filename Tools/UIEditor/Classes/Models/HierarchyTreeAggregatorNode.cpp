@@ -139,7 +139,8 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		// TODO! Yuri Coder, 2013/10/09. This method causes problems when aggregator control has its own
 		// children. Adding children to aggregator is disabled because of DF-2163.
 		aggregatorControl->RemoveAllControls();
-		
+		aggregatorControl->SetSize(rect.GetSize());
+
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
@@ -191,9 +192,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		DVASSERT(aggregatorControl);
 		if (!aggregatorControl)
 			continue;
-			
-		// DF-2164 - Get proper relative path for aggregator
-		String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+
 		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	

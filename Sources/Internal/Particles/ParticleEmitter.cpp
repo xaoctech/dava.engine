@@ -305,6 +305,23 @@ void ParticleEmitter::SetShortEffect(bool isShort)
 	}
 }
 
+Matrix3 ParticleEmitter::GetRotationMatrix()
+{
+	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	Matrix3 rotationMatrix;	
+
+	if(worldTransformPtr)
+	{	
+		rotationMatrix = Matrix3(*worldTransformPtr);
+	}
+	else
+	{
+		rotationMatrix.Identity();
+	}
+
+	return rotationMatrix;
+}
+
 void ParticleEmitter::Play()
 {
     Pause(false);
@@ -761,12 +778,7 @@ bool ParticleEmitter::IsPaused()
 	return isPaused;
 }
 
-void ParticleEmitter::SetAutorestart(bool _isAutorestart)
-{
-	isAutorestart = _isAutorestart;
-}
-
-bool ParticleEmitter::GetAutorestart()
+bool ParticleEmitter::GetAutoRestart()
 {
 	return isAutorestart;
 }
@@ -936,6 +948,11 @@ void ParticleEmitter::SetDisabledForAllLayers(bool value)
 void ParticleEmitter::RecalcBoundingBox()
 {
 	bbox = AABBox3(Vector3(), Vector3());
+}
+
+void ParticleEmitter::RecalculateWorldBoundingBox()
+{
+	worldBBox = bbox; //as ParticelEmmiter dont use world transform for particle rendering, just for generation
 }
 
 void ParticleEmitter::SetLongToAllLayers(bool isLong)

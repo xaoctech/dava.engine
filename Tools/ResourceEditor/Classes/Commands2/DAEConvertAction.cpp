@@ -68,7 +68,7 @@ void DAEConvertAction::ConvertFromSceToSc2() const
 {
     Scene *scene = CreateSceneFromSce();
     FilePath sc2Path = FilePath::CreateWithNewExtension(daePath, ".sc2");
-	SceneHelper::SaveScene(scene, sc2Path);
+    scene->Save(sc2Path);
     scene->Release();
 }
 
@@ -79,8 +79,13 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
     
     Scene *scene = new Scene();
     Entity *rootNode = scene->GetRootNode(scePath);
-    scene->AddNode(rootNode);
-    scene->BakeTransforms();
+	if(rootNode)
+	{
+		rootNode = rootNode->Clone();
+		scene->AddNode(rootNode);
+		scene->BakeTransforms();
+		rootNode->Release();
+	}
     
     return scene;
 }
@@ -101,8 +106,8 @@ void DAEConvertWithSettingsAction::ConvertFromSceToSc2() const
         
         FilePath newSc2Path = sc2Path;
         newSc2Path.ReplaceBasename(sc2Path.GetBasename() + "_new");
-        SceneHelper::SaveScene(scene, newSc2Path);
-        SafeRelease(scene);
+        scene->Save(newSc2Path);
+        scene->Release();
         
         TryToMergeScenes(sc2Path, newSc2Path);
         
@@ -120,11 +125,11 @@ void DAEConvertWithSettingsAction::TryToMergeScenes(const DAVA::FilePath &origin
     Scene * oldScene = CreateSceneFromSc2(originalPath);
     Scene * newScene = CreateSceneFromSc2(newPath);
     
+	CopyShadowSettings(oldScene, newScene);
     CopyMaterialsSettings(oldScene, newScene);
     CopyLODSettings(oldScene, newScene);
-	CopyShadowSettings(oldScene, newScene);
     
-    SceneHelper::SaveScene(newScene, originalPath);
+    newScene->Save(originalPath);
     
     oldScene->Release();
     newScene->Release();
@@ -137,6 +142,8 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
     Entity * rootNode = scene->GetRootNode(scenePathname);
 	if(rootNode)
 	{
+		rootNode = rootNode->Clone();
+
 		Vector<Entity*> tmpEntities;
 		uint32 entitiesCount = (uint32)rootNode->GetChildrenCount();
         
@@ -153,14 +160,17 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
 			tmpEntities.push_back(rootNode->GetChild(i));
 		}
         
+
 		// now we can safely add entities into our hierarchy
 		for (uint32 i = 0; i < (uint32) tmpEntities.size(); ++i)
 		{
 			scene->AddNode(tmpEntities[i]);
 		}
 
+		rootNode->Release();
+
         Set<String> errorsLog;
-        SceneValidator::Instance()->ValidateScene(scene, errorsLog);
+        SceneValidator::Instance()->ValidateScene(scene, scenePathname, errorsLog);
 	}
     
     return scene;
@@ -172,17 +182,33 @@ void DAEConvertWithSettingsAction::CopyMaterialsSettings(DAVA::Scene * srcScene,
     Vector<Material *> srcMaterials = CreateMaterialsVector(srcScene);
     Vector<Material *> dstMaterials = CreateMaterialsVector(dstScene);
     
-    if (srcMaterials.size() == dstMaterials.size())
-    {
-        uint32 count = srcMaterials.size();
-        for (uint32 i = 0; i < count; ++i)
-        {
-            if(srcMaterials[i]->GetName() == dstMaterials[i]->GetName())
-            {
-				dstMaterials[i]->CopySettings(srcMaterials[i]);
-            }
-        }
-    }
+	auto endItSrc = srcMaterials.end();
+	auto endItDst = dstMaterials.end();
+
+	auto itSrc = srcMaterials.begin();
+	auto itDst = dstMaterials.begin();
+
+	while( (itSrc != endItSrc) && (itDst != endItDst))
+	{
+		Material *src = *itSrc;
+		Material *dst = *itDst;
+
+		if(src->GetName() == dst->GetName())
+		{
+			dst->CopySettings(src);
+
+			++itSrc;
+			++itDst;
+		}
+		else if(src->GetName() < dst->GetName())
+		{
+			++itSrc;
+		}
+		else
+		{
+			++itDst;
+		}
+	}
 }
 
 DAVA::Vector<DAVA::Material *> DAEConvertWithSettingsAction::CreateMaterialsVector(DAVA::Scene *scene)

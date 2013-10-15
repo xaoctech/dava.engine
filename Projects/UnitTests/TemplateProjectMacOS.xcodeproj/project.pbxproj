@@ -45,7 +45,6 @@
 		E8B6B3C11705DD97004F665E /* LocalizationTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3BF1705DD97004F665E /* LocalizationTest.cpp */; };
 		E8EF78011669249000DA7BD2 /* CloneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EF77FF1669249000DA7BD2 /* CloneTest.cpp */; };
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
-		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE9892E511638EF700500198 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E111638EF700500198 /* InfoPlist.strings */; };
 		FE9892E611638EF700500198 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E311638EF700500198 /* MainMenu.xib */; };
 		FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE98931811638F3C00500198 /* libFramework.a */; };
@@ -211,7 +210,7 @@
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
-				FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */,
+				1770DF5B17DF763700000391 /* QTKit.framework in Frameworks */,
 				1770DF5B17DF763700000391 /* QTKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -32,7 +32,7 @@
 
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
-#include "Scene3D/Scene.h"
+//#include "Scene3D/Scene.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Utils/Utils.h"
@@ -90,7 +90,7 @@ namespace DAVA
      Scene * scene = ...;
      scene->Load("filename
 */
-
+class Scene;
 class SceneFileV2 : public BaseObject
 {
 public: 

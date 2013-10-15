@@ -65,6 +65,10 @@ namespace DAVA
 	{\
 		DVASSERT(0 && "Application tried to call GL or DX in separate thread");\
 	}\
+	if(Thread::IsMainThread())\
+	{\
+		RenderManager::Instance()->VerifyRenderContext();\
+	}\
 	command;\
 	GLenum err = glGetError();\
 	if (err != GL_NO_ERROR)\

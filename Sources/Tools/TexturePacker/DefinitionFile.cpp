@@ -82,7 +82,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 {
     DVASSERT(pathToProcess.IsDirectoryPathname());
 
-	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("* Load PNG Definition: %s", _filename.GetAbsolutePathname().c_str());
 	
 	FILE * fp = fopen(_filename.GetAbsolutePathname().c_str(), "rt");
 	fscanf(fp, "%d", &frameCount);
@@ -99,7 +99,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 	
 //	String dirWrite = path + String("/$process/"); 
 //	mkdir(dirWrite.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if (CommandLineParser::Instance()->GetVerbose())printf("* frameCount: %d spriteWidth: %d spriteHeight: %d\n", frameCount, spriteWidth, spriteHeight); 
+	Logger::FrameworkDebug("* frameCount: %d spriteWidth: %d spriteHeight: %d", frameCount, spriteWidth, spriteHeight);
 
 
 	frameRects = new Rect2i[frameCount];
@@ -111,8 +111,16 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 		
 		
 		Rect2i reducedRect;
-		frameX.FindNonOpaqueRect(reducedRect);
-		if (CommandLineParser::Instance()->GetVerbose())printf("%s - reduced_rect(%d %d %d %d)\n", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
+        if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+        {
+            reducedRect = Rect2i(0, 0, frameX.GetWidth(), frameX.GetHeight());
+            Logger::Info("%s - NOT reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
+        }
+        else
+        {
+            frameX.FindNonOpaqueRect(reducedRect);
+            Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
+        }
 		
 		
 		PngImageExt frameX2;
@@ -163,7 +171,7 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	FILE * fp = fopen(filename.GetAbsolutePathname().c_str(), "rt");
 	if (!fp)
 	{
-		printf("*** ERROR: Can't open definition file: %s\n",filename.GetAbsolutePathname().c_str());
+		Logger::Error("*** ERROR: Can't open definition file: %s",filename.GetAbsolutePathname().c_str());
 		return false;
 	}
 	fscanf(fp, "%d %d", &spriteWidth, &spriteHeight);
@@ -174,7 +182,7 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	for (int i = 0; i < frameCount; ++i)
 	{
 		fscanf(fp, "%d %d %d %d\n", &frameRects[i].x, &frameRects[i].y, &frameRects[i].dx, &frameRects[i].dy);
-		printf("[DefinitionFile] frame: %d w: %d h: %d\n", i, frameRects[i].dx, frameRects[i].dy);
+		Logger::FrameworkDebug("[DefinitionFile] frame: %d w: %d h: %d", i, frameRects[i].dx, frameRects[i].dy);
 		
 		if (CommandLineParser::Instance()->IsFlagSet("--add0pixel"))
 		{
@@ -211,7 +219,7 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	
 	
 	fclose(fp);
-	printf("Loaded definition: %s frames: %d\n",filename.GetAbsolutePathname().c_str(), frameCount);
+	Logger::FrameworkDebug("Loaded definition: %s frames: %d",filename.GetAbsolutePathname().c_str(), frameCount);
 	
 	return true;
 }

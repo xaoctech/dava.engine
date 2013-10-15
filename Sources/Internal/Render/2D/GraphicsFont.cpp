@@ -419,6 +419,7 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 	float32 currentY = y;
 	float32 sizeFix = 0.0f;
 	//Logger::FrameworkDebug("%S startX:%f", string.c_str(), currentX);
+    //RenderManager::Instance()->SetColor(Color::White());
 	for (uint32 indexInString = 0; indexInString < length; ++indexInString)
 	{
 		char16 c = string[indexInString];
@@ -470,6 +471,7 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 
 		prevChIndex = chIndex;
 	}
+    //RenderManager::Instance()->ResetColor();
 
 	currentX -= (fdef->characterWidthTable[prevChIndex] + horizontalSpacing) * fontScaleCoeff;
 	currentX += (fdef->characterPreShift[prevChIndex] + fontSprite->GetRectOffsetValueForFrame(prevChIndex, Sprite::ACTIVE_WIDTH)) * fontScaleCoeff; // characterWidthTable[prevChIndex];

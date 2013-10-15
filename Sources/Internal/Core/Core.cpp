@@ -46,9 +46,9 @@
 #include "Input/InputSystem.h"
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"
+#include "Render/2D/FTFont.h"
 #include "Job/JobManager.h"
 #include "Render/RenderHelper.h"
-
 
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Input/AccelerometeriPhone.h"
@@ -169,8 +169,8 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	RenderHelper::Instance()->Release();
-	PerformanceSettings::Instance()->Release();
+	FTFont::ClearCache();
+	RenderHelper::Instance()->Release();	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
 	SoundSystem::Instance()->Release();

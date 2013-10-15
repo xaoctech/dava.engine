@@ -246,6 +246,8 @@ const char8 * Material::GetTypeName(eType format)
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 			return "VERTEX_COLOR_ALPHABLEND";
+		case MATERIAL_VERTEX_COLOR_ALPHABLENDED_FRAME_BLEND:
+			return "VERTEX_COLOR_ALPHABLEND_FRAME_BLEND";
 		case MATERIAL_FLAT_COLOR:
 			return "FLAT_COLOR";
 		case MATERIAL_SKYBOX:
@@ -542,6 +544,9 @@ void Material::RebuildShader()
             break;
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 			shaderCombileCombo = "MATERIAL_TEXTURE;ALPHABLEND;VERTEX_COLOR";
+			break;
+		case MATERIAL_VERTEX_COLOR_ALPHABLENDED_FRAME_BLEND:
+			shaderCombileCombo = "MATERIAL_TEXTURE;ALPHABLEND;VERTEX_COLOR;FRAME_BLEND";
 			break;
         case MATERIAL_FLAT_COLOR:
             isFlatColorEnabled = true;

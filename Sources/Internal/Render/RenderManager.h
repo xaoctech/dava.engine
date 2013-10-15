@@ -185,6 +185,8 @@ protected:
     int32 statsFrameCountToShowDebug;
     int32 frameToShowDebugStats;
     Core::eRenderer renderer;
+	
+	uint64 renderContextId;
     
 public:
     
@@ -456,7 +458,9 @@ public:
     virtual void PushMappingMatrix();
 	virtual void PopMappingMatrix();
     
-    
+    void SetRenderContextId(uint64 contextId);
+	uint64 GetRenderContextId();
+	void VerifyRenderContext();
     
     /*  
         Matrix support
@@ -505,10 +509,10 @@ public:
     void HWglBindBuffer(GLenum target, GLuint  	buffer);
     GLuint bufferBindingId[2];
     
-    int32 HWglGetLastTextureID();
-	uint32 HWglGetLastTextureType();
-    void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
-    int32 lastBindedTexture;
+    int32 HWglGetLastTextureID(int textureType);
+	void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
+	void HWglForceBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
+    int32 lastBindedTexture[Texture::TEXTURE_TYPE_COUNT];
 	uint32 lastBindedTextureType;
 
     
