@@ -85,6 +85,24 @@ public:
 	Vector2 LandscapePointToTexturePoint(const Vector2& point);
 	Vector2 TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect);
 
+	void ClampToTexture(Rect& rect);
+	void ClampToHeightmap(Rect& rect);
+
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
+	Rect GetTextureRect();
+	Rect GetHeightmapRect();
+	Rect GetLandscapeRect();
+
+	void SaveTileMaskTexture();
+
+	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
+
+	bool VerifyLandscape();
+
+	Landscape * GetBaseLandscape() const;
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;
@@ -103,6 +121,9 @@ private:
 	
 	void UpdateBaseLandscapeHeightmap();
 	bool Init();
+
+	bool InitLandscape(Entity* landscapeEntity, Landscape* landscape);
+	void DeinitLandscape();
 
 	bool IsNotPassableTerrainCanBeEnabled();
 };

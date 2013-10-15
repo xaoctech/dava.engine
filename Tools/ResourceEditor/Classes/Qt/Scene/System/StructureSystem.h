@@ -51,25 +51,21 @@ public:
 	StructureSystem(DAVA::Scene * scene);
 	~StructureSystem();
 
-	void Init();
+	bool Init(const DAVA::FilePath & path);
 
-	void Move(const EntityGroup *entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
-	void Remove(const EntityGroup *entityGroup);
+	void Move(const EntityGroup& entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
+	void Remove(const EntityGroup& entityGroup);
 	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
-	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
+	void Reload(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
 	void Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos = DAVA::Vector3());
 
-	void LockSignals();
-	void UnlockSignals();
-
-	DAVA::Landscape * FindLanscape() const;
-	DAVA::Entity * FindLandscapeEntity() const;
+	void EmitChanged();
 
 protected:
-	bool lockedSignals;
+	bool structureChanged;
 
 	void Update(DAVA::float32 timeElapsed);
 	void Draw();
@@ -86,8 +82,6 @@ protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
-	DAVA::Entity * FindLandscapeEntityRecursive(DAVA::Entity *entity) const;
-    
     bool CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const;
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 };

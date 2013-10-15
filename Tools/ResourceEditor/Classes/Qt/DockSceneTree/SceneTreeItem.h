@@ -74,6 +74,7 @@ public:
 
 protected:
 	eItemType type;
+	QIcon iconCache;
 };
 
 class SceneTreeItemEntity : public SceneTreeItem

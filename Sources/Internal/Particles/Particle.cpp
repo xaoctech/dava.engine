@@ -46,7 +46,7 @@ ForceData::ForceData(float32 forceValue, const Vector3& forceDirection, float32 
 
 Particle::Particle()
 {
-    frameLastUpdateTime = 0.0f;
+    animTime = 0.0f;
 	innerParticleEmitter = NULL;
 }
 
@@ -146,7 +146,8 @@ void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEm
 	innerParticleEmitter->SetRenderSystem(parentEmitter->GetRenderSystem());
 	innerParticleEmitter->SetWorldTransformPtr(parentEmitter->GetWorldTransformPtr());
 	innerParticleEmitter->RememberInitialTranslationVector();
-	innerParticleEmitter->SetParentParticle(this);
+	innerParticleEmitter->SetParentParticle(this);	
+	innerParticleEmitter->SetAutoRestart(false);
 
 	RegisterInnerEmitterInRenderSystem(true);
 }

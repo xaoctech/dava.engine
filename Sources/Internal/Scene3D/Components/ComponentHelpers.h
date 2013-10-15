@@ -59,6 +59,9 @@ LodComponent * GetLodComponent(Entity *fromEntity);
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
 void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
 
+Entity * FindLandscapeEntity(Entity * rootEntity);
+Landscape * FindLandscape(Entity * rootEntity);
+
 }
 
 #endif //__DAVAENGINE_COMPONENT_HELPERS_H__

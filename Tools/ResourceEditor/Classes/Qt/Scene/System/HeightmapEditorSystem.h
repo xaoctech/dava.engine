@@ -42,11 +42,10 @@ class LandscapeEditorDrawSystem;
 class HeightmapEditorSystem: public DAVA::SceneSystem
 {
 public:
-	static const float32 MAX_STRENGTH;
-	
 	enum eHeightmapDrawType
 	{
-		HEIGHTMAP_DRAW_RELATIVE = 0,
+		HEIGHTMAP_DRAW_ABSOLUTE = 0,
+		HEIGHTMAP_DRAW_RELATIVE,
 		HEIGHTMAP_DRAW_AVERAGE,
 		HEIGHTMAP_DRAW_ABSOLUTE_DROPPER,
 		HEIGHTMAP_DROPPER,
@@ -80,6 +79,9 @@ public:
 	bool GetCopyPasteHeightmap();
 	void SetCopyPasteTilemask(bool active);
 	bool GetCopyPasteTilemask();
+
+	void SetDropperHeight(float32 height);
+	float32 GetDropperHeight();
 
 protected:
 	bool enabled;
@@ -131,7 +133,6 @@ protected:
 	
 	void AddRectToAccumulator(Rect& accumulator, const Rect& rect);
 	void ResetAccumulatorRect(Rect& accumulator);
-	Rect GetClampedRect(const Rect& rect, const Rect& boundaries);
 	Rect GetHeightmapUpdatedRect();
 	Rect GetTilemaskUpdatedRect();
 	

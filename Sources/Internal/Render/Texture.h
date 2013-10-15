@@ -99,7 +99,8 @@ public:
 	enum TextureType
 	{
 		TEXTURE_2D = 0,
-		TEXTURE_CUBE = 1
+		TEXTURE_CUBE = 1,
+		TEXTURE_TYPE_COUNT = 2
 	};
 
 	enum TextureState
@@ -167,7 +168,7 @@ public:
 		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * CreateFromFile(const FilePath & pathName);
+	static Texture * CreateFromFile(const FilePath & pathName, TextureType typeHint = Texture::TEXTURE_2D);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -186,7 +187,7 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
-	static Texture * CreatePink(const FilePath &path = FilePath());
+	static Texture * CreatePink(const FilePath &path = FilePath(), TextureType requestedType = Texture::TEXTURE_2D);
 
 
 	/**
@@ -324,9 +325,8 @@ private:
 	void FlushDataToRenderer();
 	void ReleaseImages();
 
+    void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
 	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
-
-    void MakePink();
 
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
 

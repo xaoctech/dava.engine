@@ -35,10 +35,26 @@
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
 
+#include "Classes/Deprecated/ScenePreviewDialog.h"
+#include "Classes/Qt/Main/Request.h"
+
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QMessageBox>
 #include <QFileInfo>
+
+class QTransparentWidget: public QWidget
+{
+public:
+
+	QTransparentWidget(QWidget *parent) : QWidget(parent)
+	{
+		setStyleSheet(QString::fromUtf8("background-color: rgba(175, 75, 75, 0);"));
+
+//        setAttribute(Qt::WA_TranslucentBackground);
+//        setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+	}
+};
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
@@ -46,6 +62,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	, dava3DViewMargin(3)
 	, newSceneCounter(0)
 	, curScene(NULL)
+	, previewDialog(NULL)
 	/*
 	, curModifAxis(ST_AXIS_X)
 	, curModifMode(ST_MODIF_MOVE)
@@ -69,7 +86,8 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
 	davaWidget->setFocusPolicy(Qt::StrongFocus);
-
+	davaWidget->installEventFilter(this);
+    
 	// put tab bar and davawidget into vertical layout
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(tabBar);
@@ -77,9 +95,18 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
+	
+	// create top widget for tool buttons
+	topPlaceholder = new QTransparentWidget(this);
+
+	topPlaceholderLayout = new QHBoxLayout(topPlaceholder);
+	topPlaceholderLayout->setMargin(2);
+	topPlaceholderLayout->setSpacing(1);
+	topPlaceholderLayout->setAlignment(Qt::AlignLeft);
+	topPlaceholder->setLayout(topPlaceholderLayout);
 
 	setAcceptDrops(true);
-
+    
 	// create DAVA UI
 	InitDAVAUI();
 
@@ -91,10 +118,15 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
+
+	SetCurrentTab(0);
 }
 
 SceneTabWidget::~SceneTabWidget()
 {
+	davaWidget->removeEventFilter(this);
+	SafeRelease(previewDialog);
+
 	ReleaseDAVAUI();
 }
 
@@ -135,6 +167,8 @@ int SceneTabWidget::OpenTab()
 
 int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
+	HideScenePreview();
+
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
 
@@ -153,7 +187,7 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		// message box about can't load scene
 		// ...
 		
-		delete scene;
+        SafeRelease(scene);
 	}
 
 	if(tabBar->count() == 1)
@@ -168,43 +202,24 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 
 void SceneTabWidget::CloseTab(int index)
 {
-	bool doCloseScene = true;
+    Request request;
+    
+    emit CloseTabRequest(index, &request);
+    
+    if(!request.IsAccepted())
+        return;
+    
+    
 	SceneEditor2 *scene = GetTabScene(index);
-
-	if(NULL != scene)
-	{
-		if(scene->IsChanged())
-		{
-			int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?", 
-				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-			
-			if(answer == QMessageBox::Yes)
-			{
-
-			}
-			else if(answer == QMessageBox::Cancel)
-			{
-				doCloseScene = false;
-			}
-		}
-	}
-
-	if(doCloseScene)
-	{
-		if(index == tabBar->currentIndex())
-		{
-			dava3DView->SetScene(NULL);
-			SceneSignals::Instance()->EmitDeactivated(scene);
-		}
-
-		if(scene == curScene)
-		{
-			curScene = NULL;
-		}
-
-		tabBar->removeTab(index);
-		delete scene;
-	}
+    if(index == tabBar->currentIndex())
+    {
+        curScene = NULL;
+        dava3DView->SetScene(NULL);
+        SceneSignals::Instance()->EmitDeactivated(scene);
+    }
+    
+    tabBar->removeTab(index);
+    SafeRelease(scene);
 }
 
 int SceneTabWidget::GetCurrentTab() const
@@ -214,6 +229,9 @@ int SceneTabWidget::GetCurrentTab() const
 
 void SceneTabWidget::SetCurrentTab(int index)
 {
+	davaWidget->setEnabled(false);
+ 	topPlaceholder->setVisible(false);
+
 	if(index >= 0 && index < tabBar->count())
 	{
 		SceneEditor2 *oldScene = curScene;
@@ -234,6 +252,9 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 			SceneSignals::Instance()->EmitActivated(curScene);
 			curScene->selectionSystem->LockSelection(false);
+
+			davaWidget->setEnabled(true);
+//			topPlaceholder->setVisible(true); //VK: disabled for future.
 		}
 	}
 }
@@ -289,12 +310,7 @@ void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 		QList<QUrl> urls = data->urls();
 		for(int i = 0; i < urls.size(); ++i)
 		{
-			DAVA::FilePath path(urls[i].toLocalFile().toStdString());
-			if(path.IsEqualToExtension(".sc2") && path.Exists())
-			{
-				int tabId = OpenTab(path);
-				SetCurrentTab(tabId);
-			}
+            QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
 		}
 	}
 }
@@ -385,11 +401,9 @@ void SceneTabWidget::SceneModifyStatusChanged(SceneEditor2 *scene, bool modified
 	}
 }
 
-void SceneTabWidget::resizeEvent(QResizeEvent * event)
+bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 {
-	QWidget::resizeEvent(event);
-
-	if(NULL != event)
+	if(object == davaWidget && event->type() == QEvent::Resize)
 	{
 		QSize s = davaWidget->size();
 
@@ -401,8 +415,36 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		{
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
+
+		topPlaceholder->setGeometry(0, 25, width(), 20);
+	}
+
+	return QWidget::eventFilter(object, event);
+}
+
+void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls()) 
+	{
+		event->acceptProposedAction();
+	}
+	else
+	{
+		event->setDropAction(Qt::IgnoreAction);
+		event->accept();
 	}
 }
+
+void SceneTabWidget::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls())
+	{
+		TabBarDataDropped(mimeData);
+	}
+}
+
 
 void SceneTabWidget::UpdateTabName(int index)
 {
@@ -427,6 +469,44 @@ SceneEditor2* SceneTabWidget::GetCurrentScene() const
 	return curScene;
 }
 
+void SceneTabWidget::ShowScenePreview(const DAVA::FilePath &scenePath)
+{
+	if(!previewDialog)
+    {
+        previewDialog = new ScenePreviewDialog();
+    }
+
+	if(scenePath.IsEqualToExtension(".sc2"))
+	{
+		previewDialog->Show(scenePath);
+	}
+	else
+	{
+		previewDialog->Close();
+	}
+}
+
+void SceneTabWidget::HideScenePreview()
+{
+	if(previewDialog && previewDialog->GetParent())
+	{
+		previewDialog->Close();
+	}
+}
+
+void SceneTabWidget::AddTopToolWidget(QWidget *widget)
+{
+    if(widget)
+    {
+        widget->setParent(topPlaceholder);
+		topPlaceholderLayout->addWidget(widget);
+    }
+}
+
+DavaGLWidget * SceneTabWidget::GetDavaWidget() const
+{
+	return davaWidget;
+}
 
 
 MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
@@ -457,3 +537,5 @@ void MainTabBar::dropEvent(QDropEvent *event)
 		emit OnDrop(mimeData);
 	}
 }
+
+

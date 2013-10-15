@@ -227,33 +227,40 @@ void Camera::Recalc()
 
 Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint, const Rect & viewport)
 {
-    Vector4 pv(forPoint);
-    pv = pv * GetUniformProjModelMatrix();
-//    return Vector2((viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x
-//                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
+	Vector3 v = GetOnScreenPositionAndDepth(forPoint, viewport);
+	return Vector2(v.x, v.y);
+}
+
+Vector3 Camera::GetOnScreenPositionAndDepth(const Vector3 & forPoint, const Rect & viewport)
+{
+	Vector4 pv(forPoint);
+	pv = pv * GetUniformProjModelMatrix();
+	//    return Vector2((viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x
+	//                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
 
 
 	switch(RenderManager::Instance()->GetRenderOrientation())
 	{
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-        {
-            return Vector2((viewport.dx * 0.5f) * (1.f + pv.y/pv.w) + viewport.x
-                            , (viewport.dy * 0.5f) * (1.f + pv.x/pv.w) + viewport.y);
-        }
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-        {
-            DVASSERT(false);
-        }
-                //add code here
-			break;
-        default:
-            return Vector2(((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
-                       (1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y);
-            break;
+	case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+		{
+			return Vector3((viewport.dx * 0.5f) * (1.f + pv.y/pv.w) + viewport.x
+				, (viewport.dy * 0.5f) * (1.f + pv.x/pv.w) + viewport.y, pv.w + pv.z);
+		}
+		break;
+	case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+		{
+			DVASSERT(false);
+		}
+		//add code here
+		break;
+	default:
+		return Vector3(((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
+			(1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y, pv.w + pv.z);
+		break;
 	}
-    DVASSERT(false);
-	return Vector2();
+
+	DVASSERT(false);
+	return Vector3();
 }
 
 const Matrix4 &Camera::GetUniformProjModelMatrix()

@@ -38,6 +38,8 @@
 #include <QShowEvent>
 
 class SceneEditor2;
+class EntityGroup;
+
 class SceneInfo : public QtPropertyEditor
 {
 	Q_OBJECT
@@ -66,19 +68,11 @@ public:
 
 protected slots:
     
-    void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
-    
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
-//TODO: add set of slots to different scene changes
-//    void nodeDeleted(SceneData *scene);
-//    void nodeAdded(SceneData *scene);
-//    void TexturesReloaded();
-//    void MaterialsChanged();
-    
 protected slots:
     
     void UpdateInfoByTimer();
@@ -133,6 +127,7 @@ protected:
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 
+    static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
     
 protected:
     

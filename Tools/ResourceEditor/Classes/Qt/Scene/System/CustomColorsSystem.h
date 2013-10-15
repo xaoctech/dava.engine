@@ -52,13 +52,13 @@ public:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	
-	void SetBrushSize(int32 brushSize);
+	void SetBrushSize(int32 brushSize, bool updateDrawSystem = true);
 	int32 GetBrushSize();
 	void SetColor(int32 colorIndex);
 	int32 GetColor();
 
 	void SaveTexture(const FilePath& filePath);
-	void LoadTexture(const FilePath& filePath);
+	void LoadTexture(const FilePath& filePath, bool createUndo = true);
 	FilePath GetCurrentSaveFileName();
 
 protected:

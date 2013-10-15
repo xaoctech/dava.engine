@@ -104,7 +104,7 @@ public:
 	ParticleEmitter* GetInnerEmitter();
 
 	int32	frame;
-	float32 frameLastUpdateTime;
+	float32 animTime;
 	
 	friend class ParticleEmitter;
 	

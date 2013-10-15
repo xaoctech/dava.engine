@@ -120,8 +120,7 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 		}
 
 		scene->Update(0.f);
-
-		SceneHelper::SaveScene(scene, sc2Filename);
+        scene->Save(sc2Filename);
 	}
 	else
 	{
@@ -143,7 +142,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     scene->Update(0.1f);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
-    SceneValidator::Instance()->ValidateScene(scene, errorLog);
+    SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 
     texturesForSave.clear();
     SceneHelper::EnumerateTextures(scene, texturesForSave);
@@ -151,7 +150,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     CopyTextures(scene, errorLog);
 	ReleaseTextures();
 
-	Landscape *landscape = EditorScene::GetLandscape(scene);
+	Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
@@ -165,7 +164,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
     tempSceneName.ReplaceExtension(".saved.sc2");
     
-	SceneHelper::SaveScene(scene, tempSceneName, true);
+    scene->Save(tempSceneName, true);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
@@ -256,7 +255,7 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 
 void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
 {
-	Entity *land = EditorScene::GetLandscapeNode(scene);
+	Entity *land = FindLandscapeEntity(scene);
 	if(!land) return;
 
 	KeyedArchive* customProps = land->GetCustomProperties();

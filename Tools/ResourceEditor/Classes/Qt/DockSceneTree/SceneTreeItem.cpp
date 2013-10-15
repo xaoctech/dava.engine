@@ -30,6 +30,7 @@
 
 #include <QSet>
 #include "DockSceneTree/SceneTreeItem.h"
+#include "Commands2/ConvertToShadowCommand.h"
 
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
@@ -135,6 +136,9 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon lodobjIcon(":/QtIcons/lod_object.png");
 	static QIcon userobjIcon(":/QtIcons/user_object.png");
 	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
+	static QIcon cameraIcon(":/QtIcons/camera.png");
+	static QIcon lightIcon(":/QtIcons/light.png");
+	static QIcon shadowIcon(":/QtIcons/shadow.png");
 
 	QIcon ret;
 
@@ -158,11 +162,26 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
-			ret = renderobjIcon;
+			if(ConvertToShadowCommand::IsEntityWithShadowVolume(entity))
+			{
+				ret = shadowIcon;
+			}
+			else
+			{
+				ret = renderobjIcon;
+			}
 		}
 		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 		{
 			ret = userobjIcon;
+		}
+		else if(NULL != DAVA::GetCamera(entity))
+		{
+			ret = cameraIcon;
+		}
+		else if(NULL != DAVA::GetLight(entity))
+		{
+			ret = lightIcon;
 		}
 	}
 
@@ -465,17 +484,31 @@ QVariant SceneTreeItemParticleLayer::ItemData() const
 void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleLayer *layer)
 {
 	if(NULL != rootItem && NULL != layer)
-	{
+	{	
+		bool hadInnerEmmiter = false;
+		for (int i=0; i<rootItem->rowCount(); i++)
+		{
+			bool keepItem = false;
+			SceneTreeItem*item = (SceneTreeItem*)rootItem->child(i);
+			if ((item)->ItemType() == SceneTreeItem::EIT_InnerEmmiter)
+			{
+				hadInnerEmmiter = true;
+				if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+				{
+					keepItem = true;
+					((SceneTreeItemParticleInnerEmmiter*)item)->DoSync(item, layer->GetInnerEmitter());
+				}
+			}
+			if (!keepItem)
+			{
+				rootItem->removeRow(i);
+				i--;
+			}
+		}
+
 		size_t itemsCount = layer->forces.size();
 		QList<QStandardItem*> items;
-
-		int innerEmiterItem = 0;
-		if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
-		{
-			items.push_back(new SceneTreeItemParticleInnerEmmiter(layer, layer->GetInnerEmitter()));		
-			innerEmiterItem=1;
-		}
-		// add all items to the head
+		
 		for(size_t i = 0; i < itemsCount; ++i)
 		{
 			items.push_back(new SceneTreeItemParticleForce(layer, layer->forces[i]));
@@ -486,8 +519,10 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleL
 			rootItem->insertRows(0, items);
 		}
 
-		// remove old items from the tail
-		rootItem->removeRows(itemsCount+innerEmiterItem, rootItem->rowCount() - (itemsCount+innerEmiterItem));
+		if (!hadInnerEmmiter&&(layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
+		{
+			rootItem->appendRow(new SceneTreeItemParticleInnerEmmiter(layer, layer->GetInnerEmitter()));
+		}
 	}
 }
 
@@ -558,21 +593,33 @@ void SceneTreeItemParticleInnerEmmiter::DoSync(QStandardItem *rootItem, DAVA::Pa
 {
 	if(NULL != rootItem && NULL != emitter)
 	{
-		size_t itemsCount = emitter->GetLayers().size();
-		QList<QStandardItem*> items;
 		
-		for(size_t i = 0; i < itemsCount; ++i)
+		DAVA::Set<DAVA::ParticleLayer *> layerSet;
+		size_t itemsCount = emitter->GetLayers().size();
+		for (size_t i=0; i<itemsCount; i++)
 		{
-			items.push_back(new SceneTreeItemParticleLayer(emitter, emitter->GetLayers()[i]));
+			layerSet.insert(emitter->GetLayers()[i]);
 		}
-
-		if(items.size() > 0)
+		for(int i = 0; i < rootItem->rowCount(); ++i)
+		{	
+			DVASSERT(((SceneTreeItem*)rootItem->child(i))->ItemType() == SceneTreeItem::EIT_Layer);
+			SceneTreeItemParticleLayer *childItem = (SceneTreeItemParticleLayer *) rootItem->child(i);
+			DAVA::Set<DAVA::ParticleLayer *>::iterator it = layerSet.find(childItem->layer);
+			if (it!=layerSet.end())
+			{
+				layerSet.erase(it);	
+				childItem->DoSync(childItem, childItem->layer);
+			}
+			else
+			{
+				rootItem->removeRow(i);
+				i--;
+			}
+		}
+		for (DAVA::Set<DAVA::ParticleLayer *>::iterator it = layerSet.begin(), e=layerSet.end(); it!=e; ++it)
 		{
-			rootItem->insertRows(0, items);
-		}
-
-		// remove old items from the tail
-		rootItem->removeRows(itemsCount, rootItem->rowCount() - itemsCount);
+			rootItem->appendRow(new SceneTreeItemParticleLayer(emitter, *it));
+		}					
 	}
 }
 

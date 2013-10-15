@@ -35,10 +35,12 @@
 #include "DAVAEngine.h"
 #include "Qt/Scene/SceneEditor2.h"
 
-class SelectPathWidget;
+class SelectEntityPathWidget;
 
 class AddSwitchEntityDialog: public BaseAddEntityDialog
 {
+	Q_OBJECT
+
 public:
 	AddSwitchEntityDialog( QWidget* parent = 0);
 	
@@ -46,16 +48,20 @@ public:
 	
 	void CleanupPathWidgets();
 
-	const DAVA::Vector<SelectPathWidget*>& GetPathWidgets()
+	const DAVA::Vector<SelectEntityPathWidget*>& GetPathWidgets()
 	{
 		return pathWidgets;
 	}
 	
 	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
+	
+	void accept();
+	
+	void reject();
 
 protected:
 	
-	DAVA::Vector<SelectPathWidget*> pathWidgets;
+	DAVA::Vector<SelectEntityPathWidget*> pathWidgets;
 	
 	DAVA::Vector<QWidget*>			additionalWidgets;
 	

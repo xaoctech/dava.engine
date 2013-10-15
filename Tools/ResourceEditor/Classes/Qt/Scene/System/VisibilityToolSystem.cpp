@@ -51,10 +51,10 @@ VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 ,	originalImage(NULL)
 ,	state(VT_STATE_NORMAL)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
-	crossTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
+	crossTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.tex");
 	crossTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
@@ -76,18 +76,7 @@ bool VisibilityToolSystem::IsLandscapeEditingEnabled() const
 
 bool VisibilityToolSystem::IsCanBeEnabled()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-	
-	bool canBeEnabled = true;
-//	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-
-	return canBeEnabled;
+	return drawSystem->VerifyLandscape();
 }
 
 bool VisibilityToolSystem::EnableLandscapeEditing()
@@ -159,7 +148,6 @@ void VisibilityToolSystem::Update(DAVA::float32 timeElapsed)
 	{
 		if (prevCursorPos != cursorPosition)
 		{
-			UpdateBrushTool(timeElapsed);
 			prevCursorPos = cursorPosition;
 		}
 	}
@@ -179,7 +167,14 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		return;
 	}
 
-	if (event->tid == UIEvent::BUTTON_1)
+	if (UIEvent::PHASE_KEYCHAR == event->phase)
+	{
+		if (event->tid == DVKEY_ESCAPE)
+		{
+			SetState(VT_STATE_NORMAL);
+		}
+	}
+	else if (event->tid == UIEvent::BUTTON_1)
 	{
 		Vector3 point;
 
@@ -188,7 +183,6 @@ void VisibilityToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			case UIEvent::PHASE_BEGAN:
 				if (isIntersectsLandscape)
 				{
-					UpdateToolImage();
 					StoreOriginalState();
 					editingIsEnabled = true;
 				}
@@ -240,31 +234,6 @@ void VisibilityToolSystem::UpdateCursorPosition(int32 landscapeSize)
 	}
 }
 
-void VisibilityToolSystem::UpdateToolImage(bool force)
-{
-}
-
-Image* VisibilityToolSystem::CreateToolImage(int32 sideSize, const FilePath& filePath)
-{
-	Texture* toolTexture = Texture::CreateFromFile(filePath);
-	if (!toolTexture)
-	{
-		return NULL;
-	}
-
-	SafeRelease(toolImageSprite);
-	toolImageSprite = Sprite::CreateFromTexture(toolTexture, 0.f, 0.f, sideSize, sideSize);
-	toolImageSprite->GetTexture()->GeneratePixelesation();
-
-	SafeRelease(toolTexture);
-
-	return NULL;
-}
-
-void VisibilityToolSystem::UpdateBrushTool(float32 timeElapsed)
-{
-}
-
 void VisibilityToolSystem::ResetAccumulatorRect()
 {
 	float32 inf = std::numeric_limits<float32>::infinity();
@@ -278,15 +247,8 @@ void VisibilityToolSystem::AddRectToAccumulator(const Rect &rect)
 
 Rect VisibilityToolSystem::GetUpdatedRect()
 {
-	int32 textureSize = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetSize().x;
 	Rect r = updatedRectAccumulator;
-
-	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, textureSize - 1);
-	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, textureSize - 1);
-	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
-				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.x;
-	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
-				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.y;
+	drawSystem->ClampToTexture(r);
 
 	return r;
 }

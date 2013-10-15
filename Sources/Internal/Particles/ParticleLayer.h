@@ -66,6 +66,15 @@ public:
 		TYPE_PARTICLES,				// default for any particle layer loaded from yaml file
 		TYPE_SUPEREMITTER_PARTICLES
 	};
+
+	enum eParticleOrientation
+	{
+		PARTICLE_ORIENTATION_CAMERA_FACING = 1<<0, //default
+		PARTICLE_ORIENTATION_X_FACING = 1<<1,
+		PARTICLE_ORIENTATION_Y_FACING = 1<<2,
+		PARTICLE_ORIENTATION_Z_FACING = 1<<3,
+		PARTICLE_ORIENTATION_WORLD_ALIGN = 1<<4 
+	};
 	
 	ParticleLayer();
 	virtual ~ParticleLayer();
@@ -225,8 +234,17 @@ public:
     
 	RenderBatch * GetRenderBatch();
 
-	virtual void SetAdditive(bool additive);
-	bool GetAdditive() const {return additive;};
+	DAVA_DEPRECATED(void SetAdditive(bool additive));
+	DAVA_DEPRECATED(bool GetAdditive() const);
+	virtual void SetBlendMode(eBlendMode sFactor, eBlendMode dFactor);	
+	eBlendMode GetBlendSrcFactor();
+	eBlendMode GetBlendDstFactor();
+
+	virtual void SetFog(bool enable);
+	bool IsFogEnabled();
+
+	virtual void SetFrameBlend(bool enable);
+	bool IsFrameBlendEnabled();
 
 	void SetInheritPosition(bool inherit);
 	bool GetInheritPosition() const {return inheritPosition;}
@@ -286,7 +304,7 @@ protected:
 	void RemoveFromList(Particle * particle);
 	
 	void RunParticle(Particle * particle);
-	void ProcessParticle(Particle * particle);
+	void ProcessParticle(Particle * particle, float32 timeElapsed);	
 	
     void SaveForcesToYamlNode(YamlNode* layerNode);
 
@@ -325,11 +343,16 @@ protected:
 
 	ParticleLayerBatch * renderBatch;
 
-	bool		isDisabled;
-	bool		additive;
+	bool		isDisabled;	
 	bool		isLooped;
 
-	bool inheritPosition;  //for supperemitter - if true the whole emitter would be moved, otherwise just emission point
+	eBlendMode srcBlendFactor, dstBlendFactor;
+
+	bool enableFog;
+
+	bool enableFrameBlend;
+
+	bool inheritPosition;  //for super emitter - if true the whole emitter would be moved, otherwise just emission point
 
 	float32		playbackSpeed;
 
@@ -363,6 +386,7 @@ public:
 	RefPtr< PropertyLine<float32> > spin;				// spin of angle / second
 	RefPtr< PropertyLine<float32> > spinVariation;
 	RefPtr< PropertyLine<float32> > spinOverLife;
+	bool randomSpinDirection;
 	
 	RefPtr< PropertyLine<float32> > motionRandom;		//
 	RefPtr< PropertyLine<float32> > motionRandomVariation;
@@ -379,6 +403,8 @@ public:
 	RefPtr< PropertyLine<float32> > angle;				// sprite angle in degrees
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
+	RefPtr< PropertyLine<float32> > animSpeedOverLife;	
+
 	float32		alignToMotion;
 
 	float32		startTime;
@@ -390,15 +416,20 @@ public:
 	float32 	loopEndTime;
 	
 	void		UpdateLayerTime(float32 startTime, float32 endTime);
-
-	int32		frameStart;
-	int32		frameEnd;
+	
 
 	eType		type;
+
+	int32 particleOrientation;
 
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 	bool		randomFrameOnStart;
+	bool		loopSpriteAnimation;
+
+	//for long particles
+	float32 scaleVelocityBase;
+	float32 scaleVelocityFactor;
 
 	ParticleEmitter* innerEmitter;
 	FilePath	innerEmitterPath;
