@@ -475,6 +475,13 @@ void QtMainWindow::SetupDocks()
 
 void QtMainWindow::SetupActions()
 {
+    //TODO: temporary disabled
+    //-->
+    ui->actionAddNewComponent->setVisible(false);
+    ui->actionRemoveComponent->setVisible(false);
+    //<--
+    
+    
 	// scene file actions
 	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
 	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
