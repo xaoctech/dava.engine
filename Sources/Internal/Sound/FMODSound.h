@@ -50,6 +50,8 @@ class FMODSoundSystem;
 class FMODSound : public Sound
 {
 public:
+	virtual int32 Release();
+
 	virtual void SetVolume(float32 volume);
 	virtual float32	GetVolume();
 
