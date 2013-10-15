@@ -299,7 +299,11 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 			}
 			sceneEditor->EndBatch();
 
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+			// Перенести в Load и завалидейтить только подгруженную Entity
+			// -->
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
+			// <--
+
 			EmitChanged();
 		}
 	}
@@ -341,9 +345,11 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
+			// 
+			// Перенести в Load и завалидейтить только подгруженную Entity
 			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
 			// <--
             
 			EmitChanged();
