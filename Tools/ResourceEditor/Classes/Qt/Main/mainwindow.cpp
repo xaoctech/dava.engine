@@ -722,6 +722,12 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
+    
+    auto endIt = recentScenes.end();
+    for(auto it = recentScenes.begin(); it != endIt; ++it)
+    {
+        (*it)->setEnabled(enable);
+    }
 }
 
 void QtMainWindow::EnableSceneActions(bool enable)
