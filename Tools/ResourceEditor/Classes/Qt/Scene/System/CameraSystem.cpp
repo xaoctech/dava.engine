@@ -116,6 +116,8 @@ DAVA::float32 SceneCameraSystem::GetMoveSpeed()
 void SceneCameraSystem::SetViewportRect(const DAVA::Rect &rect)
 {
 	viewportRect = rect;
+
+	RecalcCameraAspect();
 }
 
 const DAVA::Rect SceneCameraSystem::GetViewportRect()
@@ -217,8 +219,10 @@ void SceneCameraSystem::Update(float timeElapsed)
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
-			curSceneCamera->SetAspect(viewportRect.dy / viewportRect.dx);
 			SafeRetain(curSceneCamera);
+
+			// Recalc camera aspect
+			RecalcCameraAspect();
 
 			// recalc current view angles using new camera pos and direction
 			RecalcCameraViewAngles();
@@ -474,6 +478,21 @@ void SceneCameraSystem::RecalcCameraViewAngles()
 	}
     
     UpdateDistanceToCamera();
+}
+
+void SceneCameraSystem::RecalcCameraAspect()
+{
+	if(NULL != curSceneCamera)
+	{
+		DAVA::float32 aspect = 1.0;
+
+		if(0 != viewportRect.dx && 0 != viewportRect.dy)
+		{
+			aspect = viewportRect.dy / viewportRect.dx;
+		}
+
+		curSceneCamera->SetAspect(aspect);
+	}
 }
 
 void SceneCameraSystem::MouseMoveCameraDirection()
