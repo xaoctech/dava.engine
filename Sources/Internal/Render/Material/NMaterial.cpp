@@ -402,7 +402,7 @@ namespace DAVA
 		nativeDefines.Remove(defineName);
 	}
 	
-	void NMaterialState::ShallowCopyTo(NMaterialState* targetState)
+	void NMaterialState::ShallowCopyTo(NMaterialState* targetState, bool copyNames)
 	{
 		DVASSERT(this != targetState);
 		
@@ -413,8 +413,11 @@ namespace DAVA
 		targetState->textureNamesArray.clear();
 		targetState->textureSlotArray.clear();
 
-		targetState->parentName = parentName;
-		targetState->materialName = materialName;
+		if(copyNames)
+		{
+			targetState->parentName = parentName;
+			targetState->materialName = materialName;
+		}
 		
 		targetState->layers.Combine(layers);
 		
@@ -1353,7 +1356,9 @@ namespace DAVA
 				NMaterialState* prevState = states.GetValue(currentStateName);
 				DVASSERT(prevState);
 				
-				ShallowCopyTo(prevState);
+				//VI: do not copy material name and parent name back
+				//VI: since they could be modified by SetParent or other calls
+				ShallowCopyTo(prevState, false);
 			}
 			
 			state->ShallowCopyTo(this);

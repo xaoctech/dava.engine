@@ -64,6 +64,9 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "../../Commands2/LandscapeEditorDrawSystemActions.h"
+
+#include "Render/Material/MaterialSystem.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -435,6 +438,10 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+	
+	QObject::connect(ui->actionLow, SIGNAL(triggered()), this, SLOT(OnSetMaterialQualityLow()));
+	QObject::connect(ui->actionNormal, SIGNAL(triggered()), this, SLOT(OnSetMaterialQualityNormal()));
+	QObject::connect(ui->actionHigh, SIGNAL(triggered()), this, SLOT(OnSetMaterialQualityHigh()));
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -529,6 +536,31 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	// <---
     
     UpdateStatusBar();
+	
+	
+	if(NULL != scene)
+	{
+		const FastName& quality = scene->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
+		if(quality == "Low")
+		{
+			ui->actionLow->setChecked(true);
+			ui->actionNormal->setChecked(false);
+			ui->actionHigh->setChecked(false);
+		}
+		else if(quality == "Normal")
+		{
+			ui->actionLow->setChecked(false);
+			ui->actionNormal->setChecked(true);
+			ui->actionHigh->setChecked(false);
+		}
+		else
+		{
+			ui->actionLow->setChecked(false);
+			ui->actionNormal->setChecked(false);
+			ui->actionHigh->setChecked(true);
+		}
+	}
+
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()
@@ -1384,3 +1416,49 @@ void QtMainWindow::NotPassableToggled(SceneEditor2* scene)
 {
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
+
+void QtMainWindow::OnSetMaterialQualityLow()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene)
+    {
+        return;
+    }
+
+	scene->renderSystem->GetMaterialSystem()->SwitchMaterialQuality("Low");
+	
+	ui->actionLow->setChecked(true);
+	ui->actionNormal->setChecked(false);
+	ui->actionHigh->setChecked(false);
+}
+
+void QtMainWindow::OnSetMaterialQualityNormal()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene)
+    {
+        return;
+    }
+	
+	scene->renderSystem->GetMaterialSystem()->SwitchMaterialQuality("Normal");
+
+	ui->actionLow->setChecked(false);
+	ui->actionNormal->setChecked(true);
+	ui->actionHigh->setChecked(false);
+}
+
+void QtMainWindow::OnSetMaterialQualityHigh()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene)
+    {
+        return;
+    }
+	
+	scene->renderSystem->GetMaterialSystem()->SwitchMaterialQuality("High");
+
+	ui->actionLow->setChecked(false);
+	ui->actionNormal->setChecked(false);
+	ui->actionHigh->setChecked(true);
+}
+

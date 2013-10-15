@@ -198,7 +198,7 @@ protected:
 	void AddChildToState(NMaterial* material);
 	void RemoveChildFromState(NMaterial* material);
 	
-	void ShallowCopyTo(NMaterialState* targetState);
+	void ShallowCopyTo(NMaterialState* targetState, bool copyNames = true);
 	void DeepCopyTo(NMaterialState* targetState);
 };
 
