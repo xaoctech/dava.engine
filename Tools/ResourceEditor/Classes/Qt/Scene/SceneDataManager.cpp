@@ -552,7 +552,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)

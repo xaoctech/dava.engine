@@ -42,9 +42,10 @@ using namespace DAVA;
 #if defined (__DAVAENGINE_BEAST__)
 
 //Beast
-BeastAction::BeastAction(SceneEditor2 *scene)
+BeastAction::BeastAction(SceneEditor2 *scene, QtWaitDialog *_waitDialog)
 	: CommandAction(CMDID_BEAST, "Beast")
 	, workingScene(scene)
+	, waitDialog(_waitDialog)
 {
 	beastManager = BeastProxy::Instance()->CreateManager();
 }
@@ -56,19 +57,28 @@ BeastAction::~BeastAction()
 
 void BeastAction::Redo()
 {
+	bool canceled = false;
+
 	Start();
 
 	while( Process() == false )
 	{
-		bool canceled = QtMainWindow::Instance()->BeastWaitCanceled();
 		if(canceled) 
 		{
 			BeastProxy::Instance()->Cancel(beastManager);
+			break;
+		}
+		else
+		{
+			if(NULL != waitDialog)
+			{
+				uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
+				waitDialog->SetMessage(Format("Beasting %d sec", deltaTime/1000));
+
+				canceled = waitDialog->WasCanceled();
+			}
 		}
 
-		uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
-
-		QtMainWindow::Instance()->BeastWaitSetMessage(Format("Beasting %d sec", deltaTime/1000));
 		Sleep(15);
 	}
 
@@ -104,6 +114,8 @@ void BeastAction::Finish()
 
 		FileSystem::Instance()->DeleteFile(textureName);
 	}
+
+	FileSystem::Instance()->DeleteDirectory(GetLightmapDirectoryPath());
 }
 
 
@@ -118,18 +130,25 @@ void BeastAction::PackLightmaps()
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
-	packer.PackLightmaps();
+	packer.PackLightmaps(DAVA::GPU_UNKNOWN);
 	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
 	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
+	FileSystem::Instance()->DeleteDirectory(workingScene->GetScenePath().GetDirectory() + "$process/");
 }
 
 DAVA::FilePath BeastAction::GetLightmapDirectoryPath()
 {
-	return EditorSettings::Instance()->GetProjectPath() + "DataSource/lightmaps_temp/";
+	DAVA::FilePath ret;
+	if(NULL != workingScene)
+	{
+		DAVA::FilePath scenePath = workingScene->GetScenePath();
+		ret = scenePath + "_beast/";
+	}
+	return ret;
 }
 
 

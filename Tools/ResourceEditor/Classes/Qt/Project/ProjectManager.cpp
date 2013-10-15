@@ -91,9 +91,10 @@ void ProjectManager::ProjectOpen(const QString &path)
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 			EditorSettings::Instance()->Save();
 
+			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
-            
-            SpritePackerHelper::Instance()->UpdateParticleSprites();
+            SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
 		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());

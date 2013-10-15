@@ -351,8 +351,9 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 {
 	processClippingCalls++;
 	QuadTreeNode& currNode = nodes[nodeId];	
-	int32 clipBoxCount = (currNode.nodeInfo&QuadTreeNode::NUM_CHILD_NODES_MASK) + currNode.objects.size(); //still can sometime try to clip node 
 	int32 objectsSize = currNode.objects.size();
+	int32 clipBoxCount = (currNode.nodeInfo&QuadTreeNode::NUM_CHILD_NODES_MASK) + objectsSize; //still can sometime try to clip node with only invisible objects
+	
 	
 	if (clippingFlags&&(clipBoxCount>1)&&nodeId)
 	{
