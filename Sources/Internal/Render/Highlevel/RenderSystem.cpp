@@ -213,30 +213,45 @@ Camera * RenderSystem::GetCamera()
 	return camera;
 }
 
-void RenderSystem::CreateSpatialTree()
+void RenderSystem::CreateSpatialTree(const AABBox3 &worldBox, int32 maxTreeDepth)
 {
-	SafeDelete(spatialTree);
-	AABBox3 worldBox;	
+	if (spatialTree)
+		RemoveSpatialTree();
+
+	spatialTree = new QuadTree(worldBox, maxTreeDepth);	
+
 	uint32 size = renderObjectArray.size();
-	for (uint32 pos = 0; pos < size; ++pos)
-	{
-		worldBox.AddAABBox(renderObjectArray[pos]->GetWorldBoundingBox());
-		/*if (RenderObject::TYPE_LANDSCAPE == renderObjectArray[pos]->GetType())
-			worldBox = renderObjectArray[pos]->GetWorldBoundingBox();*/
-		renderObjectArray[pos]->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);		
-	}	
-	if (worldBox.IsEmpty())
-		worldBox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
-	spatialTree = new QuadTree(worldBox, 10);	
 	for (uint32 pos = 0; pos < size; ++pos)
 	{
 		if (!(renderObjectArray[pos]->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE))
 		{
 			spatialTree->AddObject(renderObjectArray[pos]);
 		}
-		
-	}	
 
+	}	
+}
+
+void RenderSystem::RemoveSpatialTree()
+{
+	SafeDelete(spatialTree);
+	uint32 size = renderObjectArray.size();
+	for (uint32 pos = 0; pos < size; ++pos)
+		renderObjectArray[pos]->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);
+}
+//
+
+void RenderSystem::CreateSpatialTree()
+{	
+	AABBox3 worldBox;	
+	uint32 size = renderObjectArray.size();
+	for (uint32 pos = 0; pos < size; ++pos)
+	{
+		if (!(renderObjectArray[pos]->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE))
+			worldBox.AddAABBox(renderObjectArray[pos]->GetWorldBoundingBox());				
+	}	
+	if (worldBox.IsEmpty())
+		worldBox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
+	CreateSpatialTree(worldBox, 10);	
 }
 
 void RenderSystem::DebugDrawSpatialTree()

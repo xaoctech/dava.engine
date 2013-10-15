@@ -71,7 +71,9 @@ void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 	InitPropertyEditor();
 	if(entity)
 	{
-		propEditor->SetNode(entity);
+        EntityGroup entities;
+        entities.Add(entity);
+		propEditor->SetEntities(&entities);
 		propEditor->expandAll();
 		PerformResize();
 	}
@@ -103,7 +105,7 @@ void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
 	QDialog::hideEvent(event);
 	if(entity && propEditor)
 	{
-		propEditor->SetNode(NULL);
+		propEditor->SetEntities(NULL);
 	}
 }
 
@@ -121,7 +123,9 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 
 		if(propEditor)
 		{
-			propEditor->SetNode(entity);
+            EntityGroup entities;
+            entities.Add(entity);
+			propEditor->SetEntities(&entities);
 			propEditor->expandAll();
 			PerformResize();
 		}

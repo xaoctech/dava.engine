@@ -164,7 +164,9 @@ void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
 		return;
 	}
 
-	pEditor->SetNode(entity);
+    EntityGroup entities;
+    entities.Add(entity);
+	pEditor->SetEntities(&entities);
 	
 	if(entity)
 	{

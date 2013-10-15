@@ -153,6 +153,7 @@ void SelectPathWidgetBase::setText(const QString& filePath)
 void SelectPathWidgetBase::setText(const DAVA::String &filePath)
 {
 	setText(QString(filePath.c_str()));
+	setToolTip(filePath.c_str());
 }
 
 DAVA::String SelectPathWidgetBase::getText()

@@ -216,7 +216,10 @@ void LandscapeDialog::FillUIbyLandscapeEntity(Entity* _landscapeEntity)
 	{
 		TileModeChanged((int)landscapeToProcess->GetTiledShaderMode());
 	}
-	propEditor->SetNode(_landscapeEntity);
+    
+    EntityGroup entities;
+    entities.Add(_landscapeEntity);
+	propEditor->SetEntities(&entities);
 	propEditor->expandAll();
 	PerformResize();
 }

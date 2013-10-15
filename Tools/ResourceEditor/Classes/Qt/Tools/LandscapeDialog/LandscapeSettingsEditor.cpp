@@ -81,10 +81,14 @@ LandscapeSettingsEditor::~LandscapeSettingsEditor()
 	propertiesMap.clear();
 }
 
-void LandscapeSettingsEditor::SetNode(Entity* _landscapeEntity)
+
+void LandscapeSettingsEditor::SetEntities(const EntityGroup *landscapeEntities)
 {
 	SafeRelease(landscapeEntity);
-	landscapeEntity = SafeRetain(_landscapeEntity);
+    if(landscapeEntities && landscapeEntities->Size() == 1)
+    {
+        landscapeEntity = SafeRetain(landscapeEntities->GetEntity(0));
+    }
 	
 	RemovePropertyAll();
 	propertiesMap.clear();
