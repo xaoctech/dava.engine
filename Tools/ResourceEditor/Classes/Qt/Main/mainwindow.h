@@ -140,6 +140,10 @@ public slots:
     
     void OnSaveHeightmapToPNG();
     void OnSaveTiledTexture();
+	
+	void OnSetMaterialQualityLow();
+	void OnSetMaterialQualityNormal();
+	void OnSetMaterialQualityHigh();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -178,6 +182,8 @@ protected slots:
     void OnGlobalInvalidateTimeout();
 
 	void NotPassableToggled(SceneEditor2* scene);
+	
+	
     
 private:
 	Ui::MainWindow *ui;
