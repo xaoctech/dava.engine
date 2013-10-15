@@ -81,6 +81,7 @@ protected:
     
 	void CreateDebugCameras();
 	void RecalcCameraViewAngles();
+	void RecalcCameraAspect();
 	void MouseMoveCameraPosition();
 	void MouseMoveCameraDirection();
 	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
