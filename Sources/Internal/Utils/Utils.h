@@ -133,7 +133,7 @@ T ParseStringTo(const String & str)
     return result;
 }
 	
-uint64 eglGetCurrentContext();
+uint64 EglGetCurrentContext();
 
 };
 

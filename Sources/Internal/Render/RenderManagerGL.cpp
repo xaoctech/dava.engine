@@ -1221,7 +1221,11 @@ void RenderManager::HWglBindFBO(const int32 fbo)
 void RenderManager::Lost()
 {
 	enabledAttribCount = 0;
-	lastBindedTexture = 0;
+	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
+	{
+		lastBindedTexture[i] = 0;
+	}
+
 	lastBindedFBO = 0;
 }
 
