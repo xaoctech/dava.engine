@@ -253,8 +253,8 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 		DAVA::FilePath saveAsPath = scene->GetScenePath();
 		if(!saveAsPath.Exists())
 		{
-			saveAsPath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "/" + scene->GetScenePath().GetFilename();
-//			saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+            DAVA::FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString();
+			saveAsPath = dataSourcePath.MakeDirectoryPathname() + scene->GetScenePath().GetFilename();
 		}
 
 

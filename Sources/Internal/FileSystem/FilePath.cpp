@@ -515,11 +515,13 @@ void FilePath::ReplaceDirectory(const FilePath &directory)
     pathType = directory.pathType;
 }
     
-void FilePath::MakeDirectoryPathname()
+FilePath & FilePath::MakeDirectoryPathname()
 {
     DVASSERT(!IsEmpty());
     
     absolutePathname = MakeDirectory(absolutePathname);
+    
+    return *this;
 }
     
 void FilePath::TruncateExtension()
