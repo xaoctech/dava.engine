@@ -111,20 +111,17 @@
 
 #include "Classes/Constants.h"
 
-QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
+QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
 	, waitDialog(NULL)
-#if defined (__DAVAENGINE_BEAST__)
 	, beastWaitDialog(NULL)
-#endif //#if defined (__DAVAENGINE_BEAST__)
-
 	, materialEditor(NULL)
-	, globalInvalidateTimeoutEnabled(false)
 	, objectTypesLabel(NULL)
 	, landscapeDialog(NULL)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
+	, globalInvalidate(false)
 {
 	Console::Instance();
 	new ProjectManager();
@@ -144,9 +141,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	// create tool windows
 	new TextureBrowser(this);
 	waitDialog = new QtWaitDialog(this);
-#if defined (__DAVAENGINE_BEAST__)
 	beastWaitDialog = new QtWaitDialog(this);
-#endif //#if defined (__DAVAENGINE_BEAST__)
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
@@ -164,7 +159,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	LoadGPUFormat();
 
-    EnableGlobalTimeout(enableGlobalTimeout);
+    EnableGlobalTimeout(globalInvalidate);
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
@@ -1033,7 +1028,7 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 
 void QtMainWindow::OnReloadSprites()
 {
-    SpritePackerHelper::Instance()->UpdateParticleSprites();
+    SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void QtMainWindow::OnSelectMode()
@@ -1590,7 +1585,7 @@ void QtMainWindow::OnSaveTiledTexture()
 void QtMainWindow::OnGlobalInvalidateTimeout()
 {
     emit GlobalInvalidateTimeout();
-    if(globalInvalidateTimeoutEnabled)
+    if(globalInvalidate)
     {
         StartGlobalInvalidateTimer();
     }
@@ -1599,11 +1594,11 @@ void QtMainWindow::OnGlobalInvalidateTimeout()
 
 void QtMainWindow::EnableGlobalTimeout(bool enable)
 {
-    if(globalInvalidateTimeoutEnabled != enable)
+    if(globalInvalidate != enable)
     {
-        globalInvalidateTimeoutEnabled = enable;
+        globalInvalidate = enable;
         
-        if(globalInvalidateTimeoutEnabled)
+        if(globalInvalidate)
         {
             StartGlobalInvalidateTimer();
         }
@@ -1732,7 +1727,7 @@ void QtMainWindow::RunBeast()
 
 	beastWaitDialog->Show("Beasting...", "Please wait", false, true);
 
-	scene->Exec(new BeastAction(scene));
+	scene->Exec(new BeastAction(scene, beastWaitDialog));
 
 	beastWaitDialog->Reset();
 
@@ -1741,19 +1736,16 @@ void QtMainWindow::RunBeast()
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
 
-#if defined (__DAVAENGINE_BEAST__)
-
 void QtMainWindow::BeastWaitSetMessage(const QString &messsage)
 {
 	beastWaitDialog->SetMessage(messsage);
 
 }
+
 bool QtMainWindow::BeastWaitCanceled()
 {
 	return beastWaitDialog->WasCanceled();
 }
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
 
 void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 {

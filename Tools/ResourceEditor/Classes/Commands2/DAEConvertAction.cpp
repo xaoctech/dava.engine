@@ -170,7 +170,7 @@ DAVA::Scene * DAEConvertWithSettingsAction::CreateSceneFromSc2(const DAVA::FileP
 		rootNode->Release();
 
         Set<String> errorsLog;
-        SceneValidator::Instance()->ValidateScene(scene, errorsLog);
+        SceneValidator::Instance()->ValidateScene(scene, scenePathname, errorsLog);
 	}
     
     return scene;
