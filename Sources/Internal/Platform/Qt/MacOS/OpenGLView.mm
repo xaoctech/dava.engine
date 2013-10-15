@@ -192,7 +192,7 @@
         [[self openGLContext] flushBuffer];
     }
 	DAVA::RenderManager::Instance()->Unlock();
-//	Logger::Debug("drawRect ended");
+//	Logger::FrameworkDebug("drawRect ended");
 
 }
 
@@ -377,7 +377,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSPoint p = theEvent.locationInWindow;
+//    NSPoint p = theEvent.locationInWindow;
 //    printf("click [%f, %f]\n", p.x, p.y);
     
     [self CalcOffset:theEvent];
@@ -463,7 +463,7 @@ static int32 oldModifersFlags = 0;
     if(keyboardLocked)
     {
         {
-            //		Logger::Debug("glview keypress!");
+            //		Logger::FrameworkDebug("glview keypress!");
             unichar c = [[event characters] characterAtIndex:0];
             
             Vector<DAVA::UIEvent> touches;
