@@ -36,6 +36,7 @@
 
 namespace DAVA 
 {
+	REGISTER_CLASS(SoundComponent)
 
 SoundComponent::SoundComponent()
 {

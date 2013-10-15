@@ -1875,6 +1875,8 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 {
 	RenderObject::SetRenderSystem(_renderSystem);
 	
+	if(NULL == _renderSystem) return;
+	
 	if(NULL == tileMaskMaterial)
 	{
 		MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();

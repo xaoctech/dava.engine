@@ -38,6 +38,7 @@
 
 namespace DAVA
 {
+	REGISTER_CLASS(ActionComponent)
 
 	ActionComponent::ActionComponent() : started(false), allActionsActive(false)
 	{
