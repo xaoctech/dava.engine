@@ -94,6 +94,8 @@ public:
     void SetMaxDistance(float32 distance);
     float32 GetMaxDistance();
 
+    uint32 GetMemoryUsageBytes();
+    
 protected:
     FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
     FMODSoundGroup * GetSoundGroup(const FastName & groupName);
