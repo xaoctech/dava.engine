@@ -135,15 +135,10 @@ FTFont * FTFont::Create(const FilePath& path)
 
 void FTFont::ClearCache()
 {
-	Map<String,FTInternalFont*>::iterator endIt = fontMap.end();
-	Map<String,FTInternalFont*>::iterator it = fontMap.begin();
-	while(it != endIt)
-	{
-		SafeRelease(it->second);
-		++it;
-	}
-
-	fontMap.clear();
+    while (fontMap.size())
+    {
+        SafeRelease(fontMap.begin()->second);
+    }
 }
 
 	
