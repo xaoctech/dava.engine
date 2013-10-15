@@ -34,6 +34,8 @@
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
 
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA
 {
 	class Process
@@ -78,5 +80,7 @@ namespace DAVA
 
 	};
 };
+
+#endif
 
 #endif
