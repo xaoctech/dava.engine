@@ -199,7 +199,16 @@ void FMODSoundSystem::Suspend()
 	}
 #endif
 }
-
+    
+uint32 FMODSoundSystem::GetMemoryUsageBytes()
+{
+    uint32 memory = 0;
+    
+    FMOD_VERIFY(fmodEventSystem->getMemoryInfo(FMOD_MEMBITS_ALL, FMOD_EVENT_MEMBITS_ALL, &memory, 0));
+    
+    return memory;
+}
+    
 void FMODSoundSystem::Resume()
 {
 #ifdef __DAVAENGINE_IPHONE__
