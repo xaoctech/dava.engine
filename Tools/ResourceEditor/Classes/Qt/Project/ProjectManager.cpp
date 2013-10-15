@@ -95,22 +95,13 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
+
+            LoadProjectSettings();
+            
+            emit ProjectOpened(curProjectPath);
+            
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
 		}
-
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->UpdateModificationPanel();
-		}
-
-		LoadProjectSettings();
-
-		emit ProjectOpened(curProjectPath);
-		
-		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
-		projectPath.MakeDirectoryPathname();
-
-		DAVA::FilePath::AddTopResourcesFolder(projectPath);
 	}
 }
 
