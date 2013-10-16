@@ -82,6 +82,7 @@ public:
 	// Parameters from DB
 	void FetchParametersFromDB();
 	void FetchParametersFromIdTxt();
+	void AutotestingSystem::SetUpConnectionToDB();
 
 	String GetDeviceName();
 
