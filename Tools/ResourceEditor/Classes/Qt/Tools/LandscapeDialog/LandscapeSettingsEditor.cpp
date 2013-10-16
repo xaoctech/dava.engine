@@ -44,13 +44,13 @@
 
 #define INIT_PROPERTY(propertyName, getter, rowName, handlerName) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason )),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter)));
 
 #define INIT_COLOR_PROPERTY(propertyName, getter, rowName, handlerName) \
 	QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason )),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(ColorToQColor(getter))));
 
 #define GET_SENDER_CONTENT 	QtPropertyDataDavaVariant* sender = dynamic_cast<QtPropertyDataDavaVariant*>(QObject::sender());\
@@ -147,7 +147,7 @@ void LandscapeSettingsEditor::InitializeProperties(Entity* landscapeEntity)
 	String sMode =  tiledModes[landscape->GetTiledShaderMode()];
 	QtPropertyDataDavaVariant* tiledMode = new QtPropertyDataDavaVariant(VariantType(sMode));
 	AppendProperty(QString("Tile mode:"), tiledMode, header);
-	connect(tiledMode,SIGNAL(ValueChanged()),this, SLOT(HandleTileMode()));
+	connect(tiledMode,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason )),this, SLOT(HandleTileMode()));
 	propertiesMap.push_back(PropertyInfo(tiledMode, QVariant(sMode.c_str())));
 	tiledMode->AddAllowedValue(DAVA::VariantType(sMode), sMode.c_str());
 	if(landscape->GetTiledShaderMode() != Landscape::TILED_MODE_TILE_DETAIL_MASK)
