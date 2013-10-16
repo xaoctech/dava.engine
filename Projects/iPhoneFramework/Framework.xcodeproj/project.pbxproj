@@ -93,6 +93,14 @@
 		CC24801516DD17F300183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24801316DD17F300183D40 /* UserComponent.cpp */; };
 		CC24801616DD17F300183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24801416DD17F300183D40 /* UserComponent.h */; };
 		CC24804616E0E34300183D40 /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */; };
+		CC31BFC6180EB43400A76093 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC31BFBE180EB43400A76093 /* Job.cpp */; };
+		CC31BFC7180EB43400A76093 /* Job.h in Headers */ = {isa = PBXBuildFile; fileRef = CC31BFBF180EB43400A76093 /* Job.h */; };
+		CC31BFC8180EB43400A76093 /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC31BFC0180EB43400A76093 /* JobManager.cpp */; };
+		CC31BFC9180EB43400A76093 /* JobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CC31BFC1180EB43400A76093 /* JobManager.h */; };
+		CC31BFCA180EB43400A76093 /* JobQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC31BFC2180EB43400A76093 /* JobQueue.cpp */; };
+		CC31BFCB180EB43400A76093 /* JobQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CC31BFC3180EB43400A76093 /* JobQueue.h */; };
+		CC31BFCC180EB43400A76093 /* JobWaiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC31BFC4180EB43400A76093 /* JobWaiter.cpp */; };
+		CC31BFCD180EB43400A76093 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC31BFC5180EB43400A76093 /* JobWaiter.h */; };
 		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		CCC7A49F16F1D80C0061EA5D /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49A16F1D80C0061EA5D /* Frustum.cpp */; };
@@ -811,6 +819,14 @@
 		CC24801316DD17F300183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
 		CC24801416DD17F300183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
 		CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorSpinnerAdapter.h; sourceTree = "<group>"; };
+		CC31BFBE180EB43400A76093 /* Job.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Job.cpp; path = Job/Job.cpp; sourceTree = "<group>"; };
+		CC31BFBF180EB43400A76093 /* Job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Job.h; path = Job/Job.h; sourceTree = "<group>"; };
+		CC31BFC0180EB43400A76093 /* JobManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobManager.cpp; path = Job/JobManager.cpp; sourceTree = "<group>"; };
+		CC31BFC1180EB43400A76093 /* JobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobManager.h; path = Job/JobManager.h; sourceTree = "<group>"; };
+		CC31BFC2180EB43400A76093 /* JobQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobQueue.cpp; path = Job/JobQueue.cpp; sourceTree = "<group>"; };
+		CC31BFC3180EB43400A76093 /* JobQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobQueue.h; path = Job/JobQueue.h; sourceTree = "<group>"; };
+		CC31BFC4180EB43400A76093 /* JobWaiter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobWaiter.cpp; path = Job/JobWaiter.cpp; sourceTree = "<group>"; };
+		CC31BFC5180EB43400A76093 /* JobWaiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JobWaiter.h; path = Job/JobWaiter.h; sourceTree = "<group>"; };
 		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		CCC7A49A16F1D80C0061EA5D /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
@@ -1505,6 +1521,21 @@
 				AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		CC31BFBD180EB41700A76093 /* Job */ = {
+			isa = PBXGroup;
+			children = (
+				CC31BFBE180EB43400A76093 /* Job.cpp */,
+				CC31BFBF180EB43400A76093 /* Job.h */,
+				CC31BFC0180EB43400A76093 /* JobManager.cpp */,
+				CC31BFC1180EB43400A76093 /* JobManager.h */,
+				CC31BFC2180EB43400A76093 /* JobQueue.cpp */,
+				CC31BFC3180EB43400A76093 /* JobQueue.h */,
+				CC31BFC4180EB43400A76093 /* JobWaiter.cpp */,
+				CC31BFC5180EB43400A76093 /* JobWaiter.h */,
+			);
+			name = Job;
 			sourceTree = "<group>";
 		};
 		E8B3C7A116B9326D002BD35F /* Animation */ = {
@@ -2435,6 +2466,7 @@
 				E8B3C81A16B9326D002BD35F /* Entity */,
 				E8B3C83C16B9326D002BD35F /* FileSystem */,
 				E8B3C86716B9326D002BD35F /* Input */,
+				CC31BFBD180EB41700A76093 /* Job */,
 				E8B3C87216B9326D002BD35F /* Math */,
 				E8B3C89716B9326D002BD35F /* Network */,
 				E8B3C8A816B9326D002BD35F /* Particles */,
@@ -2486,6 +2518,7 @@
 				E8B3CA9E16B9326E002BD35F /* BaseTypes.h in Headers */,
 				E8B3CAA016B9326E002BD35F /* Data.h in Headers */,
 				E8B3CAA216B9326E002BD35F /* DynamicObjectCache.h in Headers */,
+				CC31BFCD180EB43400A76093 /* JobWaiter.h in Headers */,
 				E8B3CAA416B9326E002BD35F /* EventDispatcher.h in Headers */,
 				E8B3CAA516B9326E002BD35F /* Exception.h in Headers */,
 				E8B3CAA716B9326E002BD35F /* FastName.h in Headers */,
@@ -2495,6 +2528,7 @@
 				E8B3CAAC16B9326E002BD35F /* HashMap.h in Headers */,
 				E8B3CAAD16B9326E002BD35F /* Introspection.h in Headers */,
 				E8B3CAAE16B9326E002BD35F /* IntrospectionBase.h in Headers */,
+				CC31BFC7180EB43400A76093 /* Job.h in Headers */,
 				E8B3CAAF16B9326E002BD35F /* IntrospectionCollection.h in Headers */,
 				E8B3CAB016B9326E002BD35F /* IntrospectionFlags.h in Headers */,
 				E8B3CAB116B9326E002BD35F /* IntrospectionProperty.h in Headers */,
@@ -2672,6 +2706,7 @@
 				E8B3CC4916B9326E002BD35F /* TextureDescriptor.h in Headers */,
 				E8B3CC4C16B9326E002BD35F /* UberShader.h in Headers */,
 				E8B3CC4D16B9326E002BD35F /* VertexBuffer.h in Headers */,
+				CC31BFCB180EB43400A76093 /* JobQueue.h in Headers */,
 				E8B3CC4F16B9326E002BD35F /* Box2DDebugDraw.h in Headers */,
 				E8B3CC5116B9326E002BD35F /* Box2DGameObject.h in Headers */,
 				E8B3CC5316B9326E002BD35F /* Box2DGameObjectManager.h in Headers */,
@@ -2693,6 +2728,7 @@
 				E8B3CC7916B9326E002BD35F /* SwitchComponent.h in Headers */,
 				E8B3CC7B16B9326E002BD35F /* TransformComponent.h in Headers */,
 				E8B3CC7D16B9326E002BD35F /* UpdatableComponent.h in Headers */,
+				CC31BFC9180EB43400A76093 /* JobManager.h in Headers */,
 				E8B3CC7F16B9326E002BD35F /* DataNode.h in Headers */,
 				E8B3CC8016B9326E002BD35F /* Drawable.h in Headers */,
 				E8B3CC8416B9326E002BD35F /* ImposterManager.h in Headers */,
@@ -2902,6 +2938,7 @@
 				E8B3CA8216B9326E002BD35F /* AnimationManager.cpp in Sources */,
 				E8B3CA8416B9326E002BD35F /* BezierSplineAnimation.cpp in Sources */,
 				E8B3CA8616B9326E002BD35F /* Interpolation.cpp in Sources */,
+				CC31BFCC180EB43400A76093 /* JobWaiter.cpp in Sources */,
 				E8B3CA8816B9326E002BD35F /* KeyframeAnimation.cpp in Sources */,
 				E8B3CA8A16B9326E002BD35F /* LinearAnimation.cpp in Sources */,
 				E8B3CA8D16B9326E002BD35F /* Action.cpp in Sources */,
@@ -2927,7 +2964,9 @@
 				E8B3CAC916B9326E002BD35F /* ApplicationCore.cpp in Sources */,
 				E8B3CACB16B9326E002BD35F /* Core.cpp in Sources */,
 				E8B3CAD316B9326E002BD35F /* MongodbClient.cpp in Sources */,
+				CC31BFCA180EB43400A76093 /* JobQueue.cpp in Sources */,
 				E8B3CAD516B9326E002BD35F /* MongodbObject.cpp in Sources */,
+				CC31BFC8180EB43400A76093 /* JobManager.cpp in Sources */,
 				E8B3CAD816B9326E002BD35F /* DAVAEngine.cpp in Sources */,
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
@@ -3021,6 +3060,7 @@
 				E8B3CBF616B9326E002BD35F /* ParticleLayerBatch.cpp in Sources */,
 				E8B3CBF816B9326E002BD35F /* RenderBatch.cpp in Sources */,
 				E8B3CBFB16B9326E002BD35F /* RenderLayer.cpp in Sources */,
+				CC31BFC6180EB43400A76093 /* Job.cpp in Sources */,
 				E8B3CBFD16B9326E002BD35F /* RenderObject.cpp in Sources */,
 				E8B3CBFF16B9326E002BD35F /* RenderPass.cpp in Sources */,
 				E8B3CC0116B9326E002BD35F /* RenderSystem.cpp in Sources */,
