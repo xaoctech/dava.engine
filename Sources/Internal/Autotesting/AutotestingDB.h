@@ -37,7 +37,7 @@ public:
 	~AutotestingDB();
 
 	bool ConnectToDB(const String &name, const String &dbName, const String &dbHost, const int32 dbPort);
-	void AutotestingDB::CloseConnection();
+	void CloseConnection();
 
 	// Work with log object in DB
 	KeyedArchive *FindRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg);
