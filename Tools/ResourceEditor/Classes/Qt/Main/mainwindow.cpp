@@ -180,14 +180,9 @@ QtMainWindow::~QtMainWindow()
 
 	ProjectManager::Instance()->Release();
 	SettingsManager::Instance()->Release();
-	if( NULL != addSwitchEntityDialog)
-	{
-		delete addSwitchEntityDialog;
-	}
-	if(NULL != landscapeDialog)
-	{
-		delete addSwitchEntityDialog;
-	}
+
+	SafeDelete(landscapeDialog);
+	SafeDelete(addSwitchEntityDialog);
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
