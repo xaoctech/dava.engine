@@ -102,8 +102,10 @@ os.mkdir(luaScriptDestFolder)
 
 copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
 copy_file(currentDir, luaScriptDestFolder, "coxpcall.lua")
+copy_file(autotestingSrcFolder, autotestingDestFolder, "dbConfig.yaml")
 
 os.chdir(projectDir)
+
 
 params = ["python", "./Autotesting/copy_tests.py"]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
