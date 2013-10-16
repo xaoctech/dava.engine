@@ -2178,12 +2178,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\EntityOwnerPropertyHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2228,6 +2222,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\OwnersSignatureSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3824,9 +3821,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.h">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3853,6 +3847,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\OwnersSignatureSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
