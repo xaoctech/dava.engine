@@ -166,8 +166,6 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	FTFont::ClearCache();
-
 	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
