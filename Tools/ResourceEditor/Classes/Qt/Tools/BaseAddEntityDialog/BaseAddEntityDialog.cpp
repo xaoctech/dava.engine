@@ -46,7 +46,7 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 	ui->setupUi(this);
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
-	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);	
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
 
 	ui->scrollArea->setVisible(false);

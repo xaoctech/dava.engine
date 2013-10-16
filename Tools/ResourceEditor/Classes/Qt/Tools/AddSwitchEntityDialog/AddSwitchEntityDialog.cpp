@@ -130,16 +130,12 @@ void AddSwitchEntityDialog::accept()
 			e->Release();
 		}
 	}
-	if(vector.size() > 0)
-	{
-		EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
-		scene->Exec(command);
-		
-		Entity* affectedEntity = command->GetEntity();
-		scene->selectionSystem->SetSelection(affectedEntity);
-		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
-	}
 	
+	EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
+	scene->Exec(command);
+	scene->selectionSystem->SetSelection(switchEntity);
+	scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
+		
 	BaseAddEntityDialog::accept();
 }
 
