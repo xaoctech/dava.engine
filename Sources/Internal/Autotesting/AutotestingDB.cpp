@@ -41,11 +41,11 @@ namespace DAVA
 	{
 		DVASSERT(NULL == dbClient);
 
-		dbClient = MongodbClient::Create(dbHost, dbPort);
+		dbClient = MongodbClient::Create(dbHost.c_str(), dbPort);
 		if(dbClient)
 		{
-			dbClient->SetDatabaseName(dbName);
-			dbClient->SetCollectionName(name);
+			dbClient->SetDatabaseName(dbName.c_str());
+			dbClient->SetCollectionName(name.c_str());
 		}
 
 		return (NULL != dbClient);
