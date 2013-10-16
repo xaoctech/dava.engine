@@ -27,36 +27,39 @@
 =====================================================================================*/
 
 
-#ifndef __ENTITY_OWNER_PROPERTY_HELPER__
-#define __ENTITY_OWNER_PROPERTY_HELPER__
 
-#include <QObject>
+#ifndef __OWNERS_SIGNATURE_SYSTEM_H__
+#define __OWNERS_SIGNATURE_SYSTEM_H__
+
+#include "Base/BaseTypes.h"
+#include "Entity/SceneSystem.h"
 #include "DAVAEngine.h"
-#include "Scene3D/Entity.h"
-#include "Scene/SceneSignals.h"
+#include "Commands2/Command2.h"
 
-class CustomPropertiesComponent;
-class EntityOwnerPropertyHelper: public QObject, public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
+class OwnersSignatureSystem: public DAVA::SceneSystem
 {
-	Q_OBJECT
-	
+
 public:
+
+	OwnersSignatureSystem(DAVA::Scene* scene);
+	~OwnersSignatureSystem();
 	
-	EntityOwnerPropertyHelper();
+	void ProcessCommand(const Command2 *command, bool redo);
 	
-	~EntityOwnerPropertyHelper();
+private:
+	
+	bool IsCommandIdValid(int _id);
 	
 	void UpdateEntityOwner(DAVA::KeyedArchive *customProperties);
-
-	void SetDesignerName(DAVA::KeyedArchive *customProperties, const DAVA::String & name);
+	
+	void UpdateModificationTime(DAVA::KeyedArchive *customProperties);
+	
 	DAVA::String GetDesignerName(DAVA::KeyedArchive *customProperties);
 
-	void UpdateModificationTime(DAVA::KeyedArchive *customProperties);
 	DAVA::String GetModificationTime(DAVA::KeyedArchive *customProperties);
 
-public slots:
-	
-	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	static const DAVA::int32 validIDs[] ;
 };
 
-#endif /* defined(__ENTITY_OWNER_PROPERTY_HELPER__) */
+
+#endif /* defined(__OWNERS_SIGNATURE_SYSTEM_H__) */

@@ -107,7 +107,6 @@
 #include <QKeySequence>
 
 #include "Scene3D/Components/ActionComponent.h"
-#include "Scene/EntityOwnerPropertyHelper.h"
 
 #include "Classes/Constants.h"
 
@@ -163,7 +162,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
-	EntityOwnerPropertyHelper::Instance();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -182,14 +180,9 @@ QtMainWindow::~QtMainWindow()
 
 	ProjectManager::Instance()->Release();
 	SettingsManager::Instance()->Release();
-	if( NULL != addSwitchEntityDialog)
-	{
-		delete addSwitchEntityDialog;
-	}
-	if(NULL != landscapeDialog)
-	{
-		delete addSwitchEntityDialog;
-	}
+
+	SafeDelete(landscapeDialog);
+	SafeDelete(addSwitchEntityDialog);
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -1738,11 +1731,7 @@ void QtMainWindow::RunBeast()
 	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
 	if(ret == MB_FLAG_NO) return;
 
-	beastWaitDialog->Show("Beasting...", "Please wait", false, true);
-
 	scene->Exec(new BeastAction(scene, beastWaitDialog));
-
-	beastWaitDialog->Reset();
 
 	OnReloadTextures();
 

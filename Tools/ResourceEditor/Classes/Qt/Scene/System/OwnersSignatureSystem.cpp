@@ -27,25 +27,27 @@
 =====================================================================================*/
 
 
-
-#include "EntityOwnerPropertyHelper.h"
-#include "SceneEditor/EditorSettings.h"
+#include "OwnersSignatureSystem.h"
 #include "Classes/StringConstants.h"
+#include "SceneEditor/EditorSettings.h"
+#include "Scene/SceneSignals.h"
 
-EntityOwnerPropertyHelper::EntityOwnerPropertyHelper()
+const DAVA::int32 OwnersSignatureSystem::validIDs[] =
 {
-	connect(SceneSignals::Instance(),SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2* , bool )));
-}
+	CMDID_ENTITY_ADD,
+	CMDID_ENTITY_CHANGE_PARENT,
+	CMDID_TRANSFORM
+};
 
-EntityOwnerPropertyHelper::~EntityOwnerPropertyHelper()
-{
-	disconnect(SceneSignals::Instance(),SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2* , bool )));
-}
+OwnersSignatureSystem::OwnersSignatureSystem(DAVA::Scene* scene):SceneSystem(scene)
+{}
 
-void EntityOwnerPropertyHelper::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+OwnersSignatureSystem::~OwnersSignatureSystem()
+{}
+
+void OwnersSignatureSystem::ProcessCommand(const Command2 *command, bool redo)
 {
-	int id = command->GetId();
-	if(id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_CHANGE_PARENT || id == CMDID_TRANSFORM)
+	if(IsCommandIdValid(command->GetId()))
 	{
 		KeyedArchive* properties = command->GetEntity()->GetCustomProperties();
 		if(NULL != properties)
@@ -55,36 +57,43 @@ void EntityOwnerPropertyHelper::CommandExecuted(SceneEditor2 *scene, const Comma
 	}
 }
 
-void EntityOwnerPropertyHelper::UpdateEntityOwner(KeyedArchive *customProperties)
+bool OwnersSignatureSystem::IsCommandIdValid(int _id)
 {
-	SetDesignerName(customProperties, EditorSettings::Instance()->GetDesignerName());
-	UpdateModificationTime(customProperties);
+	for (int i = 0; i < COUNT_OF(validIDs); ++i)
+	{
+		if(validIDs[i] == _id)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
-void EntityOwnerPropertyHelper::SetDesignerName(DAVA::KeyedArchive *customProperties, const String & name)
-{
-	customProperties->SetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, name);
-}
 
-String EntityOwnerPropertyHelper::GetDesignerName(KeyedArchive *customProperties)
+DAVA::String OwnersSignatureSystem::GetDesignerName(DAVA::KeyedArchive *customProperties)
 {
 	return customProperties->GetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, "nobody");
 }
 
-void EntityOwnerPropertyHelper::UpdateModificationTime(KeyedArchive *customProperties)
+void OwnersSignatureSystem::UpdateModificationTime(DAVA::KeyedArchive *customProperties)
 {
 	time_t now = time(0);
     tm* utcTime = localtime(&now);
 	
-    String timeString = Format("%04d.%02d.%02d_%02d_%02d_%02d",
+	DAVA::String timeString = Format("%04d.%02d.%02d_%02d_%02d_%02d",
 							   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
 							   utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
-
+	
 	customProperties->SetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
 }
 
-String EntityOwnerPropertyHelper::GetModificationTime(DAVA::KeyedArchive *customProperties)
+DAVA::String OwnersSignatureSystem::GetModificationTime(DAVA::KeyedArchive *customProperties)
 {
 	return customProperties->GetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
 }
 
+void OwnersSignatureSystem::UpdateEntityOwner(DAVA::KeyedArchive *customProperties)
+{
+	customProperties->SetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, EditorSettings::Instance()->GetDesignerName());
+	UpdateModificationTime(customProperties);
+}

@@ -119,6 +119,7 @@ int main(int argc, char *argv[])
 
 		QtMainWindow::Instance()->show();
 		ProjectManager::Instance()->ProjectOpenLast();
+		QtMainWindow::Instance()->OnSceneNew();
 
 		ret = a.exec();
 
