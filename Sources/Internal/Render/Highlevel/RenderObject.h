@@ -86,6 +86,7 @@ public:
 		VISIBLE_LOD = 1 << 2,
 		VISIBLE_SWITCH = 1 << 3,
 		ALWAYS_CLIPPING_VISIBLE = 1 << 4,
+		TREE_NODE_NEED_UPDATE = 1 << 5,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
@@ -100,7 +101,7 @@ public:
     inline uint32 GetRemoveIndex();
 
 	inline void SetTreeNodeIndex(uint16 index);
-	inline uint16 GetTreeNodeIndex();
+	inline uint16 GetTreeNodeIndex();	
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
@@ -150,7 +151,7 @@ protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
-	uint16 treeNodeIndex;
+	uint16 treeNodeIndex;	
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
@@ -193,6 +194,7 @@ inline uint16 RenderObject::GetTreeNodeIndex()
 {
 	return treeNodeIndex;
 }
+
     
 inline void RenderObject::SetAABBox(const AABBox3 & _bbox)
 {
