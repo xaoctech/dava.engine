@@ -150,7 +150,7 @@ bool Thread::IsMainThread()
     
 void Thread::YieldThread()
 {
-    return pthread_yield_np();
+    pthread_yield_np();
 }
     
 Thread::ThreadId Thread::GetCurrentThreadId()
