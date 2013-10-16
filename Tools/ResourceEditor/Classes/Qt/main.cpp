@@ -45,7 +45,7 @@
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-
+#include "Classes/SceneEditor/ControlsFactory.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -124,6 +124,8 @@ int main(int argc, char *argv[])
 		ret = a.exec();
 
 		QtMainWindow::Instance()->Release();
+		ControlsFactory::ReleaseFonts();
+
 		TextureSquarenessChecker::Instance()->Release();
 		SceneValidator::Instance()->Release();
 		EditorConfig::Instance()->Release();
