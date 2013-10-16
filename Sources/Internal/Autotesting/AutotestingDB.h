@@ -20,12 +20,6 @@
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-//#define AUTOTESTING_DB_HOST    "10.128.19.33"
-#define AUTOTESTING_DB_HOST    "by2-buildmachine.wargaming.net"
-//#define AUTOTESTING_DB_HOST    "10.128.128.5"
-//#define AUTOTESTING_DB_HOST    "192.168.1.2"
-#define AUTOTESTING_DB_PORT  27017
-#define AUTOTESTING_DB_NAME  "Autotesting"
 
 #include "Database/MongodbClient.h"
 
@@ -42,8 +36,8 @@ public:
 	AutotestingDB();
 	~AutotestingDB();
 
-	bool ConnectToDB(const String &name);
-	
+	bool ConnectToDB(const String &name, const String &dbName, const String &dbHost, const int32 dbPort);
+	void AutotestingDB::CloseConnection();
 
 	// Work with log object in DB
 	KeyedArchive *FindRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg);

@@ -21,6 +21,7 @@
 #include "Render/RenderHelper.h"
 #include "FileSystem/FileList.h"
 #include "Platform/DeviceInfo.h"
+#include "FileSystem/KeyedArchive.h"
 
 #include "AutotestingSystemLua.h"
 #include "Autotesting/AutotestingDB.h"
@@ -75,10 +76,7 @@ void AutotestingSystem::OnAppStarted()
 		deviceName = GetDeviceName();
 		//Logger::Debug("AutotestingSystem::OnAppStarted DeviceName=empty");
 		
-		if(! AutotestingDB::Instance()->ConnectToDB(projectName))
-		{
-			ForceQuit("Couldn't connect to Test DB");
-		}
+		SetUpConnectionToDB();
 
 		FetchParametersFromDB();
 		ClearTestInDB();
@@ -95,7 +93,7 @@ void AutotestingSystem::OnAppStarted()
 
 void AutotestingSystem::OnAppFinished()
 {
-
+	AutotestingDB::Instance()->CloseConnection();
 }
     
 void AutotestingSystem::RunTests()
@@ -208,6 +206,27 @@ void AutotestingSystem::FetchParametersFromDB()
 	}
 
 	Logger::Debug("AutotestingSystem::FetchParametersFromDB Group=%s Filename=%s TestIndex=%d", groupName.c_str(), testFileName.c_str(), testIndex);
+}
+
+// Read DB parameters from config file and set connection to it
+void AutotestingSystem::SetUpConnectionToDB()
+{
+	KeyedArchive *option = new KeyedArchive();
+	bool res = option->LoadFromYamlFile("~res:/Autotesting/dbConfig.yaml");
+	if (!res)
+	{
+		DVASSERT(false);
+	}
+
+	String dbName = option->GetString("name");
+	String dbAddress = option->GetString("hostname");
+	int32 dbPort = option->GetInt32("port");
+	Logger::Debug("AutotestingSystem::SetUpConnectionToDB %s[%s:%d]", dbName.c_str(), dbAddress.c_str(), dbPort);
+
+	if(! AutotestingDB::Instance()->ConnectToDB(projectName, dbName, dbAddress, dbPort))
+	{
+		ForceQuit("Couldn't connect to Test DB");
+	}
 }
 
 void AutotestingSystem::ClearTestInDB()
@@ -411,6 +430,8 @@ void AutotestingSystem::OnError(const String & errorMessage)
 void AutotestingSystem::ForceQuit(const String & errorMessage)
 {
 	Logger::Error("AutotestingSystem::ForceQuit %s",errorMessage.c_str());
+	
+	AutotestingDB::Instance()->CloseConnection();
 	
 	ExitApp();
 	

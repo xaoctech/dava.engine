@@ -34,25 +34,30 @@ namespace DAVA
 
 	AutotestingDB::~AutotestingDB()
 	{
+		
+	}
+
+	bool AutotestingDB::ConnectToDB(const String &name, const String &dbName, const String &dbHost, const int32 dbPort)
+	{
+		DVASSERT(NULL == dbClient);
+
+		dbClient = MongodbClient::Create(dbHost, dbPort);
+		if(dbClient)
+		{
+			dbClient->SetDatabaseName(dbName);
+			dbClient->SetCollectionName(name);
+		}
+
+		return (NULL != dbClient);
+	}
+
+	void AutotestingDB::CloseConnection()
+	{
 		if(dbClient)
 		{
 			dbClient->Disconnect();
 			SafeRelease(dbClient);
 		}
-	}
-
-	bool AutotestingDB::ConnectToDB(const String &name)
-	{
-		DVASSERT(NULL == dbClient);
-
-		dbClient = MongodbClient::Create(AUTOTESTING_DB_HOST, AUTOTESTING_DB_PORT);
-		if(dbClient)
-		{
-			dbClient->SetDatabaseName(AUTOTESTING_DB_NAME);
-			dbClient->SetCollectionName(name);
-		}
-
-		return (NULL != dbClient);
 	}
 
 	String AutotestingDB::GetStringTestParameter(const String & deviceName, const String & parameter)
