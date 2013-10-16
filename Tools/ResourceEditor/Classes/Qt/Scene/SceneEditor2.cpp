@@ -108,6 +108,9 @@ SceneEditor2::SceneEditor2()
 	
 	beastSystem = new BeastSystem(this);
 	AddSystem(beastSystem, 0);
+	
+	ownersSignatureSystem = new OwnersSignatureSystem(this);
+	AddSystem(ownersSignatureSystem, 0);
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
@@ -392,6 +395,9 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 
 	if(editorLightSystem)
 		editorLightSystem->ProcessCommand(command, redo);
+	
+	if(ownersSignatureSystem)
+		ownersSignatureSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )

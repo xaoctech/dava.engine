@@ -107,7 +107,6 @@
 #include <QKeySequence>
 
 #include "Scene3D/Components/ActionComponent.h"
-#include "Scene/EntityOwnerPropertyHelper.h"
 
 #include "Classes/Constants.h"
 
@@ -163,7 +162,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
-	EntityOwnerPropertyHelper::Instance();
 }
 
 QtMainWindow::~QtMainWindow()
