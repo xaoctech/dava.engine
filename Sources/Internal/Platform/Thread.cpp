@@ -74,7 +74,6 @@ Thread::Thread(const Thread& t)
 }
 	
 Thread::Thread(const Message& _msg)
-:	needCopyContext(false)
 {
 	msg = _msg;
 }
@@ -134,21 +133,5 @@ Thread::ThreadId Thread::GetThreadId()
 {
 	return threadId;
 }
-
-#ifndef __DAVAENGINE_WIN32__
-void Thread::SleepThread(uint32 timeMS)
-{
-    timespec req, rem;
-    req.tv_sec = timeMS / 1000;
-    req.tv_nsec = (timeMS % 1000) * 1000000L;
-    int32 ret = EINTR;
-    while(ret == EINTR)
-    {
-        ret = nanosleep(&req, &rem);
-        req = rem;
-    }
-}
-
-#endif
 
 };

@@ -62,45 +62,8 @@ DWORD WINAPI ThreadFunc(void* param)
 	Thread * t = (Thread*)param;
 	t->SetThreadId(Thread::GetCurrentThreadId());
 
-	if(t->needCopyContext)
-	{
-#if defined(__DAVAENGINE_OPENGL__)
-		int32 res = wglMakeCurrent(Thread::currentDC, Thread::secondaryContext);
-		if(!res)
-		{
-			DWORD error = GetLastError();
-			Logger::Error("ThreadFunc::wglMakeCurrent error %d", error);
-		}
-#elif defined(__DAVAENGINE_DIRECTX9__)
-
-	
-
-
-
-#endif // #if defined(__DAVAENGINE_OPENGL__)
-
-	}
-
 	t->state = Thread::STATE_RUNNING;
 	t->msg(t);
-
-	if(t->needCopyContext)
-	{
-#if defined(__DAVAENGINE_OPENGL__)
-		int32 res = wglMakeCurrent(Thread::currentDC, NULL);
-		if(!res)
-		{
-			DWORD error = GetLastError();
-			Logger::Error("ThreadFunc::wglMakeCurrent NULL, error %d", error);
-		}
-#elif defined(__DAVAENGINE_DIRECTX9__)
-
-
-
-
-
-#endif // #if defined(__DAVAENGINE_OPENGL__)
-	}
 
 	t->state = Thread::STATE_ENDED;
 	t->Release();

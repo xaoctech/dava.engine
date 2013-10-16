@@ -931,7 +931,6 @@ void Texture::Lost()
 {
 	RenderResource::Lost();
 
-	RenderManager::Instance()->LockNonMain();
 	
 	if(RenderManager::Instance()->GetTexture() == this)
 	{//to avoid drawing deleted textures
@@ -951,8 +950,6 @@ void Texture::Lost()
 		RENDER_VERIFY(glDeleteTextures(1, &id));
 		id = 0;
 	}
-	
-	RenderManager::Instance()->UnlockNonMain();
 }
 
 void Texture::Invalidate()

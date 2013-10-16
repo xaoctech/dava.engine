@@ -127,6 +127,9 @@
     <Filter Include="Internal\DLC">
       <UniqueIdentifier>{8b6654bd-b8b7-4415-97cd-58c934760ce1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Job">
+      <UniqueIdentifier>{b3770b2f-8c2e-4f53-855f-cf86769281ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1332,6 +1335,18 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
       <Filter>Internal\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Job\JobWaiter.h">
+      <Filter>Internal\Job</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Job\Job.h">
+      <Filter>Internal\Job</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Job\JobManager.h">
+      <Filter>Internal\Job</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h">
+      <Filter>Internal\Job</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2368,6 +2383,19 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
       <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
+      <Filter>Internal\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Job\Job.cpp">
+      <Filter>Internal\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Job\JobManager.cpp">
+      <Filter>Internal\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Job\JobQueue.cpp">
+      <Filter>Internal\Job</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

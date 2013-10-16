@@ -121,7 +121,6 @@ void UILoadingTransition::DidAppear()
 	if (!thread)
 	{
 		thread = Thread::Create(Message(this, &UILoadingTransition::ThreadMessage));
-		thread->EnableCopyContext();
 		thread->Start();
 	}
 }
