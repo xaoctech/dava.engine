@@ -61,6 +61,8 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	renderBatch->SetMaterial(material);
 	
 	renderBatch->SetIndices(&indices);
+	
+	renderBatch->SetRenderDataObject(renderData);
 
 	SafeRelease(material);
 }
@@ -371,14 +373,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		{
 			renderData->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &textures2.front());
 			renderData->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
-		}
-
-		if (IsLong())
-		{
-			RenderManager::Instance()->SetRenderData(renderData);
-			renderBatch->GetMaterial()->PrepareRenderState();
-		}
-		renderBatch->SetRenderDataObject(renderData);
+		}				
 	}
 	
 }
@@ -506,6 +501,7 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 		renderBatch->GetMaterial()->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);	
 		SafeRelease(renderData); //to remove unnecessary vertex streams
 		renderData = new RenderDataObject();
+		renderBatch->SetRenderDataObject(renderData);
 		textures2.resize(0);
 		times.resize(0);		
 	}

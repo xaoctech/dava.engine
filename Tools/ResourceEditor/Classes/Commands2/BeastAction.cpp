@@ -59,6 +59,13 @@ void BeastAction::Redo()
 {
 	bool canceled = false;
 
+	if(NULL != waitDialog)
+	{
+		waitDialog->Show("Beast process", "Starting Beast", true, true);
+		waitDialog->SetRange(0, 100);
+		waitDialog->EnableCancel(false);
+	}
+
 	Start();
 
 	while( Process() == false )
@@ -72,8 +79,9 @@ void BeastAction::Redo()
 		{
 			if(NULL != waitDialog)
 			{
-				uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
-				waitDialog->SetMessage(Format("Beasting %d sec", deltaTime/1000));
+				waitDialog->SetValue(BeastProxy::Instance()->GetCurTaskProcess(beastManager));
+				waitDialog->SetMessage(BeastProxy::Instance()->GetCurTaskName(beastManager).c_str());
+				waitDialog->EnableCancel(true);
 
 				canceled = waitDialog->WasCanceled();
 			}
@@ -82,7 +90,17 @@ void BeastAction::Redo()
 		Sleep(15);
 	}
 
+	if(NULL != waitDialog)
+	{
+		waitDialog->EnableCancel(false);
+	}
+
 	Finish();
+
+	if(NULL != waitDialog)
+	{
+		waitDialog->Reset();
+	}
 }
 
 void BeastAction::Start()
@@ -94,6 +112,10 @@ void BeastAction::Start()
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 	BeastProxy::Instance()->Run(beastManager, workingScene);
+
+	if(NULL != waitDialog)
+	{
+	}
 }
 
 bool BeastAction::Process()
@@ -116,6 +138,7 @@ void BeastAction::Finish()
 	}
 
 	FileSystem::Instance()->DeleteDirectory(GetLightmapDirectoryPath());
+	FileSystem::Instance()->DeleteDirectory(FileSystem::Instance()->GetCurrentWorkingDirectory() + "temp_beast/");
 }
 
 
