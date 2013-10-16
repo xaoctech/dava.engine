@@ -128,9 +128,12 @@ void PropertyEditor::UpdateProperties()
 				if(NULL != componentData)
 				{
 					// Add optional button to track "remove this component" command
-					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
-					removeButton->setFlat(true);
-					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//TODO: Disabled for future code
+					//<--
+// 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
+// 					removeButton->setFlat(true);
+// 					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//-->
 					
 					if(component->GetType() == Component::ACTION_COMPONENT)
 					{
