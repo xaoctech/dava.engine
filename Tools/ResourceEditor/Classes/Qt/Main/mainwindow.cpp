@@ -1731,11 +1731,7 @@ void QtMainWindow::RunBeast()
 	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
 	if(ret == MB_FLAG_NO) return;
 
-	beastWaitDialog->Show("Beasting...", "Please wait", false, true);
-
 	scene->Exec(new BeastAction(scene, beastWaitDialog));
-
-	beastWaitDialog->Reset();
 
 	OnReloadTextures();
 
