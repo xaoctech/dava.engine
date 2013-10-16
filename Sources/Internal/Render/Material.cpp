@@ -942,9 +942,10 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
-        if (!instanceMaterialState->lightmapTexture)
+        if (NULL == instanceMaterialState->lightmapTexture)
         {
             SetSetupLightmap(true);
+			renderStateBlock.SetTexture(NULL, 1);
         }
 		else
         {
