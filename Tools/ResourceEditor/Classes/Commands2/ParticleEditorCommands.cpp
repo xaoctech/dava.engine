@@ -359,7 +359,7 @@ void CommandUpdateParticleLayerEnabled::Redo()
 	if (this->layer)
 	{
 		this->layer->SetDisabled(!isEnabled);
-		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+		//ParticlesEditorController::Instance()->RefreshSelectedNode(true); //looks like depricated
 	}
 }
 
@@ -378,7 +378,7 @@ void CommandUpdateParticleLayerLods::Redo()
 		{
 			this->layer->SetLodActive(i, lods[i]);
 		}		
-		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+		//ParticlesEditorController::Instance()->RefreshSelectedNode(true); //looks like depricated
 	}
 }
 
