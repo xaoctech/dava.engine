@@ -236,11 +236,6 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			Magick::Image & currentLayer = layers[k];
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-            
-            if (CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
-            {
-                currentLayer.extent(Magick::Geometry(width,height, 0, 0), Magick::Color(QuantumRange, QuantumRange, QuantumRange, QuantumRange));
-            }
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
 
