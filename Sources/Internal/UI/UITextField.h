@@ -328,9 +328,6 @@ protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
-    Font * textFont;
-    Font * constFont;
-
 	
 	// Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
@@ -348,9 +345,11 @@ private:
 	UITextFieldiPhone * textFieldiPhone;
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
-#endif
-
+#else
     UIStaticText * staticText;
+    Font * textFont;
+    Font * constFont;
+#endif
     float32 cursorTime;
 	
 	// All Boolean variables are grouped together because of DF-2149.
