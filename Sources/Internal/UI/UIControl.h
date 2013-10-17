@@ -1198,12 +1198,12 @@ protected:
 	bool visibleForUIEditor : 1;
 
 	// Enable align options
-	bool _leftAlignEnabled : 1;
-	bool _hcenterAlignEnabled : 1;
-	bool _rightAlignEnabled : 1;
-	bool _topAlignEnabled : 1;
-	bool _vcenterAlignEnabled : 1;
-	bool _bottomAlignEnabled : 1;
+	bool leftAlignEnabled : 1;
+	bool hcenterAlignEnabled : 1;
+	bool rightAlignEnabled : 1;
+	bool topAlignEnabled : 1;
+	bool vcenterAlignEnabled : 1;
+	bool bottomAlignEnabled : 1;
 	
 	bool isUpdated : 1;
 	bool isIteratorCorrupted : 1;
@@ -1214,12 +1214,12 @@ protected:
 	int32 totalTouches;
 	
 	// Align options
-	int32 _leftAlign;
-	int32 _hcenterAlign;
-	int32 _rightAlign;
-	int32 _topAlign;
-	int32 _vcenterAlign;
-	int32 _bottomAlign;
+	int32 leftAlign;
+	int32 hcenterAlign;
+	int32 rightAlign;
+	int32 topAlign;
+	int32 vcenterAlign;
+	int32 bottomAlign;
 
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;

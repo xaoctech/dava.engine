@@ -78,19 +78,19 @@ namespace DAVA
 		scale = Vector2(1.0f, 1.0f);
 		angle = 0;
 		
-		_leftAlign = 0;
-		_hcenterAlign = 0;
-		_rightAlign = 0;
-		_topAlign = 0;
-		_vcenterAlign = 0;
-		_bottomAlign = 0;
+		leftAlign = 0;
+		hcenterAlign = 0;
+		rightAlign = 0;
+		topAlign = 0;
+		vcenterAlign = 0;
+		bottomAlign = 0;
 		
-		_leftAlignEnabled = false;
-		_hcenterAlignEnabled = false;
-		_rightAlignEnabled = false;
-		_topAlignEnabled = false;
-		_vcenterAlignEnabled = false;
-		_bottomAlignEnabled = false;
+		leftAlignEnabled = false;
+		hcenterAlignEnabled = false;
+		rightAlignEnabled = false;
+		topAlignEnabled = false;
+		vcenterAlignEnabled = false;
+		bottomAlignEnabled = false;
 
 		tag = 0;
 		
@@ -397,9 +397,9 @@ namespace DAVA
 	void UIControl::SetLeftAlign(int32 align)
 	{ 
 		// Set a property value		
-		_leftAlign = align;
+		leftAlign = align;
 		
-		if (!_leftAlignEnabled)
+		if (!leftAlignEnabled)
 			return;
 			
 		// Get current right and horizontal align
@@ -437,14 +437,14 @@ namespace DAVA
 
 	int32 UIControl::GetLeftAlign()
 	{
-		return _leftAlign;
+		return leftAlign;
 	}
 
 	void UIControl::SetHCenterAlign(int32 align)
 	{	
-		_hcenterAlign = align;
+		hcenterAlign = align;
 		
-		if (!_hcenterAlignEnabled)
+		if (!hcenterAlignEnabled)
 			return;
 		
 		UIControl *parentControl = this->GetParent();		
@@ -480,14 +480,14 @@ namespace DAVA
 
 	int32 UIControl::GetHCenterAlign()
 	{
-		return _hcenterAlign;
+		return hcenterAlign;
 	}
 
 	void UIControl::SetRightAlign(int32 align)
 	{
-		_rightAlign = align;				
+		rightAlign = align;
 
-		if (!_rightAlignEnabled)
+		if (!rightAlignEnabled)
 			return;
 			
 		// Get current right and horizontal align
@@ -524,15 +524,15 @@ namespace DAVA
 
 	int32 UIControl::GetRightAlign()
 	{
-		return _rightAlign;
+		return rightAlign;
 	}
 
 	void UIControl::SetTopAlign(int32 align)
 	{
-		_topAlign = align;
+		topAlign = align;
 			
-		if (!_topAlignEnabled)
-			return;			
+		if (!topAlignEnabled)
+			return;
 		
  		//Get current top and vertical align
 		int32 bottomAlign = this->GetBottomAlign();
@@ -565,14 +565,14 @@ namespace DAVA
 
 	int32 UIControl::GetTopAlign()
 	{
-		return _topAlign;
+		return topAlign;
 	}
 
 	void UIControl::SetVCenterAlign(int32 align)
 	{
-		_vcenterAlign = align;
+		vcenterAlign = align;
 			
-		if (!_vcenterAlignEnabled)
+		if (!vcenterAlignEnabled)
 			return;
 			
 		UIControl *parentControl = this->GetParent();
@@ -608,14 +608,14 @@ namespace DAVA
 
 	int32 UIControl::GetVCenterAlign()
 	{
-		return _vcenterAlign;
+		return vcenterAlign;
 	}
 
 	void UIControl::SetBottomAlign(int32 align)
 	{
-		_bottomAlign = align;
+		bottomAlign = align;
 		
-		if (!_bottomAlignEnabled)
+		if (!bottomAlignEnabled)
 			return;
 
 		// Get current right and horizontal align
@@ -653,120 +653,120 @@ namespace DAVA
 
 	int32 UIControl::GetBottomAlign()
 	{
-		return _bottomAlign;
+		return bottomAlign;
 	}
 	
 	// Enable align options methods
 	void UIControl::SetLeftAlignEnabled(bool isEnabled)
 	{		
-		_leftAlignEnabled = isEnabled;
+		leftAlignEnabled = isEnabled;
 		if (isEnabled)
 		{
-			SetLeftAlign(_leftAlign);
+			SetLeftAlign(leftAlign);
 		}
 		else
 		{
 			if (GetHCenterAlignEnabled())
 			{
-				SetHCenterAlign(_hcenterAlign);
+				SetHCenterAlign(hcenterAlign);
 			}
 		}
 	}
 
 	bool UIControl::GetLeftAlignEnabled()
 	{
-		return _leftAlignEnabled;
+		return leftAlignEnabled;
 	}
 
 	void UIControl::SetHCenterAlignEnabled(bool isEnabled)
 	{
-		_hcenterAlignEnabled = isEnabled;
+		hcenterAlignEnabled = isEnabled;
 		if (isEnabled)
 		{
-			SetHCenterAlign(_hcenterAlign);
+			SetHCenterAlign(hcenterAlign);
 		}
 	}
 
 	bool UIControl::GetHCenterAlignEnabled()
 	{
-		return _hcenterAlignEnabled;
+		return hcenterAlignEnabled;
 	}
 
 	void UIControl::SetRightAlignEnabled(bool isEnabled)
 	{		
-		_rightAlignEnabled = isEnabled;
+		rightAlignEnabled = isEnabled;
 		if (isEnabled)
 		{
-			SetRightAlign(_rightAlign);
+			SetRightAlign(rightAlign);
 		}
 		else
 		{
 			if (GetHCenterAlignEnabled())
 			{
-				SetHCenterAlign(_hcenterAlign);
+				SetHCenterAlign(hcenterAlign);
 			}
 		}
 	}
 
 	bool UIControl::GetRightAlignEnabled()
 	{
-		return _rightAlignEnabled;
+		return rightAlignEnabled;
 	}
 
 	void UIControl::SetTopAlignEnabled(bool isEnabled)
 	{		
- 		_topAlignEnabled = isEnabled;
+ 		topAlignEnabled = isEnabled;
 		if(isEnabled)
 		{
-			SetTopAlign(_topAlign);
+			SetTopAlign(topAlign);
 		}
 		else
 		{
 			if (GetVCenterAlignEnabled())
 			{
-				SetVCenterAlign(_vcenterAlign);
+				SetVCenterAlign(vcenterAlign);
 			}
 		}
 	}
 
 	bool UIControl::GetTopAlignEnabled()
 	{
-		return _topAlignEnabled;
+		return topAlignEnabled;
 	}
 
 	void UIControl::SetVCenterAlignEnabled(bool isEnabled)
 	{
-		_vcenterAlignEnabled = isEnabled;
+		vcenterAlignEnabled = isEnabled;
 		if (isEnabled)
 		{
-			SetVCenterAlign(_vcenterAlign);
+			SetVCenterAlign(vcenterAlign);
 		}
 	}
 
 	bool UIControl::GetVCenterAlignEnabled()
 	{
-		return _vcenterAlignEnabled;
+		return vcenterAlignEnabled;
 	}
 
 	void UIControl::SetBottomAlignEnabled(bool isEnabled)
 	{
-		_bottomAlignEnabled = isEnabled;
+		bottomAlignEnabled = isEnabled;
 		if (isEnabled)
 		{
-			SetBottomAlign(_bottomAlign);
+			SetBottomAlign(bottomAlign);
 		}
 		else
 		{
 			if (GetVCenterAlignEnabled())
 			{
-				SetVCenterAlign(_vcenterAlign);
+				SetVCenterAlign(vcenterAlign);
 			}
 		}
 	}
 
 	bool UIControl::GetBottomAlignEnabled()
 	{
-		return _bottomAlignEnabled;
+		return bottomAlignEnabled;
 	}	
 	
 	void UIControl::SetBackground(UIControlBackground *newBg)
@@ -1309,19 +1309,19 @@ namespace DAVA
 		SafeRelease(background);
 		background = srcControl->background->Clone();
 		
-		_leftAlign = srcControl->_leftAlign;
-		_hcenterAlign = srcControl->_hcenterAlign;
-		_rightAlign = srcControl->_rightAlign;
-		_topAlign = srcControl->_topAlign;
-		_vcenterAlign = srcControl->_vcenterAlign;
-		_bottomAlign = srcControl->_bottomAlign;
+		leftAlign = srcControl->leftAlign;
+		hcenterAlign = srcControl->hcenterAlign;
+		rightAlign = srcControl->rightAlign;
+		topAlign = srcControl->topAlign;
+		vcenterAlign = srcControl->vcenterAlign;
+		bottomAlign = srcControl->bottomAlign;
 		
-		_leftAlignEnabled = srcControl->_leftAlignEnabled;
-		_hcenterAlignEnabled = srcControl->_hcenterAlignEnabled;
-		_rightAlignEnabled = srcControl->_rightAlignEnabled;
-		_topAlignEnabled = srcControl->_topAlignEnabled;
-		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
-		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
+		leftAlignEnabled = srcControl->leftAlignEnabled;
+		hcenterAlignEnabled = srcControl->hcenterAlignEnabled;
+		rightAlignEnabled = srcControl->rightAlignEnabled;
+		topAlignEnabled = srcControl->topAlignEnabled;
+		vcenterAlignEnabled = srcControl->vcenterAlignEnabled;
+		bottomAlignEnabled = srcControl->bottomAlignEnabled;
 		
 		if (background && srcControl->background)
 		{
@@ -2616,12 +2616,12 @@ namespace DAVA
 		// Set left align property
 		if (this->GetLeftAlignEnabled())
 		{
-			_leftAlign = (int32)controlRect.x;
+			leftAlign = (int32)controlRect.x;
 		}
 		// Set top align property
 		if (this->GetTopAlignEnabled())
 		{
-			_topAlign = (int32)controlRect.y;
+			topAlign = (int32)controlRect.y;
 		}		
 		
 		UIControl *parent = this->GetParent();
@@ -2631,43 +2631,43 @@ namespace DAVA
 		// Set right align property
 		if (this->GetRightAlignEnabled())
 		{
-			_rightAlign = (int32)(parent->GetSize().x - controlRect.x - controlRect.dx);
+			rightAlign = (int32)(parent->GetSize().x - controlRect.x - controlRect.dx);
 		}
 		// Set hcenter align property
 		if (this->GetHCenterAlignEnabled())
 		{
 			if (this->GetLeftAlignEnabled())
 			{
-				_hcenterAlign = (int32)(controlRect.x + controlRect.dx - Round(parent->GetSize().x / 2));
+				hcenterAlign = (int32)(controlRect.x + controlRect.dx - Round(parent->GetSize().x / 2));
 			}
 			else if (this->GetRightAlignEnabled())
 			{
-				_hcenterAlign = (int32)(controlRect.x - Round(parent->GetSize().x / 2));
+				hcenterAlign = (int32)(controlRect.x - Round(parent->GetSize().x / 2));
 			}
 			else
 			{
-				_hcenterAlign = (int32)(controlRect.x - Round(parent->GetSize().x / 2) + Round(controlRect.dx / 2));
+				hcenterAlign = (int32)(controlRect.x - Round(parent->GetSize().x / 2) + Round(controlRect.dx / 2));
 			}			
 		}
 		// Set bottom align property
 		if (this->GetBottomAlignEnabled())
 		{
-			_bottomAlign = (int32)(parent->GetSize().y - controlRect.y - controlRect.dy);
+			bottomAlign = (int32)(parent->GetSize().y - controlRect.y - controlRect.dy);
 		}
 		// Set Vcenter align property
 		if (this->GetVCenterAlignEnabled())
 		{
 			if (this->GetTopAlignEnabled())
 			{
-				_vcenterAlign = (int32)(controlRect.y + controlRect.dy - Round(parent->GetSize().y / 2));
+				vcenterAlign = (int32)(controlRect.y + controlRect.dy - Round(parent->GetSize().y / 2));
 			}
 			else if (this->GetBottomAlignEnabled())
 			{
-				_vcenterAlign = (int32)(controlRect.y - Round(parent->GetSize().y / 2));
+				vcenterAlign = (int32)(controlRect.y - Round(parent->GetSize().y / 2));
 			}
 			else 
 			{
-				_vcenterAlign = (int32)(controlRect.y - Round(parent->GetSize().y / 2) + Round(controlRect.dy / 2));
+				vcenterAlign = (int32)(controlRect.y - Round(parent->GetSize().y / 2) + Round(controlRect.dy / 2));
 			}			
 		}		
 	}
