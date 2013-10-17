@@ -138,9 +138,14 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
     
-    lastBindedTexture = 0;
-    lastBindedFBO = 0;
+	for(uint32 i  = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
+	{
+		lastBindedTexture[i] = 0;
+	}
 	lastBindedTextureType = Texture::TEXTURE_2D;
+	
+    lastBindedFBO = 0;
+	
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
 	cursor = 0;
@@ -155,6 +160,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+	
+	renderContextId = 0;
 }
 	
 RenderManager::~RenderManager()
@@ -167,7 +174,7 @@ RenderManager::~RenderManager()
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
 	SafeRelease(cursor);
-	Logger::Debug("[RenderManager] released");
+	Logger::FrameworkDebug("[RenderManager] released");
 }
 
 void RenderManager::SetDebug(bool isDebugEnabled)
@@ -195,7 +202,7 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
     hardwareState.Reset(false);
 	currentState.Reset(true);
     
-	Logger::Debug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
+	Logger::FrameworkDebug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
 }
 #endif //    #ifdef __DAVAENGINE_ANDROID__    
 
@@ -244,9 +251,9 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 	frameBufferWidth = _frameBufferWidth;
 	frameBufferHeight = _frameBufferHeight;
 #if defined (__DAVAENGINE_OPENGL__)
-//	Logger::Debug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
+//	Logger::FrameworkDebug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
 #else
-//	Logger::Debug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
+//	Logger::FrameworkDebug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
 #endif
     // TODO: Rethink of initialization concepts because they changed
     pointerArraysRendererState = pointerArraysCurrentState = 0;
@@ -332,8 +339,9 @@ void RenderManager::ResetColor()
 	
 	
 void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
-{
+{	
     currentState.SetTexture(texture, textureLevel);
+	
 /*  DVASSERT(textureLevel < MAX_TEXTURE_LEVELS);
 	if(texture != currentTexture[textureLevel])
 	{
@@ -342,7 +350,7 @@ void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
 		{
 			if(debugEnabled)
 			{
-				Logger::Debug("Bind texture: id %d", texture->id);
+				Logger::FrameworkDebug("Bind texture: id %d", texture->id);
 			}
             
 #if defined(__DAVAENGINE_OPENGL__)
@@ -700,7 +708,7 @@ const RenderManager::Caps & RenderManager::GetCaps()
 	return caps;
 }
     
-RenderManager::Stats & RenderManager::GetStats()
+const RenderManager::Stats & RenderManager::GetStats()
 {
     return stats;
 }
@@ -789,7 +797,6 @@ void RenderManager::Stats::Clear()
     drawElementsCalls = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
-    renderBatchDrawCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)
@@ -805,9 +812,9 @@ void RenderManager::ProcessStats()
     if (statsFrameCountToShowDebug >= frameToShowDebugStats)
     {
         statsFrameCountToShowDebug = 0;
-        Logger::Debug("== Frame stats: DrawArraysCount: %d DrawElementCount: %d ==", stats.drawArraysCalls, stats.drawElementsCalls);
+        Logger::FrameworkDebug("== Frame stats: DrawArraysCount: %d DrawElementCount: %d ==", stats.drawArraysCalls, stats.drawElementsCalls);
         for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
-            Logger::Debug("== Primitive Stats: %d ==", stats.primitiveCount[k]);
+            Logger::FrameworkDebug("== Primitive Stats: %d ==", stats.primitiveCount[k]);
     }
 }
     
@@ -873,5 +880,42 @@ uint32 RenderManager::GetFBOViewFramebuffer() const
     return fboViewFramebuffer;
 }
 
-    
+void RenderManager::SetRenderContextId(uint64 contextId)
+{
+	renderContextId = contextId;
+}
+	
+uint64 RenderManager::GetRenderContextId()
+{
+	return renderContextId;
+}
+	
+void RenderManager::VerifyRenderContext()
+{
+	
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__))
+	
+#if defined(__DAVAENGINE_WIN32__)
+	uint64 curRenderContext = (uint64)wglGetCurrentContext();
+#elif defined(__DAVAENGINE_MACOS__)
+	uint64 curRenderContext = (uint64)CGLGetCurrentContext();
+#endif
+	
+	//VI: if you see this assert then something wrong happened to
+	//opengl context and current context doesn't match the one that was
+	//stored as a reference context.
+	//It may happen in several cases:
+	//1. This check was performed in another thread without prior updating renderContextId
+	//2. OpenGL context was invalidated and recreated without updating renderContextId
+	//3. Something really bad happened and opengl context was set to thread local storage by external forces
+	//In order to deal with cases 1) and 2) just check app logic and update renderContextId when it's appropriate.
+	//In order to deal with 3) seek for the solution. For example on MacOSX 10.8 NSOpenPanel runs in another process.
+	//And after returning from file selection dialog the opengl context is completely wrong until the end of current event loop.
+	//In order to fix call QApplication::processEvents in case of Qt or equivalent in case of native app or
+	//postpone result processing via delayed selector execution.
+	DVASSERT(curRenderContext == renderContextId);
+	
+#endif
+}
+	
 };

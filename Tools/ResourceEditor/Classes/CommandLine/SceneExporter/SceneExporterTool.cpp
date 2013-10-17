@@ -46,7 +46,8 @@ void SceneExporterTool::PrintUsage()
     printf("\t-processdir - foldername from DataSource/3d/ for exporting\n");
     printf("\t-processfile - filename from DataSource/3d/ for exporting\n");
     printf("\t-gpu - PoverVR_iOS, PoverVR_Android, tegra, mali, adreno\n");
-    
+	printf("\t-saveNormals - disable removing of normals from vertexes\n");
+
     printf("\n");
     printf("Samples:\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
@@ -93,6 +94,8 @@ bool SceneExporterTool::InitializeFromCommandLine()
         return false;
     }
     
+	optimizeOnExport = (CommandLineParser::CommandIsFound(String("-saveNormals")) == false);
+
     return true;
 }
 
@@ -103,6 +106,7 @@ void SceneExporterTool::Process()
     exporter.SetOutFolder(outFolder);
     exporter.SetInFolder(inFolder);
     exporter.SetGPUForExporting(gpu);
+	exporter.EnableOptimizations(optimizeOnExport);
     
     if(commandAction == ACTION_EXPORT_FILE)
     {

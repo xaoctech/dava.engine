@@ -42,7 +42,8 @@
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeAggregatorNode.h"
-#include <set>
+
+#include "AlignDistribute/AlignDistributeEnums.h"
 
 using namespace DAVA;
 
@@ -52,7 +53,7 @@ class HierarchyTreeController: public QObject, public Singleton<HierarchyTreeCon
 	Q_OBJECT
 	
 public:
-	typedef std::set<HierarchyTreeControlNode*> SELECTEDCONTROLNODES;
+	typedef List<HierarchyTreeControlNode*> SELECTEDCONTROLNODES;
 	
 	explicit HierarchyTreeController(QObject* parent = NULL);
     virtual ~HierarchyTreeController();
@@ -109,7 +110,6 @@ public:
     void EmitHierarchyTreeUpdated(bool needRestoreSelection = true);
 
     const SELECTEDCONTROLNODES& GetActiveControlNodes() const;
-	bool IsNodeActive(const HierarchyTreeControlNode* activeControl) const;
 
     // Look through all controls and update their localized texts.
     void UpdateLocalization(bool takePathFromLocalizationSystem);
@@ -117,6 +117,11 @@ public:
 	bool HasUnsavedChanges() const;
 
 	HierarchyTreeScreenNode* GetScreenNodeForNode(HierarchyTreeNode* node);
+
+	// Align/Distribute logic.
+	void AlignSelectedControls(eAlignControlsType alignType);
+	void DistributeSelectedControls(eDistributeControlsType distributeType);
+
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	String GetNewControlName(const String& baseName);
@@ -154,6 +159,14 @@ protected:
 
 	// Cleanup the memory used by nodes removed from scene.
 	void CleanupNodesDeletedFromScene();
+
+	// Insert/remove selected control to the list with dups check.
+	void InsertSelectedControlToList(HierarchyTreeControlNode* control);
+	void RemoveSelectedControlFromList(HierarchyTreeControlNode* control);
+
+	// Whether align/distribute is possible.
+	bool CanPerformAlign(eAlignControlsType alignType);
+	bool CanPerformDistribute(eDistributeControlsType distributeType);
 
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;

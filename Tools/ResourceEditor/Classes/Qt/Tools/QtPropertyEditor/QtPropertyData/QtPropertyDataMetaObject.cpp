@@ -34,13 +34,30 @@ QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::Me
 	: QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(_object, _meta))
 	, object(_object)
 	, meta(_meta)
+	, lastCommand(NULL)
 { }
 
 QtPropertyDataMetaObject::~QtPropertyDataMetaObject()
-{ }
-
-QVariant QtPropertyDataMetaObject::GetValueInternal()
 {
+	DAVA::SafeDelete(lastCommand);
+}
+
+void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
+{
+	QtPropertyDataDavaVariant::SetValueInternal(value);
+	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
+
+	DAVA::SafeDelete(lastCommand);
+	lastCommand = new MetaObjModifyCommand(meta, object, newValue);
+
+	// also save value to meta-object
+	DAVA::VariantType::SaveData(object, meta, newValue);
+}
+
+bool QtPropertyDataMetaObject::UpdateValueInternal()
+{
+	bool ret = false;
+
 	// load current value from meta-object
 	// we should do this because meta-object may change at any time 
 	DAVA::VariantType v = DAVA::VariantType::LoadData(object, meta);
@@ -50,18 +67,10 @@ QVariant QtPropertyDataMetaObject::GetValueInternal()
 	if(v != GetVariantValue())
 	{
 		QtPropertyDataDavaVariant::SetVariantValue(v);
+		ret = true;
 	}
 
-	// return current variant value, converted to QVariant
-	return QtPropertyDataDavaVariant::GetValueInternal();
-}
-
-void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
-{
-	QtPropertyDataDavaVariant::SetValueInternal(value);
-
-	// also save value to meta-object
-	DAVA::VariantType::SaveData(object, meta, QtPropertyDataDavaVariant::GetVariantValue());
+	return ret;
 }
 
 bool QtPropertyDataMetaObject::EditorDoneInternal(QWidget *editor)
@@ -76,4 +85,16 @@ bool QtPropertyDataMetaObject::EditorDoneInternal(QWidget *editor)
 	}
 
 	return ret;
+}
+
+void* QtPropertyDataMetaObject::CreateLastCommand() const
+{
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		command = new MetaObjModifyCommand(*lastCommand);
+	}
+
+	return command;
 }

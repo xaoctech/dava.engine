@@ -319,6 +319,8 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 	DVASSERT(material);
 	SafeRetain(material);
 	
+	material->SetMaterialSystem(this);
+	
 	if(material->IsConfigMaterial() &&
 	   material->IsSwitchable())
 	{
@@ -441,5 +443,10 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 	return child;
 }
 	
+	NMaterial* MaterialSystem::CreateChild(const FastName& parentName)
+	{
+		NMaterial* parent = GetMaterial(parentName);
+		return CreateChild(parent);
+	}
 };
 

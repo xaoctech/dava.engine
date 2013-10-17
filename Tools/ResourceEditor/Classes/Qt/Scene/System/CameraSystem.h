@@ -57,10 +57,15 @@ public:
 	const DAVA::Rect GetViewportRect();
 
 	void LookAt(const DAVA::AABBox3 &box);
-	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
+	void MoveTo(const DAVA::Vector3 &pos);
+	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &target);
 
-	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);
-	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z);
+	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3) const;
+	DAVA::Vector3 GetScreenPosAndDepth(const DAVA::Vector3 &pos3) const;
+	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z) const;
+
+    DAVA::float32 GetDistanceToCamera() const;
+    void UpdateDistanceToCamera();
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -69,8 +74,24 @@ protected:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
+    void ProcessKeyboardMove(float timeElapsed);
+    
+	void CreateDebugCameras();
+	void RecalcCameraViewAngles();
+	void RecalcCameraAspect();
+	void MouseMoveCameraPosition();
+	void MouseMoveCameraDirection();
+	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
+    
+	void MoveAnimate(DAVA::float32 timeElapsed);
+	DAVA::Entity* GetEntityFromCamera(DAVA::Camera *camera) const;
+
 protected:
 	DAVA::Rect viewportRect;
+	bool debugCamerasCreated;
 
 	DAVA::float32 curSpeed;
 	DAVA::Camera* curSceneCamera;
@@ -81,19 +102,17 @@ protected:
 	bool animateToNewPos;
 	DAVA::float32 animateToNewPosTime;
 	DAVA::Vector3 newPos;
-	DAVA::Vector3 newDir;
+	DAVA::Vector3 newTar;
 
 	DAVA::float32 curViewAngleZ, curViewAngleY;
 	const DAVA::float32 maxViewAngle;
 
-	void ProcessKeyboardMove(float timeElapsed);
+	DAVA::Set<DAVA::Entity *> sceneCameras;
 
-	void RecalcCameraViewAngles();
-	void MouseMoveCameraPosition();
-	void MouseMoveCameraDirection();
-	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
+    DAVA::float32 distanceToCamera;
 
-	void MoveAnimate(DAVA::float32 timeElapsed);
+    
+    
 };
 
 #endif

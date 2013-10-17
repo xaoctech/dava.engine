@@ -113,8 +113,8 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     }
 
     
-    propertyList->AddBoolProperty("property.material.isopaque");
-    propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetAlphatest());
+    propertyList->AddBoolProperty("property.material.isalphatest");
+    propertyList->SetBoolPropertyValue("property.material.isalphatest", material->GetAlphatest());
     
     propertyList->AddBoolProperty("property.material.twosided");
     propertyList->SetBoolPropertyValue("property.material.twosided", material->GetTwoSided());
@@ -184,7 +184,7 @@ void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
 
 void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("property.material.isopaque" == forKey)
+    if("property.material.isalphatest" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetAlphatest(newValue);

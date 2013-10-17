@@ -137,6 +137,7 @@ namespace DAVA
 	textures(8)
 	{
 		parent = NULL;
+		requiredVertexFormat = EVF_FORCE_DWORD;
 	}
 	
 	NMaterialState::~NMaterialState()
@@ -251,7 +252,7 @@ namespace DAVA
 				SafeDeleteArray(tmpPtr); //cannot delete void* pointer
 				materialProperty->size = size;
 				materialProperty->type = type;
-				materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
+				materialProperty->data = new char[materialProperty->GetDataSize()];
 			}
 		}
 		else
@@ -259,11 +260,11 @@ namespace DAVA
 			materialProperty = new NMaterialProperty;
 			materialProperty->size = size;
 			materialProperty->type = type;
-			materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
+			materialProperty->data = new char[materialProperty->GetDataSize()];
 			materialProperties.Insert(propertyFastName, materialProperty);
 		}
 		
-		memcpy(materialProperty->data, data, size * Shader::GetUniformTypeSize(type));
+		memcpy(materialProperty->data, data, materialProperty->GetDataSize());
 	}
 	
 	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
@@ -289,12 +290,12 @@ namespace DAVA
 		materialName = name;
 	}
 	
-	FastName NMaterialState::GetMaterialName()
+	const FastName& NMaterialState::GetMaterialName() const
 	{
 		return materialName;
 	}
 	
-	FastName NMaterialState::GetParentName()
+	const FastName& NMaterialState::GetParentName() const
 	{
 		return parentName;
 	}
@@ -363,7 +364,14 @@ namespace DAVA
     
 	Texture * NMaterialState::GetTexture(uint32 index)
 	{
+		DVASSERT(index >= 0 && index < texturesArray.size());
 		return texturesArray[index];
+	}
+	
+	const FastName& NMaterialState::GetTextureName(uint32 index)
+	{
+		DVASSERT(index >= 0 && index < textureNamesArray.size());
+		return textureNamesArray[index];
 	}
 	
 	uint32 NMaterialState::GetTextureCount()
@@ -446,6 +454,8 @@ namespace DAVA
 		{
 			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
 		}
+		
+		targetState->requiredVertexFormat = requiredVertexFormat;
 	}
 	
 	bool NMaterialState::LoadFromYamlNode(const YamlNode* stateNode)
@@ -624,6 +634,8 @@ namespace DAVA
 			
 			++propIter;
 		}
+		
+		targetState->requiredVertexFormat = requiredVertexFormat;
 	}
 	
 	NMaterialState* NMaterialState::CloneState()
@@ -648,13 +660,11 @@ namespace DAVA
 		ready = false;
 		materialDynamicLit = false;
 		configMaterial = false;
+		materialSystem = NULL;
 	}
     
 	NMaterial::~NMaterial()
 	{
-		//VI: TODO: It would be really great to remove itself from the material system here
-		//VI: but it's not really good to store pointer to material system in each material
-		
 		SetParent(NULL);
 	}
     
@@ -792,7 +802,7 @@ namespace DAVA
 					NMaterialProperty * property = currentMaterial->materialProperties.GetValue(uniform->name);
 					if (property)
 					{
-						shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data);
+						shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data, property->GetDataSize());
 						break;
 					}
 					currentMaterial = currentMaterial->parent;
@@ -1059,6 +1069,7 @@ namespace DAVA
 		}
         
         childMaterial->SetMaterialName(childName);
+		childMaterial->SetMaterialSystem(materialSystem);
 		
 		return childMaterial;
 	}
@@ -1410,6 +1421,9 @@ namespace DAVA
 		if(this->IsSwitchable())
 		{
 			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+			
+			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			
 			while(stateIter != states.End())
 			{
 				clonedMaterial->states.Insert(stateIter.GetKey(),
@@ -1422,6 +1436,8 @@ namespace DAVA
 		{
 			DeepCopyTo(clonedMaterial);
 		}
+		
+		clonedMaterial->materialSystem = materialSystem;
 		
 		return clonedMaterial;
 	}

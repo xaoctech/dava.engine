@@ -64,13 +64,15 @@ public:
 	
 private:
 	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
-	
+	void DisplayUIControlsSize();
+
 private:
 	UITextField* textField;
 	UITextField* passwordTextField;
 
 	UIStaticText* staticText;
 	UIButton* testButton;
+	UIButton* removeFromParentButton;
 	
 	UIWebView* webView1;
 	UIWebView* webView2;

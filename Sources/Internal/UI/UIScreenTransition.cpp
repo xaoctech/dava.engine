@@ -56,7 +56,7 @@ void UIScreenTransition::CreateRenderTargets()
 {
 	if (renderTargetPrevScreen || renderTargetNextScreen)
 	{
-		Logger::Debug("Render targets already created");
+		Logger::FrameworkDebug("Render targets already created");
 		return;
 	}
 	

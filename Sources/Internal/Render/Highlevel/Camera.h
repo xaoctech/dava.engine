@@ -88,7 +88,7 @@ public:
         
         \param[in] fovInDegrees new for in degrees for the camera
      */ 
-	void SetFOV(const float32 &fovxInDegrees);
+	virtual void SetFOV(const float32 &fovxInDegrees);
 
 	/**
         \brief Function change width in ortho camera.
@@ -184,7 +184,7 @@ public:
         \brief return current Field Of View of this camera
         \returns FOV for this camera
      */ 
-    float32 GetFOV() const;
+    virtual float32 GetFOV() const;
         
     /** 
         \brief return current aspect for this camera
@@ -303,8 +303,9 @@ public:
         \returns 2D point on screen.
      */
     Vector2 GetOnScreenPosition(const Vector3 & forPoint, const Rect & viewport);
-    
-    /**
+	Vector3 GetOnScreenPositionAndDepth(const Vector3 & forPoint, const Rect & viewport);
+
+	/**
         \brief Function to return 3D position of 2D point that was transformed before. 
         \param[in] win windows coords of the point
         \param[in] viewport viewport coords

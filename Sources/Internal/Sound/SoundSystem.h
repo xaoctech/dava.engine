@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __DAVAENGINE_SOUND_SYSTEM_H__
 #define __DAVAENGINE_SOUND_SYSTEM_H__
 
@@ -73,19 +71,19 @@ public:
 
 	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
 	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-    
-    void SendCallbackOnUpdate(Sound * sound);
-    
+
 private:
 	SoundGroup * CreateSoundGroup(const FastName & groupName);
+
+    void ReleaseOnUpdate(Sound * sound);
 
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
 
+    Vector<Sound *> soundsToReleaseOnUpdate;
+
 	FastNameMap<SoundGroup*> soundGroups;
 	Vector<VolumeAnimatedObject*> animatedObjects;
-
-    Vector<Sound *> soundSendCallbackOnUpdate;
 
 friend class SoundGroup;
 friend class Sound;

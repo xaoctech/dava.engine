@@ -468,6 +468,7 @@ public:
 	VariantType& operator=(const VariantType& other);
 
 	const MetaInfo* Meta();
+	void* MetaObject();
 
 	static VariantType LoadData(const void *src, const MetaInfo *meta);
 	static void SaveData(void *dst, const MetaInfo *meta, const VariantType &val);

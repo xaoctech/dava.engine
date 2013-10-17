@@ -80,7 +80,7 @@ public:
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType, uint32 index = 0);
-    Component * GetComponent(uint32 componentType, uint32 index = 0);
+    Component * GetComponent(uint32 componentType, uint32 index = 0) const;
     Component * GetOrCreateComponent(uint32 componentType, uint32 index = 0);
     uint32 GetComponentCount();
     uint32 GetComponentCount(uint32 componentType);
@@ -130,7 +130,7 @@ public:
         \brief Get name of this particular node.
         \returns name of this node
      */
-    inline const String & GetName();
+    inline const String & GetName() const;
 
     /**
         \brief Get full name of this node from root. This function is slow because it go up by hierarchy and make full node name.
@@ -176,7 +176,7 @@ public:
         If you dont want to modify matrix call GetLocalTransform().
      */
 	Matrix4 & ModifyLocalTransform(); 
-    const Matrix4 & GetWorldTransform();
+    const Matrix4 & GetWorldTransform() const;
     const Matrix4 & GetDefaultLocalTransform(); 
     
     void SetLocalTransform(const Matrix4 & newMatrix);
@@ -268,7 +268,7 @@ public:
         \brief function returns debug flags of specific node
         \returns flags of this specific scene node
      */
-    uint32 GetDebugFlags();
+    uint32 GetDebugFlags() const;
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
@@ -444,7 +444,7 @@ inline Entity * Entity::GetParent()
 	return parent;
 }
     
-inline const String & Entity::GetName()
+inline const String & Entity::GetName() const
 {
     return name;
 }

@@ -64,8 +64,9 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	toolImageIndex(0)
 ,	copyPasteHeightmap(false)
 ,	copyPasteTilemask(false)
+,	curHeight(0.f)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
@@ -87,18 +88,7 @@ bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
 
 bool HeightmapEditorSystem::IsCanBeEnabled()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-	
-	bool canBeEnabled = true;
-	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-	
-	return canBeEnabled;
+	return drawSystem->VerifyLandscape();
 }
 
 bool HeightmapEditorSystem::EnableLandscapeEditing()
@@ -342,6 +332,12 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				{
 					koef = -koef;
 				}
+
+				if (IsKeyModificatorPressed(DVKEY_ALT))
+				{
+					koef = -koef;
+				}
+
 				editorHeightmap->DrawRelativeRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
 				break;
 			}

@@ -112,7 +112,7 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
     //TODO: what this?
 	scenePath = PathManip(filename.GetAbsolutePathname().c_str()).GetPath();
 
-	Logger::Debug("scene start load: path = %s\n", scenePath.c_str());
+	Logger::FrameworkDebug("scene start load: path = %s\n", scenePath.c_str());
 	
 	sceneFP->Read(&header, sizeof(SceneFile::Header));
 	
@@ -125,13 +125,13 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
     
 
     
-	if (debugLogEnabled)Logger::Debug("File version: %d\n", header.version);
-	if (debugLogEnabled)Logger::Debug("Material count: %d\n", header.materialCount);
-	if (debugLogEnabled)Logger::Debug("Static Mesh count: %d\n", header.staticMeshCount);
-	if (debugLogEnabled)Logger::Debug("Animated Mesh count: %d\n", header.animatedMeshCount);
-	if (debugLogEnabled)Logger::Debug("Cameras count: %d\n", header.cameraCount);
-	if (debugLogEnabled)Logger::Debug("Node animations count: %d\n", header.nodeAnimationsCount);
-	if (debugLogEnabled)Logger::Debug("Lights count: %d\n", header.lightCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("File version: %d\n", header.version);
+	if (debugLogEnabled)Logger::FrameworkDebug("Material count: %d\n", header.materialCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("Static Mesh count: %d\n", header.staticMeshCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("Animated Mesh count: %d\n", header.animatedMeshCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("Cameras count: %d\n", header.cameraCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("Node animations count: %d\n", header.nodeAnimationsCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("Lights count: %d\n", header.lightCount);
 
 //  Do not read textures anymore
 //	for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
@@ -192,7 +192,7 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 			SceneNodeAnimation * anim = aList->animations[k];
 			if (!anim)
 			{
-				if (debugLogEnabled)Logger::Debug("*** ERROR: animation: %d can't find anim: %s\n", animationIndex, aList->GetName().c_str());
+				if (debugLogEnabled)Logger::Error("*** ERROR: animation: %d can't find anim: %s\n", animationIndex, aList->GetName().c_str());
 				continue;
 			}
 			String & name = anim->bindName;
@@ -200,13 +200,13 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 			anim->SetBindNode(bindNode);
 			if (!bindNode)
 			{
-				if (debugLogEnabled)Logger::Debug("*** ERROR: animation: %d can't find bind node: %s\n", animationIndex, name.c_str());
+				if (debugLogEnabled)Logger::Error("*** ERROR: animation: %d can't find bind node: %s\n", animationIndex, name.c_str());
 			}
 		}
 	}
 	SafeRelease(sceneFP);
 	
-	Logger::Debug("scene loaded");
+	Logger::FrameworkDebug("scene loaded");
 	
     for (size_t mi = 0; mi < materials.size(); ++mi)
     {
@@ -245,7 +245,7 @@ bool SceneFile::ReadTexture()
     sceneFP->Read(&hasOpacity, sizeof(hasOpacity));
 	
 	DAVA::Texture * texture = DAVA::Texture::CreateFromFile(tname);//textureDef.name);//0;
-	if (debugLogEnabled)Logger::Debug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
+	if (debugLogEnabled)Logger::FrameworkDebug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
     
     SafeRelease(texture);
 	return true;
@@ -320,7 +320,7 @@ bool SceneFile::ReadMaterial()
     {
         //mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.lightmapTexture));
     }
-	if (debugLogEnabled)Logger::Debug("- Material: %s diffuseTexture: %s hasOpacity: %s\n", materialDef.name, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
+	if (debugLogEnabled)Logger::FrameworkDebug("- Material: %s diffuseTexture: %s hasOpacity: %s\n", materialDef.name, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
 	
 
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
@@ -342,7 +342,7 @@ bool SceneFile::ReadStaticMesh()
 {
 	uint32 polyGroupCount;
 	sceneFP->Read(&polyGroupCount, sizeof(uint32));
-	if (debugLogEnabled)Logger::Debug("- Static Mesh: %d\n", polyGroupCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("- Static Mesh: %d\n", polyGroupCount);
 	
 	StaticMesh * mesh = new StaticMesh(scene);
     
@@ -355,9 +355,9 @@ bool SceneFile::ReadStaticMesh()
         sceneFP->Read(&vertexFormat, sizeof(uint32));
 		sceneFP->Read(&vertexCount, sizeof(uint32));
 		sceneFP->Read(&indexCount, sizeof(uint32));
-        if (debugLogEnabled)Logger::Debug("--- vertex format: %x\n", vertexFormat); 
-		if (debugLogEnabled)Logger::Debug("--- vertex count: %d\n", vertexCount);
-		if (debugLogEnabled)Logger::Debug("--- index count: %d\n", indexCount);
+        if (debugLogEnabled)Logger::FrameworkDebug("--- vertex format: %x\n", vertexFormat); 
+		if (debugLogEnabled)Logger::FrameworkDebug("--- vertex count: %d\n", vertexCount);
+		if (debugLogEnabled)Logger::FrameworkDebug("--- index count: %d\n", indexCount);
 		
 		polygonGroup->AllocateData(vertexFormat, vertexCount, indexCount);
 		
@@ -376,14 +376,14 @@ bool SceneFile::ReadStaticMesh()
             {
                 sceneFP->Read(&normal, sizeof(Vector3));
                 polygonGroup->SetNormal(v, normal);
-                //Logger::Debug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
+                //Logger::FrameworkDebug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
             }
 
             if (polygonGroup->GetFormat() & EVF_TANGENT)
             {
                 sceneFP->Read(&tangent, sizeof(Vector3));
                 polygonGroup->SetTangent(v, tangent);
-                //Logger::Debug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
+                //Logger::FrameworkDebug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
             }
             
 			if (polygonGroup->GetFormat() & EVF_TEXCOORD0)
@@ -422,7 +422,7 @@ bool SceneFile::ReadAnimatedMesh()
 {
 	int polyGroupCount;
 	sceneFP->Read(&polyGroupCount, sizeof(int));
-	if (debugLogEnabled)Logger::Debug("- Animated Mesh: %d\n", polyGroupCount);
+	if (debugLogEnabled)Logger::FrameworkDebug("- Animated Mesh: %d\n", polyGroupCount);
 	
 	AnimatedMesh * mesh = new AnimatedMesh(scene);
 	//mesh->Create(polyGroupCount);
@@ -435,8 +435,8 @@ bool SceneFile::ReadAnimatedMesh()
 		int vertexCount, indexCount;
 		sceneFP->Read(&vertexCount, sizeof(int));
 		sceneFP->Read(&indexCount, sizeof(int));
-		if (debugLogEnabled)Logger::Debug("--- vertex count: %d\n", vertexCount);
-		if (debugLogEnabled)Logger::Debug("--- index count: %d\n", indexCount);
+		if (debugLogEnabled)Logger::FrameworkDebug("--- vertex count: %d\n", vertexCount);
+		if (debugLogEnabled)Logger::FrameworkDebug("--- index count: %d\n", indexCount);
 		
 		
 		polygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_COLOR | EVF_TEXCOORD0 | EVF_JOINTWEIGHT, vertexCount, indexCount);
@@ -607,7 +607,7 @@ bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
             
             DVASSERT(materialIndex < (int)materials.size());
 
-			if (debugLogEnabled)Logger::Debug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
+			if (debugLogEnabled)Logger::FrameworkDebug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
 		
 			if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)
 			{
@@ -625,7 +625,7 @@ bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
             parentNode->AddNode(node);
         }
 	}
-	if (debugLogEnabled)Logger::Debug("%s node: %s typeId: %d childCount: %d type: %s\n", GetIndentString('-', level), name, def.nodeType, def.childCount, nodeType); 
+	if (debugLogEnabled)Logger::FrameworkDebug("%s node: %s typeId: %d childCount: %d type: %s\n", GetIndentString('-', level), name, def.nodeType, def.childCount, nodeType); 
 	
     if (parentNode == scene) 
     {
@@ -685,7 +685,7 @@ bool SceneFile::ReadAnimation()
 	int nodeCount;
 	sceneFP->Read(&nodeCount, sizeof(int32));
 	
-	if (debugLogEnabled)Logger::Debug("- scene node anim list: %s nodeCount: %d\n", name, nodeCount); 
+	if (debugLogEnabled)Logger::FrameworkDebug("- scene node anim list: %s nodeCount: %d\n", name, nodeCount); 
 
 	for (int nodeIndex = 0; nodeIndex < nodeCount; ++nodeIndex)
 	{
@@ -700,7 +700,7 @@ bool SceneFile::ReadAnimation()
 		SceneNodeAnimation * anim = new SceneNodeAnimation(keyCount);
 		anim->SetBindName(name);	
 		anim->SetDuration(duration); 
-		if (debugLogEnabled)Logger::Debug("-- scene node %d anim: %s keyCount: %d duration: %f seconds\n", nodeIndex, name, keyCount, duration); 
+		if (debugLogEnabled)Logger::FrameworkDebug("-- scene node %d anim: %s keyCount: %d duration: %f seconds\n", nodeIndex, name, keyCount, duration); 
 
 		for (int k = 0; k < keyCount; ++k)
 		{
@@ -745,14 +745,14 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
     forRootNode->FindNodesByNamePart("_lod0", lodNodes);
     if (debugLogEnabled) 
     {
-        Logger::Debug("Find %d nodes with LOD", lodNodes.size());
+        Logger::FrameworkDebug("Find %d nodes with LOD", lodNodes.size());
     }
     for (List<Entity*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
     {
         String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
         if (debugLogEnabled) 
         {
-            Logger::Debug("Processing LODs for %s", nodeName.c_str());
+            Logger::FrameworkDebug("Processing LODs for %s", nodeName.c_str());
         }
 
         Entity *oldParent = (*it)->GetParent();
@@ -765,7 +765,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
             {//if layer is not a dummy
                 if (debugLogEnabled) 
                 {
-                    Logger::Debug("      Add LOD layer %d", i);
+                    Logger::FrameworkDebug("      Add LOD layer %d", i);
                 }
                 ln->Retain();
                 ln->GetParent()->RemoveNode(ln);
@@ -780,7 +780,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
                 {
                     if (debugLogEnabled) 
                     {
-                        Logger::Debug("      Add Dummy LOD layer %d", i);
+                        Logger::FrameworkDebug("      Add Dummy LOD layer %d", i);
                     }
                     ln->Retain();
                     ln->SetVisible(false);
@@ -803,14 +803,14 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
 //    forRootNode->FindNodesByNamePart("_lod0", lodNodes);
 //    if (debugLogEnabled) 
 //    {
-//        Logger::Debug("Find %d nodes with LOD", lodNodes.size());
+//        Logger::FrameworkDebug("Find %d nodes with LOD", lodNodes.size());
 //    }
 //    for (List<Entity*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
 //    {
 //        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
 //        if (debugLogEnabled) 
 //        {
-//            Logger::Debug("Processing LODs for %s", nodeName.c_str());
+//            Logger::FrameworkDebug("Processing LODs for %s", nodeName.c_str());
 //        }
 //        bool isNeedInit = true;
 //        Entity *newNode = new Entity(scene);
@@ -829,7 +829,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
 //                {
 //                    if (debugLogEnabled) 
 //                    {
-//                        Logger::Debug("      Add LOD layer %d", i);
+//                        Logger::FrameworkDebug("      Add LOD layer %d", i);
 //                    }
 //                    if (isNeedInit)
 //                    {//we should init our new node from the first appeared real(not a dummy) node
@@ -861,7 +861,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
 //                {
 //                    if (debugLogEnabled) 
 //                    {
-//                        Logger::Debug("      Add Dummy LOD layer %d", i);
+//                        Logger::FrameworkDebug("      Add Dummy LOD layer %d", i);
 //                    }
 //                    meshToAdd->AddDummyLODLayer(i);
 //

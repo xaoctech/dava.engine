@@ -212,28 +212,28 @@ public:
     }
     
     /* TEST, need to transfer to unit tests.
-     Logger::Debug("%d", Conversion<double, int>::exists);
-     Logger::Debug("%d", Conversion<Component*, VisibilityAABBoxComponent*>::exists);
-     Logger::Debug("%d", Conversion<VisibilityAABBoxComponent*, Component*>::exists);
-     Logger::Debug("%d", SUPERSUBCLASS(VisibilityAABBoxComponent, Component));
-     Logger::Debug("%d", SUPERSUBCLASS(Component, VisibilityAABBoxComponent));
-     Logger::Debug("%d", SUPERSUBCLASS(void*, VisibilityAABBoxComponent));
-     Logger::Debug("%d", SUPERSUBCLASS(BaseObject, VisibilityAABBoxComponent));
+     Logger::FrameworkDebug("%d", Conversion<double, int>::exists);
+     Logger::FrameworkDebug("%d", Conversion<Component*, VisibilityAABBoxComponent*>::exists);
+     Logger::FrameworkDebug("%d", Conversion<VisibilityAABBoxComponent*, Component*>::exists);
+     Logger::FrameworkDebug("%d", SUPERSUBCLASS(VisibilityAABBoxComponent, Component));
+     Logger::FrameworkDebug("%d", SUPERSUBCLASS(Component, VisibilityAABBoxComponent));
+     Logger::FrameworkDebug("%d", SUPERSUBCLASS(void*, VisibilityAABBoxComponent));
+     Logger::FrameworkDebug("%d", SUPERSUBCLASS(BaseObject, VisibilityAABBoxComponent));
      
      
-     Logger::Debug("(BaseObject*) isPointer: %d", TypeTraits<BaseObject*>::isPointer);
-     Logger::Debug("(BaseObject*) isReference: %d", TypeTraits<BaseObject*>::isReference);
-     Logger::Debug("(BaseObject*) isPointerToMemberFunction: %d", TypeTraits<BaseObject*>::isPointerToMemberFunction);
+     Logger::FrameworkDebug("(BaseObject*) isPointer: %d", TypeTraits<BaseObject*>::isPointer);
+     Logger::FrameworkDebug("(BaseObject*) isReference: %d", TypeTraits<BaseObject*>::isReference);
+     Logger::FrameworkDebug("(BaseObject*) isPointerToMemberFunction: %d", TypeTraits<BaseObject*>::isPointerToMemberFunction);
      
-     Logger::Debug("(BaseObject&) isPointer: %d", TypeTraits<BaseObject&>::isPointer);
-     Logger::Debug("(BaseObject&) isReference: %d", TypeTraits<BaseObject&>::isReference);
-     Logger::Debug("(BaseObject&) isPointerToMemberFunction: %d", TypeTraits<BaseObject&>::isPointerToMemberFunction);
+     Logger::FrameworkDebug("(BaseObject&) isPointer: %d", TypeTraits<BaseObject&>::isPointer);
+     Logger::FrameworkDebug("(BaseObject&) isReference: %d", TypeTraits<BaseObject&>::isReference);
+     Logger::FrameworkDebug("(BaseObject&) isPointerToMemberFunction: %d", TypeTraits<BaseObject&>::isPointerToMemberFunction);
      
      void(VisibilityAABBoxSystem::*func)() = &VisibilityAABBoxSystem::Run;
      
-     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isPointer: %d", TypeTraits<VisibilityAABBoxSystem::Run>::isPointer);
-     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isReference: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isReference);
-     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isPointerToMemberFunction: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isPointerToMemberFunction);
+     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isPointer: %d", TypeTraits<VisibilityAABBoxSystem::Run>::isPointer);
+     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isReference: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isReference);
+     //    Logger::FrameworkDebug("(&VisibilityAABBoxSystem::Run) isPointerToMemberFunction: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isPointerToMemberFunction);
      */    
 
     

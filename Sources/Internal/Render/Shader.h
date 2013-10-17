@@ -109,6 +109,7 @@ public:
 		bool ValidateCache(const Vector4 & value);
 		bool ValidateCache(const Matrix4 & value);
 		bool ValidateCache(const Matrix3 & value);
+		bool ValidateCache(const void* value, uint16 valueSize);
     };
 
     Shader();
@@ -162,7 +163,7 @@ public:
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);*/
 
-    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data);
+    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data, uint16 dataLength);
 	void SetUniformValueByIndex(int32 uniformIndex, int32 value);
     void SetUniformValueByIndex(int32 uniformIndex, float32 value);
     //void SetUniformValueByIndex(int32 uniformIndex, int32 count, int32 * value);

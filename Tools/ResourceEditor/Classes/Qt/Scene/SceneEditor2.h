@@ -54,6 +54,8 @@
 #include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
+#include "Scene/System/DebugDrawSystem.h"
+#include "Scene/System/BeastSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -90,12 +92,13 @@ public:
 	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;
 	TextDrawSystem *textDrawSystem;
-
+	DebugDrawSystem *debugDrawSystem;
+	BeastSystem	*beastSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
-	bool Save(const DAVA::FilePath &path);
-	bool Save();
+    virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
+	SceneFileV2::eError Save();
 	bool Export(const DAVA::eGPUFamily newGPU);
 
 	DAVA::FilePath GetScenePath();
@@ -139,6 +142,14 @@ public:
 
 	void DisableTools(int32 toolFlags);
 	bool IsToolsEnabled(int32 toolFlags);
+	int32 GetEnabledTools();
+
+	virtual void Update(float timeElapsed);
+
+	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
+	virtual Entity* Clone(Entity *dstNode = NULL);
+
+	DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 
 protected:
 	bool isLoaded;
@@ -148,10 +159,17 @@ protected:
     
     RenderManager::Stats renderStats;
 
+	DAVA::Vector<DAVA::Entity *> editorEntities;
 
 	virtual void EditorCommandProcess(const Command2 *command, bool redo);
-	virtual void Update(float timeElapsed);
 	virtual void Draw();
+
+    void ExtractEditorEntities();
+	void InjectEditorEntities();
+
+	void RemoveSystems();
+
+	bool wasChanged; //deprecated
 
 private:
 	friend struct EditorCommandNotify;

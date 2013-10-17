@@ -43,12 +43,14 @@ float GetUITextViewSizeDivider()
 @public
 	UITextField * textField;
 	DAVA::UITextField * cppTextField;
+	BOOL textInputAllowed;
 }
 - (id) init : (DAVA::UITextField  *) tf;
 - (void) dealloc;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField;
 - (BOOL)textField:(UITextField *)_textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
 - (void)setIsPassword:(bool)isPassword;
+- (void)setTextInputAllowed:(bool)value;
 
 - (void)setupTraits;
 
@@ -72,8 +74,9 @@ float GetUITextViewSizeDivider()
 		self.transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
 		self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider);
 		self.center = CGPointMake(DAVA::Core::Instance()->GetPhysicalScreenWidth()/2/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/2/divider);	
-		self.userInteractionEnabled = FALSE;
-		
+		self.userInteractionEnabled = TRUE;
+		textInputAllowed = YES;
+
 		cppTextField = tf;
 		DAVA::Rect rect = tf->GetRect();
 		textField = [[UITextField alloc] initWithFrame: CGRectMake((rect.x - DAVA::Core::Instance()->GetVirtualScreenXMin()) 
@@ -89,16 +92,44 @@ float GetUITextViewSizeDivider()
 		textField.delegate = self;
 		
 		[self setupTraits];
+		
+		// Attach to "keyboard shown/keyboard hidden" notifications.
+		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+		[center addObserver:self selector:@selector(keyboardDidShow:)
+					   name:UIKeyboardDidShowNotification object:nil];
+		[center addObserver:self selector:@selector(keyboardWillHide:)
+					   name:UIKeyboardWillHideNotification object:nil];
+
+		// Done!
 		[self addSubview:textField];
 	}
 	return self;
 }
 
+-(void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if (cppTextField)
+    {
+        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != cppTextField)
+        {
+            DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField, false);
+        }
+    }
+}
+
+-(id)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    id hitView = [super hitTest:point withEvent:event];
+    if (hitView == self) return nil;
+    else return hitView;
+}
 
 - (void) dealloc
 {
 	[textField release];
 	textField = 0;
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	[super dealloc];
 }
 
@@ -134,9 +165,19 @@ float GetUITextViewSizeDivider()
 	return TRUE;
 }
 
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+	return textInputAllowed;
+}
+
 - (void)setIsPassword:(bool)isPassword
 {
 	[textField setSecureTextEntry:isPassword ? YES: NO];
+}
+
+- (void)setTextInputAllowed:(bool)value
+{
+	textInputAllowed = (value == true);
 }
 
 - (void) setupTraits
@@ -372,6 +413,46 @@ float GetUITextViewSizeDivider()
 	}
 }
 
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+	if (cppTextField && cppTextField->GetDelegate())
+	{
+		cppTextField->GetDelegate()->OnKeyboardHidden();
+	}
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+	if (!cppTextField || !cppTextField->GetDelegate())
+	{
+		return;
+	}
+
+	// keyboard frame is in window coordinates
+	NSDictionary *userInfo = [notification userInfo];
+	CGRect rawKeyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+
+	// convert own frame to window coordinates, frame is in superview's coordinates
+	CGRect ownFrame = [textField.window convertRect:self.frame fromView:textField.superview];
+
+	// calculate the area of own frame that is covered by keyboard
+	CGRect keyboardFrame = CGRectIntersection(ownFrame, rawKeyboardFrame);
+
+	// now this might be rotated, so convert it back
+	keyboardFrame = [textField.window convertRect:keyboardFrame toView:textField.superview];
+
+	// Recalculate to virtual coordinates.
+	DAVA::Vector2 keyboardOrigin(keyboardFrame.origin.x, keyboardFrame.origin.y);
+	keyboardOrigin *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	keyboardOrigin += DAVA::UIControlSystem::Instance()->GetInputOffset();
+	
+	DAVA::Vector2 keyboardSize(keyboardFrame.size.width, keyboardFrame.size.height);
+	keyboardSize *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	keyboardSize += DAVA::UIControlSystem::Instance()->GetInputOffset();
+
+	cppTextField->GetDelegate()->OnKeyboardShown(DAVA::Rect(keyboardOrigin, keyboardSize));
+}
+
 @end
 
 void CreateTextField(DAVA::UITextField  * tf)
@@ -428,11 +509,20 @@ namespace DAVA
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         if (align & ALIGN_LEFT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentLeft;
+		}
         else if (align & ALIGN_HCENTER)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentCenter;
+		}
         else if (align & ALIGN_RIGHT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentRight;
+		}
 
         if (align & ALIGN_TOP)
             textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
@@ -543,8 +633,13 @@ namespace DAVA
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
 		[textFieldHolder setIsPassword: isPassword];
 	}
-	
-	
+
+	void UITextFieldiPhone::SetInputEnabled(bool value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		[textFieldHolder setTextInputAllowed:value];
+	}
+
 	void UITextFieldiPhone::SetAutoCapitalizationType(DAVA::int32 value)
 	{
 		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;

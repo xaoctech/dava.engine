@@ -37,13 +37,15 @@
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "IconHelper.h"
+#include "SubcontrolsHelper.h"
+#include "ResourcesManageHelper.h"
+#include "WidgetSignalsBlocker.h"
+
 #include <QVariant>
 #include <QMenu>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "IconHelper.h"
-#include "SubcontrolsHelper.h"
-#include "ResourcesManageHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -70,6 +72,8 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)));
 	
 	connect(ui->treeWidget, SIGNAL(ShowCustomMenu(const QPoint&)), this, SLOT(OnShowCustomMenu(const QPoint&)));
+	connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(OnTreeItemChanged(QTreeWidgetItem*, int)));
+
 	internalSelectionChanged = false;
 }
 
@@ -189,6 +193,7 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const Hierarch
 		QTreeWidgetItem* controlItem = new QTreeWidgetItem();
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
+		controlItem->setCheckState(0, controlNode->GetVisibleFlag() ? Qt::Checked : Qt::Unchecked);
 
 		Decorate(controlItem, controlNode->GetUIObject());
 
@@ -317,8 +322,20 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 	
 	if (selectedControl)
 	{
-		if (ui->treeWidget->selectedItems().size() == 1)
+		int32 selectedItemsSize = ui->treeWidget->selectedItems().size();
+		if (selectedItemsSize == 0)
+		{
+			// Just reset selected control and don't select anything else.
+			// See please DF-2377 for details.
 			HierarchyTreeController::Instance()->ResetSelectedControl();
+			return;
+		}
+		else if (selectedItemsSize == 1)
+		{
+			// Only one control is selected, reset the previous selection and continue.
+			HierarchyTreeController::Instance()->ResetSelectedControl();
+		}
+
 		HierarchyTreeController::Instance()->SelectControl(selectedControl);
 	}
 }
@@ -646,3 +663,39 @@ HierarchyTreeNode* HierarchyTreeWidget::GetNodeFromTreeItem(QTreeWidgetItem* ite
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
 	return HierarchyTreeController::Instance()->GetTree().GetNode(id);
 }
+
+void HierarchyTreeWidget::OnTreeItemChanged(QTreeWidgetItem *item, int column)
+{
+	bool currentVisibleFlag = (item->checkState(column) == Qt::Checked);
+	
+	WidgetSignalsBlocker blocker(this);
+	UpdateVisibleFlagRecursive(item, column, currentVisibleFlag);
+}
+
+void HierarchyTreeWidget::UpdateVisibleFlagRecursive(QTreeWidgetItem* rootItem, int column, bool flagValue)
+{
+	HierarchyTreeControlNode* controlNode = GetControlNodeByTreeItem(rootItem);
+	if (!controlNode)
+	{
+		return;
+	}
+
+	rootItem->setCheckState(column, flagValue ? Qt::Checked : Qt::Unchecked);
+	controlNode->SetVisibleFlag(flagValue);
+	
+	// Repeat for all children.
+	int childCount = rootItem->childCount();
+	for (int count = 0; count < childCount; count ++)
+	{
+		UpdateVisibleFlagRecursive(rootItem->child(count), column, flagValue);
+	}
+}
+
+HierarchyTreeControlNode* HierarchyTreeWidget::GetControlNodeByTreeItem(QTreeWidgetItem* item)
+{
+	QVariant data = item->data(ITEM_ID);
+	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
+	
+	return dynamic_cast<HierarchyTreeControlNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(id));
+}
+

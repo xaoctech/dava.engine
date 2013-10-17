@@ -31,6 +31,9 @@
 #include "SaveEntityAsAction.h"
 #include "Scene3D/SceneFileV2.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+
+
 SaveEntityAsAction::SaveEntityAsAction(const EntityGroup *_entities, const DAVA::FilePath &_path)
 	: CommandAction(CMDID_SAVE_ENTITY_AS, "Save Entities As")
 	, entities(_entities)
@@ -54,8 +57,7 @@ void SaveEntityAsAction::Redo()
 			scene->AddNode(clone);
 		}
 
-		DAVA::SceneFileV2 sceneFile;
-		sceneFile.SaveScene(sc2Path, scene);
+        scene->Save(sc2Path);
 
 		scene->Release();
 	}

@@ -39,7 +39,8 @@ namespace DAVA
 class RenderPassBatchArray;
 class RenderObject;
 class Camera;
-
+class AbstractSpatialTree;
+	
 class RenderHierarchy
 {
 public:
@@ -48,15 +49,23 @@ public:
     
     virtual void AddRenderObject(RenderObject * renderObject);
     virtual void RemoveRenderObject(RenderObject * renderObject);
+	virtual void ObjectUpdated(RenderObject * renderObject);
 
     /**
         Clip objects & update nearest lights for them
      */
     virtual void Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray);
-    
+	   
+private:
+	
+	void CreateSpatialTree();
+	void DebugDrawSpatialTree();
+
 private:
     Vector<RenderObject*> renderObjectArray;
     Camera * camera;
+	
+	AbstractSpatialTree *spatialTree;
 };
     
 } // ns

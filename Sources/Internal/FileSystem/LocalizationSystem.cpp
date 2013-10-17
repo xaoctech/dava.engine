@@ -117,7 +117,7 @@ LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const Stri
 		/* Get the next event. */
 		if (!yaml_parser_parse(&parser, &event))
 		{
-			Logger::Debug("parsing error: type: %d %s line: %d pos: %d", parser.error, parser.problem, parser.problem_mark.line, parser.problem_mark.column);
+			Logger::Error("parsing error: type: %d %s line: %d pos: %d", parser.error, parser.problem, parser.problem_mark.line, parser.problem_mark.column);
 			SafeDelete(strFile);
 			break;
 		}
@@ -125,7 +125,7 @@ LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const Stri
 		switch(event.type)
 		{
 			case YAML_ALIAS_EVENT:
-				//Logger::Debug("alias: %s", event.data.alias.anchor);
+				//Logger::FrameworkDebug("alias: %s", event.data.alias.anchor);
 				break;
 				
 			case YAML_SCALAR_EVENT:
@@ -146,11 +146,11 @@ LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const Stri
 				
 			case YAML_DOCUMENT_START_EVENT:
 			{
-				//Logger::Debug("document start:");
+				//Logger::FrameworkDebug("document start:");
 			}break;
 				
 			case YAML_DOCUMENT_END_EVENT:
-			{	//Logger::Debug("document end:");
+			{	//Logger::FrameworkDebug("document end:");
 			}
 				break;
 				

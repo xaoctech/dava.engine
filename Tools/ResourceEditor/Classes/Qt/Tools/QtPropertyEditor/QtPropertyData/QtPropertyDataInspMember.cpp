@@ -20,6 +20,7 @@ QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::In
 	: QtPropertyDataDavaVariant(DAVA::VariantType())
 	, object(_object)
 	, member(_member)
+	, lastCommand(NULL)
 {
 	if(NULL != member)
 	{
@@ -28,10 +29,29 @@ QtPropertyDataInspMember::QtPropertyDataInspMember(void *_object, const DAVA::In
 }
 
 QtPropertyDataInspMember::~QtPropertyDataInspMember()
-{ }
-
-QVariant QtPropertyDataInspMember::GetValueInternal()
 {
+	DAVA::SafeDelete(lastCommand);
+}
+
+void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
+{
+	QtPropertyDataDavaVariant::SetValueInternal(value);
+	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
+
+	// also save value to meta-object
+	if(NULL != member)
+	{
+		DAVA::SafeDelete(lastCommand);
+		lastCommand = new InspMemberModifyCommand(member, object, newValue);
+
+		member->SetValue(object, newValue);
+	}
+}
+
+bool QtPropertyDataInspMember::UpdateValueInternal()
+{
+	bool ret = false;
+
 	// get current value from introspection member
 	// we should do this because member may change at any time
 	if(NULL != member)
@@ -43,22 +63,11 @@ QVariant QtPropertyDataInspMember::GetValueInternal()
 		if(v != GetVariantValue())
 		{
 			QtPropertyDataDavaVariant::SetVariantValue(v);
+			ret = true;
 		}
 	}
 
-	// return current variant value, converted to QVariant
-	return QtPropertyDataDavaVariant::GetValueInternal();
-}
-
-void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
-{
-	QtPropertyDataDavaVariant::SetValueInternal(value);
-
-	// also save value to meta-object
-	if(NULL != member)
-	{
-		member->SetValue(object, QtPropertyDataDavaVariant::GetVariantValue());
-	}
+	return ret;
 }
 
 bool QtPropertyDataInspMember::EditorDoneInternal(QWidget *editor)
@@ -73,4 +82,16 @@ bool QtPropertyDataInspMember::EditorDoneInternal(QWidget *editor)
 	}
 
 	return ret;
+}
+
+void* QtPropertyDataInspMember::CreateLastCommand() const
+{
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		command = new InspMemberModifyCommand(*lastCommand);
+	}
+
+	return command;
 }

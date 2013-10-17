@@ -87,6 +87,8 @@ public:
 	//! On operations
 	inline const Vector2 & operator += (const Vector2 & _v);
 	inline const Vector2 & operator -= (const Vector2 & _v);
+	inline const Vector2 & operator *= (const Vector2 & _v);
+	inline const Vector2 & operator /= (const Vector2 & _v);
 	inline const Vector2 & operator *= (float32 f);
 	inline const Vector2 & operator /= (float32 f);
 	inline Vector2 operator -() const;
@@ -99,6 +101,8 @@ public:
 //! operators
 inline Vector2 operator - (const Vector2 & _v1, const Vector2 & _v2);
 inline Vector2 operator + (const Vector2 & _v1, const Vector2 & _v2);
+inline Vector2 operator * (const Vector2 & _v1, const Vector2 & _v2);
+inline Vector2 operator / (const Vector2 & _v1, const Vector2 & _v2);
 
 //! with scalar
 inline Vector2 operator + (const Vector2 & _v, float32 _f);
@@ -172,6 +176,8 @@ public:
 	//! On operations
 	inline const Vector3 & operator += (const Vector3 & _v);
 	inline const Vector3 & operator -= (const Vector3 & _v);
+	inline const Vector3 & operator *= (const Vector3 & _v);
+	inline const Vector3 & operator /= (const Vector3 & _v);
 	inline const Vector3 & operator *= (float32 f);
 	inline const Vector3 & operator /= (float32 f);
 	inline Vector3 operator -() const;
@@ -185,6 +191,8 @@ public:
 //! operators
 inline Vector3 operator - (const Vector3 & _v1, const Vector3 & _v2);
 inline Vector3 operator + (const Vector3 & _v1, const Vector3 & _v2);
+inline Vector3 operator * (const Vector3 & _v1, const Vector3 & _v2);
+inline Vector3 operator / (const Vector3 & _v1, const Vector3 & _v2);
 
 //! with scalar
 inline Vector3 operator + (const Vector3 & _v, float32 _f);
@@ -337,6 +345,20 @@ inline const Vector2 & Vector2::operator -=(const Vector2 & _v)
 	return *this;
 }
 
+inline const Vector2 & Vector2::operator *=(const Vector2 & _v)
+{
+	x *= _v.x;
+	y *= _v.y;
+	return *this;
+}
+
+inline const Vector2 & Vector2::operator /=(const Vector2 & _v)
+{
+	x /= _v.x;
+	y /= _v.y;
+	return *this;
+}
+
 inline const Vector2 & Vector2::operator *= (float32 _f)
 {
 	x *= _f;
@@ -415,6 +437,16 @@ inline Vector2 operator - (const Vector2 & _v1, const Vector2 & _v2)
 inline Vector2 operator + (const Vector2 & _v1, const Vector2 & _v2)
 {
 	return Vector2(_v1.x + _v2.x, _v1.y + _v2.y);
+}
+
+inline Vector2 operator * (const Vector2 & _v1, const Vector2 & _v2)
+{
+	return Vector2(_v1.x * _v2.x, _v1.y * _v2.y);
+}
+
+inline Vector2 operator / (const Vector2 & _v1, const Vector2 & _v2)
+{
+	return Vector2(_v1.x / _v2.x, _v1.y / _v2.y);
 }
 
 //! With scalars
@@ -606,6 +638,22 @@ inline const Vector3 & Vector3::operator -= (const Vector3 & _v)
 	return *this;
 }
 
+inline const Vector3 & Vector3::operator *= (const Vector3 & _v)
+{
+	x *= _v.x;
+	y *= _v.y;
+	z *= _v.z;
+	return *this;
+}
+
+inline const Vector3 & Vector3::operator /= (const Vector3 & _v)
+{
+	x /= _v.x;
+	y /= _v.y;
+	z /= _v.z;
+	return *this;
+}
+
 inline const Vector3 & Vector3::operator *= (float32 f)
 {
 	x *= f;
@@ -644,6 +692,15 @@ inline Vector3 operator - (const Vector3 & _v1, const Vector3 & _v2)
 inline Vector3 operator + (const Vector3 & _v1, const Vector3 & _v2)
 {
 	return Vector3(_v1.x + _v2.x, _v1.y + _v2.y, _v1.z + _v2.z);
+}
+
+inline Vector3 operator * (const Vector3 & _v1, const Vector3 & _v2)
+{
+	return Vector3(_v1.x * _v2.x, _v1.y * _v2.y, _v1.z * _v2.z);
+}
+inline Vector3 operator / (const Vector3 & _v1, const Vector3 & _v2)
+{
+	return Vector3(_v1.x / _v2.x, _v1.y / _v2.y, _v1.z / _v2.z);
 }
 
 //! with scalar

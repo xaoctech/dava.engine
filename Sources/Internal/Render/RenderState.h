@@ -164,6 +164,7 @@ inline uint32 RenderStateBlock::GetStateValue(uint32 state)
 }
     
 */
+class Texture;
 class Shader;
 
 static const String RENDER_STATES_NAMES[] = 
@@ -386,8 +387,6 @@ public:
     
     // STATE_BLEND_FUNC
     inline void SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor);
-    inline void SetBlendSrc(eBlendMode _sourceFactor);
-    inline void SetBlendDest(eBlendMode _destFactor);
 	inline eBlendMode GetSrcBlend();
 	inline eBlendMode GetDestBlend();
     
@@ -584,16 +583,6 @@ inline void RenderState::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _dest
         destFactor = _destFactor;
         //changeSet |= STATE_CHANGED_SRC_BLEND | STATE_CHANGED_DEST_BLEND;
     }
-}
-    
-inline void RenderState::SetBlendSrc(eBlendMode _sourceFactor)
-{
-    sourceFactor = _sourceFactor;
-}
-
-inline void RenderState::SetBlendDest(eBlendMode _destFactor)
-{
-    destFactor = _destFactor;
 }
     
 // SHADER

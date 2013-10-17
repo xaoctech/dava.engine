@@ -41,6 +41,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
+#include "Classes/Qt/Scene/SceneHelper.h"
+
 #include <QFileDialog>
 #include <QString>
 
@@ -48,92 +50,6 @@
 
 using namespace DAVA;
 
-#if 0
-//Open Project
-CommandOpenProject::CommandOpenProject()
-    :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
-{
-}
-
-
-void CommandOpenProject::Execute()
-{
-    QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
-    
-    if(0 < path.size())
-    {
-		String projectPath = PathnameToDAVAStyle(path);
-		if('/' != projectPath[projectPath.length() - 1])
-        {
-            projectPath += '/';
-        }
-        
-        EditorSettings::Instance()->SetProjectPath(projectPath);
-        String dataSource3Dpathname = projectPath + String("DataSource/3d/");
-        EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
-		EditorSettings::Instance()->Save();
-
-        SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
-		SceneValidator::Instance()->SetPathForChecking(projectPath);
-
-		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
-		
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-        if(screen)
-        {
-            screen->UpdateModificationPanel();
-		}
-		
-		/* #### dock -->
-		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-        if(activeScene)
-        {
-            activeScene->ReloadLibrary();
-        }
-		<-- */
-	}
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
-#endif
-
-
-//Open scene
-CommandOpenScene::CommandOpenScene(const DAVA::FilePath &scenePathname/* = DAVA::FilePath() */)
-	:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_OPEN_SCENE)
-    ,   selectedScenePathname(scenePathname)
-{
-}
-
-
-void CommandOpenScene::Execute()
-{
-    if(selectedScenePathname.IsEmpty())
-    {
-        FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-        selectedScenePathname = GetOpenFileName(String("Open Scene File"), dataSourcePath, String("Scene File (*.sc2)"));
-    }
-    
-    if(!selectedScenePathname.IsEmpty())
-    {
-        SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-        if(screen)
-        {
-            screen->NewScene();
-            
-            EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
-            screen->OpenFileAtScene(selectedScenePathname);
-            
-			// TODO: mainwindow
-			//QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
-
-            //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
-        }
-        
-		// TODO: mainwindow
-        //QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
-    }
-}
 
 //Save
 CommandSaveSpecifiedScene::CommandSaveSpecifiedScene(Entity* activeScene, FilePath& filePath)
@@ -195,14 +111,8 @@ void CommandSaveSpecifiedScene::Execute()
 			sc->AddNode(entityToAdd);
 		}
 
-		SceneFileV2 * outFile = new SceneFileV2();
-		
-		outFile->EnableSaveForGame(true);
-		outFile->EnableDebugLog(false);
+        sc->Save(normalizedPathname);
 
-		outFile->SaveScene(normalizedPathname, sc);
-		
-		SafeRelease(outFile);
 		SafeRelease(entityToAdd); 
 		SafeRelease(sc);
 	}
@@ -211,51 +121,5 @@ void CommandSaveSpecifiedScene::Execute()
 	//QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
-//Export
-CommandExport::CommandExport(eGPUFamily gpu)
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
-    ,   gpuFamily(gpu)
-{
-}
 
 
-void CommandExport::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->ExportAs(gpuFamily);
-    }
-}
-
-
-//Save to folder with childs
-CommandSaveToFolderWithChilds::CommandSaveToFolderWithChilds()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TO_FOLDER_WITH_CHILDS)
-{
-}
-
-
-void CommandSaveToFolderWithChilds::Execute()
-{
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	if(sceneData->GetScenePathname().IsEmpty())
-	{
-		ShowErrorDialog("Can't save not saved scene.");
-		return;
-	}
-
-	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
-	
-    if(0 < path.size())
-    {
-		FilePath folderPath = PathnameToDAVAStyle(path);
-        folderPath.MakeDirectoryPathname();
-
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->SaveToFolder(folderPath);
-		}
-	}
-}

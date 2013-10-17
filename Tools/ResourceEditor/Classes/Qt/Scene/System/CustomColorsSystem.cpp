@@ -41,8 +41,6 @@
 #include "../../../Commands2/CustomColorsCommands2.h"
 #include "../SceneSignals.h"
 
-#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
-
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	enabled(false)
@@ -55,7 +53,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 ,	originalImage(NULL)
 ,	colorIndex(0)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
@@ -67,6 +65,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 CustomColorsSystem::~CustomColorsSystem()
 {
 	SafeRelease(cursorTexture);
+	SafeRelease(toolImageSprite);
 }
 
 bool CustomColorsSystem::IsLandscapeEditingEnabled() const
@@ -76,18 +75,7 @@ bool CustomColorsSystem::IsLandscapeEditingEnabled() const
 
 bool CustomColorsSystem::IsCanBeEnabled()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-	
-	bool canBeEnabled = true;
-	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
-//	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
-	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
-	
-	return canBeEnabled;
+	return drawSystem->VerifyLandscape();
 }
 
 bool CustomColorsSystem::EnableLandscapeEditing()
@@ -115,7 +103,7 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	FilePath filePath = GetCurrentSaveFileName();
 	if (!filePath.IsEmpty())
 	{
-		LoadTexture(filePath);
+		LoadTexture(filePath, false);
 	}
 
 	drawSystem->EnableCursor(landscapeSize);
@@ -128,7 +116,7 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	
 	if (!toolImageSprite)
 	{
-		CreateToolImage(512, "~res:/LandscapeEditor/Tools/customcolorsbrush/circle.png");
+		CreateToolImage(512, "~res:/LandscapeEditor/Tools/customcolorsbrush/circle.tex");
 	}
 	
 	enabled = true;
@@ -369,7 +357,7 @@ void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 	drawSystem->GetCustomColorsProxy()->ResetChanges();
 }
 
-void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
+void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool createUndo /* = true */)
 {
 	if(filePath.IsEmpty())
 		return;
@@ -388,7 +376,10 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
 												   false);
 		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
 
-		StoreOriginalState();
+		if (createUndo)
+		{
+			StoreOriginalState();
+		}
 		RenderManager::Instance()->SetRenderTarget(drawSystem->GetCustomColorsProxy()->GetSprite());
 		sprite->Draw();
 		RenderManager::Instance()->RestoreRenderTarget();
@@ -400,7 +391,10 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
 
 		StoreSaveFileName(filePath);
 
-		CreateUndoPoint();
+		if (createUndo)
+		{
+			CreateUndoPoint();
+		}
 	}
 }
 
@@ -409,7 +403,7 @@ void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
 	if (customProps)
 	{
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
 	}
 }
 
@@ -418,9 +412,9 @@ FilePath CustomColorsSystem::GetCurrentSaveFileName()
 	String currentSaveName;
 
 	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
-	if (customProps && customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+	if (customProps && customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
 	{
-		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+		currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 	}
 
 	return GetAbsolutePathFromScenePath(currentSaveName);

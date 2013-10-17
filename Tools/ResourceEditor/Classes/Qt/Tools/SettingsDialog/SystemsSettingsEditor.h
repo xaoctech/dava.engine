@@ -33,31 +33,7 @@
 
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
-
-#include "Scene/System/CameraSystem.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/GridSystem.h"
-#include "Scene/System/HoodSystem.h"
-#include "Scene/System/SelectionSystem.h"
-#include "Scene/System/ModifSystem.h"
-#include "Scene/System/LandscapeEditorDrawSystem.h"
-#include "Scene/System/HeightmapEditorSystem.h"
-#include "Scene/System/TilemaskEditorSystem.h"
-#include "Scene/System/CustomColorsSystem.h"
-#include "Scene/System/VisibilityToolSystem.h"
-#include "Scene/System/RulerToolSystem.h"
-#include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
-#include "Scene/System/EditorLightSystem.h"
-#include "Scene/System/TextDrawSystem.h"
-
-#include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-
-#include "Tools/QtPropertyEditor/QtPropertyItem.h"
-
 #include <QPushButton>
 
 typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
@@ -79,54 +55,14 @@ public:
 	
 protected slots:
 	
-	void HandleCustomColorBrushSize();
-
-	void HandleCustomColorColorIndex();
-
-	void HandleCameraMoveSpeed();
+	void HandleGridMax();
 	
-	void HandleCameraViewportRect();
+	void HandleGridStep();
 	
 	void HandleCollisionDrawMode();
-	
-	void HandleHoodModifMode();
-	
-	void HandleHoodPosition();
-	
-	void HandleHoodModifAxis();
-	
-	void HandleHoodScale();
-	
+
 	void HandleSelectionDrawMode();
 	
-	void HandlePivotPoint();
-	
-	void HandleEntityModifMode();
-		
-	void HandleEntityModifAxis();
-	
-	void HandleEntityLandscapeSnap();
-	
-	void HandleHightmapBrushSize();
-	
-	void HandleHightmapStrength();
-	
-	void HandleHightmapAverageStrength();
-	
-	void HandleHightmapDrawingType();
-	
-	void HandleTileMaskBrushSize();
-	
-	void HandleTileMaskStrength();
-	
-	void HandleTileTextureIndex();
-	
-	void HandleVisibToolBrushSize();
-	
-	void HandleLightCameraEnbled();
-	
-	void HandleRenderShadowRectColor();
-
 protected slots:
 
 	void ShowDialog();
@@ -136,14 +72,14 @@ protected:
 	struct PropertyInfo
 	{
 		QtPropertyDataDavaVariant*	property;
-		DAVA::VariantType			defaultValue;
+		QVariant					defaultValue;
 		STATE_FLAGS_MAP *			flagsMap;
 		PropertyInfo()
 		{
 			property = NULL;
 			flagsMap = NULL;
 		}
-		PropertyInfo(QtPropertyDataDavaVariant* _property, DAVA::VariantType _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
+		PropertyInfo(QtPropertyDataDavaVariant* _property, QVariant _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
 		{
 			property = _property;
 			defaultValue = _defaultValue;
@@ -155,8 +91,10 @@ protected:
 	
 	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
 	
-	void InitMapWithFlag(STATE_FLAGS_MAP& map, DAVA::uint32 value);
+	void InitMapWithFlag(STATE_FLAGS_MAP* map, DAVA::uint32 value);
 	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
+	
+	void SetAllCheckedToFalse(STATE_FLAGS_MAP* map);
 	
 	
 	DAVA::List<PropertyInfo> propertiesMap;

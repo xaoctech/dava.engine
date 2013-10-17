@@ -126,6 +126,8 @@ public:
     bool GetVisible() const;
 
 	virtual void UpdateAABBoxFromSource();
+	
+	virtual void AttachToRenderSystem(RenderSystem* rs);
 
 protected:
     PolygonGroup * dataSource;

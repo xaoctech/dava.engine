@@ -85,6 +85,12 @@ public:
     
     virtual bool IsTextFieldShouldSetFocusedOnAppear(UITextField * textField);
     virtual bool IsTextFieldCanLostFocus(UITextField * textField);
+	
+	/*
+	 \brief Called when device keyboard is displayed/hidden.
+	 */
+	virtual void OnKeyboardShown(const Rect& keyboardRect);
+	virtual void OnKeyboardHidden();
 };
     
 /**
@@ -192,6 +198,11 @@ public:
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	
 	/**
+	 \brief Sets contol input processing ability.
+	 */
+	virtual void SetInputEnabled(bool isEnabled, bool hierarchic = true);
+
+	/**
 	 \brief Returns the font of control
 	 \returns Font font of the control
 	 */
@@ -233,7 +244,6 @@ public:
 	 \param[in] fontColor font used for text draw of the states.
 	 */
     void SetTextColor(const Color& fontColor);
-    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
 	/**
 	 \brief Sets the size of the font.
 	 \param[in] size font size to be set.
@@ -315,12 +325,12 @@ public:
 	virtual void CopyDataFrom(UIControl *srcControl);
 
 protected:
-    bool needRedraw;
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
     Font * textFont;
-    bool isPassword;
+    Font * constFont;
+
 	
 	// Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
@@ -329,11 +339,6 @@ protected:
 	eKeyboardAppearanceType keyboardAppearanceType;
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
-	bool enableReturnKeyAutomatically;
-
-//    Sprite *textSprite;
-
-//    virtual void Draw(const UIGeometricData &geometricData);
 
     void RenderText();
 private:
@@ -345,11 +350,14 @@ private:
 	UITextFieldAndroid* textFieldAndroid;
 #endif
 
-
     UIStaticText * staticText;
     float32 cursorTime;
-    bool showCursor;
-
+	
+	// All Boolean variables are grouped together because of DF-2149.
+    bool needRedraw : 1;
+    bool isPassword : 1;
+	bool enableReturnKeyAutomatically : 1;
+    bool showCursor : 1;
 };
 
 };

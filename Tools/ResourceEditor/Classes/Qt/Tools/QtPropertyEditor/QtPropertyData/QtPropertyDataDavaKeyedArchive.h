@@ -32,7 +32,9 @@
 #define __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
 
 #include "Base/Introspection.h"
+#include "FileSystem/KeyedArchive.h"
 #include "../QtPropertyData.h"
+#include "Commands2/KeyedArchiveCommand.h"
 
 #include <QLineEdit>
 #include <QComboBox>
@@ -46,16 +48,17 @@ public:
 	QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive);
 	virtual ~QtPropertyDataDavaKeyedArcive();
 
+	virtual void* CreateLastCommand() const;
+
 protected:
 	DAVA::KeyedArchive* curArchive;
+	mutable Command2 *lastCommand;
 	int lastAddedType;
 
 	virtual QVariant GetValueInternal();
-	virtual void SetValueInternal(const QVariant &value);
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
+	virtual bool UpdateValueInternal();
 
 private:
-	void ChildsSync();
 	void ChildCreate(const QString &key, DAVA::VariantType *value);
 
 protected slots:
@@ -88,6 +91,7 @@ protected:
 
 protected slots:
 	void OkKeyPressed();
+	void PreSetSelected(int index);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__

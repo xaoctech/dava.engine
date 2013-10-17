@@ -156,7 +156,7 @@ void UIScreen::FillScreenBorders(const UIGeometricData &geometricData)
 
 void UIScreen::LoadGroup()
 {
-	//Logger::Debug("load group started");
+	//Logger::FrameworkDebug("load group started");
 	//uint64 loadGroupStart = SystemTimer::Instance()->AbsoluteMS();
 	if (groupId < 0)
 	{
@@ -177,7 +177,7 @@ void UIScreen::LoadGroup()
 		}
 	}
 	//uint64 loadGroupEnd = SystemTimer::Instance()->AbsoluteMS();
-	//Logger::Debug("load group finished: %lld", loadGroupEnd - loadGroupStart);
+	//Logger::FrameworkDebug("load group finished: %lld", loadGroupEnd - loadGroupStart);
 }
 
 void UIScreen::UnloadGroup()

@@ -117,47 +117,44 @@ namespace DAVA
 			started = false;
 			allActionsActive = false;
 			
-			uint32 count = actions.size();
-			for(uint32 i = 0; i < count; ++i)
+			entity->GetScene()->actionSystem->UnWatch(this);
+		}
+		
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			actions[i].active = false;
+			actions[i].timer = 0.0f;
+			actions[i].markedForUpdate = false;
+		}
+	}
+	
+	void ActionComponent::Stop(int32 switchIndex)
+	{
+		uint32 activeCount = 0;
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			if(actions[i].action.switchIndex == switchIndex)
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
 				actions[i].markedForUpdate = false;
 			}
 			
-			entity->GetScene()->actionSystem->UnWatch(this);
+			if(actions[i].active)
+			{
+				activeCount++;
+			}
 		}
-	}
-	
-	void ActionComponent::Stop(int32 switchIndex)
-	{
-		if(started)
-		{
-			uint32 activeCount = 0;
-			uint32 count = actions.size();
-			for(uint32 i = 0; i < count; ++i)
-			{
-				if(actions[i].markedForUpdate &&
-				   (actions[i].action.switchIndex == switchIndex))
-				{
-					actions[i].active = false;
-					actions[i].timer = 0.0f;
-					actions[i].markedForUpdate = false;
-				}
+
+		if(started &&
+		   0 == activeCount)
+		{			
+			started = false;
+			allActionsActive = false;
 				
-				if(actions[i].active)
-				{
-					activeCount++;
-				}
-			}
-			
-			if(0 == activeCount)
-			{
-				started = false;
-				allActionsActive = false;
-				
-				entity->GetScene()->actionSystem->UnWatch(this);
-			}
+			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -350,6 +347,7 @@ namespace DAVA
 			{
 				component->StopAfterNRepeats(action.stopAfterNRepeats);
 				component->StopWhenEmpty(action.stopWhenEmpty);
+				component->Stop();
 				component->Start();
 			}
 		}

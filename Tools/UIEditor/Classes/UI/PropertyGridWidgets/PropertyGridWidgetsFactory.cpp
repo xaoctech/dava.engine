@@ -39,6 +39,7 @@
 #include "UIButtonMetadata.h"
 #include "UIListMetadata.h"
 #include "UIScrollViewMetadata.h"
+#include "UIScrollBarMetadata.h"
 #include "UISliderMetadata.h"
 #include "UISpinnerMetadata.h"
 #include "UIStaticTextMetadata.h"
@@ -91,8 +92,11 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 	listWidget = new ListPropertyGridWidget();
 	registeredWidgets.push_back(listWidget);
 	
-	scrollWidget = new ScrollViewPropertyGridWidget();
+	scrollWidget = new ScrollControlPropertyGridWidget();
 	registeredWidgets.push_back(scrollWidget);
+	
+	scrollViewWidget = new ScrollViewPropertyGridWidget();
+	registeredWidgets.push_back(scrollViewWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -170,7 +174,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
         resultList.push_back(uiTextFieldWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -185,7 +188,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 	    resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);		
-      	resultList.push_back(stateWidget);
 		resultList.push_back(sliderWidget);
 	 	resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -200,7 +202,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
 		resultList.push_back(listWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -216,7 +217,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         
@@ -230,7 +230,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 		resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         
@@ -244,7 +243,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 		resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
+		resultList.push_back(scrollViewWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+	}
+	
+	// UI Scroll Bar
+	const UIScrollBarMetadata* uiScrollBarMetadata = dynamic_cast<const UIScrollBarMetadata*>(metaData);
+	if (uiScrollBarMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
 		resultList.push_back(scrollWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -261,7 +273,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         

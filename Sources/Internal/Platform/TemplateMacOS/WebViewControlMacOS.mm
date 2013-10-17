@@ -90,17 +90,17 @@ using namespace DAVA;
 			switch (action)
 			{
 				case IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
-					Logger::Debug("PROCESS_IN_WEBVIEW");
+					Logger::FrameworkDebug("PROCESS_IN_WEBVIEW");
 					break;
 					
 				case IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
-					Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					Logger::FrameworkDebug("PROCESS_IN_SYSTEM_BROWSER");
 					process = NO;
 					[[NSWorkspace sharedWorkspace] openURL:[request URL]];
 					break;
 					
 				case IUIWebViewDelegate::NO_PROCESS:
-					Logger::Debug("NO_PROCESS");
+					Logger::FrameworkDebug("NO_PROCESS");
 					
 				default:
 					process = NO;
@@ -201,7 +201,7 @@ void WebViewControl::SetRect(const Rect& rect)
 	webViewRect.size.height = rect.dy * Core::GetVirtualToPhysicalFactor();
 	
 	webViewRect.origin.x = rect.x * DAVA::Core::GetVirtualToPhysicalFactor();
-	webViewRect.origin.y = (Core::Instance()->GetPhysicalScreenHeight() - rect.y - rect.dy) * DAVA::Core::GetVirtualToPhysicalFactor();
+	webViewRect.origin.y = Core::Instance()->GetPhysicalScreenHeight() - (rect.y + rect.dy) * DAVA::Core::GetVirtualToPhysicalFactor();
 	
 	webViewRect.origin.x += Core::Instance()->GetPhysicalDrawOffset().x;
 	webViewRect.origin.y += Core::Instance()->GetPhysicalDrawOffset().y;

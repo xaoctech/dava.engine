@@ -74,7 +74,7 @@ void BaseObjectChecker::Dump()
     for (std::set<BaseObject*>::iterator it = baseObjects.begin(); it != baseObjects.end(); ++it)
     {
         BaseObject * obj = *it;
-        Logger::Debug("(%s) object not released", typeid(obj).name());
+        Logger::FrameworkDebug("(%s) object not released", typeid(obj).name());
     }
 }
 

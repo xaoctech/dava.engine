@@ -69,11 +69,26 @@ public:
     UIControl *GetSlider();
     
     virtual void Draw(const UIGeometricData &geometricData);
-
+	virtual void AddControl(UIControl *control);
+	virtual UIControl *Clone();
+	virtual void CopyDataFrom(UIControl *srcControl);
+	
+	virtual List<UIControl* >& GetRealChildren();
+	virtual List<UIControl* > GetSubcontrols();
+	
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNodeCompleted();
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	
     void Input(UIEvent *currentInput);
 
 	eScrollOrientation GetOrientation() const;
 	void SetOrientation(eScrollOrientation value);
+
+protected:
+	// Calculate the start offset based on the initial click point.
+	void CalculateStartOffset(const Vector2& inputPoint);
+	void InitControls(const Rect &rect = Rect());
 
 private:
     int32 orientation;
@@ -82,7 +97,11 @@ private:
     UIControl *slider;
     
     bool resizeSliderProportionally;
-    
+
+	Vector2 startPoint;
+	Vector2 startOffset;
+	
+	float32 GetValidSliderSize(float32 size);
 };
 
 

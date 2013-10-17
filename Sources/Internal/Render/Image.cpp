@@ -48,6 +48,9 @@ Image::Image()
 Image::~Image()
 {
 	SafeDeleteArray(data);
+	
+	width = 0;
+	height = 0;
 }
 
 Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
@@ -85,11 +88,54 @@ Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
     }
     else 
     {
-        Logger::Error("Image::Create trying to create image with wrong format");
+        Logger::Error("[Image::Create] trying to create image with wrong format");
+		SafeRelease(image);
     }
     
 	return image;
 }
+
+Image * Image::CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data)
+{
+	Image * image = Image::Create(width, height, format);
+	if(!image) return NULL;
+
+	if(data)
+	{
+		Memcpy(image->data, data, image->dataSize);
+	}
+
+	return image;
+}
+
+Image * Image::CreatePinkPlaceholder()
+{
+    Image * image = new Image();
+	image->width = 16;
+	image->height = 16;
+	image->format = FORMAT_RGBA8888;
+    image->dataSize = image->width * image->height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    image->data = new uint8[image->dataSize];
+
+    
+    uint32 pink = 0xffff00ff;
+    uint32 gray = 0xff7f7f7f;
+    bool pinkOrGray = false;
+    
+    uint32 * writeData = (uint32*) image->data;
+    for(uint32 w = 0; w < image->width; ++w)
+    {
+        pinkOrGray = !pinkOrGray;
+        for(uint32 h = 0; h < image->height; ++h)
+        {
+            *writeData++ = pinkOrGray ? pink : gray;
+            pinkOrGray = !pinkOrGray;
+        }
+    }
+
+    return image;
+}
+
 
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {
@@ -232,5 +278,60 @@ Image* Image::CopyImageRegion(const Image* imageToCopy, const Rect& rect)
 	return CopyImageRegion(imageToCopy, (uint32)rect.dx, (uint32)rect.dy, (uint32)rect.x, (uint32)rect.y);
 }
 
+void Image::InsertImage(const Image* image, uint32 dstX, uint32 dstY,
+						uint32 srcX /* = 0 */, uint32 srcY /* = 0 */,
+						uint32 srcWidth /* = -1 */, uint32 srcHeight /* = -1 */)
+{
+	if (GetPixelFormat() != image->GetPixelFormat())
+	{
+		return;
+	}
+
+	if (image == NULL || dstX >= width || dstY >= height ||
+		srcX >= image->GetWidth() || srcY >= image->GetHeight())
+	{
+		return;
+	}
+
+	uint32 insertWidth = (srcWidth == (uint32)-1) ? image->GetWidth() : srcWidth;
+	uint32 insertHeight = (srcHeight == (uint32)-1) ? image->GetHeight() : srcHeight;
+
+	if (srcX + insertWidth > image->GetWidth())
+	{
+		insertWidth = image->GetWidth() - srcX;
+	}
+	if (dstX + insertWidth > width)
+	{
+		insertWidth = width - dstX;
+	}
+
+	if (srcY + insertHeight > image->GetHeight())
+	{
+		insertHeight = image->GetHeight() - srcY;
+	}
+	if (dstY + insertHeight > height)
+	{
+		insertHeight = height - dstY;
+	}
+
+	PixelFormat format = GetPixelFormat();
+	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+
+	uint8* srcData = image->GetData();
+	uint8* dstData = data;
+
+	for (uint32 i = 0; i < insertHeight; ++i)
+	{
+		memcpy(dstData + (width * (dstY + i) + dstX) * formatSize,
+			   srcData + (image->GetWidth() * (srcY + i) + srcX) * formatSize,
+			   formatSize * insertWidth);
+	}
+}
+
+void Image::InsertImage(const Image* image, const Vector2& dstPos, const Rect& srcRect)
+{
+	InsertImage(image, (uint32)dstPos.x, (uint32)dstPos.y,
+				(uint32)srcRect.x, (uint32)srcRect.y, (uint32)srcRect.dx, (uint32)srcRect.dy);
+}
 
 };

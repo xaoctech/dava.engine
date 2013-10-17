@@ -62,7 +62,6 @@ GraphicsFontDefinition::~GraphicsFontDefinition()
 GraphicsFont::GraphicsFont()
 	:fontSprite(0)
 {
-	color = Color::White();
 	fontType = TYPE_GRAPHICAL;
 	fdef = 0;
 	fontScaleCoeff = 1.0f;
@@ -107,7 +106,6 @@ Font * GraphicsFont::Clone() const
 	cloneFont->fdef = SafeRetain(this->fdef);	
 	cloneFont->fontSprite = SafeRetain(this->fontSprite);
 
-	cloneFont->SetColor(this->GetColor());
 	cloneFont->SetVerticalSpacing(this->GetVerticalSpacing());
     cloneFont->SetHorizontalSpacing(this->GetHorizontalSpacing());
 	cloneFont->SetSize(this->GetSize());
@@ -144,14 +142,14 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 		if (chIndex == GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
             if(c != '\n')
-                Logger::Debug("*** Error: can't find character %c in font", c);
+                Logger::Error("*** Error: can't find character %c in font", c);
 			if (charSizes)charSizes->push_back(0); // push zero size if character is not available
 			continue;
 		}
 		
 		if (prevChIndex != GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
-			//Logger::Debug("kern: %c-%c = %f", string[indexInString - 1], c,  GetDistanceFromAtoB(prevChIndex, chIndex));
+			//Logger::FrameworkDebug("kern: %c-%c = %f", string[indexInString - 1], c,  GetDistanceFromAtoB(prevChIndex, chIndex));
 			DVASSERT(chIndex < fdef->tableLenght);
 			currentX += GetDistanceFromAtoB(prevChIndex, chIndex);
 		}
@@ -296,7 +294,7 @@ bool GraphicsFontDefinition::LoadFontDefinition(const FilePath & fontDefName)
 		characterTable[t] = c;
 		DVVERIFY(file->Read(&characterPreShift[t], 4) == 4);
 		DVVERIFY(file->Read(&characterWidthTable[t], 4) == 4);
-		//Logger::Debug("char: %c idx: %d",  characterTable[t], t);
+		//Logger::FrameworkDebug("char: %c idx: %d",  characterTable[t], t);
 	}
 	
 	DVVERIFY(file->Read(&defaultShiftValue, 4) == 4);
@@ -304,7 +302,7 @@ bool GraphicsFontDefinition::LoadFontDefinition(const FilePath & fontDefName)
 	for (int t = 0; t < tableLenght; ++t)
 	{
 		DVVERIFY(file->Read(&kerningBaseShift[t], 4) == 4);
-		//Logger::Debug("base: %c baseshift:%f preshift:%f", characterTable[t], kerningBaseShift[t], characterPreShift[t]);
+		//Logger::FrameworkDebug("base: %c baseshift:%f preshift:%f", characterTable[t], kerningBaseShift[t], characterPreShift[t]);
 	}
 	
 	DVVERIFY(file->Read(&kerningPairCount, 4) == 4);
@@ -330,7 +328,7 @@ bool GraphicsFontDefinition::LoadFontDefinition(const FilePath & fontDefName)
 	
 //	for (int32 t = 0; t < tableLenght; ++t)
 //	{
-//		//Logger::Debug("char check: %c idx: %d",  characterTable[t], t);
+//		//Logger::FrameworkDebug("char check: %c idx: %d",  characterTable[t], t);
 //	}
 	
 	
@@ -420,8 +418,8 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 	float32 currentX = x;
 	float32 currentY = y;
 	float32 sizeFix = 0.0f;
-	//Logger::Debug("%S startX:%f", string.c_str(), currentX);
-    RenderManager::Instance()->SetColor(color);
+	//Logger::FrameworkDebug("%S startX:%f", string.c_str(), currentX);
+    //RenderManager::Instance()->SetColor(Color::White());
 	for (uint32 indexInString = 0; indexInString < length; ++indexInString)
 	{
 		char16 c = string[indexInString];
@@ -436,13 +434,13 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 		if (chIndex == GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
             if(c != '\n')
-                Logger::Debug("*** Error: can't find character %c in font", c);
+                Logger::Error("*** Error: can't find character %c in font", c);
 			continue;
 		}
 		
 		if (prevChIndex != GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
-			//Logger::Debug("kern: %c-%c = %f", string[indexInString - 1], c,  GetDistanceFromAtoB(prevChIndex, chIndex));
+			//Logger::FrameworkDebug("kern: %c-%c = %f", string[indexInString - 1], c,  GetDistanceFromAtoB(prevChIndex, chIndex));
 			currentX += GetDistanceFromAtoB(prevChIndex, chIndex);
 		}
 		
@@ -467,13 +465,13 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 //		RenderManager::Instance()->ResetColor();
 		
 		currentX += (fdef->characterWidthTable[chIndex] + horizontalSpacing) * fontScaleCoeff;
-//		Logger::Debug("%c w:%f pos: %f\n", c, fdef->characterWidthTable[chIndex] * fontScaleCoeff, currentX); 
+//		Logger::FrameworkDebug("%c w:%f pos: %f\n", c, fdef->characterWidthTable[chIndex] * fontScaleCoeff, currentX); 
 //		if (c == ' ')currentX += fdef->characterWidthTable[chIndex] * fontScaleCoeff;
 //		else currentX += fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::ACTIVE_WIDTH) * fontScaleCoeff;
 
 		prevChIndex = chIndex;
 	}
-    RenderManager::Instance()->ResetColor();
+    //RenderManager::Instance()->ResetColor();
 
 	currentX -= (fdef->characterWidthTable[prevChIndex] + horizontalSpacing) * fontScaleCoeff;
 	currentX += (fdef->characterPreShift[prevChIndex] + fontSprite->GetRectOffsetValueForFrame(prevChIndex, Sprite::ACTIVE_WIDTH)) * fontScaleCoeff; // characterWidthTable[prevChIndex];

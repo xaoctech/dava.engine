@@ -555,13 +555,13 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 
 	// Yuri Coder, 2013/04/24. Thumb Button and all the backgrounds are child controls now
 	// so save them under appropriate names.
-	YamlNode* thumbButtonNode = this->thumbButton->SaveToYamlNode(loader);
+	YamlNode* thumbButtonNode = SaveToYamlNodeRecursive(loader, this->thumbButton);
 	node->AddNodeToMap(UISLIDER_THUMB_SPRITE_CONTROL_NAME, thumbButtonNode);
 
-	YamlNode* minBackgroundNode = this->bgMin->SaveToYamlNode(loader);
+	YamlNode* minBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMin);
 	node->AddNodeToMap(UISLIDER_MIN_SPRITE_CONTROL_NAME, minBackgroundNode);
 
-	YamlNode* maxBackgroundNode = this->bgMax->SaveToYamlNode(loader);
+	YamlNode* maxBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMax);
 	node->AddNodeToMap(UISLIDER_MAX_SPRITE_CONTROL_NAME, maxBackgroundNode);
 
     return node;
@@ -588,22 +588,30 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	maxValue = t->maxValue;
 	
 	currentValue = t->currentValue;
-	
+
 	if (t->thumbButton)
 	{
+		RemoveControl(thumbButton);
 		thumbButton = t->thumbButton->Clone();
 		AddControl(thumbButton);
+		thumbButton->Release();
 	}
 	if (t->bgMin)
 	{
+		RemoveControl(bgMin);
 		bgMin = t->bgMin->Clone();
 		AddControl(bgMin);
+		bgMin->Release();
+
 		PostInitBackground(bgMin);
 	}
 	if (t->bgMax)
 	{
+		RemoveControl(bgMax);
 		bgMax = t->bgMax->Clone();
 		AddControl(bgMax);
+		bgMax->Release();
+
 		PostInitBackground(bgMax);
 	}
 	

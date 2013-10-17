@@ -37,7 +37,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Debug/DVAssert.h"
-
+#include "Render/Material/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -58,6 +58,7 @@ RenderBatch::RenderBatch()
 	renderObject = 0;
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
+	aabbox = AABBox3(Vector3(), Vector3());
 }
     
 RenderBatch::~RenderBatch()
@@ -108,16 +109,13 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     {
         return;
     }
-
-
-    if(!GetVisible())
-        return;
-
     
 //    uint32 flags = renderObject->GetFlags();
 //    if ((flags & visiblityCriteria) != visiblityCriteria)
 //        return;
-    RenderManager::Instance()->GetStats().renderBatchDrawCount++;
+    
+    if(!GetVisible())
+        return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
@@ -210,7 +208,16 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
-	rb->material = SafeRetain(material);
+	
+	if(material)
+	{
+		rb->material = material->Clone();
+		rb->material->SetMaterialSystem(NULL);
+	}
+	else
+	{
+		SafeRelease(rb->material);
+	}
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;
@@ -320,6 +327,28 @@ bool RenderBatch::GetVisible() const
     return ((flags & visiblityCriteria) == visiblityCriteria);
 }
     
-
-
+void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
+{
+	MaterialSystem* matSystem = rs->GetMaterialSystem();
+	MaterialSystem* prevSystem = (material) ? material->GetMaterialSystem() : NULL;
+	if(material &&
+	   prevSystem != matSystem)
+	{
+		const FastName& parentName = material->GetParentName();
+		material->SetParent(NULL);
+		
+		matSystem->AddMaterial(material);
+		
+		if(prevSystem)
+		{
+			prevSystem->RemoveMaterial(material);
+		}
+		
+		NMaterial* newParent = matSystem->GetMaterial(parentName);
+		if(newParent)
+		{
+			material->SetParent(newParent);
+		}
+	}
+}
 };

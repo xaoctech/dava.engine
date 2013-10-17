@@ -72,6 +72,7 @@ public:
 	DAVA::Landscape* GetLandscape() const;
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
+	void RemoveCollisionObject(DAVA::Entity *entity);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -114,6 +115,9 @@ protected:
 
 	QMap<DAVA::Entity*, CollisionBaseObject*> entityToCollision;
 	QMap<btCollisionObject*, DAVA::Entity*> collisionToEntity;
+
+	DAVA::Set<DAVA::Entity*> entitiesToAdd;
+	DAVA::Set<DAVA::Entity*> entitiesToRemove;
 
 	CollisionBaseObject* BuildFromEntity(DAVA::Entity * entity);
 	void DestroyFromEntity(DAVA::Entity * entity);

@@ -91,8 +91,8 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 	if(spriteName.IsEmpty() || spriteName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
 
-//	Logger::Debug("pure create: %s", spriteName.c_str());
-//	Logger::Info("Sprite pure creation");
+//	Logger::FrameworkDebug("pure create: %s", spriteName.c_str());
+//	Logger::FrameworkDebug("Sprite pure creation");
 	FilePath pathName = FilePath::CreateWithNewExtension(spriteName, ".txt");
     
 	// Yuri Coder, 2013/07/15. According to DF-1504 issue we have to sent the full existing
@@ -145,11 +145,11 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
     
     SafeRelease(fp);
     
-//	Logger::Debug("Adding to map for key: %s", spr->relativePathname.c_str());
+//	Logger::FrameworkDebug("Adding to map for key: %s", spr->relativePathname.c_str());
 	spriteMap[spr->relativePathname.GetAbsolutePathname()] = spr;
-//	Logger::Debug("Resetting sprite");
+//	Logger::FrameworkDebug("Resetting sprite");
 	spr->Reset();
-//	Logger::Debug("Returning pointer");
+//	Logger::FrameworkDebug("Returning pointer");
 	return spr;
 }
     
@@ -233,7 +233,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		sscanf(tempBuf, "%s", textureCharName);
         
 		FilePath tp = pathName.GetDirectory() + String(textureCharName);
-//		Logger::Debug("Opening texture: %s", tp.c_str());
+//		Logger::FrameworkDebug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
 		textureNames[k] = tp;
 		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
@@ -338,7 +338,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		frameVertices[i][7] *= resourceToVirtualFactor;
 	}
     
-//	Logger::Debug("Frames created: %d", spr->frameCount);
+//	Logger::FrameworkDebug("Frames created: %d", spr->frameCount);
 	//	center.x = width / 2;
 	//	center.y = height / 2;
 	
@@ -346,7 +346,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 	defaultPivotPoint.y = 0;
 	
 //	timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead2;
-//  Logger::Debug("Sprite: %s time:%lld", relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
+//  Logger::FrameworkDebug("Sprite: %s time:%lld", relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
 
 }
 
@@ -357,10 +357,10 @@ Sprite* Sprite::Create(const FilePath &spriteName)
 	if (!spr)
 	{
 		Texture *pinkTexture = Texture::CreatePink();
-		spr = CreateFromTexture(Vector2(16.f, 16.f), pinkTexture, Vector2(0.f, 0.f), Vector2(16.f, 16.f));
+		// DF-1984 - Set sprite relative path name inside CreateFromTexture->InitFromTexture function
+		spr = CreateFromTexture(Vector2(16.f, 16.f), pinkTexture, Vector2(0.f, 0.f), Vector2(16.f, 16.f), spriteName);
         
         spr->type = SPRITE_FROM_FILE;
-        spr->relativePathname = spriteName;
 		pinkTexture->Release();
 	}
 	return spr;
@@ -406,16 +406,16 @@ Sprite* Sprite::CreateFromTexture(Texture *fromTexture, int32 xOffset, int32 yOf
 	return spr;
 }
 
-Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTexture, const Vector2 & textureRegionOffset, const Vector2 & textureRegionSize)
+Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTexture, const Vector2 & textureRegionOffset, const Vector2 & textureRegionSize, const FilePath &spriteName /* = FilePath()*/)
 {
 	DVASSERT(fromTexture);
 	Sprite *spr = new Sprite();
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
-	spr->InitFromTexture(fromTexture, (int32)textureRegionOffset.x, (int32)textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, (int32)spriteSize.x, (int32)spriteSize.y, false);
+	spr->InitFromTexture(fromTexture, (int32)textureRegionOffset.x, (int32)textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, (int32)spriteSize.x, (int32)spriteSize.y, false, spriteName);
 	return spr;
 }
 
-void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded)
+void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded, const FilePath &spriteName /* = FilePath() */)
 {
 	if (!contentScaleIncluded) 
 	{
@@ -450,7 +450,7 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 //	int32 height = sprHeight;
 	this->size.dy = (float32)sprHeight;
 	
-//	Logger::Info("Init from texture: %.4fx%.4f", sprWidth, sprWidth);
+//	Logger::FrameworkDebug("Init from texture: %.4fx%.4f", sprWidth, sprWidth);
 
 //	this->originalSize = this->size;
 	this->defaultPivotPoint.x = 0;
@@ -515,8 +515,8 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 		
 	}
 	
-	
-	this->relativePathname = Format("FBO sprite %d", fboCounter);
+	// DF-1984 - Set available sprite relative path name here. Use FBO sprite name only if sprite name is empty.
+	this->relativePathname = spriteName.IsEmpty() ? Format("FBO sprite %d", fboCounter) : spriteName;
 	spriteMap[this->relativePathname.GetAbsolutePathname()] = this;
 	fboCounter++;
 	this->Reset();
@@ -608,7 +608,7 @@ void Sprite::Clear()
 
 Sprite::~Sprite()
 {
-//	Logger::Info("Removing sprite");
+//	Logger::FrameworkDebug("Removing sprite");
 	Clear();
 		
 }
@@ -1420,14 +1420,14 @@ void Sprite::PrepareForNewSize()
 	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
 	String scaledName = pathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	
-	Logger::Instance()->Debug("Seraching for file: %s", scaledName.c_str());
+	Logger::Instance()->FrameworkDebug("Seraching for file: %s", scaledName.c_str());
 	
 	
 	File *fp = File::Create(scaledName, File::READ|File::OPEN);
 	
 	if (!fp)
 	{
-		Logger::Instance()->Debug("Can't find file: %s", scaledName.c_str());
+		Logger::Instance()->FrameworkDebug("Can't find file: %s", scaledName.c_str());
 		return;
 	}
 	SafeRelease(fp);
@@ -1435,7 +1435,7 @@ void Sprite::PrepareForNewSize()
 	Vector2 tempPivotPoint = defaultPivotPoint;
 		
 	Clear();
-	Logger::Debug("erasing from sprite from map");
+	Logger::FrameworkDebug("erasing from sprite from map");
 	spriteMap.erase(relativePathname.GetAbsolutePathname());
 	textures = 0;
 	textureNames = 0;
@@ -1472,7 +1472,7 @@ void Sprite::PrepareForNewSize()
 
 void Sprite::ValidateForSize()
 {
-	Logger::Debug("--------------- Sprites validation for new resolution ----------------");
+	Logger::FrameworkDebug("--------------- Sprites validation for new resolution ----------------");
 	List<Sprite*> spritesToReload;
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
@@ -1486,21 +1486,21 @@ void Sprite::ValidateForSize()
 	{
 		(*it)->PrepareForNewSize();
 	}
-	Logger::Debug("----------- Sprites validation for new resolution DONE  --------------");
+	Logger::FrameworkDebug("----------- Sprites validation for new resolution DONE  --------------");
 //	Texture::DumpTextures();
 }
 
 	
 void Sprite::DumpSprites()
 {
-	Logger::Info("============================================================");
-	Logger::Info("--------------- Currently allocated sprites ----------------");
+	Logger::FrameworkDebug("============================================================");
+	Logger::FrameworkDebug("--------------- Currently allocated sprites ----------------");
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
 		Sprite *sp = it->second; //[spriteDict objectForKey:[txKeys objectAtIndex:i]];
-		Logger::Debug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
+		Logger::FrameworkDebug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
 	}
-	Logger::Info("============================================================");
+	Logger::FrameworkDebug("============================================================");
 }
 
 void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)

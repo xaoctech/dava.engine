@@ -167,6 +167,7 @@ void EditorScene::CheckNodes(Entity * curr)
 			dbgComp = new DebugRenderComponent();
 			newDebugComp = true;
 			curr->AddComponent(dbgComp);
+			dbgComp->Release();
 		}
 
 		// check other debug settings
@@ -311,7 +312,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		//Logger::Debug("Has Hit");
+		//Logger::FrameworkDebug("Has Hit");
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
@@ -332,7 +333,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
 		}
-			//		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+			//		Logger::FrameworkDebug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
 		if (findedIndex == -1)
 			findedIndex = cb.m_collisionObjects.size() - 1;
@@ -413,7 +414,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	uint64 time2;
     landCollisionWorld->rayTest(pos, to, cb);
 	time2 = SystemTimer::Instance()->AbsoluteMS();
-	//Logger::Debug("raytest %lld", time2-time1);
+	//Logger::FrameworkDebug("raytest %lld", time2-time1);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
@@ -437,42 +438,6 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-Landscape * EditorScene::GetLandscape(Entity *node)
-{
-    Landscape *landscape = DAVA::GetLandscape(node);
-    if(!landscape)
-    {
-        for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-        {
-            landscape = EditorScene::GetLandscape(node->GetChild(ci));
-            if(landscape)
-            {
-                break;
-            }
-        }
-
-    }
-	return landscape;
-}
-
-Entity* EditorScene::GetLandscapeNode(Entity *node)
-{
-    Landscape *landscape = DAVA::GetLandscape(node);
-    if(landscape)
-    {
-        return node;
-    }
-    
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-    {
-        Entity * child = node->GetChild(ci);
-		Entity * result = GetLandscapeNode(child);
-		if (result)
-			return result;
-    }
-    
-	return NULL;
-}
 
 HeightmapNode * EditorScene::FindHeightmap(Entity * curr, btCollisionObject * coll)
 {
@@ -711,7 +676,7 @@ void EditorScene::AddEditorEntity(Entity *editorEntity)
 void EditorScene::UpdateShadowColorFromLandscape()
 {
 	// try to get shadow color for landscape
-	Entity *land = GetLandscapeNode(this);
+	Entity *land = FindLandscapeEntity(this);
 	if(!land) return;
 
 	KeyedArchive * props = land->GetCustomProperties();
@@ -723,7 +688,7 @@ void EditorScene::UpdateShadowColorFromLandscape()
 
 void EditorScene::SetShadowColor( const Color &color )
 {
-	Entity *land = GetLandscapeNode(this);
+	Entity *land = FindLandscapeEntity(this);
 	if(!land) return;
 
 	KeyedArchive * props = land->GetCustomProperties();

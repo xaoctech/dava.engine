@@ -46,6 +46,7 @@ namespace DAVA
 	textureValidator(NULL)
 	{
 		type = RenderObject::TYPE_SKYBOX;
+		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
 	}
 	
 	SkyboxRenderObject::~SkyboxRenderObject()
@@ -119,17 +120,17 @@ namespace DAVA
 		}
 		
 		Vector3 cubeTexCoords[SKYBOX_VERTEX_COUNT] = {
-			Vector3(-1, -1, -1), Vector3(-1, -1, 1), Vector3(1, -1, -1), Vector3(1, -1, -1), Vector3(-1, -1, 1), Vector3(1, -1, 1),
-			Vector3(1, -1, -1), Vector3(1, -1, 1), Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, 1, 1),
-			Vector3(1, 1, -1), Vector3(1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, 1, -1), Vector3(1, 1, 1), Vector3(-1, 1, 1),
-			Vector3(-1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Vector3(-1, -1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, 1),
-			Vector3(-1, -1, 1), Vector3(-1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, 1, 1), Vector3(1, 1, 1)
+			Vector3(1, 1, -1), Vector3(-1, 1, -1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, 1, 1),
+			Vector3(1, -1, -1), Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, -1), Vector3(1, 1, 1),
+			Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(1, -1, -1), Vector3(1, -1, 1),
+			Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(-1, 1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Vector3(-1, -1, 1),
+			Vector3(1, 1, 1), Vector3(-1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, 1)
 		};
 		
 		PolygonGroup* polygonGroup = new PolygonGroup();
 		polygonGroup->AllocateData(EVF_VERTEX | EVF_CUBETEXCOORD0, SKYBOX_VERTEX_COUNT, SKYBOX_VERTEX_COUNT);
 		
-		//face 0
+		//face 0 (right)+
 		polygonGroup->SetCoord(0, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
 		polygonGroup->SetCoord(1, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(2, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
@@ -137,7 +138,7 @@ namespace DAVA
 		polygonGroup->SetCoord(4, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(5, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		
-		//face 1
+		//face 1 (front)+
 		polygonGroup->SetCoord(6, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
 		polygonGroup->SetCoord(7, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(8, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
@@ -145,7 +146,7 @@ namespace DAVA
 		polygonGroup->SetCoord(10, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
 		polygonGroup->SetCoord(11, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 
-		//face 2
+		//face 2 (left)
 		polygonGroup->SetCoord(12, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
 		polygonGroup->SetCoord(13, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(14, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
@@ -153,7 +154,7 @@ namespace DAVA
 		polygonGroup->SetCoord(16, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(17, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
 				
-		//face 3
+		//face 3 (back)
 		polygonGroup->SetCoord(18, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
 		polygonGroup->SetCoord(19, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
 		polygonGroup->SetCoord(20, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
@@ -198,14 +199,10 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath);
+			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, NULL);
 			
-			if(tx && DAVA::Texture::TEXTURE_2D == tx->textureType)
-			{
-				//this could happen when pink texture were returned
-				SafeRelease(tx);
-			}
-			
+			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
+						
 			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, tx);
 			SafeRelease(tx);
 		}
@@ -229,25 +226,35 @@ namespace DAVA
 	
 	RenderObject* SkyboxRenderObject::Clone(RenderObject *newObject)
 	{
-		SkyboxRenderObject* skyboxRenderObject = cast_if_equal<SkyboxRenderObject*>(newObject);
+		if(!newObject)
+		{
+			DVASSERT_MSG(IsPointerToExactClass<SkyboxRenderObject>(this), "Can clone only SkyboxRenderObject");
+			newObject = new SkyboxRenderObject();
+		}
 		
-		if(skyboxRenderObject)
+		SkyboxRenderObject* skyboxRenderObject = static_cast<SkyboxRenderObject*>(newObject);
+		
+		skyboxRenderObject->type = type;
+		skyboxRenderObject->flags = flags;
+		skyboxRenderObject->debugFlags = debugFlags;
+		skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
+		
+		skyboxRenderObject->bbox = bbox;
+		skyboxRenderObject->texturePath = texturePath;
+		skyboxRenderObject->offsetZ = offsetZ;
+		skyboxRenderObject->rotationZ = rotationZ;
+		skyboxRenderObject->nonClippingDistance = nonClippingDistance;
+		
+		uint32 size = GetRenderBatchCount();
+		for(uint32 i = 0; i < size; ++i)
 		{
-			skyboxRenderObject->type = type;
-			skyboxRenderObject->flags = flags;
-			skyboxRenderObject->debugFlags = debugFlags;			
-			skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
-
-			skyboxRenderObject->bbox = bbox;
-			skyboxRenderObject->texturePath = texturePath;
-			skyboxRenderObject->offsetZ = offsetZ;
-			skyboxRenderObject->rotationZ = rotationZ;
-			skyboxRenderObject->nonClippingDistance = nonClippingDistance;
+			RenderBatch *batch = GetRenderBatch(i)->Clone();
+			skyboxRenderObject->AddRenderBatch(batch);
+			batch->Release();
 		}
-		else
-		{
-			newObject = RenderObject::Clone(newObject);
-		}
+		
+		skyboxRenderObject->BuildSkybox();
+		skyboxRenderObject->UpdateMaterial();
 		
 		return newObject;
 	}
@@ -314,6 +321,11 @@ namespace DAVA
 			}
 		}
 		
+		offsetZ = offset;
+	}
+	
+	void SkyboxRenderObject::ForceSetOffsetZ(float32 offset)
+	{
 		offsetZ = offset;
 	}
 	

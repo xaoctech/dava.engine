@@ -61,7 +61,7 @@ const int AlignTest::alignTypesData[] =
 };
 
 AlignTest::AlignTest():
-TestTemplate<AlignTest>("SplitTest"),
+TestTemplate<AlignTest>("AlignTest"),
 	currentAlignIndex(0),
 	currenTestIndex(0),
 	data(NULL)
@@ -198,6 +198,7 @@ void AlignTest::VerifyTestImage(Image *testImage)
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
 
+	GameCore::Instance()->RegisterError(Format("TEST #%d, DIFRESULT2 = %f", currenTestIndex, differencePersentage), __FILE__, __LINE__, &data->testData);
 	// Verify compare results
 	if (data)
 	{

@@ -26,6 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+
 #ifndef __DAVAENGINE_LANDSCAPE_NODE_H__
 #define __DAVAENGINE_LANDSCAPE_NODE_H__
 
@@ -313,6 +314,7 @@ protected:
             x = y = size = lod = 0;
             rdoQuad = -1;
             frame = 0;
+			startClipPlane = 0;
         }
         
         int16   x, y;
@@ -321,6 +323,7 @@ protected:
         int8    lod;
         int16   rdoQuad;
         AABBox3 bbox;
+		uint8 startClipPlane;
         uint32  frame;
     };
    
@@ -338,7 +341,7 @@ protected:
     void UnbindMaterial();
     
     void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
-    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
+    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags);
     void DrawFans();
 
     Texture * CreateTexture(eTextureLevel level, const FilePath & textureName);

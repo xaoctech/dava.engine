@@ -662,7 +662,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	/*GLenum glErr = glGetError();
 	if (glErr != GL_NO_ERROR)
 	{
-		Logger::Debug("GLError: 0x%x", glErr);
+		Logger::FrameworkDebug("GLError: 0x%x", glErr);
 	}*/
 }
 

@@ -382,17 +382,17 @@ DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);
 			if(outExtension == ".pvr")
 			{
-				DAVA::Logger::Info("Starting PVR conversion (%s), id %d...",
+				DAVA::Logger::FrameworkDebug("Starting PVR conversion (%s), id %d...",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
 				convertedImages = ConvertFormat(descriptor, gpu, item->force);
-				DAVA::Logger::Info("Done, id %d", item->id);
+				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}
 			else if(outExtension == ".dds")
 			{
-				DAVA::Logger::Info("Starting DXT conversion (%s), id %d...",
+				DAVA::Logger::FrameworkDebug("Starting DXT conversion (%s), id %d...",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
 				convertedImages = ConvertFormat(descriptor, gpu, item->force);
-				DAVA::Logger::Info("Done, id %d", item->id);
+				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}
 			else
 			{
@@ -523,7 +523,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
  DAVA::FilePath pathToConvert = (descriptor->IsCubeMap()) ? PrepareCubeMapForConvert(*descriptor) : FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
  
  QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, pathToConvert, gpu).c_str();
- DAVA::Logger::Info("%s", command.toStdString().c_str());
+ DAVA::Logger::FrameworkDebug("%s", command.toStdString().c_str());
  
  QProcess p;
  p.start(command);

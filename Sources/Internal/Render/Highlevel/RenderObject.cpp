@@ -43,6 +43,8 @@ RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
     ,   flags(DEFAULT_FLAGS)
     ,   removeIndex(-1)
+	,   treeNodeIndex(INVALID_TREE_NODE_INDEX)
+	,   startClippingPlane(0)
     ,   debugFlags(0)
     ,   worldTransform(0)
 	,	renderSystem(0)
@@ -65,10 +67,6 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 	batch->Retain();
 	batch->SetRenderObject(this);
     renderBatchArray.push_back(batch);
-    if (removeIndex != -1)
-    {
-        DVASSERT(renderSystem);
-    }
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
 //    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
@@ -79,12 +77,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
-{
-    if (removeIndex != -1)
-    {
-        DVASSERT(renderSystem);
-    }
-    
+{    
     batch->SetRenderObject(0);
 	batch->Release();
 
@@ -125,6 +118,9 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	newObject->debugFlags = debugFlags;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;
+
+	//TODO:VK: Do we need remove all renderbatches from newObject?
+	DVASSERT(newObject->GetRenderBatchCount() == 0);
 
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
@@ -203,6 +199,13 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
 {
 	renderSystem = _renderSystem;
+	
+	uint32 size = GetRenderBatchCount();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        RenderBatch *batch = GetRenderBatch(i);
+		batch->AttachToRenderSystem(_renderSystem);
+	}
 }
 
 RenderSystem * RenderObject::GetRenderSystem()
@@ -212,6 +215,12 @@ RenderSystem * RenderObject::GetRenderSystem()
 
 void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
 {
+}
+
+void RenderObject::RecalculateWorldBoundingBox()
+{
+	DVASSERT(!bbox.IsEmpty());
+	bbox.GetTransformedBox(*worldTransform, worldBBox);
 }
 
 };

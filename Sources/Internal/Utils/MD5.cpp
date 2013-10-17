@@ -114,7 +114,7 @@ void MD5::RecursiveDirectoryMD5(const FilePath & pathName, MD5 & md5, bool isRec
 			if(!fileList->IsNavigationDirectory(i))
 			{
 				//	bool success = DeleteDirectory(fileList->GetPathname(i), isRecursive);
-				//	Logger::Debug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+				//	Logger::FrameworkDebug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 				//	if (!success)return false;
 				if (isRecursive)
 					RecursiveDirectoryMD5(fileList->GetPathname(i), md5, isRecursive);
@@ -131,7 +131,7 @@ void MD5::RecursiveDirectoryMD5(const FilePath & pathName, MD5 & md5, bool isRec
 			md5.Update(fileDigest, DIGEST_SIZE);
 
 			//bool success = DeleteFile(fileList->GetPathname(i));
-			//Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+			//Logger::FrameworkDebug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 			//if(!success)return false;
 		}
 	}

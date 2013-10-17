@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "Base/FastName.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/SoundGroup.h"
@@ -60,7 +58,7 @@ SoundSystem::~SoundSystem()
 	}
     soundGroups.Clear();
 
-	FMOD_VERIFY(fmodSystem->release());
+	FMOD_VERIFY(fmodEventSystem->release());
 }
 
 void SoundSystem::LoadFEV(const FilePath & filePath)
@@ -84,18 +82,12 @@ void SoundSystem::Update()
     for(int32 i = 0; i < size; i++)
         animatedObjects[i]->Update();
 
-    size = soundSendCallbackOnUpdate.size();
-    for(int32 i = 0; i < size; i++)
-    {
-        Sound * sound = soundSendCallbackOnUpdate[i];
-        sound->PerformPlaybackComplete();
-        sound->Release();
-    }
-
-    if(size)
-        soundSendCallbackOnUpdate.clear();
-
 	fmodEventSystem->update();
+
+    size = soundsToReleaseOnUpdate.size();
+    for(int32 i = 0; i < size; i++)
+        SafeRelease(soundsToReleaseOnUpdate[i]);
+    soundsToReleaseOnUpdate.clear();
 }
 
 void SoundSystem::Suspend()
@@ -169,6 +161,11 @@ ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & 
 		return ScopedPtr<SoundEventCategory>(0);
 }
 
+void SoundSystem::ReleaseOnUpdate(Sound * sound)
+{
+    soundsToReleaseOnUpdate.push_back(sound);
+}
+
 void SoundSystem::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
 {
 	animatedObjects.push_back(object);
@@ -179,11 +176,6 @@ void SoundSystem::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
 	Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
 	if(it != animatedObjects.end())
 		animatedObjects.erase(it);
-}
-
-void SoundSystem::SendCallbackOnUpdate(Sound * sound)
-{
-    soundSendCallbackOnUpdate.push_back(sound);
 }
 
 };

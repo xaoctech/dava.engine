@@ -51,6 +51,10 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 	{
 		className = "UIList";
 	}
+	else if (dynamic_cast<UIScrollBar*>(uiControl))
+	{
+		className = "UIScrollBar";
+	}
 	else if (dynamic_cast<UIScrollView*>(uiControl))
 	{
 		className = "UIScrollView";

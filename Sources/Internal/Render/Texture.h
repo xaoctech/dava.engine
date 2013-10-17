@@ -99,7 +99,15 @@ public:
 	enum TextureType
 	{
 		TEXTURE_2D = 0,
-		TEXTURE_CUBE = 1
+		TEXTURE_CUBE = 1,
+		TEXTURE_TYPE_COUNT = 2
+	};
+
+	enum TextureState
+	{
+		STATE_INVALID	=	0,
+		STATE_DATA_LOADED,
+		STATE_VALID
 	};
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -114,7 +122,7 @@ public:
 	static const int MIN_HEIGHT = 8;
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
-	// Main constructurs
+	// Main constructors
 	
     static void InitializePixelFormatDescriptors();
 
@@ -160,9 +168,7 @@ public:
 		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * CreateFromFile(const FilePath & pathName);
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
-	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
+	static Texture * CreateFromFile(const FilePath & pathName, TextureType typeHint = Texture::TEXTURE_2D);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -181,14 +187,8 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
-	static Texture * CreatePink(const FilePath &path = FilePath());
+	static Texture * CreatePink(const FilePath &path = FilePath(), TextureType requestedType = Texture::TEXTURE_2D);
 
-    /**
-        \brief Function to load specific mip-map level from file
-        \param[in] level level of mip map you want to replace
-        \param[in] pathName path to file you want to use for texture
-     */
-	void LoadMipMapFromFile(int32 level, const FilePath & pathName);
 
 	/**
         \brief Sets default RGBA format that is used for textures loaded from files. 
@@ -247,8 +247,9 @@ public:
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
-	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
 	void SetInvalidater(TextureInvalidater* invalidater);
+
+	inline TextureState GetState() const;
 
 public:							// properties for fast access
 
@@ -280,8 +281,6 @@ public:							// properties for fast access
 	String		debugInfo;
 	uint32		width;			// texture width 
 	uint32		height;			// texture height
-//	uint32		imageWidth;		// image width
-//	uint32		imageHeight;	// image height
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;
@@ -312,14 +311,27 @@ private:
     
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
+	static void AddToMap(Texture *tex, const FilePath & pathname);
     
-	static Texture * CreateFromImage(const FilePath & pathname, const TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(File *file, const TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
 
-    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
-    bool CheckImageSize(const Vector<Image *> &imageSet);
-    bool IsCompressedFormat(PixelFormat format);
+	void ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor);
+
+
+	Vector<Image *> images;
+	bool LoadImages(eGPUFamily gpu);
+	void SetParamsFromImages();
+	void FlushDataToRenderer();
+	void ReleaseImages();
+
+    void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
+
+    static bool CheckImageSize(const Vector<Image *> &imageSet);
+    static bool IsCompressedFormat(PixelFormat format);
     
+	static uint32 ConvertToPower2FBOValue(uint32 value);
+
+
 	static PixelFormat defaultRGBAFormat;
 	Texture();
 	virtual ~Texture();
@@ -332,6 +344,8 @@ private:
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
 #if defined(__DAVAENGINE_OPENGL__)
+	void HWglCreateFBOBuffers();
+
     static GLint HWglFilterToGLFilter(TextureFilter filter);
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
@@ -341,8 +355,11 @@ private:
     
     static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
-    static FilePath GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
 	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
+
+
+	TextureState state;
+	TextureDescriptor *texDescriptor;
 };
     
 // Implementation of inline functions
@@ -361,6 +378,12 @@ inline const eGPUFamily Texture::GetSourceFileGPUFamily() const
 {
     return loadedAsFile;
 }
+
+inline Texture::TextureState Texture::GetState() const
+{
+	return state;
+}
+
 
 };
 #endif // __DAVAENGINE_TEXTUREGLES_H__

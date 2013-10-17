@@ -46,7 +46,10 @@ TextureSquarenessChecker::~TextureSquarenessChecker()
 
 void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *scene)
 {
-    if(scene) 
+	//TODO: NEWMATERIAL
+	DVASSERT(false && "TODO: re-implement for new materials if needed.");
+	
+    /*if(scene)
     {
         Vector<Material *> allMaterials;
         SceneHelper::EnumerateMaterials(scene, allMaterials);
@@ -75,20 +78,20 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
         {
             ValidateTextureCoordsOfNodeGeometry(scene);
 
-			FilePath currentPath = QtMainWindow::Instance()->GetCurrentScene()->GetScenePath();
-
-			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-            screen->SaveSceneToFile(currentPath);
+            QtMainWindow::Instance()->GetCurrentScene()->Save();
         }
     }
 
     squaredTextures.clear();
-    parsedPG.clear();
+    parsedPG.clear();*/
 }
 
 void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *sceneNode)
 {
-    if(!sceneNode)
+	//TODO: NEWMATERIAL
+	DVASSERT(false && "TODO: re-implement for new materials if needed.");
+
+    /*if(!sceneNode)
         return;
 
     int32 count = sceneNode->GetChildrenCount();
@@ -109,10 +112,10 @@ void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *scene
             PolygonGroup *polygonGroup = rb->GetPolygonGroup();
             if(!polygonGroup) continue;
 
-            NMaterial *material = rb->GetMaterial();
+            Material *material = rb->GetMaterial();
             if(!material) continue;
 
-            Texture * texture = material->GetTexture(NMaterial::TEXTURE_ALBEDO);
+            Texture * texture = material->GetTexture(Material::TEXTURE_DIFFUSE);
             if(squaredTextures.count(texture) && std::find(parsedPG.begin(), parsedPG.end(), polygonGroup) == parsedPG.end())
             {
                 Vector2 newScale = squaredTextures[texture];
@@ -134,7 +137,7 @@ void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *scene
             }
 
         }
-    }
+    }*/
 }
 
 bool TextureSquarenessChecker::CheckTexureSquareness(Texture *texure)

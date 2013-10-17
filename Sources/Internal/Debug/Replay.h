@@ -113,7 +113,7 @@ T Replay::Read()
 	if(file->GetPos() == file->GetSize())
 	{
 		isPlayback = false;
-		Logger::Info("replay ended");
+		Logger::FrameworkDebug("replay ended");
 	}
 
 	return value;

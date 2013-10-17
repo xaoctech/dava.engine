@@ -48,6 +48,7 @@ using namespace DAVA;
 SceneExporter::SceneExporter()
 {
     exportForGPU = GPU_UNKNOWN;
+	optimizeOnExport = true;
 }
 
 SceneExporter::~SceneExporter()
@@ -78,7 +79,7 @@ void SceneExporter::SetGPUForExporting(const eGPUFamily newGPU)
 
 void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneExporter::ExportFile] %s", fileName.c_str());
+    Logger::FrameworkDebug("[SceneExporter::ExportFile] %s", fileName.c_str());
     
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
     
@@ -120,6 +121,11 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
+    
+    if(optimizeOnExport)
+    {
+        RemoveEditorCustomProperties(scene);
+    }
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
@@ -131,13 +137,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
-    
-    SceneFileV2 * outFile = new SceneFileV2();
-    outFile->EnableSaveForGame(true);
-    outFile->EnableDebugLog(false);
-    
-    outFile->SaveScene(tempSceneName, scene);
-    SafeRelease(outFile);
+    scene->Save(tempSceneName, optimizeOnExport);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
@@ -164,6 +164,8 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
         {
             node->GetParent()->RemoveNode(node);
         }
+//TODO: NEWMATERIAL: check if this code works as designed
+		/*
 		else
 		{
 			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent *>(node->GetComponent(DAVA::Component::RENDER_COMPONENT));
@@ -175,19 +177,70 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 					DAVA::uint32 count = ro->GetRenderBatchCount();
 					for(DAVA::uint32 ri = 0; ri < count; ++ri)
 					{
-						//DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
-                        Logger::Error("Return DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial()");
-						DAVA::Material *material = 0;//ro->GetRenderBatch(ri)->GetMaterial();
-						
-                        if(material)
+						DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
+						if(material)
 							material->SetStaticLightingParams(0);
 					}
 				}
 
 			}
 		}
+		*/
     }
 }
+
+void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
+{
+    Vector<Entity *> scenenodes;
+    rootNode->GetChildNodes(scenenodes);
+    
+//    "editor.dynamiclight.enable";
+//    "editor.donotremove";
+//    
+//    "editor.referenceToOwner";
+//    "editor.isSolid";
+//    "editor.isLocked";
+//    "editor.designerName"
+//    "editor.modificationData"
+//    "editor.staticlight.enable";
+//    "editor.staticlight.used"
+//    "editor.staticlight.castshadows";
+//    "editor.staticlight.receiveshadows";
+//    "editor.staticlight.falloffcutoff"
+//    "editor.staticlight.falloffexponent"
+//    "editor.staticlight.shadowangle"
+//    "editor.staticlight.shadowsamples"
+//    "editor.staticlight.shadowradius"
+//    "editor.dynamiclight.enable"
+//    "editor.intensity"
+    
+    Vector<Entity *>::const_iterator endIt = scenenodes.end();
+    for (Vector<Entity *>::iterator it = scenenodes.begin(); it != endIt; ++it)
+    {
+        Entity * node = *it;
+
+        if(node->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT))
+        {
+            KeyedArchive *props = node->GetCustomProperties();
+            const Map<String, VariantType*> propsMap = props->GetArchieveData();
+            
+            auto endIt = propsMap.end();
+            for(auto it = propsMap.begin(); it != endIt; ++it)
+            {
+                String key = it->first;
+                
+                if(key.find(ResourceEditor::EDITOR_BASE) == 0)
+                {
+                    if((key != ResourceEditor::EDITOR_DO_NOT_REMOVE) && (key != ResourceEditor::EDITOR_DYNAMIC_LIGHT_ENABLE))
+                    {
+                        props->DeleteKey(key);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
@@ -299,7 +352,7 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
 
-    Landscape *landscape = EditorScene::GetLandscape(scene);
+    Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
@@ -391,5 +444,10 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
 		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
     }
+}
+
+void SceneExporter::EnableOptimizations( bool enable )
+{
+	optimizeOnExport = enable;
 }
 

@@ -39,6 +39,7 @@
 #include "../EditorScene.h"
 
 #include "../Qt/CubemapEditor/MaterialHelper.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
@@ -529,6 +530,15 @@ void MaterialEditor::OnSetupColor(BaseObject * object, void * userData, void * c
 
 void MaterialEditor::NodesPropertyChanged(const String &)
 {
+	if(workingScene)
+	{
+		SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(workingScene);
+		if(sc)
+		{
+			sc->MarkAsChanged();
+		}
+	}
+
     RefreshList();
 }
 
@@ -543,16 +553,12 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
     
     if(workingScene)
     {
-        EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
-        if(editorScene)
+        Landscape *landscape = FindLandscape(workingScene);
+        if (landscape)
         {
-            Landscape *landscape = editorScene->GetLandscape(editorScene);
-            if (landscape)
-            {
-                landscape->SetFog(enabled);
-                landscape->SetFogDensity(dencity);
-                landscape->SetFogColor(newColor);
-            }
+            landscape->SetFog(enabled);
+            landscape->SetFogDensity(dencity);
+            landscape->SetFogColor(newColor);
         }
     }
 }

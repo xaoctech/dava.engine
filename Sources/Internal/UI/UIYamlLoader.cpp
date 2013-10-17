@@ -334,14 +334,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 
 			font->SetSize(fontSize);
 			
-			
-			const YamlNode * fontColorNode = node->Get("color");
-			if (fontColorNode)
-			{
-				Color color = GetColorFromYamlNode(fontColorNode);
-				font->SetColor(color);
-			}
-            
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
@@ -371,17 +363,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 			{
 				font->SetSize(fontSizeNode->AsFloat());
 			}
-            
-            const YamlNode * fontColorNode = node->Get("color");
-			if (fontColorNode)
-			{
-				Color color = GetColorFromYamlNode(fontColorNode);
-				font->SetColor(color);
-			}
-            else
-            {
-                font->SetColor(1.f, 1.f, 1.f, 1.f);
-            }
             
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
@@ -414,7 +395,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 	}
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 }
 	
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
@@ -462,7 +443,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
     SafeRelease(resultNode);
     
     uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+	Logger::FrameworkDebug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 
     return savedOK;
 }
@@ -489,11 +470,11 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * root
 		UIControl* control = CreateControl(type, baseType);
 		if (!control)
 		{
-			Logger::Debug("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
+			Logger::Warning("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
 			continue;
 		}else
 		{
-			//Logger::Debug("Create control with type:%s", type.c_str());
+			//Logger::FrameworkDebug("Create control with type:%s", type.c_str());
 		}
 		control->LoadFromYamlNode(node, this);
 		parentControl->AddControl(control);
@@ -511,7 +492,7 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * root
 UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
 {
 	// Firstly try Type (Custom Control).
-	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(type));
+	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(type));
 	if (control)
 	{
 		// Everything is OK. Just update the custom control type for the control, if any.
@@ -535,7 +516,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 	// Retry with base type, if any.
 	if (!baseType.empty())
 	{
-		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(baseType));
+		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(baseType));
 		if (control)
 		{
 			// Even if the control of the base type was created, we have to store its custom type.

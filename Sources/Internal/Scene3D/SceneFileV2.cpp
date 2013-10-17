@@ -209,25 +209,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     List<DataNode*> nodes;
 	if (isSaveForGame)
 		_scene->OptimizeBeforeExport();
-   
-	_scene->GetDataNodes(nodes);
-	
-	//TODO: make more appropriate code to exclude materials from saving as DataNode
-	//TODO: probably NMaterial should be not node a DataNode at all
-	List<DataNode*>::iterator it = nodes.begin();
-	while(it != nodes.end())
-	{
-		if(dynamic_cast<NMaterial*>(*it) != NULL)
-		{
-			it = nodes.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-	
-	int32 dataNodesCount = nodes.size();
+    _scene->GetDataNodes(nodes);
+    int32 dataNodesCount = (int32)nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));
     for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
 	{
@@ -292,7 +275,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 	serializationContext.SetScene(scene);
     
     if(isDebugLogEnabled)
-        Logger::Debug("+ load data objects");
+        Logger::FrameworkDebug("+ load data objects");
 
     if (GetVersion() >= 2)
     {
@@ -304,7 +287,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     }
     
     if(isDebugLogEnabled)
-        Logger::Debug("+ load hierarchy");
+        Logger::FrameworkDebug("+ load hierarchy");
 	
 	if(header.version >= 10)
 	{
@@ -368,7 +351,7 @@ bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
     
     
     node->Save(archive, &serializationContext);
@@ -405,7 +388,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, &serializationContext);
         AddToNodeMap(node);
@@ -428,7 +411,7 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
 
     node->Save(archive, &serializationContext);
     
@@ -469,7 +452,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, &serializationContext);
         
@@ -495,7 +478,7 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
     uint64 ptr = node->GetPreviousPointer();
     
     if(isDebugLogEnabled)
-        Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
     
 	serializationContext.SetDataBlock(ptr, SafeRetain(node));
 }
@@ -504,7 +487,7 @@ bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
+        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, &serializationContext);
     
 	archive->SetInt32("#childrenCount", node->GetChildrenCount());
@@ -612,7 +595,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
 
 		if(!skipNode)
@@ -738,7 +721,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
                 String currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
-                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
                 
                 childNode->SetName(currentName);
@@ -764,6 +747,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     }
     return false;
 }
+
     
 bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 {
@@ -779,7 +763,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
-                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
                 }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
@@ -788,7 +772,11 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         }
         Entity * newMeshInstanceNode = new Entity();
         oldMeshInstanceNode->Entity::Clone(newMeshInstanceNode);
-        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode));
+
+		Component *clonedComponent = oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode);
+        newMeshInstanceNode->RemoveComponent(clonedComponent->GetType());
+        newMeshInstanceNode->AddComponent(clonedComponent);
+		clonedComponent->Release();
         
         //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
@@ -807,7 +795,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
 //                if (oldMeshInstanceNode->GetLightmapCount() == 0)
 //                {
-//                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+//                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
 //                }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
@@ -864,6 +852,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         RenderComponent * renderComponent = new RenderComponent;
         renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
+		renderComponent->Release();
         
 		if(parent)
 		{
@@ -886,7 +875,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		lod->Entity::Clone(newNode);
 		Entity * parent = lod->GetParent();
 
-		newNode->AddComponent(new LodComponent());
+		newNode->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
 
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
@@ -934,6 +923,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		RenderComponent * renderComponent = new RenderComponent();
 		newNode->AddComponent(renderComponent);
 		renderComponent->SetRenderObject(emitter);
+		renderComponent->Release();
 		
 		DVASSERT(parent);
 		if(parent)
@@ -960,8 +950,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 			parent->RemoveNode(particleEffectNode);
 		}
 
-		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
-		newNode->AddComponent(effectComponent);
+		newNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
 		newNode->Release();
 		return true;
 	}
@@ -975,6 +964,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		SwitchComponent * swConponent = new SwitchComponent();
 		newNode->AddComponent(swConponent);
 		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
+		swConponent->Release();
 
 		Entity * parent = sw->GetParent();
 		DVASSERT(parent);
@@ -994,7 +984,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		Entity * newNode = new Entity();
 		un->Clone(newNode);
 
-		newNode->AddComponent(new UserComponent());
+		newNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
 
 		Entity * parent = un->GetParent();
 		DVASSERT(parent);
@@ -1017,7 +1007,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
 		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
 
-		newNode->AddComponent(new RenderComponent(spriteObject));
+		newNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(spriteObject)));
 
 		Entity * parent = spr->GetParent();
 		DVASSERT(parent);
@@ -1075,7 +1065,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 //            node->SetName(rootNodeName);
 //    }
     int32 nowCount = rootNode->GetChildrenCountRecursive();
-    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+    Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
 void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)

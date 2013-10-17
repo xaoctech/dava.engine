@@ -34,7 +34,6 @@
 #include "TexturePacker/DefinitionFile.h"
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"
-#include "Render/Texture.h"
 #include "TextureCompression/TextureConverter.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
@@ -66,11 +65,9 @@ bool TexturePacker::TryToPack(const Rect2i & textureRect, List<DefinitionFile*> 
 			SafeDelete(packer);
 			return false;
 		}
-		if (CommandLineParser::Instance()->GetVerbose())
-			Logger::Info("p: %s %d\n",defFile->filename.GetAbsolutePathname().c_str(), frame);
+        Logger::FrameworkDebug("p: %s %d",defFile->filename.GetAbsolutePathname().c_str(), frame);
 	}
-	if (CommandLineParser::Instance()->GetVerbose())
-		Logger::Info("\n* %d x %d - success\n", textureRect.dx, textureRect.dy);
+    Logger::FrameworkDebug("* %d x %d - success", textureRect.dx, textureRect.dy);
 	
 	if (lastPackedPacker)
 	{
@@ -149,8 +146,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 		int bestResolution = (maxTextureSize + 1) * (maxTextureSize + 1);
 		int bestXResolution, bestYResolution;
 		
-		if (CommandLineParser::Instance()->GetVerbose())
-			Logger::Info("* Packing tries started: ");
+        Logger::FrameworkDebug("* Packing tries started: ");
 		
 		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
@@ -165,16 +161,15 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 						bestYResolution = yResolution;
 					}
 			}
-		if (CommandLineParser::Instance()->GetVerbose())
-			Logger::Info("\n");
+
+        Logger::FrameworkDebug("");
         
 		if (bestResolution != (maxTextureSize + 1) * (maxTextureSize + 1))
 		{
 			char textureNameWithIndex[50];
 			sprintf(textureNameWithIndex, "texture%d", textureIndex++);
 			FilePath textureName = outputPath + textureNameWithIndex;
-			if (CommandLineParser::Instance()->GetVerbose())
-				Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
+            Logger::FrameworkDebug("* Writing final texture (%d x %d): %s", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 			
 			PngImageExt finalImage;
 			finalImage.Create(bestXResolution, bestYResolution);
@@ -183,7 +178,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 			for (int frame = 0; frame < defFile->frameCount; ++frame)
 			{
 				Rect2i *destRect = lastPackedPacker->SearchRectForPtr(&defFile->frameRects[frame]);
-				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame\n");
+				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame");
 				
 				FilePath withoutExt(defFile->filename);
                 withoutExt.TruncateExtension();
@@ -195,7 +190,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 			
 			if (!WriteDefinition(excludeFolder, outputPath, textureNameWithIndex, defFile))
 			{
-				Logger::Error("* ERROR: failed to write definition\n");
+				Logger::Error("* ERROR: failed to write definition");
 			}
 
             textureName.ReplaceExtension(".png");
@@ -226,8 +221,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 	int bestResolution = (maxTextureSize + 1) * (maxTextureSize + 1);
 	int bestXResolution, bestYResolution;
 	
-	if (CommandLineParser::Instance()->GetVerbose())
-		Logger::Info("* Packing tries started: ");
+    Logger::FrameworkDebug("* Packing tries started: ");
 	
     bool needOnlySquareTexture = onlySquareTextures || NeedSquareTextureForCompression(forGPU);
 	for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
@@ -245,13 +239,12 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 					 bestYResolution = yResolution;
 				 }
 		 }
-	if (CommandLineParser::Instance()->GetVerbose())
-		Logger::Info("\n");
+    Logger::FrameworkDebug("\n");
+
 	if (bestResolution != (maxTextureSize + 1) * (maxTextureSize + 1))
 	{
 		FilePath textureName = outputPath + "texture";
-		if (CommandLineParser::Instance()->GetVerbose())
-			Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
+        Logger::FrameworkDebug("* Writing final texture (%d x %d): %s", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 	
 		PngImageExt finalImage;
 		finalImage.Create(bestXResolution, bestYResolution);
@@ -263,7 +256,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 			for (int frame = 0; frame < defFile->frameCount; ++frame)
 			{
 				Rect2i *destRect = lastPackedPacker->SearchRectForPtr(&defFile->frameRects[frame]);
-				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame\n");
+				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame");
 				
                 FilePath withoutExt(defFile->filename);
                 withoutExt.TruncateExtension();
@@ -280,7 +273,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 			
 			if (!WriteDefinition(excludeFolder, outputPath, "texture", defFile))
 			{
-				Logger::Error("* ERROR: failed to write definition\n");
+				Logger::Error("* ERROR: failed to write definition");
 			}
 		}
 
@@ -296,14 +289,14 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defList, eGPUFamily forGPU)
 {
 	if (defList.size() != 1)
-		if (CommandLineParser::Instance()->GetVerbose())Logger::Error("* ERROR: failed to pack to multiple textures\n");
+        Logger::Error("* ERROR: failed to pack to multiple textures");
 
 	for (int i = 0; i < (int)sortVector.size(); ++i)
 	{
 		DefinitionFile * defFile = sortVector[i].defFile;
 		int frame = sortVector[i].frameIndex;
-		if (CommandLineParser::Instance()->GetVerbose())
-            Logger::Info("[MultiPack] prepack: %s frame: %d w:%d h:%d\n", defFile->filename.GetAbsolutePathname().c_str(), frame, defFile->frameRects[frame].dx, defFile->frameRects[frame].dy);
+        
+        Logger::FrameworkDebug("[MultiPack] prepack: %s frame: %d w:%d h:%d", defFile->filename.GetAbsolutePathname().c_str(), frame, defFile->frameRects[frame].dx, defFile->frameRects[frame].dy);
 	}
 	
 	Vector<ImagePacker*> & packers = usedPackers;
@@ -316,7 +309,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		float maxValue = 0.0f;
 		//int bestResolution = 1025 * 1025;
 		
-		if (CommandLineParser::Instance()->GetVerbose())Logger::Info("* Packing tries started: ");
+        Logger::FrameworkDebug("* Packing tries started: ");
 		
 		ImagePacker * bestPackerForThisStep = 0;
 		Vector<SizeSortItem> newWorkVector;
@@ -346,7 +339,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		packers.push_back(bestPackerForThisStep);
 	}
 	
-	if (CommandLineParser::Instance()->GetVerbose())Logger::Info("* Writing %d final textures \n", (int)packers.size());
+    Logger::FrameworkDebug("* Writing %d final textures", (int)packers.size());
 
 	Vector<PngImageExt*> finalImages;
 	
@@ -386,7 +379,8 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			
 			if (foundPacker)
 			{
-				if (CommandLineParser::Instance()->GetVerbose())Logger::Info("[MultiPack] pack to texture: %d\n", packerIndex);
+                Logger::FrameworkDebug("[MultiPack] pack to texture: %d", packerIndex);
+                
 				PngImageExt image;
 				image.Read(imagePath);
 				finalImages[packerIndex]->DrawImage(destRect->x, destRect->y, &image);
@@ -413,7 +407,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		FilePath textureName = outputPath + "texture";
 		if (!WriteMultipleDefinition(excludeFolder, outputPath, "texture", defFile))
 		{
-			Logger::Error("* ERROR: failed to write definition\n");
+			Logger::Error("* ERROR: failed to write definition");
 		}
 	}	
 }
@@ -458,8 +452,7 @@ Rect2i TexturePacker::ReduceRectToOriginalSize(const Rect2i & _input)
 bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
-	if (CommandLineParser::Instance()->GetVerbose())
-		Logger::Info("* Write definition: %s\n", fileName.c_str());
+    Logger::FrameworkDebug("* Write definition: %s", fileName.c_str());
 	
 	FilePath defFilePath = outputPath + fileName;
 	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
@@ -498,8 +491,7 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
-	if (CommandLineParser::Instance()->GetVerbose())
-		Logger::Info("* Write definition: %s\n", fileName.c_str());
+    Logger::FrameworkDebug("* Write definition: %s", fileName.c_str());
 	
 	FilePath defFilePath = outputPath + fileName;
 	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
@@ -616,22 +608,15 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 
-    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
     descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
-    if(descriptor->settings.generateMipMaps)
-    {
-        descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-    }
-    else
-    {
-        descriptor->settings.minFilter = Texture::FILTER_LINEAR;
-        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-    }
-    
+	
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps);
+	descriptor->settings.minFilter = ftItem.minFilter;
+	descriptor->settings.magFilter = ftItem.magFilter;
+	
     if(forGPU == GPU_UNKNOWN)   // not need compression
         return descriptor;
-    
     
     descriptor->exportedAsGpuFamily = forGPU;
 
@@ -663,6 +648,64 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     }
     
     return descriptor;
+}
+
+Texture::TextureWrap TexturePacker::GetDescriptorWrapMode()
+{
+	if (CommandLineParser::Instance()->IsFlagSet("--wrapClampToEdge"))
+	{
+		return Texture::WRAP_CLAMP_TO_EDGE;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--wrapRepeat"))
+	{
+		return Texture::WRAP_REPEAT;
+	}
+	
+	// Default Wrap mode
+	return Texture::WRAP_CLAMP_TO_EDGE;
+}
+
+TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMaps)
+{
+	// Default filter
+	TexturePacker::FilterItem filterItem(generateMipMaps ? Texture::FILTER_LINEAR_MIPMAP_LINEAR :
+															Texture::FILTER_LINEAR,
+															Texture::FILTER_LINEAR);
+	
+	if (CommandLineParser::Instance()->IsFlagSet("--magFilterNearest"))
+	{
+		filterItem.magFilter = Texture::FILTER_NEAREST;
+	}
+	if (CommandLineParser::Instance()->IsFlagSet("--magFilterLinear"))
+	{
+		filterItem.magFilter = Texture::FILTER_LINEAR;
+	}
+	if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearestMipmapNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinearMipmapNearest"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_NEAREST;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterNearestMipmapLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_NEAREST_MIPMAP_LINEAR;
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--minFilterLinearMipmapLinear"))
+	{
+		filterItem.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+	}
+
+	return filterItem;
 }
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)

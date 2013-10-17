@@ -32,7 +32,8 @@
 #include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataKeyedArchiveMember.h"
+#include "SceneEditor/EditorConfig.h"
 
 #include <QSet>
 #include <QMenu>
@@ -45,6 +46,7 @@
 QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive)
 	: curArchive(archive)
 	, lastAddedType(DAVA::VariantType::TYPE_STRING)
+	, lastCommand(NULL)
 {
 	if(NULL != curArchive)
 	{
@@ -52,13 +54,14 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 	}
 
 	SetFlags(FLAG_IS_DISABLED);
-	ChildsSync();
 
 	// add optional widget (button) to add new key
 	QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
 	addButton->setIconSize(QSize(12, 12));
 	AddOW(QtPropertyOW(addButton));
 	QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddKeyedArchiveField()));
+
+	UpdateValue();
 }
 
 QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
@@ -66,6 +69,11 @@ QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
 	if(NULL != curArchive)
 	{
 		curArchive->Release();
+	}
+
+	if(NULL != lastCommand)
+	{
+		delete lastCommand;
 	}
 }
 
@@ -79,72 +87,62 @@ QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
 	}
 	else
 	{
-		v = QString("KeyedArchive[NULL]");
+		v = QString("KeyedArchive [NULL]");
 	}
 
 	return v;
 }
 
-void QtPropertyDataDavaKeyedArcive::SetValueInternal(const QVariant &value)
-{ }
-
-void QtPropertyDataDavaKeyedArcive::ChildChanged(const QString &key, QtPropertyData *data)
+bool QtPropertyDataDavaKeyedArcive::UpdateValueInternal()
 {
-	if(NULL != curArchive)
+	// update children
 	{
-		QtPropertyDataDavaVariant *variantData = dynamic_cast<QtPropertyDataDavaVariant *>(data);
-		if(NULL != variantData)
+		QSet<QtPropertyData *> dataToRemove;
+
+		// at first step of sync we mark (placing to vector) items to remove
+		for(int i = 0; i < ChildCount(); ++i)
 		{
-			curArchive->SetVariant(key.toStdString(), variantData->GetVariantValue());
-		}
-	}
-}
-
-void QtPropertyDataDavaKeyedArcive::ChildsSync()
-{
-	QSet<QtPropertyData *> dataToRemove;
-
-	// at first step of sync we mark (placing to vector) items to remove
-	for(int i = 0; i < ChildCount(); ++i)
-	{
-		QPair<QString, QtPropertyData *> pair = ChildGet(i);
-		if(NULL != pair.second)
-		{
-			dataToRemove.insert(pair.second);
-		}
-	}
-
-	// as second step we go throught keyed archive and add new data items,
-	// and remove deleting mark from items that are still in archive
-	if(NULL != curArchive)
-	{
-		DAVA::Map<DAVA::String, DAVA::VariantType*> data = curArchive->GetArchieveData();
-		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
-
-		for(; i != data.end(); ++i)
-		{
-			QtPropertyData *childData = ChildGet(i->first.c_str());
-
-			// this key already in items list
-			if(NULL != childData)
+			QPair<QString, QtPropertyData *> pair = ChildGet(i);
+			if(NULL != pair.second)
 			{
-				// remove deleting mark
-				dataToRemove.remove(childData);
-			}
-			// create new child data
-			else
-			{
-				ChildCreate(i->first.c_str(), i->second);
+				dataToRemove.insert(pair.second);
 			}
 		}
+
+		// as second step we go throught keyed archive and add new data items,
+		// and remove deleting mark from items that are still in archive
+		if(NULL != curArchive)
+		{
+			DAVA::Map<DAVA::String, DAVA::VariantType*> data = curArchive->GetArchieveData();
+			DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
+
+			for(; i != data.end(); ++i)
+			{
+				QtPropertyData *childData = ChildGet(i->first.c_str());
+
+				// this key already in items list
+				if(NULL != childData)
+				{
+					// remove deleting mark
+					dataToRemove.remove(childData);
+				}
+				// create new child data
+				else
+				{
+					ChildCreate(i->first.c_str(), i->second);
+				}
+			}
+		}
+
+		// delete all marked items
+		QSetIterator<QtPropertyData *> it(dataToRemove);
+		while(it.hasNext())
+		{
+			ChildRemove(it.next());
+		}
 	}
 
-	// delete all marked items
-	QSetIterator<QtPropertyData *> it(dataToRemove);
-	while(it.hasNext())
-	{
-		ChildRemove(it.next());
-	}
+	return false;
 }
 
 void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::VariantType *value)
@@ -157,7 +155,20 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	}
 	else
 	{
-		childData = new QtPropertyDataDavaVariant(*value);
+		childData = new QtPropertyKeyedArchiveMember(curArchive, key.toStdString());
+
+		int presetValueType = EditorConfig::Instance()->GetPropertyValueType(key.toStdString());
+		if(presetValueType != DAVA::VariantType::TYPE_NONE)
+		{
+			if(value->type == presetValueType)
+			{
+				const DAVA::Vector<DAVA::String>& allowedValues = EditorConfig::Instance()->GetComboPropertyValues(key.toStdString());
+				for(size_t i = 0; i < allowedValues.size(); ++i)
+				{
+					((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), allowedValues[i].c_str());
+				}
+			}
+		}
 	}
 
 	ChildAdd(key, childData);
@@ -210,8 +221,17 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 					const QtPropertyOW *ow = childData->GetOW(j);
 					if(NULL != ow && ow->widget == btn)
 					{
+						if(NULL != lastCommand)
+						{
+							delete lastCommand;
+						}
+
+						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, child.first.toStdString());
+
 						curArchive->DeleteKey(child.first.toStdString());
-						ChildsSync();
+						//ChildsSync();
+
+						emit ValueChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
 				}
@@ -223,18 +243,47 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 
 void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value)
 {
+	DVASSERT(value.type != DAVA::VariantType::TYPE_NONE && value.type < DAVA::VariantType::TYPES_COUNT);
 	if(NULL != curArchive)
 	{
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
-		ChildsSync();
+		//ChildsSync();
+
+		if(NULL != lastCommand)
+		{
+			delete lastCommand;
+		}
+
+		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
+
+		emit ValueChanged(QtPropertyData::VALUE_EDITED);
 	}
 }
 
+void* QtPropertyDataDavaKeyedArcive::CreateLastCommand() const
+{
+	Command2 *command = NULL;
+
+	if(NULL != lastCommand)
+	{
+		if(CMDID_KEYEDARCHIVE_REM_KEY == lastCommand->GetId())
+		{
+			command = new KeyeadArchiveRemValueCommand(*((KeyeadArchiveRemValueCommand *) lastCommand));
+		}
+		else if(CMDID_KEYEDARCHIVE_ADD_KEY == lastCommand->GetId())
+		{
+			command = new KeyedArchiveAddValueCommand(*((KeyedArchiveAddValueCommand *) lastCommand));
+		}
+	}
+
+	return command;
+}
 
 KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int defaultType, QWidget *parent /* = NULL */) 
 	: QWidget(parent)
 	, arch(_arch)
+	, presetWidget(NULL)
 {
 	QGridLayout *grLayout = new QGridLayout();
 	int delautTypeIndex = 0;
@@ -247,7 +296,6 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	defaultBtn = new QPushButton("Ok", this);
 	keyWidget = new QLineEdit(this);
 	valueWidget = new QComboBox(this);
-	presetWidget = new QComboBox(this);
 
 	int j = 0;
 	for (int type = (DAVA::VariantType::TYPE_NONE + 1); type < DAVA::VariantType::TYPES_COUNT; type++)
@@ -267,13 +315,30 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	}
 	valueWidget->setCurrentIndex(delautTypeIndex);
 
-	grLayout->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
-	grLayout->addWidget(keyWidget, 0, 1, 1, 2);
-	grLayout->addWidget(new QLabel("Value type:", this), 1, 0, 1, 1);
-	grLayout->addWidget(valueWidget, 1, 1, 1, 2);
-	grLayout->addWidget(new QLabel("Preset:", this), 2, 0, 1, 1);
-	grLayout->addWidget(presetWidget, 2, 1, 1, 2);
-	grLayout->addWidget(defaultBtn, 3, 2, 1, 1);
+	int row = 0;
+	grLayout->addWidget(new QLabel("Key:", this), row, 0, 1, 1);
+	grLayout->addWidget(keyWidget, row, 1, 1, 2);
+	grLayout->addWidget(new QLabel("Value type:", this), ++row, 0, 1, 1);
+	grLayout->addWidget(valueWidget, row, 1, 1, 2);
+
+	const Vector<String> &presetValues = EditorConfig::Instance()->GetProjectPropertyNames();
+	if(presetValues.size() > 0)
+	{
+		presetWidget = new QComboBox(this);
+		
+		presetWidget->addItem("None", DAVA::VariantType::TYPE_NONE);
+		for(size_t i = 0; i < presetValues.size(); ++i)
+		{
+			presetWidget->addItem(presetValues[i].c_str(), EditorConfig::Instance()->GetPropertyValueType(presetValues[i]));
+		}
+
+		grLayout->addWidget(new QLabel("Preset:", this), ++row, 0, 1, 1);
+		grLayout->addWidget(presetWidget, row, 1, 1, 2);
+
+		QObject::connect(presetWidget, SIGNAL(activated(int)), this, SLOT(PreSetSelected(int)));
+	}
+
+	grLayout->addWidget(defaultBtn, ++row, 2, 1, 1);
 
 	grLayout->setMargin(5);
 	grLayout->setSpacing(3);
@@ -350,7 +415,23 @@ void KeyedArchiveItemWidget::OkKeyPressed()
 		}
 		else
 		{
-			emit ValueReady(key, DAVA::VariantType::FromType(valueWidget->itemData(valueWidget->currentIndex()).toInt()));
+			// preset?
+			int presetType = DAVA::VariantType::TYPE_NONE;
+			if(NULL != presetWidget)
+			{
+				presetType = presetWidget->itemData(presetWidget->currentIndex()).toInt();
+			}
+			
+			if(DAVA::VariantType::TYPE_NONE != presetType)
+			{
+				DAVA::VariantType presetValue = *(EditorConfig::Instance()->GetPropertyDefaultValue(key));
+				emit ValueReady(key, presetValue);
+			}
+			else
+			{
+				emit ValueReady(key, DAVA::VariantType::FromType(valueWidget->itemData(valueWidget->currentIndex()).toInt()));
+			}
+
 			this->deleteLater();
 		}
 	}
@@ -360,3 +441,18 @@ void KeyedArchiveItemWidget::OkKeyPressed()
 	}
 }
 
+void KeyedArchiveItemWidget::PreSetSelected(int index)
+{
+	if(presetWidget->itemData(index).toInt() != DAVA::VariantType::TYPE_NONE)
+	{
+		keyWidget->setText(presetWidget->itemText(index));
+		keyWidget->setEnabled(false);
+		valueWidget->setEnabled(false);
+	}
+	else
+	{
+		keyWidget->setText("");
+		keyWidget->setEnabled(true);
+		valueWidget->setEnabled(true);
+	}
+}

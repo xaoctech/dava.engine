@@ -468,6 +468,9 @@ void ShadowVolume::MakeShadowVolumeFromPolygonGroup(PolygonGroup * oldPolygonGro
 	Memcpy(shadowPolygonGroup->indexArray, newPolygonGroup->indexArray, nextIndex*sizeof(int16));
 
 	SafeRelease(newPolygonGroup);
+
+	SafeDeleteArray(adjacency);
+	SafeDeleteArray(mapping);
 }
 
 void ShadowVolume::GetDataNodes(Set<DataNode*> & dataNodes)

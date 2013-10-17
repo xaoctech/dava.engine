@@ -65,11 +65,15 @@ namespace DAVA
 	{\
 		DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");\
 	}\
+	if(Thread::IsMainThread())\
+	{\
+		RenderManager::Instance()->VerifyRenderContext();\
+	}\
 	command;\
 	GLenum err = glGetError();\
 	if (err != GL_NO_ERROR)\
     {  \
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
         OGLDebugBreak(); \
     }\
 }
@@ -80,7 +84,7 @@ namespace DAVA
     GLenum err = glGetError();\
     if (err != GL_NO_ERROR)\
     {  \
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
         DVASSERT(false);\
 		OGLDebugBreak(); \
     }\
@@ -115,11 +119,13 @@ namespace DAVA
     #define glGenerateMipmap glGenerateMipmapOES
 	#define glBindFramebuffer glBindFramebufferOES
     #define DAVA_GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+	#define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
     
 #elif defined(__DAVAENGINE_ANDROID__)
     
     #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
 	#define DAVA_GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+	#define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
     
 #elif defined(__DAVAENGINE_MACOS__)
 	

@@ -87,7 +87,7 @@ FileList::FileList(const FilePath & filepath)
 				}
 
 				fileList.push_back(entry);
-				//Logger::Debug("filelist: %s %s", filepath.c_str(), entry.name.c_str());
+				//Logger::FrameworkDebug("filelist: %s %s", filepath.c_str(), entry.name.c_str());
 			}
 			while( _findnext( hFile, &c_file ) == 0 );
 

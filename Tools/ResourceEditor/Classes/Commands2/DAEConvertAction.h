@@ -38,12 +38,41 @@ class DAEConvertAction: public CommandAction
 {
 public:
 	DAEConvertAction(const DAVA::FilePath &path);
-	~DAEConvertAction();
 
 	virtual void Redo();
 
 protected:
+    
+    virtual void ConvertFromSceToSc2() const;
+    
+    DAVA::Scene * CreateSceneFromSce() const;
+
+protected:
 	DAVA::FilePath daePath;
+};
+
+
+class DAEConvertWithSettingsAction: public DAEConvertAction
+{
+public:
+	DAEConvertWithSettingsAction(const DAVA::FilePath &path);
+    
+protected:
+
+    virtual void ConvertFromSceToSc2() const;
+
+    static DAVA::Scene * CreateSceneFromSc2(const DAVA::FilePath &scenePathname);
+
+    static void TryToMergeScenes(const DAVA::FilePath &originalPath, const DAVA::FilePath &newPath);
+    
+    static void CopyMaterialsSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
+    static void CopyLODSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
+	static void CopyShadowSettings(DAVA::Scene * srcScene, DAVA::Scene * dstScene);
+	static void CopyShadowSettingsRecursive(const DAVA::Entity * srcEntity, DAVA::Entity * dstEntity);
+    
+    static DAVA::Vector<DAVA::Material *> CreateMaterialsVector(DAVA::Scene *scene);
+    static bool CompareMaterials(const DAVA::Material *left, const DAVA::Material *right);
+
 };
 
 #endif // __RESOURCEEDITORQT__DAECONVERTACTION__

@@ -708,6 +708,10 @@ public:
 	 */
 	virtual void RemoveControl(UIControl *control);
 	/**
+	 \brief Remove this control from its parent, if any.
+	 */
+	virtual void RemoveFromParent();
+	/**
 	 \brief Removes all children from the control.
 	 */
 	virtual void RemoveAllControls();
@@ -1154,6 +1158,10 @@ public:
 	int32 GetInitialState() const;
 	void SetInitialState(int32 newState);
 
+	// Get/set visible flag for UI editor. Should not be serialized.
+	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
+	void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1164,7 +1172,9 @@ public:
 	float32	angle;//!<control rotation angle. Rotation around pivot point.
 	
 protected:
-	
+	// Save the control to YAML including all the child controls and return it.
+	virtual YamlNode* SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control,  YamlNode* rootNode = NULL);
+
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
 
 	Vector2 absolutePosition;
@@ -1176,12 +1186,29 @@ protected:
 	UIControlBackground *background;
 //	Rect absoluteRect;
 	int32 controlState;
-	bool visible;
-	bool inputEnabled;
-	bool clipContents;
 
-	bool multiInput;
-	bool exclusiveInput;
+	// boolean flags are grouped here to pack them together (see please DF-2149).
+	bool inputEnabled : 1;
+	bool exclusiveInput : 1;
+	bool visible : 1;
+	bool clipContents : 1;
+	bool debugDrawEnabled : 1;
+	bool multiInput : 1;
+
+	bool visibleForUIEditor : 1;
+
+	// Enable align options
+	bool _leftAlignEnabled : 1;
+	bool _hcenterAlignEnabled : 1;
+	bool _rightAlignEnabled : 1;
+	bool _topAlignEnabled : 1;
+	bool _vcenterAlignEnabled : 1;
+	bool _bottomAlignEnabled : 1;
+	
+	bool isUpdated : 1;
+	bool isIteratorCorrupted : 1;
+
+
 	int32 currentInputID;
 	int32 touchesInside;
 	int32 totalTouches;
@@ -1194,14 +1221,6 @@ protected:
 	int32 _vcenterAlign;
 	int32 _bottomAlign;
 
-	// Enable align options
-	bool _leftAlignEnabled;
-	bool _hcenterAlignEnabled;
-	bool _rightAlignEnabled;
-	bool _topAlignEnabled;
-	bool _vcenterAlignEnabled;
-	bool _bottomAlignEnabled;
-	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
 
@@ -1209,7 +1228,6 @@ protected:
 	
 	bool needToRecalcFromAbsoluteCoordinates;
 	
-	bool debugDrawEnabled;
 	Color debugDrawColor;
 
 	eDebugDrawPivotMode drawPivotPointMode;
@@ -1233,14 +1251,12 @@ protected:
 #endif
 	
 private:
-	bool isUpdated;
-	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
 
-	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
+	void RecalculatePivotPoint(const Rect &newRect);
 
 	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);

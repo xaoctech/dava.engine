@@ -31,16 +31,18 @@
 #ifndef __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 #define __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 
-#include <QComboBox>
-
 #include "Base/Introspection.h"
 #include "Base/EnumMap.h"
 
 #include "../QtPropertyData.h"
 
+class QToolButton;
+
 class QtPropertyDataDavaVariant : public QtPropertyData
 {
 	Q_OBJECT
+
+	friend class QtPropertyDataDavaVariantSubValue;
 
 public:
 	QtPropertyDataDavaVariant(const DAVA::VariantType &value);
@@ -49,10 +51,6 @@ public:
 	const DAVA::VariantType& GetVariantValue() const;
 	void SetVariantValue(const DAVA::VariantType& value);
 
-	// TODO:
-	// void SetValuesRange();
-	// const EnumMap* GetValuesRange();
-	
 	void AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue = QVariant());
 	void ClearAllowedValues();
 
@@ -68,9 +66,6 @@ protected:
 	virtual QVariant GetValueAlias();
 	virtual void SetValueInternal(const QVariant &value);
 
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	virtual void ChildNeedUpdate();
-
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
 	virtual bool SetEditorDataInternal(QWidget *editor);
 	virtual bool EditorDoneInternal(QWidget *editor);
@@ -78,7 +73,8 @@ protected:
 protected slots:
 	void ColorOWPressed();
 	void FilePathOWPressed();
-	//void ComboIndexChanged(int index);
+	void AllowedOWPressed();
+	void AllowedSelected(int index);
 
 private:
 	struct AllowedValue
@@ -89,14 +85,15 @@ private:
 
 	QVector<AllowedValue> allowedValues;
 	bool allowedValuesLocked;
+	QToolButton *allowedButton;
 
 	bool iconCacheIsValid;
 	QIcon iconCache;
 
+	void InitFlags();
 	void ChildsCreate();
 	void ChildsSetFromMe();
-	void MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData);
-
+	void MeSetFromChilds();
 
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive);
 	QVariant FromVector4(const DAVA::Vector4 &vector);
@@ -118,8 +115,37 @@ private:
 	void ToColor(const QVariant &value);
 	void ToAABBox3(const QVariant &value);
 
-	QComboBox* CreateAllowedValuesComboBox(QWidget *parent);
-	void SetAllowedValueFromComboBox(QComboBox *combobox);
+	void SubValueAdd(const QString &key, const QVariant &value);
+	void SubValueSet(const QString &key, const QVariant &value);
+	QVariant SubValueGet(const QString &key);
+
+	QWidget* CreateAllowedValuesEditor(QWidget *parent);
+	void SetAllowedValueEditorData(QWidget *editorWidget);
+	void ApplyAllowedValueFromEditor(QWidget *editorWidget);
+};
+
+class QtPropertyDataDavaVariantSubValue : public QtPropertyData
+{
+public:
+	QtPropertyDataDavaVariantSubValue(QtPropertyDataDavaVariant *_parentVariant, const QVariant &value)
+		: QtPropertyData(value)
+		, parentVariant(_parentVariant)
+		, trackParent(true)
+	{ }
+
+	QtPropertyDataDavaVariant *parentVariant;
+	bool trackParent;
+
+	virtual void SetValueInternal(const QVariant &value)
+	{
+		QtPropertyData::SetValueInternal(value);
+		if(NULL != parentVariant && trackParent)
+		{
+			parentVariant->MeSetFromChilds();
+		}
+
+		trackParent = true;
+	}
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_VARIANT_H__

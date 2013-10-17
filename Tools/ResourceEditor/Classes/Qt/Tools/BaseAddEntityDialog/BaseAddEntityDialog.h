@@ -34,11 +34,9 @@
 #include <QDialog.h>
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
-//#include "QtPropertyData.h"
-//#include "Base/Introspection.h"
+#include "DockProperties/PropertyEditorDialog.h"
 
 class DAVA::Entity;
-
 
 namespace Ui
 {
@@ -55,12 +53,10 @@ public:
 	virtual ~BaseAddEntityDialog();
 	
 	void GetIncludedControls(QList<QWidget*>& includedWidgets);
-	
-	void showEvent ( QShowEvent * event );
 
 	void hideEvent ( QHideEvent * event );
 	
-	DAVA::Entity* GetEntity()
+	virtual DAVA::Entity* GetEntity()
 	{
 		return entity;
 	}
@@ -68,8 +64,16 @@ public:
 	void SetEntity(DAVA::Entity* );
 	
 protected:
+
+	void showEvent ( QShowEvent * event );
+	
+	virtual void InitPropertyEditor();
+	
+	void PerformResize();
 	
 	void AddControlToUserContainer(QWidget* widget);
+	
+	void AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString);
 	
 	void RemoveControlFromUserContainer(QWidget* widget);
 	
@@ -77,7 +81,11 @@ protected:
 
 	DAVA::Entity* entity;
 	
+	PropertyEditorDialog *propEditor;
+	
 	Ui::BaseAddEntityDialog *ui;
+	
+	DAVA::Map<QWidget*, QWidget*> additionalWidgetMap;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

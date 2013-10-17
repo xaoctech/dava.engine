@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __DAVAENGINE_SOUND_H__
 #define __DAVAENGINE_SOUND_H__
 
@@ -41,6 +39,7 @@ namespace FMOD
 {
 class Sound;
 class ChannelGroup;
+class Channel;
 };
 
 namespace DAVA
@@ -56,22 +55,17 @@ public:
 		TYPE_STREAMED
 	};
 
-	enum eEvent
-	{
-		EVENT_SOUND_COMPLETED = 1 //!< Event is performed when sound playback is completed.
-	};
-
 	static Sound * Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
 	static Sound * Create3D(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
 
 	void SetVolume(float32 volume);
 	float32	GetVolume();
 
-	void Play();
+	void Play(const Message & msg = Message());
 	void Pause(bool isPaused);
 	bool IsPaused();
 	void Stop();
-	void PerformPlaybackComplete();
+    void PerformCallback(FMOD::Channel * instance);
 
 	void SetPosition(const Vector3 & position);
 	void UpdateInstancesPosition();
@@ -101,7 +95,7 @@ private:
 
     uint8 * soundData;
 
-	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
+    Map<FMOD::Channel *, Message> callbacks;
 };
 
 };

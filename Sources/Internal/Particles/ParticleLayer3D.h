@@ -47,8 +47,7 @@ class ParticleLayer3D : public ParticleLayer
 public:
 	ParticleLayer3D(ParticleEmitter* parent);
 	virtual ~ParticleLayer3D();
-
-	virtual void LoadFromYaml(const FilePath & configPath, const YamlNode * node);
+	
 	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
 	virtual void Draw(Camera * camera);
@@ -58,7 +57,9 @@ public:
 
 	NMaterial * GetMaterial();
 	
-	virtual void SetAdditive(bool additive);
+	virtual void SetBlendMode(eBlendMode sFactor, eBlendMode dFactor);
+
+	virtual void SetFrameBlend(bool enable);
 
 	// Whether this layer should be drawn as "long" one?
 	virtual bool IsLong();
@@ -95,7 +96,10 @@ protected:
 	RenderDataObject * renderData;
 	Vector<float32> verts;
 	Vector<float32> textures;
+	Vector<float32> textures2;
+	Vector<float32> times;
 	Vector<uint32> colors;
+	static Vector<uint16> indices;
 
 	Vector3 _up;
 	Vector3 _left;
@@ -105,7 +109,7 @@ protected:
 	Vector3 currentParticlePosition;
 	
 	NMaterial* regularMaterial;
-	NMaterial* additiveMaterial;
+	NMaterial* frameBlendMaterial;
 
 public:
     //INTROSPECTION_EXTEND(ParticleLayer3D, ParticleLayer,

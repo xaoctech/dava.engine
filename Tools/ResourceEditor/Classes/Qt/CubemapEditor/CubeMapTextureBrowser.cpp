@@ -33,6 +33,7 @@
 #include "Qt/Main/QtUtils.h"
 #include "ui_CubeMapTextureBrowser.h"
 #include "../../StringConstants.h"
+#include "Scene3D/Systems/SkyboxSystem.h"
 
 #include <QFileDialog>
 #include <QScrollBar>
@@ -42,11 +43,13 @@
 
 const int FACE_IMAGE_SIZE = 64;
 
-CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
+CubeMapTextureBrowser::CubeMapTextureBrowser(SceneEditor2* currentScene, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CubeMapTextureBrowser),
 	cubeListItemDelegate(QSize(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE))
 {
+	scene = currentScene;
+	
     ui->setupUi(this);
 	ui->loadingWidget->setVisible(false);
 	ui->listTextures->setItemDelegate(&cubeListItemDelegate);
@@ -194,6 +197,11 @@ void CubeMapTextureBrowser::OnChooseDirectoryClicked()
 void CubeMapTextureBrowser::OnReloadClicked()
 {
 	QString path = ui->textRootPath->text();
+	
+	if(scene)
+	{
+		scene->skyboxSystem->Reload();
+	}
 	
 	ReloadTexturesFromUI(path);
 }

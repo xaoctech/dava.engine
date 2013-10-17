@@ -74,9 +74,9 @@ public:
 
 
         INTROSPECTION(LodDistance,
-            PROPERTY("distance", "Distance", GetDistance, SetDistance, I_SAVE | I_VIEW | I_EDIT)
-            MEMBER(nearDistanceSq, "Near Distance", I_SAVE)
-            MEMBER(farDistanceSq, "Far Distance", I_SAVE)
+            PROPERTY("distance", "Distance", GetDistance, SetDistance, I_SAVE | I_VIEW)
+            MEMBER(nearDistanceSq, "Near Distance", I_SAVE | I_VIEW)
+            MEMBER(farDistanceSq, "Far Distance", I_SAVE | I_VIEW)
         );
 	};
 
@@ -101,12 +101,12 @@ public:
 	static float32 GetDefaultDistance(int32 layer);
 	void SetCurrentLod(int32 newLod);
 
-	inline int32 GetLodLayersCount();
-	inline float32 GetLodLayerDistance(int32 layerNum);
-	inline float32 GetLodLayerNear(int32 layerNum);
-	inline float32 GetLodLayerFar(int32 layerNum);
-	inline float32 GetLodLayerNearSquare(int32 layerNum);
-	inline float32 GetLodLayerFarSquare(int32 layerNum);
+	inline int32 GetLodLayersCount() const;
+	inline float32 GetLodLayerDistance(int32 layerNum) const;
+	inline float32 GetLodLayerNear(int32 layerNum) const;
+	inline float32 GetLodLayerFar(int32 layerNum) const;
+	inline float32 GetLodLayerNearSquare(int32 layerNum) const;
+	inline float32 GetLodLayerFarSquare(int32 layerNum) const;
 
 	void GetLodData(Vector<LodData*> &retLodLayers);
 
@@ -135,68 +135,42 @@ public:
          \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
 	 */
     void SetForceLodLayer(int32 layer);
-    int32 GetForceLodLayer();
+    int32 GetForceLodLayer() const;
 
-	int32 GetMaxLodLayer();
+	int32 GetMaxLodLayer() const;
 
 	void SetLayerVisibility(int32 layerNum, bool visible);
+
+    void CopyLODSettings(const LodComponent * fromLOD);	
 
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
-        COLLECTION(lodLayersArray, "Lod Layers Array", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(forceLodLayer, "Force Lod Layer", I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("forceDistance", "Force Distance", GetForceDistance, SetForceDistance, I_SAVE | I_VIEW | I_EDIT)
+        COLLECTION(lodLayersArray, "Lod Layers Array", I_SAVE | I_VIEW)
+        MEMBER(forceLodLayer, "Force Lod Layer", I_SAVE | I_VIEW)
+        PROPERTY("forceDistance", "Force Distance", GetForceDistance, SetForceDistance, I_SAVE | I_VIEW)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
     );
-    
-//    Entity::Save(archive, sceneFile);
-//    archive->SetInt32("lodCount", (int32)lodLayers.size());
-//    
-//    int32 lodIdx = 0;
-//    const List<LodData>::const_iterator &end = lodLayers.end();
-//    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
-//    {
-//        LodData & ld = *it;
-//        archive->SetInt32(Format("lod%d_layer", lodIdx), (int32)ld.layer);
-//        size_t size = ld.nodes.size();
-//        archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
-//        for (size_t idx = 0; idx < size; ++idx)
-//        {
-//            for (int32 i = 0; i < (int32)children.size(); i++)
-//            {
-//                if(children[i] == ld.nodes[idx])
-//                {
-//                    archive->SetInt32(Format("l%d_%d_ni", lodIdx, idx), i);
-//                    break;
-//                }
-//            }
-//        }
-//        
-//        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
-//        lodIdx++;
-//    }
-
 };
 
-int32 LodComponent::GetLodLayersCount()
+int32 LodComponent::GetLodLayersCount() const
 {
 	return (int32)lodLayers.size();
 }
 
-float32 LodComponent::GetLodLayerDistance(int32 layerNum)
+float32 LodComponent::GetLodLayerDistance(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].distance;
 }
 
-float32 LodComponent::GetLodLayerNearSquare(int32 layerNum)
+float32 LodComponent::GetLodLayerNearSquare(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].nearDistanceSq;
 }
 
-float32 LodComponent::GetLodLayerFarSquare(int32 layerNum)
+float32 LodComponent::GetLodLayerFarSquare(int32 layerNum) const
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].farDistanceSq;

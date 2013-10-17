@@ -52,7 +52,6 @@ public:
 	//if requested size in <0 - rect creates for the all text size	
 	void SetText(const WideString & string, const Vector2 &requestedTextRectSize = Vector2(0,0));
 	void SetFont(Font * font);
-	DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
     void SetTextColor(const Color& color);
 
 	void SetShadowColor(const Color &color);

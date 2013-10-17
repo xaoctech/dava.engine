@@ -33,6 +33,8 @@
 #include "Project/ProjectManager.h"
 #include "DAVAEngine.h"
 
+#include "Utils/TeamcityOutput.h"
+
 #if defined (__DAVAENGINE_MACOS__)
 #include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
@@ -66,6 +68,9 @@ int main(int argc, char *argv[])
     bool needToQuit = false;
     if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
+		DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
+		DAVA::Logger::AddCustomOutput(out);
+
         if(CommandLineManager::Instance()->IsToolInitialized())
         {
             CommandLineManager::Instance()->Process();
@@ -78,12 +83,16 @@ int main(int argc, char *argv[])
             CommandLineManager::Instance()->PrintUsageForActiveTool();
             needToQuit = true;
         }
+
+		DAVA::Logger::RemoveCustomOutput(out);
+		delete out;
     }
     
     if(!needToQuit)
     {
         QtMainWindow::Instance()->show();
 		ProjectManager::Instance()->ProjectOpenLast();
+        QtMainWindow::Instance()->OnSceneNew();
 
         ret = a.exec();
     }

@@ -39,6 +39,8 @@
 
 #include "../Qt/Main/QtUtils.h"
 
+#include "Main/mainwindow.h"
+#include "Scene/SceneEditor2.h"
 
 
 
@@ -415,14 +417,24 @@ void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 
 FilePath PropertyFilepathCell::GetPathname()
 {
-    if(!property->GetFilePath().IsEmpty())
-    {
-        return property->GetFilePath();
-    }
-
-    return EditorSettings::Instance()->GetDataSourcePath();
+    //Temporary workaround only for ResourceEditor/Material Editor.
+    
+    FilePath path = property->GetFilePath();
+    if(path.Exists())
+        return path;
+   
+    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+    if(!scene)
+        return EditorSettings::Instance()->GetDataSourcePath();
+    
+    FilePath scenePath = scene->GetScenePath().GetDirectory();
+    FilePath imagesFolder = scenePath + "images/";
+    
+    if(imagesFolder.Exists())
+        return imagesFolder;
+    
+    return scenePath;
 }
-
 
 String PropertyFilepathCell::GetExtensionFilter()
 {
@@ -464,12 +476,12 @@ void PropertyFilepathCell::Input(UIEvent *currentInput)
     if(currentInput->phase == UIEvent::PHASE_MOVE)
     {
         ++moveCounter;
-//        Logger::Debug("move");
+//        Logger::FrameworkDebug("move");
     }
     else 
     {
         moveCounter = 0;
-//        Logger::Debug("not_move");
+//        Logger::FrameworkDebug("not_move");
     }
     
     UIListCell::Input(currentInput);
