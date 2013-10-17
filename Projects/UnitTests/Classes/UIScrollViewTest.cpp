@@ -94,6 +94,7 @@ void UIScrollViewTest::LoadResources()
 	testControl4->SetName("CONTROL_4");
 	testControl4->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	scrollView->AddControlToContainer(testControl4);
+	SafeRelease(testControl4);
 
 	UIControl *testControlChild = new UIControl(Rect(100, 100, 150, 150));
 	testControlChild->SetDebugDraw(true);
@@ -122,6 +123,10 @@ void UIScrollViewTest::LoadResources()
 	testButton->AddControl(testControl);
 	
 	scrollView->AddControlToContainer(testButton);
+
+	SafeRelease(testControlChild);
+	SafeRelease(testControl);
+	SafeRelease(testButton);
 	
 	testMessageText = new UIStaticText(Rect(10, 10, 300, 30));
 	testMessageText->SetFont(font);
@@ -138,6 +143,8 @@ void UIScrollViewTest::LoadResources()
 	finishTestBtn->SetDebugDraw(true);
 	finishTestBtn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	AddControl(finishTestBtn);
+
+	SafeRelease(font);
 }
 
 void UIScrollViewTest::UnloadResources()

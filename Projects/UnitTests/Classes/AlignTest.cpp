@@ -79,8 +79,9 @@ TestTemplate<AlignTest>("AlignTest"),
 
 void AlignTest::LoadResources()
 {
-    font = FTFont::Create("~res:/Fonts/korinna.ttf");		
-  
+    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");		
+    DVASSERT(font);
+
     staticText = new UIStaticText();
     staticText->SetRect(Rect(10.f, 10.f, 400.f, 200.f));
 	staticText->SetTextColor(Color::White());
@@ -96,6 +97,8 @@ void AlignTest::LoadResources()
     staticText2->SetFont(font);
 	staticText2->SetText(controlText);
 	AddControl(staticText2);
+
+	SafeRelease(font);
 }
 
 void AlignTest::UnloadResources()
@@ -103,7 +106,6 @@ void AlignTest::UnloadResources()
 	RemoveAllControls();
     SafeRelease(staticText);
     SafeRelease(staticText2);
-    SafeRelease(font);
 }
 
 void AlignTest::MultilineEnable(PerfFuncData * testData)
