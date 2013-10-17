@@ -90,9 +90,7 @@ void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
 
 Rect HierarchyTreeAggregatorNode::GetRect() const
 {
-	Rect rect = this->rect;
-	CombineRectWithChild(rect);
-	return rect;
+	return this->rect;
 }
 
 void HierarchyTreeAggregatorNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
@@ -196,7 +194,9 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		DVASSERT(aggregatorControl);
 		if (!aggregatorControl)
 			continue;
-
+			
+		// DF-2164 - Get proper relative path for aggregator
+		String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	

@@ -876,15 +876,6 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
@@ -1182,9 +1173,6 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -1340,6 +1328,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
       <Filter>Internal\Sound\FMOD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h">
+      <Filter>Internal\Autotesting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1979,12 +1973,6 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp">
       <Filter>Internal\Debug</Filter>
     </ClCompile>
@@ -2243,9 +2231,6 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
@@ -2345,6 +2330,9 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Vector.cpp">
       <Filter>Internal\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
@@ -2380,6 +2368,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundGroup.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\GameAPI.cpp">
+      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
