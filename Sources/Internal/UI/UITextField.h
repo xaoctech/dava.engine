@@ -354,10 +354,9 @@ private:
 	UITextFieldiPhone * textFieldiPhone;
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
-#endif
-
-
+#else
     UIStaticText * staticText;
+#endif
     float32 cursorTime;
     bool showCursor;
 
