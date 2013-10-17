@@ -1,11 +1,11 @@
 #include "TilemaskEditorPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
+#include "../../Tools/TileTexturePreviewWidget/TileTexturePreviewWidget.h"
 #include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "../LandscapeEditorShortcutManager.h"
-#include "TileTexturePreviewWidget.h"
 
 #include <QLayout>
 #include <QComboBox>
