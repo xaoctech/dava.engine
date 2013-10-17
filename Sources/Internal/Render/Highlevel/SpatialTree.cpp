@@ -443,6 +443,9 @@ void QuadTree::UpdateTree()
 		{
 			object->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);
 			uint16 startNode = object->GetTreeNodeIndex();
+			if ((!startNode)&&(!worldBox.IsInside(object->GetWorldBoundingBox())))
+				continue; //object is out of world - leave it in root node
+
 			uint16 targetNode = FindObjectAddNode(startNode, object->GetWorldBoundingBox());
 			if (startNode!=targetNode)
 			{
