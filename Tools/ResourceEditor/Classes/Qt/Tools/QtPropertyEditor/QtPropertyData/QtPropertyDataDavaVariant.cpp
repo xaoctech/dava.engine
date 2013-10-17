@@ -34,11 +34,11 @@
 #include "QtPropertyDataDavaVariant.h"
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
 #include "../QtPropertyWidgets/QtComboFake.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QColorDialog>
 #include <QListWidget>
 #include <QComboBox>
-#include <QFileDialog>
 #include <QPushButton>
 #include <QToolButton>
 #include <QPainter>
@@ -775,7 +775,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 
 void QtPropertyDataDavaVariant::FilePathOWPressed()
 {
-	QString path = QFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
+	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
 	if(!path.isEmpty())
 	{
 		SetValue(path, QtPropertyData::VALUE_EDITED);
