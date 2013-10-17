@@ -48,6 +48,7 @@
 #include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #ifdef __DAVAENGINE_SPEEDTREE__
 #include "SpeedTreeImporter.h"
@@ -122,7 +123,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
 {
-	Console::Instance();
+	new Console();
 	new ProjectManager();
 	new SettingsManager();
 	ui->setupUi(this);
@@ -167,6 +168,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	SafeRelease(materialEditor);
+	SafeDelete(landscapeDialog);
+	SafeDelete(addSwitchEntityDialog);
     
     if(HintManager::Instance())
         HintManager::Instance()->Release();
@@ -178,11 +181,9 @@ QtMainWindow::~QtMainWindow()
 	delete ui;
 	ui = NULL;
 
-	ProjectManager::Instance()->Release();
 	SettingsManager::Instance()->Release();
-
-	SafeDelete(landscapeDialog);
-	SafeDelete(addSwitchEntityDialog);
+	ProjectManager::Instance()->Release();
+	Console::Instance()->Release();
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -246,7 +247,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 		}
 
 
-		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
+		QString selectedPath = QtFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
 		{
 			DAVA::FilePath scenePath = DAVA::FilePath(selectedPath.toStdString());
@@ -836,7 +837,7 @@ void QtMainWindow::OnSceneNew()
 
 void QtMainWindow::OnSceneOpen()
 {
-	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
+	QString path = QtFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
 	OpenScene(path);
 }
 
@@ -885,7 +886,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 		return;
 	}
 
-	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
+	QString path = QtFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
 	if(path.isEmpty())
 		return;
 
@@ -982,7 +983,7 @@ void QtMainWindow::OnImportSpeedTreeXML()
 {
 #ifdef __DAVAENGINE_SPEEDTREE__
     QString projectPath = ProjectManager::Instance()->CurProjectPath();
-    QString path = QFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
+    QString path = QtFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
     if (!path.isEmpty())
     {
         DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
@@ -1547,7 +1548,7 @@ void QtMainWindow::OnSaveHeightmapToPNG()
     FilePath heightmapPath = landscape->GetHeightmapPathname();
     FilePath requestedPngPath = FilePath::CreateWithNewExtension(heightmapPath, ".png");
 
-    QString selectedPath = QFileDialog::getSaveFileName(this, "Save heightmap as", requestedPngPath.GetAbsolutePathname().c_str(), "PGN Image (*.png)");
+    QString selectedPath = QtFileDialog::getSaveFileName(this, "Save heightmap as", requestedPngPath.GetAbsolutePathname().c_str(), "PGN Image (*.png)");
     if(selectedPath.isEmpty()) return;
 
     requestedPngPath = DAVA::FilePath(selectedPath.toStdString());

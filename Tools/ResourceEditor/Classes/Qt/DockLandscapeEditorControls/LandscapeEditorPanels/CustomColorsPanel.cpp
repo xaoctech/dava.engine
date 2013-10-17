@@ -7,12 +7,12 @@
 #include "Constants.h"
 #include "Main/QtUtils.h"
 #include "../LandscapeEditorShortcutManager.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QLayout>
 #include <QComboBox>
 #include <QPushButton>
 #include <QSpacerItem>
-#include <QFileDialog>
 #include <QLabel>
 
 CustomColorsPanel::CustomColorsPanel(QWidget* parent)
@@ -204,7 +204,7 @@ void CustomColorsPanel::SaveTexture()
 		selectedPathname = sceneEditor->GetScenePath().GetDirectory();
 	}
 	
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+	QString filePath = QtFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
 													QString(selectedPathname.GetAbsolutePathname().c_str()),
 													QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
 	selectedPathname = PathnameToDAVAStyle(filePath);

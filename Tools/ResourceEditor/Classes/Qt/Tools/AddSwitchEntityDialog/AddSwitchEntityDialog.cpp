@@ -39,7 +39,7 @@
 #include "ui_BaseAddEntityDialog.h"
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
-		:BaseAddEntityDialog(parent)
+		:BaseAddEntityDialog(parent, QDialogButtonBox::Ok | QDialogButtonBox::Cancel)
 {
 	setAcceptDrops(true);
 	setAttribute( Qt::WA_DeleteOnClose, true );
@@ -66,6 +66,10 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
+
+	propEditor->setVisible(false);
+	propEditor->setMinimumHeight(0);
+	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
 
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);

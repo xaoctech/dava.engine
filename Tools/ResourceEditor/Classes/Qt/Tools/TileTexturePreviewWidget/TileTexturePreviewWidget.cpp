@@ -2,6 +2,8 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "../../Main/QtUtils.h"
 
+#include "TileTexturePreviewWidgetItemDelegate.h"
+
 #include <QHeaderView>
 #include <QToolButton>
 #include <QLabel>
@@ -22,7 +24,7 @@ TileTexturePreviewWidget::TileTexturePreviewWidget(QWidget* parent)
 	ConnectToSignals();
 
 	validator = new QRegExpValidator();
-	validator->setRegExp(QRegExp("#[A-F0-9]{6}", Qt::CaseInsensitive));
+	validator->setRegExp(QRegExp(TileTexturePreviewWidgetItemDelegate::TILE_COLOR_VALIDATE_REGEXP, Qt::CaseInsensitive));
 }
 
 TileTexturePreviewWidget::~TileTexturePreviewWidget()
@@ -84,6 +86,8 @@ void TileTexturePreviewWidget::AddTexture(Image* previewTexture, const Color& co
 		colors.push_back(color);
 
 		UpdateColor(images.size() - 1);
+
+		this->setItemDelegate(new TileTexturePreviewWidgetItemDelegate());
 	}
 
 	UpdateImage(images.size() - 1);

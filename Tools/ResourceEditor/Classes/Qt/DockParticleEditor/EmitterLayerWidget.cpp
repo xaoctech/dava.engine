@@ -33,10 +33,10 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
 #include "../Scene/SceneDataManager.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
-#include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
 
@@ -863,7 +863,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 	projectPath += "Data/Gfx/Particles/";
     
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
+	QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
 	
