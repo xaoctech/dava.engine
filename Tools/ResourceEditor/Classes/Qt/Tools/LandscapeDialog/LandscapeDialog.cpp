@@ -52,7 +52,7 @@
 #define OPEN_TEXTURE_TITLE "Open texture"
 #define OPEN_HEIGHTMAP_TITLE "Open height map"
 #define TEXTURE_FILE_FILTER "PNG(*.png);; TEX(*.tex)"
-#define HEIGHTMAP_FILE_FILTER "HeightMap(*.heightmap)"
+#define HEIGHTMAP_FILE_FILTER "PNG(*.png);;HeightMap(*.heightmap)"
 #define HEIGHT_MAP_ID 0xABCD
 
 #define TAB_CONTENT_WIDTH 450
@@ -431,7 +431,6 @@ void LandscapeDialog::ValueChanged(String fileName)
 		{
 			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(innerLandscapeEntity, filePath, innerLandscape->GetBoundingBox());
 			sceneEditor->Exec(command);
-			//innerLandscape->BuildLandscapeFromHeightmapImage(filePath, innerLandscape->GetBoundingBox());
 		}
 	}
 	else
