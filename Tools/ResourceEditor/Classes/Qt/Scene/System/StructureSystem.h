@@ -77,7 +77,7 @@ protected:
 	void CheckAndMarkLocked(DAVA::Entity *entity);
 	void MarkLocked(DAVA::Entity *entity);
 
-	DAVA::Entity* Load(const DAVA::FilePath& sc2path);
+	DAVA::Entity* Load(const DAVA::FilePath& sc2path, bool optimize);
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
