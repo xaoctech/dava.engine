@@ -235,7 +235,7 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
-	DAVA::SceneFileV2::eError ret = DAVA::SceneFileV2::ERROR_NO_ERROR;
+	bool ret = false;
 
 	if(NULL != scene)
 	{
@@ -245,7 +245,6 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
             DAVA::FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString();
 			saveAsPath = dataSourcePath.MakeDirectoryPathname() + scene->GetScenePath().GetFilename();
 		}
-
 
 		QString selectedPath = QtFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
@@ -262,13 +261,14 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 				}
 				else
 				{
+					ret = true;
 					AddRecent(scenePath.GetAbsolutePathname().c_str());
 				}
 			}
 		}
 	}
 
-	return (ret == DAVA::SceneFileV2::ERROR_NO_ERROR);
+	return ret;
 }
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
