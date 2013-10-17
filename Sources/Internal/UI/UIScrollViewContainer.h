@@ -86,6 +86,7 @@ protected:
 	bool 		scrollStartMovement : 1;
 	bool		enableHorizontalScroll : 1;
 	bool		enableVerticalScroll : 1;
+	bool 		lockTouch;
 };
 };
 
