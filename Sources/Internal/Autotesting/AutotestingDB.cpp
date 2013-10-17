@@ -34,7 +34,7 @@ namespace DAVA
 
 	AutotestingDB::~AutotestingDB()
 	{
-		
+		CloseConnection();
 	}
 
 	bool AutotestingDB::ConnectToDB(const String &name, const String &dbName, const String &dbHost, const int32 dbPort)
