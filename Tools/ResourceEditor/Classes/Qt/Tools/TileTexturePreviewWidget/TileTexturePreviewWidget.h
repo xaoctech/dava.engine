@@ -66,6 +66,7 @@ private:
 
 	void ConnectToSignals();
 
+	void SetColor(int32 number, const Color& color);
 	void UpdateImage(int32 number);
 	void UpdateColor(int32 number);
 	void UpdateSelection();
