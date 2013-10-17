@@ -1,13 +1,14 @@
 #include "TileTexturePreviewWidget.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "../../Main/QtUtils.h"
+#include "StringConstants.h"
 
 #include "TileTexturePreviewWidgetItemDelegate.h"
 
 #include <QHeaderView>
-#include <QToolButton>
 #include <QLabel>
 #include <QColorDialog>
+#include <QEvent>
 
 TileTexturePreviewWidget::TileTexturePreviewWidget(QWidget* parent)
 :	QTreeWidget(parent)
@@ -18,7 +19,6 @@ TileTexturePreviewWidget::TileTexturePreviewWidget(QWidget* parent)
 	colors.reserve(DEF_TILE_TEXTURES_COUNT);
 	images.reserve(DEF_TILE_TEXTURES_COUNT);
 	labels.reserve(DEF_TILE_TEXTURES_COUNT);
-	buttons.reserve(DEF_TILE_TEXTURES_COUNT);
 
 	SetMode(MODE_WITH_COLORS);
 	ConnectToSignals();
@@ -46,7 +46,6 @@ void TileTexturePreviewWidget::Clear()
 	colors.clear();
 	images.clear();
 	labels.clear();
-	buttons.clear();
 }
 
 void TileTexturePreviewWidget::AddTexture(Image* previewTexture, const Color& color /*  = Color::White() */)
@@ -74,14 +73,9 @@ void TileTexturePreviewWidget::AddTexture(Image* previewTexture, const Color& co
 		label->setAutoFillBackground(true);
 		setItemWidget(item, COLOR_PREVIEW_COLUMN, label);
 		labels.push_back(label);
-
-		QToolButton* button = new QToolButton();
-		button->setIconSize(QSize(12, 12));
-		button->setIcon(QIcon(":/QtIcons/color.png"));
-		setItemWidget(item, COLOR_SELECT_BUTTON_COLUMN, button);
-		buttons.push_back(button);
-
-		connect(button, SIGNAL(clicked()), this, SLOT(OnPickColorButton()));
+		label->installEventFilter(this);
+		label->setToolTip(ResourceEditor::TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP.c_str());
+		label->setCursor(Qt::PointingHandCursor);
 
 		colors.push_back(color);
 
@@ -104,12 +98,11 @@ void TileTexturePreviewWidget::InitWithColors()
 	Clear();
 
 	setHeaderHidden(true);
-	setColumnCount(3);
+	setColumnCount(2);
 	setRootIsDecorated(false);
 	header()->setStretchLastSection(false);
 	header()->setResizeMode(0, QHeaderView::Stretch);
 	header()->setResizeMode(1, QHeaderView::ResizeToContents);
-	header()->setResizeMode(2, QHeaderView::ResizeToContents);
 	setIconSize(QSize(TEXTURE_PREVIEW_WIDTH_SMALL, TEXTURE_PREVIEW_HEIGHT));
 
 	blockSignals(blocked);
@@ -260,13 +253,11 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 	}
 }
 
-void TileTexturePreviewWidget::OnPickColorButton()
+bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 {
-	QObject* source = sender();
-
-	for (int32 i = 0; i < (int32)images.size(); ++i)
+	for (int32 i = 0; i < (int32)labels.size(); ++i)
 	{
-		if (source == buttons[i])
+		if (obj == labels[i] && ev->type() == QEvent::MouseButtonDblClick)
 		{
 			QColor curColor = ColorToQColor(colors[i]);
 			QColor color = QColorDialog::getColor(curColor, this, tr("Tile color"), 0);
