@@ -2,7 +2,7 @@
 
 #include <QLineEdit>
 
-const QString TileTexturePreviewWidgetItemDelegate::TILE_COLOR_VALIDATE_REGEXP = "#[A-F0-9]{6}";
+const QString TileTexturePreviewWidgetItemDelegate::TILE_COLOR_VALIDATE_REGEXP = "#{0,1}[A-F0-9]{6}";
 
 TileTexturePreviewWidgetItemDelegate::TileTexturePreviewWidgetItemDelegate(QObject* parent /* = 0 */)
 :	QItemDelegate(parent)
