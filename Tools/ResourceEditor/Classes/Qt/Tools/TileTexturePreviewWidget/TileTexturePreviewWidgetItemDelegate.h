@@ -15,6 +15,11 @@ public:
 	virtual QWidget* createEditor(QWidget* parent,
 								  const QStyleOptionViewItem& option,
 								  const QModelIndex& index) const;
+
+protected:
+	virtual void drawFocus(QPainter* painter,
+						   const QStyleOptionViewItem& option,
+						   const QRect& rect) const;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILETEXTUREPREVIEWWIDGETITEMDELEGATE__) */

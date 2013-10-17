@@ -13,7 +13,7 @@ TileTexturePreviewWidgetItemDelegate::~TileTexturePreviewWidgetItemDelegate()
 {
 }
 
-QWidget* TileTexturePreviewWidgetItemDelegate:: createEditor(QWidget* parent,
+QWidget* TileTexturePreviewWidgetItemDelegate::createEditor(QWidget* parent,
 															 const QStyleOptionViewItem& option,
 															 const QModelIndex& index) const
 {
@@ -28,4 +28,10 @@ QWidget* TileTexturePreviewWidgetItemDelegate:: createEditor(QWidget* parent,
 	}
 
 	return widget;
+}
+
+void TileTexturePreviewWidgetItemDelegate::drawFocus(QPainter* painter,
+													 const QStyleOptionViewItem& option,
+													 const QRect& rect) const
+{
 }
