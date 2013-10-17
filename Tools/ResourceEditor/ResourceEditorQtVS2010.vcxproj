@@ -1237,6 +1237,7 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />

@@ -232,6 +232,9 @@
     <Filter Include="Classes\Qt\Tools\SliderWidget">
       <UniqueIdentifier>{77209fd5-5cd1-4465-9f21-223b539f5da1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\QtFileDialog">
+      <UniqueIdentifier>{bd109383-7ec3-4aa9-98e4-92206aa6b482}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -3850,6 +3853,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\OwnersSignatureSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h">
+      <Filter>Classes\Qt\Tools\QtFileDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
