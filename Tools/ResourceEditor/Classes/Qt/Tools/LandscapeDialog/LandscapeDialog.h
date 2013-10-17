@@ -40,7 +40,6 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "./../Qt/Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-#include "LandscapeSettingsEditor.h"
 
 class SelectEntityPathWidget;
 
@@ -54,56 +53,57 @@ public:
 	~LandscapeDialog();
 	
 	void CleanupPathWidgets();
-
-	virtual	void SetEntity(DAVA::Entity* ){}
 	
 public slots:
-	
-	void reject();
-	
-	void accept();
+
+	void SceneActivated(SceneEditor2 *);
+
+	void done(int);
 		
 protected slots:
 	
 	void ValueChanged(DAVA::String fileName);
 	
-	void TileModeChanged(int newValue);
-	
 	void ActionButtonClicked();
+
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+	
+	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	
 protected:
+
+	void TileModeChanged(int newValue);
+
+	virtual void FillPropertyEditorWithContent();
 	
 	void showEvent ( QShowEvent * event );
-
-	virtual void InitPropertyEditor();
 	
 	void SetLandscapeEntity(Entity* _landscapeEntity);
 	
 	void FillUIbyLandscapeEntity(Entity* _landscapeEntity);
 
 	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
+
+	void SaveTabState();
+	
+	void ApplyTabState(SceneEditor2*	sceneEditor); 
+
+	Vector3 GetSizeOfCurrentLandscape();
+
+	QtPropertyDataDavaVariant* sizePropertyDataVariant;
+	QtPropertyDataDavaVariant* hightPropertyDataVariant;
 	
 	Landscape*				innerLandscape;
 	Entity*					innerLandscapeEntity;
 	QPushButton*			actionButton;
+	SceneEditor2*			sceneEditor; 
+
+	DAVA::Map<SelectPathWidgetBase*, int32>  widgetMap;
+
+	DAVA::Map<SceneEditor2*, Entity* > tabEntityMap;
 	
-	struct DefaultInfo
-	{
-		int32 specificInfo;
-		FilePath path;
-		DefaultInfo()
-		{
-			specificInfo = 0;
-		}
-		
-		DefaultInfo(int32 _specificInfo, FilePath _path)
-		{
-			specificInfo = _specificInfo;
-			path  = _path;
-		}
-	};
-	
-	DAVA::Map<SelectPathWidgetBase*,DefaultInfo>  widgetMap;
+	Vector3	landscapeSize;
+
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */

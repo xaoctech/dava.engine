@@ -35,6 +35,9 @@
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
 #include "DockProperties/PropertyEditorDialog.h"
+#include <QDialogButtonBox>
+
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
 class DAVA::Entity;
 
@@ -48,26 +51,36 @@ class BaseAddEntityDialog: public QDialog
 	Q_OBJECT
 
 public:
-	explicit BaseAddEntityDialog( QWidget* parent = 0);
+	explicit BaseAddEntityDialog( QWidget* parent = 0, QDialogButtonBox::StandardButtons buttons = QDialogButtonBox::Close);
 
 	virtual ~BaseAddEntityDialog();
 	
 	void GetIncludedControls(QList<QWidget*>& includedWidgets);
 
-	void hideEvent ( QHideEvent * event );
-	
 	virtual DAVA::Entity* GetEntity()
 	{
 		return entity;
 	}
 	
-	void SetEntity(DAVA::Entity* );
-	
+	void virtual SetEntity(DAVA::Entity* );
+
+protected slots:
+
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+
 protected:
+
+	virtual void FillPropertyEditorWithContent() = 0;
+
+	virtual QtPropertyData* AddInspMemberToEditor(void *object, const DAVA::InspMember *);
+
+	virtual QtPropertyData* AddKeyedArchiveMember(DAVA::KeyedArchive* _archive, const DAVA::String& _key, const DAVA::String& rowName);
+
+	virtual QtPropertyData*  AddMetaObject(void *_object, const DAVA::MetaInfo *_meta, const String& rowName);
 
 	void showEvent ( QShowEvent * event );
 	
-	virtual void InitPropertyEditor();
+	void InitPropertyEditor();
 	
 	void PerformResize();
 	
@@ -81,7 +94,7 @@ protected:
 
 	DAVA::Entity* entity;
 	
-	PropertyEditorDialog *propEditor;
+	QtPropertyEditor *propEditor;
 	
 	Ui::BaseAddEntityDialog *ui;
 	
