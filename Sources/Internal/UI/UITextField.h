@@ -330,7 +330,6 @@ protected:
 	float32	cursorBlinkingTime;
     Font * textFont;
     Font * constFont;
-    bool isPassword;
 	
 	// Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
@@ -339,6 +338,13 @@ protected:
 	eKeyboardAppearanceType keyboardAppearanceType;
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
+
+
+	// All Boolean variables are grouped together because of DF-2149.
+	bool needRedraw : 1;
+	bool isPassword : 1;
+	bool enableReturnKeyAutomatically : 1;
+	bool showCursor : 1;
 
     void RenderText();
 private:
@@ -352,12 +358,6 @@ private:
     UIStaticText * staticText;
 #endif
     float32 cursorTime;
-	
-	// All Boolean variables are grouped together because of DF-2149.
-    bool needRedraw : 1;
-    bool isPassword : 1;
-	bool enableReturnKeyAutomatically : 1;
-    bool showCursor : 1;
 };
 
 };
