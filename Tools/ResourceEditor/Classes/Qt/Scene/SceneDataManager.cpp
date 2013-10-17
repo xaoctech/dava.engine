@@ -39,7 +39,6 @@
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
 #include "../Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
 #include "../Qt/CubemapEditor/MaterialHelper.h"
@@ -553,7 +552,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)

@@ -33,9 +33,15 @@
 
 LandscapeProxy::LandscapeProxy(Landscape* landscape)
 :	displayingTexture(0)
-,	mode(MODE_CUSTOM_LANDSCAPE)
+,	mode(MODE_ORIGINAL_LANDSCAPE)
 ,	tilemaskWasChanged(0)
+,	tilemaskImageCopy(NULL)
 {
+	DVASSERT(landscape != NULL);
+
+	tilemaskSprites[TILEMASK_SPRITE_SOURCE] = NULL;
+	tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = NULL;
+
 	baseLandscape = SafeRetain(landscape);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
 	{
@@ -53,6 +59,9 @@ LandscapeProxy::~LandscapeProxy()
 	SafeRelease(baseLandscape);
 	SafeRelease(displayingTexture);
 	SafeRelease(customLandscape);
+	SafeRelease(tilemaskImageCopy);
+	SafeRelease(tilemaskSprites[TILEMASK_SPRITE_SOURCE]);
+	SafeRelease(tilemaskSprites[TILEMASK_SPRITE_DESTINATION]);
 }
 
 void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode mode)
@@ -89,6 +98,16 @@ AABBox3 LandscapeProxy::GetLandscapeBoundingBox()
 Texture* LandscapeProxy::GetLandscapeTexture(Landscape::eTextureLevel level)
 {
 	return baseLandscape->GetTexture(level);
+}
+
+Color LandscapeProxy::GetLandscapeTileColor(Landscape::eTextureLevel level)
+{
+	return baseLandscape->GetTileColor(level);
+}
+
+void LandscapeProxy::SetLandscapeTileColor(Landscape::eTextureLevel level, const Color& color)
+{
+	baseLandscape->SetTileColor(level, color);
 }
 
 void LandscapeProxy::SetTilemaskTexture(Texture* texture)
@@ -319,7 +338,15 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 Vector3 LandscapeProxy::PlacePoint(const Vector3& point)
 {
 	Vector3 landscapePoint;
-	bool res = baseLandscape->PlacePoint(point, landscapePoint);
+	if (mode == MODE_ORIGINAL_LANDSCAPE)
+	{
+		baseLandscape->PlacePoint(point, landscapePoint);
+	}
+	else if (mode == MODE_CUSTOM_LANDSCAPE)
+	{
+		customLandscape->PlacePoint(point, landscapePoint);
+	}
+
 	return landscapePoint;
 }
 
@@ -341,4 +368,52 @@ void LandscapeProxy::IncreaseTilemaskChanges()
 void LandscapeProxy::DecreaseTilemaskChanges()
 {
 	--tilemaskWasChanged;
+}
+
+void LandscapeProxy::InitTilemaskImageCopy()
+{
+	if (tilemaskImageCopy == NULL)
+	{
+		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	}
+}
+
+Image* LandscapeProxy::GetTilemaskImageCopy()
+{
+	return tilemaskImageCopy;
+}
+
+void LandscapeProxy::InitTilemaskSprites()
+{
+	if (tilemaskSprites[TILEMASK_SPRITE_SOURCE] == NULL
+		|| tilemaskSprites[TILEMASK_SPRITE_DESTINATION] == NULL)
+	{
+		SafeRelease(tilemaskSprites[TILEMASK_SPRITE_SOURCE]);
+		SafeRelease(tilemaskSprites[TILEMASK_SPRITE_DESTINATION]);
+
+		int32 texSize = GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->GetWidth();
+		tilemaskSprites[TILEMASK_SPRITE_SOURCE] = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+		tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+	}
+}
+
+Sprite* LandscapeProxy::GetTilemaskSprite(int32 number)
+{
+	if (number >= 0 && number < TILEMASK_SPRITES_COUNT)
+	{
+		return tilemaskSprites[number];
+	}
+
+	return NULL;
+}
+
+void LandscapeProxy::SwapTilemaskSprites()
+{
+	Sprite* temp = tilemaskSprites[TILEMASK_SPRITE_SOURCE];
+	tilemaskSprites[TILEMASK_SPRITE_SOURCE] = tilemaskSprites[TILEMASK_SPRITE_DESTINATION];
+	tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = temp;
 }

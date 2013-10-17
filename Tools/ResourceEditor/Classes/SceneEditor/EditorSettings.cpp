@@ -259,6 +259,7 @@ eGPUFamily EditorSettings::GetTextureViewGPU()
 void EditorSettings::SetTextureViewGPU(int32 gpu)
 {
     settings->SetInt32(String("TextureViewGPU"), gpu);
+	Save();
 }
 
 

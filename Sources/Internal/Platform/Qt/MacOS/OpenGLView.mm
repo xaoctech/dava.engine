@@ -74,6 +74,8 @@
 	GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 	
+	DAVA::RenderManager::Instance()->SetRenderContextId((uint64)CGLGetCurrentContext());
+	
 //	activeCursor = 0;
     
     //RenderManager::Create(Core::RENDERER_OPENGL);
@@ -190,7 +192,7 @@
         [[self openGLContext] flushBuffer];
     }
 	DAVA::RenderManager::Instance()->Unlock();
-//	Logger::Debug("drawRect ended");
+//	Logger::FrameworkDebug("drawRect ended");
 
 }
 
@@ -375,7 +377,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSPoint p = theEvent.locationInWindow;
+//    NSPoint p = theEvent.locationInWindow;
 //    printf("click [%f, %f]\n", p.x, p.y);
     
     [self CalcOffset:theEvent];
@@ -461,7 +463,7 @@ static int32 oldModifersFlags = 0;
     if(keyboardLocked)
     {
         {
-            //		Logger::Debug("glview keypress!");
+            //		Logger::FrameworkDebug("glview keypress!");
             unichar c = [[event characters] characterAtIndex:0];
             
             Vector<DAVA::UIEvent> touches;

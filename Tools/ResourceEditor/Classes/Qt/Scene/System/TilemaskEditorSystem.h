@@ -64,7 +64,9 @@ public:
 
 	uint32 GetTileTextureCount() const;
 	Texture* GetTileTexture(int32 index);
-	
+	Color GetTileColor(int32 index);
+	void SetTileColor(int32 index, const Color& color);
+
 protected:
 	bool enabled;
 	
@@ -94,15 +96,11 @@ protected:
 	bool editingIsEnabled;
 	
 	Sprite* toolSprite;
-	Sprite* maskSprite;
-	Sprite* oldMaskSprite;
 	bool toolSpriteUpdated;
 
 	eBlendMode srcBlendMode;
 	eBlendMode dstBlendMode;
 	Shader* tileMaskEditorShader;
-
-	Image* originalMask;
 
 	bool needCreateUndo;
 	
@@ -119,9 +117,10 @@ protected:
 	void CreateMaskFromTexture(Texture* texture);
 
 	void CreateUndoPoint();
-	void StoreOriginalState();
 
 	bool IsCanBeEnabled();
+
+	void InitSprites();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */

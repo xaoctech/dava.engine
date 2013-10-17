@@ -71,7 +71,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
 	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
 
-	SetRefreshTimeout(5000);
+	SetUpdateTimeout(5000);
 	SetEditTracking(true);
 }
 
@@ -83,38 +83,59 @@ PropertyEditor::~PropertyEditor()
 	SafeRelease(curNode);
 }
 
-void PropertyEditor::SetNode(DAVA::Entity *node)
+void PropertyEditor::SetEntities(const EntityGroup *selected)
 {
-	// Store the current Property Editor Tree state before switching to the new node.
+    //TODO: support multiselected editing
+
+	SafeRelease(curNode);
+    if(NULL != selected && selected->Size() == 1)
+	{
+        curNode = SafeRetain(selected->GetEntity(0));
+	}
+
+    UpdateProperties();
+}
+
+void PropertyEditor::SetAdvancedMode(bool set)
+{
+	if(advancedMode != set)
+	{
+		advancedMode = set;
+        UpdateProperties();
+	}
+}
+
+void PropertyEditor::UpdateProperties()
+{
+    // Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
 	// Property Editor nodes between the different Scene Nodes.
 	treeStateHelper.SaveTreeViewState(false);
-	
-	SafeRelease(curNode);
-	curNode = SafeRetain(node);
-
+    
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
 		// ensure that custom properties exist
 		curNode->GetCustomProperties();
-
+        
         AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
-
+        
 		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
         {
             Component *component = curNode->GetComponent(i);
             if(component)
             {
                 QtPropertyData *componentData = AppendIntrospectionInfo(component, component->GetTypeInfo());
-
+                
 				if(NULL != componentData)
                 {
 					// Add optional button to track "remove this component" command
-					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
-					removeButton->setFlat(true);
-
-					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//TODO: Disabled for future code
+					//<--
+// 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
+// 					removeButton->setFlat(true);
+// 					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//-->
 					
 					if(component->GetType() == Component::ACTION_COMPONENT)
 					{
@@ -147,7 +168,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
             }
         }
 	}
-
+    
 	// Restore back the tree view state from the shared storage.
 	if (!treeStateHelper.IsTreeStateStorageEmpty())
 	{
@@ -157,15 +178,6 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 	{
 		// Expand the root elements as default value.
 		expandToDepth(0);
-	}
-}
-
-void PropertyEditor::SetAdvancedMode(bool set)
-{
-	if(advancedMode != set)
-	{
-		advancedMode = set;
-		SetNode(curNode);
 	}
 }
 
@@ -222,13 +234,14 @@ void PropertyEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(NULL != scene)
 	{
-		SetNode(scene->selectionSystem->GetSelectionEntity(0));
+        const EntityGroup selection = scene->selectionSystem->GetSelection();
+		SetEntities(&selection);
 	}
 }
 
 void PropertyEditor::sceneDeactivated(SceneEditor2 *scene)
 {
-	SetNode(NULL);
+	SetEntities(NULL);
 }
 
 void PropertyEditor::actionShowAdvanced()
@@ -243,26 +256,19 @@ void PropertyEditor::actionShowAdvanced()
 
 void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
-	if(NULL != selected && selected->Size() == 1)
-	{
-		SetNode(selected->GetEntity(0));
-	}
-	else
-	{
-		SetNode(NULL);
-	}
+    SetEntities(selected);
 }
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	if(command->GetEntity() == curNode)
-	{
-		if( command->GetId() == CMDID_ADD_COMPONENT ||
-			command->GetId() == CMDID_REMOVE_COMPONENT)
-		{
-			SetNode(curNode);
-		}
-	}
+    if(command->GetId() == CMDID_ADD_COMPONENT || command->GetId() == CMDID_REMOVE_COMPONENT)
+    {
+        UpdateProperties();
+    }
+    else
+    {
+        Update();
+    }
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

@@ -34,12 +34,15 @@
 #include "Main/mainwindow.h"
 #include "SceneEditor/EditorSettings.h"
 #include <QLabel>
+#include "Classes/Commands2/EntityAddCommand.h"
+
+#include "ui_BaseAddEntityDialog.h"
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
-		:BaseAddEntityDialog(parent)
+		:BaseAddEntityDialog(parent, QDialogButtonBox::Ok | QDialogButtonBox::Cancel)
 {
-	setAcceptDrops(false);
-	
+	setAcceptDrops(true);
+	setAttribute( Qt::WA_DeleteOnClose, true );
 	FilePath defaultPath(EditorSettings::Instance()->GetProjectPath().GetAbsolutePathname() + "/DataSource/3d");
 	
 	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
@@ -63,12 +66,23 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
+
+	propEditor->setVisible(false);
+	propEditor->setMinimumHeight(0);
+	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
+
+	Entity* entityToAdd = new Entity();
+	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
+	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
+	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+	SetEntity(entityToAdd);
+	SafeRelease(entityToAdd);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {
 	RemoveAllControlsFromUserContainer();
-	
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
 		delete widget;
@@ -87,6 +101,50 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 {
 	Q_FOREACH(SelectEntityPathWidget* widget, pathWidgets)
 	{
-		entities.push_back(widget->GetOutputEntity(editor));
+		Entity* entity = widget->GetOutputEntity(editor);
+		if(entity)
+		{
+			entities.push_back(entity);
+		}
 	}
+}
+
+void AddSwitchEntityDialog::accept()
+{
+	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
+	
+	Entity* switchEntity = entity;
+	
+	if( NULL == scene)
+	{
+		CleanupPathWidgets();
+		return;
+	}
+	
+	Vector<Entity*> vector;
+	GetPathEntities(vector, scene);
+	CleanupPathWidgets();
+	
+	Q_FOREACH(Entity* item, vector)
+	{
+		if(item)
+		{
+			Entity *e = item->Clone();
+			switchEntity->AddNode(e);
+			e->Release();
+		}
+	}
+	
+	EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
+	scene->Exec(command);
+	scene->selectionSystem->SetSelection(switchEntity);
+	scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
+		
+	BaseAddEntityDialog::accept();
+}
+
+void AddSwitchEntityDialog::reject()
+{
+	CleanupPathWidgets();
+	BaseAddEntityDialog::reject();
 }

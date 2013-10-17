@@ -61,6 +61,7 @@ public:
     ~TextureBrowser();
 
 	void Close();
+	void Update();
 
 	static QColor gpuColor_PVR_ISO;
 	static QColor gpuColor_PVR_Android;
@@ -150,6 +151,8 @@ private slots:
 
 	void convertStatusImg(const QString &curPath, int curGpu);
 	void convertStatusQueue(int curJob, int jobCount);
+    
+    void clearFilter();
 };
 
 #endif // __TEXTURE_BROWSER_H__

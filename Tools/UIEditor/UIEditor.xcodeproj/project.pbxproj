@@ -136,6 +136,7 @@
 		17DF04DA16368040001F7ED2 /* ScreenMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04D716368040001F7ED2 /* ScreenMetadata.cpp */; };
 		17DF04EB1636850C001F7ED2 /* platformpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */; };
 		17DF04EC1636850C001F7ED2 /* screenpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */; };
+		17E1927617FDB39E002E1506 /* DistributeHandlers.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */; };
 		17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */; };
 		17F6F49E1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */; };
 		17FBCE46163A7ED100FD96C0 /* UIControlStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */; };
@@ -500,6 +501,8 @@
 		17DF04E81636850C001F7ED2 /* platformpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platformpropertygridwidget.h; path = PropertyGridWidgets/platformpropertygridwidget.h; sourceTree = "<group>"; };
 		17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenpropertygridwidget.cpp; path = PropertyGridWidgets/screenpropertygridwidget.cpp; sourceTree = "<group>"; };
 		17DF04EA1636850C001F7ED2 /* screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screenpropertygridwidget.h; path = PropertyGridWidgets/screenpropertygridwidget.h; sourceTree = "<group>"; };
+		17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DistributeHandlers.cpp; path = AlignDistribute/DistributeHandlers.cpp; sourceTree = "<group>"; };
+		17E1927517FDB39E002E1506 /* DistributeHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DistributeHandlers.h; path = AlignDistribute/DistributeHandlers.h; sourceTree = "<group>"; };
 		17E897C9162EE92C00A2A946 /* propertygridcontainerwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = propertygridcontainerwidget.h; path = PropertyGridWidgets/propertygridcontainerwidget.h; sourceTree = "<group>"; };
 		17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetadataFactory.cpp; path = Metadata/MetadataFactory.cpp; sourceTree = "<group>"; };
 		17E897F2162FEB3600A2A946 /* MetadataFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetadataFactory.h; path = Metadata/MetadataFactory.h; sourceTree = "<group>"; };
@@ -950,6 +953,8 @@
 			children = (
 				171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */,
 				171FA7FA17C4AE5D00C7F7F2 /* AlignHandlers.h */,
+				17E1927417FDB39E002E1506 /* DistributeHandlers.cpp */,
+				17E1927517FDB39E002E1506 /* DistributeHandlers.h */,
 				171FA7EF17C4A48B00C7F7F2 /* AlignDistributeManager.cpp */,
 				171FA7F017C4A48B00C7F7F2 /* AlignDistributeManager.h */,
 				171FA7F617C4A7F400C7F7F2 /* ControlsPositionData.cpp */,
@@ -1230,7 +1235,6 @@
 			isa = PBXGroup;
 			children = (
 				171FA7EC17C4A3EA00C7F7F2 /* AlignDistribute */,
-				E8951B491737B03100755339 /* Tools */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
@@ -1724,6 +1728,7 @@
 				171FA7F117C4A48B00C7F7F2 /* AlignDistributeManager.cpp in Build Sources */,
 				171FA7F817C4A7F400C7F7F2 /* ControlsPositionData.cpp in Build Sources */,
 				171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */,
+				17E1927617FDB39E002E1506 /* DistributeHandlers.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1858,9 +1863,9 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = UIEditor;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Release;
 		};
@@ -1903,9 +1908,9 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = UIEditor;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Debug;
 		};

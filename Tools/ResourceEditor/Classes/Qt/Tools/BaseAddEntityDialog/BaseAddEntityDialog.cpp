@@ -34,9 +34,18 @@
 #include "QScrollBar.h"
 #include "Scene/System/BeastSystem.h"
 
-#define PROPERTY_EDITOR_HEIGHT 300
 
-BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Main/mainwindow.h"
+
+#define PROPERTY_EDITOR_HEIGHT	300
+#define QT_HEIGHT_LIMIT			16777215
+#define WINDOW_HEIGHT_LIMIT		800
+
+BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::StandardButtons buttons)
 :	QDialog(parent),
 	entity(NULL),
 	ui(new Ui::BaseAddEntityDialog)
@@ -44,16 +53,23 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 	ui->setupUi(this);
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
-	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);	
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
 
-	ui->scrollArea->setVisible(false);
-	ui->propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
+	//ui->scrollArea->setVisible(false);
+	propEditor = NULL;
+	
+	InitPropertyEditor();
+
+	ui->buttonBox->setStandardButtons(buttons);
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
+	propEditor->RemovePropertyAll();
+	disconnect( propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)) );
 	delete ui;
+	delete propEditor;
 	SafeRelease(entity);
 	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
 	{
@@ -62,37 +78,63 @@ BaseAddEntityDialog::~BaseAddEntityDialog()
 	additionalWidgetMap.clear();
 }
 
-void BaseAddEntityDialog::PerformResize()
+void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 {
-	PropertyEditor* pEditor = ui->propEditor;
-	pEditor->expandAll();
-	this->adjustSize();
-	ui->scrollArea->setMaximumHeight(ui->scrollArea->sizeHint().height());
-	setMinimumHeight(sizeHint().height());
-	
-	bool isEditorFullyDisplayed = pEditor->verticalScrollBar()->maximum() == 0;
-	QScrollArea* area = ui->scrollArea;
-	bool isScrollAreaFullyDisplayed = area->isVisible() ?
-	area->verticalScrollBar()->maximum() == 0 : true;
-	int maxLimit = std::numeric_limits<int>::max();
-	int maxHeight = isEditorFullyDisplayed? PROPERTY_EDITOR_HEIGHT : maxLimit;
-	
-	ui->propEditor->setMaximumHeight(maxHeight);
-	maxHeight = isScrollAreaFullyDisplayed ? area->sizeHint().height() : maxLimit;
-	area->setMaximumHeight(maxHeight);
-	
-	this->adjustSize();
-	maxHeight = (isEditorFullyDisplayed && isScrollAreaFullyDisplayed) ? sizeHint().height() : 800;
-	setMaximumHeight(maxHeight);
+	QDialog::showEvent(event);
+	propEditor->expandAll();
+	PerformResize();
 }
 
-void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
+void BaseAddEntityDialog::PerformResize()
 {
-	QDialog::hideEvent(event);
-	if(entity)
+	propEditor->expandAll();
+	int propEditorHeight = 0;
+	if(propEditor->isVisible())
 	{
-		ui->propEditor->SetNode(NULL);
+		propEditorHeight = PROPERTY_EDITOR_HEIGHT;
 	}
+
+	QRect rectEditor = propEditor->geometry();
+	rectEditor.setHeight(propEditorHeight);
+	propEditor->setGeometry(rectEditor);
+
+	QScrollArea* area = ui->scrollArea;
+	int scrollAreaHeight = area->sizeHint().height();
+	
+	QRect areaEditor = area->geometry();
+	areaEditor.setHeight(scrollAreaHeight);
+	area->setGeometry(areaEditor);
+	
+	int currentMax  = ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 4 + scrollAreaHeight + propEditorHeight;
+	int maxHeight = currentMax < WINDOW_HEIGHT_LIMIT ? currentMax : WINDOW_HEIGHT_LIMIT;
+
+	int minHeight = propEditorHeight + ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 3;
+	setMinimumHeight(minHeight);
+	QRect rect = geometry();
+	rect.setHeight(maxHeight);
+	setGeometry(rect);
+}
+
+QtPropertyData* BaseAddEntityDialog::AddInspMemberToEditor(void *object, const DAVA::InspMember * member)
+{
+	int flags = DAVA::I_VIEW | DAVA::I_EDIT;
+	QtPropertyData* propData = QtPropertyDataIntrospection::CreatePropDataFromInspMember(object, member, flags);
+	propEditor->AppendProperty(member->Name(), propData);
+	return propData;
+}
+
+QtPropertyData* BaseAddEntityDialog::AddKeyedArchiveMember(DAVA::KeyedArchive* _archive, const DAVA::String& _key, const DAVA::String& rowName)
+{
+	QtPropertyData*  propData = new QtPropertyKeyedArchiveMember(_archive, _key);
+	propEditor->AppendProperty(rowName.c_str(), propData);
+	return propData;
+}
+
+QtPropertyData* BaseAddEntityDialog::AddMetaObject(void *_object, const DAVA::MetaInfo *_meta, const String& rowName)
+{
+	QtPropertyData*  propData = new QtPropertyDataMetaObject( _object, _meta);
+	propEditor->AppendProperty(rowName.c_str(), propData);
+	return propData;
 }
 
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
@@ -101,17 +143,6 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	
 	entity = _entity;
 	SafeRetain(entity);
-	if(entity)
-	{
-		BeastSystem::SetDefaultPropertyValues(entity);
-			
-		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
-		PropertyEditor* pEditor = ui->propEditor;	
-
-		pEditor->SetNode(entity);
-		pEditor->expandAll();
-		PerformResize();
-	}
 }
 
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
@@ -173,3 +204,39 @@ void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 	}
 }
 
+void BaseAddEntityDialog::InitPropertyEditor()
+{
+	propEditor = new QtPropertyEditor(this);
+	propEditor->setObjectName(QString::fromUtf8("propEditor"));
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sizePolicy.setHeightForWidth(propEditor->sizePolicy().hasHeightForWidth());
+	propEditor->setSizePolicy(sizePolicy);
+	propEditor->setMinimumSize(QSize(0, 0));
+	propEditor->setMaximumSize(QSize(16777215, 9999));
+	propEditor->setMouseTracking(false);
+	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	propEditor->setTabKeyNavigation(false);
+	propEditor->setAlternatingRowColors(true);
+	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	propEditor->setIndentation(16);
+	propEditor->setAnimated(false);
+	propEditor->setVisible(true);
+	propEditor->SetEditTracking(true);
+	ui->verticalLayout_4->addWidget(propEditor);
+	propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
+	connect( propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)) );
+}
+
+void BaseAddEntityDialog::OnItemEdited(const QString &name, QtPropertyData *data)
+{
+	Command2 *command = (Command2 *) data->CreateLastCommand();
+	if(NULL != command)
+	{
+		SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+		if(NULL != curScene)
+		{
+			curScene->Exec(command);
+		}
+	}
+}

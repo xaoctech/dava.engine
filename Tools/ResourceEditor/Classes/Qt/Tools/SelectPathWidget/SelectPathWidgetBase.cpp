@@ -29,13 +29,12 @@
 
 
 #include "SelectPathWidgetBase.h"
-#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
-
+#include "Tools/MimeDataHelper/MimeDataHelper.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QFileInfo>
 #include <QKeyEvent>
 #include <QUrl>
-#include <QFileDialog>
 #include <QStyle>
 
 SelectPathWidgetBase::SelectPathWidgetBase(QWidget* _parent, DAVA::String _openDialogDefualtPath, DAVA::String _relativPath, DAVA::String _openFileDialogTitle, DAVA::String _fileFormatDescriotion)
@@ -121,9 +120,7 @@ void SelectPathWidgetBase::OpenClicked()
 		dialogString = presentPath.GetDirectory();
 	}
 	
-	DAVA::String retString = QFileDialog::getOpenFileName(this, openFileDialogTitle.c_str(),
-                                                    QString(dialogString.GetAbsolutePathname().c_str()),
-                                                    fileFormatFilter.c_str()).toStdString();
+	DAVA::String retString = QtFileDialog::getOpenFileName(this, openFileDialogTitle.c_str(), QString(dialogString.GetAbsolutePathname().c_str()), fileFormatFilter.c_str()).toStdString();
 
 	if(!retString.empty())
 	{
@@ -153,6 +150,7 @@ void SelectPathWidgetBase::setText(const QString& filePath)
 void SelectPathWidgetBase::setText(const DAVA::String &filePath)
 {
 	setText(QString(filePath.c_str()));
+	setToolTip(filePath.c_str());
 }
 
 DAVA::String SelectPathWidgetBase::getText()

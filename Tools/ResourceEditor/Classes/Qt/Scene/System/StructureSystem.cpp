@@ -33,7 +33,8 @@
 #include "Scene/SceneSignals.h"
 #include "Scene/SceneEditor2.h"
 
-#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/EntityAddCommand.h"
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/ParticleLayerMoveCommand.h"
 #include "Commands2/ParticleLayerRemoveCommand.h"
@@ -58,18 +59,33 @@ StructureSystem::~StructureSystem()
 
 }
 
-void StructureSystem::Init()
+bool StructureSystem::Init(const DAVA::FilePath & path)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor)
-	{
-		// mark solid all entities, that has childs as solid
-		for(DAVA::int32 i = 0; i < sceneEditor->GetChildrenCount(); ++i)
-		{
-			CheckAndMarkSolid(sceneEditor->GetChild(i));
-			CheckAndMarkLocked(sceneEditor->GetChild(i));
-		}
-	}
+	if(NULL == sceneEditor) return false;
+
+	Entity * rootNode = Load(path);
+	if(!rootNode) return false;
+    
+    DAVA::Vector<DAVA::Entity*> tmpEntities;
+    int entitiesCount = rootNode->GetChildrenCount();
+    
+    // remember all child pointers, but don't add them to scene in this cycle
+    // because when entity is adding it is automatically removing from its old hierarchy
+    tmpEntities.reserve(entitiesCount);
+    for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+    {
+        tmpEntities.push_back(rootNode->GetChild(i));
+    }
+    
+    // now we can safely add entities into our hierarchy
+    for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+    {
+        sceneEditor->AddNode(tmpEntities[i]);
+    }
+
+    rootNode->Release();
+    return true;
 }
 
 void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
@@ -84,7 +100,7 @@ void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newPare
 
 		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityMoveCommand(entityGroup.GetEntity(i), newParent, newBefore));
+			sceneEditor->Exec(new EntityParentChangeCommand(entityGroup.GetEntity(i), newParent, newBefore));
 		}
 
 		if(entityGroup.Size() > 1)
@@ -275,7 +291,7 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
                         CopyLightmapSettings(origEntity, newEntity);
                     }
 					
-					sceneEditor->Exec(new EntityMoveCommand(newEntity, origEntity->GetParent(), before));
+					sceneEditor->Exec(new EntityParentChangeCommand(newEntity, origEntity->GetParent(), before));
 					sceneEditor->Exec(new EntityRemoveCommand(origEntity));
 
 					newEntity->Release();
@@ -283,7 +299,11 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 			}
 			sceneEditor->EndBatch();
 
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+			// Перенести в Load и завалидейтить только подгруженную Entity
+			// -->
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
+			// <--
+
 			EmitChanged();
 		}
 	}
@@ -302,7 +322,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
 
-			if(entityPos.IsZero())
+			if(entityPos.IsZero() && FindLandscape(loadedEntity) == NULL)
 			{
 				SceneCameraSystem *cameraSystem = sceneEditor->cameraSystem;
 
@@ -321,12 +341,15 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
-			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
+            
+			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
+			// 
+			// Перенести в Load и завалидейтить только подгруженную Entity
 			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
 			// <--
             
 			EmitChanged();
@@ -449,6 +472,7 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
+        sceneEditor->ReleaseRootNode(sc2path);
         Entity *rootNode = sceneEditor->GetRootNode(sc2path);
         if(rootNode)
         {
@@ -465,6 +489,9 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 				loadedEntity = parentForOptimize->GetChild(0);
 				loadedEntity->SetSolid(true);
 				loadedEntity->Retain();
+                
+                CheckAndMarkLocked(loadedEntity);
+                CheckAndMarkSolid(loadedEntity);
 			}
 
 			parentForOptimize->Release();

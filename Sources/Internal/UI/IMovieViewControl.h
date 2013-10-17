@@ -36,10 +36,17 @@
 
 namespace DAVA {
 
-// Yuri Coder, 2012/09/10. This struct contains nothing for now and added just for the
-// case to don't touch UIMovieView's interface in the future. Will be expanded later.
+enum eMovieScalingMode
+{
+	scalingModeNone,       // No scaling
+    scalingModeAspectFit,  // Uniform scale until one dimension fits
+    scalingModeAspectFill, // Uniform scale until the movie fills the visible bounds. One dimension may have clipped contents
+    scalingModeFill        // Non-uniform scale. Both render dimensions will exactly match the visible bounds
+};
+
 struct OpenMovieParams
 {
+	eMovieScalingMode scalingMode;
 };
 
 // Common interface for Movie View Controls for different platforms.

@@ -56,6 +56,7 @@
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
+#include "Scene/System/OwnersSignatureSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -94,6 +95,7 @@ public:
 	TextDrawSystem *textDrawSystem;
 	DebugDrawSystem *debugDrawSystem;
 	BeastSystem	*beastSystem;
+	OwnersSignatureSystem *ownersSignatureSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -146,6 +148,10 @@ public:
 
 	virtual void Update(float timeElapsed);
 
+	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
+	virtual Entity* Clone(Entity *dstNode = NULL);
+
+	DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 
 protected:
 	bool isLoaded;
@@ -162,6 +168,10 @@ protected:
 
     void ExtractEditorEntities();
 	void InjectEditorEntities();
+
+	void RemoveSystems();
+
+	bool wasChanged; //deprecated
 
 private:
 	friend struct EditorCommandNotify;

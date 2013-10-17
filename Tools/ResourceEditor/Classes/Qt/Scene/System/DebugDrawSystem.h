@@ -44,11 +44,18 @@ class DebugDrawSystem : public DAVA::SceneSystem
 	friend class EditorScene;
 
 public:
+
+	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
+
+public:
 	DebugDrawSystem(DAVA::Scene * scene);
 	virtual ~DebugDrawSystem();
 
 	void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
 	ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
+
+	void EnableHangingObjectsMode(bool enabled);
+	bool HangingObjectsModeEnabled() const;
 
 protected:
 
@@ -59,6 +66,14 @@ protected:
 	inline void DrawUserNode(DAVA::Entity *entity);
 	inline void DrawLightNode(DAVA::Entity *entity);
 	inline void DrawSoundNode(DAVA::Entity *entity);
+	inline void DrawHangingObjects(DAVA::Entity *entity);
+
+
+	inline void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
+
+	//hanging objects 
+	bool IsObjectHanging(DAVA::Entity * entity);
+	DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
 
 private:
 	SceneCollisionSystem *collSystem;
@@ -66,6 +81,8 @@ private:
 
 	ResourceEditor::eSceneObjectType objectType;
     DAVA::Color objectTypeColor;
+
+	bool hangingObjectsModeEnabled;
 };
 
 

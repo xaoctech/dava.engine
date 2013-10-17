@@ -36,19 +36,25 @@
 
 #include <QLabel>
 #include <QLayout>
+#include <QPalette>
 
 StatusBar::StatusBar(QWidget *parent)
 	: QStatusBar(parent)
 {
-    distanceToCamera = new QLabel(this);
-    
+	sceneGeometry = new QLabel(this);
+	sceneGeometry->setToolTip("Resolution");
+	sceneGeometry->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	addPermanentWidget(sceneGeometry);
+
+	distanceToCamera = new QLabel(this);
+	distanceToCamera->setToolTip("Distance from camera to center of the selection");
+	distanceToCamera->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	addPermanentWidget(distanceToCamera);
-    
-    setContentsMargins(0, 0, 0, 0);
+
+	layout()->setContentsMargins(0, 0, 0, 0);
+	layout()->setMargin(0);
+	layout()->setSpacing(2);
     setStyleSheet("QStatusBar::item {border: none;}");
-    layout()->setMargin(0);
-    layout()->setSpacing(1);
-    layout()->setContentsMargins(0, 0, 0, 0);
 }
 
 StatusBar::~StatusBar()
@@ -58,12 +64,12 @@ StatusBar::~StatusBar()
 
 void StatusBar::SetDistanceToCamera(DAVA::float32 distance)
 {
-    distanceToCamera->setText(QString::fromStdString(DAVA::Format("Distance to selection: %0.6f", distance)));
+    distanceToCamera->setText(QString::fromStdString(DAVA::Format("%0.6f", distance)));
 }
 
 void StatusBar::ResetDistanceToCamera()
 {
-    distanceToCamera->setText(QString::fromStdString("Distance to selection: No selection"));
+    distanceToCamera->setText(QString::fromStdString("No selection"));
 }
 
 void StatusBar::UpdateDistanceToCamera()
@@ -99,6 +105,11 @@ void StatusBar::SceneSelectionChanged( SceneEditor2 *scene, const EntityGroup *s
 void StatusBar::UpdateByTimer()
 {
 	UpdateDistanceToCamera();
+}
+
+void StatusBar::OnSceneGeometryChaged( int width, int height )
+{
+	sceneGeometry->setText(QString::fromStdString(DAVA::Format("%d x %d", width, height)));
 }
 
 

@@ -602,9 +602,9 @@ int32 PolygonGroup::OptimazeVertexes(const uint8 * meshData, Vector<uint8> & opt
 		const float32 * tmpMeshData = (float32*) meshData;
 		
 		bool skip = false;
-		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		for (uint32 mask = EVF_LOWER_BIT; mask <= EVF_HIGHER_BIT; mask = mask << 1)
 		{
-			if (!IsFloatDataEqual(&tmpMeshData, &optData, vertexFormat, EVF_VERTEX))
+			if (!IsFloatDataEqual(&tmpMeshData, &optData, vertexFormat, mask))
 			{
 				skip = true;
 				break;
@@ -633,7 +633,7 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	uint8 * tmpNewMesh = newMeshData;
 	for (int32 i = 0; i < vertexCount; ++i)
 	{
-		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		for (uint32 mask = EVF_LOWER_BIT; mask <= EVF_HIGHER_BIT; mask = mask << 1)
 		{
 			CopyData(&tmpMesh, &tmpNewMesh, vertexFormat, newVertexFormat, mask);
 		}

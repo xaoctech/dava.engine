@@ -126,7 +126,7 @@ void AddSkyboxDialog::OnCreateButtonClicked()
 
 void  AddSkyboxDialog::OnDeleteButtonClicked()
 {
-	Entity* skyboxEntity = GetEntity();
+	/*Entity* skyboxEntity = GetEntity();
 		
 	if(skyboxEntity)
 	{
@@ -134,7 +134,7 @@ void  AddSkyboxDialog::OnDeleteButtonClicked()
 		UpdateEntity(NULL);
 		
 		MakeCreateButton();
-	}
+	}*/
 }
 
 void AddSkyboxDialog::MakeCreateButton()
@@ -158,15 +158,21 @@ void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
 	entity = newEntity;
 	SafeRetain(entity);
 
-	PropertyEditor* pEditor = ui->propEditor;
-	
-	pEditor->SetNode(entity);
+	/*PropertyEditor* pEditor = propEditor;
+	if(NULL == pEditor)
+	{
+		return;
+	}
+
+    EntityGroup entities;
+    entities.Add(entity);
+	pEditor->SetEntities(&entities);
 	
 	if(entity)
 	{
 		pEditor->expandAll();
 		PerformResize();
-	}
+	}*/
 }
 
 void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
@@ -175,13 +181,13 @@ void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
 	
 	Entity* currentSkybox = scene->skyboxSystem->GetSkybox();
 	
-	AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
+	/*AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
 	dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 	dlg->SetEditorScene(scene);
 	dlg->UpdateEntity(currentSkybox);
 	dlg->SetInitialState(currentSkybox);
 	dlg->setWindowTitle("Set up Skybox");
-	dlg->show();
+	dlg->show();*/
 }
 
 void AddSkyboxDialog::SetEditorScene(SceneEditor2* scene)

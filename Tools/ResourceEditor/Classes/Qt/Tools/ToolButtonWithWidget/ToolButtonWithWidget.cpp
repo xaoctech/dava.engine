@@ -27,65 +27,27 @@
 =====================================================================================*/
 
 
+#include "ToolButtonWithWidget.h"
 
-#include "HangingObjectsView.h"
-#include "ui_HangingObjectsView.h"
-#include <stdlib.h> 
-#include "Project/ProjectManager.h"
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EditorConfig.h"
+#include <QWidgetAction>
+#include <QMenu>
 
-HangingObjectsView::HangingObjectsView(QWidget* parent)
-:	QWidget(parent),
-	ui(new Ui::HangingObjectsView)
+ToolButtonWithWidget::ToolButtonWithWidget(QWidget *parent /*= 0*/)
+	: QToolButton(parent)
 {
-	ui->setupUi(this);
-	
-	Init();
+	setPopupMode(QToolButton::MenuButtonPopup);
+	setToolButtonStyle(Qt::ToolButtonIconOnly);
+	setAutoRaise(false);
 }
 
-HangingObjectsView::~HangingObjectsView()
+void ToolButtonWithWidget::SetWidget( QWidget *widget )
 {
-	delete ui;
-}
+	QWidgetAction *wa = new QWidgetAction(this);
+	wa->setDefaultWidget(widget);
+	QMenu *m = new QMenu(this);
+	m->addAction(wa);
 
-void HangingObjectsView::Init()
-{
-	// TODO: mainwindow
-	/*
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(this, SIGNAL(Clicked(float,bool)), handler, SLOT(ToggleHangingObjects(float,bool)));
-	connect(ui->btnUpdate, SIGNAL(clicked()), this, SLOT(Clicked()));
-	connect(ui->checkBoxEnable, SIGNAL(stateChanged(int)), this, SLOT(CheckBoxChangeState(int )));
-	
-	ui->btnUpdate->blockSignals(true);
-	QtMainWindowHandler::Instance()->RegisterHangingObjectsWidgets(ui->checkBoxEnable,
-		ui->doubleSpinBoxHeight,
-		ui->btnUpdate);
-
-	handler->SetHangingObjectsWidgetsState(false);
-	ui->checkBoxEnable->setEnabled(true);
-	*/
+	setMenu(m);
 }
 
 
-void HangingObjectsView::Clicked()
-{
-	float value = (float)ui->doubleSpinBoxHeight->value();
-	emit Clicked(value, ui->checkBoxEnable->isChecked());
-}
-
-void HangingObjectsView::CheckBoxChangeState(int newState)
-{
-	if(newState == Qt::Unchecked)
-	{
-		ui->doubleSpinBoxHeight->setEnabled(false);
-		ui->btnUpdate->setEnabled(false);
-	}
-	if(newState == Qt::Checked)
-	{
-		ui->doubleSpinBoxHeight->setEnabled(true);
-		ui->btnUpdate->setEnabled(true);
-	}
-	this->Clicked();
-}

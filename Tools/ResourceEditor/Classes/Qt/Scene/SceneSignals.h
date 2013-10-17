@@ -97,6 +97,7 @@ signals:
 	void VisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state);
 	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
 	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
+	void SnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
 	void VisibilityToolToggled(SceneEditor2* scene);
 	void CustomColorsToggled(SceneEditor2* scene);
@@ -201,6 +202,11 @@ public:
 	void EmitEditorLightEnabled(bool enabled)
 	{
 		emit EditorLightEnabled(enabled);
+	}
+
+	void EmitSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
+	{
+		emit SnapToLandscapeChanged(scene, isSpanToLandscape);
 	}
 
 };

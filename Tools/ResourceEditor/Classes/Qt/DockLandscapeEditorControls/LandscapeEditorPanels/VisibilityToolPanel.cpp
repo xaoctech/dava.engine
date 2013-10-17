@@ -1,7 +1,8 @@
 #include "VisibilityToolPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "Tools/SliderWidget/SliderWidget.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
 #include "../LandscapeEditorShortcutManager.h"
@@ -9,6 +10,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QLabel>
 
 VisibilityToolPanel::VisibilityToolPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
@@ -62,8 +64,14 @@ void VisibilityToolPanel::InitUI()
 	sliderWidgetAreaSize = new SliderWidget(this);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+	QVBoxLayout* layoutBrushSize = new QVBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetAreaSize);
+
 	layout->addWidget(buttonSetVisibilityPoint);
-	layout->addWidget(sliderWidgetAreaSize);
+	layout->addLayout(layoutBrushSize);
 	layout->addWidget(buttonSetVisibilityArea);
 	layout->addWidget(buttonSaveTexture);
 	layout->addSpacerItem(spacer);
@@ -73,8 +81,8 @@ void VisibilityToolPanel::InitUI()
 	SetWidgetsState(false);
 	BlockAllSignals(true);
 
-	sliderWidgetAreaSize->Init(ResourceEditor::VISIBILITY_TOOL_AREA_SIZE_CAPTION.c_str(),
-							   false, DEF_AREA_MAX_SIZE, DEF_AREA_MIN_SIZE, DEF_AREA_MIN_SIZE);
+	sliderWidgetAreaSize->Init(false, DEF_AREA_MAX_SIZE, DEF_AREA_MIN_SIZE, DEF_AREA_MIN_SIZE);
+	sliderWidgetAreaSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
 	buttonSetVisibilityPoint->setText(ResourceEditor::VISIBILITY_TOOL_SET_POINT_CAPTION.c_str());
 	buttonSetVisibilityPoint->setCheckable(true);
 	buttonSetVisibilityArea->setText(ResourceEditor::VISIBILITY_TOOL_SET_AREA_CAPTION.c_str());
@@ -193,7 +201,7 @@ void VisibilityToolPanel::SetVisibilityToolButtonsState(SceneEditor2* scene,
 void VisibilityToolPanel::SaveTexture()
 {
 	FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
-	QString filePath = QFileDialog::getSaveFileName(NULL,
+	QString filePath = QtFileDialog::getSaveFileName(NULL,
 													QString(ResourceEditor::VISIBILITY_TOOL_SAVE_CAPTION.c_str()),
 													QString(currentPath.GetAbsolutePathname().c_str()),
 													QString(ResourceEditor::VISIBILITY_TOOL_FILE_FILTER.c_str()));

@@ -136,8 +136,11 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			aggregatorControl->RemoveControl(child);
 		}*/
 
+		// TODO! Yuri Coder, 2013/10/09. This method causes problems when aggregator control has its own
+		// children. Adding children to aggregator is disabled because of DF-2163.
 		aggregatorControl->RemoveAllControls();
-		
+		aggregatorControl->SetSize(rect.GetSize());
+
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
@@ -150,8 +153,12 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
 		}
-		//aggregatorControl->SetSize(screen->GetSize()); TODO:// update child size 
+
+		// Have to remember Align Data prior to changing rectangle and then apply the alignment
+		// back, since SetRect affects the alignment. See please DF-2342.
+		AlignData alignData = SaveAlignData(aggregatorControl);
 		aggregatorControl->SetRect(aggregatorControl->GetRect());	//update childs size and position
+		RestoreAlignData(aggregatorControl, alignData);
 	}
 }
 
@@ -173,10 +180,12 @@ bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 
 bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
+	// DF-2164 - Get proper relative path for aggregator
+	String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 	// Always update aggregator path if it is empty while save
 	if (this->path.IsEmpty())
 	{
-		this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+		this->path = aggregatorPath;
 	}
 	
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
@@ -188,8 +197,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		if (!aggregatorControl)
 			continue;
 
-		String aggregatorName = FilePath(path.toStdString()).GetFilename();
-		aggregatorControl->SetAggregatorPath(aggregatorName);
+		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	
 	node->Set(WIDTH_NODE, (int32)rect.dx);
@@ -240,7 +248,7 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
 
-	if (uiAggregator && uiAggregator->GetAggregatorPath().GetAbsolutePathname().compare(path.GetFilename()) == 0)
+	if (uiAggregator && uiAggregator->GetAggregatorPath() == path)
 	{
 		Logger::Debug(uiAggregator->GetAggregatorPath().GetAbsolutePathname().c_str());
 		HIERARCHYTREENODESLIST childs = node->GetChildNodes();
@@ -289,4 +297,39 @@ const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChild
 const FilePath& HierarchyTreeAggregatorNode::GetPath()
 {
 	return path;
+}
+
+HierarchyTreeAggregatorNode::AlignData HierarchyTreeAggregatorNode::SaveAlignData(UIControl* uiControl)
+{
+	AlignData resultData;
+	if (!uiControl)
+	{
+		return resultData;
+	}
+	
+	resultData.leftAlign = uiControl->GetLeftAlign();
+	resultData.hcenterAlign = uiControl->GetHCenterAlign();
+	resultData.rightAlign = uiControl->GetRightAlign();
+	
+	resultData.topAlign = uiControl->GetTopAlign();
+	resultData.vcenterAlign = uiControl->GetVCenterAlign();
+	resultData.bottomAlign = uiControl->GetBottomAlign();
+	
+	return resultData;
+}
+
+void HierarchyTreeAggregatorNode::RestoreAlignData(UIControl* uiControl, const HierarchyTreeAggregatorNode::AlignData& alignData)
+{
+	if (!uiControl)
+	{
+		return;
+	}
+
+	uiControl->SetLeftAlign(alignData.leftAlign);
+	uiControl->SetHCenterAlign(alignData.hcenterAlign);
+	uiControl->SetRightAlign(alignData.rightAlign);
+
+	uiControl->SetTopAlign(alignData.topAlign);
+	uiControl->SetVCenterAlign(alignData.vcenterAlign);
+	uiControl->SetBottomAlign(alignData.bottomAlign);
 }

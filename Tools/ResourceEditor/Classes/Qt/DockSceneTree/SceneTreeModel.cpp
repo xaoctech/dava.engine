@@ -464,6 +464,15 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 							ret = false;
 							break;
 						}
+
+						// 4. or we are dropping last element to the bottom of the list
+						if( NULL == parentEntity && row == -1 && // dropping to be bottom of the list
+							!entityIndex.parent().isValid() && // no parent
+							entityIndex.row() == (rowCount(entityIndex.parent()) - 1)) // dropped item is already bottom
+						{
+							ret = false;
+							break;
+						}
 					}
 
 					delete entities;

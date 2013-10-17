@@ -1,18 +1,19 @@
 #include "CustomColorsPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "../../../SceneEditor/EditorConfig.h"
 #include "Project/ProjectManager.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
 #include "../LandscapeEditorShortcutManager.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QLayout>
 #include <QComboBox>
 #include <QPushButton>
 #include <QSpacerItem>
-#include <QFileDialog>
+#include <QLabel>
 
 CustomColorsPanel::CustomColorsPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
@@ -97,9 +98,15 @@ void CustomColorsPanel::InitUI()
 	buttonSaveTexture = new QPushButton(this);
 	buttonLoadTexture = new QPushButton(this);
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	
+
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetBrushSize);
+
 	layout->addWidget(comboColor);
-	layout->addWidget(sliderWidgetBrushSize);
+	layout->addLayout(layoutBrushSize);
 	layout->addWidget(buttonLoadTexture);
 	layout->addWidget(buttonSaveTexture);
 	layout->addSpacerItem(spacer);
@@ -109,8 +116,8 @@ void CustomColorsPanel::InitUI()
 	SetWidgetsState(false);
 	BlockAllSignals(true);
 	
-	sliderWidgetBrushSize->Init(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str(),
-								false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
 	buttonSaveTexture->setText(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str());
 	buttonLoadTexture->setText(ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION.c_str());
 }
@@ -191,12 +198,13 @@ void CustomColorsPanel::SaveTexture()
 	SceneEditor2* sceneEditor = GetActiveScene();
 	
 	FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
-	if (selectedPathname.IsEmpty())
+
+	if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
 	{
 		selectedPathname = sceneEditor->GetScenePath().GetDirectory();
 	}
 	
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+	QString filePath = QtFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
 													QString(selectedPathname.GetAbsolutePathname().c_str()),
 													QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
 	selectedPathname = PathnameToDAVAStyle(filePath);
@@ -212,7 +220,8 @@ void CustomColorsPanel::LoadTexture()
 	SceneEditor2* sceneEditor = GetActiveScene();
 	
 	FilePath currentPath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
-	if (currentPath.IsEmpty())
+
+	if (currentPath.IsEmpty() || !currentPath.Exists())
 	{
 		currentPath = sceneEditor->GetScenePath().GetDirectory();
 	}

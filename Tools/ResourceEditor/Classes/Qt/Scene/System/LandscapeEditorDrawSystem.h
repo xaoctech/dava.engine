@@ -101,6 +101,8 @@ public:
 
 	bool VerifyLandscape();
 
+	Landscape * GetBaseLandscape() const;
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;

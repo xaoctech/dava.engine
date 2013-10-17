@@ -72,7 +72,8 @@ Landscape::Landscape()
     
 	cursor = 0;
     uniformCameraPosition = -1;
-    
+	textureTiling.resize(TEXTURE_COUNT);
+	tileColor.resize(TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         uniformTextures[k] = -1;
@@ -903,14 +904,15 @@ float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const Landscap
 	return dist0;
 }
 	
-void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
+void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
     Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
     
     if (currentNode->data.size >= 2)
-        frustumRes = frustum->Classify(currentNode->data.bbox);
+		if (clippingFlags)
+			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);		
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
@@ -925,7 +927,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
             for (int32 index = 0; index < 4; ++index)
             {
                 LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                Draw(child); 
+                Draw(child, clippingFlags); 
             }
         }
         return;
@@ -1079,7 +1081,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
             for (int32 index = 0; index < 4; ++index)
             {
                 LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                Draw(child); 
+                Draw(child, clippingFlags); 
             }
         }
         /* EXPERIMENTAL => reduce level of quadtree, results was not successfull 
@@ -1295,7 +1297,7 @@ void Landscape::Draw(Camera * camera)
 		lod0quads.clear();
 		lodNot0quads.clear();
 
-		Draw(&quadTreeHead);
+		Draw(&quadTreeHead, 0x3f);
 	}
     
     BindMaterial(nearLodIndex);
@@ -1336,19 +1338,14 @@ void Landscape::Draw(Camera * camera)
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
-		fans.clear();
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);		
 		cursor->Prepare();
 		ClearQueue();
 
         
 #if defined (DRAW_OLD_STYLE)    
         Draw(&quadTreeHead);
-#else //#if defined (DRAW_OLD_STYLE)    
-        lod0quads.clear();
-        lodNot0quads.clear();
-        
-        Draw(&quadTreeHead);
+#else //#if defined (DRAW_OLD_STYLE)            
         
         if(nearLodIndex != farLodIndex)     
 		{

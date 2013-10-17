@@ -106,6 +106,17 @@ float GetUITextViewSizeDivider()
 	return self;
 }
 
+-(void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if (cppTextField)
+    {
+        if (DAVA::UIControlSystem::Instance()->GetFocusedControl() != cppTextField)
+        {
+            DAVA::UIControlSystem::Instance()->SetFocusedControl(cppTextField, false);
+        }
+    }
+}
+
 -(id)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     id hitView = [super hitTest:point withEvent:event];
@@ -498,11 +509,20 @@ namespace DAVA
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         if (align & ALIGN_LEFT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentLeft;
+		}
         else if (align & ALIGN_HCENTER)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentCenter;
+		}
         else if (align & ALIGN_RIGHT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentRight;
+		}
 
         if (align & ALIGN_TOP)
             textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;

@@ -33,26 +33,6 @@ QtPropertyDataInspMember::~QtPropertyDataInspMember()
 	DAVA::SafeDelete(lastCommand);
 }
 
-QVariant QtPropertyDataInspMember::GetValueInternal()
-{
-	// get current value from introspection member
-	// we should do this because member may change at any time
-	if(NULL != member)
-	{
-		DAVA::VariantType v = member->Value(object);
-
-		// if current variant value not equal to the real member value
-		// we should update current variant value
-		if(v != GetVariantValue())
-		{
-			QtPropertyDataDavaVariant::SetVariantValue(v);
-		}
-	}
-
-	// return current variant value, converted to QVariant
-	return QtPropertyDataDavaVariant::GetValueInternal();
-}
-
 void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
@@ -66,6 +46,28 @@ void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 
 		member->SetValue(object, newValue);
 	}
+}
+
+bool QtPropertyDataInspMember::UpdateValueInternal()
+{
+	bool ret = false;
+
+	// get current value from introspection member
+	// we should do this because member may change at any time
+	if(NULL != member)
+	{
+		DAVA::VariantType v = member->Value(object);
+
+		// if current variant value not equal to the real member value
+		// we should update current variant value
+		if(v != GetVariantValue())
+		{
+			QtPropertyDataDavaVariant::SetVariantValue(v);
+			ret = true;
+		}
+	}
+
+	return ret;
 }
 
 bool QtPropertyDataInspMember::EditorDoneInternal(QWidget *editor)

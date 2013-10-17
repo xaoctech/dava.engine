@@ -73,6 +73,7 @@ ParticleLayer::ParticleLayer()
 	spin = 0;			
 	spinVariation = 0;
 	spinOverLife = 0;
+	animSpeedOverLife = 0;
 	randomSpinDirection = false;
 
 	motionRandom = 0;		
@@ -113,6 +114,7 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeEnabled = false;
 	frameOverLifeFPS = 0;
 	randomFrameOnStart = false;
+	loopSpriteAnimation = true;
 
 	scaleVelocityBase = 1;
 	scaleVelocityFactor = 0;
@@ -197,6 +199,9 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 		dstLayer->spinOverLife.Set(spinOverLife->Clone());
 	dstLayer->randomSpinDirection = randomSpinDirection;
 
+	if (animSpeedOverLife)
+		dstLayer->animSpeedOverLife.Set(animSpeedOverLife->Clone());
+
 	
 	if (motionRandom)
 		dstLayer->motionRandom.Set(motionRandom->Clone());
@@ -259,9 +264,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 	dstLayer->randomFrameOnStart = randomFrameOnStart;
+	dstLayer->loopSpriteAnimation = loopSpriteAnimation;
 	dstLayer->particleOrientation = particleOrientation;
 
-	dstLayer->scaleVelocityBase = scaleVelocityFactor;
+	dstLayer->scaleVelocityBase = scaleVelocityBase;
 	dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->isDisabled = isDisabled;
@@ -599,7 +605,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 					count--;
 				}else
 				{
-					ProcessParticle(current);
+					ProcessParticle(current, timeElapsed);
 					prev = current;
 				}
 
@@ -677,7 +683,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 				}
 				else
 				{
-					ProcessParticle(head);
+					ProcessParticle(head, timeElapsed);
 				}
             }
 			
@@ -850,19 +856,22 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
     
 	particle->frame = 0;
+	particle->animTime = 0;
 	if (randomFrameOnStart&&sprite)
 	{
 		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
 	}	
 	
 	// process it to fill first life values
-	ProcessParticle(particle);
+	ProcessParticle(particle, 0);
 
 	// go to life
 	RunParticle(particle);
 }
 
-void ParticleLayer::ProcessParticle(Particle * particle)
+
+
+void ParticleLayer::ProcessParticle(Particle * particle, float32 timeElapsed)
 {
 	float32 t = particle->life / particle->lifeTime;
 	if (sizeOverLifeXY)
@@ -886,22 +895,28 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		particle->drawColor = particle->color*emitter->ambientColor;
 	}
 
-	// Frame Overlife FPS defines how many frames should be displayed in a second.
-	// This property is cycled - if we reached the last frame, we'll update to the new one.
-	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
+	// Frame Overlife FPS defines how many frames should be displayed in a second.	
+	if (frameOverLifeEnabled)
 	{
-		//float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
-		float32 frameTime = 1.0f / frameOverLifeFPS;
-		while ((particle->life - particle->frameLastUpdateTime) > frameTime)
+		float32 animDelta = timeElapsed*frameOverLifeFPS;
+		if (animSpeedOverLife)
+			animDelta*=animSpeedOverLife->GetValue(t);
+		particle->animTime+=animDelta;
+
+		while (particle->animTime>1.0f)
 		{
 			particle->frame ++;
 			// Spright might not be loaded (see please DF-1661).
 			if (!this->sprite || particle->frame >= this->sprite->GetFrameCount())
 			{
-				particle->frame = 0;
+				if (loopSpriteAnimation)
+					particle->frame = 0;					
+				else
+					particle->frame = this->sprite->GetFrameCount()-1;
+					
 			}
 
-			particle->frameLastUpdateTime += frameTime;
+			particle->animTime -= 1.0f;
 		}
 	}
     
@@ -1039,6 +1054,11 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	{
 		randomFrameOnStart = randomFrameOnStartNode->AsBool();
 	}
+	const YamlNode* loopSpriteAnimationNode = node->Get("loopSpriteAnimation");
+	if (loopSpriteAnimationNode)
+	{
+		loopSpriteAnimation = loopSpriteAnimationNode->AsBool();
+	}
 
 	const YamlNode* particleOrientationNode = node->Get("particleOrientation");
 	if (particleOrientationNode)
@@ -1121,6 +1141,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
 	spinVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinVariation");	
 	spinOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinOverLife");	
+	animSpeedOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "animSpeedOverLife");	
 	const YamlNode* randomSpinDirectionNode = node->Get("randomSpinDirection");
 	if (randomSpinDirectionNode)
 	{
@@ -1293,6 +1314,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spin", this->spin);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinVariation", this->spinVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinOverLife", this->spinOverLife);
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "animSpeedOverLife", this->animSpeedOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomSpinDirection", this->randomSpinDirection);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandom", this->motionRandom);
@@ -1313,6 +1335,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "loopSpriteAnimation", this->loopSpriteAnimation);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);    
 

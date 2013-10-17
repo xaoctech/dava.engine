@@ -23,6 +23,10 @@ public:
 	static const int DEF_STRENGTH_MAX_VALUE = 30;
 	static const int DEF_AVERAGE_STRENGTH_MIN_VALUE = 0;
 	static const int DEF_AVERAGE_STRENGTH_MAX_VALUE = 60;
+	static const int STRENGTH_MIN_BOUNDARY = -999;
+	static const int STRENGTH_MAX_BOUNDARY = 999;
+	static const int AVG_STRENGTH_MIN_BOUNDARY = 0;
+	static const int AVG_STRENGTH_MAX_BOUNDARY = 999;
 
 	explicit HeightmapEditorPanel(QWidget* parent = 0);
 	~HeightmapEditorPanel();

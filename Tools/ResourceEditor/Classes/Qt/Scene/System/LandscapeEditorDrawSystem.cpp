@@ -63,6 +63,9 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 	SafeRelease(customColorsProxy);
 	SafeRelease(visibilityToolProxy);
 	SafeRelease(rulerToolProxy);
+	SafeRelease(cursorTexture);
+
+	SafeDelete(notPassableTerrainProxy);
 }
 
 LandscapeProxy* LandscapeEditorDrawSystem::GetLandscapeProxy()
@@ -110,7 +113,8 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
 	landscapeProxy->SetRenderer(landscapeRenderer);
-	
+	landscapeRenderer->Release();
+
 	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
 	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
 	
@@ -601,8 +605,9 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 		landscapeProxy->UpdateFullTiledTexture(true);
 	}
 
-	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK) == NULL ||
-		landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	Texture* tileMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
+	Texture* fullTiled = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (tileMask == NULL || tileMask->IsPinkPlaceholder() || fullTiled == NULL)
 	{
 		return false;
 	}
@@ -626,4 +631,9 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 	}
 
 	return true;
+}
+
+Landscape * LandscapeEditorDrawSystem::GetBaseLandscape() const
+{
+	return baseLandscape;
 }

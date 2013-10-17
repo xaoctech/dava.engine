@@ -57,7 +57,7 @@ namespace DAVA
 		friend class InspInfo;
 
 	public:
-		InspMember(const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0);
+		InspMember(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags = 0);
 
 		// Имя члена интроспекции, соответствует имени члена класса
 		const char* Name() const;
@@ -111,7 +111,7 @@ namespace DAVA
 	protected:
 		const char* name;
 		InspDesc desc;
-		const int offset;
+		const long int offset;
 		const MetaInfo* type;
 		const int flags;
 	};

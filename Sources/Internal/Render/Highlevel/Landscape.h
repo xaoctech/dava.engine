@@ -301,6 +301,7 @@ protected:
             x = y = size = lod = 0;
             rdoQuad = -1;
             frame = 0;
+			startClipPlane = 0;
         }
         
         int16   x, y;
@@ -309,6 +310,7 @@ protected:
         int8    lod;
         int16   rdoQuad;
         AABBox3 bbox;
+		uint8 startClipPlane;
         uint32  frame;
     };
    
@@ -326,7 +328,7 @@ protected:
     void UnbindMaterial();
     
     void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
-    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
+    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippingFlags);
     void DrawFans();
 
     Texture * CreateTexture(eTextureLevel level, const FilePath & textureName);
@@ -365,9 +367,9 @@ protected:
     int32 uniformCameraPosition;
     int32 uniformTextures[TEXTURE_COUNT];
     int32 uniformTextureTiling[TEXTURE_COUNT];
-    Vector2 textureTiling[TEXTURE_COUNT];
+    Vector<Vector2> textureTiling;
     int32 uniformTileColor[TEXTURE_COUNT];
-    Color tileColor[TEXTURE_COUNT];
+    Vector<Color> tileColor;
     
     int32 uniformFogDensity;
     int32 uniformFogColor;
@@ -425,6 +427,9 @@ public:
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
+		COLLECTION(tileColor, "Tile Color",  I_VIEW | I_EDIT)
+		COLLECTION(textureTiling, "Texture tiling", I_VIEW | I_EDIT)
+		//PROPERTY("tiledShaderMode", "Tiled shader mode", GetTiledShaderMode, SetTiledShaderMode, I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

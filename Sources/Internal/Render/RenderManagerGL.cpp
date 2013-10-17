@@ -74,6 +74,9 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	SetPixelFormat( hDC, iFormat, &pfd );
 
 	hRC = wglCreateContext(hDC);
+
+	renderContextId = (uint64)hRC;
+	
 	Thread::secondaryContext = wglCreateContext(hDC);
 	Thread::currentDC = hDC;
 
@@ -1130,9 +1133,9 @@ void RenderManager::AttachRenderData()
 
     
     
-int32 RenderManager::HWglGetLastTextureID()
+int32 RenderManager::HWglGetLastTextureID(int textureType)
 {
-    return lastBindedTexture;
+    return lastBindedTexture[textureType];
 
     
 //#if defined(__DAVAENGINE_ANDROID__)
@@ -1147,24 +1150,31 @@ int32 RenderManager::HWglGetLastTextureID()
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 	
-uint32 RenderManager::HWglGetLastTextureType()
-{
-	return lastBindedTextureType;
-}
-
 void RenderManager::HWglBindTexture(int32 tId, uint32 textureType)
 {
     if(0 != tId)
     {
         glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
         
-        //		GLenum err = glGetError();
-        //		if (err != GL_NO_ERROR)
-        //			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+        		//GLenum err = glGetError();
+        		//if (err != GL_NO_ERROR)
+        		//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
         
-        lastBindedTexture = tId;
+        lastBindedTexture[textureType] = tId;
 		lastBindedTextureType = textureType;
     }
+}
+	
+void RenderManager::HWglForceBindTexture(int32 tId, uint32 textureType)
+{
+	glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
+	
+	//GLenum err = glGetError();
+	//if (err != GL_NO_ERROR)
+	//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+	
+	lastBindedTexture[textureType] = tId;
+	lastBindedTextureType = textureType;
 }
 
 int32 RenderManager::HWglGetLastFBO()
@@ -1211,7 +1221,11 @@ void RenderManager::HWglBindFBO(const int32 fbo)
 void RenderManager::Lost()
 {
 	enabledAttribCount = 0;
-	lastBindedTexture = 0;
+	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
+	{
+		lastBindedTexture[i] = 0;
+	}
+
 	lastBindedFBO = 0;
 }
 

@@ -30,6 +30,8 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 ActionEnableRulerTool::ActionEnableRulerTool(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_RULER_TOOL)
 ,	sceneEditor(forSceneEditor)
@@ -55,7 +57,7 @@ void ActionEnableRulerTool::Redo()
 	
 	if (!success || !sceneEditor->rulerToolSystem->EnableLandscapeEditing())
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::RULER_TOOL_ENABLE_ERROR);
 	}
 	
 	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
@@ -83,7 +85,7 @@ void ActionDisableRulerTool::Redo()
 	disabled = sceneEditor->rulerToolSystem->DisableLandscapeEdititing();
 	if (!disabled)
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::RULER_TOOL_DISABLE_ERROR);
 	}
 	
 	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);

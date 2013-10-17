@@ -40,7 +40,7 @@
 #include "Scene/SceneEditor2.h"
 
 #include "Commands2/TransformCommand.h"
-#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityAddCommand.h"
 #include <QApplication>
 
 EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys)
@@ -789,7 +789,7 @@ void EntityModificationSystem::CloneEnd()
 			cloneParent->RemoveNode(clonedEntities[i]);
 
 			// and add it once again with command
-			sceneEditor->Exec(new EntityMoveCommand(clonedEntities[i], cloneParent));
+			sceneEditor->Exec(new EntityAddCommand(clonedEntities[i], cloneParent));
 
 			// make cloned entiti selected
 			selectionSystem->AddSelection(clonedEntities[i]);
@@ -800,4 +800,15 @@ void EntityModificationSystem::CloneEnd()
 	}
 
 	clonedEntities.clear();
+}
+
+void EntityModificationSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	if (GetLandscape(entity) != NULL)
+	{
+		SetLandscapeSnap(false);
+
+		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
+		SceneSignals::Instance()->EmitSnapToLandscapeChanged(sceneEditor, false);
+	}
 }

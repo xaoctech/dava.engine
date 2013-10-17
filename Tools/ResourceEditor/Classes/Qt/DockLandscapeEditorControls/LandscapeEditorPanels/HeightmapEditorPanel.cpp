@@ -1,7 +1,7 @@
 #include "HeightmapEditorPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../SliderWidget/SliderWidget.h"
+#include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 #include "Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "../LandscapeEditorShortcutManager.h"
@@ -94,10 +94,10 @@ void HeightmapEditorPanel::InitUI()
 	checkboxTilemask = new QCheckBox(this);
 	editHeight = new QLineEdit(this);
 
-	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
-	QLabel* labelBrushSizeDesc = new QLabel(this);
-	layoutBrushSize->addWidget(labelBrushSizeDesc);
-	layoutBrushSize->addWidget(comboBrushImage);
+	QHBoxLayout* layoutBrushImage = new QHBoxLayout();
+	QLabel* labelBrushImageDesc = new QLabel(this);
+	layoutBrushImage->addWidget(labelBrushImageDesc);
+	layoutBrushImage->addWidget(comboBrushImage);
 
 	QVBoxLayout* layoutCopyPaste = new QVBoxLayout();
 	QHBoxLayout* layoutCopyPasteType = new QHBoxLayout();
@@ -107,6 +107,24 @@ void HeightmapEditorPanel::InitUI()
 	layoutCopyPasteType->addWidget(checkboxTilemask);
 	layoutCopyPaste->addWidget(radioCopyPaste);
 	layoutCopyPaste->addLayout(layoutCopyPasteType);
+
+	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
+	QLabel* labelBrushSize = new QLabel();
+	labelBrushSize->setText(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION.c_str());
+	layoutBrushSize->addWidget(labelBrushSize);
+	layoutBrushSize->addWidget(sliderWidgetBrushSize);
+
+	QHBoxLayout* layoutStrength = new QHBoxLayout();
+	QLabel* labelStrength = new QLabel();
+	labelStrength->setText(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_CAPTION.c_str());
+	layoutStrength->addWidget(labelStrength);
+	layoutStrength->addWidget(sliderWidgetStrength);
+
+	QHBoxLayout* layoutAvgStrength = new QHBoxLayout();
+	QLabel* labelAvgStrength = new QLabel();
+	labelAvgStrength->setText(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION.c_str());
+	layoutAvgStrength->addWidget(labelAvgStrength);
+	layoutAvgStrength->addWidget(sliderWidgetAverageStrength);
 
 	QGridLayout* layoutDrawTypes = new QGridLayout();
 	layoutDrawTypes->addWidget(radioAbsolute, 0, 0);
@@ -124,10 +142,10 @@ void HeightmapEditorPanel::InitUI()
 
 	QSpacerItem* spacer = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-	layout->addWidget(sliderWidgetBrushSize);
 	layout->addLayout(layoutBrushSize);
-	layout->addWidget(sliderWidgetStrength);
-	layout->addWidget(sliderWidgetAverageStrength);
+	layout->addLayout(layoutBrushImage);
+	layout->addLayout(layoutStrength);
+	layout->addLayout(layoutAvgStrength);
 	layout->addLayout(layoutCopyPaste);
 	layout->addLayout(layoutDrawTypes);
 	layout->addLayout(layoutHeight);
@@ -138,22 +156,22 @@ void HeightmapEditorPanel::InitUI()
 	SetWidgetsState(false);
 	BlockAllSignals(true);
 
-	sliderWidgetBrushSize->Init(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION.c_str(),
-								false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
-	sliderWidgetStrength->Init(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_CAPTION.c_str(),
-							   true, DEF_STRENGTH_MAX_VALUE, 0, 0);
-	sliderWidgetAverageStrength->Init(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION.c_str(),
-									  false, DEF_AVERAGE_STRENGTH_MAX_VALUE,
+	sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
+	sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
+	sliderWidgetStrength->Init(true, DEF_STRENGTH_MAX_VALUE, 0, 0);
+	sliderWidgetStrength->SetRangeBoundaries(STRENGTH_MIN_BOUNDARY, STRENGTH_MAX_BOUNDARY);
+	sliderWidgetAverageStrength->Init(false, DEF_AVERAGE_STRENGTH_MAX_VALUE,
 									  DEF_AVERAGE_STRENGTH_MIN_VALUE, DEF_AVERAGE_STRENGTH_MIN_VALUE);
+	sliderWidgetAverageStrength->SetRangeBoundaries(AVG_STRENGTH_MIN_BOUNDARY, AVG_STRENGTH_MAX_BOUNDARY);
 
-	layoutBrushSize->setContentsMargins(0, 0, 0, 0);
+	layoutBrushImage->setContentsMargins(0, 0, 0, 0);
 	layoutCopyPaste->setContentsMargins(0, 0, 0, 0);
 	layoutCopyPasteType->setContentsMargins(0, 0, 0, 0);
 	layoutDrawTypes->setContentsMargins(0, 0, 0, 0);
 	layoutHeight->setContentsMargins(0, 0, 0, 0);
 
-	labelBrushSizeDesc->setText(ResourceEditor::HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE.c_str());
-	labelBrushSizeDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+	labelBrushImageDesc->setText(ResourceEditor::HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE.c_str());
+	labelBrushImageDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	labelHeightDesc->setText(ResourceEditor::HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT.c_str());
 	labelHeightDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 

@@ -325,12 +325,9 @@ public:
 	virtual void CopyDataFrom(UIControl *srcControl);
 
 protected:
-    bool needRedraw;
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
-    Font * textFont;
-    bool isPassword;
 	
 	// Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
@@ -339,11 +336,6 @@ protected:
 	eKeyboardAppearanceType keyboardAppearanceType;
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
-	bool enableReturnKeyAutomatically;
-
-//    Sprite *textSprite;
-
-//    virtual void Draw(const UIGeometricData &geometricData);
 
     void RenderText();
 private:
@@ -353,13 +345,18 @@ private:
 	UITextFieldiPhone * textFieldiPhone;
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
-#endif
-
-
+#else
     UIStaticText * staticText;
+    Font * textFont;
+    Font * constFont;
+#endif
     float32 cursorTime;
-    bool showCursor;
-
+	
+	// All Boolean variables are grouped together because of DF-2149.
+    bool needRedraw : 1;
+    bool isPassword : 1;
+	bool enableReturnKeyAutomatically : 1;
+    bool showCursor : 1;
 };
 
 };

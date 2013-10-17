@@ -847,7 +847,7 @@ void EditorBodyControl::PackLightmaps()
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
-	packer.PackLightmaps();
+	packer.PackLightmaps(EditorSettings::Instance()->GetTextureViewGPU());
 	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 

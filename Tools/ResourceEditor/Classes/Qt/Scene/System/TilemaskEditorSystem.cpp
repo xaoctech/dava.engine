@@ -49,13 +49,10 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	strength(0.25f)
 ,	toolImagePath("")
 ,	tileTextureNum(0)
-,	maskSprite(NULL)
-,	oldMaskSprite(NULL)
 ,	toolSprite(NULL)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	toolSpriteUpdated(false)
 ,	needCreateUndo(false)
-,	originalMask(NULL)
 ,	toolImageIndex(0)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
@@ -109,9 +106,11 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
 	
-	CreateMaskTexture();
-	
+	InitSprites();
+
 	enabled = true;
 	return enabled;
 }
@@ -188,10 +187,8 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 			case UIEvent::PHASE_BEGAN:
 				if (isIntersectsLandscape && !needCreateUndo)
 				{
-					CreateMaskTexture();
 					UpdateToolImage();
 					ResetAccumulatorRect();
-					StoreOriginalState();
 					editingIsEnabled = true;
 				}
 				break;
@@ -205,6 +202,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 					needCreateUndo = true;
 					editingIsEnabled = false;
 				}
+				prevCursorPos = Vector2(-1.f, -1.f);
 				break;
 		}
 	}
@@ -289,18 +287,21 @@ void TilemaskEditorSystem::UpdateToolImage(bool force)
 
 void TilemaskEditorSystem::UpdateBrushTool()
 {
+	Sprite* srcSprite = drawSystem->GetLandscapeProxy()->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE);
+	Sprite* dstSprite = drawSystem->GetLandscapeProxy()->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_DESTINATION);
+
 	int32 colorType = (int32)tileTextureNum;
 	
-	RenderManager::Instance()->SetRenderTarget(maskSprite);
+	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
 	srcBlendMode = RenderManager::Instance()->GetSrcBlend();
 	dstBlendMode = RenderManager::Instance()->GetDestBlend();
 	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 	
 	RenderManager::Instance()->SetShader(tileMaskEditorShader);
-	oldMaskSprite->PrepareSpriteRenderData(0);
-	RenderManager::Instance()->SetRenderData(oldMaskSprite->spriteRenderObject);
-	RenderManager::Instance()->SetTexture(oldMaskSprite->GetTexture(), 0);
+	srcSprite->PrepareSpriteRenderData(0);
+	RenderManager::Instance()->SetRenderData(srcSprite->spriteRenderObject);
+	RenderManager::Instance()->SetTexture(srcSprite->GetTexture(), 0);
 	RenderManager::Instance()->SetTexture(toolSprite->GetTexture(), 1);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -321,13 +322,10 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->RestoreRenderTarget();
 	RenderManager::Instance()->SetColor(Color::White());
 	
-	oldMaskSprite->GetTexture()->GenerateMipmaps();
-	maskSprite->GetTexture()->GenerateMipmaps();
-	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(maskSprite->GetTexture());
-	Sprite * temp = oldMaskSprite;
-	oldMaskSprite = maskSprite;
-	maskSprite = temp;
-	
+	srcSprite->GetTexture()->GenerateMipmaps();
+	dstSprite->GetTexture()->GenerateMipmaps();
+	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(dstSprite->GetTexture());
+	drawSystem->GetLandscapeProxy()->SwapTilemaskSprites();
 
 	RenderManager::Instance()->SetRenderTarget(toolSprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
@@ -405,6 +403,30 @@ Texture* TilemaskEditorSystem::GetTileTexture(int32 index)
 	return texture;
 }
 
+Color TilemaskEditorSystem::GetTileColor(int32 index)
+{
+	if (index < 0 || index >= (int32)GetTileTextureCount())
+	{
+		return Color::Black();
+	}
+
+	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
+	Color color = drawSystem->GetLandscapeProxy()->GetLandscapeTileColor(level);
+	
+	return color;
+}
+
+void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
+{
+	if (index < 0 || index >= (int32)GetTileTextureCount())
+	{
+		return;
+	}
+
+	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
+	drawSystem->GetLandscapeProxy()->SetLandscapeTileColor(level, color);
+}
+
 void TilemaskEditorSystem::CreateMaskTexture()
 {
 	CreateMaskFromTexture(drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK));
@@ -412,20 +434,8 @@ void TilemaskEditorSystem::CreateMaskTexture()
 
 void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 {
-    SafeRelease(maskSprite);
-	SafeRelease(oldMaskSprite);
-    SafeRelease(toolSprite);
-	
-	float32 texSize = 1024;
-	if(texture)
-	{
-		texSize = (float32)texture->GetWidth();
-	}
-    
-	maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
-	oldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
-	toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
-	
+	Sprite* sprite = drawSystem->GetLandscapeProxy()->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE);
+
 	if(texture)
 	{
 		RenderManager::Instance()->LockNonMain();
@@ -434,12 +444,7 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 		Sprite *oldMask = Sprite::CreateFromTexture(texture, 0, 0,
 													(float32)texture->GetWidth(), (float32)texture->GetHeight());
 		
-		RenderManager::Instance()->SetRenderTarget(oldMaskSprite);
-		oldMask->SetPosition(0.f, 0.f);
-		oldMask->Draw();
-		RenderManager::Instance()->RestoreRenderTarget();
-		
-		RenderManager::Instance()->SetRenderTarget(maskSprite);
+		RenderManager::Instance()->SetRenderTarget(sprite);
 		oldMask->SetPosition(0.f, 0.f);
 		oldMask->Draw();
 		RenderManager::Instance()->RestoreRenderTarget();
@@ -449,12 +454,17 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 		RenderManager::Instance()->UnlockNonMain();
 	}
 	
-	oldMaskSprite->GetTexture()->GenerateMipmaps();
-	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(oldMaskSprite->GetTexture());
+	sprite->GetTexture()->GenerateMipmaps();
+	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(sprite->GetTexture());
 }
 
 void TilemaskEditorSystem::Draw()
 {
+	if (!IsLandscapeEditingEnabled())
+	{
+		return;
+	}
+
 	if (toolSpriteUpdated)
 	{
 		UpdateBrushTool();
@@ -472,17 +482,7 @@ void TilemaskEditorSystem::CreateUndoPoint()
 {
 	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
 	DVASSERT(scene);
-	scene->Exec(new ModifyTilemaskCommand(originalMask, drawSystem->GetLandscapeProxy(), GetUpdatedRect()));
-
-	SafeRelease(originalMask);
-}
-
-void TilemaskEditorSystem::StoreOriginalState()
-{
-	DVASSERT(originalMask == NULL);
-
-	LandscapeProxy* lp = drawSystem->GetLandscapeProxy();
-	originalMask = lp->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	scene->Exec(new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), GetUpdatedRect()));
 }
 
 int32 TilemaskEditorSystem::GetBrushSize()
@@ -503,4 +503,17 @@ int32 TilemaskEditorSystem::GetToolImage()
 uint32 TilemaskEditorSystem::GetTileTextureIndex()
 {
 	return tileTextureNum;
+}
+
+void TilemaskEditorSystem::InitSprites()
+{
+	float32 texSize = drawSystem->GetTextureSize();
+
+	if (toolSprite == NULL)
+	{
+		toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+	}
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
+	CreateMaskTexture();
 }

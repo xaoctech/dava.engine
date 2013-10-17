@@ -28,25 +28,19 @@
 
 
 
-#ifndef __ADD_ENTITY__COMMAND_H__
-#define __ADD_ENTITY__COMMAND_H__
+#ifndef __TOOL_BUTTON_WITH_WIDGET_H__
+#define __TOOL_BUTTON_WITH_WIDGET_H__
 
-#include "Commands2/Command2.h"
+#include <QToolButton>
 
-class AddEntityCommand : public Command2
+class ToolButtonWithWidget: public QToolButton
 {
+	Q_OBJECT
+
 public:
-	AddEntityCommand(DAVA::Entity* entityToAdd, DAVA::Scene* scene);
-	~AddEntityCommand();
+	ToolButtonWithWidget(QWidget *parent = 0);
 
-	virtual void Undo();
-	virtual void Redo();
-
-	virtual DAVA::Entity* GetEntity() const;
-
-	DAVA::Entity* entityToAdd;
-	DAVA::Scene*  scene;
-	
+	void SetWidget(QWidget *widget);
 };
 
-#endif // __ADD_ENTITY__COMMAND_H__
+#endif // __TOOL_BUTTON_WITH_WIDGET_H__

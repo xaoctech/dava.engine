@@ -82,6 +82,8 @@ public:
     
     void AddTopToolWidget(QWidget *widget);
 
+	DavaGLWidget * GetDavaWidget() const;
+
 signals:
     
     void CloseTabRequest(int index, Request *closeRequest);

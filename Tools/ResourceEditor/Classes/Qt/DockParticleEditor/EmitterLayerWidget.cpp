@@ -33,10 +33,10 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
 #include "../Scene/SceneDataManager.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
-#include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
 
@@ -330,6 +330,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(randomFrameOnStartCheckBox, SIGNAL(stateChanged(int)),
 		this, SLOT(OnValueChanged()));
 	mainBox->addWidget(randomFrameOnStartCheckBox);
+	loopSpriteAnimationCheckBox = new QCheckBox("loop sprite animation", this);
+	connect(loopSpriteAnimationCheckBox, SIGNAL(stateChanged(int)),
+		this, SLOT(OnValueChanged()));
+	mainBox->addWidget(loopSpriteAnimationCheckBox);
+
+	animSpeedOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(animSpeedOverLifeTimeLine);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -489,6 +496,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		   this,
 		   SLOT(OnValueChanged()));
 	disconnect(randomFrameOnStartCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
+	disconnect(loopSpriteAnimationCheckBox,
 		SIGNAL(stateChanged(int)),
 		this,
 		SLOT(OnValueChanged()));
@@ -718,6 +729,11 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
 	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
 	randomFrameOnStartCheckBox->setChecked(layer->randomFrameOnStart);
+	loopSpriteAnimationCheckBox->setChecked(layer->loopSpriteAnimation);
+
+	animSpeedOverLifeTimeLine->Init(0, 1, updateMinimized);
+	animSpeedOverLifeTimeLine->SetMinLimits(0);
+	animSpeedOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->animSpeedOverLife).GetProps(), Qt::blue, "anim speed over life");
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -780,6 +796,7 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE"));//todo
 	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
 	spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
+	animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
 	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
@@ -825,6 +842,10 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	props->DeleteAllKeys();
 	spinOverLifeTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
+	
+	props->DeleteAllKeys();
+	animSpeedOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS", props);
 
 	props->DeleteAllKeys();
 	alphaOverLifeTimeLine->GetVisualState(props);
@@ -842,7 +863,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 	projectPath += "Data/Gfx/Particles/";
     
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
+	QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
 	
@@ -929,6 +950,9 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propSpinOverLife;
 	spinOverLifeTimeLine->GetValue(0, propSpinOverLife.GetPropsPtr());
 
+	PropLineWrapper<float32> propAnimSpeedOverLife;
+	animSpeedOverLifeTimeLine->GetValue(0, propAnimSpeedOverLife.GetPropsPtr());
+
 	PropLineWrapper<Color> propColorRandom;
 	colorRandomGradient->GetValues(propColorRandom.GetPropsPtr());
 
@@ -1006,6 +1030,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value(),
 						 randomFrameOnStartCheckBox->isChecked(),
+						 loopSpriteAnimationCheckBox->isChecked(),
+						 propAnimSpeedOverLife.GetPropLine(),
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
@@ -1127,6 +1153,8 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
 	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
 	randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
+	loopSpriteAnimationCheckBox->setVisible(!isSuperemitter);
+	animSpeedOverLifeTimeLine->setVisible(!isSuperemitter);
 
 	// The Pivot Point must be hidden for Superemitter mode.
 	pivotPointLabel->setVisible(!isSuperemitter);

@@ -100,7 +100,7 @@ void MimeDataHelper::ConvertToMimeData(List<FilePath>& filePathList, QMimeData* 
 	QList<QUrl> list;
 	for(List<FilePath>::const_iterator it = filePathList.begin(); it != filePathList.end(); ++it)
 	{
-		list.append(QUrl(QString(it->GetAbsolutePathname().c_str())));
+		list.append(QUrl::fromLocalFile(it->GetAbsolutePathname().c_str()));
 	}
 	mimeData->setUrls(list);
 }
@@ -160,7 +160,7 @@ void MimeDataHelper::ConvertQMimeDataFromFilePath(const QMimeData* mimeData,List
 
 	Q_FOREACH(QUrl url, droppedUrls)
 	{
-		FilePath filePath(url.toString().toStdString());
+		FilePath filePath( url.toLocalFile().toStdString());
 		if(!(filePath.Exists() && filePath.GetExtension() == ".sc2"))
 		{
 			continue;

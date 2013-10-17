@@ -36,6 +36,8 @@
 //
 
 #include "InputTest.h"
+#include "UI/UIMovieView.h"
+#include "UI/UIScrollView.h"
 
 using namespace DAVA;
 
@@ -170,6 +172,7 @@ void InputTest::LoadResources()
 	textField->SetKeyboardAppearanceType(DAVA::UITextField::KEYBOARD_APPEARANCE_ALERT);
 	textField->SetReturnKeyType(DAVA::UITextField::RETURN_KEY_JOIN);
 	textField->SetKeyboardType(DAVA::UITextField::KEYBOARD_TYPE_TWITTER);
+	textField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 
 	AddControl(textField);
 
@@ -253,6 +256,8 @@ void InputTest::LoadResources()
 	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	 */
+
+	DisplayUIControlsSize();
 }
 
 void InputTest::UnloadResources()
@@ -336,4 +341,24 @@ void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *call
 	}
 	
 	webView->SetVisible(true);
+}
+
+void InputTest::DisplayUIControlsSize()
+{
+	Logger::Info("Sizeof UIControl is\t%i", sizeof(UIControl));
+	Logger::Info("Sizeof UIMovieView is\t%i", sizeof(UIMovieView));
+	Logger::Info("Sizeof UIScrollView is\t%i", sizeof(UIScrollView));
+	Logger::Info("Sizeof UIAggregatorControl is\t%i", sizeof(UIAggregatorControl));
+	Logger::Info("Sizeof UIWebView is\t%i", sizeof(UIWebView));
+	Logger::Info("Sizeof UIButton is\t%i", sizeof(UIButton));
+	Logger::Info("Sizeof UIControlBackground is\t%i", sizeof(UIControlBackground));
+	Logger::Info("Sizeof UIList is\t%i", sizeof(UIList));
+	Logger::Info("Sizeof UIPopup is\t%i", sizeof(UIPopup));
+	Logger::Info("Sizeof UIScreen is\t%i", sizeof(UIScreen));
+	Logger::Info("Sizeof UIScrollBar is\t%i", sizeof(UIScrollBar));
+	Logger::Info("Sizeof UISlider is\t%i", sizeof(UISlider));
+	Logger::Info("Sizeof UISpinner is\t%i", sizeof(UISpinner));
+	Logger::Info("Sizeof UIStaticText is\t%i", sizeof(UIStaticText));
+	Logger::Info("Sizeof UISwitch is\t%i", sizeof(UISwitch));
+	Logger::Info("Sizeof UITextField is\t%i", sizeof(UITextField));
 }
