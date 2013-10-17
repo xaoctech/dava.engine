@@ -96,10 +96,10 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 	// Initial content max size is actual control sizes
 	Vector2 maxSize = currentMaxSize;
 	
-	List<UIControl*> childslist = parentControl->GetRealChildren();
-	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
+	const List<UIControl*> &childslist = parentControl->GetRealChildren();
+	for(List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
 	{
-    	UIControl *childControl = (UIControl*)(*it);
+    	UIControl *childControl = (*it);
 		if (!childControl)
 			continue;
 		
@@ -112,8 +112,8 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 			childControl->SetRect(childRect);
 		}
 		// Calculate control full "length" and "height"
-		float32 controlSizeX = abs(parentOffset.x) + childRect.x + childRect.dx;
-		float32 controlSizeY = abs(parentOffset.y) + childRect.y + childRect.dy;
+		float32 controlSizeX = Abs(parentOffset.x) + childRect.x + childRect.dx;
+		float32 controlSizeY = Abs(parentOffset.y) + childRect.y + childRect.dy;
 		// Check horizontal size
 		if (controlSizeX >= maxSize.x)
 		{
@@ -125,8 +125,8 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 		}
 		// Change global offset - it has to include parent offset and current child offset
 		Vector2 offset;
-		offset.x = abs(parentOffset.x) + childRect.x;
-		offset.y = abs(parentOffset.y) + childRect.y;
+		offset.x = Abs(parentOffset.x) + childRect.x;
+		offset.y = Abs(parentOffset.y) + childRect.y;
 		// Move to next child
 		maxSize = GetMaxSize(childControl, maxSize, offset);
 	}
@@ -345,6 +345,7 @@ void UIScrollView::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPo
 	
 	scrollHorizontal->SetPosition(curContainerRect.x);
 	scrollVertical->SetPosition(curContainerRect.y);
+	scrollContainer->SetRect(curContainerRect);
 }
 
 float32 UIScrollView::GetParameterForScrollBar(UIScrollBar* forScrollBar, const Vector2& vectorParam)

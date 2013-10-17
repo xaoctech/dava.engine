@@ -45,6 +45,8 @@ public:
 	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
 	virtual ~QtPropertyDataIntrospection();
 
+	static QtPropertyData * CreatePropDataFromInspMember(void *_object, const DAVA::InspMember *member, int hasAllFlags);
+
 protected:
 	void *object;
 	const DAVA::InspInfo *info;
@@ -53,7 +55,6 @@ protected:
 	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
 
 	virtual QVariant GetValueInternal();
-	virtual void ChildNeedUpdate();
 
 	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
 

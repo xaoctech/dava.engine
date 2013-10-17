@@ -310,12 +310,7 @@ void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 		QList<QUrl> urls = data->urls();
 		for(int i = 0; i < urls.size(); ++i)
 		{
-			DAVA::FilePath path(urls[i].toLocalFile().toStdString());
-			if(path.IsEqualToExtension(".sc2") && path.Exists())
-			{
-				int tabId = OpenTab(path);
-				SetCurrentTab(tabId);
-			}
+            QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
 		}
 	}
 }
@@ -506,6 +501,11 @@ void SceneTabWidget::AddTopToolWidget(QWidget *widget)
         widget->setParent(topPlaceholder);
 		topPlaceholderLayout->addWidget(widget);
     }
+}
+
+DavaGLWidget * SceneTabWidget::GetDavaWidget() const
+{
+	return davaWidget;
 }
 
 

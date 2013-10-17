@@ -66,7 +66,7 @@ protected:
 class ModifyTilemaskCommand: public Command2
 {
 public:
-	ModifyTilemaskCommand(Image* originalMask, LandscapeProxy* landscapeProxy,
+	ModifyTilemaskCommand(LandscapeProxy* landscapeProxy,
 						  const Rect& updatedRect);
 	~ModifyTilemaskCommand();
 
@@ -81,6 +81,7 @@ protected:
 	Rect updatedRect;
 
 	Sprite* ApplyImageToTexture(Image* image, Texture* texture);
+	void ApplyImageToSprite(Image* image, Sprite* dstSprite);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__) */

@@ -172,6 +172,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS,
 									  bool randomFrameOnStart,
+									  bool loopSpriteAnimation,
+									  RefPtr< PropertyLine<float32> > animSpeedOverLife,
 									  
 									  float32 pivotPointX,
 									  float32 pivotPointY)
@@ -221,6 +223,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
 	this->randomFrameOnStart = randomFrameOnStart;
+	this->loopSpriteAnimation = loopSpriteAnimation;
+	this->animSpeedOverLife = animSpeedOverLife;
 	
 	this->pivotPointX = pivotPointX;
 	this->pivotPointY = pivotPointY;
@@ -262,6 +266,8 @@ void CommandUpdateParticleLayer::Redo()
 	layer->frameOverLifeEnabled = frameOverLifeEnabled;
 	layer->frameOverLifeFPS = frameOverLifeFPS;
 	layer->randomFrameOnStart = randomFrameOnStart;
+	layer->loopSpriteAnimation = loopSpriteAnimation;
+	layer->animSpeedOverLife = animSpeedOverLife;
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
@@ -353,7 +359,7 @@ void CommandUpdateParticleLayerEnabled::Redo()
 	if (this->layer)
 	{
 		this->layer->SetDisabled(!isEnabled);
-		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+		//ParticlesEditorController::Instance()->RefreshSelectedNode(true); //looks like depricated
 	}
 }
 
@@ -372,7 +378,7 @@ void CommandUpdateParticleLayerLods::Redo()
 		{
 			this->layer->SetLodActive(i, lods[i]);
 		}		
-		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+		//ParticlesEditorController::Instance()->RefreshSelectedNode(true); //looks like depricated
 	}
 }
 

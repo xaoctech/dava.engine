@@ -59,21 +59,28 @@ SceneValidator::~SceneValidator()
 {
 }
 
-bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
+bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene, const DAVA::FilePath &scenePath)
 {
     errorMessages.clear();
 
-    ValidateScene(scene, errorMessages);
+    ValidateScene(scene, scenePath, errorMessages);
 
     ShowErrorDialog(errorMessages);
     return (!errorMessages.empty());
 }
 
 
-void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
+void SceneValidator::ValidateScene(Scene *scene, const DAVA::FilePath &scenePath, Set<String> &errorsLog)
 {
     if(scene) 
     {
+		DAVA::String tmp = scenePath.GetAbsolutePathname();
+		size_t pos = tmp.find("/Data");
+		if(pos != String::npos)
+		{
+			SetPathForChecking(tmp.substr(0, pos + 1));
+		}
+
         ValidateSceneNode(scene, errorsLog);
 
         for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
@@ -464,7 +471,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 {
 	if(!texture) return;
 	
-	String path = texturePathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+	String path = texturePathname.GetRelativePathname(pathForChecking);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
 	if(texture->IsPinkPlaceholder())

@@ -49,7 +49,7 @@ class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
-
+class HangingObjectsHeight;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -57,15 +57,16 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 protected:
     
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
-    
+
 public:
-	explicit QtMainWindow(bool enableGlobalTimeout, QWidget *parent = 0);
+	explicit QtMainWindow(QWidget *parent = 0);
 	~QtMainWindow();
 
 	Ui::MainWindow* GetUI();
 	SceneTabWidget* GetSceneWidget();
 	SceneEditor2* GetCurrentScene();
 
+    bool OpenScene(const QString & path);
 	bool SaveScene(SceneEditor2 *scene);
 	bool SaveSceneAs(SceneEditor2 *scene);
 
@@ -77,19 +78,13 @@ public:
 	void WaitSetValue(int value);
 	void WaitStop();
 
-    void EnableGlobalTimeout(bool enable);
-
-#if defined (__DAVAENGINE_BEAST__)
 	void BeastWaitSetMessage(const QString &messsage);
 	bool BeastWaitCanceled();
-#endif //#if defined (__DAVAENGINE_BEAST__)
 
-	void OpenScene(const QString & path);
+	void EnableGlobalTimeout(bool enable);
 
-    
 signals:
     void GlobalInvalidateTimeout();
-
     
 // qt actions slots
 public slots:
@@ -141,13 +136,14 @@ public slots:
 	void OnUniteEntitiesWithLODs();
 	void OnAddEntityMenuAboutToShow();
 	void OnAddEntityFromSceneTree();
-	
+
 	void OnSetSkyboxNode();
 	
 	void OnShowSettings();
 	void OnOpenHelp();
 
 	void OnSetShadowColor();
+	void OnShadowBlendModeWillShow();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
 
@@ -185,8 +181,12 @@ public slots:
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
 
+	void OnHangingObjects();
+	void OnHangingObjectsHeight(double value);
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
+	void closeEvent(QCloseEvent * e);
 
 	void SetupMainMenu();
 	void SetupToolBars();
@@ -206,6 +206,8 @@ protected:
 	void RunBeast();
 
 
+	bool IsAnySceneChanged();
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -213,28 +215,24 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-    
-	void AddSwitchDialogFinished(int result);
-	void LandscapeDialogFinished(int result);
 
     void OnGlobalInvalidateTimeout();
 
 	void EditorLightEnabled(bool enabled);
 
+	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
+
+	void UnmodalDialogFinished(int);
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
-    
-#if defined (__DAVAENGINE_BEAST__)
 	QtWaitDialog *beastWaitDialog;
-#endif //#if defined (__DAVAENGINE_BEAST__)
 
 	QtPosSaver posSaver;
+	bool globalInvalidate;
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
-	AddSwitchEntityDialog* addSwitchEntityDialog;
-	LandscapeDialog* landscapeDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
@@ -242,6 +240,10 @@ private:
 
 	QtLabelWithActions *objectTypesLabel;
     QComboBox *objectTypesWidget;
+
+	AddSwitchEntityDialog*	addSwitchEntityDialog;
+	LandscapeDialog*		landscapeDialog;
+	HangingObjectsHeight*	hangingObjectsWidget;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
@@ -252,13 +254,10 @@ private:
 	void LoadShadowBlendModeState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void LoadLandscapeEditorState(SceneEditor2* scene);
-	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 	void LoadObjectTypes(SceneEditor2 *scene);
-
-    bool globalInvalidateTimeoutEnabled;
+	void LoadHangingObjects(SceneEditor2 *scene);
 
 	bool IsSavingAllowed();
-    
     void CreateObjectTypesCombobox();
 };
 

@@ -117,9 +117,10 @@ public:
 	bool HasUnsavedChanges() const;
 
 	HierarchyTreeScreenNode* GetScreenNodeForNode(HierarchyTreeNode* node);
-	
+
 	// Align/Distribute logic.
 	void AlignSelectedControls(eAlignControlsType alignType);
+	void DistributeSelectedControls(eDistributeControlsType distributeType);
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
@@ -162,6 +163,10 @@ protected:
 	// Insert/remove selected control to the list with dups check.
 	void InsertSelectedControlToList(HierarchyTreeControlNode* control);
 	void RemoveSelectedControlFromList(HierarchyTreeControlNode* control);
+
+	// Whether align/distribute is possible.
+	bool CanPerformAlign(eAlignControlsType alignType);
+	bool CanPerformDistribute(eDistributeControlsType distributeType);
 
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;

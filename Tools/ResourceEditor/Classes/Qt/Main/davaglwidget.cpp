@@ -120,6 +120,8 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e);
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
+
+	emit Resized(e->size().width(), e->size().height());
 }
 
 void DavaGLWidget::changeEvent(QEvent * event)
@@ -269,8 +271,6 @@ void DavaGLWidget::Render()
 		// so we can wait a minimum time
 		waitUntilNextFrameMs = 1;
 	}
-
-    QWidget::paintEvent(new QPaintEvent(rect()));
 
 	QTimer::singleShot(waitUntilNextFrameMs, this, SLOT(Render()));
 }

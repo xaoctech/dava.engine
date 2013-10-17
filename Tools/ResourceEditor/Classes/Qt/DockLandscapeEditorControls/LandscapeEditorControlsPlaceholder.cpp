@@ -84,6 +84,7 @@ void LandscapeEditorControlsPlaceholder::SetPanel(LandscapeEditorBasePanel* pane
 	
 	currentPanel = panel;
 	layout()->addWidget(panel);
+	panel->show();
 
 	panel->InitPanel(activeScene);
 }
@@ -96,9 +97,10 @@ void LandscapeEditorControlsPlaceholder::RemovePanel()
 	}
 	
 	currentPanel->DeinitPanel();
-	
-	currentPanel->setParent(NULL);
+
+	currentPanel->hide();
 	layout()->removeWidget(currentPanel);
+	currentPanel->setParent(NULL);
 	currentPanel = NULL;
 }
 

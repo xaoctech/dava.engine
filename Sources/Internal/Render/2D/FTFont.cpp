@@ -132,6 +132,19 @@ FTFont * FTFont::Create(const FilePath& path)
 	
 	return font;
 }
+
+void FTFont::ClearCache()
+{
+    while (fontMap.size())
+    {
+        uint32 oldSize = fontMap.size();
+        
+        SafeRelease(fontMap.begin()->second);
+        
+        DVASSERT_MSG(oldSize != fontMap.size(), "Please release all controls and used fonts");
+    }
+}
+
 	
 FTFont *	FTFont::Clone() const
 {
@@ -198,7 +211,9 @@ YamlNode * FTFont::SaveToYamlNode() const
 
 	return node;
 }
-	
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -241,6 +256,8 @@ FTInternalFont::FTInternalFont(const FilePath & path)
 	
 FTInternalFont::~FTInternalFont()
 {
+	ClearString();
+
 	FT_Done_Face(face);
 	SafeDeleteArray(memoryFont);
 }

@@ -60,8 +60,6 @@
 #include "../Commands/FileCommands.h"
 
 
-#include "../Deprecated/ScenePreviewDialog.h"
-
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 	, initialized(false)

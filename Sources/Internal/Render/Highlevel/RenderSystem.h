@@ -115,8 +115,12 @@ public:
 
 	void DebugDrawSpatialTree();
     
-private:
+	void CreateSpatialTree(const AABBox3 &worldBox, int32 maxTreeDepth);
 	void CreateSpatialTree();
+	void RemoveSpatialTree();
+
+private:
+	
     void ProcessClipping();
     void FindNearestLights();
     void FindNearestLights(RenderObject * renderObject);

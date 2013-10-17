@@ -28,16 +28,16 @@
 
 
 
-#ifndef __ADD_ENTITY__COMMAND_H__
-#define __ADD_ENTITY__COMMAND_H__
+#ifndef __ENTITY_ADD_COMMAND_H__
+#define __ENTITY_ADD_COMMAND_H__
 
 #include "Commands2/Command2.h"
 
-class AddEntityCommand : public Command2
+class EntityAddCommand : public Command2
 {
 public:
-	AddEntityCommand(DAVA::Entity* entityToAdd, DAVA::Scene* scene);
-	~AddEntityCommand();
+	EntityAddCommand(DAVA::Entity* entityToAdd, DAVA::Entity* toParent);
+	~EntityAddCommand();
 
 	virtual void Undo();
 	virtual void Redo();
@@ -45,8 +45,8 @@ public:
 	virtual DAVA::Entity* GetEntity() const;
 
 	DAVA::Entity* entityToAdd;
-	DAVA::Scene*  scene;
+	DAVA::Entity* parentToAdd;
 	
 };
 
-#endif // __ADD_ENTITY__COMMAND_H__
+#endif // __ENTITY_ADD_COMMAND_H__

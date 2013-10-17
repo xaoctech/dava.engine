@@ -27,32 +27,48 @@
 =====================================================================================*/
 
 
-#ifndef __ENTITY_OWNER_PROPERTY_HELPER__
-#define __ENTITY_OWNER_PROPERTY_HELPER__
 
-#include "DAVAEngine.h"
-#include "Scene3D/Entity.h"
+#ifndef __DYNAMIC_SHADOW_COMMANDS_H__
+#define __DYNAMIC_SHADOW_COMMANDS_H__
 
-namespace DAVA {
-	//entityOwnerPropertyHelper
+#include "Commands2/Command2.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
-	
-class CustomPropertiesComponent;
-class EntityOwnerPropertyHelper: public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
+class SceneEditor2;
+class ChangeDynamicShadowColorCommand : public Command2
 {
 public:
-	void UpdateEntityOwner(KeyedArchive *customProperties);
+	ChangeDynamicShadowColorCommand(SceneEditor2 *scene, const DAVA::Color & color);
 
-	void SetDesignerName(KeyedArchive *customProperties, const String & name);
-	String GetDesignerName(KeyedArchive *customProperties);
+	virtual void Undo();
+	virtual void Redo();
 
-	void UpdateModificationTime(KeyedArchive *customProperties);
-	String GetModificationTime(KeyedArchive *customProperties);
+	virtual DAVA::Entity* GetEntity() const;
 
-	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
-	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
+private:
+
+	DAVA::Color oldColor;
+	DAVA::Color newColor;
+	SceneEditor2 *scene;
 };
 
+
+class ChangeDynamicShadowModeCommand : public Command2
+{
+public:
+	ChangeDynamicShadowModeCommand(SceneEditor2 *scene, DAVA::ShadowVolumeRenderPass::eBlend mode);
+
+	virtual void Undo();
+	virtual void Redo();
+
+	virtual DAVA::Entity* GetEntity() const;
+
+private:
+
+	DAVA::ShadowVolumeRenderPass::eBlend oldMode;
+	DAVA::ShadowVolumeRenderPass::eBlend newMode;
+	SceneEditor2 *scene;
 };
 
-#endif /* defined(__ENTITY_OWNER_PROPERTY_HELPER__) */
+
+#endif // __DYNAMIC_SHADOW_COMMANDS_H__

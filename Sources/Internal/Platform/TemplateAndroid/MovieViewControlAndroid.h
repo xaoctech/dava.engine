@@ -27,8 +27,8 @@
  =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__
-#define __DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__
+#ifndef __DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__
+#define __DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__
 
 #include "Base/BaseTypes.h"
 #if defined(__DAVAENGINE_ANDROID__)
@@ -104,4 +104,4 @@ private:
 
 #endif //__DAVAENGINE_ANDROID__
 
-#endif /* defined(__DAVAENGINE_MOVIEVIEWCONTROL_IOS_H__) */
+#endif /* defined(__DAVAENGINE_MOVIEVIEWCONTROL_ANDROID_H__) */

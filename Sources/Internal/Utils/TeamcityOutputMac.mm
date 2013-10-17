@@ -28,38 +28,21 @@
 
 
 
-#include "Commands2/AddEntityCommand.h"
-#include "../Qt/Scene/SceneDataManager.h"
-#include "Scene3D/Entity.h"
+#include "Utils/TeamcityOutput.h"
+
+#if defined(__DAVAENGINE_MACOS__)
+#import <Foundation/Foundation.h>
 
 
-AddEntityCommand::AddEntityCommand(DAVA::Entity* _entityToAdd, DAVA::Scene* _scene)
-	: Command2(CMDID_ADD_ENTITY, "Add Entity")
-    , entityToAdd(_entityToAdd)
-    , scene(_scene)
+namespace DAVA
 {
-	SafeRetain(entityToAdd);
-}
-
-AddEntityCommand::~AddEntityCommand()
+    
+void TeamcityOutput::PlatformOutput(const String &text) const
 {
-	SafeRelease(entityToAdd);
+    NSLog(@"%s", text.c_str());
 }
+    
+}; // end of namespace DAVA
 
-void AddEntityCommand::Undo()
-{
-    if(NULL != scene && NULL != entityToAdd)
-    {
-        scene->RemoveNode(entityToAdd);
-    }
-}
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
-void AddEntityCommand::Redo()
-{
-	scene->AddNode(entityToAdd);
-}
-
-Entity* AddEntityCommand::GetEntity() const
-{
-	return entityToAdd;
-}

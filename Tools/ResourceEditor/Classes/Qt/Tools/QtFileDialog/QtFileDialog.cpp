@@ -26,28 +26,3 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#ifndef __ENTITY_MOVE_COMMAND_H__
-#define __ENTITY_MOVE_COMMAND_H__
-
-#include "Commands2/Command2.h"
-
-class EntityMoveCommand : public Command2
-{
-public:
-	EntityMoveCommand(DAVA::Entity* entity, DAVA::Entity *newParent, DAVA::Entity *newBefore = NULL);
-	~EntityMoveCommand();
-
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
-
-	DAVA::Entity* entity;
-	DAVA::Entity* oldParent;
-	DAVA::Entity* oldBefore;
-	DAVA::Entity* newParent;
-	DAVA::Entity* newBefore;
-};
-
-#endif // __ENTITY_MOVE_COMMAND_H__

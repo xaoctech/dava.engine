@@ -45,6 +45,8 @@
 
 #include "../StringConstants.h"
 
+#include "../../Main/QtUtils.h"
+
 SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	: SceneSystem(scene)
 	, curSceneCamera(NULL)
@@ -114,6 +116,8 @@ DAVA::float32 SceneCameraSystem::GetMoveSpeed()
 void SceneCameraSystem::SetViewportRect(const DAVA::Rect &rect)
 {
 	viewportRect = rect;
+
+	RecalcCameraAspect();
 }
 
 const DAVA::Rect SceneCameraSystem::GetViewportRect()
@@ -215,8 +219,10 @@ void SceneCameraSystem::Update(float timeElapsed)
 			// remember current scene camera
 			SafeRelease(curSceneCamera);
 			curSceneCamera = camera;
-			curSceneCamera->SetAspect(viewportRect.dy / viewportRect.dx);
 			SafeRetain(curSceneCamera);
+
+			// Recalc camera aspect
+			RecalcCameraAspect();
 
 			// recalc current view angles using new camera pos and direction
 			RecalcCameraViewAngles();
@@ -316,7 +322,6 @@ void SceneCameraSystem::AddEntity(DAVA::Entity * entity)
 	if(NULL != camera)
 	{
 		sceneCameras.insert(entity);
-		GetScene()->AddCamera(camera);
 	}
 }
 
@@ -335,7 +340,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 	{
 		DAVA::float32 moveSpeed = curSpeed * timeElapsed;        
 
-		if(1) // TODO: check for key modifiers
+		if(!IsKeyModificatorPressed(DVKEY_ALT)) // TODO: check for key modifiers
 		{
 			DAVA::KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
 
@@ -473,6 +478,21 @@ void SceneCameraSystem::RecalcCameraViewAngles()
 	}
     
     UpdateDistanceToCamera();
+}
+
+void SceneCameraSystem::RecalcCameraAspect()
+{
+	if(NULL != curSceneCamera)
+	{
+		DAVA::float32 aspect = 1.0;
+
+		if(0 != viewportRect.dx && 0 != viewportRect.dy)
+		{
+			aspect = viewportRect.dy / viewportRect.dx;
+		}
+
+		curSceneCamera->SetAspect(aspect);
+	}
 }
 
 void SceneCameraSystem::MouseMoveCameraDirection()

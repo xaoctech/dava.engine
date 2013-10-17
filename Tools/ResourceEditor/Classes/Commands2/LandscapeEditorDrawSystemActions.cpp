@@ -30,6 +30,8 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 ActionEnableNotPassable::ActionEnableNotPassable(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_RULER_TOOL)
 ,	sceneEditor(forSceneEditor)
@@ -55,7 +57,7 @@ void ActionEnableNotPassable::Redo()
 	
 	if (!success || !sceneEditor->landscapeEditorDrawSystem->EnableNotPassableTerrain())
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::NOT_PASSABLE_TERRAIN_ENABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitNotPassableTerrainToggled(sceneEditor);

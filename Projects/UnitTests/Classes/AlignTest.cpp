@@ -61,7 +61,7 @@ const int AlignTest::alignTypesData[] =
 };
 
 AlignTest::AlignTest():
-TestTemplate<AlignTest>("SplitTest"),
+TestTemplate<AlignTest>("AlignTest"),
 	currentAlignIndex(0),
 	currenTestIndex(0),
 	data(NULL)
@@ -173,8 +173,8 @@ void AlignTest::MakeScreenShot()
 void AlignTest::OnScreenShot(Image *testImage)
 {
 	//Use this code to generate new reference screenshots
-//	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-//	ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/Win32/test%d.png", currenTestIndex));
+	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	ImageLoader::Save(testImage, workingPath + Format("Data/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
@@ -197,7 +197,6 @@ void AlignTest::VerifyTestImage(Image *testImage)
 				
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
-
 	// Verify compare results
 	if (data)
 	{

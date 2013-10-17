@@ -82,9 +82,6 @@
     <Filter Include="Classes\Qt\DockSceneGraph">
       <UniqueIdentifier>{39430818-6e4e-42bf-bbd9-946b83c94b54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\DockHangingObjects">
-      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\DockMaterialViewOptions">
       <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
     </Filter>
@@ -208,9 +205,6 @@
     <Filter Include="Classes\Qt\Settings">
       <UniqueIdentifier>{0c11ce84-cd79-4a91-8ae8-eb63aca96f0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\SliderWidget">
-      <UniqueIdentifier>{d95815db-d6ea-44d1-82b0-73a7f1f5a5d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
@@ -229,8 +223,20 @@
     <Filter Include="Classes\Qt\Tools\QtLabelWithActions">
       <UniqueIdentifier>{f45b0c79-9408-4fd0-9fe0-45f7474237de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\SoundBrowser">
-      <UniqueIdentifier>{32a36509-1d42-41c9-a2c4-4a09bfea4178}</UniqueIdentifier>
+    <Filter Include="Classes\Qt\Tools\HangingObjectsHeight">
+      <UniqueIdentifier>{dd963721-b170-45e4-8709-701ee3388a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\ToolButtonWithWidget">
+      <UniqueIdentifier>{ea518442-bcb2-4598-a8b0-f59de80f1624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\SliderWidget">
+      <UniqueIdentifier>{77209fd5-5cd1-4465-9f21-223b539f5da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\QtFileDialog">
+      <UniqueIdentifier>{bd109383-7ec3-4aa9-98e4-92206aa6b482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\TileTexturePreviewWidget">
+      <UniqueIdentifier>{db27caa7-9656-4101-a102-5e4083d818d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1164,12 +1170,6 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Classes\LandscapeEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp">
       <Filter>Classes\Qt\DockSceneGraph</Filter>
     </ClCompile>
@@ -1308,9 +1308,6 @@
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp">
-      <Filter>Classes\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClCompile>
@@ -1339,9 +1336,6 @@
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.cpp">
@@ -1564,12 +1558,6 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
@@ -1962,9 +1950,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp">
       <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
     </ClCompile>
@@ -2073,12 +2058,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\SliderWidget\SliderWidget_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SliderWidget\SliderWidget.cpp">
-      <Filter>Classes\Qt\SliderWidget</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\RulerToolActions.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2172,13 +2151,7 @@
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp">
@@ -2205,11 +2178,68 @@
     <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\SoundBrowser\SoundBrowser_moc.cpp">
+    <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.cpp">
+      <Filter>Classes\Qt\Tools\HangingObjectsHeight</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\HangingObjectsHeight\HangingObjectsHeight_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp">
+      <Filter>Classes\Qt\Tools\ToolButtonWithWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\OwnersSignatureSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\LandscapeSetTexturesCommands.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.cpp">
-      <Filter>Classes\Qt\SoundBrowser</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SoundBrowser\FMODSoundBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3206,12 +3236,6 @@
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
       <Filter>Classes\LandscapeEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
-      <Filter>Classes\Qt\DockHangingObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h">
       <Filter>Classes\Qt\DockSceneGraph</Filter>
     </ClInclude>
@@ -3356,9 +3380,6 @@
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h">
-      <Filter>Classes\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClInclude>
@@ -3393,9 +3414,6 @@
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands2\EntityMoveCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.h">
@@ -3641,9 +3659,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h">
       <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\AddEntityCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h">
       <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
     </ClInclude>
@@ -3734,9 +3749,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\SliderWidget\SliderWidget.h">
-      <Filter>Classes\Qt\SliderWidget</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\RulerToolActions.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3803,9 +3815,6 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\AddComponentCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3824,11 +3833,50 @@
     <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_soundbrowser.h">
+    <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.h">
+      <Filter>Classes\Qt\Tools\HangingObjectsHeight</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h">
+      <Filter>Classes\Qt\Tools\ToolButtonWithWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h">
+      <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\OwnersSignatureSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h">
+      <Filter>Classes\Qt\Tools\QtFileDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\LandscapeSetTexturesCommands.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.h">
-      <Filter>Classes\Qt\SoundBrowser</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_soundbrowser.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

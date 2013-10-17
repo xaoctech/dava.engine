@@ -34,6 +34,8 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 ActionEnableHeightmapEditor::ActionEnableHeightmapEditor(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_HEIGHTMAP)
 ,	sceneEditor(forSceneEditor)
@@ -59,7 +61,7 @@ void ActionEnableHeightmapEditor::Redo()
 
 	if (!success || !sceneEditor->heightmapEditorSystem->EnableLandscapeEditing())
 	{
-		//show error message
+		ShowErrorDialog(ResourceEditor::HEIGHTMAP_EDITOR_ENABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitHeightmapEditorToggled(sceneEditor);
@@ -87,7 +89,7 @@ void ActionDisableHeightmapEditor::Redo()
 	disabled = sceneEditor->heightmapEditorSystem->DisableLandscapeEdititing();
 	if (!disabled)
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::HEIGHTMAP_EDITOR_DISABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitHeightmapEditorToggled(sceneEditor);
