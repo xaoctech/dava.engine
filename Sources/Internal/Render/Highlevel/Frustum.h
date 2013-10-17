@@ -150,10 +150,7 @@ public:
 
 	// 
 	void DebugDraw();
-
-
-	//count  actual plane compares for Classify with plane masking - reset explicitly!
-	static uint32 planeCalls;
+	
 
 private:
 	int32					planeCount;

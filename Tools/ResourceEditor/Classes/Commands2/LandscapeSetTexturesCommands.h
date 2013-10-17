@@ -28,45 +28,64 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
-#define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
+#ifndef __RESOURCEEDITORQT__LANDSCAPESETTEXTURESCOMMANDS2__
+#define __RESOURCEEDITORQT__LANDSCAPESETTEXTURESCOMMANDS2__
 
-#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
+#include "Commands2/Command2.h"
+#include "Commands2/CommandAction.h"
 #include "DAVAEngine.h"
-#include "Qt/Scene/SceneEditor2.h"
 
-class SelectEntityPathWidget;
+using namespace DAVA;
 
-class AddSwitchEntityDialog: public BaseAddEntityDialog
+class LandscapeProxy;
+
+class LandscapeSetTexturesCommand: public Command2
 {
-	Q_OBJECT
-
 public:
-	AddSwitchEntityDialog(QWidget* parent = 0);
+	LandscapeSetTexturesCommand( Entity* landscapeEntity,
+								Landscape::eTextureLevel textureID,
+								const FilePath& texturePath);
+	~LandscapeSetTexturesCommand();
 	
-	~AddSwitchEntityDialog();
-	
-	void CleanupPathWidgets();
-
-	const DAVA::Vector<SelectEntityPathWidget*>& GetPathWidgets()
+	virtual void Undo();
+	virtual void Redo();
+	DAVA::Entity* GetEntity() const
 	{
-		return pathWidgets;
+		return landscapeEntity;
 	}
-	
-	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
-	
-	void accept();
-	
-	void reject();
 
 protected:
-
-	virtual void FillPropertyEditorWithContent(){}
-	
-	DAVA::Vector<SelectEntityPathWidget*> pathWidgets;
-	
-	DAVA::Vector<QWidget*>			additionalWidgets;
-
+	Landscape::eTextureLevel textureID;
+	FilePath originalTexturePath;
+	FilePath newTexturePath;
+	Entity* landscapeEntity;
+	Landscape* landscape;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */
+
+class LandscapeSetHeightMapCommand: public Command2
+{
+public:
+	LandscapeSetHeightMapCommand( Entity* landscapeEntity,
+								 const FilePath& texturePath,
+								 const AABBox3& newLandscapeBox);
+	~LandscapeSetHeightMapCommand();
+	
+	virtual void Undo();
+	virtual void Redo();
+	DAVA::Entity* GetEntity() const
+	{
+		return landscapeEntity;
+	}
+
+protected:
+	FilePath	originalHeightMapPath;
+	FilePath	newHeightMapPath;
+	Entity*		landscapeEntity;
+	Landscape*	landscape;
+	AABBox3		originalLandscapeBox;
+	AABBox3		newLandscapeBox;
+};
+
+
+#endif /* defined(__RESOURCEEDITORQT__LANDSCAPESETTEXTURESCOMMANDS2__) */

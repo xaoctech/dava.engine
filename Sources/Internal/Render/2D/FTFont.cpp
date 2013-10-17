@@ -137,7 +137,11 @@ void FTFont::ClearCache()
 {
     while (fontMap.size())
     {
+        uint32 oldSize = fontMap.size();
+        
         SafeRelease(fontMap.begin()->second);
+        
+        DVASSERT_MSG(oldSize != fontMap.size(), "Please release all controls and used fonts");
     }
 }
 
