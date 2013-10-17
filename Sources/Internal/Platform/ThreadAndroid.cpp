@@ -41,7 +41,7 @@ namespace DAVA
 #include <pthread.h>
 
 
-
+Thread::ThreadId Thread::mainThreadId;
 void * PthreadMain (void * param)
 {
 	Thread * t = (Thread*)param;
