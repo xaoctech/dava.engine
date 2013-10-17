@@ -38,7 +38,7 @@ public class JNIMovieViewControl {
 			public Void call() throws Exception {
 				Activity activity = JNIActivity.GetActivity();
 				FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-						(int) (dx + 0.5f), (int) (dy + 0.5f));
+						Math.round(dx), Math.round(dy));
 				params.leftMargin = (int) x;
 				params.topMargin = (int) y;
 				
@@ -130,8 +130,8 @@ public class JNIMovieViewControl {
 				FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
 				params.leftMargin = (int) x;
 				params.topMargin = (int) y;
-				params.width = (int) (dx + 0.5f);
-				params.height = (int) (dy + 0.5f);
+				params.width = Math.round(dx);
+				params.height = Math.round(dy);
 				view.setLayoutParams(params);
 			}
 		});
