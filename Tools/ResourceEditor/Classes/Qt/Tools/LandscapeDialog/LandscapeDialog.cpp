@@ -84,6 +84,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
+	connect(SceneSignals::Instance(), SIGNAL(Closed(SceneEditor2 *)), this, SLOT(SceneClosed(SceneEditor2 *)));
 	
 	DAVA::String resFolder = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
 	
@@ -133,7 +134,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 
 LandscapeDialog::~LandscapeDialog()
 {
-	
+	disconnect(SceneSignals::Instance(), SIGNAL(Closed(SceneEditor2 *)), this, SLOT(SceneClosed(SceneEditor2 *)));
 	disconnect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	
 	for (DAVA::Map<SelectPathWidgetBase*,int32>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
@@ -455,6 +456,21 @@ void LandscapeDialog::SceneActivated(SceneEditor2 *editor)
 {
 	SaveTabState();
 	ApplyTabState(editor);
+}
+
+void LandscapeDialog::SceneClosed(SceneEditor2 *_editor)
+{
+	if(_editor == sceneEditor)//release created entity without any actions with command
+	{
+		SafeRelease(innerLandscapeEntity);
+		QDialog::done(0);
+	}
+	else// in case of 2+ tabs SceneActivated fired faster than Closed, so erase entity from tabMap
+	{
+		Entity* entity = tabEntityMap[_editor];
+		SafeRelease(entity);
+		tabEntityMap.erase(_editor);
+	}
 }
 
 void LandscapeDialog::SaveTabState()

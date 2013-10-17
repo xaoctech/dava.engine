@@ -57,7 +57,9 @@ public:
 public slots:
 
 	void SceneActivated(SceneEditor2 *);
-
+	
+	void SceneClosed(SceneEditor2 *);
+	
 	void done(int);
 		
 protected slots:
