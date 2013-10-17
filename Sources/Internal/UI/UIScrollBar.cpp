@@ -185,8 +185,6 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
     
 	return node;
 }
-
-
     
 void UIScrollBar::Input(UIEvent *currentInput)
 {
