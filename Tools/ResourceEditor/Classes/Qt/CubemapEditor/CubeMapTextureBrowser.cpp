@@ -34,6 +34,7 @@
 #include "ui_CubeMapTextureBrowser.h"
 #include "../../StringConstants.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QFileDialog>
 #include <QScrollBar>
@@ -186,7 +187,7 @@ void CubeMapTextureBrowser::RestoreListSelection(int currentRow)
 
 void CubeMapTextureBrowser::OnChooseDirectoryClicked()
 {
-	QString newDir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+	QString newDir = QtFileDialog::getExistingDirectory(this, tr("Open Directory"),
 													   ui->textRootPath->text());
 	if(!newDir.isNull())
 	{
@@ -208,7 +209,7 @@ void CubeMapTextureBrowser::OnReloadClicked()
 
 void CubeMapTextureBrowser::OnCreateCubemapClicked()
 {
-	QString fileName = QFileDialog::getSaveFileName(this,
+	QString fileName = QtFileDialog::getSaveFileName(this,
 													tr("Create Cubemap Texture"),
 													ui->textRootPath->text(),
 													tr("Tex File (*.tex)"));
