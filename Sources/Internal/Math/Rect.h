@@ -106,8 +106,8 @@ inline Rect::Rect( const Vector2 & point, const Vector2 & size )
 
 inline bool Rect::PointInside(const Vector2 & point) const
 {	
-    if ((point.x >= x) && (point.x <= x + dx) 
-		&& (point.y >= y) && (point.y <= y + dy))
+    if ((point.x >= x) && (point.x < x + dx) 
+		&& (point.y >= y) && (point.y < y + dy))
 			return true;
 	return false;
 }
