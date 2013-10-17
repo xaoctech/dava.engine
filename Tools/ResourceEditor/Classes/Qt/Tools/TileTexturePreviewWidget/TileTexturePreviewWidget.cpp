@@ -263,18 +263,25 @@ bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 {
 	for (int32 i = 0; i < (int32)labels.size(); ++i)
 	{
-		if (obj == labels[i] && ev->type() == QEvent::MouseButtonDblClick)
+		if (obj == labels[i])
 		{
-			QColor curColor = ColorToQColor(colors[i]);
-			QColor color = QColorDialog::getColor(curColor, this, tr("Tile color"), 0);
-
-			if (color.isValid() && color != curColor)
+			if (ev->type() == QEvent::MouseButtonRelease)
 			{
-				colors[i] = QColorToColor(color);
-				UpdateColor(i);
-			}
+				QColor curColor = ColorToQColor(colors[i]);
+				QColor color = QColorDialog::getColor(curColor, this, tr("Tile color"), 0);
 
-			return true;
+				if (color.isValid() && color != curColor)
+				{
+					colors[i] = QColorToColor(color);
+					UpdateColor(i);
+				}
+
+				return true;
+			}
+			else if (ev->type() == QEvent::MouseButtonPress)
+			{
+				return true;
+			}
 		}
 	}
 
