@@ -255,6 +255,7 @@ private:
 	void LoadHangingObjects(SceneEditor2 *scene);
 
 	bool IsSavingAllowed();
+	bool IsTextureReloadAllowed();
     void CreateObjectTypesCombobox();
 };
 
