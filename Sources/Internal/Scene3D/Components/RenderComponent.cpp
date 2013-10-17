@@ -78,7 +78,9 @@ void RenderComponent::OptimizeBeforeExport()
 			if (polygonGroup)
 			{
 				uint32 newFormat = MaterialOptimizer::GetOptimizedVertexFormat((Material::eType)renderBatch->GetMaterial()->type);
-				polygonGroup->OptimizeVertices(newFormat);
+                //TODO::VK crash on Tanks/USSR/T-28_crash.sc2
+//				polygonGroup->OptimizeVertices(newFormat);
+                
 			}
 		}
 	}
