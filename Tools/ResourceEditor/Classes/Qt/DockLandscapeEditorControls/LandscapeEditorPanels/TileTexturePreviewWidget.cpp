@@ -250,6 +250,10 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 	{
 		SetSelectedTexture(index);
 	}
+	else
+	{
+		UpdateSelection();
+	}
 }
 
 void TileTexturePreviewWidget::OnPickColorButton()
