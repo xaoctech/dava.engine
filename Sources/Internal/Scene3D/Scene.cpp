@@ -515,12 +515,6 @@ void Scene::Update(float timeElapsed)
 		lodSystem->SetCamera(currentCamera);
 		lodSystem->Process();
 	}
-	
-    if(currentCamera)
-    {
-        SoundSystem::Instance()->SetListenerPosition(currentCamera->GetPosition());
-        SoundSystem::Instance()->SetListenerOrientation(currentCamera->GetTarget() - currentCamera->GetPosition(), currentCamera->GetLeft());
-    }
 
 	switchSystem->Process();
     
