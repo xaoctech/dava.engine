@@ -330,7 +330,6 @@ protected:
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
     Font * textFont;
-    Font * constFont;
     bool isPassword;
 	
 	// Keyboard customization params.
