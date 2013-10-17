@@ -116,7 +116,7 @@ FTFont * FTFont::Create(const FilePath& path)
 	}
 	
 	if(!iFont)
-	{//TODO: for now internal fonts is never released, need to be fixed later
+	{	
 		iFont = new FTInternalFont(path);
         if( !iFont->face )
         {
@@ -135,14 +135,11 @@ FTFont * FTFont::Create(const FilePath& path)
 
 void FTFont::ClearCache()
 {
-    while (fontMap.size())
-    {
-        uint32 oldSize = fontMap.size();
-        
-        SafeRelease(fontMap.begin()->second);
-        
-        DVASSERT_MSG(oldSize != fontMap.size(), "Please release all controls and used fonts");
-    }
+	while (fontMap.size())
+	{
+		SafeRelease(fontMap.begin()->second);
+		fontMap.erase(fontMap.begin());
+	}
 }
 
 	
@@ -265,10 +262,10 @@ FTInternalFont::~FTInternalFont()
 
 int32 FTInternalFont::Release()
 {
-	if(1 == GetRetainCount())
-	{
-		fontMap.erase(fontPath.GetAbsolutePathname());
-	}
+// 	if(1 == GetRetainCount())
+// 	{
+// 		fontMap.erase(fontPath.GetAbsolutePathname());
+// 	}
 	
 	return BaseObject::Release();
 }
