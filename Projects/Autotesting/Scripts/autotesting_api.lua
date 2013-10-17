@@ -133,6 +133,22 @@ function SaveArchiveToDB(name, archive, document)
 	autotestingSystem:SaveKeyedArchiveToDB(name, archive, document)
 end
 
+function GetParameter(name, default)
+	local var = autotestingSystem:GetTestParameter(name)
+	if var == "not_found" then
+		var = testData[name]
+		if not var then
+			if default then
+				return default
+			else
+				OnError("Couldn't find value for variable "..name)
+			end
+		end
+	end
+	
+	return var
+end
+
 function ReadString(name)
 	return autotestingSystem:ReadString(name)
 end
@@ -360,9 +376,10 @@ function GetTimeElapsed()
 	return autotestingSystem:GetTimeElapsed()
 
 end
+
 function WaitControl(name, time)
     local waitTime = time or TIMEOUT
-    Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
+    --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
@@ -376,6 +393,25 @@ function WaitControl(name, time)
     end
     
     Log("WaitControl not found "..name, "DEBUG")
+    return false
+end
+
+function WaitControlDisappeared(name, time)
+    local waitTime = time or TIMEOUT
+    --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+		coroutine.yield()
+        
+        if not autotestingSystem:FindControl(name) then
+            --Log("WaitControl found "..name, "DEBUG")
+            return true
+        end
+    end
+    
+    Log("WaitControl still on the screen: "..name, "DEBUG")
     return false
 end
 
