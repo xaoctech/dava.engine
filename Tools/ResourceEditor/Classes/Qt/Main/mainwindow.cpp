@@ -1021,11 +1021,21 @@ void QtMainWindow::OnRedo()
 
 void QtMainWindow::OnReloadTextures()
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	SetGPUFormat(GetGPUFormat());
 }
 
 void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
 	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
@@ -1944,6 +1954,19 @@ bool QtMainWindow::IsSavingAllowed()
 	if (!scene || scene->GetEnabledTools() != 0)
 	{
 		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
+		return false;
+	}
+
+	return true;
+}
+
+bool QtMainWindow::IsTextureReloadAllowed()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	if (!scene || scene->GetEnabledTools() != 0)
+	{
+		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing before reload textures!");
 		return false;
 	}
 
