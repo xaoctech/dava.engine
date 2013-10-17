@@ -8,7 +8,6 @@
 using namespace DAVA;
 
 class QLabel;
-class QToolButton;
 
 class TileTexturePreviewWidget: public QTreeWidget
 {
@@ -38,6 +37,9 @@ public:
 
 	void Clear();
 
+protected:
+	virtual bool eventFilter(QObject* obj, QEvent* ev);
+
 signals:
 	void SelectionChanged(int selectedTexture);
 	void TileColorChanged(int32 tileNumber, Color color);
@@ -45,7 +47,6 @@ signals:
 private slots:
 	void OnCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 	void OnItemChanged(QTreeWidgetItem* item, int column);
-	void OnPickColorButton();
 
 private:
 	static const int32 COLOR_PREVIEW_COLUMN = 1;
@@ -58,7 +59,6 @@ private:
 	Vector<Color> colors;
 	Vector<Image*> images;
 	Vector<QLabel*> labels;
-	Vector<QToolButton*> buttons;
 
 	eWidgetModes mode;
 
