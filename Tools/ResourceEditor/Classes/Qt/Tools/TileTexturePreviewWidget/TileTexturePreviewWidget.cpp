@@ -268,9 +268,11 @@ bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 				UpdateColor(i);
 			}
 
-			break;
+			return true;
 		}
 	}
+
+	return QObject::eventFilter(obj, ev);
 }
 
 void TileTexturePreviewWidget::SetMode(TileTexturePreviewWidget::eWidgetModes mode)
