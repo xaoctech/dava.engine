@@ -425,7 +425,6 @@
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\LandscapeEditorBasePanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel.cpp" />
-    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
@@ -567,6 +566,8 @@
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
@@ -652,7 +653,6 @@
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\LandscapeEditorBasePanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
@@ -787,6 +787,8 @@
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\ToolButtonWithWidget\ToolButtonWithWidget_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
@@ -1120,7 +1122,6 @@
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\LandscapeEditorBasePanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel.h" />
-    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
@@ -1265,6 +1266,8 @@
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h" />
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h" />
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h" />
     <ClInclude Include="Classes\Qt\Tools\ToolButtonWithWidget\ToolButtonWithWidget.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
