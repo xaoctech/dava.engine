@@ -53,6 +53,9 @@ public:
 	
 	SceneEditor2* GetEditorScene() const;
 	
+protected:
+	virtual void FillPropertyEditorWithContent();
+
 protected slots:
 	
 	void OnFinished(int code);

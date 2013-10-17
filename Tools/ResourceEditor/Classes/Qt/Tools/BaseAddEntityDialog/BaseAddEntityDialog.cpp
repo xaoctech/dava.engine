@@ -145,6 +145,11 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	SafeRetain(entity);
 }
 
+DAVA::Entity* BaseAddEntityDialog::GetEntity()
+{
+	return entity;
+}
+
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 {
 	ui->userContentLayout->addWidget(widget);

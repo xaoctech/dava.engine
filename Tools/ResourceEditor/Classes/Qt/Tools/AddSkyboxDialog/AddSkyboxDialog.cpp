@@ -62,6 +62,11 @@ AddSkyboxDialog::~AddSkyboxDialog()
 	SafeRelease(editorScene);
 }
 
+void AddSkyboxDialog::FillPropertyEditorWithContent()
+{
+
+}
+
 void AddSkyboxDialog::OnFinished(int code)
 {
 	closeHandled = true;
@@ -89,10 +94,6 @@ void AddSkyboxDialog::OnFinished(int code)
 			curRenderObj->ForceSetOffsetZ(initialState.offset);
 			curRenderObj->SetRotationZ(initialState.rotation);
 			curRenderObj->SetTexture(initialState.texture);
-			if(curRenderObj->GetTextureValidator() == NULL)
-			{
-				curRenderObj->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}
 		}
 	}
 }
@@ -103,17 +104,6 @@ void AddSkyboxDialog::OnCreateButtonClicked()
 	{
 		Entity* skyboxNode = editorScene->skyboxSystem->AddSkybox();
 		RenderObject* ro = GetRenderObject(skyboxNode);
-		
-		if(ro &&
-		   ro->GetType() == RenderObject::TYPE_SKYBOX)
-		{
-			SkyboxRenderObject* renderObject = static_cast<SkyboxRenderObject*>(ro);
-			
-			if(renderObject->GetTextureValidator() == NULL)
-			{
-				renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}			
-		}
 		
 		MakeDeleteButton();
 		UpdateEntity(skyboxNode);
@@ -177,17 +167,18 @@ void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
 
 void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
 {
-	DVASSERT(scene);
+	if(NULL != scene)	
+	{
+		Entity* currentSkybox = scene->skyboxSystem->GetSkybox();
 	
-	Entity* currentSkybox = scene->skyboxSystem->GetSkybox();
-	
-	/*AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
-	dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-	dlg->SetEditorScene(scene);
-	dlg->UpdateEntity(currentSkybox);
-	dlg->SetInitialState(currentSkybox);
-	dlg->setWindowTitle("Set up Skybox");
-	dlg->show();*/
+		AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
+		dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+		dlg->SetEditorScene(scene);
+		dlg->UpdateEntity(currentSkybox);
+		dlg->SetInitialState(currentSkybox);
+		dlg->setWindowTitle("Set up Skybox");
+		dlg->show();
+	}
 }
 
 void AddSkyboxDialog::SetEditorScene(SceneEditor2* scene)
