@@ -474,8 +474,8 @@ void StructureSystem::MarkLocked(DAVA::Entity *entity)
 DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool optimize)
 {
 	DAVA::Entity* loadedEntity = NULL;
-	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
 		// if there is already entity for such file, we should release it
