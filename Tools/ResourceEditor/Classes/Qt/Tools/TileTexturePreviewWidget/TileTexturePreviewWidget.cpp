@@ -227,7 +227,13 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 
 		if (state == QValidator::Acceptable)
 		{
-			QColor color = QColor(item->text(0));
+			QString colorString = item->text(0);
+			if (!colorString.startsWith("#"))
+			{
+				colorString = "#" + colorString;
+			}
+
+			QColor color = QColor(colorString);
 			if (color.isValid())
 			{
 				Color c = QColorToColor(color);
