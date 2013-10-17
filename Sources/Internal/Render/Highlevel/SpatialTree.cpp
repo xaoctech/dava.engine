@@ -362,18 +362,16 @@ void QuadTree::ObjectUpdated(RenderObject *object)
 }
 
 void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
-{
-	processClippingCalls++;
+{	
 	QuadTreeNode& currNode = nodes[nodeId];	
 	int32 objectsSize = currNode.objects.size();
 	int32 clipBoxCount = (currNode.nodeInfo&QuadTreeNode::NUM_CHILD_NODES_MASK) + objectsSize; //still can sometime try to clip node with only invisible objects
 	
 	
-	if (clippingFlags&&(clipBoxCount>1)&&nodeId)
-	{
-		nodeFrustrumCalls++;
+	if (clippingFlags&&(clipBoxCount>1)&&nodeId) //root node is considered as always pass  - as objects out of worldBox are added here
+	{		
 		uint8 startClipPlane = (currNode.nodeInfo&QuadTreeNode::START_CLIP_PLANE_MASK)>>QuadTreeNode::START_CLIP_PLANE_OFFSET;
-		if (currFrustum->Classify(nodes[nodeId].bbox, clippingFlags, startClipPlane)==Frustum::EFR_OUTSIDE)
+		if (currFrustum->Classify(currNode.bbox, clippingFlags, startClipPlane)==Frustum::EFR_OUTSIDE)
 			return; //node box is outside - return
 		currNode.nodeInfo&=~QuadTreeNode::START_CLIP_PLANE_MASK;
 		currNode.nodeInfo|=(uint16(startClipPlane))<<QuadTreeNode::START_CLIP_PLANE_OFFSET;
@@ -392,8 +390,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 		{			
 			uint32 flags = currNode.objects[i]->GetFlags();
 			if ((flags&RenderObject::CLIPPING_VISIBILITY_CRITERIA)==RenderObject::CLIPPING_VISIBILITY_CRITERIA)
-			{
-				objFrustrumCalls++;				
+			{				
 				if ((flags&RenderObject::ALWAYS_CLIPPING_VISIBLE)||currFrustum->IsInside(currNode.objects[i]->GetWorldBoundingBox(), clippingFlags, currNode.objects[i]->startClippingPlane))
 					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			}				
@@ -403,23 +400,19 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 	//process children	
 	for (int32 i=0; i<QuadTreeNode::NODE_NONE; ++i)
 	{
-		if (nodes[nodeId].children[QuadTreeNode::eNodeType(i)]!=INVALID_TREE_NODE_INDEX)
+		uint16 childNodeId = currNode.children[i];
+		if (childNodeId!=INVALID_TREE_NODE_INDEX)
 		{
-			ProcessNodeClipping(nodes[nodeId].children[QuadTreeNode::eNodeType(i)], clippingFlags);
+			ProcessNodeClipping(childNodeId, clippingFlags);
 		}
 	}		
 }
 
 void QuadTree::ProcessClipping(Frustum *frustum)
 {
-	currFrustum = frustum;
-	objFrustrumCalls = 0;
-	nodeFrustrumCalls = 0;
-	processClippingCalls = 0;
-	Frustum::planeCalls = 0;
-	ProcessNodeClipping(0, 0x3f); //root node is considered as always pass  - as objects out of worldBox are added here
-	int32 totalCalls = objFrustrumCalls+nodeFrustrumCalls;
-	uint32 frustumPlaneCalls = Frustum::planeCalls;
+	currFrustum = frustum;	
+	ProcessNodeClipping(0, 0x3f); 
+
 	
 }
 void QuadTree::UpdateTree()
@@ -489,9 +482,9 @@ void QuadTree::DebugDrawNode(uint16 nodeId)
 	RenderHelper::Instance()->DrawBox(nodes[nodeId].bbox);	
 	for (int32 i=0; i<QuadTreeNode::NODE_NONE; ++i)
 	{
-		if (nodes[nodeId].children[QuadTreeNode::eNodeType(i)]!=INVALID_TREE_NODE_INDEX)
+		if (nodes[nodeId].children[i]!=INVALID_TREE_NODE_INDEX)
 		{			
-			DebugDrawNode(nodes[nodeId].children[QuadTreeNode::eNodeType(i)]);
+			DebugDrawNode(nodes[nodeId].children[i]);
 		}
 	}	
 	
