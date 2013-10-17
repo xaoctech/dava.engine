@@ -209,10 +209,11 @@ void QuadTree::RecalculateNodeZLimits(uint16 nodeId)
 	currNode.bbox.max.z = -AABBOX_INFINITY;
 	for (int32 i=0; i<QuadTreeNode::NODE_NONE; i++)
 	{
-		if (nodes[nodeId].children[i]!=INVALID_TREE_NODE_INDEX)
+		uint16 childId = currNode.children[i];
+		if (childId!=INVALID_TREE_NODE_INDEX)
 		{
-			currNode.bbox.min.z = Min(currNode.bbox.min.z, nodes[currNode.children[i]].bbox.min.z);
-			currNode.bbox.max.z = Max(currNode.bbox.max.z, nodes[currNode.children[i]].bbox.max.z);
+			currNode.bbox.min.z = Min(currNode.bbox.min.z, nodes[childId].bbox.min.z);
+			currNode.bbox.max.z = Max(currNode.bbox.max.z, nodes[childId].bbox.max.z);
 		}
 	}
 	for (int32 i=0, size = currNode.objects.size(); i<size; i++)
