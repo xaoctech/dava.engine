@@ -102,7 +102,7 @@ protected:
 	DAVA::KeyedArchive *settings;
 };
 
-
+/*
 class SettingsManager2: public QObject, public DAVA::Singleton<SettingsManager2>
 {
 	Q_OBJECT
@@ -125,5 +125,6 @@ protected:
 
 	DAVA::FastNameMap<SettingRow> settings;
 };
+*/
 
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_MANAGER__) */
