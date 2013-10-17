@@ -72,7 +72,8 @@ Landscape::Landscape()
     
 	cursor = 0;
     uniformCameraPosition = -1;
-    
+	textureTiling.resize(TEXTURE_COUNT);
+	tileColor.resize(TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         uniformTextures[k] = -1;

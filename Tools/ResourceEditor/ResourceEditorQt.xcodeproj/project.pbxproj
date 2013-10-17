@@ -429,8 +429,6 @@
 		5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */; };
 		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
-		622ABE8217E8438A00C913D8 /* LandscapeSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 622ABE8017E8438A00C913D8 /* LandscapeSettingsEditor.cpp */; };
-		622ABE8B17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 622ABE8A17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp */; };
 		6247842117D71FB1005022DB /* SettingsStateDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6247841F17D71FB1005022DB /* SettingsStateDialog.cpp */; };
 		6247842A17D72A5F005022DB /* SettingsStateDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6247842917D72A5F005022DB /* SettingsStateDialog_moc.cpp */; };
 		626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B0090177B2F4600D8A54F /* AddSwitchEntityDialog.cpp */; };
@@ -447,6 +445,7 @@
 		62A43E0E17BCFF090003287B /* SettingsManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A43E0D17BCFF090003287B /* SettingsManager_moc.cpp */; };
 		62A66F4E17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A66F4D17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp */; };
 		62A66F5717BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A66F5617BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp */; };
+		62A7AD26180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7AD24180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp */; };
 		62A7CA6917B8D05A000AEBF5 /* GeneralSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */; };
 		62A7CA6A17B8D05A000AEBF5 /* SettingsDialogQt.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */; };
 		62A7CA6E17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */; };
@@ -1506,9 +1505,6 @@
 		5CF17EC415B9385300A9FC33 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
 		5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphCommands.cpp; path = Classes/Commands/SceneGraphCommands.cpp; sourceTree = "<group>"; };
 		5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphCommands.h; path = Classes/Commands/SceneGraphCommands.h; sourceTree = "<group>"; };
-		622ABE8017E8438A00C913D8 /* LandscapeSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeSettingsEditor.cpp; path = Classes/Qt/Tools/LandscapeDialog/LandscapeSettingsEditor.cpp; sourceTree = "<group>"; };
-		622ABE8117E8438A00C913D8 /* LandscapeSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeSettingsEditor.h; path = Classes/Qt/Tools/LandscapeDialog/LandscapeSettingsEditor.h; sourceTree = "<group>"; };
-		622ABE8A17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeSettingsEditor_moc.cpp; path = LandscapeDialog/LandscapeSettingsEditor_moc.cpp; sourceTree = "<group>"; };
 		6247841F17D71FB1005022DB /* SettingsStateDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsStateDialog.cpp; path = Classes/Qt/Settings/SettingsStateDialog.cpp; sourceTree = "<group>"; };
 		6247842017D71FB1005022DB /* SettingsStateDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsStateDialog.h; path = Classes/Qt/Settings/SettingsStateDialog.h; sourceTree = "<group>"; };
 		6247842917D72A5F005022DB /* SettingsStateDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsStateDialog_moc.cpp; path = _GeneratedQt/Settings/SettingsStateDialog_moc.cpp; sourceTree = "<group>"; };
@@ -1537,6 +1533,8 @@
 		62A66F4D17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemsSettingsEditor.cpp; path = Classes/Qt/Tools/SettingsDialog/SystemsSettingsEditor.cpp; sourceTree = "<group>"; };
 		62A66F5517BBD97A0092AC7B /* SystemsSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemsSettingsEditor.h; path = Classes/Qt/Tools/SettingsDialog/SystemsSettingsEditor.h; sourceTree = "<group>"; };
 		62A66F5617BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemsSettingsEditor_moc.cpp; path = SettingsDialog/SystemsSettingsEditor_moc.cpp; sourceTree = "<group>"; };
+		62A7AD24180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeSetTexturesCommands.cpp; sourceTree = "<group>"; };
+		62A7AD25180BDD2100282F2E /* LandscapeSetTexturesCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeSetTexturesCommands.h; sourceTree = "<group>"; };
 		62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeneralSettingsEditor.cpp; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.cpp; sourceTree = "<group>"; };
 		62A7CA6617B8D05A000AEBF5 /* GeneralSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneralSettingsEditor.h; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.h; sourceTree = "<group>"; };
 		62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsDialogQt.cpp; path = Classes/Qt/Tools/SettingsDialog/SettingsDialogQt.cpp; sourceTree = "<group>"; };
@@ -2539,6 +2537,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				62A7AD24180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp */,
+				62A7AD25180BDD2100282F2E /* LandscapeSetTexturesCommands.h */,
 				E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */,
 				E8DADC2C17E9ED3C00561D52 /* AddComponentCommand.h */,
 				E8DADC2D17E9ED3C00561D52 /* RemoveComponentCommand.cpp */,
@@ -3435,8 +3435,6 @@
 		62AC3EF417E0B0CB008F8299 /* LandscapeDialog */ = {
 			isa = PBXGroup;
 			children = (
-				622ABE8017E8438A00C913D8 /* LandscapeSettingsEditor.cpp */,
-				622ABE8117E8438A00C913D8 /* LandscapeSettingsEditor.h */,
 				62AC3F0317E0B2A5008F8299 /* LandscapeDialog.cpp */,
 				62AC3F0417E0B2A5008F8299 /* LandscapeDialog.h */,
 			);
@@ -3446,7 +3444,6 @@
 		62AC3F0617E0B7A3008F8299 /* LandscapeDialog */ = {
 			isa = PBXGroup;
 			children = (
-				622ABE8A17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp */,
 				62AC3F0717E0B7BA008F8299 /* LandscapeDialog_moc.cpp */,
 			);
 			name = LandscapeDialog;
@@ -4448,6 +4445,7 @@
 				5C574E5B15C9463C0015537A /* btBoxShape.cpp in Build Sources */,
 				5C574E5C15C9463C0015537A /* btBvhTriangleMeshShape.cpp in Build Sources */,
 				5C574E5D15C9463C0015537A /* btCapsuleShape.cpp in Build Sources */,
+				62A7AD26180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp in Build Sources */,
 				5C574E5E15C9463C0015537A /* btCollisionShape.cpp in Build Sources */,
 				5C574E5F15C9463C0015537A /* btCompoundShape.cpp in Build Sources */,
 				5C574E6015C9463C0015537A /* btConcaveShape.cpp in Build Sources */,
@@ -4898,8 +4896,6 @@
 				495A604017E7679F00039A43 /* HeightmapEditorPanel_moc.cpp in Build Sources */,
 				62AC3F0517E0B2A5008F8299 /* LandscapeDialog.cpp in Build Sources */,
 				62AC3F0817E0B7BA008F8299 /* LandscapeDialog_moc.cpp in Build Sources */,
-				622ABE8217E8438A00C913D8 /* LandscapeSettingsEditor.cpp in Build Sources */,
-				622ABE8B17E8464F00C913D8 /* LandscapeSettingsEditor_moc.cpp in Build Sources */,
 				A6B0519117E8B600000EED68 /* ActionComponentEditor.cpp in Build Sources */,
 				A6B0519317E8B763000EED68 /* ActionComponentEditor_moc.cpp in Build Sources */,
 				E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */,
