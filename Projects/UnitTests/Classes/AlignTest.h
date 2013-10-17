@@ -54,7 +54,6 @@ public:
 private:
     UIStaticText * staticText;
     UIStaticText * staticText2;
-    Font * font;
 	
 	void OnScreenShot(Image *testImage);
 	void MakeScreenShot();

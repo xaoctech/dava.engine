@@ -153,6 +153,8 @@ void UIListTest::LoadResources()
 	finishTestBtn->SetDebugDraw(true);
 	finishTestBtn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIListTest::ButtonPressed));
 	AddControl(finishTestBtn);
+
+	SafeRelease(font);
 }
 
 void UIListTest::UnloadResources()
