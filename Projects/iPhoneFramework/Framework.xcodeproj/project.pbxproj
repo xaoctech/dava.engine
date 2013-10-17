@@ -13,6 +13,10 @@
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
 		02AF979C17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AF979A17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp */; };
 		02AF979D17EB596D005A62F2 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AF979B17EB596D005A62F2 /* SpeedTreeLeafBatch.h */; };
+		02C85176181032EA002B7E1C /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85172181032EA002B7E1C /* AutotestingDB.cpp */; };
+		02C85177181032EA002B7E1C /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
+		02C85178181032EA002B7E1C /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
+		02C85179181032EA002B7E1C /* GameAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85175181032EA002B7E1C /* GameAPI.h */; };
 		02D4CFBE18055E29007EC9EC /* FMODSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB618055E29007EC9EC /* FMODSound.cpp */; };
 		02D4CFBF18055E29007EC9EC /* FMODSound.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D4CFB718055E29007EC9EC /* FMODSound.h */; };
 		02D4CFC018055E29007EC9EC /* FMODSoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB818055E29007EC9EC /* FMODSoundEvent.cpp */; };
@@ -61,10 +65,6 @@
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		62BAA48F178EF915003DE32C /* MailComposeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BAA48D178EF915003DE32C /* MailComposeDelegate.h */; };
 		62BAA492178EF952003DE32C /* MailComposeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 62BAA491178EF952003DE32C /* MailComposeDelegate.mm */; };
-		7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A8F772517E73E720048A43D /* AutotestingDB.cpp */; };
-		7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A8F772617E73E720048A43D /* AutotestingDB.h */; };
-		7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A8F772717E73E720048A43D /* GameAPI.cpp */; };
-		7A8F772C17E73E720048A43D /* GameAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A8F772817E73E720048A43D /* GameAPI.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -725,6 +725,10 @@
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		02AF979A17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeLeafBatch.cpp; sourceTree = "<group>"; };
 		02AF979B17EB596D005A62F2 /* SpeedTreeLeafBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeLeafBatch.h; sourceTree = "<group>"; };
+		02C85172181032EA002B7E1C /* AutotestingDB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingDB.cpp; sourceTree = "<group>"; };
+		02C85173181032EA002B7E1C /* AutotestingDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingDB.h; sourceTree = "<group>"; };
+		02C85174181032EA002B7E1C /* GameAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameAPI.cpp; sourceTree = "<group>"; };
+		02C85175181032EA002B7E1C /* GameAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameAPI.h; sourceTree = "<group>"; };
 		02D4CFB618055E29007EC9EC /* FMODSound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSound.cpp; sourceTree = "<group>"; };
 		02D4CFB718055E29007EC9EC /* FMODSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSound.h; sourceTree = "<group>"; };
 		02D4CFB818055E29007EC9EC /* FMODSoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundEvent.cpp; sourceTree = "<group>"; };
@@ -773,10 +777,6 @@
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		62BAA48D178EF915003DE32C /* MailComposeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailComposeDelegate.h; sourceTree = "<group>"; };
 		62BAA491178EF952003DE32C /* MailComposeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailComposeDelegate.mm; sourceTree = "<group>"; };
-		7A8F772517E73E720048A43D /* AutotestingDB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingDB.cpp; sourceTree = "<group>"; };
-		7A8F772617E73E720048A43D /* AutotestingDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingDB.h; sourceTree = "<group>"; };
-		7A8F772717E73E720048A43D /* GameAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameAPI.cpp; sourceTree = "<group>"; };
-		7A8F772817E73E720048A43D /* GameAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameAPI.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -1546,10 +1546,10 @@
 		E8B3C7B116B9326D002BD35F /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
-				7A8F772517E73E720048A43D /* AutotestingDB.cpp */,
-				7A8F772617E73E720048A43D /* AutotestingDB.h */,
-				7A8F772717E73E720048A43D /* GameAPI.cpp */,
-				7A8F772817E73E720048A43D /* GameAPI.h */,
+				02C85172181032EA002B7E1C /* AutotestingDB.cpp */,
+				02C85173181032EA002B7E1C /* AutotestingDB.h */,
+				02C85174181032EA002B7E1C /* GameAPI.cpp */,
+				02C85175181032EA002B7E1C /* GameAPI.h */,
 				C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */,
 				C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */,
 				C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */,
@@ -2827,8 +2827,8 @@
 				02D4CFC318055E29007EC9EC /* FMODSoundGroup.h in Headers */,
 				02D4CFC518055E29007EC9EC /* FMODSoundSystem.h in Headers */,
 				02D4CFCA18056051007EC9EC /* FMODSoundComponent.h in Headers */,
-				7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */,
-				7A8F772C17E73E720048A43D /* GameAPI.h in Headers */,			);
+				02C85177181032EA002B7E1C /* AutotestingDB.h in Headers */,
+				02C85179181032EA002B7E1C /* GameAPI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3215,8 +3215,8 @@
 				02D4CFC218055E29007EC9EC /* FMODSoundGroup.cpp in Sources */,
 				02D4CFC418055E29007EC9EC /* FMODSoundSystem.cpp in Sources */,
 				02D4CFC918056051007EC9EC /* FMODSoundComponent.cpp in Sources */,
-				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
-				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,			);
+				02C85176181032EA002B7E1C /* AutotestingDB.cpp in Sources */,
+				02C85178181032EA002B7E1C /* GameAPI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
