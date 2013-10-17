@@ -79,7 +79,7 @@ void DAVA::EnableSleepTimer()
 	jniUtils.EnableSleepTimer();
 }
 
-uint64 EglGetCurrentContext()
+uint64 DAVA::EglGetCurrentContext()
 {
 	//TODO: in case if context checking will ever be needed on Android,
 	//TODO: implement this method similar to any other platform
