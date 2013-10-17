@@ -106,8 +106,9 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	}
 }
 
-static const char8 * logLevelString[4] =
+static const char8 * logLevelString[5] =
 {	
+	"framwork",
 	"debug",
 	"info",
 	"warning",
@@ -116,7 +117,7 @@ static const char8 * logLevelString[4] =
 	
 Logger::Logger()
 {
-	logLevel = LEVEL_DEBUG;
+	logLevel = LEVEL_FRAMEWORK;
 	SetLogFilename(String());
     
     consoleModeEnabled = false;
@@ -165,6 +166,15 @@ void Logger::Log(eLogLevel ll, const char16* text, ...)
 	va_end(vl);
 }
 	
+void Logger::FrameworkDebug( const char8 * text, ... )
+{
+	va_list vl;
+	va_start(vl, text);
+	if (Logger::Instance())
+		Logger::Instance()->Logv(LEVEL_FRAMEWORK, text, vl);
+	va_end(vl);
+}
+
 void Logger::Debug(const char8 * text, ...)
 {
 	va_list vl;
@@ -198,6 +208,15 @@ void Logger::Error(const char8 * text, ...)
 	va_start(vl, text);
     if (Logger::Instance())
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+	va_end(vl);
+}
+
+void Logger::FrameworkDebug( const char16 * text, ... )
+{
+	va_list vl;
+	va_start(vl, text);
+	if (Logger::Instance())
+		Logger::Instance()->Logv(LEVEL_FRAMEWORK, text, vl);
 	va_end(vl);
 }
 
@@ -241,6 +260,22 @@ void Logger::AddCustomOutput(DAVA::LoggerOutput *lo)
 {
 	if(Logger::Instance() && lo)
 		Logger::Instance()->customOutputs.push_back(lo);
+}
+
+void Logger::RemoveCustomOutput(DAVA::LoggerOutput *lo)
+{
+	if(Logger::Instance() && lo)
+	{
+		Vector<LoggerOutput *>::const_iterator endIt = Logger::Instance()->customOutputs.end();
+		for(Vector<LoggerOutput *>::iterator it = Logger::Instance()->customOutputs.begin(); it != endIt; ++it)
+		{
+			if((*it) == lo)
+			{
+				Logger::Instance()->customOutputs.erase(it);
+				break;
+			}
+		}
+	}
 }
 
 void Logger::SetLogFilename(const String & filename)
@@ -320,6 +355,7 @@ void Logger::ConsoleLog(DAVA::Logger::eLogLevel ll, const char16 *text)
 {
     wprintf(L"[%s] %s", StringToWString(GetLogLevelString(ll)).c_str(), text);
 }
+
 
 }
 

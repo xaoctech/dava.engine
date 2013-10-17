@@ -178,7 +178,7 @@ public:
             tokens[tokenCount++] = strtok(temp," \t");
             while (tokens[tokenCount - 1] != NULL)
             {
-                //Logger::Debug("%s\n",tokens[tokenCount]);
+                //Logger::FrameworkDebug("%s\n",tokens[tokenCount]);
                 tokens[tokenCount++] = strtok (NULL, " \t");
                 if (tokenCount > 5)break;
             }
@@ -251,7 +251,7 @@ public:
         strings = backtrace_symbols(array, size);
         
         for (i = 0; i < size; ++i) {
-            Logger::Debug("%p : %s\n", array[i], strings[i]);
+            Logger::FrameworkDebug("%p : %s\n", array[i], strings[i]);
         }
         free(strings);
 #elif defined(__DAVAENGINE_WIN32__)

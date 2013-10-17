@@ -50,7 +50,6 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,	color(1.0f, 1.0f, 1.0f, 1.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -61,24 +60,6 @@ Font::~Font()
 	FontManager::Instance()->UnregisterFont(this);
 }
 
-
-void Font::SetColor(float32 r, float32 g, float32 b, float32 a)
-{
-	color.r = r; 
-	color.g = g; 
-	color.b = b; 
-	color.a = a;
-}
-
-void Font::SetColor(const Color & _color)
-{
-	color = _color;
-}
-
-const Color & Font::GetColor() const
-{
-	return color;
-}
 
 bool Font::IsEqual(const Font *font) const
 {
@@ -91,7 +72,7 @@ bool Font::IsEqual(const Font *font) const
 	{
 		return false;
 	}
-	if (size != font->size || color != font->color || verticalSpacing != font->verticalSpacing)
+	if (size != font->size || verticalSpacing != font->verticalSpacing)
 	{
 		return false;
 	}
@@ -222,9 +203,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					// so last position is pos instead of (pos-1)
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
-						//Logger::Debug("before=%d %d", currentLineStart, pos - 1);
+						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
 						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
-						//Logger::Debug(L"after=%S", currentLineWithoutLastWord.c_str());
+						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
 						currentLineStart = -1;	// start seach of characters for the new line
@@ -261,9 +242,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 						currentLineEnd = lastWordEnd;
 					}else // here we add current line to results because current word is too big for current line
 					{
-						//Logger::Debug("before=%d %d", currentLineStart, currentLineEnd);
+						//Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
 						WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-						//Logger::Debug(L"after=%S", currentLineWithoutLastWord.c_str());
+						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						currentLineStart = lastWordStart;
 						//fix: 
@@ -280,9 +261,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					// so last position is pos instead of (pos-1)
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
-						//Logger::Debug("before=%d %d", currentLineStart, pos - 1);
+						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
 						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
-						//Logger::Debug(L"after=%S", currentLineWithoutLastWord.c_str());
+						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
 						currentLineStart = -1;	// start seach of characters for the new line
@@ -303,9 +284,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				{	
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
-						//Logger::Debug("before=%d %d", currentLineStart, pos - 1);
+						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
 						WideString currentLineWithoutLastWord = text.substr(currentLineStart, (pos - 1) - currentLineStart);
-						//Logger::Debug(L"after=%S", currentLineWithoutLastWord.c_str());
+						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
 						currentLineStart = -1;	// start seach of characters for the new line
@@ -329,9 +310,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 			case FINISH:
 				if (currentLineStart != -1) // we check if we have something left in currentline and add this line to results
 				{
-					//Logger::Debug("ending=%d %d", currentLineStart, currentLineEnd);
+					//Logger::FrameworkDebug("ending=%d %d", currentLineStart, currentLineEnd);
 					WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-					//Logger::Debug(L"after=%S", currentLine.c_str());
+					//Logger::FrameworkDebug(L"after=%S", currentLine.c_str());
 					resultVector.push_back(currentLine);
 				}
 				state = EXIT; // always exit from here
@@ -357,12 +338,6 @@ YamlNode * Font::SaveToYamlNode() const
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
 
-    Color color = this->GetColor();
-    //Font color
-    Vector4 colorVector4(color.r, color.g, color.b, color.a);
-    nodeValue->SetVector4(colorVector4);
-    node->Set("color", nodeValue);
-    
     SafeDelete(nodeValue);
     
     return node;

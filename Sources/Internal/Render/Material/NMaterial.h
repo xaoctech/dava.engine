@@ -151,14 +151,15 @@ public:
     void SetTexture(const FastName & textureFastName, Texture * texture);
     Texture * GetTexture(const FastName & textureFastName) const;
     Texture * GetTexture(uint32 index);
+	const FastName& GetTextureName(uint32 index);
     uint32 GetTextureCount();
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
 	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
 	
 	virtual void SetMaterialName(const String& name);
-	FastName GetMaterialName();
-	FastName GetParentName();
+	const FastName& GetMaterialName() const;
+	const FastName& GetParentName() const;
 	
 	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
@@ -166,6 +167,9 @@ public:
 	bool LoadFromYamlNode(const YamlNode* stateNode);
 	
 	NMaterialState* CloneState();
+	
+	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
+	inline NMaterial* GetParent() {return parent;}
 			
 protected:
 	
@@ -186,6 +190,9 @@ protected:
 	
 	NMaterial* parent;
 	Vector<NMaterial*> children;
+	
+	//TODO: fill it from configuration
+	uint32 requiredVertexFormat;
 	
 protected:
 	
@@ -267,6 +274,9 @@ public:
 	uint32 GetStateCount() const;
 	NMaterialState* GetState(uint32 index);
 	
+	inline void SetMaterialSystem(MaterialSystem* system) {materialSystem = system;}
+	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
+	
 protected:
     
  	FastNameSet inheritedDefines;
@@ -289,6 +299,8 @@ protected:
  	HashMap<FastName, NMaterialState*> states;
 	
 	static uint64 uniqueIdSequence;
+	
+	MaterialSystem* materialSystem;
 	
 protected:
 	

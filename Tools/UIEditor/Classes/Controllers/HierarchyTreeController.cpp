@@ -36,6 +36,9 @@
 #include "MetadataFactory.h"
 #include "LibraryController.h"
 #include "CommandsController.h"
+#include "ControlCommands.h"
+
+#include "AlignDistribute/AlignDistributeManager.h"
 
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
@@ -144,11 +147,13 @@ void HierarchyTreeController::ChangeItemSelection(HierarchyTreeControlNode* cont
 
 void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 {
-	if (activeControlNodes.find(control) != activeControlNodes.end())
+	if (IsControlSelected(control))
+	{
 		return;
+	}
 	
 	//add selection
-	activeControlNodes.insert(control);
+	InsertSelectedControlToList(control);
 	UIControl* uiControl = control->GetUIObject();
 	if (uiControl)
 	{
@@ -172,11 +177,14 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 
 void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
 {
-	if (activeControlNodes.find(control) == activeControlNodes.end())
+	if (false == IsControlSelected(control))
+	{
 		return;
+	}
 	
 	//remove selection
-	activeControlNodes.erase(control);
+	RemoveSelectedControlFromList(control);
+
 	UIControl* uiControl = control->GetUIObject();
 	if (uiControl)
 	{
@@ -213,9 +221,28 @@ void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control,
 		emit SelectedControlNodesChanged(activeControlNodes);
 }
 
+void HierarchyTreeController::InsertSelectedControlToList(HierarchyTreeControlNode* control)
+{
+	SELECTEDCONTROLNODES::iterator iter = std::find(activeControlNodes.begin(), activeControlNodes.end(), control);
+	if (iter == activeControlNodes.end())
+	{
+		activeControlNodes.push_back(control);
+	}
+}
+
+void HierarchyTreeController::RemoveSelectedControlFromList(HierarchyTreeControlNode* control)
+{
+	SELECTEDCONTROLNODES::iterator iter = std::find(activeControlNodes.begin(), activeControlNodes.end(), control);
+	if (iter != activeControlNodes.end())
+	{
+		activeControlNodes.erase(iter);
+	}
+}
+
 bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* control) const
 {
-	return (activeControlNodes.find(control) != activeControlNodes.end());
+	SELECTEDCONTROLNODES::const_iterator iter = std::find(activeControlNodes.begin(), activeControlNodes.end(), control);
+	return (iter != activeControlNodes.end());
 }
 
 void HierarchyTreeController::ResetSelectedControl()
@@ -350,11 +377,6 @@ HierarchyTreeScreenNode* HierarchyTreeController::GetActiveScreen() const
 const HierarchyTreeController::SELECTEDCONTROLNODES& HierarchyTreeController::GetActiveControlNodes() const
 {
 	return activeControlNodes;
-}
-
-bool HierarchyTreeController::IsNodeActive(const HierarchyTreeControlNode* control) const
-{
-	return (activeControlNodes.find((HierarchyTreeControlNode* )control) != activeControlNodes.end());
 }
 
 void HierarchyTreeController::EmitHierarchyTreeUpdated(bool needRestoreSelection)
@@ -621,4 +643,40 @@ HierarchyTreeScreenNode* HierarchyTreeController::GetScreenNodeForNode(Hierarchy
 	}
 
 	return NULL;
+}
+
+void HierarchyTreeController::AlignSelectedControls(eAlignControlsType alignType)
+{
+	if (!CanPerformAlign(alignType))
+	{
+		return;
+	}
+
+	BaseCommand* command = new ControlsAlignDistributeCommand(activeControlNodes, alignType);
+    CommandsController::Instance()->ExecuteCommand(command);
+	SafeRelease(command);
+}
+
+void HierarchyTreeController::DistributeSelectedControls(eDistributeControlsType distributeType)
+{
+	if (!CanPerformDistribute(distributeType))
+	{
+		return;
+	}
+
+	BaseCommand* command = new ControlsAlignDistributeCommand(activeControlNodes, distributeType);
+    CommandsController::Instance()->ExecuteCommand(command);
+	SafeRelease(command);
+}
+
+bool HierarchyTreeController::CanPerformAlign(eAlignControlsType /*alignType*/)
+{
+	// Align is not possible if less than two controls selected.
+	return activeControlNodes.size() >= 2;
+}
+
+bool HierarchyTreeController::CanPerformDistribute(eDistributeControlsType /*distributeType*/)
+{
+	// Distribute is not possible if less than three controls selected.
+	return activeControlNodes.size() >= 3;
 }

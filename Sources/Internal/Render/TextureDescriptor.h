@@ -105,17 +105,20 @@ public:
 public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
-    
-    void SetDefaultValues();
-    
-    
-    static TextureDescriptor *CreateFromFile(const FilePath &filePathname);
 
+    void SetDefaultValues();
+
+    
+    static TextureDescriptor * CreateFromFile(const FilePath &filePathname);
+    
+    static TextureDescriptor * CreateDescriptor(Texture::TextureWrap wrap, bool generateMipmaps);
+    
+    
     bool Load(const FilePath &filePathname);
 
     void Save() const;
     void Save(const FilePath &filePathname) const;
-    
+
     void Export(const FilePath &filePathname);
 
     bool IsCompressedTextureActual(eGPUFamily forGPU) const;
@@ -123,14 +126,14 @@ public:
     
     
     bool IsCompressedFile() const;
-
+    
     bool GetGenerateMipMaps() const;
-
+	
 	bool IsCubeMap() const;
 
     FilePath GetSourceTexturePathname() const; 
 
-    static String GetSourceTextureExtension(); 
+    static String GetSourceTextureExtension();
     static String GetSupportedTextureExtensions();
 
     static FilePath GetDescriptorPathname(const FilePath &texturePathname);
@@ -159,26 +162,23 @@ protected:
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
 
-    DAVA_DEPRECATED(void LoadVersion2(int32 signature, File *file));
-	DAVA_DEPRECATED(void LoadVersion3(int32 signature, File *file));
-	DAVA_DEPRECATED(void LoadVersion4(int32 signature, File *file));
 	void LoadVersion5(int32 signature, File *file);
 	void LoadVersion6(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
 	uint32 ReadConvertedCRC(eGPUFamily forGPU) const;
-
+    
 public:
     
     FilePath pathname;
-    
+
     TextureSettings settings;
     Compression compression[GPU_FAMILY_COUNT];
     
     //Binary only
     int8 exportedAsGpuFamily;
     int8 exportedAsPixelFormat;
-    
+	
 	uint8 faceDescription;
     
     bool isCompressedFile;

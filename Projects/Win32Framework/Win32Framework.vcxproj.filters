@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -1314,6 +1314,24 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\MovieViewControlStub.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Process.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2321,13 +2339,9 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\PerformanceSettings.cpp">
       <Filter>Internal\Core</Filter>
     </ClCompile>
@@ -2336,6 +2350,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\Vector.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Process.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
+      <Filter>Internal\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

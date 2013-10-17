@@ -73,7 +73,7 @@ void Texture::SaveToSystemMemory()
 		if (hr == D3DERR_DEVICELOST)
 		{
 			//if (!saveTexture)
-				//Logger::Debug("Trying to save to system memory rendertarget that was not saved before");
+				//Logger::FrameworkDebug("Trying to save to system memory rendertarget that was not saved before");
 			return;
 		}
 
@@ -87,7 +87,7 @@ void Texture::SaveToSystemMemory()
 		
 		D3DSURFACE_DESC desc;
 		id->GetLevelDesc(0, &desc);
-		//Logger::Debug("Saving render target to system memory: %s size: %d x %d format:%d", relativePathname.c_str(), width, height, desc.Format);
+		//Logger::FrameworkDebug("Saving render target to system memory: %s size: %d x %d format:%d", relativePathname.c_str(), width, height, desc.Format);
 		/*
 		HRESULT hr = device->CreateOffscreenPlainSurface(width, height, desc.Format, D3DPOOL_SYSTEMMEM, &saveSurface, NULL);
 		DX_VERIFY(hr);
@@ -162,7 +162,7 @@ void Texture::Lost()
 {
 	if (isRenderTarget)
 	{
-		//Logger::Debug("Releasing lost render target with path: %s", relativePathname.c_str());
+		//Logger::FrameworkDebug("Releasing lost render target with path: %s", relativePathname.c_str());
 		D3DSafeRelease(id);
 	}
 }
@@ -176,7 +176,7 @@ void Texture::Invalidate()
 		id = CreateTextureNative(Vector2((float32)width, (float32)height), format, isRenderTarget, 0);
 		if (saveTexture)
 		{
-			//Logger::Debug("Restoring lost render target with path: %s size: %d x %d", relativePathname.c_str(), width, height);
+			//Logger::FrameworkDebug("Restoring lost render target with path: %s size: %d x %d", relativePathname.c_str(), width, height);
 			/*
 				We add dirty rect because without it UpdateTexture updates texture only once.
 			*/

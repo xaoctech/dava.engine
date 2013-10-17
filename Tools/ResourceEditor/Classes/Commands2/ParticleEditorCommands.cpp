@@ -130,12 +130,18 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter,
 
 void CommandUpdateParticleLayer::Init(const String& layerName,
 									  ParticleLayer::eType layerType,
-									  bool isDisabled,
-									  bool additive,
+									  bool isDisabled,									  
 									  bool inheritPosition,
 									  bool isLong,
+									  float32 scaleVelocityBase,
+									  float32 scaleVelocityFactor,
 									  bool isLooped,
 									  Sprite* sprite,
+									  eBlendMode srcFactor,
+									  eBlendMode dstFactor,
+									  bool enableFog,
+									  bool enableFrameBlending,
+									  int32 particleOrientation,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
 									  RefPtr< PropertyLine<float32> > number,
@@ -166,18 +172,25 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS,
 									  bool randomFrameOnStart,
+									  bool loopSpriteAnimation,
+									  RefPtr< PropertyLine<float32> > animSpeedOverLife,
 									  
 									  float32 pivotPointX,
 									  float32 pivotPointY)
 {
 	this->layerName = layerName;
 	this->layerType = layerType;
-	this->isDisabled = isDisabled;
-	this->additive = additive;
+	this->isDisabled = isDisabled;	
 	this->inheritPosition = inheritPosition;
 	this->isLooped = isLooped;
 	this->isLong = isLong;
+	this->scaleVelocityBase = scaleVelocityBase;
+	this->scaleVelocityFactor = scaleVelocityFactor;
 	this->sprite = sprite;
+	this->srcFactor = srcFactor;
+	this->dstFactor = dstFactor;
+	this->enableFog = enableFog;
+	this->enableFrameBlending = enableFrameBlending;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
 	this->number = number;
@@ -192,6 +205,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
 	this->randomSpinDirection = randomSpinDirection;
+	this->particleOrientation = particleOrientation;
 
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
@@ -209,6 +223,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
 	this->randomFrameOnStart = randomFrameOnStart;
+	this->loopSpriteAnimation = loopSpriteAnimation;
+	this->animSpeedOverLife = animSpeedOverLife;
 	
 	this->pivotPointX = pivotPointX;
 	this->pivotPointY = pivotPointY;
@@ -218,11 +234,15 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 void CommandUpdateParticleLayer::Redo()
 {
 	layer->layerName = layerName;
-	layer->SetDisabled(isDisabled);
-	layer->SetAdditive(additive);
+	layer->SetDisabled(isDisabled);	
 	layer->SetInheritPosition(inheritPosition);
 	layer->SetLong(isLong);
+	layer->scaleVelocityBase = scaleVelocityBase;
+	layer->scaleVelocityFactor = scaleVelocityFactor;
 	layer->SetLooped(isLooped);
+	layer->SetBlendMode(srcFactor, dstFactor);
+	layer->SetFog(enableFog);
+	layer->SetFrameBlend(enableFrameBlending);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -237,6 +257,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->spinVariation = spinVariation;
 	layer->spinOverLife = spinOverLife;
 	layer->randomSpinDirection = randomSpinDirection;
+	layer->particleOrientation = particleOrientation;
 
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
@@ -245,6 +266,8 @@ void CommandUpdateParticleLayer::Redo()
 	layer->frameOverLifeEnabled = frameOverLifeEnabled;
 	layer->frameOverLifeFPS = frameOverLifeFPS;
 	layer->randomFrameOnStart = randomFrameOnStart;
+	layer->loopSpriteAnimation = loopSpriteAnimation;
+	layer->animSpeedOverLife = animSpeedOverLife;
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
@@ -279,7 +302,10 @@ void CommandUpdateParticleLayer::Redo()
 		{
 			layer->CreateInnerEmitter();
 			if (!layer->innerEmitterPath.IsEmpty())
-				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);
+			{
+				layer->GetInnerEmitter()->LoadFromYaml(layer->innerEmitterPath);				
+			}
+			layer->GetInnerEmitter()->SetPlaybackSpeed(layer->GetPlaybackSpeed());
 		}
 		emitter->Play();
 	}
@@ -405,8 +431,9 @@ void CommandAddParticleEmitter::Redo()
 	Entity* emitterEntity = new Entity();
 	emitterEntity->SetName("Particle Emitter");
 	emitterEntity->AddComponent(renderComponent);
-	LodComponent * lodComponent = new LodComponent();
-	emitterEntity->AddComponent(lodComponent);
+	renderComponent->Release();
+
+	emitterEntity->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));
 	effectEntity->AddNode(emitterEntity);
 }
 

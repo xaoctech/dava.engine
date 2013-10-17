@@ -33,7 +33,8 @@
 #include "Scene/SceneSignals.h"
 #include "Scene/SceneEditor2.h"
 
-#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/EntityAddCommand.h"
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/ParticleLayerMoveCommand.h"
 #include "Commands2/ParticleLayerRemoveCommand.h"
@@ -42,11 +43,15 @@
 
 #include "Classes/SceneEditor/SceneValidator.h"
 
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, lockedSignals(false)
+	, structureChanged(false)
 {
-
+    new DAVA::SwitchComponent();
+    new DAVA::ActionComponent();
 }
 
 StructureSystem::~StructureSystem()
@@ -54,73 +59,81 @@ StructureSystem::~StructureSystem()
 
 }
 
-void StructureSystem::Init()
+bool StructureSystem::Init(const DAVA::FilePath & path)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor)
-	{
-		// mark solid all entities, that has childs as solid
-		for(DAVA::int32 i = 0; i < sceneEditor->GetChildrenCount(); ++i)
-		{
-			CheckAndMarkSolid(sceneEditor->GetChild(i));
-			CheckAndMarkLocked(sceneEditor->GetChild(i));
-		}
-	}
+	if(NULL == sceneEditor) return false;
+
+	Entity * rootNode = Load(path);
+	if(!rootNode) return false;
+    
+    DAVA::Vector<DAVA::Entity*> tmpEntities;
+    int entitiesCount = rootNode->GetChildrenCount();
+    
+    // remember all child pointers, but don't add them to scene in this cycle
+    // because when entity is adding it is automatically removing from its old hierarchy
+    tmpEntities.reserve(entitiesCount);
+    for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+    {
+        tmpEntities.push_back(rootNode->GetChild(i));
+    }
+    
+    // now we can safely add entities into our hierarchy
+    for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+    {
+        sceneEditor->AddNode(tmpEntities[i]);
+    }
+
+    rootNode->Release();
+    return true;
 }
 
-void StructureSystem::Move(const EntityGroup *entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
+void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && NULL != entityGroup)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
-		EntityGroup toMove = *entityGroup;
-
-		if(toMove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Move entities");
 		}
 
-		for(size_t i = 0; i < toMove.Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityMoveCommand(toMove.GetEntity(i), newParent, newBefore));
+			sceneEditor->Exec(new EntityParentChangeCommand(entityGroup.GetEntity(i), newParent, newBefore));
 		}
 
-		if(toMove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
-void StructureSystem::Remove(const EntityGroup *entityGroup)
+void StructureSystem::Remove(const EntityGroup &entityGroup)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && NULL != entityGroup)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
-		EntityGroup toRemove = *entityGroup;
-
-		if(toRemove.Size() > 1)
+		if(entityGroup.Size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Remove entities");
 		}
 
-		for(size_t i = 0; i < toRemove.Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
-			sceneEditor->Exec(new EntityRemoveCommand(toRemove.GetEntity(i)));
+			sceneEditor->Exec(new EntityRemoveCommand(entityGroup.GetEntity(i)));
 		}
 
-		if(toRemove.Size() > 1)
+
+		if(entityGroup.Size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -131,7 +144,6 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 	{
 		if(layers.size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Move particle layers");
 		}
 
@@ -143,10 +155,9 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 		if(layers.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -158,7 +169,6 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 	{
 		if(layers.size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Remove particle layers");
 		}
 
@@ -170,10 +180,9 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 		if(layers.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -184,7 +193,6 @@ void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &force
 	{
 		if(forces.size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Move particle layers");
 		}
 
@@ -196,10 +204,9 @@ void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &force
 		if(forces.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
@@ -210,7 +217,6 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 	{
 		if(forces.size() > 1)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Remove particle layers");
 		}
 
@@ -222,26 +228,27 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 		if(forces.size() > 1)
 		{
 			sceneEditor->EndBatch();
-			UnlockSignals();
-
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
+
+		EmitChanged();
 	}
 }
 
-void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
+void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && entityGroup->Size() > 0)
+	if(NULL != sceneEditor && entityGroup.Size() > 0)
 	{
 		DAVA::Vector<DAVA::Entity*> newEntities;
+		SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
+
 		bool loadSuccess = false;
 
 		// load new models
-		for(size_t i = 0; i < entityGroup->Size(); ++i)
+		for(size_t i = 0; i < entityGroup.Size(); ++i)
 		{
 			DAVA::FilePath loadModelPath = newModelPath;
-			DAVA::Entity *entity = entityGroup->GetEntity(i);
+			DAVA::Entity *entity = entityGroup.GetEntity(i);
 
 			newEntities.push_back(NULL);
 
@@ -267,12 +274,10 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 		// replace old models with new
 		if(loadSuccess)
 		{
-			LockSignals();
 			sceneEditor->BeginBatch("Reload model");
-
-			for(size_t i = 0; i < entityGroup->Size(); ++i)
+			for(size_t i = 0; i < entityGroup.Size(); ++i)
 			{
-				DAVA::Entity *origEntity = entityGroup->GetEntity(i);
+				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
 				DAVA::Entity *newEntity = newEntities[i];
 
 				if(NULL != origEntity && NULL != newEntity && NULL != origEntity->GetParent())
@@ -286,19 +291,16 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
                         CopyLightmapSettings(origEntity, newEntity);
                     }
 					
-					sceneEditor->Exec(new EntityMoveCommand(newEntity, origEntity->GetParent(), before));
+					sceneEditor->Exec(new EntityParentChangeCommand(newEntity, origEntity->GetParent(), before));
 					sceneEditor->Exec(new EntityRemoveCommand(origEntity));
 
 					newEntity->Release();
 				}
 			}
-
 			sceneEditor->EndBatch();
-			UnlockSignals();
 
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
-            
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+			EmitChanged();
 		}
 	}
 }
@@ -316,7 +318,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			KeyedArchive *customProps = loadedEntity->GetCustomProperties();
             customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
 
-			if(entityPos.IsZero())
+			if(entityPos.IsZero() && FindLandscape(loadedEntity) == NULL)
 			{
 				SceneCameraSystem *cameraSystem = sceneEditor->cameraSystem;
 
@@ -328,15 +330,15 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 
 				camDirection.Normalize();
 				
-				entityPos = camPosition + camDirection * (bboxSize / 2);
+				entityPos = camPosition + camDirection * bboxSize;
 			}
 
 			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
 
-			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
-			loadedEntity->Release();
+            
+			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
 			// -->
@@ -344,24 +346,25 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
             SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
 			// <--
             
-			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+			EmitChanged();
 		}
 	}
 }
 
-void StructureSystem::LockSignals()
+void StructureSystem::EmitChanged()
 {
-	lockedSignals = true;
-}
-
-void StructureSystem::UnlockSignals()
-{
-	lockedSignals = false;
+	// mark that structure was changed. real signal will be emited on next update() call
+	// this should done be to increase perfomance - on Change emit on multiple scene structure operations
+	structureChanged = true;
 }
 
 void StructureSystem::Update(DAVA::float32 timeElapsed)
 {
-
+	if(structureChanged)
+	{
+		SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		structureChanged = false;
+	}
 }
 
 void StructureSystem::Draw()
@@ -376,38 +379,29 @@ void StructureSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void StructureSystem::ProcessCommand(const Command2 *command, bool redo)
 {
-	if(!lockedSignals)
+	if(NULL != command)
 	{
-		if(NULL != command)
+		int cmdId = command->GetId();
+		if( cmdId == CMDID_PARTICLE_LAYER_REMOVE ||
+			cmdId == CMDID_PARTICLE_LAYER_MOVE ||
+			cmdId == CMDID_PARTICLE_FORCE_REMOVE ||
+			cmdId == CMDID_PARTICLE_FORCE_MOVE)
 		{
-			int cmdId = command->GetId();
-			if(cmdId == CMDID_PARTICLE_LAYER_REMOVE ||
-			   cmdId == CMDID_PARTICLE_LAYER_MOVE ||
-			   cmdId == CMDID_PARTICLE_FORCE_REMOVE ||
-			   cmdId == CMDID_PARTICLE_FORCE_MOVE)
-			{
-				SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
-			}
+			EmitChanged();
 		}
 	}
 }
 
 void StructureSystem::AddEntity(DAVA::Entity * entity)
 {
-	if(!lockedSignals)
-	{
-		DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
-		SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), parent);
-	}
+	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
+	EmitChanged();
 }
 
 void StructureSystem::RemoveEntity(DAVA::Entity * entity)
 {
-	if(!lockedSignals)
-	{
-		DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
-		SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), parent);
-	}
+	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
+	EmitChanged();
 }
 
 void StructureSystem::CheckAndMarkSolid(DAVA::Entity *entity)
@@ -472,22 +466,30 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
-		loadedEntity = sceneEditor->GetRootNode(sc2path);
+        sceneEditor->ReleaseRootNode(sc2path);
+        Entity *rootNode = sceneEditor->GetRootNode(sc2path);
+        if(rootNode)
+        {
+            loadedEntity = rootNode->Clone();
+            
+            Entity *parentForOptimize = new Entity();
+			parentForOptimize->AddNode(loadedEntity);
+            SafeRelease(loadedEntity);
+            
+			SceneFileV2 sceneFile;
+			sceneFile.OptimizeScene(parentForOptimize);
+			if(parentForOptimize->GetChildrenCount())
+			{
+				loadedEntity = parentForOptimize->GetChild(0);
+				loadedEntity->SetSolid(true);
+				loadedEntity->Retain();
+                
+                CheckAndMarkLocked(loadedEntity);
+                CheckAndMarkSolid(loadedEntity);
+			}
 
-		if(NULL != loadedEntity)
-		{
-			DAVA::SceneFileV2 *sceneFile = new DAVA::SceneFileV2();
-			DAVA::Entity *rootEntity = new DAVA::Entity();
-
-			rootEntity->AddNode(loadedEntity);
-			loadedEntity = rootEntity->GetChild(0);
-
-			loadedEntity->Retain();
-			loadedEntity->SetSolid(true);
-
-			sceneFile->Release();
-			rootEntity->Release();
-		}
+			parentForOptimize->Release();
+        }
 
 		sceneEditor->ReleaseRootNode(sc2path);
 	}
@@ -495,44 +497,15 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 	return loadedEntity;
 }
 
-DAVA::Landscape * StructureSystem::FindLanscape() const
-{
-    Entity *entity = FindLandscapeEntity();
-    return GetLandscape(entity);
-}
-
-DAVA::Entity * StructureSystem::FindLandscapeEntity() const
-{
-	return FindLandscapeEntityRecursive(GetScene());
-}
-
-
-DAVA::Entity * StructureSystem::FindLandscapeEntityRecursive( DAVA::Entity *entity ) const
-{
-	if(GetLandscape(entity))
-	{
-		return entity;
-	}
-
-	DAVA::int32 count = entity->GetChildrenCount();
-	for(DAVA::int32 i = 0; i < count; ++i)
-	{
-		Entity *child = entity->GetChild(i);
-		if(FindLandscapeEntityRecursive(child))
-		{
-			return child;
-		}
-	}
-
-	return NULL;
-}
-
-
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
 {
-    DAVA::Vector<DAVA::RenderObject *> fromMeshes;
+	//TODO: NEWMATERIAL
+	DVASSERT(false && "TODO: re-implement for new materials if needed.");
+	return true;
+
+/*    DAVA::Vector<DAVA::RenderObject *> fromMeshes;
     FindMeshesRecursive(fromEntity, fromMeshes);
-	
+
     DAVA::Vector<DAVA::RenderObject *> toMeshes;
     FindMeshesRecursive(toEntity, toMeshes);
     
@@ -552,24 +525,12 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
                 DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
                 DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
                 
-				NMaterial* fromMaterial = fromBatch->GetMaterial();
-				NMaterial* toMaterial = toBatch->GetMaterial();
-				
-                if(fromMaterial && toMaterial)
+                DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
+                DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
+                
+                if(fromState && toState)
                 {
-					toMaterial->SetTexture(TEXTURE_LIGHTMAP, fromMaterial->GetTexture(TEXTURE_LIGHTMAP));
-					
-					NMaterialProperty* uvOffsetProp = fromMaterial->GetMaterialProperty(LIGHTMAP_UV_OFFSET);
-					if(uvOffsetProp)
-					{
-						toMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, uvOffsetProp->data);
-					}
-					
-					NMaterialProperty* uvScaleProp = fromMaterial->GetMaterialProperty(LIGHTMAP_UV_SCALE);
-					if(uvScaleProp)
-					{
-						toMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, uvScaleProp->data);
-					}
+                    toState->InitFromState(fromState);
                 }
                 
             }
@@ -577,8 +538,8 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
         
         return true;
     }
-	
-    return false;
+
+    return false;*/
 }
 
 void StructureSystem::FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const

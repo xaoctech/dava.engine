@@ -64,7 +64,7 @@ void SceneSaver::SetOutFolder(const FilePath &folderPathname)
 
 void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneSaver::SaveFile] %s", fileName.c_str());
+    Logger::FrameworkDebug("[SceneSaver::SaveFile] %s", fileName.c_str());
     
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
 
@@ -97,7 +97,7 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 {
-	Logger::Info("[SceneSaver::ResaveFile] %s", fileName.c_str());
+	Logger::FrameworkDebug("[SceneSaver::ResaveFile] %s", fileName.c_str());
 
 	FilePath sc2Filename = sceneUtils.dataSourceFolder + fileName;
 
@@ -120,11 +120,7 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 		}
 
 		scene->Update(0.f);
-
-		SceneFileV2 * outFile = new SceneFileV2();
-		outFile->EnableDebugLog(false);
-		outFile->SaveScene(sc2Filename, scene);
-		SafeRelease(outFile);
+        scene->Save(sc2Filename);
 	}
 	else
 	{
@@ -154,7 +150,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     CopyTextures(scene, errorLog);
 	ReleaseTextures();
 
-	Landscape *landscape = EditorScene::GetLandscape(scene);
+	Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
@@ -168,12 +164,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
     tempSceneName.ReplaceExtension(".saved.sc2");
     
-    SceneFileV2 * outFile = new SceneFileV2();
-    outFile->EnableSaveForGame(true);
-    outFile->EnableDebugLog(false);
-    
-    outFile->SaveScene(tempSceneName, scene);
-    SafeRelease(outFile);
+    scene->Save(tempSceneName, true);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
@@ -264,7 +255,7 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 
 void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
 {
-	Entity *land = EditorScene::GetLandscapeNode(scene);
+	Entity *land = FindLandscapeEntity(scene);
 	if(!land) return;
 
 	KeyedArchive* customProps = land->GetCustomProperties();

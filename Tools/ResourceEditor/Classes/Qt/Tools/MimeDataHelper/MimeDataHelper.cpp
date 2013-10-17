@@ -160,7 +160,7 @@ void MimeDataHelper::ConvertQMimeDataFromFilePath(const QMimeData* mimeData,List
 
 	Q_FOREACH(QUrl url, droppedUrls)
 	{
-		FilePath filePath(url.toString().toStdString());
+		FilePath filePath( url.toLocalFile().toStdString());
 		if(!(filePath.Exists() && filePath.GetExtension() == ".sc2"))
 		{
 			continue;

@@ -35,6 +35,7 @@
 #include "Base/FastNameMap.h"
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
+#include "Render/Highlevel/SpatialTree.h"
 
 namespace DAVA
 {
@@ -111,8 +112,11 @@ public:
     const Color & GetShadowRectColor();
 	
 	inline MaterialSystem* GetMaterialSystem() {return materialSystem;}
+
+	void DebugDrawSpatialTree();
     
 private:
+	void CreateSpatialTree();
     void ProcessClipping();
     void FindNearestLights();
     void FindNearestLights(RenderObject * renderObject);

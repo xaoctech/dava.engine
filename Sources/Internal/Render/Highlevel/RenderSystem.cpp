@@ -28,6 +28,7 @@
 
 
 #include "Render/Highlevel/RenderSystem.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/RenderHierarchy.h"
@@ -35,6 +36,8 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Render/Highlevel/ShadowRect.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
@@ -83,6 +86,8 @@ RenderSystem::RenderSystem()
 	materialSystem = new MaterialSystem();
 	materialSystem->SetDefaultMaterialQuality("Normal"); //TODO: add code setting material quality based on device specs
 	materialSystem->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
+
+	markedObjects.reserve(100);
 }
 
 RenderSystem::~RenderSystem()
@@ -106,7 +111,7 @@ RenderSystem::~RenderSystem()
         SafeDelete(layer);
     }
     renderLayersMap.Clear();
-	
+
 	SafeDelete(materialSystem);
 }
     
@@ -157,15 +162,21 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
 	particleEmitterSystem->AddIfEmitter(renderObject);
-	renderObject->SetRenderSystem(this);
+
+	renderObject->SetRenderSystem(this);	
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
     particleEmitterSystem->RemoveIfEmitter(renderObject);
-	renderObject->SetRenderSystem(0);
+	renderObject->SetRenderSystem(0);	
 }
 
+    
+RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
+{
+	return renderPassesMap[passName];
+}
     
 void RenderSystem::SetCamera(Camera * _camera)
 {
@@ -176,7 +187,7 @@ Camera * RenderSystem::GetCamera()
 {
 	return camera;
 }
-
+    
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
     markedObjects.push_back(renderObject);
@@ -300,15 +311,16 @@ Vector<Light*> & RenderSystem::GetLights()
 
 void RenderSystem::Update(float32 timeElapsed)
 {
-    // Update all registered objects
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS))
+	{
+		particleEmitterSystem->Update(timeElapsed, camera);
+	}
+
     uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
         objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
-
-	particleEmitterSystem->Update(timeElapsed, camera);
-    
     
     // Update nearest lights for objects    
     int32 objectBoxesUpdated = 0;
@@ -318,6 +330,10 @@ void RenderSystem::Update(float32 timeElapsed)
         RenderObject * obj = *it;
         obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
         FindNearestLights(obj);
+		
+		if (obj->GetTreeNodeIndex() != INVALID_TREE_NODE_INDEX)
+			renderHierarchy->ObjectUpdated(obj);
+		
         objectBoxesUpdated++;
     }
     markedObjects.clear();
@@ -375,10 +391,4 @@ const Color & RenderSystem::GetShadowRectColor()
     
     return shadowRect->GetColor();
 }
-
-RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
-{
-	return renderPassesMap[passName];
-}
-
 };

@@ -75,6 +75,14 @@ bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
 {
 	return true;
 }
+	
+void UITextFieldDelegate::OnKeyboardShown(const Rect& /*keyboardRect*/)
+{
+}
+
+void UITextFieldDelegate::OnKeyboardHidden()
+{
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -82,6 +90,7 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 ,	delegate(0)
 ,	cursorBlinkingTime(0.0f)
 ,   textFont(NULL)
+,	constFont(NULL)
 ,   staticText(NULL)
 ,   isPassword(false)
 ,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
@@ -113,6 +122,7 @@ UITextField::UITextField()
 :   delegate(NULL)
 ,   cursorBlinkingTime(0.f)
 ,   textFont(NULL)
+,	constFont(NULL)
 ,   staticText(NULL)
 ,   isPassword(false)
 ,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
@@ -160,6 +170,7 @@ UITextField::UITextField()
 UITextField::~UITextField()
 {
     SafeRelease(textFont);
+	SafeRelease(constFont);
 #ifdef __DAVAENGINE_ANDROID__
 	SafeDelete(textFieldAndroid);
 #endif
@@ -297,8 +308,14 @@ void UITextField::ReleaseFocus()
 void UITextField::SetFont(Font * font)
 {
 #ifndef __DAVAENGINE_IPHONE__
-    SafeRelease(textFont);
-    textFont = SafeRetain(font);
+	// Yuri Coder, 2013/10/10. The implementation is copied from TextBlock.cpp
+	//Do not change the code above. This magic realised to avoid font destruction.
+	//For example in this case UITextField->SetFont(UITextField->GetFont()); code should work correct
+	SafeRelease(constFont);
+	constFont = font->Clone();
+	SafeRelease(textFont);
+	textFont = constFont->Clone();
+
     staticText->SetFont(textFont);
 #endif
 }
@@ -312,10 +329,6 @@ void UITextField::SetTextColor(const Color& fontColor)
 #endif
 }
 
-void UITextField::SetFontColor(const Color& fontColor)
-{
-    SetTextColor(fontColor);
-}
 
 void UITextField::SetShadowOffset(const DAVA::Vector2 &offset)
 {
@@ -582,20 +595,12 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
 	}
 
-    if(staticText)
-    {
-        staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
+	if(staticText)
+	{
+		staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
-		const YamlNode * textColorNode = node->Get("textcolor");
 		const YamlNode * shadowColorNode = node->Get("shadowcolor");
 		const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
-		const YamlNode * textAlignNode = node->Get("textalign");
-		
-		if(textColorNode)
-		{
-			Vector4 c = textColorNode->AsVector4();
-			SetTextColor(Color(c.x, c.y, c.z, c.w));
-		}
 
 		if(shadowColorNode)
 		{
@@ -607,12 +612,22 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
 		}
+	}
 
-		if(textAlignNode)
-		{
-			SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
-		}
-    }
+
+	const YamlNode * textColorNode = node->Get("textcolor");
+	const YamlNode * textAlignNode = node->Get("textalign");
+
+	if(textColorNode)
+	{
+		Vector4 c = textColorNode->AsVector4();
+		SetTextColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(textAlignNode)
+	{
+		SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
+	}
     //InitAfterYaml();
 
 #if 0
@@ -846,7 +861,14 @@ void UITextField::SetEnableReturnKeyAutomatically(bool value)
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetEnableReturnKeyAutomatically(value);
 #endif
+}
 
+void UITextField::SetInputEnabled(bool isEnabled, bool hierarchic)
+{
+	UIControl::SetInputEnabled(isEnabled, hierarchic);
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetInputEnabled(isEnabled);
+#endif
 }
 
 }; // namespace

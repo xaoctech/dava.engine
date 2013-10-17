@@ -33,6 +33,8 @@
 #include "../Qt/Scene/SceneEditor2.h"
 #include "../Qt/Scene/SceneSignals.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 ActionEnableVisibilityTool::ActionEnableVisibilityTool(SceneEditor2* forSceneEditor)
 :	CommandAction(CMDID_ENABLE_VISIBILITY_TOOL)
 ,	sceneEditor(forSceneEditor)
@@ -58,7 +60,7 @@ void ActionEnableVisibilityTool::Redo()
 	
 	if (!success || !sceneEditor->visibilityToolSystem->EnableLandscapeEditing())
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::VISIBILITY_TOOL_ENABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);
@@ -86,7 +88,7 @@ void ActionDisableVisibilityTool::Redo()
 	disabled = sceneEditor->visibilityToolSystem->DisableLandscapeEdititing();
 	if (!disabled)
 	{
-		// show error message
+		ShowErrorDialog(ResourceEditor::VISIBILITY_TOOL_DISABLE_ERROR);
 	}
 
 	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);

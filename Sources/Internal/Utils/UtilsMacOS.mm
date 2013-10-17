@@ -66,6 +66,12 @@ void EnableSleepTimer()
 	UIApplication * app = [UIApplication sharedApplication];
 	app.idleTimerDisabled = NO;
 }
+	
+	uint64 eglGetCurrentContext()
+	{
+		return (uint64)[EAGLContext currentContext];
+	}
+	
 #endif
 
 }; // end of namespace DAVA

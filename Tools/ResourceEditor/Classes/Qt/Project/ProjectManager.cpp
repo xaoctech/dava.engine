@@ -94,8 +94,6 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             
             SpritePackerHelper::Instance()->UpdateParticleSprites();
-
-			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
@@ -104,10 +102,14 @@ void ProjectManager::ProjectOpen(const QString &path)
 			screen->UpdateModificationPanel();
 		}
 
-		emit ProjectOpened(curProjectPath);
+		LoadProjectSettings();
 
-		// TODO: 
-		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
+		emit ProjectOpened(curProjectPath);
+		
+		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
+		projectPath.MakeDirectoryPathname();
+
+		DAVA::FilePath::AddTopResourcesFolder(projectPath);
 	}
 }
 
@@ -125,10 +127,19 @@ void ProjectManager::ProjectClose()
 {
 	if("" != curProjectPath)
 	{
+		FilePath path = curProjectPath.toStdString();
+		path.MakeDirectoryPathname();
+
+		DAVA::FilePath::RemoveResourcesFolder(path);
+
 		curProjectPath = "";
 		emit ProjectClosed();
-		
-		// TODO:
-		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
 	}
+}
+
+void ProjectManager::LoadProjectSettings()
+{
+	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
+	prjPath.MakeDirectoryPathname();
+	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
 }

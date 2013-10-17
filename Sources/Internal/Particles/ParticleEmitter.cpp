@@ -39,7 +39,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/SceneFileV2.h"
 
-
 namespace DAVA 
 {
 
@@ -147,8 +146,7 @@ RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 		newObject = new ParticleEmitter();
 	}
 
-	ParticleEmitter* pe = (ParticleEmitter*)newObject;
-	pe->LoadFromYaml(configPath);
+	((ParticleEmitter*)newObject)->LoadFromYaml(configPath);
 
 	return newObject;
 }
@@ -305,6 +303,23 @@ void ParticleEmitter::SetShortEffect(bool isShort)
 		lodLevelLocked = false; //once effect is not considered short anymore - unlock lod
 		currentLodLevel = desiredLodLevel;
 	}
+}
+
+Matrix3 ParticleEmitter::GetRotationMatrix()
+{
+	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	Matrix3 rotationMatrix;	
+
+	if(worldTransformPtr)
+	{	
+		rotationMatrix = Matrix3(*worldTransformPtr);
+	}
+	else
+	{
+		rotationMatrix.Identity();
+	}
+
+	return rotationMatrix;
 }
 
 void ParticleEmitter::Play()
@@ -763,12 +778,7 @@ bool ParticleEmitter::IsPaused()
 	return isPaused;
 }
 
-void ParticleEmitter::SetAutorestart(bool _isAutorestart)
-{
-	isAutorestart = _isAutorestart;
-}
-
-bool ParticleEmitter::GetAutorestart()
+bool ParticleEmitter::GetAutoRestart()
 {
 	return isAutorestart;
 }
@@ -938,6 +948,11 @@ void ParticleEmitter::SetDisabledForAllLayers(bool value)
 void ParticleEmitter::RecalcBoundingBox()
 {
 	bbox = AABBox3(Vector3(), Vector3());
+}
+
+void ParticleEmitter::RecalculateWorldBoundingBox()
+{
+	worldBBox = bbox; //as ParticelEmmiter dont use world transform for particle rendering, just for generation
 }
 
 void ParticleEmitter::SetLongToAllLayers(bool isLong)

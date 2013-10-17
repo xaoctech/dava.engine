@@ -103,11 +103,11 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-        
+
 		switch(blendMode)
 		{
 		case MODE_BLEND_ALPHA:
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 			break;
 		case MODE_BLEND_MULTIPLY:
 			RenderManager::Instance()->SetBlendMode(BLEND_DST_COLOR, BLEND_ZERO);

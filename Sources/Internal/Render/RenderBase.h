@@ -114,6 +114,8 @@ enum eBlendMode
 	BLEND_DST_ALPHA,
 	BLEND_ONE_MINUS_DST_ALPHA,
 	BLEND_SRC_ALPHA_SATURATE,
+	BLEND_SRC_COLOR,
+	BLEND_ONE_MINUS_SRC_COLOR,
 
 	BLEND_MODE_COUNT,
 };
@@ -129,7 +131,9 @@ static const String BLEND_MODE_NAMES[] =
 	"BLEND_ONE_MINUS_SRC_ALPHA",
 	"BLEND_DST_ALPHA",
 	"BLEND_ONE_MINUS_DST_ALPHA",
-	"BLEND_SRC_ALPHA_SATURATE"
+	"BLEND_SRC_ALPHA_SATURATE",
+	"BLEND_SRC_COLOR",
+	"BLEND_ONE_MINUS_SRC_COLOR"
 };
 
 enum PixelFormat
@@ -209,6 +213,8 @@ static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
     GL_DST_ALPHA,
     GL_ONE_MINUS_DST_ALPHA,
     GL_SRC_ALPHA_SATURATE,
+	GL_SRC_COLOR,
+	GL_ONE_MINUS_SRC_COLOR,
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
 static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
@@ -449,19 +455,20 @@ enum eVertexFormat
     EVF_TANGENT			= 128,
     EVF_BINORMAL		= 256,
     EVF_JOINTWEIGHT		= 512,
-	EVF_CUBETEXCOORD0	= 1024,
-    EVF_CUBETEXCOORD1	= 2048,
-    EVF_CUBETEXCOORD2	= 4096,
-    EVF_CUBETEXCOORD3	= 8192,
+	EVF_TIME			= 1024,
+	EVF_CUBETEXCOORD0	= 2048,
+    EVF_CUBETEXCOORD1	= 4096,
+    EVF_CUBETEXCOORD2	= 8192,
+    EVF_CUBETEXCOORD3	= 16384,	
     EVF_LOWER_BIT		= EVF_VERTEX,
-    EVF_HIGHER_BIT		= EVF_JOINTWEIGHT, 
+    EVF_HIGHER_BIT		= EVF_TIME, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
 };
 enum
 {
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 10
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 11
 };
 
 inline int32 GetTexCoordCount(int32 vertexFormat)
@@ -513,6 +520,8 @@ inline int32 GetVertexSize(int32 flags)
     if (flags & EVF_CUBETEXCOORD1) size += 3 * sizeof(float32);
     if (flags & EVF_CUBETEXCOORD2) size += 3 * sizeof(float32);
     if (flags & EVF_CUBETEXCOORD3) size += 3 * sizeof(float32);
+
+	if (flags & EVF_TIME) size+=sizeof(float32);
 	
     return size;
 }

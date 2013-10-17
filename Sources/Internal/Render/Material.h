@@ -155,7 +155,11 @@ public:
         MATERIAL_FLAT_COLOR,
 		
 		MATERIAL_SKYBOX,
+
+		MATERIAL_VERTEX_COLOR_ALPHABLENDED_FRAME_BLEND,
         
+        MATERIAL_SPEED_TREE_LEAF,
+
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
         // MATERIAL_VERTEX_LIGHTING,       // flag
@@ -196,7 +200,8 @@ public:
     Material();
     virtual ~Material();
     
-    Material * Clone();
+    Material * Clone(Material *newMaterial = NULL);
+	void CopySettings(Material *fromMaterial);
     
     enum eValidationResult
     {
@@ -252,6 +257,7 @@ public:
     float32 GetShininess() const;
 
 	void SetSetupLightmap(bool isSetupLightmap);
+    bool GetSetupLightmap() const;
     
     
     void EnableTextureShift(const bool & isEnabled);

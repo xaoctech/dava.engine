@@ -32,7 +32,6 @@
 
 static const PixelFormat formats[] =
 {
-	FORMAT_RGBA8888,
 	FORMAT_DXT1,
 	FORMAT_DXT1NM,
 	FORMAT_DXT1A,
@@ -67,12 +66,12 @@ void DXTTest::LoadResources()
     DVASSERT(font);
 
     font->SetSize(20);
-    font->SetColor(Color::White());
 
     compareResultText = new UIStaticText(Rect(0, 256, 512, 200));
     compareResultText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
     compareResultText->SetMultiline(true);
     compareResultText->SetFont(font);
+    compareResultText->SetTextColor(Color::White());
     AddControl(compareResultText);
 
     SafeRelease(font);

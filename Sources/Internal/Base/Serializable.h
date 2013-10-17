@@ -37,6 +37,7 @@ namespace DAVA
 {
 
 class KeyedArchive;
+
 class Serializable
 {
 public:

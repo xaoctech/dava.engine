@@ -36,6 +36,8 @@
 //
 
 #include "InputTest.h"
+#include "UI/UIMovieView.h"
+#include "UI/UIScrollView.h"
 
 using namespace DAVA;
 
@@ -47,6 +49,34 @@ class UIWebViewDelegate: public IUIWebViewDelegate
 	virtual eAction URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick);
 
 	virtual void PageLoaded(UIWebView* webview);
+};
+
+class UIMoveableTextFieldDelegate : public UITextFieldDelegate
+{
+public:
+	UIMoveableTextFieldDelegate(UITextField* textField)
+	{
+		this->moveableTextField = textField;
+	}
+	
+	virtual void OnKeyboardShown(const Rect& keyboardRect)
+	{
+		this->initialTextFieldRect = this->moveableTextField->GetRect();
+		Rect newRect = this->initialTextFieldRect;
+		
+		newRect.y = keyboardRect.y - newRect.dy;
+
+		this->moveableTextField->SetRect(newRect);
+	}
+
+	virtual void OnKeyboardHidden()
+	{
+		this->moveableTextField->SetRect(initialTextFieldRect);
+	}
+
+protected:
+	UITextField* moveableTextField;
+	Rect initialTextFieldRect;
 };
 
 IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isInitiatedByUser)
@@ -89,6 +119,7 @@ InputTest::InputTest() :
 	passwordTextField = NULL;
 	staticText = NULL;
 	testButton = NULL;
+	removeFromParentButton = NULL;
 	
 	onScreenTime = 0.0f;
 	testFinished = false;
@@ -106,15 +137,14 @@ void InputTest::LoadResources()
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
-    font->SetColor(Color::White());
 	
 	passwordTextField = new UITextField(Rect(0, 30, 512, 50));
 #ifdef __DAVAENGINE_IPHONE__
-	Color color(1.f, 1.f, 1.f, 1.f);
-	passwordTextField->SetFontColor(color);
 #else
 	passwordTextField->SetFont(font);
 #endif
+    passwordTextField->SetTextColor(Color::White());
+
 	passwordTextField->SetSprite(spr,0);
     passwordTextField->SetSpriteAlign(ALIGN_RIGHT);
 	passwordTextField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
@@ -123,39 +153,52 @@ void InputTest::LoadResources()
 	passwordTextField->SetDelegate(new UITextFieldDelegate());
 	passwordTextField->SetIsPassword(true);
 	passwordTextField->SetDelegate(this);
+//	passwordTextField->SetInputEnabled(false, false);
 	AddControl(passwordTextField);
 	
-	textField = new UITextField(Rect(600, 10, 100, 100));
+	textField = new UITextField(Rect(0, 600, 950, 40));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
-	textField->SetText(L"Traited Field");
+    textField->SetTextColor(Color::White());
+
+	textField->SetText(L"This field will auto-move over the keyboard.");
 	textField->SetDebugDraw(true);
-	textField->SetDelegate(new UITextFieldDelegate());
+	textField->SetDelegate(new UIMoveableTextFieldDelegate(textField));
 
 	textField->SetAutoCapitalizationType(DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_NONE);
 	textField->SetAutoCorrectionType(DAVA::UITextField::AUTO_CORRECTION_TYPE_NO);
 	textField->SetKeyboardAppearanceType(DAVA::UITextField::KEYBOARD_APPEARANCE_ALERT);
 	textField->SetReturnKeyType(DAVA::UITextField::RETURN_KEY_JOIN);
 	textField->SetKeyboardType(DAVA::UITextField::KEYBOARD_TYPE_TWITTER);
+	textField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 
 	AddControl(textField);
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
+    
+    textField->SetTextColor(Color::White());
+
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
+	removeFromParentButton = new UIButton(Rect(320, 300, 300, 30));
+	removeFromParentButton->SetStateFont(0xFF, font);
+	removeFromParentButton->SetStateFontColor(0xFF, Color::White());
+	removeFromParentButton->SetStateText(0xFF, L"Remove From Parent Test");
+	removeFromParentButton->SetDebugDraw(true);
+	removeFromParentButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
+
 	testButton = new UIButton(Rect(0, 300, 300, 30));
 	testButton->SetStateFont(0xFF, font);
+	testButton->SetStateFontColor(0xFF, Color::White());
 	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
@@ -163,6 +206,7 @@ void InputTest::LoadResources()
 	staticText = new UIStaticText(Rect(0, 0, 512, 20));
 	font->SetSize(10);
 	staticText->SetFont(font);
+    staticText->SetTextColor(Color::White());
 	staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);// 12 - Rtop
 	staticText->SetText(L"Type password in the field below");
 	staticText->SetDebugDraw(true);
@@ -199,7 +243,8 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
-    
+	AddControl(removeFromParentButton);
+
     SafeRelease(spr);
     SafeRelease(texture);
 
@@ -211,6 +256,8 @@ void InputTest::LoadResources()
 	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	 */
+
+	DisplayUIControlsSize();
 }
 
 void InputTest::UnloadResources()
@@ -218,6 +265,7 @@ void InputTest::UnloadResources()
 	RemoveAllControls();
 
 	SafeRelease(testButton);
+	SafeRelease(removeFromParentButton);
 	SafeRelease(textField);
 	SafeRelease(staticText);
 	
@@ -259,7 +307,14 @@ bool InputTest::RunTest(int32 testNum)
 
 void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
-	testFinished = true;
+	if (obj == testButton)
+	{
+		testFinished = true;
+	}
+	else if (obj == removeFromParentButton)
+	{
+		removeFromParentButton->RemoveFromParent();
+	}
 }
 
 bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
@@ -286,4 +341,24 @@ void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *call
 	}
 	
 	webView->SetVisible(true);
+}
+
+void InputTest::DisplayUIControlsSize()
+{
+	Logger::Info("Sizeof UIControl is\t%i", sizeof(UIControl));
+	Logger::Info("Sizeof UIMovieView is\t%i", sizeof(UIMovieView));
+	Logger::Info("Sizeof UIScrollView is\t%i", sizeof(UIScrollView));
+	Logger::Info("Sizeof UIAggregatorControl is\t%i", sizeof(UIAggregatorControl));
+	Logger::Info("Sizeof UIWebView is\t%i", sizeof(UIWebView));
+	Logger::Info("Sizeof UIButton is\t%i", sizeof(UIButton));
+	Logger::Info("Sizeof UIControlBackground is\t%i", sizeof(UIControlBackground));
+	Logger::Info("Sizeof UIList is\t%i", sizeof(UIList));
+	Logger::Info("Sizeof UIPopup is\t%i", sizeof(UIPopup));
+	Logger::Info("Sizeof UIScreen is\t%i", sizeof(UIScreen));
+	Logger::Info("Sizeof UIScrollBar is\t%i", sizeof(UIScrollBar));
+	Logger::Info("Sizeof UISlider is\t%i", sizeof(UISlider));
+	Logger::Info("Sizeof UISpinner is\t%i", sizeof(UISpinner));
+	Logger::Info("Sizeof UIStaticText is\t%i", sizeof(UIStaticText));
+	Logger::Info("Sizeof UISwitch is\t%i", sizeof(UISwitch));
+	Logger::Info("Sizeof UITextField is\t%i", sizeof(UITextField));
 }

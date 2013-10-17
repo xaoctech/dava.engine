@@ -45,13 +45,14 @@ EditorLightSystem::EditorLightSystem(DAVA::Scene * scene)
 		
 	cameraLight = new DAVA::Entity();
 	cameraLight->SetName(ResourceEditor::EDITOR_CAMERA_LIGHT);
-	cameraLight->AddComponent(new LightComponent(light));
+	cameraLight->AddComponent(ScopedPtr<LightComponent> (new LightComponent(light)));
 	light->Release();
 
 	lightCountOnScene = 0;
 	SetRequiredComponents(1 << Component::LIGHT_COMPONENT);
 
-	SetCameraLightEnabled(true);
+	isEnabled = true;
+	AddCameraLightOnScene();
 }
 
 EditorLightSystem::~EditorLightSystem()
@@ -82,8 +83,6 @@ void EditorLightSystem::UpdateCameraLightPosition()
 {
 	if(GetScene() && cameraLight && cameraLight->GetParent())
 	{
-//		SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
-//		Camera *camera = cameraSystem->curSceneCamera;
         Camera *camera = GetScene()->GetCurrentCamera();
 		if(!camera) return;
 
@@ -94,21 +93,23 @@ void EditorLightSystem::UpdateCameraLightPosition()
 
 void EditorLightSystem::SetCameraLightEnabled( bool enabled )
 {
-	isEnabled = enabled;
+	if(enabled != isEnabled)
+	{
+		isEnabled = enabled;
+		UpdateCameraLightState();
 
-	UpdateCameraLightState();
+		SceneSignals::Instance()->EmitEditorLightEnabled(isEnabled);
+	}
 }
 
 
 void EditorLightSystem::AddCameraLightOnScene()
 {
-//	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
-//	if(sc)
-//	{
-//		sc->AddEditorEntity(cameraLight);
-//	}
-    
-    AddEditorEntity(cameraLight);
+	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+	if(sc && (cameraLight->GetParent() == NULL))
+	{
+		sc->AddEditorEntity(cameraLight);
+	}
 }
 
 
@@ -123,7 +124,11 @@ void EditorLightSystem::RemoveCameraLightFromScene()
 
 void EditorLightSystem::AddEntity( DAVA::Entity * entity )
 {
-	DVASSERT(entity);
+	if(!isEnabled && (entity == cameraLight))
+	{
+		SetCameraLightEnabled(true);
+		return;
+	}
 
 	lightCountOnScene += CountLightsForEntityRecursive(entity);
 
@@ -135,7 +140,11 @@ void EditorLightSystem::AddEntity( DAVA::Entity * entity )
 
 void EditorLightSystem::RemoveEntity( DAVA::Entity * entity )
 {
-	DVASSERT(entity);
+	if(isEnabled && (entity == cameraLight) && (lightCountOnScene == 0))
+	{
+		SetCameraLightEnabled(false);
+		return;
+	}
 
 	lightCountOnScene -= CountLightsForEntityRecursive(entity);
 	DVASSERT(lightCountOnScene >= 0);
@@ -161,20 +170,6 @@ DAVA::int32 EditorLightSystem::CountLightsForEntityRecursive( DAVA::Entity *enti
 	}
 
 	return lightsCount;
-}
-
-void EditorLightSystem::AddEditorEntity(DAVA::Entity *entity)
-{
-    Scene *sc = GetScene();
-    
-    if(sc->GetChildrenCount())
-	{
-		sc->InsertBeforeNode(entity, sc->GetChild(0));
-	}
-	else
-	{
-		sc->AddNode(entity);
-	}
 }
 
 void EditorLightSystem::Process()

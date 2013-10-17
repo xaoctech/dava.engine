@@ -238,6 +238,9 @@ public:
 	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void RecalcBoundingBox();
+
+	/*from RenderObject*/
+	virtual void RecalculateWorldBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -289,19 +292,10 @@ public:
 	 */
 	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
 
-	/**
-	 \brief Enable/disable autorestart.
-	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 
-	 Option is enabled by default.
-	 \param[in] autoRestart enable autorestart if true
-	 */
-	void SetAutorestart(bool isAutorestart);
+		
 
-	/**
-	 \brief Get autorestart state.
-	 \returns current autorestart state.
-	 */
-	bool GetAutorestart();
+	
+	bool GetAutoRestart();
 
 	/**
 	 \brief Get emitter's size.
@@ -400,7 +394,9 @@ public:
 	void SetShortEffect(bool isShort);
 	
 	virtual void SetRenderSystem(RenderSystem * _renderSystem);
-	
+
+	Matrix3 GetRotationMatrix();
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -427,6 +423,12 @@ protected:
 	float32 time;
 	int32	emitPointsCount;
 	bool	isPaused;
+	/**
+	 \brief Enable/disable autorestart.
+	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 
+	 Option is enabled by default.
+	 \param[in] autoRestart enable autorestart if true
+	 */
 	bool	isAutorestart;
 	bool	particlesFollow;
     bool    is3D;
@@ -443,6 +445,7 @@ protected:
 	uint32 currentLodLevel, desiredLodLevel; //if lodLevelLocked - set lod level updates desired level
 	bool lodLevelLocked; //short effect locks it's lod layer once started
 	
+
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;
@@ -463,7 +466,7 @@ public:
 	inline void SetRepeatCount(int32 repeatCount) {this->repeatCount = repeatCount;};
 	inline void SetTime(float32 time) {this->time = time;};
 	inline void SetEmitPointsCount(int32 emitPointsCount) {this->emitPointsCount = emitPointsCount;};
-	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};
+	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};	
 	inline void SetAutoRestart(bool isAutorestart) {this->isAutorestart = isAutorestart;};
     inline void Set3D(bool is3D) {this->is3D = is3D;};
 	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};

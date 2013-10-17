@@ -65,6 +65,7 @@ namespace DAVA
 		void SetTexture(const FilePath& texPath);
 		FilePath GetTexture();
 		void SetOffsetZ(const float32& offset);
+		void ForceSetOffsetZ(float32 offset);
 		float32 GetOffsetZ();
 		void SetRotationZ(const float32& rotation);
 		float32 GetRotationZ();

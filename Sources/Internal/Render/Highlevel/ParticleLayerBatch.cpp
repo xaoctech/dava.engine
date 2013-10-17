@@ -41,7 +41,8 @@ namespace DAVA
 
 ParticleLayerBatch::ParticleLayerBatch()
 :	totalCount(0),
-	particleLayer(0)
+	particleLayer(0),
+	indices(0)
 {
 
 }
@@ -63,9 +64,11 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	if (((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA) || particleLayer->GetDisabled())
 		return;
 
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+	Matrix4 worldMatrix = Matrix4::IDENTITY;
+	Matrix4 finalMatrix = worldMatrix * camera->GetMatrix();
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);	
 
-    particleLayer->Draw(camera);
+    particleLayer->Draw(camera); //note - it is mostly deprecated and is here for compatibility with old not-3d particles
     
 	if(!totalCount)return;
 
@@ -74,7 +77,8 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	RenderManager::Instance()->SetRenderData(renderDataObject);
 	RenderManager::Instance()->AttachRenderData();
 	
-	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+	//RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, 6*totalCount, EIF_16, &((*indices)[0]));
 }
 
 void ParticleLayerBatch::SetTotalCount(int32 _totalCount)
@@ -92,6 +96,11 @@ RenderBatch * ParticleLayerBatch::Clone(RenderBatch * destination)
 void ParticleLayerBatch::SetParticleLayer(ParticleLayer * _particleLayer)
 {
 	particleLayer = _particleLayer;
+}
+
+void ParticleLayerBatch::SetIndices(Vector<uint16> *_indices)
+{
+	indices = _indices;
 }
 
 

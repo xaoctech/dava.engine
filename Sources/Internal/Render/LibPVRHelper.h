@@ -33,8 +33,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+
 #include "FileSystem/FilePath.h"
+
 #include "Render/RenderBase.h"
+
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     #include "PVRDefines.h"

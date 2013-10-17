@@ -51,8 +51,6 @@
 #include "StringConstants.h"
 #include "version.h"
 
-#include "Render/Material/MaterialSystem.h"
-
 using namespace DAVA;
 
 
@@ -69,7 +67,8 @@ void GameCore::OnAppStarted()
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
-	    
+
+    
 #ifdef __DAVAENGINE_BEAST__
 	new BeastProxyImpl();
 #else 
@@ -100,7 +99,7 @@ void GameCore::OnAppStarted()
     FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
     if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
     {
-//        Logger::Debug("[GameCore::OnAppStarted()] Unpacking Help");
+//        Logger::FrameworkDebug("[GameCore::OnAppStarted()] Unpacking Help");
         ResourceArchive * helpRA = new ResourceArchive();
         if(helpRA->Open("~res:/Help.docs"))
         {

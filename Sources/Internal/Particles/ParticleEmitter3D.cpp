@@ -79,6 +79,11 @@ void ParticleEmitter3D::Draw(Camera * camera)
 void ParticleEmitter3D::RecalcBoundingBox()
 {
 	RenderObject::RecalcBoundingBox(); //transpass ParticleEmitter::RecalcBoundingBox()
+	if (GetWorldTransformPtr()) //add emmiter anyway
+	{
+		Vector3 emmiterPos = GetWorldTransformPtr()->GetTranslationVector();
+		bbox.AddPoint(emmiterPos);
+	}	
 }
 
 
@@ -101,15 +106,15 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
         particle->position = tempPosition;
     }
     else if (emitterType == EMITTER_RECT)
-    {
-        // TODO: add emitter angle support
+    {        
         float32 rand05_x = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
         float32 rand05_y = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
         float32 rand05_z = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
         Vector3 lineDirection(0, 0, 0);
         if(size)
-            lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
-        particle->position = tempPosition + lineDirection;
+            lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);		
+		//particle->position = tempPosition + lineDirection;
+        particle->position = tempPosition + TransformPerserveLength(lineDirection, rotationMatrix);
     }
 	else if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
 			 (emitterType == EMITTER_ONCIRCLE_EDGES))
@@ -185,7 +190,7 @@ void ParticleEmitter3D::CalculateParticlePositionForCircle(Particle* particle, c
 		directionVector = rotatedVector;
 	}
 		
-	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
+	particle->position = tempPosition + TransformPerserveLength(directionVector, rotationMatrix);	
 }
 	
 void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
@@ -208,7 +213,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 							curRadius * sinAngle,
 							0.0f);
 
-	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
+	particle->position = tempPosition + TransformPerserveLength(directionVector, rotationMatrix);	
 
 	particle->speed = velocity;
 
@@ -233,9 +238,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 	}
 
 	particle->direction = directionVector;
-	float dirLength = particle->direction.Length();
-	particle->direction*=(1.0f/dirLength);
-	particle->speed*=dirLength;
+	particle->direction.Normalize();
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
@@ -331,9 +334,12 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitter3D>(this), "Can clone only ParticleEmitter3D");
 		newObject = new ParticleEmitter3D();
 	}
-	
+	else
+	{
+		CleanupLayers();
+	}
+
 	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
-		
 	clonedEmitter->SetConfigPath(this->configPath);
 	clonedEmitter->SetPosition(this->position);
 	clonedEmitter->SetAngle(this->angle);
@@ -390,6 +396,7 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		}
 
 		clonedEmitter->AddLayer(clonedLayer);
+		SafeRelease(clonedLayer);
 	}
 
 	return newObject;

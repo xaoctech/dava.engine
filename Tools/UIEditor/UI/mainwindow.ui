@@ -240,6 +240,22 @@
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionAlign_Left"/>
+   <addaction name="actionAlign_Horz_Center"/>
+   <addaction name="actionAlign_Right"/>
+   <addaction name="actionAlign_Top"/>
+   <addaction name="actionAlign_Vert_Center"/>
+   <addaction name="actionAlign_Bottom"/>
+   <addaction name="separator"/>
+   <addaction name="actionEqualBetweenLeftEdges"/>
+   <addaction name="actionEqualBetweenXCenters"/>
+   <addaction name="actionEqualBetweenRightEdges"/>
+   <addaction name="actionEqualBetweenXObjects"/>
+   <addaction name="actionEqualBetweenTopEdges"/>
+   <addaction name="actionEqualBetweenYCenters"/>
+   <addaction name="actionEqualBetweenBottomEdges"/>
+   <addaction name="actionEqualBetweenYObjects"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="propertiesDockWidget">
@@ -499,6 +515,109 @@
    </property>
    <property name="toolTip">
     <string>Import existing platform</string>
+   </property>
+  </action>
+  <action name="actionAlign_Left">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_left.png</normaloff>:/Icons/align_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Left</string>
+   </property>
+   <property name="toolTip">
+    <string>Align Left</string>
+   </property>
+  </action>
+  <action name="actionAlign_Horz_Center">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_hcenter.png</normaloff>:/Icons/align_hcenter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Horz Center</string>
+   </property>
+   <property name="toolTip">
+    <string>Align Horizontal Center</string>
+   </property>
+  </action>
+  <action name="actionAlign_Right">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_right.png</normaloff>:/Icons/align_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Right</string>
+   </property>
+  </action>
+  <action name="actionAlign_Top">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_top.png</normaloff>:/Icons/align_top.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Top</string>
+   </property>
+  </action>
+  <action name="actionAlign_Vert_Center">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_vcenter.png</normaloff>:/Icons/align_vcenter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Vert Center</string>
+   </property>
+  </action>
+  <action name="actionAlign_Bottom">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/align_bottom.png</normaloff>:/Icons/align_bottom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Align Bottom</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenLeftEdges">
+   <property name="text">
+    <string>Eq Left</string>
+   </property>
+   <property name="toolTip">
+    <string>Equal Distance between Left Edges</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenXCenters">
+   <property name="text">
+    <string>Eq X Centers</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenRightEdges">
+   <property name="text">
+    <string>Eq Right</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenXObjects">
+   <property name="text">
+    <string>Eq X</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenTopEdges">
+   <property name="text">
+    <string>Eq Top</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenYCenters">
+   <property name="text">
+    <string>Eq Y Centers</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenBottomEdges">
+   <property name="text">
+    <string>Eq Bottom</string>
+   </property>
+  </action>
+  <action name="actionEqualBetweenYObjects">
+   <property name="text">
+    <string>Eq Y</string>
    </property>
   </action>
  </widget>

@@ -70,6 +70,11 @@ void CommandLineParser::SetArguments(const Vector<String> &arguments)
         params.push_back(String());
 }
 
+void CommandLineParser::AddArgument(const String & arg)
+{
+    flags.push_back(arg);
+    params.push_back(String());
+}
     
 void CommandLineParser::SetArguments(int argc, char * argv[])
 {
@@ -213,7 +218,7 @@ String CommandLineParser::GetCommandParamAdditional(const String &command, const
 int32 CommandLineParser::GetCommandsCount()
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    return commandLine.size();
+    return (int32)commandLine.size();
 }
 
 bool CommandLineParser::CheckPosition(int32 commandPosition)

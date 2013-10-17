@@ -48,7 +48,7 @@ class LodComponent;
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 
-RenderObject * GetRenderObject(Entity * fromEntity);
+RenderObject * GetRenderObject(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
@@ -58,6 +58,9 @@ Camera * GetCamera(Entity * fromEntity);
 LodComponent * GetLodComponent(Entity *fromEntity);
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
 void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
+
+Entity * FindLandscapeEntity(Entity * rootEntity);
+Landscape * FindLandscape(Entity * rootEntity);
 
 }
 

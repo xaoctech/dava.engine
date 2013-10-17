@@ -53,8 +53,11 @@ class Logger : public Singleton<Logger>
 public:
 	enum eLogLevel
 	{
-		//! Highest log level if it set all message printed out
-		LEVEL_DEBUG = 0,
+		//! Highest log level if it set all message printed out. Use it to separate framework logs from project logs
+		LEVEL_FRAMEWORK = 0,
+
+		//! Highest log level at project. If it set all message printed out. 
+		LEVEL_DEBUG,
 
 		//! Normal log level prints only message not related to debug
 		LEVEL_INFO,
@@ -108,18 +111,21 @@ public:
 	//! independent on what level filter is set, use ELL_NONE.
 	virtual void Log(eLogLevel ll, const char16* text, ...);
 	virtual void Logv(eLogLevel ll, const char16* text, va_list li);
-	
+
+	static void FrameworkDebug(const char8 * text, ...);
 	static void Debug(const char8 * text, ...);
 	static void Warning(const char8 * text, ...);
 	static void Info(const char8 * text, ...);
 	static void Error(const char8 * text, ...);
 
+	static void FrameworkDebug(const char16 * text, ...);
 	static void Debug(const char16 * text, ...);
 	static void Warning(const char16 * text, ...);
 	static void Info(const char16 * text, ...);
 	static void Error(const char16 * text, ...);
 
 	static void AddCustomOutput(DAVA::LoggerOutput *lo);
+	static void RemoveCustomOutput(DAVA::LoggerOutput *lo);
 
 #if defined(__DAVAENGINE_ANDROID__)
     static void SetTag(const char8 *logTag);

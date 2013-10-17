@@ -35,6 +35,9 @@ namespace DAVA
 {
 
 REGISTER_CLASS(UIScrollBar);
+
+//use these names for children controls to define UIScrollBar in .yaml
+static const String UISCROLLBAR_SLIDER_NAME = "slider";
 	
 UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientation, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -42,9 +45,7 @@ UIScrollBar::UIScrollBar(const Rect &rect, eScrollOrientation requiredOrientatio
 ,	orientation(requiredOrientation)
 ,   resizeSliderProportionally(true)
 {
-    slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
-    slider->SetInputEnabled(false, false);
-    AddControl(slider);
+	InitControls(rect);
 }
 
 UIScrollBar::~UIScrollBar()
@@ -62,6 +63,130 @@ UIControl *UIScrollBar::GetSlider()
     return slider;
 }
 
+void UIScrollBar::AddControl(UIControl *control)
+{
+	// Synchronize the pointers to the buttons each time new control is added.
+	UIControl::AddControl(control);
+
+	if (control->GetName() == UISCROLLBAR_SLIDER_NAME)
+	{
+		slider = control;
+	}
+}
+
+List<UIControl* >& UIScrollBar::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	
+	realChildren.remove(FindByName(UISCROLLBAR_SLIDER_NAME));
+
+	return realChildren;
+}
+
+List<UIControl* > UIScrollBar::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+
+	// Lookup for the contols by their names.
+	AddControlToList(subControls, UISCROLLBAR_SLIDER_NAME);
+
+	return subControls;
+}
+
+UIControl* UIScrollBar::Clone()
+{
+	UIScrollBar *t = new UIScrollBar(GetRect());
+	t->CopyDataFrom(this);
+	return t;
+}
+
+void UIScrollBar::CopyDataFrom(UIControl *srcControl)
+{
+    //release default buttons - they have to be copied from srcControl
+    RemoveControl(slider);
+ 	SafeRelease(slider);
+
+    UIControl::CopyDataFrom(srcControl);
+	
+	UIScrollBar* t = (UIScrollBar*) srcControl;
+	this->orientation = t->orientation;
+	this->resizeSliderProportionally = t->resizeSliderProportionally;
+	this->slider = t->slider->Clone();
+
+	AddControl(slider);
+}
+
+void UIScrollBar::InitControls(const Rect &rect)
+{
+	slider = new UIControl(Rect(0, 0, rect.dx, rect.dy));
+	slider->SetName(UISCROLLBAR_SLIDER_NAME);
+	slider->SetInputEnabled(false, false);
+   	AddControl(slider);
+}
+
+void UIScrollBar::LoadFromYamlNodeCompleted()
+{
+	slider = SafeRetain(FindByName(UISCROLLBAR_SLIDER_NAME));
+	if (!slider)
+	{
+		InitControls();
+	}
+}
+
+void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+{
+	RemoveControl(slider);
+	SafeRelease(slider);
+
+	UIControl::LoadFromYamlNode(node, loader);
+		
+	const YamlNode * orientNode = node->Get("orientation");
+	if (orientNode)
+	{
+		if (orientNode->AsString() == "ORIENTATION_VERTICAL")
+			orientation = ORIENTATION_VERTICAL;
+		else if (orientNode->AsString() == "ORIENTATION_HORIZONTAL")
+			orientation = ORIENTATION_HORIZONTAL;
+		else 
+		{
+			DVASSERT(0 && "Orientation constant is wrong");
+		}
+	}
+}
+
+YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+	//Temp variables
+	String stringValue;
+    
+	//Control Type
+	SetPreferredNodeType(node, "UIScrollBar");
+
+	//Orientation
+	eScrollOrientation orient = this->GetOrientation();
+	switch(orient)
+	{
+		case ORIENTATION_VERTICAL:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+		case ORIENTATION_HORIZONTAL:
+			stringValue = "ORIENTATION_HORIZONTAL";
+			break;
+		default:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+	}
+	node->Set("orientation", stringValue);
+	
+	// Slider have to be saved too.
+	YamlNode* sliderNode = slider->SaveToYamlNode(loader);
+	node->AddNodeToMap(UISCROLLBAR_SLIDER_NAME, sliderNode);
+    
+	return node;
+}
+
+
     
 void UIScrollBar::Input(UIEvent *currentInput)
 {
@@ -69,29 +194,83 @@ void UIScrollBar::Input(UIEvent *currentInput)
     {
         return;
     }
-    
-    if (currentInput->phase == UIEvent::PHASE_BEGAN
-        || currentInput->phase == UIEvent::PHASE_DRAG
-        || currentInput->phase == UIEvent::PHASE_ENDED)
+
+    if ((currentInput->phase == UIEvent::PHASE_BEGAN) ||
+		(currentInput->phase == UIEvent::PHASE_DRAG) ||
+		(currentInput->phase == UIEvent::PHASE_ENDED))
     {
+		if (currentInput->phase == UIEvent::PHASE_BEGAN)
+		{
+			startPoint = currentInput->point;
+			CalculateStartOffset(currentInput->point);
+		}
+
         float32 newPos;
-        const Rect &r = GetGeometricData().GetUnrotatedRect();
-        if(orientation == ORIENTATION_HORIZONTAL)
-        {
-            newPos = (currentInput->point.x - r.x - slider->size.x/2) * (delegate->TotalAreaSize(this) / size.x);
-        }
-        else 
-        {
-            newPos = (currentInput->point.y - r.y - slider->size.y/2) * (delegate->TotalAreaSize(this) / size.y);
-        }
-        
+		if(orientation == ORIENTATION_HORIZONTAL)
+		{
+			float32 centerOffsetX = (currentInput->point.x - startPoint.x);
+			newPos = (startOffset.x + centerOffsetX) * (delegate->TotalAreaSize(this) / size.x);
+
+		}
+		else
+		{
+			float32 centerOffsetY = (currentInput->point.y - startPoint.y);
+			newPos = (startOffset.y + centerOffsetY) * (delegate->TotalAreaSize(this) / size.y);
+		}
+
+		// Clamp.
         newPos = Min(Max(0.0f, newPos), delegate->TotalAreaSize(this) - delegate->VisibleAreaSize(this));
         
         delegate->OnViewPositionChanged(this, newPos);
     }
 }
 
-    
+void UIScrollBar::CalculateStartOffset(const Vector2& inputPoint)
+{
+    const Rect &r = GetGeometricData().GetUnrotatedRect();
+	Rect sliderRect = slider->GetRect();
+
+	if(orientation == ORIENTATION_HORIZONTAL)
+	{
+		if (((inputPoint.x - r.x) >= sliderRect.x) &&
+			((inputPoint.x - r.x) <= sliderRect.x + sliderRect.dx))
+		{
+			// The tap happened inside the slider - start "as is".
+			startOffset.x = (sliderRect.x - r.x);
+		}
+		else
+		{
+			// The tap happened outside of the slider - center the slider.
+			startOffset.x = (inputPoint.x - r.x - slider->size.x/2);
+		}
+	}
+	else
+	{
+		// The same with Y.
+		if (((inputPoint.y - r.y) >= sliderRect.y) &&
+			((inputPoint.y - r.y) <= sliderRect.y + sliderRect.dy))
+		{
+			// The tap happened inside the slider - start "as is".
+			startOffset.y = (sliderRect.y - r.y);
+		}
+		else
+		{
+			// The tap happened outside of the slider - center the slider.
+			startOffset.y = (inputPoint.y - r.y - slider->size.y/2);
+		}
+	}
+	
+	if (startOffset.x < 0.0f)
+	{
+		startOffset.x = 0.0f;
+	}
+	
+	if (startOffset.y < 0.0f)
+	{
+		startOffset.y = 0.0f;
+	}
+}
+	
 void UIScrollBar::Draw(const UIGeometricData &geometricData)
 {
     if (delegate) 
@@ -106,10 +285,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.y = size.y * (visibleArea / totalSize);
-                    if (slider->size.y < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.y = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.y = GetValidSliderSize(slider->size.y);
                     if (slider->size.y >= size.y) 
                     {
                         slider->SetVisible(false, true);
@@ -129,6 +305,10 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 else if(slider->relativePosition.y + slider->size.y > size.y)
                 {
                     slider->size.y = size.y - slider->relativePosition.y;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.y = GetValidSliderSize(slider->size.y);
+					slider->relativePosition.y = size.y - slider->size.y;
                 }
 
             }
@@ -138,10 +318,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.x = size.x * (visibleArea / totalSize);
-                    if (slider->size.x < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.x = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.x = GetValidSliderSize(slider->size.x);
                     if (slider->size.x >= size.x) 
                     {
                         slider->SetVisible(false, true);
@@ -160,6 +337,10 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 else if(slider->relativePosition.x + slider->size.x > size.x)
                 {
                     slider->size.x = size.x - slider->relativePosition.x;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.x = GetValidSliderSize(slider->size.x);
+					slider->relativePosition.x = size.x - slider->size.x;
                 }
             }
                 break;
@@ -176,6 +357,11 @@ UIScrollBar::eScrollOrientation UIScrollBar::GetOrientation() const
 void UIScrollBar::SetOrientation(eScrollOrientation value)
 {
 	orientation = value;
+}
+
+float32 UIScrollBar::GetValidSliderSize(float32 size)
+{
+	return (size < MINIMUM_SLIDER_SIZE) ? MINIMUM_SLIDER_SIZE : size;
 }
 
 };

@@ -73,6 +73,7 @@ ParticleLayer::ParticleLayer()
 	spin = 0;			
 	spinVariation = 0;
 	spinOverLife = 0;
+	animSpeedOverLife = 0;
 	randomSpinDirection = false;
 
 	motionRandom = 0;		
@@ -95,7 +96,10 @@ ParticleLayer::ParticleLayer()
 
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
-	additive = true;
+	srcBlendFactor = BLEND_SRC_ALPHA;
+	dstBlendFactor = BLEND_ONE;
+	enableFog = true;
+	enableFrameBlend = false;
 	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
@@ -110,6 +114,12 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeEnabled = false;
 	frameOverLifeFPS = 0;
 	randomFrameOnStart = false;
+	loopSpriteAnimation = true;
+
+	scaleVelocityBase = 1;
+	scaleVelocityFactor = 0;
+
+	particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
 
     isDisabled = false;
 	isLooped = false;
@@ -136,9 +146,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 {
 	if(!dstLayer)
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleLayer>(this), "Can clone only ParticleLayer");
 		dstLayer = new ParticleLayer();
 	}
-	
+
 	if (life)
 		dstLayer->life.Set(life->Clone());
 	
@@ -170,10 +181,12 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 		dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
 
 	// Copy the forces.
+	dstLayer->CleanupForces();
 	for (int32 f = 0; f < (int32)forces.size(); ++ f)
 	{
 		ParticleForce* clonedForce = new ParticleForce(this->forces[f]);
 		dstLayer->AddForce(clonedForce);
+		clonedForce->Release();
 	}
 
 	if (spin)
@@ -185,6 +198,9 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (spinOverLife)
 		dstLayer->spinOverLife.Set(spinOverLife->Clone());
 	dstLayer->randomSpinDirection = randomSpinDirection;
+
+	if (animSpeedOverLife)
+		dstLayer->animSpeedOverLife.Set(animSpeedOverLife->Clone());
 
 	
 	if (motionRandom)
@@ -220,12 +236,15 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (angleVariation)
 		dstLayer->angleVariation.Set(angleVariation->Clone());
 
+	SafeRelease(dstLayer->innerEmitter);
 	if (innerEmitter)
 		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
 
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
-	dstLayer->SetAdditive(additive);
+	dstLayer->SetBlendMode(srcBlendFactor, dstBlendFactor);
+	dstLayer->SetFog(enableFog);
+	dstLayer->SetFrameBlend(enableFrameBlend);
 	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
@@ -238,12 +257,18 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->loopEndTime = loopEndTime;
 	
 	dstLayer->type = type;
+	SafeRelease(dstLayer->sprite);
 	dstLayer->sprite = SafeRetain(sprite);
 	dstLayer->layerPivotPoint = layerPivotPoint;	
 
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 	dstLayer->randomFrameOnStart = randomFrameOnStart;
+	dstLayer->loopSpriteAnimation = loopSpriteAnimation;
+	dstLayer->particleOrientation = particleOrientation;
+
+	dstLayer->scaleVelocityBase = scaleVelocityFactor;
+	dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
@@ -254,7 +279,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 bool ParticleLayer::IsLodActive(int32 lod)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		return activeLODS[lod];
 	
 	return false;
@@ -262,7 +287,7 @@ bool ParticleLayer::IsLodActive(int32 lod)
 
 void ParticleLayer::SetLodActive(int32 lod, bool active)
 {
-	if (lod<activeLODS.size())
+	if ((lod>=0)&&(lod<activeLODS.size()))
 		activeLODS[lod] = active;
 }
 
@@ -544,8 +569,9 @@ void ParticleLayer::RestartLayerIfNeed()
 
 void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 {
-	// increment timer, take the playbackSpeed into account.
-	timeElapsed *= playbackSpeed;
+	// it is already multiplied by playbackSpeed in Emitter
+	//timeElapsed *= playbackSpeed;
+
 	layerTime += timeElapsed;
 	loopLayerTime += timeElapsed;
 	
@@ -579,7 +605,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 					count--;
 				}else
 				{
-					ProcessParticle(current);
+					ProcessParticle(current, timeElapsed);
 					prev = current;
 				}
 
@@ -657,7 +683,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 				}
 				else
 				{
-					ProcessParticle(head);
+					ProcessParticle(head, timeElapsed);
 				}
             }
 			
@@ -714,20 +740,21 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		particle->lifeTime += (lifeVariation->GetValue(layerTime) * randCoeff);
 	
 	// size 
-	particle->size = Vector2(0.0f, 0.0f); 
+	particle->size = Vector2(1.0f, 1.0f); 
 	if (size)
 		particle->size = size->GetValue(layerTime);
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	if(sprite)
+	if(sprite && (type!=TYPE_SUPEREMITTER_PARTICLES)) //don't update for super emitter particle even if they have old sprite
 	{
 		particle->size.x /= (float32)sprite->GetWidth();
 		particle->size.y /= (float32)sprite->GetHeight();
-	}
-	else
-	{
-		particle->size = Vector2(0, 0);
+	}	
+
+	if (emitter->parentParticle){
+		particle->size.x*=emitter->parentParticle->size.x;
+		particle->size.y*=emitter->parentParticle->size.y;
 	}
 
 	float32 vel = 0.0f;
@@ -829,19 +856,22 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
     
 	particle->frame = 0;
+	particle->animTime = 0;
 	if (randomFrameOnStart&&sprite)
 	{
 		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
 	}	
 	
 	// process it to fill first life values
-	ProcessParticle(particle);
+	ProcessParticle(particle, 0);
 
 	// go to life
 	RunParticle(particle);
 }
 
-void ParticleLayer::ProcessParticle(Particle * particle)
+
+
+void ParticleLayer::ProcessParticle(Particle * particle, float32 timeElapsed)
 {
 	float32 t = particle->life / particle->lifeTime;
 	if (sizeOverLifeXY)
@@ -865,21 +895,28 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		particle->drawColor = particle->color*emitter->ambientColor;
 	}
 
-	// Frame Overlife FPS defines how many frames should be displayed in a second.
-	// This property is cycled - if we reached the last frame, we'll update to the new one.
-	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
+	// Frame Overlife FPS defines how many frames should be displayed in a second.	
+	if (frameOverLifeEnabled)
 	{
-		float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
-		if (timeElapsed > (1 / frameOverLifeFPS))
+		float32 animDelta = timeElapsed*frameOverLifeFPS;
+		if (animSpeedOverLife)
+			animDelta*=animSpeedOverLife->GetValue(t);
+		particle->animTime+=animDelta;
+
+		while (particle->animTime>1.0f)
 		{
 			particle->frame ++;
 			// Spright might not be loaded (see please DF-1661).
 			if (!this->sprite || particle->frame >= this->sprite->GetFrameCount())
 			{
-				particle->frame = 0;
+				if (loopSpriteAnimation)
+					particle->frame = 0;					
+				else
+					particle->frame = this->sprite->GetFrameCount()-1;
+					
 			}
 
-			particle->frameLastUpdateTime = particle->life;
+			particle->animTime -= 1.0f;
 		}
 	}
     
@@ -899,15 +936,9 @@ void ParticleLayer::PrepareRenderData(Camera * camera)
 }
 
 void ParticleLayer::Draw(Camera * camera)
-{
-	if (additive)
-	{
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
-	}
-	else 
-	{
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-	}
+{	
+
+	RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
 
 	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)
@@ -1023,11 +1054,35 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	{
 		randomFrameOnStart = randomFrameOnStartNode->AsBool();
 	}
+	const YamlNode* loopSpriteAnimationNode = node->Get("loopSpriteAnimation");
+	if (loopSpriteAnimationNode)
+	{
+		loopSpriteAnimation = loopSpriteAnimationNode->AsBool();
+	}
+
+	const YamlNode* particleOrientationNode = node->Get("particleOrientation");
+	if (particleOrientationNode)
+	{
+		particleOrientation = particleOrientationNode->AsInt32();
+	}
+
 
 	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
 	if (frameOverLifeFPSNode)
 	{
 		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
+	}
+
+	const YamlNode* scaleVelocityBaseNode = node->Get("scaleVelocityBase");
+	if (scaleVelocityBaseNode)
+	{
+		scaleVelocityBase = scaleVelocityBaseNode->AsFloat();
+	}
+
+	const YamlNode* scaleVelocityFactorNode = node->Get("scaleVelocityFactor");
+	if (scaleVelocityFactorNode)
+	{
+		scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
 	}
 
 	life = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "life");	
@@ -1086,6 +1141,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
 	spinVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinVariation");	
 	spinOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinOverLife");	
+	animSpeedOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "animSpeedOverLife");	
 	const YamlNode* randomSpinDirectionNode = node->Get("randomSpinDirection");
 	if (randomSpinDirectionNode)
 	{
@@ -1096,15 +1152,38 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	motionRandomVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomVariation");	
 	motionRandomOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomOverLife");	
 
-
+	//read blend node for backward compatibility with old effect files
 	const YamlNode * blend = node->Get("blend");
 	if (blend)
 	{
 		if (blend->AsString() == "alpha")
-			additive = false;
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		if (blend->AsString() == "add")
-			additive = true;
+			SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
 	}
+	
+	//or set blending factors directly
+	const YamlNode * blendSrcNode = node->Get("srcBlendFactor");
+	const YamlNode * blendDestNode = node->Get("dstBlendFactor");
+	if(blendSrcNode && blendDestNode)
+	{
+		eBlendMode newBlendScr = GetBlendModeByName(blendSrcNode->AsString());
+		eBlendMode newBlendDest = GetBlendModeByName(blendDestNode->AsString());
+		SetBlendMode(newBlendScr, newBlendDest);
+	}
+
+	const YamlNode * fogNode = node->Get("enableFog");
+	if (fogNode)
+	{
+		SetFog(fogNode->AsBool());
+	}
+
+	const YamlNode * frameBlendNode = node->Get("enableFrameBlend");	
+	if (frameBlendNode)
+	{
+		SetFrameBlend(frameBlendNode->AsBool());
+	}
+	
 
 	const YamlNode * alignToMotionNode = node->Get("alignToMotion");
 	if (alignToMotionNode)
@@ -1209,6 +1288,16 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
         relativePath.substr(0, relativePath.size()-4));
 
+
+	layerNode->Add("srcBlendFactor", BLEND_MODE_NAMES[(int32)srcBlendFactor]);
+	layerNode->Add("dstBlendFactor", BLEND_MODE_NAMES[(int32)dstBlendFactor]);
+
+	layerNode->Add("enableFog", enableFog);	
+	layerNode->Add("enableFrameBlend", enableFrameBlend);	
+
+	layerNode->Add("scaleVelocityBase", scaleVelocityBase);
+	layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
@@ -1225,6 +1314,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spin", this->spin);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinVariation", this->spinVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinOverLife", this->spinOverLife);
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "animSpeedOverLife", this->animSpeedOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomSpinDirection", this->randomSpinDirection);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandom", this->motionRandom);
@@ -1245,9 +1335,9 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "loopSpriteAnimation", this->loopSpriteAnimation);
 
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);    
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
@@ -1261,6 +1351,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
 
 	layerNode->Set("inheritPosition", inheritPosition);	
+
+	layerNode->Set("particleOrientation", particleOrientation);
 
 	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
 	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
@@ -1330,7 +1422,46 @@ void ParticleLayer::UpdateFrameTimeline()
 	
 void ParticleLayer::SetAdditive(bool additive)
 {
-	this->additive = additive;
+	if (additive)
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
+	else
+		SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+}
+bool ParticleLayer::GetAdditive() const
+{
+	return  (srcBlendFactor == BLEND_SRC_ALPHA) && (dstBlendFactor == BLEND_ONE);
+}
+
+void ParticleLayer::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
+{
+	srcBlendFactor = sFactor;
+	dstBlendFactor = dFactor;
+}
+eBlendMode ParticleLayer::GetBlendSrcFactor()
+{
+	return srcBlendFactor;
+}
+eBlendMode ParticleLayer::GetBlendDstFactor()
+{
+	return dstBlendFactor;
+}
+
+void ParticleLayer::SetFog(bool enable)
+{
+	enableFog = enable;
+}
+bool ParticleLayer::IsFogEnabled()
+{
+	return enableFog;
+}
+
+void ParticleLayer::SetFrameBlend(bool enable)
+{
+	enableFrameBlend = enable;
+}
+bool ParticleLayer::IsFrameBlendEnabled()
+{
+	return enableFrameBlend;
 }
 
 void ParticleLayer::SetInheritPosition(bool inherit)
@@ -1511,12 +1642,14 @@ void ParticleLayer::UpdatePlaybackSpeedForInnerEmitters(float value)
 		
 		current = current->next;
 	}
+	if (innerEmitter)
+		innerEmitter->SetPlaybackSpeed(value);
 }
 
 void ParticleLayer::CreateInnerEmitter()
 {
 	SafeRelease(innerEmitter);
-	innerEmitter = new ParticleEmitter();
+	innerEmitter = new ParticleEmitter();	
 }
 
 ParticleEmitter* ParticleLayer::GetInnerEmitter()

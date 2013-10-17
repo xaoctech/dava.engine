@@ -182,7 +182,7 @@ void PolygonGroupWithMaterial::Draw()
 MeshInstanceNode::MeshInstanceNode()
 :	Entity()
 {
-    //Logger::Debug("MeshInstance: %p", this);
+    //Logger::FrameworkDebug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
     
     //RenderComponent * renderComponent = new RenderComponent();
@@ -205,7 +205,7 @@ MeshInstanceNode::~MeshInstanceNode()
     
     SafeRelease(materialState);
 
-    //Logger::Debug("~MeshInstance: %p", this);
+    //Logger::FrameworkDebug("~MeshInstance: %p", this);
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -774,7 +774,7 @@ void MeshInstanceNode::BakeTransforms()
     bool canBakeEverything = true;
     for (int k = 0; k < (int32)polygroups.size(); ++k)
     {
-        //Logger::Debug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
+        //Logger::FrameworkDebug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
      
         StaticMesh * mesh = polygroups[k]->GetMesh();
         PolygonGroup * polygroup = polygroups[k]->GetPolygonGroup();

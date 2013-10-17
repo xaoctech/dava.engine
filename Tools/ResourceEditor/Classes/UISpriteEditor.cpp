@@ -79,7 +79,7 @@ void UISpriteEditor::LoadFromYamlNodeCompleted()
 	
 	frameSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &UISpriteEditor::OnCurrentFrameChanged));
 	float32 value = frameSlider->GetValue();
-	Logger::Debug("%f", value);
+	Logger::FrameworkDebug("%f", value);
 	frameSlider->SetValue(0.0f);
 	//frameSlider->SetEventsContinuos(false);
 	//Rect rect = GetRect();

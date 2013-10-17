@@ -136,8 +136,11 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			aggregatorControl->RemoveControl(child);
 		}*/
 
+		// TODO! Yuri Coder, 2013/10/09. This method causes problems when aggregator control has its own
+		// children. Adding children to aggregator is disabled because of DF-2163.
 		aggregatorControl->RemoveAllControls();
-		
+		aggregatorControl->SetSize(rect.GetSize());
+
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
@@ -173,10 +176,12 @@ bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 
 bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
+	// DF-2164 - Get proper relative path for aggregator
+	String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 	// Always update aggregator path if it is empty while save
 	if (this->path.IsEmpty())
 	{
-		this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+		this->path = aggregatorPath;
 	}
 	
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
@@ -188,8 +193,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		if (!aggregatorControl)
 			continue;
 
-		String aggregatorName = FilePath(path.toStdString()).GetFilename();
-		aggregatorControl->SetAggregatorPath(aggregatorName);
+		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	
 	node->Set(WIDTH_NODE, (int32)rect.dx);
@@ -240,7 +244,7 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
 
-	if (uiAggregator && uiAggregator->GetAggregatorPath().GetAbsolutePathname().compare(path.GetFilename()) == 0)
+	if (uiAggregator && uiAggregator->GetAggregatorPath() == path)
 	{
 		Logger::Debug(uiAggregator->GetAggregatorPath().GetAbsolutePathname().c_str());
 		HIERARCHYTREENODESLIST childs = node->GetChildNodes();

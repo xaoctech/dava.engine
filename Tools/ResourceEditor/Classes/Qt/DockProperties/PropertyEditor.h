@@ -47,19 +47,21 @@ public:
 	PropertyEditor(QWidget *parent = 0, bool connectToSceneSignals = true);
 	~PropertyEditor();
 
-	void SetNode(DAVA::Entity *node);
+	virtual void SetNode(DAVA::Entity *node);
 	void SetAdvancedMode(bool set);
 
 protected:
     QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::InspInfo * info);
-    
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
-	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	
 	void actionShowAdvanced();
+	void EditActionComponent();
 
 protected:
 	bool advancedMode;

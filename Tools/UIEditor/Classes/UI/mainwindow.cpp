@@ -46,6 +46,7 @@
 #include "ResourcesManageHelper.h"
 #include "Dialogs/importdialog.h"
 #include "ImportCommands.h"
+#include "AlignDistribute/AlignDistributeEnums.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -621,6 +622,26 @@ void MainWindow::InitMenu()
 	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
 	connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedoRequested()));
 
+	// Align.
+	connect(ui->actionAlign_Left, SIGNAL(triggered()), this, SLOT(OnAlignLeft()));
+	connect(ui->actionAlign_Horz_Center, SIGNAL(triggered()), this, SLOT(OnAlignHorzCenter()));
+	connect(ui->actionAlign_Right, SIGNAL(triggered()),this, SLOT(OnAlignRight()));
+
+	connect(ui->actionAlign_Top, SIGNAL(triggered()), this, SLOT(OnAlignTop()));
+	connect(ui->actionAlign_Vert_Center, SIGNAL(triggered()), this, SLOT(OnAlignVertCenter()));
+	connect(ui->actionAlign_Bottom, SIGNAL(triggered()), this, SLOT(OnAlignBottom()));
+
+	// Distribute.
+	connect(ui->actionEqualBetweenLeftEdges , SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenLeftEdges ()));
+	connect(ui->actionEqualBetweenXCenters, SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenXCenters()));
+	connect(ui->actionEqualBetweenRightEdges, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenRightEdges()));
+	connect(ui->actionEqualBetweenXObjects, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenX()));
+
+	connect(ui->actionEqualBetweenTopEdges , SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenTopEdges()));
+	connect(ui->actionEqualBetweenYCenters, SIGNAL(triggered()), this, SLOT(OnDistributeEqualDistanceBetweenYCenters()));
+	connect(ui->actionEqualBetweenBottomEdges, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenBottomEdges()));
+	connect(ui->actionEqualBetweenYObjects, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenY()));
+
 	UpdateMenu();
 }
 
@@ -1032,4 +1053,74 @@ void MainWindow::ScrollToScenePositionAndPoint(const Vector2& scenePosition, con
 	
 	ui->horizontalScrollBar->setValue(newHScrollValue);
 	ui->verticalScrollBar->setValue(newVScrollValue);
+}
+
+void MainWindow::OnAlignLeft()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_LEFT);
+}
+
+void MainWindow::OnAlignHorzCenter()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_HORZ_CENTER);
+}
+
+void MainWindow::OnAlignRight()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_RIGHT);
+}
+
+void MainWindow::OnAlignTop()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_TOP);
+}
+
+void MainWindow::OnAlignVertCenter()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_VERT_CENTER);
+}
+
+void MainWindow::OnAlignBottom()
+{
+	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_BOTTOM);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenLeftEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_LEFT_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenXCenters()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X_CENTERS);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenRightEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_RIGHT_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenX()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_X);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenTopEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_TOP_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenYCenters()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y_CENTERS);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenBottomEdges()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_BOTTOM_EDGES);
+}
+
+void MainWindow::OnDistributeEqualDistanceBetweenY()
+{
+	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y);
 }

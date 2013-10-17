@@ -44,18 +44,18 @@
 #define INIT_PROPERTY(propertyName, getter, rowName, handlerName) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
 	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
-	propertiesMap.push_back(PropertyInfo(propertyName, DAVA::VariantType(getter)));
-	//propertiesMap[propertyName] = DAVA::VariantType(getter);
+	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter)));
 
 #define INIT_PROPERTY_WITH_BTN(propertyName, propertyNameBtn, getter, rowName, handlerName,drawStateMap) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
 	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
-	propertiesMap.push_back(PropertyInfo(propertyName, DAVA::VariantType(getter), &drawStateMap));\
+	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter), &drawStateMap));\
 	propertyName->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);\
 	QPushButton * propertyNameBtn = CreatePushBtn();\
 	propertyName->AddOW(QtPropertyOW(propertyNameBtn));\
-	QObject::connect(propertyNameBtn, SIGNAL(pressed()), this, SLOT(ShowDialog()));\
-	buttonsMap[propertyNameBtn] = propertiesMap.back();
+	QObject::connect(propertyNameBtn, SIGNAL(clicked()), this, SLOT(ShowDialog()));\
+	buttonsMap[propertyNameBtn] = propertiesMap.back();\
+	propertyName->AddAllowedValue(DAVA::VariantType(getter), ResolveMapToString(drawStateMap).c_str());
 
 #define ST_COLL_DRAW_NOTHING_NAME			"Draw nothing"
 #define ST_COLL_DRAW_OBJECTS_NAME			"Draw objects"
@@ -105,11 +105,6 @@ SystemsSettingsEditor::SystemsSettingsEditor( QWidget* parent)
 		:QtPropertyEditor(parent)
 {
 	sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-	if (NULL ==sceneEditor)
-	{
-		return;
-	}
-	
 	InitializeProperties();
 	expandAll();
 	resizeColumnToContents(0);
@@ -130,26 +125,7 @@ void SystemsSettingsEditor::InitializeProperties()
 {
 	QtPropertyItem *header = NULL;
 	
-	ADD_HEADER("Custom color settings:");
-	INIT_PROPERTY(brushSizeProp, sceneEditor->customColorsSystem->GetBrushSize(), "Brush size", HandleCustomColorBrushSize());
-	
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
-	INIT_PROPERTY(brushColorProp, customColors[0], "Color", HandleCustomColorColorIndex());
-	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[0]), customColorsDescription[0].c_str());
-	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[1]), customColorsDescription[1].c_str());
-	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[2]), customColorsDescription[2].c_str());
-	
-	ADD_HEADER("Render system settings:");
-	INIT_PROPERTY(renderSysShadowRectColor, sceneEditor->renderSystem->GetShadowRectColor(), "Shadow rect color", HandleRenderShadowRectColor());
-	
-	ADD_HEADER("Camera system settings:");
-	INIT_PROPERTY(camSysMoveSpeed, sceneEditor->cameraSystem->GetMoveSpeed(), "Move speed", HandleCameraMoveSpeed());
-	Rect rect = sceneEditor->cameraSystem->GetViewportRect();
-	INIT_PROPERTY(camSysViewportRect, DAVA::Matrix2(rect.x, rect.y, rect.dx,rect.dy), "Viewport rect", HandleCameraViewportRect());
-	
 	ADD_HEADER("Collision system settings:");
-	
 	collisionSysDrawStateMap[ST_COLL_DRAW_NOTHING_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_NOTHING, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_OBJECTS_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_OBJECTS, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_OBJECTS_SELECTED_NAME]= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_OBJECTS_SELECTED, false);
@@ -158,80 +134,23 @@ void SystemsSettingsEditor::InitializeProperties()
 	collisionSysDrawStateMap[ST_COLL_DRAW_LAND_RAYTEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_LAND_RAYTEST, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_LAND_COLLISION_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_LAND_COLLISION, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_ALL_NAME]				= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_ALL, false);
-	InitMapWithFlag(collisionSysDrawStateMap, sceneEditor->collisionSystem->GetDebugDrawFlags());
-	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn, ResolveMapToString(collisionSysDrawStateMap), "Collision draw mode", HandleCollisionDrawMode(),collisionSysDrawStateMap);
+	int debugDrawFlags = sceneEditor->collisionSystem->GetDebugDrawFlags();
+	InitMapWithFlag(&collisionSysDrawStateMap, debugDrawFlags);
+	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn, debugDrawFlags, "Collision draw mode", HandleCollisionDrawMode(),collisionSysDrawStateMap);
 
 	ADD_HEADER("Selection system settings:");
-	
 	selectionSysDrawStateMap[ST_SELDRAW_NOTHING_NAME]		= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NOTHING, false);
 	selectionSysDrawStateMap[ST_SELDRAW_DRAW_SHAPE_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_DRAW_SHAPE, false);
 	selectionSysDrawStateMap[ST_SELDRAW_DRAW_CORNERS_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_DRAW_CORNERS, false);
 	selectionSysDrawStateMap[ST_SELDRAW_FILL_SHAPE_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_FILL_SHAPE, false);
 	selectionSysDrawStateMap[ST_SELDRAW_NO_DEEP_TEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NO_DEEP_TEST, false);
 	selectionSysDrawStateMap[ST_SELDRAW_ALL_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_ALL, false);
-	InitMapWithFlag(selectionSysDrawStateMap, sceneEditor->selectionSystem->GetDrawMode());
-	
-	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, ResolveMapToString(selectionSysDrawStateMap), "Draw mode", HandleSelectionDrawMode(),selectionSysDrawStateMap);
-	INIT_PROPERTY(selectionPivotPoint, sceneEditor->selectionSystem->GetPivotPoint(), "Pivot point", HandlePivotPoint());
-	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_ENTITY_CENTER), ST_PIVOT_ENTITY_CENTER_NAME);
-	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_COMMON_CENTER), ST_PIVOT_COMMON_CENTER_NAME);
-	
-	ADD_HEADER("Hood system settings:");
-	INIT_PROPERTY(hoodSysModifMode, sceneEditor->hoodSystem->GetModifMode(), "Modif. mode", HandleHoodModifMode());
-	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_OFF), ST_MODIF_OFF_NAME);
-	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_MOVE), ST_MODIF_MOVE_NAME);
-	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_ROTATE), ST_MODIF_ROTATE_NAME);
-	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_SCALE), ST_MODIF_SCALE_NAME);
-	INIT_PROPERTY(hoodSysPosition, sceneEditor->hoodSystem->GetPosition(), "Position", HandleHoodPosition());
-	INIT_PROPERTY(hoodModifAxis, sceneEditor->hoodSystem->GetModifAxis(), "Modif. axis", HandleHoodModifAxis());
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_NONE), ST_AXIS_NONE_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_X), ST_AXIS_X_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_Y), ST_AXIS_Y_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_Z), ST_AXIS_Z_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_XY), ST_AXIS_XY_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_XZ), ST_AXIS_XZ_NAME);
-	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_YZ), ST_AXIS_YZ_NAME);
-	INIT_PROPERTY(hoodScale, sceneEditor->hoodSystem->GetScale(), "Scale", HandleHoodScale());
-	
+	InitMapWithFlag(&selectionSysDrawStateMap, sceneEditor->selectionSystem->GetDrawMode());
+	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, sceneEditor->selectionSystem->GetDrawMode(), "Draw mode", HandleSelectionDrawMode(),selectionSysDrawStateMap);
 
-	ADD_HEADER("Entity Modification system settings:");
-	INIT_PROPERTY(entitySysModifMode, sceneEditor->modifSystem->GetModifMode(), "Modif. mode", HandleEntityModifMode());
-	entitySysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_OFF), ST_MODIF_OFF_NAME);
-	entitySysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_MOVE), ST_MODIF_MOVE_NAME);
-	entitySysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_ROTATE), ST_MODIF_ROTATE_NAME);
-	entitySysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_SCALE), ST_MODIF_SCALE_NAME);
-	INIT_PROPERTY(entityModifAxis, sceneEditor->modifSystem->GetModifAxis(), "Modif. axis", HandleEntityModifAxis());
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_NONE), ST_AXIS_NONE_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_X), ST_AXIS_X_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_Y), ST_AXIS_Y_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_Z), ST_AXIS_Z_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_XY), ST_AXIS_XY_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_XZ), ST_AXIS_XZ_NAME);
-	entityModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_YZ), ST_AXIS_YZ_NAME);
-	INIT_PROPERTY(entityLandscapeSnap, sceneEditor->modifSystem->GetLandscapeSnap(), "LandscapeSnap", HandleEntityLandscapeSnap());
-	
-	ADD_HEADER("Heightmap system settings:");
-	INIT_PROPERTY(hightmapSysBrushSize, sceneEditor->heightmapEditorSystem->GetBrushSize(), "Brush size", HandleHightmapBrushSize());
-	INIT_PROPERTY(hightmapSysStrength, sceneEditor->heightmapEditorSystem->GetStrength(), "Strength", HandleHightmapStrength());
-	INIT_PROPERTY(hightmapSysAverageStrength, sceneEditor->heightmapEditorSystem->GetAverageStrength(), "AverageStrength", HandleHightmapAverageStrength());
-	INIT_PROPERTY(hightmapSysDrawingType, sceneEditor->heightmapEditorSystem->GetDrawingType(), "GetDrawingType", HandleHightmapDrawingType());
-	hightmapSysDrawingType->AddAllowedValue(DAVA::VariantType(HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE),	HEIGHTMAP_DRAW_RELATIVE_NAME);
-	hightmapSysDrawingType->AddAllowedValue(DAVA::VariantType(HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE),	HEIGHTMAP_DRAW_AVERAGE_NAME);
-	hightmapSysDrawingType->AddAllowedValue(DAVA::VariantType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER), HEIGHTMAP_DRAW_ABS_DROPPER_NAME);
-	hightmapSysDrawingType->AddAllowedValue(DAVA::VariantType(HeightmapEditorSystem::HEIGHTMAP_DROPPER),		HEIGHTMAP_DRAW_DROPPER_NAME);
-	hightmapSysDrawingType->AddAllowedValue(DAVA::VariantType(HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE),		HEIGHTMAP_DRAW_COPY_PASTE_NAME);
-	
-	ADD_HEADER("TilemaskEditor system settings:");
-	INIT_PROPERTY(tileMaskSysBrushSize, sceneEditor->tilemaskEditorSystem->GetBrushSize(), "Brush size", HandleTileMaskBrushSize());
-	INIT_PROPERTY(tileMaskSysStrength, sceneEditor->tilemaskEditorSystem->GetStrength(), "Strength", HandleTileMaskStrength());
-	INIT_PROPERTY(tileMaskSysTileTextureIndex, sceneEditor->tilemaskEditorSystem->GetTileTextureIndex(), "TileTextureIndex", HandleTileTextureIndex());
-	
-	ADD_HEADER("VisibilityTool system settings:");
-	INIT_PROPERTY(visibToolSysBrushSize, sceneEditor->visibilityToolSystem->GetBrushSize(), "Brush size", HandleVisibToolBrushSize());
-	
-	ADD_HEADER("EditorLight system settings:");
-	bool tt = sceneEditor->editorLightSystem->GetCameraLightEnabled();
-	INIT_PROPERTY(editorLightSysCameraLightEnabled, sceneEditor->editorLightSystem->GetCameraLightEnabled(), "Camera light enabled", HandleLightCameraEnbled());
+	ADD_HEADER("Grid system settings:");
+	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax());
+	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep());
 }
 
 void SystemsSettingsEditor::RestoreInitialSettings()
@@ -239,38 +158,47 @@ void SystemsSettingsEditor::RestoreInitialSettings()
 	for (DAVA::List<PropertyInfo>::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
 	{
 		QtPropertyDataDavaVariant* property = it->property;
-		property->SetVariantValue(it->defaultValue);
-		//to emit value changed event
-		property->SetValue(property->FromDavaVariant(it->defaultValue));
+		STATE_FLAGS_MAP *  map = it->flagsMap;
+		if(NULL != map)
+		{
+			InitMapWithFlag(map, it->defaultValue.toInt());
+		}
+		this->model()->blockSignals(true);
+		property->SetValue(it->defaultValue);
+		this->model()->blockSignals(false);
 	}
 }
 
-void SystemsSettingsEditor::InitMapWithFlag(STATE_FLAGS_MAP& map, DAVA::uint32 value)
+void SystemsSettingsEditor::InitMapWithFlag(STATE_FLAGS_MAP* map, DAVA::uint32 value)
 {
-	for(STATE_FLAGS_MAP::iterator it = map.begin(); it !=  map.end(); ++it)
+	bool setAllFalse = false;
+	for(STATE_FLAGS_MAP::iterator it = map->begin(); it !=  map->end(); ++it)
 	{
 		DAVA::uint32 flag = it->second.first;
-		
-		if(value==0 && flag == 0)
+				
+		if(flag == 0)
 		{
-			it->second.second = true;
-			break;
+			if(value==0 )
+			{
+				SetAllCheckedToFalse(map);
+				it->second.second = true;
+				break;
+			}
+			it->second.second = false;
 		}
 		
 		if(flag == std::numeric_limits<DAVA::uint32>::max() )//FF...
 		{
 			if(flag == value)
-			{
+			{				
+				SetAllCheckedToFalse(map);
 				it->second.second = true;
 				break;
 			}
+			it->second.second = false;
 			continue;
 		}
-		
-		if(flag & value)
-		{
-			it->second.second = true;
-		}
+		it->second.second = flag & value;
 	}
 }
 
@@ -289,6 +217,14 @@ DAVA::String SystemsSettingsEditor::ResolveMapToString(STATE_FLAGS_MAP& map)
 		}
 	}
 	return retValue;
+}
+
+void SystemsSettingsEditor::SetAllCheckedToFalse(STATE_FLAGS_MAP* map)
+{
+	for(STATE_FLAGS_MAP::iterator it = map->begin(); it !=  map->end(); ++it)
+	{
+		it->second.second = false;
+	}
 }
 
 DAVA::uint32 SystemsSettingsEditor::ResolveMapToUint(STATE_FLAGS_MAP& map)
@@ -318,7 +254,7 @@ void SystemsSettingsEditor::ShowDialog()
 
 	DVASSERT(propertyToChange);
 	DVASSERT(propFlagsMap);
-
+	uint32 oldValue  = ResolveMapToUint(*propFlagsMap);
 	SettingsStateDialog dialog(propFlagsMap,this);
 	dialog.exec();
 	
@@ -326,8 +262,16 @@ void SystemsSettingsEditor::ShowDialog()
 	{
 		return;
 	}
+	uint32 newValue = ResolveMapToUint(*propFlagsMap);
+	if(newValue == oldValue)
+	{
+		return;
+	}
 	
-	propertyToChange->SetValue(QVariant(ResolveMapToString(*propFlagsMap).c_str()));
+	propertyToChange->AddAllowedValue(DAVA::VariantType((int32)newValue), ResolveMapToString(*propFlagsMap).c_str());
+	propertyToChange->SetVariantValue(DAVA::VariantType((int32)newValue));
+	propertyToChange->SetValue(QVariant((int32)newValue));
+	
 }
 
 QPushButton * SystemsSettingsEditor::CreatePushBtn()
@@ -338,48 +282,18 @@ QPushButton * SystemsSettingsEditor::CreatePushBtn()
 	return configBtn;
 }
 
-void SystemsSettingsEditor::HandleCustomColorBrushSize()
+void SystemsSettingsEditor::HandleGridMax()
 {
 	GET_SENDER_CONTENT
-	int32 max = 130;
-	int32 min = 0;// TODO: ...
-	int32 current = senderContent.AsInt32();
-	// TODO: ...
-	/*if(current > max || current < min)
-	{
-		sender->SetVariantValue(DAVA::VariantType(max));
-		return;
-	}
-	if(current < min)
-	{
-		sender->SetVariantValue(DAVA::VariantType(min));
-		return;
-	}*/
-	
-	sceneEditor->customColorsSystem->SetBrushSize(senderContent.AsInt32(), false);
+	float32 value = senderContent.AsFloat();
+	sceneEditor->gridSystem->SetGridMax(value);
 }
 
-void SystemsSettingsEditor::HandleCustomColorColorIndex()
+void SystemsSettingsEditor::HandleGridStep()
 {
 	GET_SENDER_CONTENT
-	DAVA::Color value = senderContent.AsColor();
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	int pos = std::find(customColors.begin(), customColors.end(), value) - customColors.begin();
-	sceneEditor->customColorsSystem->SetColor(pos);
-}
-
-void SystemsSettingsEditor::HandleCameraMoveSpeed()
-{
-	GET_SENDER_CONTENT	
-	float speed = senderContent.AsFloat();
-	sceneEditor->cameraSystem->SetMoveSpeed(speed);
-}
-
-void SystemsSettingsEditor::HandleCameraViewportRect()
-{
-	GET_SENDER_CONTENT
-	Matrix2 rect = senderContent.AsMatrix2();
-	sceneEditor->cameraSystem->SetViewportRect(Rect(rect._00, rect._01, rect._10, rect._11));
+	float32 value = senderContent.AsFloat();
+	sceneEditor->gridSystem->SetGridStep(value);
 }
 
 void SystemsSettingsEditor::HandleCollisionDrawMode()
@@ -388,135 +302,8 @@ void SystemsSettingsEditor::HandleCollisionDrawMode()
 	sceneEditor->collisionSystem->SetDrawMode(value);
 }
 
-void SystemsSettingsEditor::HandleHoodModifMode()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->hoodSystem->SetModifMode((ST_ModifMode)value);
-}
-
-void SystemsSettingsEditor::HandleHoodPosition()
-{
-	GET_SENDER_CONTENT
-	Vector3 value = senderContent.AsVector3();
-	sceneEditor->hoodSystem->SetPosition(value);
-}
-
-void SystemsSettingsEditor::HandleHoodModifAxis()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->hoodSystem->SetModifAxis((ST_Axis) value);
-}
-
-void SystemsSettingsEditor::HandleHoodScale()
-{
-	GET_SENDER_CONTENT
-	float value = senderContent.AsFloat();
-	sceneEditor->hoodSystem->SetScale(value);
-}
-
 void SystemsSettingsEditor::HandleSelectionDrawMode()
 {
 	uint32 value = ResolveMapToUint(selectionSysDrawStateMap);
 	sceneEditor->selectionSystem->SetDrawMode(value);
-}
-
-void SystemsSettingsEditor::HandlePivotPoint()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->selectionSystem->SetPivotPoint((ST_PivotPoint)value);
-}
-
-void SystemsSettingsEditor::HandleEntityModifMode()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();	
-	sceneEditor->modifSystem->SetModifMode((ST_ModifMode) value);
-}
-
-void SystemsSettingsEditor::HandleEntityModifAxis()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->modifSystem->SetModifAxis((ST_Axis) value);
-}
-
-void SystemsSettingsEditor::HandleEntityLandscapeSnap()
-{
-	GET_SENDER_CONTENT
-	bool value = senderContent.AsBool();
-	sceneEditor->modifSystem->SetLandscapeSnap(value);
-}
-
-void SystemsSettingsEditor::HandleHightmapBrushSize()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->heightmapEditorSystem->SetBrushSize(value);
-}
-
-void SystemsSettingsEditor::HandleHightmapStrength()
-{
-	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->heightmapEditorSystem->SetStrength(value);
-}
-
-void SystemsSettingsEditor::HandleHightmapAverageStrength()
-{
-	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->heightmapEditorSystem->SetAverageStrength(value);
-}
-
-void SystemsSettingsEditor::HandleHightmapDrawingType()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->heightmapEditorSystem->SetDrawingType((HeightmapEditorSystem::eHeightmapDrawType) value);
-}
-
-void SystemsSettingsEditor::HandleTileMaskBrushSize()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->tilemaskEditorSystem->SetBrushSize(value);
-}
-
-void SystemsSettingsEditor::HandleTileMaskStrength()
-{
-	GET_SENDER_CONTENT
-	float32 value = senderContent.AsFloat();
-	sceneEditor->tilemaskEditorSystem->SetStrength(value);
-
-}
-
-void SystemsSettingsEditor::HandleTileTextureIndex()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->tilemaskEditorSystem->SetTileTexture(value);
-}
-
-void SystemsSettingsEditor::HandleVisibToolBrushSize()
-{
-	GET_SENDER_CONTENT
-	int32 value = senderContent.AsInt32();
-	sceneEditor->visibilityToolSystem->SetBrushSize(value);
-}
-
-void SystemsSettingsEditor::HandleLightCameraEnbled()
-{
-	GET_SENDER_CONTENT
-	bool value = senderContent.AsBool();
-	sceneEditor->editorLightSystem->SetCameraLightEnabled(value);
-}
-
-void SystemsSettingsEditor::HandleRenderShadowRectColor()
-{
-	GET_SENDER_CONTENT
-	DAVA::Color value = senderContent.AsColor();
-	sceneEditor->renderSystem->SetShadowRectColor(value);
 }

@@ -44,6 +44,7 @@
 #include "UISpinnerMetadata.h"
 #include "UIAggregatorMetadata.h"
 #include "UISwitchMetadata.h"
+#include "UIScrollBarMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -100,6 +101,11 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
 	if (dynamic_cast<const UIList*>(uiControl))
 	{
 		return new UIListMetadata();
+	}
+	
+	if (dynamic_cast<const UIScrollBar*>(uiControl))
+	{
+		return new UIScrollBarMetadata();
 	}
 	
 	if (dynamic_cast<const UIScrollView*>(uiControl))

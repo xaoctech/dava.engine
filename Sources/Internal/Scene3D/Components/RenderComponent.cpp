@@ -79,10 +79,8 @@ void RenderComponent::OptimizeBeforeExport()
 			PolygonGroup* polygonGroup = renderBatch->GetPolygonGroup();
 			if (polygonGroup)
 			{
-                DVASSERT(0 && "Vitaliy Borodovsky: Temporaly replaced by")
-				// uint32 newFormat = MaterialOptimizer::GetOptimizedVertexFormat((Material::eType)renderBatch->GetMaterial()->type);
-				uint32 newFormat = polygonGroup->GetFormat();
-                polygonGroup->OptimizeVertices(newFormat);
+				uint32 newFormat = renderBatch->GetMaterial()->GetRequiredVertexFormat();
+				polygonGroup->OptimizeVertices(newFormat);
 			}
 		}
 	}

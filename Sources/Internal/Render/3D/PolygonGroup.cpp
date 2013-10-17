@@ -444,7 +444,7 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive, SerializationContext * seri
 //    {
 //        Vector3 normal;
 //        GetNormal(k, normal);
-//        Logger::Debug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
+//        Logger::FrameworkDebug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
 //    }
     
 
@@ -602,9 +602,9 @@ int32 PolygonGroup::OptimazeVertexes(const uint8 * meshData, Vector<uint8> & opt
 		const float32 * tmpMeshData = (float32*) meshData;
 		
 		bool skip = false;
-		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		for (uint32 mask = EVF_LOWER_BIT; mask <= EVF_HIGHER_BIT; mask = mask << 1)
 		{
-			if (!IsFloatDataEqual(&tmpMeshData, &optData, vertexFormat, EVF_VERTEX))
+			if (!IsFloatDataEqual(&tmpMeshData, &optData, vertexFormat, mask))
 			{
 				skip = true;
 				break;
@@ -633,7 +633,7 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	uint8 * tmpNewMesh = newMeshData;
 	for (int32 i = 0; i < vertexCount; ++i)
 	{
-		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		for (uint32 mask = EVF_LOWER_BIT; mask <= EVF_HIGHER_BIT; mask = mask << 1)
 		{
 			CopyData(&tmpMesh, &tmpNewMesh, vertexFormat, newVertexFormat, mask);
 		}

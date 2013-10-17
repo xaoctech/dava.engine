@@ -79,10 +79,14 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
     UIStaticText *t = (UIStaticText *)srcControl;
+
+	SafeRelease(textBlock);
     textBlock = t->textBlock->Clone();
+
     textColor = t->textColor;
     shadowColor = t->shadowColor;
     shadowOffset = t->shadowOffset;
+
     SafeRelease(shadowBg);
 	SafeRelease(textBg);
     shadowBg = t->shadowBg->Clone();
@@ -198,7 +202,6 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	PrepareSprite();
 	textBlock->PreDraw();
 
-	background->SetDrawColor(textColor);
 	UIControl::Draw(geometricData);
 
 	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
@@ -219,10 +222,6 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	textBg->Draw(geometricData);
 }
 
-void UIStaticText::SetFontColor(const Color& fontColor)
-{
-	SetTextColor(fontColor);
-}
     
 const Vector<WideString> & UIStaticText::GetMultilineStrings()
 {

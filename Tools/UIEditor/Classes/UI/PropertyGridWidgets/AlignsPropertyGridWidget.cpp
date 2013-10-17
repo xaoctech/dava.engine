@@ -245,10 +245,5 @@ void AlignsPropertyGridWidget::UpdateSpinBoxState(QCheckBox *buddyWidget)
      	QSpinBox *spinBox = iter->second;
 		// Change spinbox state according to checkbox state
 		spinBox->setEnabled(state);
-		// If spinbox was switched to disabled - we should reset its value
-		if (!state)
-		{
-			spinBox->setValue(0);
-		}
     }
 }

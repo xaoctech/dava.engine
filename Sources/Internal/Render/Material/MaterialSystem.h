@@ -75,6 +75,9 @@ public:
 	void SwitchMaterialQuality(const FastName& qualityLevelName, bool forceSwitch = false);
 	
 	NMaterial* CreateChild(NMaterial* parent);
+	NMaterial* CreateChild(const FastName& parentName);
+	
+	bool Contains(NMaterial* material);
 	
 private:
 	
