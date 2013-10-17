@@ -224,7 +224,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -270,6 +270,7 @@
      <property name="title">
       <string>Add Entity</string>
      </property>
+     <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
      <addaction name="actionImposter"/>
@@ -850,6 +851,10 @@
    </property>
   </action>
   <action name="actionLight">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light.png</normaloff>:/QtIcons/light.png</iconset>
+   </property>
    <property name="text">
     <string>Light</string>
    </property>
@@ -860,6 +865,10 @@
    </property>
   </action>
   <action name="actionCamera">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
+   </property>
    <property name="text">
     <string>Camera</string>
    </property>
@@ -870,6 +879,10 @@
    </property>
   </action>
   <action name="actionUserNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/user_object.png</normaloff>:/QtIcons/user_object.png</iconset>
+   </property>
    <property name="text">
     <string>User Node</string>
    </property>
@@ -1028,6 +1041,10 @@
    </property>
   </action>
   <action name="actionParticleEffectNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/effect.png</normaloff>:/QtIcons/effect.png</iconset>
+   </property>
    <property name="text">
     <string>Particle Effect Node</string>
    </property>
@@ -1585,6 +1602,15 @@
    </property>
    <property name="text">
     <string>Hanging Objects</string>
+   </property>
+  </action>
+  <action name="actionAddEmptyEntity">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/node.png</normaloff>:/QtIcons/node.png</iconset>
+   </property>
+   <property name="text">
+    <string>Empty Entity</string>
    </property>
   </action>
  </widget>
