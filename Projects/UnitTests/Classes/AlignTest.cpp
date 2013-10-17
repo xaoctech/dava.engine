@@ -173,8 +173,8 @@ void AlignTest::MakeScreenShot()
 void AlignTest::OnScreenShot(Image *testImage)
 {
 	//Use this code to generate new reference screenshots
-//	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-//	ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/Win32/test%d.png", currenTestIndex));
+	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	ImageLoader::Save(testImage, workingPath + Format("Data/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
