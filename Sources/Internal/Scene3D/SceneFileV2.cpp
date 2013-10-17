@@ -1019,8 +1019,9 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     
 	//ConvertShadows(rootNode);
     //RemoveEmptySceneNodes(rootNode);
-    RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
+	RemoveEmptyHierarchy(rootNode);
+	
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {

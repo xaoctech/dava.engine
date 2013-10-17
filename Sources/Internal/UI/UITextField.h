@@ -328,6 +328,9 @@ protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
+    Font * textFont;
+    Font * constFont;
+    bool isPassword;
 	
 	// Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
@@ -347,8 +350,6 @@ private:
 	UITextFieldAndroid* textFieldAndroid;
 #else
     UIStaticText * staticText;
-    Font * textFont;
-    Font * constFont;
 #endif
     float32 cursorTime;
 	
