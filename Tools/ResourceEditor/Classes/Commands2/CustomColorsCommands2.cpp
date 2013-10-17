@@ -142,8 +142,7 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
-	
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+
 	sprite->SetPosition(updatedRect.x, updatedRect.y);
 	sprite->Draw();
 	
