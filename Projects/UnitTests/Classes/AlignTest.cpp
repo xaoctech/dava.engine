@@ -79,6 +79,12 @@ TestTemplate<AlignTest>("AlignTest"),
 
 void AlignTest::LoadResources()
 {
+	// DF-1627 - Always set black background for this test for Windows - all screenshots should be the same
+#ifdef __DAVAENGINE_WIN32__
+	GetBackground()->SetColor(Color::Black());
+	GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+#endif
+
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");		
     DVASSERT(font);
 
@@ -175,8 +181,8 @@ void AlignTest::MakeScreenShot()
 void AlignTest::OnScreenShot(Image *testImage)
 {
 	//Use this code to generate new reference screenshots
-	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	ImageLoader::Save(testImage, workingPath + Format("Data/test%d.png", currenTestIndex));
+//	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+//	ImageLoader::Save(testImage, workingPath + Format("Data/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
