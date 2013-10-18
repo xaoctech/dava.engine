@@ -56,8 +56,6 @@ private:
 	
 	DAVA::String GetDesignerName(DAVA::KeyedArchive *customProperties);
 
-	DAVA::String GetModificationTime(DAVA::KeyedArchive *customProperties);
-
 	static const DAVA::int32 validIDs[] ;
 };
 
