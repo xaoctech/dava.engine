@@ -90,8 +90,6 @@ private:
 	void Clear();
 	
 private:
-	uint32 trackedFontId;
-	
 	typedef Map<Font*, String> REGISTERED_FONTS;
 	REGISTERED_FONTS registeredFonts;
 
