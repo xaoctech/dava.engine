@@ -48,8 +48,9 @@
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, rayIntersectCached(false)
+	, landIntersectCachedResult(false)
 	, drawMode(ST_COLL_DRAW_NOTHING)
-	, curLandscape(NULL)
+	, curLandscapeEntity(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -182,21 +183,20 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 	if(landIntersectCached && lastLandRayFrom == from && lastLandRayTo == to)
 	{
 		intersectionPoint = lastLandCollision;
-		return landIntersectCached;
+		return landIntersectCachedResult;
 	}
 
 	// no cache. start new ray test
 	lastLandRayFrom = from;
 	lastLandRayTo = to;
+	landIntersectCached = true;
+	landIntersectCachedResult = false;
 
 	DAVA::Vector3 rayDirection = to - from;
 	DAVA::float32 rayLength = rayDirection.Length();
-	DAVA::Vector3 rayStep = rayDirection / rayLength;
+	DAVA::Vector3 rayStep = (rayDirection / rayLength * 5.0f);
 
 	btVector3 btFrom(from.x, from.y, from.z);
-
-	landIntersectCached = false;
-
 	while (rayLength > 0)
 	{
 		btVector3 btTo(btFrom.x() + rayStep.x, btFrom.y() + rayStep.y, btFrom.z() + rayStep.z);
@@ -208,17 +208,18 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 			btVector3 hitPoint = btCallback.m_hitPointWorld;
 			ret = DAVA::Vector3(hitPoint.x(), hitPoint.y(), hitPoint.z());
 
-			landIntersectCached = true;
+			landIntersectCachedResult = true;
 			break;
 		}
 
 		btFrom = btTo;
-		rayLength -= 1.0f;
+		rayLength -= rayStep.Length();
 	}
 
 	lastLandCollision = ret;
 	intersectionPoint = ret;
-	return landIntersectCached;
+
+	return landIntersectCachedResult;
 }
 
 bool SceneCollisionSystem::LandRayTestFromCamera(DAVA::Vector3& intersectionPoint)
@@ -236,7 +237,7 @@ bool SceneCollisionSystem::LandRayTestFromCamera(DAVA::Vector3& intersectionPoin
 
 DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
 {
-	return curLandscape;
+	return DAVA::GetLandscape(curLandscapeEntity);
 }
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
@@ -415,6 +416,10 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 				}
 			}
 			break;
+		case CMDID_LANDSCAPE_SET_HEIGHTMAP:
+		case CMDID_DRAW_HEIGHTMAP:
+			UpdateCollisionObject(curLandscapeEntity);
+			break;
 		default:
 			break;
 		}
@@ -461,7 +466,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != landscape)
 	{
 		cObj = new CollisionLandscape(entity, landCollWorld, landscape);
-		curLandscape = landscape;
+		curLandscapeEntity = entity;
 
 		return cObj;
 	}
@@ -517,9 +522,9 @@ void SceneCollisionSystem::DestroyFromEntity(DAVA::Entity * entity)
 {
 	CollisionBaseObject *cObj = entityToCollision.value(entity, NULL);
 
-	if(curLandscape == DAVA::GetLandscape(entity))
+	if(curLandscapeEntity == entity)
 	{
-		curLandscape = NULL;
+		curLandscapeEntity = NULL;
 	}
 
 	if(NULL != cObj)
