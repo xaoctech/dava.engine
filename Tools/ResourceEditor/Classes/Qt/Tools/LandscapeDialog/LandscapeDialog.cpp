@@ -479,7 +479,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-			CheckAndCreateTextForTexture(filePath);
+			CheckAndCreateTexForTexture(filePath);
 			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
@@ -491,7 +491,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 	}
 }
 
-void LandscapeDialog::CheckAndCreateTextForTexture(const FilePath& path)
+void LandscapeDialog::CheckAndCreateTexForTexture(const FilePath& path)
 {
 	FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(path);
 
