@@ -139,10 +139,10 @@ QtPropertyData* BaseAddEntityDialog::AddMetaObject(void *_object, const DAVA::Me
 
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 {
+	SafeRetain(_entity);
 	SafeRelease(entity);
 	
 	entity = _entity;
-	SafeRetain(entity);
 }
 
 DAVA::Entity* BaseAddEntityDialog::GetEntity()

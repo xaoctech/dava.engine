@@ -1021,11 +1021,21 @@ void QtMainWindow::OnRedo()
 
 void QtMainWindow::OnReloadTextures()
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	SetGPUFormat(GetGPUFormat());
 }
 
 void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
 	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
@@ -1807,6 +1817,7 @@ void QtMainWindow::OnCustomColorsEditor()
 	{
 		sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
 	}
+	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR));
 }
 
 void QtMainWindow::OnHeightmapEditor()
@@ -1825,6 +1836,7 @@ void QtMainWindow::OnHeightmapEditor()
 	{
 		sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
 	}
+	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR));
 }
 
 void QtMainWindow::OnRulerTool()
@@ -1843,6 +1855,7 @@ void QtMainWindow::OnRulerTool()
 	{
 		sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
 	}
+	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_RULER));
 }
 
 void QtMainWindow::OnTilemaskEditor()
@@ -1861,6 +1874,7 @@ void QtMainWindow::OnTilemaskEditor()
 	{
 		sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
 	}
+	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR));
 }
 
 void QtMainWindow::OnVisibilityTool()
@@ -1879,6 +1893,7 @@ void QtMainWindow::OnVisibilityTool()
 	{
 		sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
 	}
+	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_VISIBILITY));
 }
 
 void QtMainWindow::OnNotPassableTerrain()
@@ -1897,6 +1912,7 @@ void QtMainWindow::OnNotPassableTerrain()
 	{
 		scene->Exec(new ActionEnableNotPassable(scene));
 	}
+	SetLandscapeSettingsEnabled(!scene->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN));
 }
 
 void QtMainWindow::OnAddActionComponent()
@@ -1944,6 +1960,19 @@ bool QtMainWindow::IsSavingAllowed()
 	if (!scene || scene->GetEnabledTools() != 0)
 	{
 		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
+		return false;
+	}
+
+	return true;
+}
+
+bool QtMainWindow::IsTextureReloadAllowed()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	if (!scene || scene->GetEnabledTools() != 0)
+	{
+		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing before reload textures!");
 		return false;
 	}
 
@@ -2104,6 +2133,15 @@ bool QtMainWindow::IsAnySceneChanged()
 	}
 
 	return false;
+}
+
+void QtMainWindow::SetLandscapeSettingsEnabled(bool enable)
+{
+	ui->actionLandscape->setEnabled(enable);
+	if(NULL != landscapeDialog && !enable)
+	{
+		landscapeDialog->close();
+	}
 }
 
 void QtMainWindow::OnHangingObjects()

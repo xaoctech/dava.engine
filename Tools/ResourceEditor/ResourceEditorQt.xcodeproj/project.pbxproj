@@ -505,6 +505,8 @@
 		E825798A17D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798417D886EE00070B9C /* QtPropertyDataIntrospection_moc.cpp */; };
 		E825798B17D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798517D886EE00070B9C /* QtPropertyDataMetaObject_moc.cpp */; };
 		E825798E17D8872D00070B9C /* InspMemebrModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */; };
+		E835201B18103ACA0056D14D /* QtFileDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E835201918103ACA0056D14D /* QtFileDialog.cpp */; };
+		E835202518103BB30056D14D /* QtFileDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E835202418103BB30056D14D /* QtFileDialog_moc.cpp */; };
 		E838D56F16AFFED4006F1721 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */; };
 		E838D57016AFFED4006F1721 /* LibraryView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DC16AFFED4006F1721 /* LibraryView.cpp */; };
 		E838D57116AFFED4006F1721 /* EmitterLayerWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DF16AFFED4006F1721 /* EmitterLayerWidget.cpp */; };
@@ -1637,6 +1639,9 @@
 		E825798C17D8872D00070B9C /* InspMemberModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspMemberModifyCommand.h; sourceTree = "<group>"; };
 		E825798D17D8872D00070B9C /* InspMemebrModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspMemebrModifyCommand.cpp; sourceTree = "<group>"; };
 		E826131D1734170100BF60B6 /* SceneTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTypes.h; sourceTree = "<group>"; };
+		E835201918103ACA0056D14D /* QtFileDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtFileDialog.cpp; sourceTree = "<group>"; };
+		E835201A18103ACA0056D14D /* QtFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtFileDialog.h; sourceTree = "<group>"; };
+		E835202418103BB30056D14D /* QtFileDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtFileDialog_moc.cpp; sourceTree = "<group>"; };
 		E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
 		E838D4DB16AFFED4006F1721 /* LibraryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryModel.h; sourceTree = "<group>"; };
 		E838D4DC16AFFED4006F1721 /* LibraryView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryView.cpp; sourceTree = "<group>"; };
@@ -2409,6 +2414,7 @@
 		4FAD0CAF1785EC6E00B05A35 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E835202318103BB30056D14D /* QtFileDialog */,
 				4952479E180FE73D00DD089E /* TileTexturePreviewWidget */,
 				499BD23417D8B2700035CF5F /* SliderWidget */,
 				E8EF3BE1180832EA00494E24 /* HangingObjectsHeight */,
@@ -3361,6 +3367,7 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E835201818103ACA0056D14D /* QtFileDialog */,
 				49524797180FE4F100DD089E /* TileTexturePreviewWidget */,
 				49E626C6180C0DD200B62B59 /* SliderWidget */,
 				E8EF3BDD180832AA00494E24 /* HangingObjectsHeight */,
@@ -3586,6 +3593,24 @@
 				173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		E835201818103ACA0056D14D /* QtFileDialog */ = {
+			isa = PBXGroup;
+			children = (
+				E835201918103ACA0056D14D /* QtFileDialog.cpp */,
+				E835201A18103ACA0056D14D /* QtFileDialog.h */,
+			);
+			name = QtFileDialog;
+			path = Classes/Qt/Tools/QtFileDialog;
+			sourceTree = "<group>";
+		};
+		E835202318103BB30056D14D /* QtFileDialog */ = {
+			isa = PBXGroup;
+			children = (
+				E835202418103BB30056D14D /* QtFileDialog_moc.cpp */,
+			);
+			path = QtFileDialog;
 			sourceTree = "<group>";
 		};
 		E838D4D916AFFED4006F1721 /* DockLibrary */ = {
@@ -4805,6 +4830,7 @@
 				4FAD0D371785EC6E00B05A35 /* QtPropertyData_moc.cpp in Build Sources */,
 				4FAD0D381785EC6E00B05A35 /* QtPropertyEditor_moc.cpp in Build Sources */,
 				4FAD0D391785EC6E00B05A35 /* QtPropertyItem_moc.cpp in Build Sources */,
+				E835202518103BB30056D14D /* QtFileDialog_moc.cpp in Build Sources */,
 				4FAD0D3A1785EC6E00B05A35 /* QtPropertyItemDelegate_moc.cpp in Build Sources */,
 				4FAD0D3B1785EC6E00B05A35 /* QtPropertyModel_moc.cpp in Build Sources */,
 				4FAD0D3C1785EC6E00B05A35 /* QtColorLineEdit_moc.cpp in Build Sources */,
@@ -4845,6 +4871,7 @@
 				49CAAF7A17A65FA400C91496 /* RulerToolSystem.cpp in Build Sources */,
 				49CAAF8117A65FB200C91496 /* RulerToolProxy.cpp in Build Sources */,
 				4F64847A17AFB5AB00034454 /* QtWaitDialog.cpp in Build Sources */,
+				E835201B18103ACA0056D14D /* QtFileDialog.cpp in Build Sources */,
 				4F64848517AFCAA300034454 /* SceneHelper.cpp in Build Sources */,
 				4F64848B17AFCAD100034454 /* QtWaitDialog_moc.cpp in Build Sources */,
 				629FF9D117A9603B00724B29 /* BaseAddEntityDialog.cpp in Build Sources */,

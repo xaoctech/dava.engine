@@ -67,7 +67,7 @@ void LandscapeSetTexturesCommand::Redo()
 LandscapeSetHeightMapCommand::LandscapeSetHeightMapCommand( Entity* _landscapeEntity,
 														   const FilePath& _heightMapPath,
 														   const AABBox3& _newLandscapeBox)
-								: Command2(CMDID_LANDSCAPE_SET_TEXTURE, "Set Landscape heightmap")
+								: Command2(CMDID_LANDSCAPE_SET_HEIGHTMAP, "Set Landscape heightmap")
 {
 	landscape = FindLandscape(_landscapeEntity);
 	if(NULL == landscape)

@@ -239,11 +239,7 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 				Color c = QColorToColor(color);
 				if (c != colors[index])
 				{
-					colors[index] = c;
-
-					emit TileColorChanged(index, colors[index]);
-
-					UpdateColor(index);
+					SetColor(index, c);
 				}
 			}
 		}
@@ -272,8 +268,7 @@ bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 
 				if (color.isValid() && color != curColor)
 				{
-					colors[i] = QColorToColor(color);
-					UpdateColor(i);
+					SetColor(i, QColorToColor(color));
 				}
 
 				return true;
@@ -286,6 +281,13 @@ bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 	}
 
 	return QObject::eventFilter(obj, ev);
+}
+
+void TileTexturePreviewWidget::SetColor(int32 number, const Color& color)
+{
+	colors[number] = color;
+	emit TileColorChanged(number, colors[number]);
+	UpdateColor(number);
 }
 
 void TileTexturePreviewWidget::SetMode(TileTexturePreviewWidget::eWidgetModes mode)
