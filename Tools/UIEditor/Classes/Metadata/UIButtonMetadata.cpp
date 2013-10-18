@@ -167,11 +167,9 @@ void UIButtonMetadata::SetFontSize(float fontSize)
 		{
 			return;
 		}
-
-		Font* newFont = font->Clone();
-		newFont->SetSize(fontSize);
-		buttonText->SetFont(newFont);
-		newFont->Release();
+        
+		font->SetSize(fontSize);
+		buttonText->SetFont(font);
 	}
 
     UpdatePropertyDirtyFlagForFontSize();

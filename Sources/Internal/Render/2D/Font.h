@@ -188,13 +188,7 @@ public:
 	/* Put font properties into YamlNode */
 	virtual YamlNode * SaveToYamlNode() const;
 
-	// Return the hashcode (identical for identical fonts).
-	virtual uint32 GetHashCode();
-
 protected:
-	// Get the raw hash string (identical for identical fonts).
-	virtual String GetRawHashString();
-
 	static int32 globalFontDPI;
 	
 	float32	size;

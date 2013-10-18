@@ -106,18 +106,19 @@ TextBlock::~TextBlock()
 	
 void TextBlock::SetFont(Font * _font)
 {
-	if (!_font || _font == font)
-	{
-		return;
-	}
+	if(!_font)
+        return;
 
-	if (!(font && font->IsEqual(_font)))
+	if (!constFont || !constFont->IsEqual(_font))
 	{
 		needRedraw = true;
 	}
-
+//Do not change the code above. This magic realised to avoid font destruction.
+//For example in this case text->SetFont(text->GetFont()); code sрould works correct
+	SafeRelease(constFont);
+	constFont = _font->Clone();
 	SafeRelease(font);
-	font = SafeRetain(_font);
+	font = constFont->Clone();
 
 	originalFontSize = font->GetSize();
 	Prepare();
