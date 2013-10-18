@@ -36,6 +36,7 @@
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "../Qt/Main/QtUtils.h"
 
 #define  INIT_PATH_WIDGET(widgetName, widgetNum, widgetTitle, fileFilter) SelectPathWidgetBase* widgetName = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);\
 	if(innerLandscape){\
@@ -469,8 +470,22 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
 		if(filePath != presentPath)
 		{
-			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath, innerLandscape->GetBoundingBox());
-			sceneEditor->Exec(command);
+			Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
+			
+			PixelFormat format = imageVector[0]->GetPixelFormat();
+			if(format == FORMAT_A8 ||format == FORMAT_A16)
+			{
+				LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath, innerLandscape->GetBoundingBox());
+				sceneEditor->Exec(command);
+			}
+			else
+			{
+				ShowErrorDialog(ResourceEditor::LANDSCAPE_DIALOG_WRONG_PNG_ERROR);
+			}
+			Q_FOREACH(Image* image, imageVector)
+			{
+				SafeRelease(image);
+			}
 		}
 	}
 	else
