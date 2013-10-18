@@ -402,7 +402,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h" />
@@ -427,6 +429,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h" />
@@ -444,6 +447,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
@@ -501,6 +505,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Entity.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
@@ -771,6 +776,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp" />
@@ -793,6 +800,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
@@ -809,6 +817,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderCache.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp" />
@@ -866,6 +875,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />

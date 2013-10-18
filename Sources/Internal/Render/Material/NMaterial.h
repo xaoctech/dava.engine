@@ -216,7 +216,7 @@ class MaterialSystem;
 class NMaterial : public BaseObject, public NMaterialState
 {
 	friend class MaterialSystem;
-	
+
 public:
     static const FastName TEXTURE_ALBEDO;
     static const FastName TEXTURE_NORMAL;
@@ -269,13 +269,14 @@ public:
     
     virtual void SetMaterialName(const String& name);
 	
-	//VI: these 2 methods ar used for old maerial conversion only
+	//VI: these 2 methods are used for old maerial conversion and for setting lightmap props during lightmap generation
 	//VI: need to multiplex single old state to LOD states
 	uint32 GetStateCount() const;
 	NMaterialState* GetState(uint32 index);
 	
 	inline void SetMaterialSystem(MaterialSystem* system) {materialSystem = system;}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
+	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
 	
 protected:
     

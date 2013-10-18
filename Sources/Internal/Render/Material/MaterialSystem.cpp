@@ -116,7 +116,6 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
     
     if (!rootNode)
     {
-        SafeRelease(rootNode);
 		SafeRelease(parser);
         return false;
     }
@@ -227,7 +226,6 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		}
 	}
 	
-	SafeRelease(rootNode);
 	SafeRelease(parser);
 	
 	//TODO: validate material tree structure. It shouldn't contain loops or nodes belonging to several roots
