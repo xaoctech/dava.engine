@@ -205,6 +205,8 @@ protected:
 
 	bool IsAnySceneChanged();
 
+	void SetLandscapeSettingsEnabled(bool);
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
