@@ -208,7 +208,6 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 //    "editor.staticlight.shadowangle"
 //    "editor.staticlight.shadowsamples"
 //    "editor.staticlight.shadowradius"
-//    "editor.dynamiclight.enable"
 //    "editor.intensity"
     
     Vector<Entity *>::const_iterator endIt = scenenodes.end();
