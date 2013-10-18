@@ -37,7 +37,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableHeightmapEditor::ActionEnableHeightmapEditor(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_HEIGHTMAP)
+:	CommandAction(CMDID_HEIGHTMAP_EDITOR_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -68,7 +68,7 @@ void ActionEnableHeightmapEditor::Redo()
 }
 
 ActionDisableHeightmapEditor::ActionDisableHeightmapEditor(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_HEIGHTMAP)
+:	CommandAction(CMDID_HEIGHTMAP_EDITOR_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -185,7 +185,7 @@ CopyPasteHeightmapCommand::CopyPasteHeightmapCommand(bool heightmapModified,
 													 LandscapeProxy* landscapeProxy,
 													 Image* originalTilemaskImage,
 													 const Rect& tilemaskUpdatedRect)
-:	Command2(CMDID_COPY_PASTE_HEIGHTMAP, "Height Map Copy/Paste")
+:	Command2(CMDID_HEIGHTMAP_COPY_PASTE, "Height Map Copy/Paste")
 ,	heightmapProxy(heightmapProxy)
 ,	landscapeProxy(landscapeProxy)
 ,	heightmapModified(heightmapModified)
