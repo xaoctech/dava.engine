@@ -371,7 +371,7 @@ public:
 
 	bool IsToBeDeleted()
 	{
-		return shouldBeDeleted;
+		return shouldBeDeleted&&repeatCount;
 	};
 
 	void SetToBeDeleted(bool value)
