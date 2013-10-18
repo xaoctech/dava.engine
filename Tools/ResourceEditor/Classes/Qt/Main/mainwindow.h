@@ -246,6 +246,7 @@ private:
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
+	void EnableGPUReloadActions(bool enable);
 
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
