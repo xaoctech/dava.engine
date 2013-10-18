@@ -47,12 +47,12 @@
 	}\
 	widgetName->setEnabled(innerLandscape);\
 	widgetName->SetAllowedFormatsList(textureFormats);\
-	connect(widgetName, SIGNAL(PathSelected(DAVA::String)), this, SLOT(ValueChanged(DAVA::String)));
+	connect(widgetName, SIGNAL(PathSelected(DAVA::String)), this, SLOT(PathWidgetValueChanged(DAVA::String)));
 
 #define OPEN_TEXTURE_TITLE "Open texture"
 #define OPEN_HEIGHTMAP_TITLE "Open height map"
 #define TEXTURE_FILE_FILTER "PNG(*.png);; TEX(*.tex)"
-#define HEIGHTMAP_FILE_FILTER "HeightMap(*.heightmap)"
+#define HEIGHTMAP_FILE_FILTER "PNG(*.png);;HeightMap(*.heightmap)"
 #define HEIGHT_MAP_ID 0xABCD
 
 #define TAB_CONTENT_WIDTH 450
@@ -79,9 +79,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	heightMapFormats.push_back(".heightmap");
 
 	SetEntity(_landscapeEntity);
-	sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-	innerLandscapeEntity = _landscapeEntity;
-	innerLandscape = DAVA::GetLandscape(innerLandscapeEntity);
+	innerLandscape = DAVA::GetLandscape(entity);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	
@@ -103,10 +101,10 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	}
 	heightMapWidget->setEnabled(innerLandscape);
 	heightMapWidget->SetAllowedFormatsList(heightMapFormats);
-	connect(heightMapWidget, SIGNAL(PathSelected(DAVA::String)), this, SLOT(ValueChanged(DAVA::String)));
+	connect(heightMapWidget, SIGNAL(PathSelected(DAVA::String)), this, SLOT(PathWidgetValueChanged(DAVA::String)));
 	
 	AddControlToUserContainer(heightMapWidget, "Height map:");
-	AddControlToUserContainer(colorTexutureWidget, "Landscape texture:");
+	AddControlToUserContainer(colorTexutureWidget, "Color texture:");
 	AddControlToUserContainer(tileTexuture0Widget, "Tile texture 0:");
 	AddControlToUserContainer(tileTexuture1Widget, "Tile texture 1:");
 	AddControlToUserContainer(tileTexuture2Widget, "Tile texture 2:");
@@ -125,29 +123,26 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	ui->lowerLayOut->addWidget(actionButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
 	
-	QtPropertyDataDavaVariant* sizePropertyDataVariant = NULL;
-	QtPropertyDataDavaVariant* hightPropertyDataVariant = NULL;
-	
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool )));
+	landscapeSize = Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 }
 
 LandscapeDialog::~LandscapeDialog()
 {
-	
 	disconnect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	
 	for (DAVA::Map<SelectPathWidgetBase*,int32>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
 	{
 		delete it->first;
 	}
-	
+
 	delete actionButton;
 }
 
 void LandscapeDialog::FillPropertyEditorWithContent()
 {
 	propEditor->RemovePropertyAll();
-	if(NULL == innerLandscapeEntity)
+	if(NULL == entity)
 	{
 		return;
 	}
@@ -156,7 +151,7 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 	AddMetaObject(&landscapeSize.x, DAVA::MetaInfo::Instance<float>(), "Size");
 	AddMetaObject(&landscapeSize.z, DAVA::MetaInfo::Instance<float>(), "Height");
 
-	DAVA::KeyedArchive* propertyList = innerLandscapeEntity->GetCustomProperties();
+	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
 	if(!propertyList->IsKeyExists("lightmap.size"))
 	{
 		propertyList->SetInt32("lightmap.size", 1024);
@@ -200,126 +195,11 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("tileColor"));
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("textureTiling"));
-
-	//const DAVA::InspMember * memberBBox = innerLandscape->GetTypeInfo()->BaseInfo()->Member("bbox");
-	//QtPropertyData* t = AddInspMemberToEditor( innerLandscape, memberBBox);
 }
 
-void LandscapeDialog::showEvent ( QShowEvent * event )
+void LandscapeDialog::FillWidgetsWithContent()
 {
-	BaseAddEntityDialog::showEvent(event);
-	SetLandscapeEntity(innerLandscapeEntity);
-}
-
-void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
-{
-	propEditor->Update();
-}
-
-void LandscapeDialog::ActionButtonClicked()
-{
-	bool needToCreate = actionButton->text() == CREATE_TITLE;
-	if(needToCreate)
-	{
-		actionButton->setText(DELETE_TITLE);
-		
-		Entity* entityToProcess = new Entity();
-		Landscape* newLandscape = new Landscape();
-		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
-		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
-		entityToProcess->AddComponent(component);
-		SafeRelease(component);
-		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
-		SetLandscapeEntity(entityToProcess);
-	}
-	else
-	{
-		actionButton->setText(CREATE_TITLE);
-		if(entity != innerLandscapeEntity)
-		{
-			// release should be performed only for created in if(needToCreate){...} entity
-			if(tabEntityMap[sceneEditor] == innerLandscapeEntity)
-			{
-				tabEntityMap.erase(sceneEditor);
-			}
-			innerLandscapeEntity->RemoveComponent(Component::RENDER_COMPONENT);
-			SafeRelease(innerLandscapeEntity);
-		}
-
-		SetLandscapeEntity(NULL);
-	}
-}
-
-void LandscapeDialog::OnItemEdited(const QString &name, QtPropertyData *data)
-{
-	SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-	if(NULL == curScene)
-	{
-		return;		
-	}
-
-	bool isMultiple = "Size" == name || "Height" == name;
-	
-	if(isMultiple)
-	{
-		curScene->BeginBatch("Landscape resizing");
-	}
-	
-	Command2 *command = (Command2 *) data->CreateLastCommand();
-	if(NULL != command)
-	{
-		curScene->Exec(command);
-	}
-	
-	if("Size" == name || "Height" == name)
-	{
-		landscapeSize.y = landscapeSize.x;
-		AABBox3 bboxForLandscape;
-		bboxForLandscape.AddPoint(Vector3(-landscapeSize.x/2.f, -landscapeSize.y/2.f, 0.f));
-		bboxForLandscape.AddPoint(Vector3(landscapeSize.x/2.f, landscapeSize.y/2.f, landscapeSize.z));
-		LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(innerLandscapeEntity,  innerLandscape->GetHeightmapPathname(), bboxForLandscape);
-		sceneEditor->Exec(command);
-		
-		curScene->EndBatch();
-	}
-	
-	if( "tiledShaderMode" == name )
-	{
-		int newTileMode = data->GetValue().toInt();
-		TileModeChanged(newTileMode);
-	}
-}
-
-Vector3 LandscapeDialog::GetSizeOfCurrentLandscape()
-{
-	Vector3 retValue;
-	if(NULL == innerLandscape)
-	{
-		return retValue;
-	}
-	DAVA::AABBox3 bbox = innerLandscape->GetBoundingBox();
-	if(!bbox.GetSize().IsZero())
-	{
-		DAVA::AABBox3 transformedBox = bbox;
-		if(NULL != innerLandscape->GetWorldTransformPtr())
-		{
-			bbox.GetTransformedBox(*innerLandscape->GetWorldTransformPtr(), transformedBox);
-		}
-		retValue = transformedBox.max - transformedBox.min;
-	}
-	return retValue;
-}
-
-void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
-{
-	innerLandscapeEntity = _landscapeEntity;
-	innerLandscape = innerLandscapeEntity == NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
-	FillUIbyLandscapeEntity(innerLandscapeEntity);
-}
-
-void LandscapeDialog::FillUIbyLandscapeEntity(Entity* _landscapeEntity)
-{
-	Landscape*	landscapeToProcess =  _landscapeEntity== NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
+	Landscape*	landscapeToProcess =  entity == NULL ? NULL : DAVA::GetLandscape(entity);
 	
 	for (DAVA::Map<SelectPathWidgetBase*,int32>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
 	{
@@ -357,7 +237,166 @@ void LandscapeDialog::FillUIbyLandscapeEntity(Entity* _landscapeEntity)
 	{
 		actionButton->setText(CREATE_TITLE);
 	}
+}
 
+void LandscapeDialog::showEvent ( QShowEvent * event )
+{
+	BaseAddEntityDialog::showEvent(event);
+	SetLandscapeEntity(entity);
+}
+
+void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+	int id = command->GetId() ;
+	if( id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_REMOVE)
+	{
+		Entity* commandEntity = command->GetEntity();
+		Entity* landscapeEntity = FindLandscapeEntity(scene);
+		bool isEqual = commandEntity == landscapeEntity;
+		
+		if(id == CMDID_ENTITY_ADD)
+		{
+				if(!redo)
+				{
+					SetLandscapeEntity(NULL);
+				}
+				else if (redo && isEqual)
+				{
+					SetLandscapeEntity(commandEntity);
+				}
+		}
+		else
+		{
+				if(!redo && isEqual)
+				{
+					SetLandscapeEntity(commandEntity);
+				}
+				else if (redo)
+				{
+					SetLandscapeEntity(NULL);
+				}
+		}
+	}
+	if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
+	{
+		FillWidgetsWithContent();
+	}
+
+	propEditor->Update();
+}
+
+void LandscapeDialog::ActionButtonClicked()
+{
+	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+	bool needToCreate = actionButton->text() == CREATE_TITLE;
+	if(needToCreate)
+	{
+		actionButton->setText(DELETE_TITLE);
+		
+		Entity* entityToProcess = new Entity();
+		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+		Landscape* newLandscape = new Landscape();
+		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
+		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
+		entityToProcess->AddComponent(component);
+		SafeRelease(component);
+
+		AABBox3 bboxForLandscape;
+		bboxForLandscape.AddPoint(Vector3(-landscapeSize.x/2.f, -landscapeSize.y/2.f, 0.f));
+		bboxForLandscape.AddPoint(Vector3(landscapeSize.x/2.f, landscapeSize.y/2.f, landscapeSize.z));
+		newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
+
+		EntityAddCommand* commandAdd = new EntityAddCommand(entityToProcess, sceneEditor);
+		sceneEditor->Exec(commandAdd);
+		sceneEditor->selectionSystem->SetSelection(entityToProcess);
+
+		SetLandscapeEntity(entityToProcess);//BaseAddEntityDialog::entity is inited
+		SafeRelease(entityToProcess);
+	}
+	else
+	{
+		actionButton->setText(CREATE_TITLE);
+		
+		if(entity != NULL)
+		{
+			EntityRemoveCommand * command = new EntityRemoveCommand(entity);
+			sceneEditor->Exec(command);
+		}
+
+		SetLandscapeEntity(NULL);
+	}
+}
+
+void LandscapeDialog::OnItemEdited(const QString &name, QtPropertyData *data)
+{
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(NULL == curScene)
+	{
+		return;		
+	}
+
+	bool isMultiple = "Size" == name || "Height" == name;
+	
+	if(isMultiple)
+	{
+		curScene->BeginBatch("Landscape resizing");
+	}
+	
+	Command2 *command = (Command2 *) data->CreateLastCommand();
+	if(NULL != command)
+	{
+		curScene->Exec(command);
+	}
+	
+	if("Size" == name || "Height" == name)
+	{
+		landscapeSize.y = landscapeSize.x;
+		AABBox3 bboxForLandscape;
+		bboxForLandscape.AddPoint(Vector3(-landscapeSize.x/2.f, -landscapeSize.y/2.f, 0.f));
+		bboxForLandscape.AddPoint(Vector3(landscapeSize.x/2.f, landscapeSize.y/2.f, landscapeSize.z));
+		LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity,  innerLandscape->GetHeightmapPathname(), bboxForLandscape);
+		curScene->Exec(command);
+		
+		curScene->EndBatch();
+	}
+	
+	if( "tiledShaderMode" == name )
+	{
+		int newTileMode = data->GetValue().toInt();
+		TileModeChanged(newTileMode);
+	}
+}
+
+Vector3 LandscapeDialog::GetSizeOfCurrentLandscape()
+{
+	Vector3 retValue;
+	if(NULL == innerLandscape)
+	{
+		return retValue;
+	}
+	DAVA::AABBox3 bbox = innerLandscape->GetBoundingBox();
+	if(!bbox.GetSize().IsZero())
+	{
+		DAVA::AABBox3 transformedBox = bbox;
+		if(NULL != innerLandscape->GetWorldTransformPtr())
+		{
+			bbox.GetTransformedBox(*innerLandscape->GetWorldTransformPtr(), transformedBox);
+		}
+		retValue = transformedBox.max - transformedBox.min;
+	}
+	return retValue;
+}
+
+void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
+{
+	SetEntity(_landscapeEntity);
+	innerLandscape = _landscapeEntity == NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
+	FillUIbyLandscapeEntity();
+}
+
+void LandscapeDialog::FillUIbyLandscapeEntity()
+{
+	FillWidgetsWithContent();
 	FillPropertyEditorWithContent();
 	propEditor->expandAll();
 	PerformResize();
@@ -415,8 +454,9 @@ void LandscapeDialog::CleanupPathWidgets()
 	}
 }
 
-void LandscapeDialog::ValueChanged(String fileName)
+void LandscapeDialog::PathWidgetValueChanged(String fileName)
 {
+	SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
 	if(!innerLandscape)
 	{
 		return;
@@ -429,9 +469,8 @@ void LandscapeDialog::ValueChanged(String fileName)
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
 		if(filePath != presentPath)
 		{
-			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(innerLandscapeEntity, filePath, innerLandscape->GetBoundingBox());
+			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath, innerLandscape->GetBoundingBox());
 			sceneEditor->Exec(command);
-			//innerLandscape->BuildLandscapeFromHeightmapImage(filePath, innerLandscape->GetBoundingBox());
 		}
 	}
 	else
@@ -440,8 +479,8 @@ void LandscapeDialog::ValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-
-			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(innerLandscapeEntity, (Landscape::eTextureLevel)id, filePath);
+			CheckAndCreateTexForTexture(filePath);
+			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
 			if(innerLandscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
@@ -452,60 +491,22 @@ void LandscapeDialog::ValueChanged(String fileName)
 	}
 }
 
+void LandscapeDialog::CheckAndCreateTexForTexture(const FilePath& path)
+{
+	FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(path);
+
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+	if(!descriptor)
+	{
+		descriptor = new TextureDescriptor();
+		descriptor->pathname = descriptorPathname;
+		descriptor->Save();
+	}
+
+	SafeRelease(descriptor);
+}
+
 void LandscapeDialog::SceneActivated(SceneEditor2 *editor)
 {
-	SaveTabState();
-	ApplyTabState(editor);
-}
-
-void LandscapeDialog::SaveTabState()
-{
-	if(innerLandscapeEntity != entity)
-	{
-		tabEntityMap[sceneEditor] = innerLandscapeEntity;
-	}
-}
-
-void LandscapeDialog::ApplyTabState(SceneEditor2*	newSceneEditor)
-{
-	Entity* newEntity = FindLandscapeEntity(newSceneEditor);
-	SetEntity(newEntity);
-	sceneEditor = newSceneEditor;
-	if(tabEntityMap.find(newSceneEditor) != tabEntityMap.end())//found
-	{
-		SetLandscapeEntity(tabEntityMap[newSceneEditor]);
-	}
-	else
-	{
-		SetLandscapeEntity(newEntity);
-	}
-}
-
-void LandscapeDialog::done(int value )
-{
-	if(entity == NULL && innerLandscapeEntity != NULL)
-	{
-		innerLandscape->BuildLandscapeFromHeightmapImage(innerLandscape->GetHeightmapPathname(), innerLandscape->GetBoundingBox());
-		EntityAddCommand* command = new EntityAddCommand(innerLandscapeEntity, sceneEditor);
-		sceneEditor->Exec(command);
-		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
-		SafeRelease(innerLandscapeEntity);
-	}
-	if(entity != NULL && innerLandscapeEntity != NULL  && (entity != innerLandscapeEntity))
-	{
-		EntityRemoveCommand * command = new EntityRemoveCommand(entity);
-		sceneEditor->Exec(command);
-		EntityAddCommand* commandAdd = new EntityAddCommand(innerLandscapeEntity, sceneEditor);
-		sceneEditor->Exec(commandAdd);
-		sceneEditor->selectionSystem->SetSelection(innerLandscapeEntity);
-		SafeRelease(innerLandscapeEntity);
-	}
-	
-	if(entity != NULL && innerLandscapeEntity == NULL)
-	{
-		EntityRemoveCommand * command = new EntityRemoveCommand(entity);
-		sceneEditor->Exec(command);
-	}
-	
-	QDialog::done(value );
+	SetLandscapeEntity(FindLandscapeEntity(editor));
 }

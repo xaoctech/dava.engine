@@ -99,7 +99,7 @@ void ActionDisableHeightmapEditor::Redo()
 ModifyHeightmapCommand::ModifyHeightmapCommand(HeightmapProxy* heightmapProxy,
 											   Heightmap* originalHeightmap,
 											   const Rect& updatedRect)
-:	Command2(CMDID_DRAW_HEIGHTMAP, "Height Map Change")
+:	Command2(CMDID_HEIGHTMAP_MODIFY, "Height Map Change")
 ,	heightmapProxy(heightmapProxy)
 {
 	if (originalHeightmap && heightmapProxy)

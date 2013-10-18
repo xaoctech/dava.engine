@@ -208,6 +208,8 @@ protected:
 
 	bool IsAnySceneChanged();
 
+	void SetLandscapeSettingsEnabled(bool);
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -258,6 +260,7 @@ private:
 	void LoadHangingObjects(SceneEditor2 *scene);
 
 	bool IsSavingAllowed();
+	bool IsTextureReloadAllowed();
     void CreateObjectTypesCombobox();
 };
 

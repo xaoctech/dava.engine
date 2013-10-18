@@ -240,7 +240,7 @@ bool QtMainWindow::SaveScene( SceneEditor2 *scene )
 
 bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 {
-	DAVA::SceneFileV2::eError ret = DAVA::SceneFileV2::ERROR_NO_ERROR;
+	bool ret = false;
 
 	if(NULL != scene)
 	{
@@ -250,7 +250,6 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
             DAVA::FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString();
 			saveAsPath = dataSourcePath.MakeDirectoryPathname() + scene->GetScenePath().GetFilename();
 		}
-
 
 		QString selectedPath = QtFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 		if(!selectedPath.isEmpty())
@@ -267,13 +266,14 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 				}
 				else
 				{
+					ret = true;
 					AddRecent(scenePath.GetAbsolutePathname().c_str());
 				}
 			}
 		}
 	}
 
-	return (ret == DAVA::SceneFileV2::ERROR_NO_ERROR);
+	return ret;
 }
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
@@ -695,6 +695,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadObjectTypes(scene);
 	LoadHangingObjects(scene);
 
+	int32 tools = scene->GetEnabledTools();
+	SetLandscapeSettingsEnabled(tools == 0);
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
     if(materialEditor)
@@ -1029,11 +1031,21 @@ void QtMainWindow::OnRedo()
 
 void QtMainWindow::OnReloadTextures()
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	SetGPUFormat(GetGPUFormat());
 }
 
 void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 {
+	if (!IsTextureReloadAllowed())
+	{
+		return;
+	}
+
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
 	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
@@ -1773,6 +1785,9 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(false);
 	
 	int32 tools = scene->GetEnabledTools();
+	
+	SetLandscapeSettingsEnabled(tools == 0);
+	
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
 		ui->actionCustomColorsEditor->setChecked(true);
@@ -1996,6 +2011,19 @@ bool QtMainWindow::IsSavingAllowed()
 	return true;
 }
 
+bool QtMainWindow::IsTextureReloadAllowed()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	if (!scene || scene->GetEnabledTools() != 0)
+	{
+		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing before reload textures!");
+		return false;
+	}
+
+	return true;
+}
+
 void QtMainWindow::OnObjectsTypeChanged( QAction *action )
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -2150,6 +2178,15 @@ bool QtMainWindow::IsAnySceneChanged()
 	}
 
 	return false;
+}
+
+void QtMainWindow::SetLandscapeSettingsEnabled(bool enable)
+{
+	ui->actionLandscape->setEnabled(enable);
+	if(NULL != landscapeDialog && !enable)
+	{
+		landscapeDialog->close();
+	}
 }
 
 void QtMainWindow::OnHangingObjects()
