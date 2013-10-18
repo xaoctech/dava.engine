@@ -241,7 +241,7 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-    if(command->GetId() == CMDID_ADD_COMPONENT || command->GetId() == CMDID_REMOVE_COMPONENT)
+    if(command->GetId() == CMDID_COMPONENT_ADD || command->GetId() == CMDID_COMPONENT_REMOVE)
     {
         UpdateProperties();
     }

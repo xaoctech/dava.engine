@@ -61,7 +61,7 @@ using namespace DAVA;
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
-	CommandAction(CMDID_UPDATE_PARTICLE_EFFECT)
+	CommandAction(CMDID_PARTICLE_EFFECT_UPDATE)
 {
 	this->particleEffect = particleEffect;
 }
@@ -80,7 +80,7 @@ void CommandUpdateEffect::Redo()
 }
 
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
-	CommandAction(CMDID_UPDATE_PARTICLE_EMITTER)
+	CommandAction(CMDID_PARTICLE_EMITTER_UPDATE)
 {
 	this->emitter = emitter;
 }
@@ -122,7 +122,7 @@ void CommandUpdateEmitter::Redo()
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
-	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER)
+	CommandUpdateParticleLayerBase(CMDID_PARTICLE_LAYER_UPDATE)
 {
 	this->emitter = emitter;
 	this->layer = layer;
@@ -331,7 +331,7 @@ void CommandUpdateParticleLayer::Redo()
 }
 
 CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :
-	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTILCE_LAYER_TIME)
+	CommandUpdateParticleLayerBase(CMDID_PARTILCE_LAYER_UPDATE_TIME)
 {
 	this->layer = layer;
 }
@@ -348,7 +348,7 @@ void CommandUpdateParticleLayerTime::Redo()
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
-	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER_ENABLED)
+	CommandUpdateParticleLayerBase(CMDID_PARTICLE_LAYER_UPDATE_ENABLED)
 {
 	this->layer = layer;
 	this->isEnabled = isEnabled;
@@ -364,7 +364,7 @@ void CommandUpdateParticleLayerEnabled::Redo()
 }
 
 CommandUpdateParticleLayerLods::CommandUpdateParticleLayerLods(ParticleLayer* layer, const Vector<bool>& lods) :
-CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER_LODS)
+CommandUpdateParticleLayerBase(CMDID_PARTICLE_LAYER_UPDATE_LODS)
 {
 	this->layer = layer;
 	this->lods = lods;
@@ -383,7 +383,7 @@ void CommandUpdateParticleLayerLods::Redo()
 }
 
 CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
-	CommandAction(CMDID_UPDATE_PARTICLE_FORCE)
+	CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
 {
 	this->layer = layer;
 	this->forceId = forceId;
@@ -408,7 +408,7 @@ void CommandUpdateParticleForce::Redo()
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandAddParticleEmitter::CommandAddParticleEmitter(DAVA::Entity* effect) :
-    CommandAction(CMDID_ADD_PARTICLE_EMITTER)
+    CommandAction(CMDID_PARTICLE_EMITTER_ADD)
 {
 	this->effectEntity = effect;
 }
@@ -438,7 +438,7 @@ void CommandAddParticleEmitter::Redo()
 }
 
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart) :
-    CommandAction(CMDID_START_STOP_PARTICLE_EFFECT)
+    CommandAction(CMDID_PARTICLE_EFFECT_START_STOP)
 {
     this->isStart = isStart;
 	this->effectEntity = effect;
@@ -470,7 +470,7 @@ DAVA::Entity* CommandStartStopParticleEffect::GetEntity() const
 }
 
 CommandRestartParticleEffect::CommandRestartParticleEffect(DAVA::Entity* effect) :
-    CommandAction(CMDID_RESTART_PARTICLE_EFFECT)
+    CommandAction(CMDID_PARTICLE_EFFECT_RESTART)
 {
 	this->effectEntity = effect;
 }
@@ -493,7 +493,7 @@ DAVA::Entity* CommandRestartParticleEffect::GetEntity() const
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(ParticleEmitter* emitter) :
-    CommandAction(CMDID_ADD_PARTICLE_EMITTER_LAYER)
+    CommandAction(CMDID_PARTICLE_EMITTER_LAYER_ADD)
 {
 	this->selectedEmitter = emitter;
 	this->createdLayer = NULL;
@@ -532,7 +532,7 @@ void CommandAddParticleEmitterLayer::Redo()
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleLayer* layer) :
-    CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_LAYER)
+    CommandAction(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
 {
 	this->selectedLayer = layer;
 }
@@ -565,7 +565,7 @@ void CommandRemoveParticleEmitterLayer::Redo()
 }
 
 CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer(ParticleLayer* layer) :
-	CommandAction(CMDID_CLONE_PARTICLE_EMITTER_LAYER)
+	CommandAction(CMDID_PARTICLE_EMITTER_LAYER_CLONE)
 {
 	this->selectedLayer = layer;
 }
@@ -589,7 +589,7 @@ void CommandCloneParticleEmitterLayer::Redo()
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer) :
-    CommandAction(CMDID_ADD_PARTICLE_EMITTER_FORCE)
+    CommandAction(CMDID_PARTICLE_EMITTER_FORCE_ADD)
 {
 	this->selectedLayer = layer;
 }
@@ -626,7 +626,7 @@ void CommandAddParticleEmitterForce::Redo()
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force) :
-    CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_FORCE)
+    CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
 {
 	this->selectedLayer = layer;
 	this->selectedForce = force;
@@ -660,7 +660,7 @@ void CommandRemoveParticleEmitterForce::Redo()
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEmitter* emitter, const FilePath& path) :
-	CommandAction(CMDID_LOAD_PARTICLE_EMITTER_FROM_YAML)
+	CommandAction(CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML)
 {
 	this->selectedEmitter = emitter;
 	this->filePath = path;
@@ -688,7 +688,7 @@ void CommandLoadParticleEmitterFromYaml::Redo()
 }
 
 CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path) :
-	CommandAction(CMDID_SAVE_PARTICLE_EMITTER_TO_YAML)
+	CommandAction(CMDID_PARTICLE_EMITTER_SAVE_TO_YAML)
 {
 	this->selectedEmitter = emitter;
 	this->filePath = path;

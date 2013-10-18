@@ -33,7 +33,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableNotPassable::ActionEnableNotPassable(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_RULER_TOOL)
+:	CommandAction(CMDID_NOT_PASSABLE_TERRAIN_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -64,7 +64,7 @@ void ActionEnableNotPassable::Redo()
 }
 
 ActionDisableNotPassable::ActionDisableNotPassable(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_RULER_TOOL)
+:	CommandAction(CMDID_NOT_PASSABLE_TERRAIN_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }

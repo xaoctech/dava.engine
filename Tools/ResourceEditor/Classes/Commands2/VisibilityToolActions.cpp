@@ -36,7 +36,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableVisibilityTool::ActionEnableVisibilityTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_VISIBILITY_TOOL)
+:	CommandAction(CMDID_VISIBILITY_TOOL_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -67,7 +67,7 @@ void ActionEnableVisibilityTool::Redo()
 }
 
 ActionDisableVisibilityTool::ActionDisableVisibilityTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_VISIBILITY_TOOL)
+:	CommandAction(CMDID_VISIBILITY_TOOL_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -99,7 +99,7 @@ ActionSetVisibilityPoint::ActionSetVisibilityPoint(Image* originalImage,
 												   Sprite* cursorSprite,
 												   VisibilityToolProxy* visibilityToolProxy,
 												   const Vector2& visibilityPoint)
-:	CommandAction(CMDID_SET_VISIBILITY_POINT, "Set Visibility Point")
+:	CommandAction(CMDID_VISIBILITY_TOOL_SET_POINT, "Set Visibility Point")
 {
 //	this->undoImage = SafeRetain(originalImage);
 	this->cursorSprite = SafeRetain(cursorSprite);
@@ -166,7 +166,7 @@ void ActionSetVisibilityPoint::Redo()
 ActionSetVisibilityArea::ActionSetVisibilityArea(Image* originalImage,
 												 VisibilityToolProxy* visibilityToolProxy,
 												 const Rect& updatedRect)
-:	CommandAction(CMDID_SET_VISIBILITY_AREA, "Set Visibility Area")
+:	CommandAction(CMDID_VISIBILITY_TOOL_SET_AREA, "Set Visibility Area")
 {
 	Image* currentImage = visibilityToolProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
 
