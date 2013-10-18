@@ -276,6 +276,7 @@ FMOD_RESULT F_CALLBACK FMODComponentEventCallback(FMOD_EVENT *event, FMOD_EVENT_
     {
         FMOD::Event **event = (FMOD::Event **)userdata;
         FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent((*event));
+        FMOD_VERIFY((*event)->setCallback(0, 0));
         (*event) = 0;
     }
     return FMOD_OK;
