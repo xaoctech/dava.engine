@@ -329,9 +329,8 @@ protected:
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
     Font * textFont;
-    Font * constFont;
-	
-	// Keyboard customization params.
+
+    // Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
 	eAutoCorrectionType autoCorrectionType;
 	eSpellCheckingType spellCheckingType;

@@ -55,6 +55,8 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+
+	SetColor(colorIndex);
 	
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
