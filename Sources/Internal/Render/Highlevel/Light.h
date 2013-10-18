@@ -99,7 +99,6 @@ protected:
     Vector3 position;
     Vector3 direction;
     
-//    eType type; //TODO: waiting for enums at introspection
     uint32 type;
     
     Color ambientColor;
@@ -114,8 +113,8 @@ public:
     INTROSPECTION_EXTEND(Light, BaseObject,
         MEMBER(position, "Position", I_SAVE | I_VIEW)
         MEMBER(direction, "Direction", I_SAVE | I_VIEW)
-                         
-        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
+                     
+        MEMBER(type, InspDesc("Type", GlobalEnumMap<Light::eType>::Instance()), I_SAVE | I_VIEW | I_EDIT)
                          
         MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)
