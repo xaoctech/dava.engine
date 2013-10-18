@@ -79,9 +79,11 @@ TestTemplate<AlignTest>("AlignTest"),
 
 void AlignTest::LoadResources()
 {
-	// DF-1627 - Always set black background for this test - all screenshots should be the same
+	// DF-1627 - Always set black background for this test for Windows - all screenshots should be the same
+#ifdef __DAVAENGINE_WIN32__
 	GetBackground()->SetColor(Color::Black());
 	GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+#endif
 
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");		
     DVASSERT(font);
