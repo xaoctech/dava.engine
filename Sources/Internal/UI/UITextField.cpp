@@ -167,13 +167,12 @@ UITextField::UITextField()
 	
 UITextField::~UITextField()
 {
-	SafeRelease(textFont);
-
 #if defined (__DAVAENGINE_ANDROID__)
 	SafeDelete(textFieldAndroid);
 #elif defined (__DAVAENGINE_IPHONE__)
 	SafeDelete(textFieldiPhone);
 #else
+	SafeRelease(textFont);    
     RemoveAllControls();
     SafeRelease(staticText);
 #endif
