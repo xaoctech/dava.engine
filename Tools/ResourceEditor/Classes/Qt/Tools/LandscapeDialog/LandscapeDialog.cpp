@@ -37,6 +37,7 @@
 #include "Classes/Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 #include "../Qt/Main/QtUtils.h"
+#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 #define  INIT_PATH_WIDGET(widgetName, widgetNum, widgetTitle, fileFilter) SelectPathWidgetBase* widgetName = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);\
 	if(innerLandscape){\
@@ -494,7 +495,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-			CheckAndCreateTexForTexture(filePath);
+			TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
 			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
@@ -504,21 +505,6 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 			}
 		}
 	}
-}
-
-void LandscapeDialog::CheckAndCreateTexForTexture(const FilePath& path)
-{
-	FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(path);
-
-	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-	if(!descriptor)
-	{
-		descriptor = new TextureDescriptor();
-		descriptor->pathname = descriptorPathname;
-		descriptor->Save();
-	}
-
-	SafeRelease(descriptor);
 }
 
 void LandscapeDialog::SceneActivated(SceneEditor2 *editor)
