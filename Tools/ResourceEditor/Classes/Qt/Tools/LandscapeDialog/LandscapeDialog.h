@@ -83,24 +83,16 @@ protected:
 	void FillUIbyLandscapeEntity();
 
 	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
+	
+	void CheckAndCreateTextForTexture(const FilePath& path);
 
 	Vector3 GetSizeOfCurrentLandscape();
-
-	QtPropertyDataDavaVariant* sizePropertyDataVariant;
-	QtPropertyDataDavaVariant* hightPropertyDataVariant;
 	
 	Landscape*				innerLandscape;
-	//Entity*					innerLandscapeEntity;
 	QPushButton*			actionButton;
-	//SceneEditor2*			sceneEditor; 
 
 	DAVA::Map<SelectPathWidgetBase*, int32>  widgetMap;
-
-	//map to save pointers to created entities
-	//DAVA::Map<SceneEditor2*, Entity* > tabEntityMap;
-	
 	Vector3	landscapeSize;
-
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */
