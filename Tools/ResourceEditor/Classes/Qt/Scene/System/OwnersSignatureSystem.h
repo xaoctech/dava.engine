@@ -52,7 +52,7 @@ private:
 	
 	void UpdateEntityOwner(DAVA::KeyedArchive *customProperties);
 	
-	void UpdateModificationTime(DAVA::KeyedArchive *customProperties);
+	DAVA::String GetCurrentTime();
 	
 	DAVA::String GetDesignerName(DAVA::KeyedArchive *customProperties);
 

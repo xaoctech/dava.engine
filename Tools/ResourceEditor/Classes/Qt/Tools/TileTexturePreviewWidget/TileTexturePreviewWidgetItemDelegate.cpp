@@ -2,7 +2,7 @@
 
 #include <QLineEdit>
 
-const QString TileTexturePreviewWidgetItemDelegate::TILE_COLOR_VALIDATE_REGEXP = "#[A-F0-9]{6}";
+const QString TileTexturePreviewWidgetItemDelegate::TILE_COLOR_VALIDATE_REGEXP = "#{0,1}[A-F0-9]{6}";
 
 TileTexturePreviewWidgetItemDelegate::TileTexturePreviewWidgetItemDelegate(QObject* parent /* = 0 */)
 :	QItemDelegate(parent)
@@ -13,7 +13,7 @@ TileTexturePreviewWidgetItemDelegate::~TileTexturePreviewWidgetItemDelegate()
 {
 }
 
-QWidget* TileTexturePreviewWidgetItemDelegate:: createEditor(QWidget* parent,
+QWidget* TileTexturePreviewWidgetItemDelegate::createEditor(QWidget* parent,
 															 const QStyleOptionViewItem& option,
 															 const QModelIndex& index) const
 {
@@ -28,4 +28,10 @@ QWidget* TileTexturePreviewWidgetItemDelegate:: createEditor(QWidget* parent,
 	}
 
 	return widget;
+}
+
+void TileTexturePreviewWidgetItemDelegate::drawFocus(QPainter* painter,
+													 const QStyleOptionViewItem& option,
+													 const QRect& rect) const
+{
 }

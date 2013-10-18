@@ -227,17 +227,19 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
 
 		if (state == QValidator::Acceptable)
 		{
-			QColor color = QColor(item->text(0));
+			QString colorString = item->text(0);
+			if (!colorString.startsWith("#"))
+			{
+				colorString = "#" + colorString;
+			}
+
+			QColor color = QColor(colorString);
 			if (color.isValid())
 			{
 				Color c = QColorToColor(color);
 				if (c != colors[index])
 				{
-					colors[index] = c;
-
-					emit TileColorChanged(index, colors[index]);
-
-					UpdateColor(index);
+					SetColor(index, c);
 				}
 			}
 		}
@@ -257,22 +259,35 @@ bool TileTexturePreviewWidget::eventFilter(QObject *obj, QEvent *ev)
 {
 	for (int32 i = 0; i < (int32)labels.size(); ++i)
 	{
-		if (obj == labels[i] && ev->type() == QEvent::MouseButtonDblClick)
+		if (obj == labels[i])
 		{
-			QColor curColor = ColorToQColor(colors[i]);
-			QColor color = QColorDialog::getColor(curColor, this, tr("Tile color"), 0);
-
-			if (color.isValid() && color != curColor)
+			if (ev->type() == QEvent::MouseButtonRelease)
 			{
-				colors[i] = QColorToColor(color);
-				UpdateColor(i);
-			}
+				QColor curColor = ColorToQColor(colors[i]);
+				QColor color = QColorDialog::getColor(curColor, this, tr("Tile color"), 0);
 
-			return true;
+				if (color.isValid() && color != curColor)
+				{
+					SetColor(i, QColorToColor(color));
+				}
+
+				return true;
+			}
+			else if (ev->type() == QEvent::MouseButtonPress)
+			{
+				return true;
+			}
 		}
 	}
 
 	return QObject::eventFilter(obj, ev);
+}
+
+void TileTexturePreviewWidget::SetColor(int32 number, const Color& color)
+{
+	colors[number] = color;
+	emit TileColorChanged(number, colors[number]);
+	UpdateColor(number);
 }
 
 void TileTexturePreviewWidget::SetMode(TileTexturePreviewWidget::eWidgetModes mode)

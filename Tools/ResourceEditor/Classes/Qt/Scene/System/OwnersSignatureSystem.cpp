@@ -69,13 +69,7 @@ bool OwnersSignatureSystem::IsCommandIdValid(int _id)
 	return false;
 }
 
-
-DAVA::String OwnersSignatureSystem::GetDesignerName(DAVA::KeyedArchive *customProperties)
-{
-	return customProperties->GetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, "nobody");
-}
-
-void OwnersSignatureSystem::UpdateModificationTime(DAVA::KeyedArchive *customProperties)
+DAVA::String OwnersSignatureSystem::GetCurrentTime()
 {
 	time_t now = time(0);
     tm* utcTime = localtime(&now);
@@ -84,7 +78,7 @@ void OwnersSignatureSystem::UpdateModificationTime(DAVA::KeyedArchive *customPro
 							   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
 							   utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
 	
-	customProperties->SetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
+	return timeString;
 }
 
 DAVA::String OwnersSignatureSystem::GetModificationTime(DAVA::KeyedArchive *customProperties)
@@ -95,5 +89,5 @@ DAVA::String OwnersSignatureSystem::GetModificationTime(DAVA::KeyedArchive *cust
 void OwnersSignatureSystem::UpdateEntityOwner(DAVA::KeyedArchive *customProperties)
 {
 	customProperties->SetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, EditorSettings::Instance()->GetDesignerName());
-	UpdateModificationTime(customProperties);
+	customProperties->SetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, GetCurrentTime());
 }

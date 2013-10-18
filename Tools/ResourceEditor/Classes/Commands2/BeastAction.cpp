@@ -112,10 +112,6 @@ void BeastAction::Start()
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 	BeastProxy::Instance()->Run(beastManager, workingScene);
-
-	if(NULL != waitDialog)
-	{
-	}
 }
 
 bool BeastAction::Process()

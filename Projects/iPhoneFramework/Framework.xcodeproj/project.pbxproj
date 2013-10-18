@@ -2827,9 +2827,8 @@
 				02D4CFC318055E29007EC9EC /* FMODSoundGroup.h in Headers */,
 				02D4CFC518055E29007EC9EC /* FMODSoundSystem.h in Headers */,
 				02D4CFCA18056051007EC9EC /* FMODSoundComponent.h in Headers */,
-				02C85177181032EA002B7E1C /* AutotestingDB.h in Headers */,
-				02C85179181032EA002B7E1C /* GameAPI.h in Headers */,
-			);
+				7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */,
+				7A8F772C17E73E720048A43D /* GameAPI.h in Headers */,			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
@@ -3215,9 +3214,8 @@
 				02D4CFC218055E29007EC9EC /* FMODSoundGroup.cpp in Sources */,
 				02D4CFC418055E29007EC9EC /* FMODSoundSystem.cpp in Sources */,
 				02D4CFC918056051007EC9EC /* FMODSoundComponent.cpp in Sources */,
-				02C85176181032EA002B7E1C /* AutotestingDB.cpp in Sources */,
-				02C85178181032EA002B7E1C /* GameAPI.cpp in Sources */,
-			);
+				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
+				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */

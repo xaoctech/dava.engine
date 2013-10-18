@@ -64,6 +64,8 @@ public:
 
 	void EmitChanged();
 
+	DAVA::Entity* Load(const DAVA::FilePath& sc2path, bool optimize);
+
 protected:
 	bool structureChanged;
 
@@ -73,17 +75,15 @@ protected:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
-	void CheckAndMarkSolid(DAVA::Entity *entity);
-	void CheckAndMarkLocked(DAVA::Entity *entity);
-	void MarkLocked(DAVA::Entity *entity);
-
-	DAVA::Entity* Load(const DAVA::FilePath& sc2path, bool optimize);
-
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
     bool CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const;
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
+
+	void CheckAndMarkSolid(DAVA::Entity *entity);
+	void CheckAndMarkLocked(DAVA::Entity *entity);
+	void MarkLocked(DAVA::Entity *entity);
 };
 
 #endif // __SCENE_STRUCTURE_SYSTEM_H__

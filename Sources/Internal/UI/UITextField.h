@@ -328,10 +328,8 @@ protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
-    Font * textFont;
-    Font * constFont;
-	
-	// Keyboard customization params.
+
+    // Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
 	eAutoCorrectionType autoCorrectionType;
 	eSpellCheckingType spellCheckingType;
@@ -355,6 +353,7 @@ private:
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
 #else
+    Font * textFont;
     UIStaticText * staticText;
 #endif
     float32 cursorTime;

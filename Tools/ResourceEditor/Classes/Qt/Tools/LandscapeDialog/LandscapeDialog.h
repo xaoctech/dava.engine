@@ -57,12 +57,10 @@ public:
 public slots:
 
 	void SceneActivated(SceneEditor2 *);
-
-	void done(int);
-		
+	
 protected slots:
 	
-	void ValueChanged(DAVA::String fileName);
+	void PathWidgetValueChanged(DAVA::String fileName);
 	
 	void ActionButtonClicked();
 
@@ -75,35 +73,26 @@ protected:
 	void TileModeChanged(int newValue);
 
 	virtual void FillPropertyEditorWithContent();
+
+	void FillWidgetsWithContent();
 	
 	void showEvent ( QShowEvent * event );
 	
 	void SetLandscapeEntity(Entity* _landscapeEntity);
 	
-	void FillUIbyLandscapeEntity(Entity* _landscapeEntity);
+	void FillUIbyLandscapeEntity();
 
 	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
-
-	void SaveTabState();
 	
-	void ApplyTabState(SceneEditor2*	sceneEditor); 
+	void CheckAndCreateTexForTexture(const FilePath& path);
 
 	Vector3 GetSizeOfCurrentLandscape();
-
-	QtPropertyDataDavaVariant* sizePropertyDataVariant;
-	QtPropertyDataDavaVariant* hightPropertyDataVariant;
 	
 	Landscape*				innerLandscape;
-	Entity*					innerLandscapeEntity;
 	QPushButton*			actionButton;
-	SceneEditor2*			sceneEditor; 
 
 	DAVA::Map<SelectPathWidgetBase*, int32>  widgetMap;
-
-	DAVA::Map<SceneEditor2*, Entity* > tabEntityMap;
-	
 	Vector3	landscapeSize;
-
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */

@@ -146,7 +146,7 @@ void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEm
 	innerParticleEmitter->SetRenderSystem(parentEmitter->GetRenderSystem());
 	innerParticleEmitter->SetWorldTransformPtr(parentEmitter->GetWorldTransformPtr());
 	innerParticleEmitter->RememberInitialTranslationVector();
-	innerParticleEmitter->SetParentParticle(this);	
+	innerParticleEmitter->SetParentParticle(this);		
 	innerParticleEmitter->SetAutoRestart(false);
 
 	RegisterInnerEmitterInRenderSystem(true);

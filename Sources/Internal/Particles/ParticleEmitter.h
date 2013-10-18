@@ -371,7 +371,7 @@ public:
 
 	bool IsToBeDeleted()
 	{
-		return shouldBeDeleted;
+		return shouldBeDeleted&&(!particleCount); //let inner emitter particles finish
 	};
 
 	void SetToBeDeleted(bool value)
@@ -441,6 +441,7 @@ protected:
 	uint32 currentLodLevel, desiredLodLevel; //if lodLevelLocked - set lod level updates desired level
 	bool lodLevelLocked; //short effect locks it's lod layer once started
 	
+	int32 particleCount;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
