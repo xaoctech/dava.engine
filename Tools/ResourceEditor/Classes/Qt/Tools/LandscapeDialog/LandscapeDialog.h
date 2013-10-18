@@ -84,7 +84,7 @@ protected:
 
 	SelectPathWidgetBase* FindWidgetBySpecInfo(int value);
 	
-	void CheckAndCreateTextForTexture(const FilePath& path);
+	void CheckAndCreateTexForTexture(const FilePath& path);
 
 	Vector3 GetSizeOfCurrentLandscape();
 	
