@@ -123,11 +123,8 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	ui->lowerLayOut->addWidget(actionButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
 	
-	QtPropertyDataDavaVariant* sizePropertyDataVariant = NULL;
-	QtPropertyDataDavaVariant* hightPropertyDataVariant = NULL;
-	
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool )));
-	landscapeSize = Vector3(445, 445, 50);//todo
+	landscapeSize = Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 }
 
 LandscapeDialog::~LandscapeDialog()
@@ -280,8 +277,6 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 				}
 		}
 	}
-	//CMDID_LANDSCAPE_SET_TEXTURE
-	//CMDID_LANDSCAPE_SET_HEIGHTMAP
 	if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
 	{
 		FillWidgetsWithContent();
@@ -484,7 +479,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-
+			CheckAndCreateTexForTexture(filePath);
 			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
@@ -494,6 +489,21 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 			}
 		}
 	}
+}
+
+void LandscapeDialog::CheckAndCreateTexForTexture(const FilePath& path)
+{
+	FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(path);
+
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+	if(!descriptor)
+	{
+		descriptor = new TextureDescriptor();
+		descriptor->pathname = descriptorPathname;
+		descriptor->Save();
+	}
+
+	SafeRelease(descriptor);
 }
 
 void LandscapeDialog::SceneActivated(SceneEditor2 *editor)
