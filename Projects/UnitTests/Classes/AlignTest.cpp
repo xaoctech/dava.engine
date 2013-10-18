@@ -79,6 +79,10 @@ TestTemplate<AlignTest>("AlignTest"),
 
 void AlignTest::LoadResources()
 {
+	// DF-1627 - Always set black background for this test - all screenshots should be the same
+	GetBackground()->SetColor(Color::Black());
+	GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");		
     DVASSERT(font);
 
