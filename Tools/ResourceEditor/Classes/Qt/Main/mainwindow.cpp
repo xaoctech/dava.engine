@@ -689,6 +689,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
+	EnableGPUReloadActions(tools == 0);
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
     if(materialEditor)
@@ -1779,7 +1780,8 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	int32 tools = scene->GetEnabledTools();
 	
 	SetLandscapeSettingsEnabled(tools == 0);
-	
+	EnableGPUReloadActions(tools == 0);
+
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
 		ui->actionCustomColorsEditor->setChecked(true);
@@ -1967,15 +1969,20 @@ bool QtMainWindow::IsSavingAllowed()
 
 bool QtMainWindow::IsTextureReloadAllowed()
 {
-	SceneEditor2* scene = GetCurrentScene();
+	bool allowed = true;
 
-	if (!scene || scene->GetEnabledTools() != 0)
+	for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 	{
-		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing before reload textures!");
-		return false;
+		SceneEditor2* scene = GetSceneWidget()->GetTabScene(tab);
+		allowed &= (scene->GetEnabledTools() == 0);
 	}
 
-	return true;
+	if (!allowed)
+	{
+		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing in every tab before reload textures!");
+	}
+
+	return allowed;
 }
 
 void QtMainWindow::OnObjectsTypeChanged( QAction *action )
@@ -2165,4 +2172,8 @@ void QtMainWindow::OnHangingObjectsHeight( double value)
 	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
 }
 
-
+void QtMainWindow::EnableGPUReloadActions(bool enable)
+{
+	ui->menuTexturesForGPU->setEnabled(enable);
+	ui->actionReloadTextures->setEnabled(enable);
+}
