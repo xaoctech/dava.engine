@@ -417,6 +417,8 @@ void ParticleLayer::DeleteAllParticles()
 	Particle * current = head;
 	while(current)
 	{
+		if (current->GetInnerEmitter())
+			current->GetInnerEmitter()->DoRestart(true);
 		Particle * next = current->next;
 		delete(current);
 		count--;
