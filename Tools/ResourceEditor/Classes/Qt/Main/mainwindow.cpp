@@ -687,6 +687,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadObjectTypes(scene);
 	LoadHangingObjects(scene);
 
+	int32 tools = scene->GetEnabledTools();
+	SetLandscapeSettingsEnabled(tools == 0);
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
     if(materialEditor)
@@ -1775,6 +1777,9 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(false);
 	
 	int32 tools = scene->GetEnabledTools();
+	
+	SetLandscapeSettingsEnabled(tools == 0);
+	
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
 		ui->actionCustomColorsEditor->setChecked(true);
@@ -1817,7 +1822,6 @@ void QtMainWindow::OnCustomColorsEditor()
 	{
 		sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
 	}
-	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR));
 }
 
 void QtMainWindow::OnHeightmapEditor()
@@ -1836,7 +1840,6 @@ void QtMainWindow::OnHeightmapEditor()
 	{
 		sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
 	}
-	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR));
 }
 
 void QtMainWindow::OnRulerTool()
@@ -1855,7 +1858,6 @@ void QtMainWindow::OnRulerTool()
 	{
 		sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
 	}
-	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_RULER));
 }
 
 void QtMainWindow::OnTilemaskEditor()
@@ -1874,7 +1876,6 @@ void QtMainWindow::OnTilemaskEditor()
 	{
 		sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
 	}
-	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR));
 }
 
 void QtMainWindow::OnVisibilityTool()
@@ -1893,7 +1894,6 @@ void QtMainWindow::OnVisibilityTool()
 	{
 		sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
 	}
-	SetLandscapeSettingsEnabled(!sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_VISIBILITY));
 }
 
 void QtMainWindow::OnNotPassableTerrain()
@@ -1912,7 +1912,6 @@ void QtMainWindow::OnNotPassableTerrain()
 	{
 		scene->Exec(new ActionEnableNotPassable(scene));
 	}
-	SetLandscapeSettingsEnabled(!scene->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN));
 }
 
 void QtMainWindow::OnAddActionComponent()
