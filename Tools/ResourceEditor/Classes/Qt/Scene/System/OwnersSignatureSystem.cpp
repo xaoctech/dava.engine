@@ -81,11 +81,6 @@ DAVA::String OwnersSignatureSystem::GetCurrentTime()
 	return timeString;
 }
 
-DAVA::String OwnersSignatureSystem::GetModificationTime(DAVA::KeyedArchive *customProperties)
-{
-	return customProperties->GetString(ResourceEditor::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
-}
-
 void OwnersSignatureSystem::UpdateEntityOwner(DAVA::KeyedArchive *customProperties)
 {
 	customProperties->SetString(ResourceEditor::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, EditorSettings::Instance()->GetDesignerName());
