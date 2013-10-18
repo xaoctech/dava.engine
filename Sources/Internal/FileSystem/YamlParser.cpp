@@ -1534,7 +1534,7 @@ String YamlParser::GetArrayNodeRepresentationMultiline(const String& nodeName, c
             case YamlNode::TYPE_STRING:
             {
                 // Just get the string value
-                resultString += PrepareIdentedString(depth);
+                resultString += PrepareIdentedString(depth + 1);
                 resultString += LIST_ITEM_START_MARK;
                 resultString += arrayNode->AsString();
                 resultString += LIST_ITEM_END_MARK;
