@@ -30,7 +30,7 @@
 
 #include "QtPropertyDataInspColl.h"
 #include "QtPropertyDataIntrospection.h"
-#include "QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataMetaObject.h"
 
 QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
 	: object(_object)
@@ -65,7 +65,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 			{
 				if(!valueType->IsPointer())
 				{
-					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(collection->ItemPointer(i), valueType));
+					QtPropertyDataMetaObject *childData = new QtPropertyDataMetaObject(collection->ItemPointer(i), valueType);
 					ChildAdd(QString::number(index), childData);
 				}
 				else
