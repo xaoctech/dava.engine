@@ -329,25 +329,32 @@ bool RenderBatch::GetVisible() const
     
 void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 {
-	MaterialSystem* matSystem = rs->GetMaterialSystem();
+	MaterialSystem* matSystem = (rs) ? rs->GetMaterialSystem() : NULL;
 	MaterialSystem* prevSystem = (material) ? material->GetMaterialSystem() : NULL;
 	if(material &&
 	   prevSystem != matSystem)
 	{
-		const FastName& parentName = material->GetParentName();
-		material->SetParent(NULL);
-		
-		matSystem->AddMaterial(material);
-		
-		if(prevSystem)
+		if(NULL == matSystem)
 		{
-			prevSystem->RemoveMaterial(material);
+			material->SetMaterialSystem(NULL);
 		}
-		
-		NMaterial* newParent = matSystem->GetMaterial(parentName);
-		if(newParent)
+		else
 		{
-			material->SetParent(newParent);
+			const FastName& parentName = material->GetParentName();
+			material->SetParent(NULL);
+			
+			matSystem->AddMaterial(material);
+			
+			if(prevSystem)
+			{
+				prevSystem->RemoveMaterial(material);
+			}
+			
+			NMaterial* newParent = matSystem->GetMaterial(parentName);
+			if(newParent)
+			{
+				material->SetParent(newParent);
+			}
 		}
 	}
 }
