@@ -426,10 +426,9 @@ protected:
 	uint32 drawIndices;
     
 public:
-    
+   
+#if defined(LANDSCAPE_SPECULAR_LIT)
     INTROSPECTION_EXTEND(Landscape, RenderObject,
-//        MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
@@ -437,12 +436,26 @@ public:
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
 		
-#ifdef LANDSCAPE_SPECULAR_LIT
+
 		PROPERTY("specularColor", "Specular Color", GetSpecularColor, SetSpecularColor, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularShininess", "Specular Shininess", GetSpecularShininess, SetSpecularShininess, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularMap", "Specular Map", GetSpecularMapPath, SetSpecularMapPath, I_SAVE | I_VIEW | I_EDIT)
+
+		);
+#else
+
+	    INTROSPECTION_EXTEND(Landscape, RenderObject,
+         
+        MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
+
+        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
+		
+		);
+
 #endif
-    );
+    
 };
 
     
