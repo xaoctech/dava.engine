@@ -59,6 +59,8 @@ public:
 
 	void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	bool GetMultiline() const;
+	bool GetMultilineBySymbol() const;
+
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
 	
 	//for background sprite

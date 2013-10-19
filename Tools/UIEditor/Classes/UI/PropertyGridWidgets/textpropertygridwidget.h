@@ -68,6 +68,7 @@ private:
 	QLabel	*localizationKeyNameLabel;
 	QLabel	*localizationKeyTextLabel;
 	QCheckBox *multilineCheckBox;
+	QCheckBox *multilineBySymbolCheckBox;
 };
 
 #endif // TEXTPROPERTYGRIDWIDGET_H
