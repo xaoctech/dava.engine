@@ -288,6 +288,20 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	{
 		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
 		SceneHelper::EnumerateTextures(scene, allScenesTextures);
+		Landscape* landscape = scene->landscapeEditorDrawSystem->GetBaseLandscape();
+		if (landscape != NULL)
+		{
+			Texture* t = landscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
+			if (t != NULL && t->GetPathname().GetType() == FilePath::PATH_IN_MEMORY)
+			{
+				FilePath fp = landscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+				DAVA::Map<DAVA::String, DAVA::Texture *>::iterator it = allScenesTextures.find(fp.GetAbsolutePathname());
+				if (it != allScenesTextures.end())
+				{
+					allScenesTextures.erase(it);
+				}
+			}
+		}
 	}
 
 	if(allScenesTextures.size() > 0)
