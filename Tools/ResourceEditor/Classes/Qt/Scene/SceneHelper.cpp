@@ -83,6 +83,14 @@ void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
+		// by xrayman, 21.10.2013
+		// temporary fix to resolve tilemask texture disappearing after texture reload
+		// when tilemask texture was modified in tilemask editor
+		if (t == Landscape::TEXTURE_TILE_MASK)
+		{
+			continue;
+		}
+
 		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
