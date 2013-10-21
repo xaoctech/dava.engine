@@ -207,6 +207,8 @@ protected:
 
 	void SetLandscapeSettingsEnabled(bool);
 
+	void DiableUIForFutureUsing();
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
