@@ -391,6 +391,8 @@
      <property name="title">
       <string>Collision Type</string>
      </property>
+     <addaction name="actionObjectTypesOff"/>
+     <addaction name="separator"/>
      <addaction name="actionNoObject"/>
      <addaction name="actionTree"/>
      <addaction name="actionBush"/>
@@ -1611,6 +1613,14 @@
    </property>
    <property name="text">
     <string>Empty Entity</string>
+   </property>
+  </action>
+  <action name="actionObjectTypesOff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Off</string>
    </property>
   </action>
  </widget>

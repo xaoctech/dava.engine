@@ -105,7 +105,8 @@ enum eEditActions
 // list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall"]
 enum eSceneObjectType
 {
-	ESOT_NONE = 0,
+	ESOT_NONE = -1,
+	ESOT_NO_COLISION,
 	ESOT_TREE,
 	ESOT_BUSH,
 	ESOT_FRAGILE_PROJ,
