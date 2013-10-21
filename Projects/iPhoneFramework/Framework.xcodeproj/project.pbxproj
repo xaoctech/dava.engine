@@ -13,10 +13,14 @@
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
 		02AF979C17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AF979A17EB596D005A62F2 /* SpeedTreeLeafBatch.cpp */; };
 		02AF979D17EB596D005A62F2 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AF979B17EB596D005A62F2 /* SpeedTreeLeafBatch.h */; };
-		02C85176181032EA002B7E1C /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85172181032EA002B7E1C /* AutotestingDB.cpp */; };
-		02C85177181032EA002B7E1C /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
-		02C85178181032EA002B7E1C /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
-		02C85179181032EA002B7E1C /* GameAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85175181032EA002B7E1C /* GameAPI.h */; };
+		02C4E8CB18154E490052803E /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85172181032EA002B7E1C /* AutotestingDB.cpp */; };
+		02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
+		02C4E8CD18154E520052803E /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
+		02C4E8CE18154E520052803E /* GameAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85175181032EA002B7E1C /* GameAPI.h */; };
+		02C4E8CF18154E520052803E /* KeyedArchive_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */; };
+		02C4E8D118154E520052803E /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */; };
+		02C4E8D218154E520052803E /* UIControl_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */; };
+		02C4E8D318154E520052803E /* Vector_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */; };
 		02D4CFBE18055E29007EC9EC /* FMODSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB618055E29007EC9EC /* FMODSound.cpp */; };
 		02D4CFBF18055E29007EC9EC /* FMODSound.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D4CFB718055E29007EC9EC /* FMODSound.h */; };
 		02D4CFC018055E29007EC9EC /* FMODSoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB818055E29007EC9EC /* FMODSoundEvent.cpp */; };
@@ -2827,8 +2831,9 @@
 				02D4CFC318055E29007EC9EC /* FMODSoundGroup.h in Headers */,
 				02D4CFC518055E29007EC9EC /* FMODSoundSystem.h in Headers */,
 				02D4CFCA18056051007EC9EC /* FMODSoundComponent.h in Headers */,
-				7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */,
-				7A8F772C17E73E720048A43D /* GameAPI.h in Headers */,			);
+				02C4E8CD18154E520052803E /* AutotestingDB.h in Headers */,
+				02C4E8CE18154E520052803E /* GameAPI.h in Headers */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
@@ -3214,8 +3219,13 @@
 				02D4CFC218055E29007EC9EC /* FMODSoundGroup.cpp in Sources */,
 				02D4CFC418055E29007EC9EC /* FMODSoundSystem.cpp in Sources */,
 				02D4CFC918056051007EC9EC /* FMODSoundComponent.cpp in Sources */,
-				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
-				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,			);
+				02C4E8CB18154E490052803E /* AutotestingDB.cpp in Sources */,
+				02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */,
+				02C4E8CF18154E520052803E /* KeyedArchive_wrap.cxx in Sources */,
+				02C4E8D118154E520052803E /* Rect_wrap.cxx in Sources */,
+				02C4E8D218154E520052803E /* UIControl_wrap.cxx in Sources */,
+				02C4E8D318154E520052803E /* Vector_wrap.cxx in Sources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
