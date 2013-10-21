@@ -30,10 +30,6 @@
 #include "BeastSystem.h"
 
 
-#define DEFAULT_STATICLIGHT_ENABLE_STATE false
-#define DEFAULT_STATICLIGHT_CAST_SHADOWS_STATE false
-#define DEFAULT_STATICLIGHT_RECEIVE_SHADOWS_STATE false
-
 BeastSystem::BeastSystem(Scene* scene):SceneSystem(scene)
 {}
 
@@ -48,9 +44,9 @@ void BeastSystem::SetDefaultPropertyValues(Entity * entity)
 {
 	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
 	
-	SetBool(propertyList, "editor.staticlight.enable", DEFAULT_STATICLIGHT_ENABLE_STATE);
-	SetBool(propertyList, "editor.staticlight.castshadows", DEFAULT_STATICLIGHT_CAST_SHADOWS_STATE);
-	SetBool(propertyList, "editor.staticlight.receiveshadows", DEFAULT_STATICLIGHT_RECEIVE_SHADOWS_STATE);
+	SetBool(propertyList, "editor.staticlight.enable", true);
+	SetBool(propertyList, "editor.staticlight.castshadows", true);
+	SetBool(propertyList, "editor.staticlight.receiveshadows", true);
 
 	if(GetLight(entity))
 	{
@@ -61,7 +57,6 @@ void BeastSystem::SetDefaultPropertyValues(Entity * entity)
 		SetInt32(propertyList, "editor.staticlight.shadowsamples", 1);
 		SetFloat(propertyList, "editor.staticlight.falloffcutoff", 1000.f);
 		SetFloat(propertyList, "editor.staticlight.falloffexponent", 1.f);
-		SetBool(propertyList, "editor.dynamiclight.enable", true);
 	}
 }
 
