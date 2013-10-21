@@ -33,69 +33,27 @@
 #include "CubemapEditor/CubemapUtils.h"
 #include "AddSkyboxDialog.h"
 
-AddSkyboxDialog::AddSkyboxDialog(QWidget* parent) : BaseAddEntityDialog(parent)
+AddSkyboxDialog::AddSkyboxDialog(QWidget* parent) 
+	: BaseAddEntityDialog(parent)
+	, editorScene(NULL)
 {
-	controlButton = new QPushButton();
-	closeHandled = false;
-	editorScene = NULL;
-	initialState.initialSkyboxNode = NULL;
+	controlButton = new QPushButton(this);
 	
 	ui->lowerLayOut->removeWidget(ui->buttonBox);
 	ui->lowerLayOut->addWidget(controlButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
-	
-	QObject::connect(this, SIGNAL(finished(int)), this, SLOT(OnFinished(int)));
+
+	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }
 
 AddSkyboxDialog::~AddSkyboxDialog()
 {
-	QObject::disconnect(this, SIGNAL(finished(int)), this, SLOT(OnFinished(int)));
-	
-	if(!closeHandled)
-	{
-		OnFinished(QDialog::Rejected);
-	}
-	
-	SafeRelease(initialState.initialSkyboxNode);
-	
-	delete controlButton;
 	SafeRelease(editorScene);
 }
 
 void AddSkyboxDialog::FillPropertyEditorWithContent()
 {
 
-}
-
-void AddSkyboxDialog::OnFinished(int code)
-{
-	closeHandled = true;
-	
-	if(code != QDialog::Accepted)
-	{
-		Entity* currentSkybox = editorScene->skyboxSystem->GetSkybox();
-		
-		if(NULL == initialState.initialSkyboxNode)
-		{
-			if(currentSkybox)
-			{
-				currentSkybox->GetParent()->RemoveNode(currentSkybox);
-			}
-		}
-		else
-		{
-			if(NULL == currentSkybox)
-			{
-				currentSkybox = editorScene->skyboxSystem->AddSkybox();
-			}
-			
-			SkyboxRenderObject* curRenderObj = static_cast<SkyboxRenderObject*>(GetRenderObject(currentSkybox));
-			
-			curRenderObj->ForceSetOffsetZ(initialState.offset);
-			curRenderObj->SetRotationZ(initialState.rotation);
-			curRenderObj->SetTexture(initialState.texture);
-		}
-	}
 }
 
 void AddSkyboxDialog::OnCreateButtonClicked()
@@ -106,7 +64,7 @@ void AddSkyboxDialog::OnCreateButtonClicked()
 		RenderObject* ro = GetRenderObject(skyboxNode);
 		
 		MakeDeleteButton();
-		UpdateEntity(skyboxNode);
+		SetSkybox(skyboxNode);
 	}
 	else
 	{
@@ -116,15 +74,15 @@ void AddSkyboxDialog::OnCreateButtonClicked()
 
 void  AddSkyboxDialog::OnDeleteButtonClicked()
 {
-	/*Entity* skyboxEntity = GetEntity();
+	Entity* skyboxEntity = GetEntity();
 		
 	if(skyboxEntity)
 	{
 		skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
-		UpdateEntity(NULL);
+		SetSkybox(NULL);
 		
 		MakeCreateButton();
-	}*/
+	}
 }
 
 void AddSkyboxDialog::MakeCreateButton()
@@ -141,19 +99,20 @@ void AddSkyboxDialog::MakeDeleteButton()
 	controlButton->setText("Delete");	
 }
 
-void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
+void AddSkyboxDialog::SetSkybox(Entity* newEntity)
 {
 	SafeRelease(entity);
 	
 	entity = newEntity;
 	SafeRetain(entity);
 
-	/*PropertyEditor* pEditor = propEditor;
+	QtPropertyEditor* pEditor = propEditor;
 	if(NULL == pEditor)
 	{
 		return;
 	}
 
+	/*
     EntityGroup entities;
     entities.Add(entity);
 	pEditor->SetEntities(&entities);
@@ -162,7 +121,8 @@ void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
 	{
 		pEditor->expandAll();
 		PerformResize();
-	}*/
+	}
+	*/
 }
 
 void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
@@ -174,8 +134,7 @@ void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
 		AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
 		dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 		dlg->SetEditorScene(scene);
-		dlg->UpdateEntity(currentSkybox);
-		dlg->SetInitialState(currentSkybox);
+		dlg->SetSkybox(currentSkybox);
 		dlg->setWindowTitle("Set up Skybox");
 		dlg->show();
 	}
@@ -192,25 +151,7 @@ SceneEditor2* AddSkyboxDialog::GetEditorScene() const
 	return editorScene;
 }
 
-void AddSkyboxDialog::SetInitialState(Entity* skyboxState)
+void AddSkyboxDialog::OnSceneActivated(SceneEditor2 *sceneEditor)
 {
-	SafeRelease(initialState.initialSkyboxNode);
-	initialState.initialSkyboxNode = SafeRetain(skyboxState);
-	
-	if(initialState.initialSkyboxNode)
-	{
-		SkyboxRenderObject* curRenderObj = static_cast<SkyboxRenderObject*>(GetRenderObject(initialState.initialSkyboxNode));
-		
-		DVASSERT(curRenderObj);
-		initialState.offset = curRenderObj->GetOffsetZ();
-		initialState.rotation = curRenderObj->GetRotationZ();
-		initialState.texture = curRenderObj->GetTexture();
-		
-		MakeDeleteButton();
-	}
-	else
-	{
-		MakeCreateButton();
-	}
-}
 
+}
