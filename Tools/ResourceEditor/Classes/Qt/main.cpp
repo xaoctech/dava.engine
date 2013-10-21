@@ -113,6 +113,10 @@ int main(int argc, char *argv[])
 		new EditorConfig();
 		new SceneValidator();
 		new TextureSquarenessChecker();
+
+		LocalizationSystem::Instance()->SetCurrentLocale("en");
+		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
+
 		new QtMainWindow();
 
 		DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
