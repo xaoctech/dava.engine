@@ -60,7 +60,7 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 { }
 
-QtPropertyData * QtPropertyDataIntrospection::CreatePropDataFromInspMember(void *_object, const DAVA::InspMember *member, int hasAllFlags)
+QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, const DAVA::InspMember *member, int hasAllFlags)
 {
 	void *memberObject = member->Data(_object);
 	const DAVA::MetaInfo *memberMetaInfo = member->Type();
@@ -135,7 +135,7 @@ QtPropertyData * QtPropertyDataIntrospection::CreatePropDataFromInspMember(void 
 
 void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int hasAllFlags)
 {
-	QtPropertyData* retData = CreatePropDataFromInspMember(object, member, hasAllFlags);
+	QtPropertyData* retData = CreateMemberData(object, member, hasAllFlags);
 	void *memberObject = member->Data(object);
 	const DAVA::MetaInfo *memberMetaInfo = member->Type();
 	const DAVA::InspInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
