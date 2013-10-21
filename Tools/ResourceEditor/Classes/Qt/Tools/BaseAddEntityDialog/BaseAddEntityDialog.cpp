@@ -118,7 +118,7 @@ void BaseAddEntityDialog::PerformResize()
 QtPropertyData* BaseAddEntityDialog::AddInspMemberToEditor(void *object, const DAVA::InspMember * member)
 {
 	int flags = DAVA::I_VIEW | DAVA::I_EDIT;
-	QtPropertyData* propData = QtPropertyDataIntrospection::CreatePropDataFromInspMember(object, member, flags);
+	QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
 	propEditor->AppendProperty(member->Name(), propData);
 	return propData;
 }
