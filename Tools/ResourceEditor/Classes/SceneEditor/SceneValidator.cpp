@@ -752,10 +752,10 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 			errorsLog.insert("Custom colors texture has to have .png extension.");
 		}
         
-        String::size_type foundPos = currentSaveName.find("/DataSource/3d/");
-        if(0 != foundPos)
+        String::size_type foundPos = currentSaveName.find("DataSource/3d/");
+        if(String::npos == foundPos)
         {
-			errorsLog.insert("Custom colors texture has to begin from /DataSource/3d/.");
+			errorsLog.insert("Custom colors texture has to begin from DataSource/3d/.");
         }
 	}
 }
