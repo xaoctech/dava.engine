@@ -48,6 +48,7 @@
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, rayIntersectCached(false)
+	, landIntersectCached(false)
 	, landIntersectCachedResult(false)
 	, drawMode(ST_COLL_DRAW_NOTHING)
 	, curLandscapeEntity(NULL)
