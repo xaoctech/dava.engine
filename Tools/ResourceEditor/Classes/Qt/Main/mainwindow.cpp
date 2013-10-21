@@ -163,6 +163,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
+
+	DiableUIForFutureUsing();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -469,13 +471,6 @@ void QtMainWindow::SetupDocks()
 
 void QtMainWindow::SetupActions()
 {
-    //TODO: temporary disabled
-    //-->
-    ui->actionAddNewComponent->setVisible(false);
-    ui->actionRemoveComponent->setVisible(false);
-    //<--
-    
-    
 	// scene file actions
 	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
 	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
@@ -599,8 +594,9 @@ void QtMainWindow::SetupActions()
  	objectTypesLabel->setDefaultAction(ui->actionNoObject);
 	
     ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
-    
-	ui->actionNoObject->setData(ResourceEditor::ESOT_NONE);
+
+	ui->actionObjectTypesOff->setData(ResourceEditor::ESOT_NONE);
+	ui->actionNoObject->setData(ResourceEditor::ESOT_NO_COLISION);
 	ui->actionTree->setData(ResourceEditor::ESOT_TREE);
 	ui->actionBush->setData(ResourceEditor::ESOT_BUSH);
 	ui->actionFragileProj->setData(ResourceEditor::ESOT_FRAGILE_PROJ);
@@ -1997,7 +1993,7 @@ void QtMainWindow::OnObjectsTypeChanged( QAction *action )
 	}
     
     bool wasBlocked = objectTypesWidget->blockSignals(true);
-    objectTypesWidget->setCurrentIndex(objectType);
+    objectTypesWidget->setCurrentIndex(objectType + 1);
     objectTypesWidget->blockSignals(wasBlocked);
 }
 
@@ -2006,7 +2002,7 @@ void QtMainWindow::OnObjectsTypeChanged(int type)
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
 
-	ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType) type;
+	ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType) (type - 1);
 	if(objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
 	{
 		scene->debugDrawSystem->SetRequestedObjectType(objectType);
@@ -2021,7 +2017,8 @@ void QtMainWindow::OnObjectsTypeMenuWillShow()
 
 	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
 
-	ui->actionNoObject->setChecked(ResourceEditor::ESOT_NONE == objectType);
+	ui->actionObjectTypesOff->setChecked(ResourceEditor::ESOT_NONE == objectType);
+	ui->actionNoObject->setChecked(ResourceEditor::ESOT_NO_COLISION == objectType);
 	ui->actionTree->setChecked(ResourceEditor::ESOT_TREE == objectType);
 	ui->actionBush->setChecked(ResourceEditor::ESOT_BUSH == objectType);
 	ui->actionFragileProj->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ == objectType);
@@ -2049,7 +2046,7 @@ void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
 		}
 	}
 
-    objectTypesWidget->setCurrentIndex(objectType);
+    objectTypesWidget->setCurrentIndex(objectType + 1);
 }
 
 void QtMainWindow::CreateObjectTypesCombobox()
@@ -2063,10 +2060,12 @@ void QtMainWindow::CreateObjectTypesCombobox()
     auto endIt = actions.end();
     for(auto it = actions.begin(); it != endIt; ++it)
     {
+		if((*it)->isSeparator()) continue;
+
         objectTypesWidget->addItem((*it)->icon(), (*it)->text());
     }
     
-    objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE);
+    objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE + 1);
     
     QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
 }
@@ -2176,4 +2175,16 @@ void QtMainWindow::EnableGPUReloadActions(bool enable)
 {
 	ui->menuTexturesForGPU->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
+}
+
+void QtMainWindow::DiableUIForFutureUsing()
+{
+	//TODO: temporary disabled
+	//-->
+	ui->actionAddNewComponent->setVisible(false);
+	ui->actionRemoveComponent->setVisible(false);
+	ui->actionUniteEntitiesWithLODs->setVisible(false);
+
+	ui->menuFile->removeAction(ui->menuImport->menuAction());
+	//<--
 }
