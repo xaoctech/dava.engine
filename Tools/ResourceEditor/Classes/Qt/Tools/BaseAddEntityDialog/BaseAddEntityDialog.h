@@ -76,7 +76,6 @@ protected:
 
 	void showEvent(QShowEvent * event);
 	
-	void InitPropertyEditor();
 	void PerformResize();
 	
 	DAVA::Entity* entity;

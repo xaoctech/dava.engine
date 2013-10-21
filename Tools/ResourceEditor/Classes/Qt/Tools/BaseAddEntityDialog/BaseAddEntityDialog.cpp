@@ -41,10 +41,6 @@
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 #include "Main/mainwindow.h"
 
-#define PROPERTY_EDITOR_HEIGHT	300
-#define QT_HEIGHT_LIMIT			16777215
-#define WINDOW_HEIGHT_LIMIT		800
-
 BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::StandardButtons buttons)
 :	QDialog(parent),
 	entity(NULL),
@@ -54,12 +50,18 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::Stan
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);	
-	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
+	setAttribute( Qt::WA_MacAlwaysShowToolWindow); // on top of all applications
 
-	//ui->scrollArea->setVisible(false);
-	propEditor = NULL;
-	
-	InitPropertyEditor();
+	propEditor = ui->propertyEditor; //new QtPropertyEditor(this);
+	propEditor->setMouseTracking(false);
+	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	propEditor->setTabKeyNavigation(false);
+	propEditor->setAlternatingRowColors(true);
+	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	propEditor->setIndentation(16);
+	propEditor->SetEditTracking(true);
+	connect(propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)));
 
 	ui->buttonBox->setStandardButtons(buttons);
 }
@@ -67,18 +69,18 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::Stan
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
 	propEditor->RemovePropertyAll();
-	disconnect( propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)) );
-	delete ui;
-	delete propEditor;
 	SafeRelease(entity);
+
 	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
 	{
 		delete it->second;
 	}
 	additionalWidgetMap.clear();
+
+	delete ui;
 }
 
-void BaseAddEntityDialog::showEvent ( QShowEvent * event )
+void BaseAddEntityDialog::showEvent(QShowEvent * event)
 {
 	QDialog::showEvent(event);
 	propEditor->expandAll();
@@ -87,38 +89,16 @@ void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 
 void BaseAddEntityDialog::PerformResize()
 {
-	propEditor->expandAll();
-	int propEditorHeight = 0;
-	if(propEditor->isVisible())
-	{
-		propEditorHeight = PROPERTY_EDITOR_HEIGHT;
-	}
-
-	QRect rectEditor = propEditor->geometry();
-	rectEditor.setHeight(propEditorHeight);
-	propEditor->setGeometry(rectEditor);
-
-	QScrollArea* area = ui->scrollArea;
-	int scrollAreaHeight = area->sizeHint().height();
-	
-	QRect areaEditor = area->geometry();
-	areaEditor.setHeight(scrollAreaHeight);
-	area->setGeometry(areaEditor);
-	
-	int currentMax  = ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 4 + scrollAreaHeight + propEditorHeight;
-	int maxHeight = currentMax < WINDOW_HEIGHT_LIMIT ? currentMax : WINDOW_HEIGHT_LIMIT;
-
-	int minHeight = propEditorHeight + ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 3;
-	setMinimumHeight(minHeight);
-	QRect rect = geometry();
-	rect.setHeight(maxHeight);
-	setGeometry(rect);
+	QList<int> sizes;
+	sizes.push_back(geometry().height() - ui->scrollAreaWidgetContents_2->geometry().height() - ui->buttonBox->height() - layout()->spacing() * 4);
+	sizes.push_back(ui->scrollAreaWidgetContents_2->geometry().height());
+	ui->splitter->setSizes(sizes);
 }
 
 QtPropertyData* BaseAddEntityDialog::AddInspMemberToEditor(void *object, const DAVA::InspMember * member)
 {
 	int flags = DAVA::I_VIEW | DAVA::I_EDIT;
-	QtPropertyData* propData = QtPropertyDataIntrospection::CreatePropDataFromInspMember(object, member, flags);
+	QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
 	propEditor->AppendProperty(member->Name(), propData);
 	return propData;
 }
@@ -153,7 +133,6 @@ DAVA::Entity* BaseAddEntityDialog::GetEntity()
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 {
 	ui->userContentLayout->addWidget(widget);
-	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
 }
 
 
@@ -164,7 +143,6 @@ void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget, const DAVA:
 	ui->userContentLayout->addWidget(label, rowCount, 0);
 	ui->userContentLayout->addWidget(widget, rowCount, 1);
 	additionalWidgetMap[widget] = label;
-	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
 }
 
 void BaseAddEntityDialog::RemoveControlFromUserContainer(QWidget* widget)
@@ -207,30 +185,6 @@ void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 			includedWidgets.append(child);
 		}
 	}
-}
-
-void BaseAddEntityDialog::InitPropertyEditor()
-{
-	propEditor = new QtPropertyEditor(this);
-	propEditor->setObjectName(QString::fromUtf8("propEditor"));
-	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	sizePolicy.setHeightForWidth(propEditor->sizePolicy().hasHeightForWidth());
-	propEditor->setSizePolicy(sizePolicy);
-	propEditor->setMinimumSize(QSize(0, 0));
-	propEditor->setMaximumSize(QSize(16777215, 9999));
-	propEditor->setMouseTracking(false);
-	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	propEditor->setTabKeyNavigation(false);
-	propEditor->setAlternatingRowColors(true);
-	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
-	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-	propEditor->setIndentation(16);
-	propEditor->setAnimated(false);
-	propEditor->setVisible(true);
-	propEditor->SetEditTracking(true);
-	ui->verticalLayout_4->addWidget(propEditor);
-	propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
-	connect( propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)) );
 }
 
 void BaseAddEntityDialog::OnItemEdited(const QString &name, QtPropertyData *data)
