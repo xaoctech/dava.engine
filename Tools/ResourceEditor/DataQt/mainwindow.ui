@@ -1339,6 +1339,9 @@
    <property name="toolTip">
     <string>Save Scene As...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionPivotCenter">
    <property name="checkable">
