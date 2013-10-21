@@ -1582,4 +1582,72 @@ VariantType VariantType::FromType(int type)
 	return v;
 }
 
+VariantType VariantType::Convert(const VariantType &val, int type)
+{
+	VariantType ret;
+
+	if(val.type == type)
+	{
+		ret = val;
+	}
+	else
+	{
+		switch (type)
+		{
+		case TYPE_INT32:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt32((DAVA::int32) val.AsUInt32()); break;
+				case TYPE_UINT64: ret.SetInt32((DAVA::int32) val.AsUInt64()); break;
+				case TYPE_INT64: ret.SetInt32((DAVA::int32) val.AsUInt64()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_UINT32:
+			{
+				switch (val.type)
+				{
+				case TYPE_INT32: ret.SetUInt32((DAVA::uint32) val.AsInt32()); break;
+				case TYPE_UINT64: ret.SetUInt32((DAVA::uint32) val.AsUInt64()); break;
+				case TYPE_INT64: ret.SetUInt32((DAVA::uint32) val.AsUInt64()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_INT64:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt64((DAVA::int64) val.AsUInt32()); break;
+				case TYPE_UINT64: ret.SetInt64((DAVA::int64) val.AsUInt64()); break;
+				case TYPE_INT32: ret.SetInt64((DAVA::int64) val.AsInt32()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_UINT64:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt64((DAVA::uint64) val.AsUInt32()); break;
+				case TYPE_INT64: ret.SetInt64((DAVA::uint64) val.AsInt64()); break;
+				case TYPE_INT32: ret.SetInt64((DAVA::uint64) val.AsInt32()); break;
+				default: break;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return ret;
+}
+
 };
