@@ -43,12 +43,12 @@
 
 #define INIT_PROPERTY(propertyName, getter, rowName, handlerName) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter)));
 
 #define INIT_PROPERTY_WITH_BTN(propertyName, propertyNameBtn, getter, rowName, handlerName,drawStateMap) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter), &drawStateMap));\
 	propertyName->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);\
 	QPushButton * propertyNameBtn = CreatePushBtn();\
@@ -149,8 +149,8 @@ void SystemsSettingsEditor::InitializeProperties()
 	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, sceneEditor->selectionSystem->GetDrawMode(), "Draw mode", HandleSelectionDrawMode(QtPropertyData::ValueChangeReason),selectionSysDrawStateMap);
 
 	ADD_HEADER("Grid system settings:");
-	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax());
-	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep());
+	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax(QtPropertyData::ValueChangeReason));
+	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep(QtPropertyData::ValueChangeReason));
 }
 
 void SystemsSettingsEditor::RestoreInitialSettings()
