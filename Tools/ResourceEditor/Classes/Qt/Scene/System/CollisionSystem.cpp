@@ -460,6 +460,7 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity * entity)
 CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity)
 {
 	CollisionBaseObject *cObj = NULL;
+	bool isLandscape = false;
 
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
@@ -467,9 +468,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != landscape)
 	{
 		cObj = new CollisionLandscape(entity, landCollWorld, landscape);
-		curLandscapeEntity = entity;
-
-		return cObj;
+		isLandscape = true;
 	}
 
 	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
@@ -514,6 +513,11 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 
 		entityToCollision[entity] = cObj;
 		collisionToEntity[cObj->btObject] = entity;
+	}
+
+	if(isLandscape)
+	{
+		curLandscapeEntity = entity;
 	}
 
 	return cObj;
