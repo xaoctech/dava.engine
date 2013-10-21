@@ -67,10 +67,6 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
 	const DAVA::InspInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
 
-	/*if(memberMetaInfo->IsPointer())//for what?
-	{
-		const DAVA::InspInfo *ii = memberMetaInfo->GetIntrospection(memberObject);
-	}*/
 	QtPropertyData * retData = NULL;
 	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
