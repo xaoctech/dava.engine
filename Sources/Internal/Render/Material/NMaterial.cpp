@@ -361,7 +361,6 @@ namespace DAVA
 			textures.Insert(textureFastName, bucket);
 			texturesArray.push_back(texture);
 			textureNamesArray.push_back(textureFastName);
-			//textureSlotArray.push_back(-1);
 		}
 	}
     
@@ -448,7 +447,6 @@ namespace DAVA
 		targetState->textures.Clear();
 		targetState->texturesArray.clear();
 		targetState->textureNamesArray.clear();
-		//targetState->textureSlotArray.clear();
 
 		if(copyNames)
 		{
@@ -604,7 +602,6 @@ namespace DAVA
 				}
 				
 				RenderState * renderState = new RenderState();
-				//const YamlNode * renderStateNode = renderStepNode->Get("RenderState");
 				if (renderStepNode)
 				{
 					renderState->LoadFromYamlNode(renderStepNode);
@@ -638,7 +635,6 @@ namespace DAVA
 		targetState->textures.Clear();
 		targetState->texturesArray.clear();
 		targetState->textureNamesArray.clear();
-		//targetState->textureSlotArray.clear();
 
         if(parentName.IsValid()) targetState->parentName = parentName;
 		if(materialName.IsValid()) targetState->materialName = materialName;
@@ -695,6 +691,8 @@ namespace DAVA
 		materialDynamicLit = false;
 		configMaterial = false;
 		materialSystem = NULL;
+		memset(lights, 0, sizeof(Light*) * 8);
+		lightCount = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -724,7 +722,7 @@ namespace DAVA
 		const YamlNode * materialNode = rootNode->Get("Material");
 		
 		uint32 materialStateCount = 0;
-		for(uint32 i = 0; i < materialNode->GetCount(); ++i)
+		for(int32 i = 0; i < materialNode->GetCount(); ++i)
 		{
 			const YamlNode* materialStateNode = materialNode->Get(i);
 			
@@ -734,7 +732,7 @@ namespace DAVA
 			}
 		}
 		
-		for(uint32 i = 0; i < materialNode->GetCount(); ++i)
+		for(int32 i = 0; i < materialNode->GetCount(); ++i)
 		{
 			const YamlNode* materialStateNode = materialNode->Get(i);
 			
@@ -810,16 +808,8 @@ namespace DAVA
 		SetupPerFrameProperties(camera);
 		
 		RenderState* renderState = activeTechnique->GetRenderState();
-		
-//		NMaterial* texMat = this;
-//		while(texMat)
-//		{
-//			BindTextures(texMat, renderState);
-//			texMat = texMat->parent;
-//		}
-		
+				
 		Shader * shader = activeTechnique->GetShader();
-		
 		
 		//VI: need to set textures BEFORE FlushState since they will be bind there
 		uint32 uniformCount = shader->GetUniformCount();
@@ -872,25 +862,6 @@ namespace DAVA
 		}
 	}
 	
-/*	void NMaterial::BindTextures(NMaterial* curMaterial, RenderState* rs)
-	{
-		size_t textureCount = curMaterial->texturesArray.size();
-		for(size_t i = 0; i < textureCount; ++i)
-		{
-			int32 textureSlot = curMaterial->textureSlotArray[i];
-			if(textureSlot < 0)
-			{
-				NMaterialProperty* prop = curMaterial->GetMaterialProperty(curMaterial->textureNamesArray[i]);
-				DVASSERT(prop);
-				
-				textureSlot = *(int32*)prop->data;
-				curMaterial->textureSlotArray[i] = textureSlot;
-			}
-			
-			rs->SetTexture(curMaterial->texturesArray[i], textureSlot);
-		}
-	}
-*/	
 	void NMaterial::Draw(PolygonGroup * polygonGroup)
 	{
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
@@ -987,7 +958,6 @@ namespace DAVA
 		effectiveLayers.Combine(layers);
 		UnPropagateParentDefines();
 		
-		//SafeRelease(state.parent);
 		SetParentToState(NULL);
 	}
 	
@@ -1030,11 +1000,6 @@ namespace DAVA
 			MaterialTechnique* technique = iter.GetValue();
 			technique->RecompileShader(combinedDefines);
 			
-			Shader* shader = technique->GetShader();
-			
-			//VI: assume that uniform "lightPosition0" indicates vertex or pixel lighting
-			int lightPositionUniformIndex = shader->FindUniformIndexByName("lightPosition0");
-			materialDynamicLit = (lightPositionUniformIndex >= 0);
 			++iter;
 		}
 				
@@ -1081,6 +1046,14 @@ namespace DAVA
 			techniqueForRenderPass.Clear(); //VI: will copy parent techniques
 		}
 		
+		//{TODO: remove this!
+		
+		materialDynamicLit = (parent) ? parent->IsDynamicLit() : false;
+		materialDynamicLit = materialDynamicLit ||
+							inheritedDefines.IsKey("VERTEX_LIT") ||
+							inheritedDefines.IsKey("PIXEL_LIT");
+		//END TODO}
+		
 		NotifyChildrenOnChange();
 	}
 	
@@ -1110,37 +1083,7 @@ namespace DAVA
 		String childName = Format("%s.%lu", materialName.c_str(), uniqueIdSequence++);
 		
 		NMaterial* childMaterial = new NMaterial();
-		
-		/*NMaterial* childMaterial = NULL;
-		
-		if(!IsSwitchable())
-		{
-			childMaterial = new NMaterial();
-			CopyTechniquesTo(childMaterial);
-		}
-		else
-		{
-			//childMaterial = Clone();
-			childMaterial = new NMaterial();
-			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
-			
-			while(stateIter != states.End())
-			{
-				NMaterialState* currentState = stateIter.GetValue();
-				NMaterialState* childState = new NMaterialState();
-				
-				childState->parentName = GetMaterialName();
-				
-				currentState->CopyTechniquesTo(childState);
-				
-				childMaterial->states.Insert(stateIter.GetKey(),
-											 childState);
-				
-				++stateIter;
-			}
-
-		}*/
-        
+		        
         childMaterial->SetMaterialName(childName);
 		childMaterial->SetMaterialSystem(materialSystem);
 		
@@ -1456,27 +1399,7 @@ namespace DAVA
 			
 			SetParent(newParent);
 			
-			currentStateName = stateName;
-			
-			if(techniqueForRenderPass.Size() == 0)
-			{
-				//VI: try to copy renderpasses from corresponding parent material when there's no own renderpasses
-				HashMap<FastName, MaterialTechnique *>::Iterator iter = newParent->techniqueForRenderPass.Begin();
-				while(iter != newParent->techniqueForRenderPass.End())
-				{
-					MaterialTechnique* technique = iter.GetValue();
-					
-					RenderState* newRenderState = new RenderState();
-					technique->GetRenderState()->CopyTo(newRenderState);
-					MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
-																					  technique->GetUniqueDefineSet(),
-																					  newRenderState);
-					AddMaterialTechnique(iter.GetKey(), materialTechnique);
-					
-					++iter;
-				}
-
-			}
+			currentStateName = stateName;			
 		}
 		
 		return (state != NULL);
