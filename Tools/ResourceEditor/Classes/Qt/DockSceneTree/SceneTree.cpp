@@ -284,16 +284,7 @@ void SceneTree::ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLay
 
 void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 {
-	SceneEditor2* sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(index)));
-		if(NULL != entity)
-		{
-			DAVA::AABBox3 box = sceneEditor->selectionSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
-			sceneEditor->cameraSystem->LookAt(box);
-		}
-	}
+    LookAtSelection();
 }
 
 void SceneTree::ShowContextMenu(const QPoint &pos)
