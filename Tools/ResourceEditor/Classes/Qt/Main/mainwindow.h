@@ -128,7 +128,7 @@ public slots:
 	void OnLandscapeDialog();
 	void OnLightDialog();
 	void OnCameraDialog();
-	void OnImposterDialog();
+	void OnEmptyEntity();
 
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
