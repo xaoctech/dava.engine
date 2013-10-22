@@ -201,31 +201,25 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 
 void LandscapeDialog::FillWidgetsWithContent()
 {
-	Landscape*	landscapeToProcess =  entity == NULL ? NULL : DAVA::GetLandscape(entity);
+	Landscape*	landscapeToProcess = DAVA::GetLandscape(entity);
 	
 	for (DAVA::Map<SelectPathWidgetBase*,int32>::iterator it = widgetMap.begin(); it != widgetMap.end(); ++it)
 	{
 		SelectPathWidgetBase* widget = it->first;
 		int32 info = it->second;
+
+		widget->blockSignals(true);
 		
+		DAVA::String widgetText("");
 		if(landscapeToProcess)
 		{
-			if(info == HEIGHT_MAP_ID)
-			{
-				widget->setText(landscapeToProcess->GetHeightmapPathname().GetAbsolutePathname());
-			}
-			else
-			{
-				String t = landscapeToProcess->GetTextureName((Landscape::eTextureLevel)info).GetAbsolutePathname();
-				widget->setText(landscapeToProcess->GetTextureName((Landscape::eTextureLevel)info).GetAbsolutePathname());
-			}
+			widgetText = (info == HEIGHT_MAP_ID) ? landscapeToProcess->GetHeightmapPathname().GetAbsolutePathname():
+				landscapeToProcess->GetTextureName((Landscape::eTextureLevel)info).GetAbsolutePathname();
 		}
-		else
-		{
-			widget->blockSignals(true);
-			widget->setText(DAVA::String(""));
-			widget->blockSignals(false);
-		}
+
+		widget->setText(widgetText);
+		
+		widget->blockSignals(false);
 		
 		widget->setEnabled(landscapeToProcess);
 	}
@@ -253,30 +247,18 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 	if( id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_REMOVE)
 	{
 		Entity* commandEntity = command->GetEntity();
-		Entity* landscapeEntity = FindLandscapeEntity(scene);
-		bool isEqual = commandEntity == landscapeEntity;
+			
+		bool isAddEntityCommand = id == CMDID_ENTITY_ADD;
 		
-		if(id == CMDID_ENTITY_ADD)
+		if((isAddEntityCommand && !redo)||(!isAddEntityCommand && redo))
 		{
-				if(!redo)
-				{
-					SetLandscapeEntity(NULL);
-				}
-				else if (redo && isEqual)
-				{
-					SetLandscapeEntity(commandEntity);
-				}
+			SetLandscapeEntity(NULL);
+			
 		}
-		else
+		else if((isAddEntityCommand && redo)||(!isAddEntityCommand && !redo))
 		{
-				if(!redo && isEqual)
-				{
-					SetLandscapeEntity(commandEntity);
-				}
-				else if (redo)
-				{
-					SetLandscapeEntity(NULL);
-				}
+			
+			SetLandscapeEntity(commandEntity);
 		}
 	}
 	if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
@@ -392,7 +374,7 @@ Vector3 LandscapeDialog::GetSizeOfCurrentLandscape()
 void LandscapeDialog::SetLandscapeEntity(Entity* _landscapeEntity)
 {
 	SetEntity(_landscapeEntity);
-	innerLandscape = _landscapeEntity == NULL ? NULL : DAVA::GetLandscape(_landscapeEntity);
+	innerLandscape = DAVA::GetLandscape(_landscapeEntity);
 	FillUIbyLandscapeEntity();
 }
 
