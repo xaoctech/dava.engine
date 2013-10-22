@@ -337,11 +337,11 @@ namespace DAVA
 			}
 			
 			targetState->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-			targetState->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
+			targetState->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
 			
 			if(oldMaterial->isFlatColorEnabled)
 			{
-				targetState->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
+				targetState->SetPropertyValue("flatColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
 			}
 			
 			if(oldMaterial->isTexture0ShiftEnabled)
