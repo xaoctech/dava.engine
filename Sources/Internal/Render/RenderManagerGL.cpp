@@ -368,6 +368,7 @@ void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates
     switch(renderOrientation)
     {
         case Core::SCREEN_ORIENTATION_PORTRAIT:
+        case Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
         { 
             y = frameBufferHeight - y - height;
         }
@@ -425,11 +426,7 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 	
     switch (orientation) 
 	{
-		case Core::SCREEN_ORIENTATION_PORTRAIT:
-		case Core::SCREEN_ORIENTATION_TEXTURE:
-			retScreenWidth = frameBufferWidth;
-			retScreenHeight = frameBufferHeight;
-			break;
+		
 		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
             
             //mark glTranslatef(0.0f, (float32)frameBufferHeight, 0.0f);
@@ -455,6 +452,9 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 			retScreenWidth = frameBufferHeight;
 			retScreenHeight = frameBufferWidth;
 			break;
+        default:
+            retScreenWidth = frameBufferWidth;
+			retScreenHeight = frameBufferHeight;
 	}
     
     SetMatrix(MATRIX_PROJECTION, orthoMatrix);
@@ -804,6 +804,7 @@ void RenderManager::SetHWClip(const Rect &rect)
 	switch (renderOrientation) 
 	{
 	case Core::SCREEN_ORIENTATION_PORTRAIT:
+    case Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
 		{
 			//			x = frameBufferWidth - x;
 			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
