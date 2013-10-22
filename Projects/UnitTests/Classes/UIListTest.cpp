@@ -38,7 +38,7 @@
 #include "UIListTest.h"
 
 static const int32 CELL_COUNT = 50;
-static const float32 LIST_TEST_AUTO_CLOSE_TIME = 300.0f;
+static const float32 LIST_TEST_AUTO_CLOSE_TIME = 30.0f;
 
 UIListTestDelegate::UIListTestDelegate(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates)

@@ -44,11 +44,13 @@ class Light;
 class Landscape;
 class Camera;
 class LodComponent;
+class SkyboxRenderObject;
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 
 RenderObject * GetRenderObject(const Entity * fromEntity);
+SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
