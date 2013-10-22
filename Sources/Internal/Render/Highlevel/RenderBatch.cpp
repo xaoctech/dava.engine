@@ -340,7 +340,7 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 		}
 		else
 		{
-			const FastName& parentName = material->GetParentName();
+			FastName parentName = material->GetParentName();
 			material->SetParent(NULL);
 			
 			matSystem->AddMaterial(material);

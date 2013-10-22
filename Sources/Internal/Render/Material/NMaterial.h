@@ -186,7 +186,7 @@ protected:
 	HashMap<FastName, TextureBucket*> textures;
 	Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
-	Vector<int32> textureSlotArray;
+	//Vector<int32> textureSlotArray;
 	
 	NMaterial* parent;
 	Vector<NMaterial*> children;
@@ -207,6 +207,10 @@ protected:
 	
 	void ShallowCopyTo(NMaterialState* targetState, bool copyNames = true);
 	void DeepCopyTo(NMaterialState* targetState);
+	
+	void MapTextureNameToSlot(const FastName& textureName);
+	
+	void CopyTechniquesTo(NMaterialState* targetState);
 };
 
 
@@ -314,7 +318,7 @@ protected:
 	void PropagateParentDefines();
 	void UnPropagateParentDefines();
 	
-	void BindTextures(NMaterial* curMaterial, RenderState* rs);
+//	void BindTextures(NMaterial* curMaterial, RenderState* rs);
 	void SetupPerFrameProperties(Camera* camera);
 	
 	void Serialize(const NMaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);

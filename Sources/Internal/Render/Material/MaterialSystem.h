@@ -102,7 +102,7 @@ private:
 private:
 	
     HashMap<FastName, NMaterial*> materials;
-	HashMap<FastName, NMaterial*> switchableTemplates;
+	//HashMap<FastName, NMaterial*> switchableTemplates;
 	NMaterial* defaultMaterial;
 	
 	FastName currentMaterialQuality;
