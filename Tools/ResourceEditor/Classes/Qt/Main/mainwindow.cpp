@@ -1658,24 +1658,35 @@ void QtMainWindow::OnConvertToShadow()
             }
         }
         
-        if(isRenderBatchFound)
+        if(!isRenderBatchFound)
         {
-            scene->BeginBatch("Convert To Shadow");
-            
-            for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-            {
-                if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
-                {
-                    scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
-                }
-            }
-            
-            scene->EndBatch();
-        }
-        else
-        {
-            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch (Material)");
             return;
+        }
+        
+        
+        bool errorHappend = false;
+        scene->BeginBatch("Convert To Shadow");
+        
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            Entity *entity = ss->GetSelectionEntity(i);
+            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
+            {
+                scene->Exec(new ConvertToShadowCommand(entity));
+            }
+            else
+            {
+                errorHappend = true;
+                Logger::Error("Cannot convert %s to shadow", entity->GetName().c_str());
+            }
+        }
+        
+        scene->EndBatch();
+        
+        if(errorHappend)
+        {
+            ShowErrorDialog("Not all entities were converted. See details at console output");
         }
     }
 }
