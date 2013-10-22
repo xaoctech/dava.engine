@@ -55,13 +55,8 @@ MaterialSystem::~MaterialSystem()
     
 NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
-	NMaterial* material = switchableTemplates.GetValue(name);
-	
-	if(!material)
-	{
-		material = materials.GetValue(name);
-	}
-	
+	NMaterial* material = materials.GetValue(name);
+		
 	DVASSERT(material);
 	
 	return material;
@@ -312,20 +307,13 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	return material;
 }
 	
-void MaterialSystem::AddMaterial(NMaterial* material)
-{
-	DVASSERT(material);
-	SafeRetain(material);
-	
-	material->SetMaterialSystem(this);
-	
-	if(material->IsConfigMaterial() &&
-	   material->IsSwitchable())
+	void MaterialSystem::AddMaterial(NMaterial* material)
 	{
-		switchableTemplates.Insert(material->GetMaterialName(), material);
-	}
-	else
-	{
+		DVASSERT(material);
+		SafeRetain(material);
+		
+		material->SetMaterialSystem(this);
+		
 		NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
 		DVASSERT(material != collisionMaterial); //should not add same material several times
 		if(collisionMaterial != NULL &&
@@ -357,7 +345,6 @@ void MaterialSystem::AddMaterial(NMaterial* material)
 			material->SwitchState(currentMaterialQuality, this);
 		}
 	}
-}
 
 void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
@@ -418,7 +405,7 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 	{
 		NMaterial* mat = *it;
 		
-		if(mat->IsSwitchable() && !mat->IsConfigMaterial())
+		if(mat->IsSwitchable())
 		{
 			mat->SwitchState(qualityLevelName, this, forceSwitch);
 		}
@@ -429,7 +416,7 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 {
 	NMaterial* child = parent->CreateChild();
 	
-	if(parent->IsSwitchable())
+	if(child->IsSwitchable())
 	{
 		child->SwitchState(currentMaterialQuality, this);
 	}
