@@ -258,15 +258,15 @@ void Core::CalculateScaleMultipliers()
 {
 	needTorecalculateMultipliers = false;
 	float32 width, height;
-	if (screenOrientation == SCREEN_ORIENTATION_PORTRAIT || screenOrientation == SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
+	if (screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_LEFT || screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
 	{
-		width = screenWidth;
-		height = screenHeight;
+        height = screenWidth;
+		width = screenHeight;
 	}
 	else 
 	{
-		height = screenWidth;
-		width = screenHeight;
+        width = screenWidth;
+		height = screenHeight;
 	}
 	rotatedScreenWidth = width;
 	rotatedScreenHeight = height;

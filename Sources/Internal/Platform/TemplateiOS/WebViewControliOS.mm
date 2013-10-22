@@ -204,8 +204,7 @@ void WebViewControl::SetRect(const Rect& rect)
 			break;
 		}
 
-		case Core::SCREEN_ORIENTATION_PORTRAIT:
-		case Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN:
+		default:
 		{
 			// Minimum recalculations are needed, no swapping, no rotation.
 			webViewRect.origin.x = rect.x * DAVA::Core::GetVirtualToPhysicalFactor();
@@ -220,10 +219,6 @@ void WebViewControl::SetRect(const Rect& rect)
 			break;
 		}
 
-		default:
-		{
-			break;
-		}
 	}
 	
 	// Apply the Retina scale divider, if any.

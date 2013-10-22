@@ -14,6 +14,7 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Base/BaseTypes.h"
+#include "Core/Core.h"
 #if defined(__DAVAENGINE_IPHONE__)
 
 #import "Platform/TemplateiOS/EAGLViewController.h"
@@ -68,11 +69,28 @@
 */
 
 // Override to allow orientations other than the default portrait orientation.
-/*- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation 
 {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
-}*/
+    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)
+        return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft)||(interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE)
+        return (interfaceOrientation == UIInterfaceOrientationPortrait)||(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
+    return FALSE;
+}
+
+-(BOOL)shouldAutorotate
+{
+    return (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)||(DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE);
+}
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)
+        return UIInterfaceOrientationMaskLandscape;
+    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE)
+        return UIInterfaceOrientationMaskPortrait;
+    return FALSE;
+    return UIInterfaceOrientationPortrait;
+}
 
 
 - (void)didReceiveMemoryWarning 

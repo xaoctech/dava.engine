@@ -200,7 +200,7 @@ void Camera::Recalc()
 	flags |= REQUIRE_REBUILD_PROJECTION;
 
 	float32 realAspect = aspect;
-	if ((RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_TEXTURE))
+	if ((RenderManager::Instance()->GetRenderOrientation() != Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT) && (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT))
 	{
 		realAspect = 1.0f / realAspect;
 	}
