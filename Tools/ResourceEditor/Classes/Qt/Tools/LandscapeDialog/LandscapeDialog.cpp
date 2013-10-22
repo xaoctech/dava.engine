@@ -64,7 +64,7 @@
 #define DELETE_TITLE "Delete"
 
 
-#define DEFAULT_LANDSCAPE_SIDE_LENGTH	445.0f
+#define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
 LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
