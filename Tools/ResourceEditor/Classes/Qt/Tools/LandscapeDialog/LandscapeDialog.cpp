@@ -472,7 +472,10 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		if(filePath != presentPath)
 		{
 			Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
-			
+			if(imageVector.size() == 0)
+			{
+				return;
+			}
 			PixelFormat format = imageVector[0]->GetPixelFormat();
 			if(format == FORMAT_A8 ||format == FORMAT_A16)
 			{
