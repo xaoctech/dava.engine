@@ -157,6 +157,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
 
+	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo , SLOT(UpdateInfoByTimer()));
+
+
 	LoadGPUFormat();
 
     EnableGlobalTimeout(globalInvalidate);
@@ -558,7 +561,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
-	QObject::connect(ui->actionImposter, SIGNAL(triggered()), this, SLOT(OnImposterDialog()));
+	QObject::connect(ui->actionAddEmptyEntity, SIGNAL(triggered()), this, SLOT(OnEmptyEntity()));
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
@@ -1325,19 +1328,6 @@ void QtMainWindow::OnCameraDialog()
 	}
 	SafeRelease(sceneNode);
 	SafeRelease(camera);
-}
-
-void QtMainWindow::OnImposterDialog()
-{
-	Entity* sceneNode = new ImposterNode();
-	sceneNode->SetName(ResourceEditor::IMPOSTER_NODE_NAME);
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(sceneEditor)
-	{
-		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
-		sceneEditor->selectionSystem->SetSelection(sceneNode);
-	}
-	SafeRelease(sceneNode);
 }
 
 void QtMainWindow::OnUserNodeDialog()
@@ -2212,4 +2202,18 @@ void QtMainWindow::DiableUIForFutureUsing()
 
 	ui->menuFile->removeAction(ui->menuImport->menuAction());
 	//<--
+}
+
+void QtMainWindow::OnEmptyEntity()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	Entity* newEntity = new Entity();
+	newEntity->SetName(ResourceEditor::ENTITY_NAME);
+
+	scene->Exec(new EntityAddCommand(newEntity, scene));
+	scene->selectionSystem->SetSelection(newEntity);
+
+	newEntity->Release();
 }

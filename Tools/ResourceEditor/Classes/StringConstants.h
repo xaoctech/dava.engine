@@ -46,6 +46,7 @@ namespace ResourceEditor
 	static const String SWITCH_NODE_NAME = "SwitchNode";
 	static const String PARTICLE_EFFECT_NODE_NAME = "Particle Effect";
 	static const String LAYER_NODE_NAME = "Layer";
+	static const String ENTITY_NAME = "Entity";
 
 	// Base node names
 	static const String EDITOR_BASE = "editor.";

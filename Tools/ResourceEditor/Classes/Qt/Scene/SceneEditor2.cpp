@@ -51,6 +51,8 @@ SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
 {
+	renderStats.Clear();
+
 	EditorCommandNotify *notify = new EditorCommandNotify(this);
 	commandStack.SetNotify(notify);
 	SafeRelease(notify);

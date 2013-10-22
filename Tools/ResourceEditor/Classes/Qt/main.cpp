@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
 		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
 		new QtMainWindow();
+		QtMainWindow::Instance()->EnableGlobalTimeout(true);
 
 		DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
 

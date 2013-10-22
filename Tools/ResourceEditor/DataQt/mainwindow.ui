@@ -273,7 +273,6 @@
      <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
-     <addaction name="actionImposter"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
