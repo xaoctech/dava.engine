@@ -48,8 +48,9 @@ JobStack::~JobStack()
 	}
 }
 
-void JobStack::push(const JobItem &item)
+bool JobStack::push(const JobItem &item)
 {
+	bool ret = true;
 	JobItemWrapper *i = head;
 
 	// search for the same works in list and remove it
@@ -75,6 +76,7 @@ void JobStack::push(const JobItem &item)
 			delete i;
 			itemsCount--;
 
+			ret = false;
 			break;
 		}
 
@@ -83,6 +85,7 @@ void JobStack::push(const JobItem &item)
 
 	// add new work
 	i = new JobItemWrapper(item);
+
 	if(NULL != head)
 	{
 		head->prev = i;
@@ -91,6 +94,8 @@ void JobStack::push(const JobItem &item)
 
 	head = i;
 	itemsCount++;
+
+	return ret;
 }
 
 JobItem* JobStack::pop()
