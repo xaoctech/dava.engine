@@ -456,7 +456,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 		dstLayer = new ParticleLayer3D(parentFor3DLayer);
 		dstLayer->SetLong(this->isLong);
 	}
-
+		
 	ParticleLayer::Clone(dstLayer);
 
 	return dstLayer;
@@ -532,10 +532,10 @@ void ParticleLayer3D::CreateInnerEmitter()
 	
 void ParticleLayer3D::MaterialSystemReady(MaterialSystem* materialSystem)
 {
-	regularMaterial = SafeRetain(materialSystem->CreateChild(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesBlend")));
-	frameBlendMaterial = SafeRetain(materialSystem->CreateChild(materialSystem->GetMaterial("Global.Textured.VertexColor.ParticlesFrameBlend")));
+	regularMaterial = SafeRetain(materialSystem->CreateChild("Global.Textured.VertexColor.ParticlesBlend"));
+	frameBlendMaterial = SafeRetain(materialSystem->CreateChild("Global.Textured.VertexColor.ParticlesFrameBlend"));
     
-	renderBatch->SetMaterial(regularMaterial);		
+	SetFrameBlend(enableFrameBlend);
 }
 
 };

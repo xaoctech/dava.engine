@@ -239,7 +239,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	SafeRelease(dstLayer->innerEmitter);
 	if (innerEmitter)
 		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
-
+	
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->SetBlendMode(srcBlendFactor, dstBlendFactor);
