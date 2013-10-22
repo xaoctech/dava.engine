@@ -51,6 +51,7 @@
 // commands
 #include "Commands2/ParticleEditorCommands.h"
 #include "Commands2/SaveEntityAsAction.h"
+#include "Commands2/ConvertToShadowCommand.h"
 
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
@@ -431,6 +432,13 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 		}
 		
+        if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
+        {
+			contextMenu.addSeparator();
+            contextMenu.addAction(QtMainWindow::Instance()->GetUI()->actionConvertToShadow);
+        }
+        
+        
 //      Disabled for 0.5.5 version
 //		SceneEditor2* sceneEditor = treeModel->GetScene();
 //		if(NULL != sceneEditor)
