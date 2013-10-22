@@ -174,7 +174,7 @@ void ParticleEmitter::Load(KeyedArchive *archive, SerializationContext *serializ
 			configPath = serializationContext->GetScenePath() + filename;
 			LoadFromYaml(configPath);
 		}
-	}
+	}	
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
@@ -986,7 +986,15 @@ void ParticleEmitter::SetRenderSystem(RenderSystem * _renderSystem)
 {
 	RenderObject::SetRenderSystem(_renderSystem);
 	
-	
+	if(_renderSystem)
+	{
+		MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
+		for(int i = 0; i < layers.size(); ++i)
+		{
+			ParticleLayer* layer = layers[i];
+			layer->MaterialSystemReady(matSystem);
+		}
+	}
 }
 
 }; 
