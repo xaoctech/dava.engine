@@ -42,23 +42,26 @@ class AddSkyboxDialog : public BaseAddEntityDialog
 	
 public:
 	static void Show(QWidget* parent, SceneEditor2* scene);
-	
+
+    void virtual SetEntity(DAVA::Entity* newEntity);
+
 	//void SetInitialState(Entity* skyboxState);
-	
-	SceneEditor2* GetEditorScene() const;
-	void SetSkybox(DAVA::Entity* skyboxEntity);
 	
 protected:
 	AddSkyboxDialog(QWidget* parent = 0);
 	~AddSkyboxDialog();
 
+	void SetEditorScene(SceneEditor2* scene);
+    SceneEditor2* GetEditorScene() const;
+    
 	virtual void FillPropertyEditorWithContent();
 	void MakeCreateButton();
 	void MakeDeleteButton();
-	void SetEditorScene(SceneEditor2* scene);
 
 protected slots:
 	void OnSceneActivated(SceneEditor2 *sceneEditor);
+    void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+    
 	void OnCreateButtonClicked();
 	void OnDeleteButtonClicked();
 	

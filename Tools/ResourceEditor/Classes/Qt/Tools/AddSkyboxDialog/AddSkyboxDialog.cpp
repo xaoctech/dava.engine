@@ -32,6 +32,8 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "CubemapEditor/CubemapUtils.h"
 #include "AddSkyboxDialog.h"
+#include "Classes/Commands2/EntityAddCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 
 AddSkyboxDialog::AddSkyboxDialog(QWidget* parent) 
 	: BaseAddEntityDialog(parent)
@@ -44,6 +46,7 @@ AddSkyboxDialog::AddSkyboxDialog(QWidget* parent)
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
+	connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
 }
 
 AddSkyboxDialog::~AddSkyboxDialog()
@@ -53,35 +56,43 @@ AddSkyboxDialog::~AddSkyboxDialog()
 
 void AddSkyboxDialog::FillPropertyEditorWithContent()
 {
+    if(propEditor == NULL)
+        return;
+    
+	propEditor->RemovePropertyAll();
+	if(NULL == entity)
+		return;
 
+    AddInspMemberToEditor(entity, entity->GetTypeInfo()->Member("name"));
+
+    SkyboxRenderObject *skyBox = GetSkybox(entity);
+    if(skyBox)
+    {
+        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("texture"));
+        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("verticalOffset"));
+        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("rotationAngle"));
+    }
 }
 
 void AddSkyboxDialog::OnCreateButtonClicked()
 {
 	if(editorScene)
 	{
-		Entity* skyboxNode = editorScene->skyboxSystem->AddSkybox();
-		RenderObject* ro = GetRenderObject(skyboxNode);
-		
-		MakeDeleteButton();
-		SetSkybox(skyboxNode);
-	}
-	else
-	{
-		DVASSERT(false);
+		Entity* skyboxEntity = editorScene->skyboxSystem->AddSkybox();
+        skyboxEntity->Retain();
+
+		skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
+        editorScene->Exec(new EntityAddCommand(skyboxEntity, editorScene)); //To enable Ctrl+Z operation
+        skyboxEntity->Release();
 	}
 }
 
 void  AddSkyboxDialog::OnDeleteButtonClicked()
 {
 	Entity* skyboxEntity = GetEntity();
-		
-	if(skyboxEntity)
+	if(skyboxEntity && editorScene)
 	{
-		skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
-		SetSkybox(NULL);
-		
-		MakeCreateButton();
+        editorScene->Exec(new EntityRemoveCommand(skyboxEntity));
 	}
 }
 
@@ -99,42 +110,32 @@ void AddSkyboxDialog::MakeDeleteButton()
 	controlButton->setText("Delete");	
 }
 
-void AddSkyboxDialog::SetSkybox(Entity* newEntity)
+void AddSkyboxDialog::SetEntity(DAVA::Entity* newEntity)
 {
-	SafeRelease(entity);
-	
-	entity = newEntity;
-	SafeRetain(entity);
-
-	QtPropertyEditor* pEditor = propEditor;
-	if(NULL == pEditor)
-	{
-		return;
-	}
-
-	/*
-    EntityGroup entities;
-    entities.Add(entity);
-	pEditor->SetEntities(&entities);
-	
-	if(entity)
-	{
-		pEditor->expandAll();
-		PerformResize();
-	}
-	*/
+    BaseAddEntityDialog::SetEntity(newEntity);
+    
+    if(entity)
+    {
+        MakeDeleteButton();
+    }
+    else
+    {
+        MakeCreateButton();
+    }
+    
+    FillPropertyEditorWithContent();
 }
 
 void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
 {
 	if(NULL != scene)	
 	{
-		Entity* currentSkybox = scene->skyboxSystem->GetSkybox();
+		Entity* currentSkybox = scene->skyboxSystem->GetSkyboxEntity();
 	
 		AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
 		dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 		dlg->SetEditorScene(scene);
-		dlg->SetSkybox(currentSkybox);
+		dlg->SetEntity(currentSkybox);
 		dlg->setWindowTitle("Set up Skybox");
 		dlg->show();
 	}
@@ -153,5 +154,24 @@ SceneEditor2* AddSkyboxDialog::GetEditorScene() const
 
 void AddSkyboxDialog::OnSceneActivated(SceneEditor2 *sceneEditor)
 {
+    SetEditorScene(sceneEditor);
+    SetEntity(sceneEditor->skyboxSystem->GetSkyboxEntity());
+}
 
+void AddSkyboxDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    if(NULL == GetSkybox(command->GetEntity()))
+    {
+        return;
+    }
+
+    int id = command->GetId() ;
+    if((id == CMDID_ENTITY_ADD && redo) || (id == CMDID_ENTITY_REMOVE && !redo))
+    {
+        SetEntity(command->GetEntity());
+    }
+    else if((id == CMDID_ENTITY_ADD && !redo) || (id == CMDID_ENTITY_REMOVE && redo))
+    {
+        SetEntity(NULL);
+    }
 }
