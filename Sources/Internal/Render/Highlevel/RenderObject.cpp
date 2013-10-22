@@ -126,6 +126,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 
 	newObject->type = type;
 	newObject->flags = flags;
+	newObject->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);
 	newObject->debugFlags = debugFlags;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;

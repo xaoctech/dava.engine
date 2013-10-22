@@ -288,6 +288,20 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	{
 		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
 		SceneHelper::EnumerateTextures(scene, allScenesTextures);
+		Landscape* landscape = scene->landscapeEditorDrawSystem->GetBaseLandscape();
+		if (landscape != NULL)
+		{
+			Texture* t = landscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
+			if (t != NULL && t->GetPathname().GetType() == FilePath::PATH_IN_MEMORY)
+			{
+				FilePath fp = landscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+				DAVA::Map<DAVA::String, DAVA::Texture *>::iterator it = allScenesTextures.find(fp.GetAbsolutePathname());
+				if (it != allScenesTextures.end())
+				{
+					allScenesTextures.erase(it);
+				}
+			}
+		}
 	}
 
 	if(allScenesTextures.size() > 0)
@@ -1644,24 +1658,35 @@ void QtMainWindow::OnConvertToShadow()
             }
         }
         
-        if(isRenderBatchFound)
+        if(!isRenderBatchFound)
         {
-            scene->BeginBatch("Convert To Shadow");
-            
-            for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-            {
-                if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
-                {
-                    scene->Exec(new ConvertToShadowCommand(ss->GetSelectionEntity(i)));
-                }
-            }
-            
-            scene->EndBatch();
-        }
-        else
-        {
-            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch");
+            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch (Material)");
             return;
+        }
+        
+        
+        bool errorHappend = false;
+        scene->BeginBatch("Convert To Shadow");
+        
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            Entity *entity = ss->GetSelectionEntity(i);
+            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
+            {
+                scene->Exec(new ConvertToShadowCommand(entity));
+            }
+            else
+            {
+                errorHappend = true;
+                Logger::Error("Cannot convert %s to shadow", entity->GetName().c_str());
+            }
+        }
+        
+        scene->EndBatch();
+        
+        if(errorHappend)
+        {
+            ShowErrorDialog("Not all entities were converted. See details at console output");
         }
     }
 }

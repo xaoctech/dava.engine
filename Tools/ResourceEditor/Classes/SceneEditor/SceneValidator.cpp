@@ -412,7 +412,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 		}
 	}
-
+    
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -749,8 +749,14 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 		FilePath path = "/" + currentSaveName;
 		if(!path.IsEqualToExtension(".png"))
 		{
-			errorsLog.insert("Need to reassign custom colors texture.");
+			errorsLog.insert("Custom colors texture has to have .png extension.");
 		}
+        
+        String::size_type foundPos = currentSaveName.find("DataSource/3d/");
+        if(String::npos == foundPos)
+        {
+			errorsLog.insert("Custom colors texture has to begin from DataSource/3d/.");
+        }
 	}
 }
 
