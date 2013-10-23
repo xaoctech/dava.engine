@@ -38,6 +38,7 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
+#include "../../../Commands2/TilemaskEditorCommands.h"
 #include "../../Main/QtUtils.h"
 #include "../../../SceneEditor/EditorSettings.h"
 
@@ -59,7 +60,6 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	prevCursorPosition(-1.f, -1.f)
 ,	tilemaskImage(NULL)
 ,	tilemaskCopyPasteTool(NULL)
-,	originalTilemaskImage(NULL)
 ,   squareTexture(NULL)
 ,	toolImageIndex(0)
 ,	copyPasteHeightmap(false)
@@ -117,7 +117,10 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
-	
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
+	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
+
 	enabled = true;
 	return enabled;
 }
@@ -477,7 +480,6 @@ void HeightmapEditorSystem::StoreOriginalHeightmap()
 void HeightmapEditorSystem::PrepareTilemaskCopyPaste()
 {
 	tilemaskImage = CreateTilemaskImage();
-	originalTilemaskImage = CreateTilemaskImage();
 	CreateTilemaskCopyPasteTool();
 	ResetAccumulatorRect(tilemaskUpdatedRect);
 }
@@ -500,18 +502,24 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 		return;
 	}
 
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
+	SceneEditor2* scene = (SceneEditor2*)GetScene();
 
-	Rect heightmapRect = GetHeightmapUpdatedRect();
-	Rect tilemaskRect = GetTilemaskUpdatedRect();
+	scene->BeginBatch("Height Map Copy/Paste");
+	if (copyPasteHeightmap)
+	{
+		Rect heightmapRect = GetHeightmapUpdatedRect();
+		ModifyHeightmapCommand* cmd = new ModifyHeightmapCommand(drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect);
+		scene->Exec(cmd);
+		SafeRelease(originalHeightmap);
+	}
 
-	scene->Exec(new CopyPasteHeightmapCommand(copyPasteHeightmap, copyPasteTilemask,
-											  drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect,
-											  drawSystem->GetLandscapeProxy(), originalTilemaskImage, tilemaskRect));
-
-	SafeRelease(originalHeightmap);
-	SafeRelease(originalTilemaskImage);
+	if (copyPasteTilemask)
+	{
+		Rect tilemaskRect = GetTilemaskUpdatedRect();
+		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
+		scene->Exec(cmd);
+	}
+	scene->EndBatch();
 }
 
 void HeightmapEditorSystem::SetBrushSize(int32 brushSize)

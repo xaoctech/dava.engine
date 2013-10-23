@@ -1887,7 +1887,24 @@ void QtMainWindow::OnTilemaskEditor()
 	}
 	else
 	{
-		sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
+		if (GetGPUFormat() != GPU_UNKNOWN)
+		{
+			int answer = ShowQuestion("Inappropriate texture format",
+									  "Tile mask editing is only allowed in PNG texture format.\nDo you want to reload textures in PNG format?",
+									  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+			if (answer == MB_FLAG_NO)
+			{
+				return;
+			}
+
+			sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+			OnReloadTexturesTriggered(ui->actionReloadPNG);
+		}
+
+		if (GetGPUFormat() == GPU_UNKNOWN)
+		{
+			sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
+		}
 	}
 }
 
