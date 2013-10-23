@@ -278,6 +278,11 @@ void SceneEditor2::Exec(Command2 *command)
 	commandStack.Exec(command);
 }
 
+void SceneEditor2::ClearCommands(int commandId)
+{
+	commandStack.Clear(commandId);
+}
+
 bool SceneEditor2::IsLoaded() const
 {
 	return isLoaded;
