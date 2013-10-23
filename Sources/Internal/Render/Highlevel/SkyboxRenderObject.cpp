@@ -203,7 +203,7 @@ namespace DAVA
 			}
 			else
 			{
-				tx = Texture::CreatePink("", Texture::TEXTURE_CUBE);
+				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
 				skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
 			}
 			SafeRelease(tx);
