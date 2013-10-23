@@ -93,7 +93,7 @@ void UIScrollViewTest::LoadResources()
 	testControl4->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 	testControl4->SetName("CONTROL_4");
 	testControl4->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
-	scrollView->AddControlToContainer(testControl4);
+//	scrollView->AddControlToContainer(testControl4);
 	SafeRelease(testControl4);
 
 	UIControl *testControlChild = new UIControl(Rect(100, 100, 150, 150));
@@ -122,7 +122,25 @@ void UIScrollViewTest::LoadResources()
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIScrollViewTest::ButtonPressed));
 	testButton->AddControl(testControl);
 	
-	scrollView->AddControlToContainer(testButton);
+//	scrollView->AddControlToContainer(testButton);
+	
+	UIControl *testControl5 = new UIControl(Rect(-50, 500, 150, 150));
+	testControl5->SetDebugDraw(true);
+	testControl5->GetBackground()->SetColor(Color(0.3333, 0.3333, 0.5555, 1.0000));
+	testControl5->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testControl5->SetName("CONTROL_5");
+
+	UIControl *testControl6 = new UIControl(Rect(-50, -50, 25, 25));
+	testControl6->SetDebugDraw(true);
+	testControl6->GetBackground()->SetColor(Color(0.3333, 0.6667, 0.4980, 1.0000));
+	testControl6->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testControl6->SetName("CONTROL_6");
+
+	testControl5->AddControl(testControl6);
+	//SafeRelease(testControl6);
+
+	scrollView->AddControlToContainer(testControl5);
+	//SafeRelease(testControl5);
 
 	SafeRelease(testControlChild);
 	SafeRelease(testControl);

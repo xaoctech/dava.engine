@@ -85,7 +85,7 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-    
+//    new UIScrollViewTest();
 	new UIMovieTest();
 	
 	new InputTest();
