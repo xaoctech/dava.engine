@@ -36,6 +36,7 @@
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "../Qt/Main/QtUtils.h"
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -456,27 +457,32 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 	if(widgetMap[sender] == HEIGHT_MAP_ID)
 	{
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
-		if(filePath != presentPath)
+		if(filePath != presentPath && filePath.Exists())
 		{
-			Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
-			if(imageVector.size() == 0)
+			if(filePath.GetExtension() == ".png")
 			{
-				return;
+				Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
+				if(imageVector.size() == 0)
+				{
+					return;
+				}
+				PixelFormat format = imageVector[0]->GetPixelFormat();
+				Q_FOREACH(Image* image, imageVector)
+				{
+					SafeRelease(image);
+				}
+				
+				if( !(format == FORMAT_A8 ||format == FORMAT_A16))
+				{
+					sender->EraseWidget();
+					ShowErrorDialog(ResourceEditor::LANDSCAPE_DIALOG_WRONG_PNG_ERROR);
+					return;
+				}
 			}
-			PixelFormat format = imageVector[0]->GetPixelFormat();
-			if(format == FORMAT_A8 ||format == FORMAT_A16)
-			{
-				LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath, innerLandscape->GetBoundingBox());
-				sceneEditor->Exec(command);
-			}
-			else
-			{
-				ShowErrorDialog(ResourceEditor::LANDSCAPE_DIALOG_WRONG_PNG_ERROR);
-			}
-			Q_FOREACH(Image* image, imageVector)
-			{
-				SafeRelease(image);
-			}
+			
+			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath,
+																					 innerLandscape->GetBoundingBox());
+			sceneEditor->Exec(command);
 		}
 	}
 	else
