@@ -33,6 +33,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
+#include "MetaObjModifyCommand.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
@@ -121,6 +122,9 @@ protected:
 	bool IsCanBeEnabled();
 
 	void InitSprites();
+
+	MetaObjModifyCommand* CreateTileColorCommand(Landscape::eTextureLevel level,
+												 const Color& color);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */

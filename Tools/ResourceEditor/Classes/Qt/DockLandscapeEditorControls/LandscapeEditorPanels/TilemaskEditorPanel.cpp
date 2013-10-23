@@ -114,6 +114,8 @@ void TilemaskEditorPanel::ConnectToSignals()
 {
 	connect(SceneSignals::Instance(), SIGNAL(TilemaskEditorToggled(SceneEditor2*)),
 			this, SLOT(EditorToggled(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)),
+			this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 
 	connect(sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
 	connect(sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
@@ -541,4 +543,21 @@ void TilemaskEditorPanel::OnTileColorChanged(int32 tileNumber, Color color)
 {
 	SceneEditor2* sceneEditor = GetActiveScene();
 	sceneEditor->tilemaskEditorSystem->SetTileColor(tileNumber, color);
+}
+
+void TilemaskEditorPanel::OnCommandExecuted(SceneEditor2* scene, const Command2* command, bool redo)
+{
+	if (scene != GetActiveScene() || !GetEditorEnabled() || command->GetId() != CMDID_META_OBJ_MODIFY)
+	{
+		return;
+	}
+
+	SceneEditor2* sceneEditor = GetActiveScene();
+	int32 count = (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		Color color = sceneEditor->tilemaskEditorSystem->GetTileColor(i);
+		tileTexturePreviewWidget->UpdateColor(i, color);
+	}
 }
