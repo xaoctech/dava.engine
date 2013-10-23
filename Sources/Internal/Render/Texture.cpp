@@ -495,7 +495,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	if(!IsLoadAvailable(gpu, texDescriptor))
 		return false;
 	
-	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == texDescriptor->exportedAsGpuFamily))
+	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
 		Vector<String> faceNames;
 		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
