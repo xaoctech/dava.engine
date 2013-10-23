@@ -33,7 +33,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
-#include "MetaObjModifyCommand.h"
+#include "Commands2/MetaObjModifyCommand.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
