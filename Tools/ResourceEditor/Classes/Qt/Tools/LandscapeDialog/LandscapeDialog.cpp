@@ -458,7 +458,8 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 	if(widgetMap[sender] == HEIGHT_MAP_ID)
 	{
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
-		if(filePath != presentPath && filePath.Exists())
+//		if(filePath != presentPath && filePath.Exists())
+		if(filePath != presentPath)
 		{
 			if(filePath.IsEqualToExtension(".png"))
 			{
