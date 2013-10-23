@@ -437,6 +437,13 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionLandscapeToolbar);
 	ui->menuToolbars->addAction(ui->sceneToolBar->toggleViewAction());
 
+	// undo/redo
+	QToolButton *undoBtn = (QToolButton *) ui->mainToolBar->widgetForAction(ui->actionUndo);
+	QToolButton *redoBtn = (QToolButton *) ui->mainToolBar->widgetForAction(ui->actionRedo);
+	undoBtn->setPopupMode(QToolButton::MenuButtonPopup);
+	redoBtn->setPopupMode(QToolButton::MenuButtonPopup);
+
+	// modification widget
 	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
@@ -451,7 +458,6 @@ void QtMainWindow::SetupToolBars()
 	ui->mainToolBar->addWidget(reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
-    
 
 	//hanging objects	
 	HangingObjectsHeight *hangingObjectsWidget = new HangingObjectsHeight(this);
@@ -465,7 +471,7 @@ void QtMainWindow::SetupToolBars()
 	ui->sceneToolBar->addSeparator();
 	ui->sceneToolBar->addWidget(hangingBtn);
 
-	// adding reload textures actions
+	// outline by object type
 	CreateObjectTypesCombobox();
 	ui->sceneToolBar->addWidget(objectTypesWidget);
 }
@@ -1789,7 +1795,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(false);
 	
 	int32 tools = scene->GetEnabledTools();
-	
+
 	SetLandscapeSettingsEnabled(tools == 0);
 	EnableGPUReloadActions(tools == 0);
 
@@ -1862,7 +1868,7 @@ void QtMainWindow::OnRulerTool()
 	{
 		return;
 	}
-	
+
 	if (sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled())
 	{
 		sceneEditor->Exec(new ActionDisableRulerTool(sceneEditor));
