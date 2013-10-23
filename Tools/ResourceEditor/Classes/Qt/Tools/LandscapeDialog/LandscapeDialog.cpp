@@ -54,8 +54,8 @@
 
 #define OPEN_TEXTURE_TITLE "Open texture"
 #define OPEN_HEIGHTMAP_TITLE "Open height map"
-#define TEXTURE_FILE_FILTER "PNG(*.png);; TEX(*.tex)"
-#define HEIGHTMAP_FILE_FILTER "PNG(*.png);;HeightMap(*.heightmap)"
+#define TEXTURE_FILE_FILTER "PNG (*.png);;TEX (*.tex);;All (*.png *.tex)"
+#define HEIGHTMAP_FILE_FILTER "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap) "
 #define HEIGHT_MAP_ID 0xABCD
 
 #define TAB_CONTENT_WIDTH 450
