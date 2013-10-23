@@ -369,6 +369,7 @@ void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates
     {
         case Core::SCREEN_ORIENTATION_PORTRAIT:
         case Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
+        case Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE:
         { 
             y = frameBufferHeight - y - height;
         }
@@ -805,6 +806,7 @@ void RenderManager::SetHWClip(const Rect &rect)
 	{
 	case Core::SCREEN_ORIENTATION_PORTRAIT:
     case Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
+    case Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE:
 		{
 			//			x = frameBufferWidth - x;
 			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
