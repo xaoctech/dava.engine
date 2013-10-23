@@ -140,6 +140,7 @@ void UIScrollViewTest::LoadResources()
 	//SafeRelease(testControl6);
 
 	scrollView->AddControlToContainer(testControl5);
+	scrollView->RecalculateContentSize();
 	//SafeRelease(testControl5);
 
 	SafeRelease(testControlChild);
