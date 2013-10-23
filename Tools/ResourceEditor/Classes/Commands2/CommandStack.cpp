@@ -89,8 +89,10 @@ void CommandStack::Clear()
 	CleanCheck();
 }
 
-void CommandStack::Clear(int commandId)
+bool CommandStack::Clear(int commandId)
 {
+	bool ret = false;
+
 	for(int i = 0; i < commandList.size(); i++)
 	{
 		Command2 *cmd = GetCommand(i);
@@ -100,12 +102,14 @@ void CommandStack::Clear(int commandId)
 			ClearCommand(i);
 
 			i--; // check command with same index on next step
+
+			ret = true;
 		}
 		else if(cmd->GetId() == CMDID_BATCH)
 		{
 			CommandBatch *batch = (CommandBatch *) cmd;
 
-			batch->Clear(commandId);
+			ret |= batch->Clear(commandId);
 			if(batch->Size() == 0)
 			{
 				// clear empty batch
@@ -115,6 +119,8 @@ void CommandStack::Clear(int commandId)
 			}
 		}
 	}
+
+	return ret;
 }
 
 void CommandStack::Undo()

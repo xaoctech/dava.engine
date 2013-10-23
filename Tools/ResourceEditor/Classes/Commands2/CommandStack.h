@@ -49,7 +49,7 @@ public:
 	bool CanUndo() const;
 
 	void Clear();
-	void Clear(int commandId);
+	bool Clear(int commandId);
 	
 	void Undo();
 	void Redo();
