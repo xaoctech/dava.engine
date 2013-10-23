@@ -119,9 +119,10 @@ void SelectPathWidgetBase::OpenClicked()
 	{
 		dialogString = presentPath.GetDirectory();
 	}
-	
+	this->blockSignals(true);
 	DAVA::String retString = QtFileDialog::getOpenFileName(this, openFileDialogTitle.c_str(), QString(dialogString.GetAbsolutePathname().c_str()), fileFormatFilter.c_str()).toStdString();
-
+	this->blockSignals(false);
+	
 	if(!retString.empty())
 	{
 		HandlePathSelected(retString);
@@ -144,13 +145,13 @@ void SelectPathWidgetBase::HandlePathSelected(DAVA::String name)
 void SelectPathWidgetBase::setText(const QString& filePath)
 {
 	QLineEdit::setText(filePath);
+	setToolTip(filePath);
 	emit PathSelected(filePath.toStdString());
 }
 
 void SelectPathWidgetBase::setText(const DAVA::String &filePath)
 {
 	setText(QString(filePath.c_str()));
-	setToolTip(filePath.c_str());
 }
 
 DAVA::String SelectPathWidgetBase::getText()
