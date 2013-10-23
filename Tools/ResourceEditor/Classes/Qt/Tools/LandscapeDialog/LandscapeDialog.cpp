@@ -280,6 +280,11 @@ void LandscapeDialog::ActionButtonClicked()
 		Entity* entityToProcess = new Entity();
 		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
 		Landscape* newLandscape = new Landscape();
+		
+		for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)
+		{
+			newLandscape->SetTexture((Landscape::eTextureLevel)i, Texture::CreatePink());
+		}
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
