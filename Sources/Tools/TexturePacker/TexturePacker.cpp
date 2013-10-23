@@ -60,11 +60,13 @@ bool TexturePacker::TryToPack(const Rect2i & textureRect, List<DefinitionFile*> 
 	{
 		DefinitionFile * defFile = sortVector[i].defFile;
 		int frame = sortVector[i].frameIndex;
-		if (!packer->AddImage(Size2i(defFile->frameRects[frame].dx, defFile->frameRects[frame].dy), &defFile->frameRects[frame]))
+
+		if (!packer->AddImage(defFile->GetFrameSize(frame), &defFile->frameRects[frame]))
 		{
 			SafeDelete(packer);
 			return false;
 		}
+
         Logger::FrameworkDebug("p: %s %d",defFile->filename.GetAbsolutePathname().c_str(), frame);
 	}
     Logger::FrameworkDebug("* %d x %d - success", textureRect.dx, textureRect.dy);
@@ -86,7 +88,7 @@ int TexturePacker::TryToPackFromSortVector(ImagePacker * packer,Vector<SizeSortI
 	{
 		DefinitionFile * defFile = tempSortVector[i].defFile;
 		int frame = tempSortVector[i].frameIndex;
-		if (packer->AddImage(Size2i(defFile->frameRects[frame].dx, defFile->frameRects[frame].dy), &defFile->frameRects[frame]))
+		if (packer->AddImage(defFile->GetFrameSize(frame), &defFile->frameRects[frame]))
 		{
 			packedCount++;
 			tempSortVector.erase(tempSortVector.begin() + i);
@@ -105,10 +107,9 @@ float TexturePacker::TryToPackFromSortVectorWeight(ImagePacker * packer,Vector<S
 	{
 		DefinitionFile * defFile = tempSortVector[i].defFile;
 		int frame = tempSortVector[i].frameIndex;
-		if (packer->AddImage(Size2i(defFile->frameRects[frame].dx, defFile->frameRects[frame].dy), &defFile->frameRects[frame]))
+		if (packer->AddImage(defFile->GetFrameSize(frame), &defFile->frameRects[frame]))
 		{
-			//float weightCoeff = (float)(tempSortVector.size() - i) / (float)(tempSortVector.size());
-			weight += (defFile->frameRects[frame].dx * defFile->frameRects[frame].dy);// * weightCoeff;
+			weight += (defFile->GetFrameWidth(frame) * defFile->GetFrameHeight(frame));// * weightCoeff;
 			tempSortVector.erase(tempSortVector.begin() + i);
 			i--;
 		}
@@ -134,7 +135,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 		for (int frame = 0; frame < defFile->frameCount; ++frame)
 		{
 			SizeSortItem sortItem;
-			sortItem.imageSize = defFile->frameRects[frame].dx * defFile->frameRects[frame].dy;
+			sortItem.imageSize = defFile->GetFrameWidth(frame) * defFile->GetFrameHeight(frame);
 			sortItem.defFile = defFile;
 			sortItem.frameIndex = frame;
 			sortVector.push_back(sortItem);
@@ -185,7 +186,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 
 				PngImageExt image;
 				image.Read(FramePathHelper::GetFramePathRelative(withoutExt, frame));
-				finalImage.DrawImage(destRect->x, destRect->y, &image);
+				DrawToFinalImage(finalImage, image, *destRect, defFile->frameRects[frame]);
 			}
 			
 			if (!WriteDefinition(excludeFolder, outputPath, textureNameWithIndex, defFile))
@@ -208,7 +209,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 		for (int frame = 0; frame < defFile->frameCount; ++frame)
 		{
 			SizeSortItem sortItem;
-			sortItem.imageSize = defFile->frameRects[frame].dx * defFile->frameRects[frame].dy;
+			sortItem.imageSize = defFile->GetFrameWidth(frame) * defFile->GetFrameHeight(frame);
 			sortItem.defFile = defFile;
 			sortItem.frameIndex = frame;
 			sortVector.push_back(sortItem);
@@ -263,12 +264,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 
 				PngImageExt image;
 				image.Read(FramePathHelper::GetFramePathRelative(withoutExt, frame));
-				finalImage.DrawImage(destRect->x, destRect->y, &image);
-
-				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
-				{
-					finalImage.DrawRect(*destRect, 0xFF0000FF);
-				}
+				DrawToFinalImage(finalImage, image, *destRect, defFile->frameRects[frame]);
 			}
 			
 			if (!WriteDefinition(excludeFolder, outputPath, "texture", defFile))
@@ -383,11 +379,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
                 
 				PngImageExt image;
 				image.Read(imagePath);
-				finalImages[packerIndex]->DrawImage(destRect->x, destRect->y, &image);
-				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
-				{
-					finalImages[packerIndex]->DrawRect(*destRect, 0xFF0000FF);
-				}
+				DrawToFinalImage(*finalImages[packerIndex], image, *destRect, defFile->frameRects[frame]);
 			}
 		}
 	}
@@ -470,9 +462,9 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 		Rect2i *destRect = lastPackedPacker->SearchRectForPtr(&defFile->frameRects[frame]);
 		Rect2i origRect = defFile->frameRects[frame];
 		Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
-		fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, 0);
+		WriteDefinitionString(fp, writeRect, origRect, 0);
 
-        if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
+		if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
         {
             Logger::Error("In sprite %s.psd frame %d has size bigger than sprite size!", defFile->filename.GetBasename().c_str(), frame);
         }
@@ -552,6 +544,7 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, 
 			Rect2i origRect = defFile->frameRects[frame];
 			Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
 			fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, packerIndex);
+			WriteDefinitionString(fp, writeRect, origRect, packerIndex);
 
             if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
             {
@@ -735,6 +728,35 @@ bool TexturePacker::CheckFrameSize(const Size2i &spriteSize, const Size2i &frame
     bool isSizeCorrect = ((frameSize.dx <= spriteSize.dx) && (frameSize.dy <= spriteSize.dy));
     
     return isSizeCorrect;
+}
+
+void TexturePacker::DrawToFinalImage( PngImageExt & finalImage, PngImageExt & drawedImage, const Rect2i & drawRect, const Rect2i &frameRect )
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		finalImage.DrawImage(drawRect.x + frameRect.x, drawRect.y + frameRect.y, &drawedImage);
+	}
+	else
+	{
+		finalImage.DrawImage(drawRect.x, drawRect.y, &drawedImage);
+	}
+
+	if (CommandLineParser::Instance()->IsFlagSet("--debug"))
+	{
+		finalImage.DrawRect(drawRect, 0xFF0000FF);
+	}
+}
+
+void TexturePacker::WriteDefinitionString(FILE *fp, const Rect2i & writeRect, const Rect2i &originRect, int textureIndex)
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, 0, 0, textureIndex);
+	}
+	else
+	{
+		fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, originRect.x, originRect.y, textureIndex);
+	}
 }
 
 

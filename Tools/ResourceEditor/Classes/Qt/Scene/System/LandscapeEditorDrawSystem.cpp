@@ -624,10 +624,7 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE2) != NULL) &&
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE3) != NULL);
 
-		if (!ok)
-		{
-			return false;
-		}
+		return ok;
 	}
 
 	return true;

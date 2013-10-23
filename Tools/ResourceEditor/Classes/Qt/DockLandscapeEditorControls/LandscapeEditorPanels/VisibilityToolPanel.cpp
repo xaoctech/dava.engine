@@ -1,7 +1,8 @@
 #include "VisibilityToolPanel.h"
 #include "../../Scene/SceneSignals.h"
 #include "../../Scene/SceneEditor2.h"
-#include "../../Tools/SliderWidget/SliderWidget.h"
+#include "Tools/SliderWidget/SliderWidget.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Constants.h"
 #include "Main/QtUtils.h"
 #include "../LandscapeEditorShortcutManager.h"
@@ -200,7 +201,7 @@ void VisibilityToolPanel::SetVisibilityToolButtonsState(SceneEditor2* scene,
 void VisibilityToolPanel::SaveTexture()
 {
 	FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
-	QString filePath = QFileDialog::getSaveFileName(NULL,
+	QString filePath = QtFileDialog::getSaveFileName(NULL,
 													QString(ResourceEditor::VISIBILITY_TOOL_SAVE_CAPTION.c_str()),
 													QString(currentPath.GetAbsolutePathname().c_str()),
 													QString(ResourceEditor::VISIBILITY_TOOL_FILE_FILTER.c_str()));

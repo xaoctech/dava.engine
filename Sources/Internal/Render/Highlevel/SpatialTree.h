@@ -57,11 +57,7 @@ class QuadTree : public AbstractSpatialTree
 	Frustum *currFrustum;
 
 	List<int32> dirtyZNodes;    
-	
-	/*to compare*/
-	int32 objFrustrumCalls;	
-	int32 nodeFrustrumCalls;
-	int32 processClippingCalls;
+	List<RenderObject *> dirtyObjects;    	
 	
 	bool CheckObjectFitNode(const AABBox3& objBox, const AABBox3& nodeBox);
 	bool CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax);		
@@ -75,8 +71,10 @@ class QuadTree : public AbstractSpatialTree
 	uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
 	
 	static const int32 RECALCULATE_Z_PER_FRAME = 10;
+	static const int32 RECALCULATE_OBJECTS_PER_FRAME = 10;
 	void RecalculateNodeZLimits(uint16 nodeId);
 	void MarkNodeDirty(uint16 nodeId);
+	void MarkObjectDirty(RenderObject *object);
 
 public:
 	QuadTree(const AABBox3 &worldBox, int32 maxTreeDepth);

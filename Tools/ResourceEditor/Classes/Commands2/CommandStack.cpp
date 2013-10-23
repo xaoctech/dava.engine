@@ -89,6 +89,40 @@ void CommandStack::Clear()
 	CleanCheck();
 }
 
+bool CommandStack::Clear(int commandId)
+{
+	bool ret = false;
+
+	for(int i = 0; i < commandList.size(); i++)
+	{
+		Command2 *cmd = GetCommand(i);
+
+		if(cmd->GetId() == commandId)
+		{
+			ClearCommand(i);
+
+			i--; // check command with same index on next step
+
+			ret = true;
+		}
+		else if(cmd->GetId() == CMDID_BATCH)
+		{
+			CommandBatch *batch = (CommandBatch *) cmd;
+
+			ret |= batch->Clear(commandId);
+			if(batch->Size() == 0)
+			{
+				// clear empty batch
+				ClearCommand(i);
+
+				i--; // check command with same index on next step
+			}
+		}
+	}
+
+	return ret;
+}
+
 void CommandStack::Undo()
 {
 	if(CanUndo())
@@ -252,18 +286,28 @@ void CommandStack::ClearLimitedCommands()
 {
 	while(commandListLimit > 0 && commandList.size() > commandListLimit)
 	{
-		Command2* command = GetCommand(0);
+		ClearCommand(0);
+	}
+}
 
-		// this is single command
-		if(NULL != command)
+void CommandStack::ClearCommand(size_t index)
+{
+	Command2 *command = GetCommand(index);
+	if(NULL != command)
+	{
+		commandList.remove(command);
+
+		if(nextCommandIndex > 0)
 		{
-			delete command;
+			nextCommandIndex--;
 		}
 
-		commandList.pop_front();
+		if(cleanCommandIndex > 0 && index <= cleanCommandIndex)
+		{
+			cleanCommandIndex--;
+		}
 
-		nextCommandIndex--;
-		cleanCommandIndex--;
+		delete command;
 	}
 }
 

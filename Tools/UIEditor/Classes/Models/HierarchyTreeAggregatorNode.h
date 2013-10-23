@@ -71,7 +71,7 @@ public:
 private:
 	void CopyAggregatorControls();
 	void ReplaceAggregator(HierarchyTreeControlNode* node);
-	
+
 private:
 	Rect rect;
 	

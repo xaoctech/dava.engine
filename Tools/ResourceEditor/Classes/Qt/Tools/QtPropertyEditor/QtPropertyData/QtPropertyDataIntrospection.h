@@ -45,6 +45,8 @@ public:
 	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
 	virtual ~QtPropertyDataIntrospection();
 
+	static QtPropertyData * CreateMemberData(void *_object, const DAVA::InspMember *member, int hasAllFlags);
+
 protected:
 	void *object;
 	const DAVA::InspInfo *info;

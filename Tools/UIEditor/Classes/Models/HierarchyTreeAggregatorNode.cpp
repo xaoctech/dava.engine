@@ -90,9 +90,7 @@ void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
 
 Rect HierarchyTreeAggregatorNode::GetRect() const
 {
-	Rect rect = this->rect;
-	CombineRectWithChild(rect);
-	return rect;
+	return this->rect;
 }
 
 void HierarchyTreeAggregatorNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
@@ -153,8 +151,12 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
 		}
-		//aggregatorControl->SetSize(screen->GetSize()); TODO:// update child size 
+
+		// Have to remember Align Data prior to changing rectangle and then apply the alignment
+		// back, since SetRect affects the alignment. See please DF-2342.
+		AlignData alignData = SaveAlignData(aggregatorControl);
 		aggregatorControl->SetRect(aggregatorControl->GetRect());	//update childs size and position
+		RestoreAlignData(aggregatorControl, alignData);
 	}
 }
 
@@ -192,7 +194,9 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		DVASSERT(aggregatorControl);
 		if (!aggregatorControl)
 			continue;
-
+			
+		// DF-2164 - Get proper relative path for aggregator
+		String aggregatorPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 		aggregatorControl->SetAggregatorPath(aggregatorPath);
 	}
 	

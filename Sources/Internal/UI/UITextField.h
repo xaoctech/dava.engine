@@ -328,17 +328,21 @@ protected:
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
-    Font * textFont;
-    Font * constFont;
 
-	
-	// Keyboard customization params.
+    // Keyboard customization params.
 	eAutoCapitalizationType autoCapitalizationType;
 	eAutoCorrectionType autoCorrectionType;
 	eSpellCheckingType spellCheckingType;
 	eKeyboardAppearanceType keyboardAppearanceType;
 	eKeyboardType keyboardType;
 	eReturnKeyType returnKeyType;
+
+
+	// All Boolean variables are grouped together because of DF-2149.
+	bool needRedraw : 1;
+	bool isPassword : 1;
+	bool enableReturnKeyAutomatically : 1;
+	bool showCursor : 1;
 
     void RenderText();
 private:
@@ -348,16 +352,11 @@ private:
 	UITextFieldiPhone * textFieldiPhone;
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
-#endif
-
+#else
+    Font * textFont;
     UIStaticText * staticText;
+#endif
     float32 cursorTime;
-	
-	// All Boolean variables are grouped together because of DF-2149.
-    bool needRedraw : 1;
-    bool isPassword : 1;
-	bool enableReturnKeyAutomatically : 1;
-    bool showCursor : 1;
 };
 
 };

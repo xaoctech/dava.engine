@@ -32,7 +32,7 @@
 #include "DAVAEngine.h"
 
 RemoveComponentCommand::RemoveComponentCommand(DAVA::Entity* _entity, DAVA::int32 componentType)
-	: Command2(CMDID_REMOVE_COMPONENT, "Remove Component")
+	: Command2(CMDID_COMPONENT_REMOVE, "Remove Component")
     , entity(_entity)
 {
 	DVASSERT(entity);

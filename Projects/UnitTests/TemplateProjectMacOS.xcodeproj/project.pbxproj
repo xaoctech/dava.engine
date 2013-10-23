@@ -211,7 +211,6 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
 				1770DF5B17DF763700000391 /* QTKit.framework in Frameworks */,
-				1770DF5B17DF763700000391 /* QTKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

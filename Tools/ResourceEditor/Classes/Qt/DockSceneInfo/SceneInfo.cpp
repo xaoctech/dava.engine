@@ -67,8 +67,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
     
-    connect(QtMainWindow::Instance(), SIGNAL(GlobalInvalidateTimeout()), SLOT(UpdateInfoByTimer()));
-    
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
 	

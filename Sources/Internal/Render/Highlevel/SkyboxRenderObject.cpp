@@ -41,8 +41,7 @@ namespace DAVA
 	:
 	offsetZ(0.0f),
 	rotationZ(0.0f),
-	nonClippingDistance(0.0f),
-	textureValidator(NULL)
+	nonClippingDistance(0.0f)
 	{
 		type = RenderObject::TYPE_SKYBOX;
 		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
@@ -50,7 +49,6 @@ namespace DAVA
 	
 	SkyboxRenderObject::~SkyboxRenderObject()
 	{
-		SafeDelete(textureValidator);
 	}
 		
 	void SkyboxRenderObject::SetRenderSystem(RenderSystem * renderSystem)
@@ -199,8 +197,15 @@ namespace DAVA
 			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, NULL);
 			
 			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-						
-			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+			if(NULL != tx && tx->textureType == Texture::TEXTURE_CUBE)
+			{
+				skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+			}
+			else
+			{
+				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
+				skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+			}
 			SafeRelease(tx);
 		}
 	}
@@ -286,12 +291,6 @@ namespace DAVA
 
 	void SkyboxRenderObject::SetTexture(const FilePath& texPath)
 	{
-		if(textureValidator)
-		{
-			bool result = textureValidator->IsValid(texPath);
-			if(!result) return;
-		}
-		
 		texturePath = texPath;
 		UpdateMaterial();
 	}
@@ -339,17 +338,6 @@ namespace DAVA
 	float32 SkyboxRenderObject::GetRotationZ()
 	{
 		return rotationZ;
-	}
-	
-	SkyboxRenderObject::SkyboxTextureValidator* SkyboxRenderObject::GetTextureValidator()
-	{
-		return textureValidator;
-	}
-	
-	void SkyboxRenderObject::SetTextureValidator(SkyboxRenderObject::SkyboxTextureValidator* validator)
-	{
-		SafeDelete(textureValidator);
-		textureValidator = validator;
 	}
 
 };

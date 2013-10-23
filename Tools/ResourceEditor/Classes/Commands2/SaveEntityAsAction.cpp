@@ -35,7 +35,7 @@
 
 
 SaveEntityAsAction::SaveEntityAsAction(const EntityGroup *_entities, const DAVA::FilePath &_path)
-	: CommandAction(CMDID_SAVE_ENTITY_AS, "Save Entities As")
+	: CommandAction(CMDID_ENTITY_SAVE_AS, "Save Entities As")
 	, entities(_entities)
 	, sc2Path(_path)
 { }
