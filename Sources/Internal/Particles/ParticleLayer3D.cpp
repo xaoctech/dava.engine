@@ -51,6 +51,9 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	
 	frameBlendMaterial = NULL;
 	regularMaterial = NULL;
+	
+	renderBatch->SetIndices(&indices);
+	renderBatch->SetRenderDataObject(renderData);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -363,8 +366,6 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			renderData->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &textures2.front());
 			renderData->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
 		}
-
-		renderBatch->SetRenderDataObject(renderData);
 	}
 	
 }

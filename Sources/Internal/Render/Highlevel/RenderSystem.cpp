@@ -315,29 +315,23 @@ void RenderSystem::Update(float32 timeElapsed)
 	{
 		particleEmitterSystem->Update(timeElapsed, camera);
 	}
-
-    uint32 size = objectsForUpdate.size();
-	for(uint32 i = 0; i < size; ++i)
-	{
-        objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
-    }
-    
-    // Update nearest lights for objects    
+	
     int32 objectBoxesUpdated = 0;
     Vector<RenderObject*>::iterator end = markedObjects.end();
     for (Vector<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
     {
         RenderObject * obj = *it;
-        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
-        FindNearestLights(obj);
 		
-		if (obj->GetTreeNodeIndex() != INVALID_TREE_NODE_INDEX)
+		obj->RecalculateWorldBoundingBox();
+		
+		FindNearestLights(obj);
+		if (obj->GetTreeNodeIndex()!=INVALID_TREE_NODE_INDEX)
 			renderHierarchy->ObjectUpdated(obj);
 		
         objectBoxesUpdated++;
     }
     markedObjects.clear();
-    
+	
     if (movedLights.size() > 0)
     {
         FindNearestLights();
@@ -346,6 +340,12 @@ void RenderSystem::Update(float32 timeElapsed)
     
     globalBatchArray->Clear();
     renderHierarchy->Clip(camera, false, globalBatchArray);
+	
+	uint32 size = objectsForUpdate.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
+    }
 }
 
 void RenderSystem::Render()

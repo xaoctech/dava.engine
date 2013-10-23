@@ -60,8 +60,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	//Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
 	//if (!worldTransformPtr)return;
 
-	uint32 flags = renderObject->GetFlags();
-	if (((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA) || particleLayer->GetDisabled())
+	if (!GetVisible() || particleLayer->GetDisabled())
 		return;
 
 	Matrix4 worldMatrix = Matrix4::IDENTITY;
