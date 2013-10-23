@@ -37,7 +37,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableCustomColors::ActionEnableCustomColors(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_CUSTOM_COLORS)
+:	CommandAction(CMDID_CUSTOM_COLORS_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -68,7 +68,7 @@ void ActionEnableCustomColors::Redo()
 }
 
 ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_CUSTOM_COLORS)
+:	CommandAction(CMDID_CUSTOM_COLORS_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -99,7 +99,7 @@ void ActionDisableCustomColors::Redo()
 ModifyCustomColorsCommand::ModifyCustomColorsCommand(Image* originalImage,
 													 CustomColorsProxy* customColorsProxy,
 													 const Rect& updatedRect)
-:	Command2(CMDID_MODIFY_CUSTOM_COLORS, "Custom Colors Modification")
+:	Command2(CMDID_CUSTOM_COLORS_MODIFY, "Custom Colors Modification")
 {
 	this->updatedRect = updatedRect;
 	this->customColorsProxy = SafeRetain(customColorsProxy);
@@ -142,8 +142,7 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
-	
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+
 	sprite->SetPosition(updatedRect.x, updatedRect.y);
 	sprite->Draw();
 	

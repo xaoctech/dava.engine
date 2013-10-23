@@ -51,6 +51,8 @@ SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
 {
+	renderStats.Clear();
+
 	EditorCommandNotify *notify = new EditorCommandNotify(this);
 	commandStack.SetNotify(notify);
 	SafeRelease(notify);
@@ -108,6 +110,9 @@ SceneEditor2::SceneEditor2()
 	
 	beastSystem = new BeastSystem(this);
 	AddSystem(beastSystem, 0);
+	
+	ownersSignatureSystem = new OwnersSignatureSystem(this);
+	AddSystem(ownersSignatureSystem, 0);
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
@@ -273,6 +278,11 @@ void SceneEditor2::Exec(Command2 *command)
 	commandStack.Exec(command);
 }
 
+bool SceneEditor2::ClearCommands(int commandId)
+{
+	return commandStack.Clear(commandId);
+}
+
 bool SceneEditor2::IsLoaded() const
 {
 	return isLoaded;
@@ -392,6 +402,9 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 
 	if(editorLightSystem)
 		editorLightSystem->ProcessCommand(command, redo);
+	
+	if(ownersSignatureSystem)
+		ownersSignatureSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )

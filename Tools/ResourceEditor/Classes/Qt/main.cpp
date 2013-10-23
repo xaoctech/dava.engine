@@ -45,7 +45,7 @@
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-
+#include "Classes/SceneEditor/ControlsFactory.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -113,16 +113,24 @@ int main(int argc, char *argv[])
 		new EditorConfig();
 		new SceneValidator();
 		new TextureSquarenessChecker();
+
+		LocalizationSystem::Instance()->SetCurrentLocale("en");
+		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
+
 		new QtMainWindow();
+		QtMainWindow::Instance()->EnableGlobalTimeout(true);
 
 		DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
 
 		QtMainWindow::Instance()->show();
 		ProjectManager::Instance()->ProjectOpenLast();
+		QtMainWindow::Instance()->OnSceneNew();
 
 		ret = a.exec();
 
 		QtMainWindow::Instance()->Release();
+		ControlsFactory::ReleaseFonts();
+
 		TextureSquarenessChecker::Instance()->Release();
 		SceneValidator::Instance()->Release();
 		EditorConfig::Instance()->Release();

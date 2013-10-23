@@ -132,8 +132,12 @@ T ParseStringTo(const String & str)
     stream >> result;
     return result;
 }
+
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	
 uint64 EglGetCurrentContext();
+	
+#endif
 
 };
 

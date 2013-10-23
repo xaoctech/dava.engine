@@ -34,7 +34,6 @@
 #include <QBoxLayout>
 #include <QDropEvent>
 #include <QMenu>
-#include <QFileDialog>
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
@@ -42,6 +41,7 @@
 #include "Project/ProjectManager.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/SelectionSystem.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 
 // framework
@@ -51,6 +51,7 @@
 // commands
 #include "Commands2/ParticleEditorCommands.h"
 #include "Commands2/SaveEntityAsAction.h"
+#include "Commands2/ConvertToShadowCommand.h"
 
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
@@ -283,16 +284,7 @@ void SceneTree::ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLay
 
 void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 {
-	SceneEditor2* sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(index)));
-		if(NULL != entity)
-		{
-			DAVA::AABBox3 box = sceneEditor->selectionSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
-			sceneEditor->cameraSystem->LookAt(box);
-		}
-	}
+    LookAtSelection();
 }
 
 void SceneTree::ShowContextMenu(const QPoint &pos)
@@ -431,6 +423,13 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 		}
 		
+        if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
+        {
+			contextMenu.addSeparator();
+            contextMenu.addAction(QtMainWindow::Instance()->GetUI()->actionConvertToShadow);
+        }
+        
+        
 //      Disabled for 0.5.5 version
 //		SceneEditor2* sceneEditor = treeModel->GetScene();
 //		if(NULL != sceneEditor)
@@ -633,7 +632,7 @@ void SceneTree::ReloadModelAs()
 				}
 			}
 
-			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
+			QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->structureSystem->Reload(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
@@ -666,7 +665,7 @@ void SceneTree::SaveEntityAs()
 				scenePath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
 			}
 
-			QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save scene file"), QString(scenePath.GetDirectory().GetAbsolutePathname().c_str()), QString("DAVA SceneV2 (*.sc2)"));
+			QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save scene file"), QString(scenePath.GetDirectory().GetAbsolutePathname().c_str()), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->Exec(new SaveEntityAsAction(&selection, filePath.toStdString()));
@@ -1032,7 +1031,7 @@ void SceneTree::LoadInnerEmitterFromYaml()
 	if (!selectedInnerEmmiterParentLayer)
 		return;
 	
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
+	QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
 		GetParticlesConfigPath(), QString("YAML File (*.yaml)"));
 	if (filePath.isEmpty())
 	{
@@ -1074,7 +1073,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 	if (forceAskFileName)
 	{
 		QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
-		QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
+		QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
 			projectPath, QString("YAML File (*.yaml)"));
 
 		if (filePath.isEmpty())
@@ -1209,7 +1208,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
     if (forceAskFileName)
     {
         QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
+        QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
 		
         if (filePath.isEmpty())

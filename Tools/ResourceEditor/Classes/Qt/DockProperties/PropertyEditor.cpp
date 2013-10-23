@@ -91,7 +91,7 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
         curNode = SafeRetain(selected->GetEntity(0));
 	}
 
-    UpdateProperties();
+    ResetProperties();
 }
 
 void PropertyEditor::SetAdvancedMode(bool set)
@@ -99,11 +99,11 @@ void PropertyEditor::SetAdvancedMode(bool set)
 	if(advancedMode != set)
 	{
 		advancedMode = set;
-        UpdateProperties();
+        ResetProperties();
 	}
 }
 
-void PropertyEditor::UpdateProperties()
+void PropertyEditor::ResetProperties()
 {
     // Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
@@ -128,9 +128,12 @@ void PropertyEditor::UpdateProperties()
 				if(NULL != componentData)
 				{
 					// Add optional button to track "remove this component" command
-					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
-					removeButton->setFlat(true);
-					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//TODO: Disabled for future code
+					//<--
+// 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
+// 					removeButton->setFlat(true);
+// 					componentData->AddOW(QtPropertyOW(removeButton, true));
+					//-->
 					
 					if(component->GetType() == Component::ACTION_COMPONENT)
 					{
@@ -238,14 +241,20 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-    if(command->GetId() == CMDID_ADD_COMPONENT || command->GetId() == CMDID_REMOVE_COMPONENT)
-    {
-        UpdateProperties();
-    }
-    else
-    {
-        Update();
-    }
+	int cmdId = command->GetId();
+
+	switch (cmdId)
+	{
+	case CMDID_COMPONENT_ADD:
+	case CMDID_COMPONENT_REMOVE:
+	case CMDID_CONVERT_TO_SHADOW:
+	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
+		ResetProperties();
+		break;
+	default:
+		Update();
+		break;
+	}
 }
 
 void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)

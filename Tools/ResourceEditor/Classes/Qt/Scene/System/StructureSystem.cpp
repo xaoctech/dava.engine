@@ -62,30 +62,36 @@ StructureSystem::~StructureSystem()
 bool StructureSystem::Init(const DAVA::FilePath & path)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL == sceneEditor) return false;
+	if(NULL == sceneEditor)
+	{
+		return false;
+	}
 
-	Entity * rootNode = Load(path);
-	if(!rootNode) return false;
-    
-    DAVA::Vector<DAVA::Entity*> tmpEntities;
-    int entitiesCount = rootNode->GetChildrenCount();
-    
-    // remember all child pointers, but don't add them to scene in this cycle
-    // because when entity is adding it is automatically removing from its old hierarchy
-    tmpEntities.reserve(entitiesCount);
-    for (DAVA::int32 i = 0; i < entitiesCount; ++i)
-    {
-        tmpEntities.push_back(rootNode->GetChild(i));
-    }
-    
-    // now we can safely add entities into our hierarchy
-    for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
-    {
-        sceneEditor->AddNode(tmpEntities[i]);
-    }
+	Entity* entity = Load(path, false);
+	if(NULL == entity)
+	{
+		return false;
+	}
 
-    rootNode->Release();
-    return true;
+	DAVA::Vector<DAVA::Entity*> tmpEntities;
+	int entitiesCount = entity->GetChildrenCount();
+
+	// remember all child pointers, but don't add them to scene in this cycle
+	// because when entity is adding it is automatically removing from its old hierarchy
+	tmpEntities.reserve(entitiesCount);
+	for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+	{
+		tmpEntities.push_back(entity->GetChild(i));
+	}
+
+	// now we can safely add entities into our hierarchy
+	for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+	{
+		sceneEditor->AddNode(tmpEntities[i]);
+	}
+
+	entity->Release();
+	return true;
 }
 
 void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
@@ -261,7 +267,7 @@ void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePat
 				}
 			}
 
-			DAVA::Entity *loadedEntity = Load(loadModelPath);
+			DAVA::Entity *loadedEntity = Load(loadModelPath, true);
 			if(NULL != loadedEntity)
 			{
 				loadedEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, loadModelPath.GetAbsolutePathname());
@@ -314,7 +320,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor)
 	{
-		DAVA::Entity *loadedEntity = Load(newModelPath);
+		DAVA::Entity *loadedEntity = Load(newModelPath, true);
 		if(NULL != loadedEntity)
 		{
 			DAVA::Vector3 entityPos = pos;
@@ -465,25 +471,30 @@ void StructureSystem::MarkLocked(DAVA::Entity *entity)
 	}
 }
 
-DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
+DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool optimize)
 {
 	DAVA::Entity* loadedEntity = NULL;
-	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
+		// if there is already entity for such file, we should release it
+		// to be sure that latest version will be loaded 
         sceneEditor->ReleaseRootNode(sc2path);
-        Entity *rootNode = sceneEditor->GetRootNode(sc2path);
+
+		// load entity from file
+		Entity *rootNode = sceneEditor->GetRootNode(sc2path);
         if(rootNode)
         {
-            loadedEntity = rootNode->Clone();
-            
             Entity *parentForOptimize = new Entity();
-			parentForOptimize->AddNode(loadedEntity);
-            SafeRelease(loadedEntity);
-            
-			SceneFileV2 sceneFile;
-			sceneFile.OptimizeScene(parentForOptimize);
+			parentForOptimize->AddNode(rootNode);
+
+			if(optimize)
+			{
+				SceneFileV2 sceneFile;
+				sceneFile.OptimizeScene(parentForOptimize);
+			}
+
 			if(parentForOptimize->GetChildrenCount())
 			{
 				loadedEntity = parentForOptimize->GetChild(0);
@@ -494,10 +505,12 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
                 CheckAndMarkSolid(loadedEntity);
 			}
 
-			parentForOptimize->Release();
-        }
+			SafeRelease(parentForOptimize);
 
-		sceneEditor->ReleaseRootNode(sc2path);
+			// release loaded entity
+			sceneEditor->ReleaseRootNode(sc2path);
+			rootNode = NULL;
+		}
 	}
 
 	return loadedEntity;

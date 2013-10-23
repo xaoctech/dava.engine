@@ -52,13 +52,13 @@
 #define INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyName, configName, localizationName, argumentsList)\
 	QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName), argumentsList)));\
 	AppendProperty(QString((WStringToString(LocalizedString(localizationName))).c_str()),	propertyName, NULL);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(OnValueChanged()));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(OnValueChanged(QtPropertyData::ValueChangeReason)));\
 	propertiesMap[propertyName] = PropertyData(DAVA::String(configName), argumentsList, VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName), argumentsList)));
 
 #define INITIALIZE_PROPERTY(propertyName, configName, localizationName)\
 	QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName))));\
 	AppendProperty(QString((WStringToString(LocalizedString(localizationName))).c_str()),	propertyName, NULL);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(OnValueChanged()));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(OnValueChanged(QtPropertyData::ValueChangeReason)));\
 	propertiesMap[propertyName] = PropertyData(DAVA::String(configName), DAVA::List<DAVA::VariantType>(), VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName))));
 
 
@@ -120,7 +120,7 @@ GeneralSettingsEditor::~GeneralSettingsEditor()
 	propertiesMap.clear();
 }
 
-void GeneralSettingsEditor::OnValueChanged()
+void GeneralSettingsEditor::OnValueChanged(QtPropertyData::ValueChangeReason)
 {
 	QtPropertyDataDavaVariant* sender = dynamic_cast<QtPropertyDataDavaVariant*>(QObject::sender());
 	if(!sender)

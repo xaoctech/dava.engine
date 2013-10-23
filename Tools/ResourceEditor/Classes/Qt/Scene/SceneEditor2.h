@@ -56,6 +56,7 @@
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
+#include "Scene/System/OwnersSignatureSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -94,6 +95,7 @@ public:
 	TextDrawSystem *textDrawSystem;
 	DebugDrawSystem *debugDrawSystem;
 	BeastSystem	*beastSystem;
+	OwnersSignatureSystem *ownersSignatureSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -115,6 +117,7 @@ public:
 	void EndBatch();
 
 	void Exec(Command2 *command);
+	bool ClearCommands(int commandId);
 
 	// checks whether the scene changed since the last save
 	bool IsLoaded() const;

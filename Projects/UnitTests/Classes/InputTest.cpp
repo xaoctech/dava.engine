@@ -247,6 +247,7 @@ void InputTest::LoadResources()
 
     SafeRelease(spr);
     SafeRelease(texture);
+	SafeRelease(font);
 
 	/*
 	staticText->SetShadowColor(DAVA::Color(0xFF/255.f, 0xC4/255.f, 0xC3/255.f, 1.f));
@@ -267,6 +268,7 @@ void InputTest::UnloadResources()
 	SafeRelease(testButton);
 	SafeRelease(removeFromParentButton);
 	SafeRelease(textField);
+	SafeRelease(passwordTextField);
 	SafeRelease(staticText);
 	
 	SafeRelease(webView1);

@@ -39,6 +39,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/SkyboxRenderObject.h"
 
 
 namespace DAVA
@@ -60,6 +61,18 @@ RenderObject * GetRenderObject(const Entity * fromEntity)
 	return object;
 }
 
+SkyboxRenderObject * GetSkybox(const Entity * fromEntity)
+{
+    RenderObject *ro = GetRenderObject(fromEntity);
+    if(ro && ro->GetType() == RenderObject::TYPE_SKYBOX)
+    {
+        return (static_cast<SkyboxRenderObject *>(ro));
+    }
+    
+    return NULL;
+}
+
+    
 ParticleEmitter * GetEmitter(Entity * fromEntity)
 {
 	ParticleEmitter * emitter = 0;

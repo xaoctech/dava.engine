@@ -128,7 +128,7 @@ public slots:
 	void OnLandscapeDialog();
 	void OnLightDialog();
 	void OnCameraDialog();
-	void OnImposterDialog();
+	void OnEmptyEntity();
 
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
@@ -205,6 +205,10 @@ protected:
 
 	bool IsAnySceneChanged();
 
+	void SetLandscapeSettingsEnabled(bool);
+
+	void DiableUIForFutureUsing();
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -244,6 +248,7 @@ private:
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
+	void EnableGPUReloadActions(bool enable);
 
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
@@ -255,6 +260,7 @@ private:
 	void LoadHangingObjects(SceneEditor2 *scene);
 
 	bool IsSavingAllowed();
+	bool IsTextureReloadAllowed();
     void CreateObjectTypesCombobox();
 };
 

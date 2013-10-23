@@ -292,7 +292,7 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 }
 
 //#define DISTANCE_TO_PLANE(p, vx, vy, vz) ((p.n.x)*(vx)+(p.n.y)*(vy)+(p.n.z)*(vz)+(p.d))
-uint32 Frustum::planeCalls;
+
 Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const
 {
 	const float32* verts[2] = {box.min.data, box.max.data};
@@ -301,8 +301,7 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 	plane = startId;
 	k=1<<startId;
 	if (k&planeMask)
-	{
-		planeCalls++;
+	{		
 		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)				
 			return EFR_OUTSIDE;		
 		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)		
@@ -313,8 +312,7 @@ Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask,
 	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
 	{		
 		if ((k&planeMask)&&(plane!=startId))
-		{
-			planeCalls++;
+		{			
 			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)			
 			{
 				startId = plane;
@@ -337,16 +335,14 @@ bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippin
 	plane = startClippingPlane;
 	k=1<<plane;
 	if (k&planeMask)
-	{
-		planeCalls++;
+	{		
 		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)		
 			return false;
 	}
 	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
 	{		
 		if ((k&planeMask)&&(plane!=startClippingPlane))
-		{
-			planeCalls++;
+		{			
 			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)			
 			{
 				startClippingPlane = plane;

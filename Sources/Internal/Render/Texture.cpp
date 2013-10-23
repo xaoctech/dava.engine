@@ -175,9 +175,8 @@ Texture * Texture::Get(const FilePath & pathName)
 	return 0;
 }
 
-void Texture::AddToMap( Texture *tex, const FilePath & pathname)
+void Texture::AddToMap(Texture *tex)
 {
-    tex->relativePathname = pathname;
     if(!tex->relativePathname.IsEmpty())
     {
         textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
@@ -273,10 +272,15 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	Texture * tx = CreateFromData(format, data, width, height, generateMipMaps);
     
 	if (!addInfo)
-        AddToMap(tx, Format("Text texture %d", textureFboCounter));
+    {
+        tx->relativePathname = Format("Text texture %d", textureFboCounter);
+    }
 	else
-        AddToMap(tx, Format("Text texture %d info:%s", textureFboCounter, addInfo));
-
+    {
+        tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+    }
+    AddToMap(tx);
+    
 	textureFboCounter++;
 	return tx;
 }
@@ -679,7 +683,10 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHin
 	Texture * texture = PureCreate(pathName);
 	if(!texture)
 	{
-		texture = CreatePink(pathName, typeHint);
+		texture = CreatePink(typeHint);
+        texture->relativePathname = pathName;
+        
+        AddToMap(texture);
 	}
 
 	return texture;
@@ -702,7 +709,8 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	if(texture)
 	{
 		texture->loadedAsFile = gpuForLoading;
-		AddToMap(texture, descriptorPathname);
+        texture->relativePathname = descriptorPathname;
+		AddToMap(texture);
 	}
 
 	descriptor->Release();
@@ -826,7 +834,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 
     tx->isRenderTarget = true;
-	AddToMap(tx, Format("FBO texture %d", textureFboCounter));
+    tx->relativePathname = Format("FBO texture %d", textureFboCounter);
+	AddToMap(tx);
 	
 	textureFboCounter++;
 	
@@ -1056,12 +1065,10 @@ int32 Texture::GetDataSize() const
     return allocSize;
 }
 
-Texture * Texture::CreatePink(const FilePath &path, TextureType requestedType)
+Texture * Texture::CreatePink(TextureType requestedType)
 {
     Texture *tex = new Texture();
     tex->MakePink(requestedType);
-	
-    AddToMap(tex, path);
     
 	return tex;
 }

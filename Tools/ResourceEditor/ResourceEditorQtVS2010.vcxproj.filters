@@ -232,6 +232,12 @@
     <Filter Include="Classes\Qt\Tools\SliderWidget">
       <UniqueIdentifier>{77209fd5-5cd1-4465-9f21-223b539f5da1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\QtFileDialog">
+      <UniqueIdentifier>{bd109383-7ec3-4aa9-98e4-92206aa6b482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\TileTexturePreviewWidget">
+      <UniqueIdentifier>{db27caa7-9656-4101-a102-5e4083d818d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2145,13 +2151,7 @@
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp">
@@ -2178,12 +2178,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\EntityOwnerPropertyHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2194,12 +2188,6 @@
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp">
-      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp">
@@ -2228,6 +2216,24 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\OwnersSignatureSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\LandscapeSetTexturesCommands.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3803,9 +3809,6 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\AddComponentCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3824,9 +3827,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.h">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3835,9 +3835,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h">
-      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h">
       <Filter>Classes\Commands2</Filter>
@@ -3853,6 +3850,21 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\OwnersSignatureSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h">
+      <Filter>Classes\Qt\Tools\QtFileDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\LandscapeSetTexturesCommands.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

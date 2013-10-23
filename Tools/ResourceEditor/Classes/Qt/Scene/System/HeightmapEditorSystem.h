@@ -124,7 +124,6 @@ protected:
 	bool copyPasteTilemask;
 
 	Image* tilemaskImage;
-	Image* originalTilemaskImage;
 
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);

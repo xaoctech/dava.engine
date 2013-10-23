@@ -35,6 +35,7 @@
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 //do not create lower cube face
 const int SKYBOX_VERTEX_COUNT = (5 * 6);
@@ -59,23 +60,9 @@ namespace DAVA
 	
 	void SkyboxSystem::AddEntity(Entity * entity)
 	{
-		DVASSERT(NULL != entity);
-		
-		if(NULL == skyboxEntity &&
-		   NULL != entity)
+		if((NULL == skyboxEntity) && GetSkybox(entity))
 		{
-			RenderComponent* renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
-			
-			if(renderComponent)
-			{
-				RenderObject* renderObj = renderComponent->GetRenderObject();
-				
-				if(renderObj &&
-				   RenderObject::TYPE_SKYBOX == renderObj->GetType())
-				{
-					skyboxEntity = SafeRetain(entity);
-				}
-			}
+            skyboxEntity = SafeRetain(entity);
 		}
 	}
 	
@@ -129,7 +116,7 @@ namespace DAVA
 		return result;
 	}
 	
-	Entity* SkyboxSystem::GetSkybox()
+	Entity* SkyboxSystem::GetSkyboxEntity() const
 	{
 		return skyboxEntity;
 	}

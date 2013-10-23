@@ -146,6 +146,11 @@ bool UIStaticText::GetMultiline() const
 	return textBlock->GetMultiline();
 }
 
+bool UIStaticText::GetMultilineBySymbol() const
+{
+	return textBlock->GetMultilineBySymbol();
+}
+
 void UIStaticText::SetAlign(int32 _align)
 {
 	UIControl::SetSpriteAlign(_align);

@@ -28,9 +28,9 @@
 
 
 
-#include <QFileDialog>
 #include "Project/ProjectManager.h"
 #include "Main/QtUtils.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/SceneValidator.h"
 #include "Classes/SceneEditor/EditorConfig.h"
@@ -68,7 +68,7 @@ QString ProjectManager::CurProjectDataSourcePath()
 
 QString ProjectManager::ProjectOpenDialog()
 {
-	return QFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+	return QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
 }
 
 void ProjectManager::ProjectOpen(const QString &path)
@@ -95,22 +95,13 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
+
+            LoadProjectSettings();
+            
+            emit ProjectOpened(curProjectPath);
+            
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
 		}
-
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->UpdateModificationPanel();
-		}
-
-		LoadProjectSettings();
-
-		emit ProjectOpened(curProjectPath);
-		
-		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
-		projectPath.MakeDirectoryPathname();
-
-		DAVA::FilePath::AddTopResourcesFolder(projectPath);
 	}
 }
 
