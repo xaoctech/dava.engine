@@ -101,17 +101,28 @@ Rect UIScrollView::GetContentRect(UIControl *parentControl, Rect currentContentR
 		
 		Rect childRect = childControl->GetRect();
 		// Get control position
-		float32 controlPosX = parentOffset.x + childRect.x;
-		float32 controlPosY = parentOffset.y + childRect.y;
+		
+		if (childRect.x < 0)
+		{
+			childRect.x = abs(parentOffset.x);
+			childControl->SetRect(childRect);
+		}
+		if (childRect.y < 0)
+		{
+			childRect.y = abs(parentOffset.y);
+			childControl->SetRect(childRect);
+		}
+		//float32 controlPosX = parentOffset.x + childRect.x;
+		//float32 controlPosY = parentOffset.y + childRect.y;
 		// Change scrollView position
-		if (controlPosX < currentRect.x)
+		/*if (controlPosX < currentRect.x)
 		{
 			currentRect.x = controlPosX;
 		}
 		if (controlPosY < currentRect.y)
 		{
 			currentRect.y = controlPosY;
-		}
+		}*/
 
 		// Calculate control full "length" and "height"
 		float32 controlSizeX = Abs(parentOffset.x) + childRect.x + childRect.dx;
@@ -313,18 +324,18 @@ void UIScrollView::RecalculateContentSize()
 	// Adjust content size and position for a new shift
 	if (newRect.x < 0)
 	{
-		contentRect.x += newRect.x;
-		newRect.dx += abs(newRect.x);
+	//	contentRect.x += newRect.x;
+	//	newRect.dx += abs(newRect.x);
 	}
 
 	if (newRect.y < 0)
 	{
-		contentRect.y += newRect.y;
-		newRect.dy += abs(newRect.y);
+	//	contentRect.y += newRect.y;
+	//	newRect.dy += abs(newRect.y);
 	}	
 
 	// Update scroll view content size
-	scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, newRect.dy, newRect.dy));
+	scrollContainer->SetRect(Rect(contentRect.x, contentRect.y, newRect.dx, newRect.dy));
 	scrollHorizontal->SetElementSize(newRect.dx);
 	scrollVertical->SetElementSize(newRect.dy);
 }
