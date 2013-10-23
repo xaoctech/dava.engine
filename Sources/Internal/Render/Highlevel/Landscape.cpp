@@ -1527,6 +1527,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
+        if(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)) continue;
         
         String textureName = archive->GetString(Format("tex_%d", k));
         
