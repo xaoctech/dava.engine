@@ -48,7 +48,7 @@ public:
 	int Size() const;
 	Command2 *GetCommand(int index) const;
 
-	void Clear(int commandId);
+	bool Clear(int commandId);
 
 protected:
 	std::vector<Command2 *> commandList;

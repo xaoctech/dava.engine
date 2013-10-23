@@ -99,8 +99,10 @@ Command2 * CommandBatch::GetCommand( int index ) const
 	return NULL;
 }
 
-void CommandBatch::Clear(int commandId)
+bool CommandBatch::Clear(int commandId)
 {
+	bool ret = false;
+
 	for(int i = 0; i < commandList.size(); ++i)
 	{
 		Command2 *command = commandList[i];
@@ -108,6 +110,8 @@ void CommandBatch::Clear(int commandId)
 		{
 			delete command;
 			commandList[i] = NULL;
+
+			ret = true;
 		}
 	}
 
@@ -125,4 +129,6 @@ void CommandBatch::Clear(int commandId)
 	{
 		commandList.clear();
 	}
+
+	return ret;
 }
