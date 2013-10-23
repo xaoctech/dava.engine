@@ -206,7 +206,7 @@ namespace ResourceEditor
 	static const String SLIDER_WIDGET_CHANGE_VALUE_TOOLTIP			= "Double click to change value";
 	static const String SLIDER_WIDGET_CURRENT_VALUE					= "Current value";
 
-	static const String TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP	= "Double click to change color";
+	static const String TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP	= "Click to change color";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

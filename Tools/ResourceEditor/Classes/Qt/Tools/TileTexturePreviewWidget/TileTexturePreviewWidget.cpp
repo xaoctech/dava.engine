@@ -72,6 +72,7 @@ void TileTexturePreviewWidget::AddTexture(Image* previewTexture, const Color& co
 		label->setFrameShape(QFrame::Box);
 		label->setAutoFillBackground(true);
 		setItemWidget(item, COLOR_PREVIEW_COLUMN, label);
+		label->setMinimumHeight(TEXTURE_PREVIEW_HEIGHT);
 		labels.push_back(label);
 		label->installEventFilter(this);
 		label->setToolTip(ResourceEditor::TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP.c_str());
@@ -342,4 +343,17 @@ Image* TileTexturePreviewWidget::MultiplyImageWithColor(DAVA::Image *image, cons
 	SafeRelease(srcTexture);
 
 	return res;
+}
+
+void TileTexturePreviewWidget::UpdateColor(int32 index, const Color& color)
+{
+	if (index < 0 || index >= (int32)colors.size())
+	{
+		return;
+	}
+
+	if (colors[index] != color)
+	{
+		SetColor(index, color);
+	}
 }
