@@ -487,7 +487,9 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 		SafeRelease(renderData); //to remove unnecessary vertex streams
 		renderData = new RenderDataObject();
 		textures2.resize(0);
-		times.resize(0);		
+		times.resize(0);
+		
+		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
