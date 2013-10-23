@@ -258,7 +258,6 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 		}
 		else if((isAddEntityCommand && redo)||(!isAddEntityCommand && !redo))
 		{
-			
 			SetLandscapeEntity(commandEntity);
 		}
 	}
@@ -462,10 +461,8 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 			if(filePath.GetExtension() == ".png")
 			{
 				Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
-				if(imageVector.size() == 0)
-				{
-					return;
-				}
+				DVASSERT(imageVector.size());
+			
 				PixelFormat format = imageVector[0]->GetPixelFormat();
 				Q_FOREACH(Image* image, imageVector)
 				{
@@ -491,7 +488,10 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-			TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
+			if(filePath.Exists())
+			{
+				TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
+			}
 			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
