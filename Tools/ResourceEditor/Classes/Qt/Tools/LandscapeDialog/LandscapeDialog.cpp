@@ -283,7 +283,9 @@ void LandscapeDialog::ActionButtonClicked()
 		
 		for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)
 		{
-			newLandscape->SetTexture((Landscape::eTextureLevel)i, Texture::CreatePink());
+			Texture* pinkTexture = Texture::CreatePink();
+			newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
+			SafeRelease(pinkTexture);
 		}
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
@@ -458,7 +460,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
 		if(filePath != presentPath && filePath.Exists())
 		{
-			if(filePath.GetExtension() == ".png")
+			if(filePath.IsEqualToExtension(".png"))
 			{
 				Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
 				DVASSERT(imageVector.size());
