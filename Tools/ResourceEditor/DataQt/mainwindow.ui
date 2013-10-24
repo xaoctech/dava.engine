@@ -1490,7 +1490,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/visibilitytool.png</normaloff>:/QtIcons/visibilitytool.png</iconset>
+     <normaloff>:/QtIcons/land_visibility.png</normaloff>:/QtIcons/land_visibility.png</iconset>
    </property>
    <property name="text">
     <string>Visibility Check Tool</string>
