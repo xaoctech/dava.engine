@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021413F518196EEB00925E51 /* SpeedTreeImportDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 021413F318196EEB00925E51 /* SpeedTreeImportDialog.cpp */; };
+		021413F9181970C400925E51 /* SpeedTreeImportDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 021413F8181970C400925E51 /* SpeedTreeImportDialog_moc.cpp */; };
 		02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02714761176B50420011B24C /* TextureSquarenessChecker.cpp */; };
 		0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F30F170B403100627F78 /* MaterialViewOptions.cpp */; };
 		0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */; };
@@ -684,6 +686,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		021413F318196EEB00925E51 /* SpeedTreeImportDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImportDialog.cpp; path = Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.cpp; sourceTree = "<group>"; };
+		021413F418196EEB00925E51 /* SpeedTreeImportDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImportDialog.h; path = Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.h; sourceTree = "<group>"; };
+		021413F6181970B700925E51 /* ui_treeimportdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_treeimportdialog.h; path = _GeneratedQt/ui_treeimportdialog.h; sourceTree = "<group>"; };
+		021413F8181970C400925E51 /* SpeedTreeImportDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeImportDialog_moc.cpp; sourceTree = "<group>"; };
 		02714761176B50420011B24C /* TextureSquarenessChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSquarenessChecker.cpp; path = Classes/SceneEditor/TextureSquarenessChecker.cpp; sourceTree = "<group>"; };
 		02714762176B50420011B24C /* TextureSquarenessChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSquarenessChecker.h; path = Classes/SceneEditor/TextureSquarenessChecker.h; sourceTree = "<group>"; };
 		0297F30F170B403100627F78 /* MaterialViewOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions.cpp; sourceTree = "<group>"; };
@@ -1877,6 +1883,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		021413F7181970C400925E51 /* SpeedTreeImport */ = {
+			isa = PBXGroup;
+			children = (
+				021413F8181970C400925E51 /* SpeedTreeImportDialog_moc.cpp */,
+			);
+			name = SpeedTreeImport;
+			path = _GeneratedQt/SpeedTreeImport;
+			sourceTree = "<group>";
+		};
 		0297F30E170B403100627F78 /* DockMaterialViewOptions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1906,6 +1921,8 @@
 		02F8B05817E32B7300D5A334 /* SpeedTree */ = {
 			isa = PBXGroup;
 			children = (
+				021413F318196EEB00925E51 /* SpeedTreeImportDialog.cpp */,
+				021413F418196EEB00925E51 /* SpeedTreeImportDialog.h */,
 				02F8B06017E32B9400D5A334 /* SpeedTreeImporter.cpp */,
 				02F8B06117E32B9400D5A334 /* SpeedTreeImporter.h */,
 			);
@@ -2649,6 +2666,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				02F8B05817E32B7300D5A334 /* SpeedTree */,
 				49FE771217E349850010B8E1 /* DockLandscapeEditorControls */,
 				62A43E0417BCFCAF0003287B /* Settings */,
 				E8637C4817B37DCF00ECA297 /* DockLODEditor */,
@@ -3875,6 +3893,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				021413F7181970C400925E51 /* SpeedTreeImport */,
+				021413F6181970B700925E51 /* ui_treeimportdialog.h */,
 				495A602517E6F8E000039A43 /* DockLandscapeEditorControls */,
 				62A43E0C17BCFEEA0003287B /* Settings */,
 				E8637C5017B37F5500ECA297 /* DockLODEditor */,
@@ -4155,7 +4175,6 @@
 		FB61758D0F0FDA4BA867C3D5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				02F8B05817E32B7300D5A334 /* SpeedTree */,
 				4FFE5C76176B37B600728624 /* Commands2 */,
 				E8B836231740FCC700D11EAE /* ImageTools */,
 				E83AB8F31779AF130037561B /* Deprecated */,
@@ -4650,6 +4669,7 @@
 				E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */,
 				496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */,
 				496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */,
+				021413F9181970C400925E51 /* SpeedTreeImportDialog_moc.cpp in Build Sources */,
 				493BAC5D16BFD655000E5F84 /* EditorBodyControlCommands.cpp in Build Sources */,
 				49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */,
 				49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */,
@@ -4698,6 +4718,7 @@
 				02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */,
 				02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */,
 				02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */,
+				021413F518196EEB00925E51 /* SpeedTreeImportDialog.cpp in Build Sources */,
 				4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */,
 				4F3E2566174CD38E000D1187 /* ConsoleView.cpp in Build Sources */,
 				748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */,
