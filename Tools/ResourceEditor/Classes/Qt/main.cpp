@@ -88,6 +88,8 @@ int main(int argc, char *argv[])
 
 	if(cmdLine.IsEnabled())
 	{
+        DAVA::Logger::Instance()->SetLogLevel(DAVA::Logger::LEVEL_WARNING);
+        
 		new SceneValidator();
 		DavaGLWidget* davaGL = new DavaGLWidget();
 
@@ -100,6 +102,10 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+            //Trick for correct loading of sprites.
+            Core::Instance()->UnregisterAllAvailableResourceSizes();
+            Core::Instance()->RegisterAvailableResourceSize(1, 1, "Gfx");
+            
 			cmdLine.Process();
 			cmdLine.PrintResults();
 		}

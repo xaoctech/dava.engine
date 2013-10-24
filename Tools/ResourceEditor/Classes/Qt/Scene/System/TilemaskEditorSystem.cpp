@@ -423,8 +423,30 @@ void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
 		return;
 	}
 
-	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
-	drawSystem->GetLandscapeProxy()->SetLandscapeTileColor(level, color);
+	if (GetTileColor(index) != color)
+	{
+		MetaObjModifyCommand* command = CreateTileColorCommand((Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index),
+															   color);
+		((SceneEditor2*)GetScene())->Exec(command);
+	}
+}
+
+MetaObjModifyCommand* TilemaskEditorSystem::CreateTileColorCommand(Landscape::eTextureLevel level, const Color& color)
+{
+	Landscape* landscape = drawSystem->GetBaseLandscape();
+	const InspMember* inspMember = landscape->GetTypeInfo()->Member("tileColor");
+	const InspColl* inspColl = inspMember->Collection();
+	void* object = inspMember->Data(landscape);
+
+	InspColl::Iterator it = inspColl->Begin(object);
+
+	int32 i = level;
+	while (i--)
+	{
+		it = inspColl->Next(it);
+	}
+
+	return new MetaObjModifyCommand(inspColl->ItemType(), inspColl->ItemPointer(it), VariantType(color));
 }
 
 void TilemaskEditorSystem::CreateMaskTexture()

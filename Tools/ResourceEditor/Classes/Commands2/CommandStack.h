@@ -49,6 +49,7 @@ public:
 	bool CanUndo() const;
 
 	void Clear();
+	bool Clear(int commandId);
 	
 	void Undo();
 	void Redo();
@@ -77,6 +78,7 @@ protected:
 
 	void ClearRedoCommands();
 	void ClearLimitedCommands();
+	void ClearCommand(size_t index);
 
 	void CleanCheck();
 
