@@ -419,8 +419,6 @@
 		5C7F49EE15B44BB70038AF3A /* SceneNodeUserData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49D915B44BB70038AF3A /* SceneNodeUserData.cpp */; };
 		5C7F49EF15B44BB70038AF3A /* UIFileTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49DB15B44BB70038AF3A /* UIFileTree.cpp */; };
 		5C7F49F015B44BB70038AF3A /* UIFileTreeCell.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49DD15B44BB70038AF3A /* UIFileTreeCell.cpp */; };
-		5C7F49F115B44BB70038AF3A /* UIScrollView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49DF15B44BB70038AF3A /* UIScrollView.cpp */; };
-		5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E115B44BB70038AF3A /* UISpriteEditor.cpp */; };
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
@@ -1493,10 +1491,6 @@
 		5C7F49DC15B44BB70038AF3A /* UIFileTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIFileTree.h; path = Classes/UIFileTree.h; sourceTree = "<group>"; };
 		5C7F49DD15B44BB70038AF3A /* UIFileTreeCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIFileTreeCell.cpp; path = Classes/UIFileTreeCell.cpp; sourceTree = "<group>"; };
 		5C7F49DE15B44BB70038AF3A /* UIFileTreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIFileTreeCell.h; path = Classes/UIFileTreeCell.h; sourceTree = "<group>"; };
-		5C7F49DF15B44BB70038AF3A /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIScrollView.cpp; path = Classes/UIScrollView.cpp; sourceTree = "<group>"; };
-		5C7F49E015B44BB70038AF3A /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScrollView.h; path = Classes/UIScrollView.h; sourceTree = "<group>"; };
-		5C7F49E115B44BB70038AF3A /* UISpriteEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISpriteEditor.cpp; path = Classes/UISpriteEditor.cpp; sourceTree = "<group>"; };
-		5C7F49E215B44BB70038AF3A /* UISpriteEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISpriteEditor.h; path = Classes/UISpriteEditor.h; sourceTree = "<group>"; };
 		5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VertexOctTree.cpp; path = Classes/VertexOctTree.cpp; sourceTree = "<group>"; };
 		5C7F49E415B44BB70038AF3A /* VertexOctTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexOctTree.h; path = Classes/VertexOctTree.h; sourceTree = "<group>"; };
 		5C7F49F615B44EE50038AF3A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
@@ -4211,10 +4205,6 @@
 				5C7F49DC15B44BB70038AF3A /* UIFileTree.h */,
 				5C7F49DD15B44BB70038AF3A /* UIFileTreeCell.cpp */,
 				5C7F49DE15B44BB70038AF3A /* UIFileTreeCell.h */,
-				5C7F49DF15B44BB70038AF3A /* UIScrollView.cpp */,
-				5C7F49E015B44BB70038AF3A /* UIScrollView.h */,
-				5C7F49E115B44BB70038AF3A /* UISpriteEditor.cpp */,
-				5C7F49E215B44BB70038AF3A /* UISpriteEditor.h */,
 				5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */,
 				5C7F49E415B44BB70038AF3A /* VertexOctTree.h */,
 				5C7F48CD15B44B6D0038AF3A /* SceneEditor */,
@@ -4467,8 +4457,6 @@
 				5C7F49EE15B44BB70038AF3A /* SceneNodeUserData.cpp in Build Sources */,
 				5C7F49EF15B44BB70038AF3A /* UIFileTree.cpp in Build Sources */,
 				5C7F49F015B44BB70038AF3A /* UIFileTreeCell.cpp in Build Sources */,
-				5C7F49F115B44BB70038AF3A /* UIScrollView.cpp in Build Sources */,
-				5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */,
 				5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */,
 				5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */,
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
