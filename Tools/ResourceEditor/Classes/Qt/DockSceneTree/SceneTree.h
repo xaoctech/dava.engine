@@ -145,6 +145,8 @@ protected:
 	// Cleanup the selected Particle Editor items.
 	void CleanupParticleEditorSelectedItems();
 
+	bool IsAnyEditorEntityIsSelected();
+
 private:
 	// Selected Particle Layer.
 	ParticleLayer* selectedLayer;
