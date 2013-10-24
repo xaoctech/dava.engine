@@ -47,8 +47,6 @@ extern void CloseKeyboard();
 namespace DAVA 
 {
 
-REGISTER_CLASS(UITextField);
-
 void UITextFieldDelegate::TextFieldShouldReturn(UITextField * /*textField*/)
 {
 }

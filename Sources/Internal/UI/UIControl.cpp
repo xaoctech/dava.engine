@@ -41,7 +41,6 @@
 
 namespace DAVA 
 {
-	REGISTER_CLASS(UIControl);
 	
 	UIControl::UIControl(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 	{

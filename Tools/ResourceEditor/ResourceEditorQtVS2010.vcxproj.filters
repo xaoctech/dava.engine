@@ -345,12 +345,6 @@
     <ClCompile Include="Classes\UIFileTreeCell.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\UIScrollView.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UISpriteEditor.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\VertexOctTree.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
@@ -2358,12 +2352,6 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UIFileTreeCell.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIScrollView.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UISpriteEditor.h">
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VertexOctTree.h">
