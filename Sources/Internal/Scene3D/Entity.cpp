@@ -1207,20 +1207,21 @@ namespace DAVA
 					}
 				}
 			}
-		}
-		
-		if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
-		{
-			KeyedArchive* customProps = compsArch->GetArchiveFromByteArray("customprops");
 			
-			if(customProps != NULL)
+			if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
 			{
-				CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
-				customPropsComponent->LoadFromArchive(*customProps, serializationContext);
+				KeyedArchive* customProps = compsArch->GetArchiveFromByteArray("customprops");
 				
-				SafeRelease(customProps);
+				if(customProps != NULL)
+				{
+					CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
+					customPropsComponent->LoadFromArchive(*customProps, serializationContext);
+					
+					SafeRelease(customProps);
+				}
 			}
-		}
+
+		}		
 	}
 	
 	CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
