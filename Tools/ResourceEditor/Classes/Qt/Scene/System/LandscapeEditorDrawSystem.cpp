@@ -582,6 +582,17 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 	}
 }
 
+void LandscapeEditorDrawSystem::ResetTileMaskTexture()
+{
+	if (!baseLandscape)
+	{
+		return;
+	}
+
+	FilePath filePath = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
+}
+
 Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
 {
 	return baseLandscape->GetTiledShaderMode();
