@@ -258,7 +258,7 @@ void Core::CalculateScaleMultipliers()
 {
 	needTorecalculateMultipliers = false;
 	float32 width, height;
-	if (screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_LEFT || screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
+	if ((screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_LEFT) || (screenOrientation == SCREEN_ORIENTATION_LANDSCAPE_RIGHT))
 	{
         height = screenWidth;
 		width = screenHeight;
