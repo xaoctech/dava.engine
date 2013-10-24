@@ -79,6 +79,8 @@ public:
 	
 	bool Contains(NMaterial* material);
 	
+	void BindMaterial(NMaterial* material);
+	
 private:
 	
 	friend class NMaterial;

@@ -99,11 +99,10 @@ namespace DAVA
 		if(NULL == skyboxEntity)
 		{
 			SkyboxRenderObject* skyboxRenderObject = new SkyboxRenderObject();
-			
 			AABBox3 box = AABBox3(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
 			skyboxRenderObject->Initialize(box); //first time initialization
 			skyboxRenderObject->SetTexture("~res:/");
-			
+						
 			RenderComponent* renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(skyboxRenderObject);
 			
@@ -116,7 +115,7 @@ namespace DAVA
 			renderComponent->Release();
 
 			GetScene()->AddNode(result);
-			
+						
 			Matrix4 * worldTransformPointer = ((TransformComponent*)result->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 			skyboxRenderObject->SetWorldTransformPtr(worldTransformPointer);
 			result->GetScene()->renderSystem->MarkForUpdate(skyboxRenderObject);

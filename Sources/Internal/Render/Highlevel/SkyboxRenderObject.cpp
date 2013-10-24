@@ -70,16 +70,16 @@ namespace DAVA
 		if(adding || switching)
 		{
 			GetRenderSystem()->RegisterForUpdate(this);
+			
+			CreateRenderData();
+			BuildSkybox();
+			UpdateMaterial();
 		}
 	}
 	
 	void SkyboxRenderObject::Initialize(AABBox3& box)
 	{
-		bbox = box;
-		
-		CreateRenderData();
-		BuildSkybox();
-		UpdateMaterial();
+		bbox = box;		
 	}
 	
 	void SkyboxRenderObject::CreateRenderData()
@@ -354,5 +354,4 @@ namespace DAVA
 		SafeDelete(textureValidator);
 		textureValidator = validator;
 	}
-
 };

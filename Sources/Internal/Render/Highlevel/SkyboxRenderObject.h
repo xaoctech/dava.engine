@@ -73,7 +73,7 @@ namespace DAVA
 		//set validator in resourceeditor during skybox creation in order to filter out non-skybox textures files
 		SkyboxRenderObject::SkyboxTextureValidator* GetTextureValidator();
 		void SetTextureValidator(SkyboxRenderObject::SkyboxTextureValidator* validator);
-		
+				
 		//INTROSPECTION used intentionally instead of INTROSPECTION_EXTEND in order to hide underlying details of SkyboxRenderObject implementation
 		INTROSPECTION(SkyboxRenderObject,
 					  PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)

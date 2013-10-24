@@ -632,7 +632,10 @@ namespace DAVA
 		for (uint32 c = 0; c < size; ++c)
 		{
 			Entity * res = children[c]->FindByName(searchName);
-			if (res != 0)return res;
+			if (res != 0)
+			{
+				return res;
+			}
 		}
 		return 0;
 	}
@@ -938,12 +941,12 @@ namespace DAVA
 	
 	void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 	{
-		DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 		
 		if(!debugComponent)
 		{
 			AddComponent(ScopedPtr<DebugRenderComponent> (new DebugRenderComponent()));
-			debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+			debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 			debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
 		}
 		
@@ -970,7 +973,7 @@ namespace DAVA
 	
 	uint32 Entity::GetDebugFlags() const
 	{
-		DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 		if(debugComponent)
 		{
 			return debugComponent->GetDebugFlags();

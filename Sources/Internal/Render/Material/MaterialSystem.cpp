@@ -433,5 +433,17 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 		NMaterial* parent = GetMaterial(parentName);
 		return CreateChild(parent);
 	}
+	
+	void MaterialSystem::BindMaterial(NMaterial* newMaterial)
+	{
+		FastName parentName = newMaterial->GetParentName();
+		AddMaterial(newMaterial);
+		
+		NMaterial* newParent = GetMaterial(parentName);
+		if(newParent)
+		{
+			newMaterial->SetParent(newParent);
+		}
+	}
 };
 
