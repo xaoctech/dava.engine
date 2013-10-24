@@ -257,9 +257,10 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 	}
 	
 	int id = command->GetId();
-	Entity* commandEntity = command->GetEntity();
 	if( id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_REMOVE)
 	{
+		Entity* commandEntity = command->GetEntity();
+		
 		bool isAddEntityCommand = id == CMDID_ENTITY_ADD;
 		
 		if((isAddEntityCommand && !redo)||(!isAddEntityCommand && redo))
