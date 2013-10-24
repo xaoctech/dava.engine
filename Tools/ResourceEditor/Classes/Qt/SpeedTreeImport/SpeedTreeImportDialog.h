@@ -26,44 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef ___SPEEDTREE_LEAF_BATCH_H__
-#define ___SPEEDTREE_LEAF_BATCH_H__
 
-#include "Render/Highlevel/RenderBatch.h"
 
-namespace DAVA
-{
+#ifndef __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
+#define __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
 
-class Texture;
-class Camera;
-class Shader;
-class SpeedTreeLeafBatch : public RenderBatch
-{
-public:
-    SpeedTreeLeafBatch(DAVA::Texture * tex = 0);
-    virtual ~SpeedTreeLeafBatch();
+#include "DAVAEngine.h"
+#include <QDialog>
 
-    void SetTexture(Texture * texture);
-
-    virtual void Draw(DAVA::Camera * camera);
-
-    virtual RenderBatch * Clone(RenderBatch * dstNode = 0);
-    virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-    virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
-
-private:
-    Shader * shader;
-    Texture * texture;
-
-    int32 uniformWorldTranslate;
-    int32 uniformTexture0;
-    int32 uniformWorldScale;
-
-public:
-    INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);
-
-};
-
+namespace Ui {
+	class QtTreeImportDialog;
 }
 
-#endif //___SPEEDTREE_BATCH_H__
+class SpeedTreeImportDialog: public QDialog
+{
+	Q_OBJECT
+
+public:
+	SpeedTreeImportDialog(QWidget *parent = 0);
+	~SpeedTreeImportDialog();
+
+public slots:
+    int exec();
+
+private slots:
+    void OnCancel();
+    void OnOk();
+
+    void OnXMLSelect();
+    void OnSc2Select();
+    void OnImagesSelect();
+
+private:
+    void UpdateEditLines(bool makeSc2PathDefault = true, bool makeTexturesDirDefault = true);
+    QString GetDefaultDialogPath(const DAVA::FilePath & forPath);
+
+	Ui::QtTreeImportDialog *ui;
+
+    DAVA::FilePath xmlFilePath;
+    DAVA::FilePath sc2FilePath;
+    DAVA::FilePath texturesDirPath;
+};
+
+#endif // __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
