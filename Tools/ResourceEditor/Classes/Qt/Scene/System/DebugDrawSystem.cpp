@@ -152,14 +152,42 @@ inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 
 inline void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 {
-	if(NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+	DAVA::LightComponent *comp = (DAVA::LightComponent *) entity->GetComponent(DAVA::Component::LIGHT_COMPONENT);
+	if(NULL != comp)
 	{
-		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+		DAVA::Light *light = comp->GetLightObject();
+		if(NULL != light)
+		{
+			AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
 
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
-		DAVA::RenderHelper::Instance()->FillBox(worldBox);
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+			if(light->GetType() == Light::TYPE_DIRECTIONAL)
+			{
+				DAVA::Vector3 center = worldBox.GetCenter();
+				DAVA::Vector3 direction = light->GetDirection();
+
+				direction.Normalize();
+				direction = direction * worldBox.GetSize().x;
+
+				center -= (direction / 2);
+
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawArrow(center + direction, center, direction.Length() / 2);
+			}
+			else if(light->GetType() == Light::TYPE_POINT)
+			{
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
+				DAVA::RenderHelper::Instance()->FillDodecahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2);
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawDodecahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2);
+			}
+			else
+			{
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
+				DAVA::RenderHelper::Instance()->FillBox(worldBox);
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+			}
+		}
 	}
 }
 
