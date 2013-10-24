@@ -51,7 +51,7 @@
 #include "Tools/QtFileDialog/QtFileDialog.h"
 
 #ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImporter.h"
+#include "Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.h"
 #endif
 
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
@@ -998,13 +998,8 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 void QtMainWindow::OnImportSpeedTreeXML()
 {
 #ifdef __DAVAENGINE_SPEEDTREE__
-    QString projectPath = ProjectManager::Instance()->CurProjectPath();
-    QString path = QtFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
-    if (!path.isEmpty())
-    {
-        DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
-        QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
-    }
+    SpeedTreeImportDialog importDialog(this);
+    importDialog.exec();
 #endif //__DAVAENGINE_SPEEDTREE__
 }
 
@@ -2216,8 +2211,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
 	ui->actionUniteEntitiesWithLODs->setVisible(false);
-
-	ui->menuFile->removeAction(ui->menuImport->menuAction());
 	//<--
 }
 
