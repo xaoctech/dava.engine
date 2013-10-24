@@ -212,7 +212,7 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	if(material)
 	{
 		rb->material = material->Clone();
-		rb->material->SetMaterialSystem(NULL);
+		//rb->material->SetMaterialSystem(NULL);
 	}
 	else
 	{
@@ -283,6 +283,9 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			if(mat)
 			{
 				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
+				MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
+				
+				matSystem->BindMaterial(newMaterial);
 			}
 			
 			SafeRelease(oldMaterialInstance);
@@ -340,20 +343,11 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 		}
 		else
 		{
-			FastName parentName = material->GetParentName();
-			material->SetParent(NULL);
-			
-			matSystem->AddMaterial(material);
+			matSystem->BindMaterial(material);
 			
 			if(prevSystem)
 			{
 				prevSystem->RemoveMaterial(material);
-			}
-			
-			NMaterial* newParent = matSystem->GetMaterial(parentName);
-			if(newParent)
-			{
-				material->SetParent(newParent);
 			}
 		}
 	}

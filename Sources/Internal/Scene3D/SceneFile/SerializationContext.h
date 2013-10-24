@@ -42,6 +42,7 @@ namespace DAVA
 	class Material;
 	class InstanceMaterialState;
 	class NMaterial;
+
 	class SerializationContext
 	{
 	private:
@@ -133,6 +134,7 @@ namespace DAVA
 											InstanceMaterialState* oldMaterialState);
 		NMaterial* GetNewMaterial(const String& name);
 
+		MaterialSystem* GetMaterialSystem();
 	};
 };
 

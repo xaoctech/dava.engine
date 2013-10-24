@@ -366,4 +366,9 @@ namespace DAVA
 	{
 		return scene->renderSystem->GetMaterialSystem()->GetMaterial(name);
 	}
+	
+	MaterialSystem* SerializationContext::GetMaterialSystem()
+	{
+		return scene->renderSystem->GetMaterialSystem();
+	}
 }

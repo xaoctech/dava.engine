@@ -553,7 +553,7 @@ void Texture::SetParamsFromImages()
 	height = images[0]->height;
 	format = images[0]->format;
 
-	textureType = (images[0]->cubeFaceID != (uint32)-1) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
+	textureType = (images[0]->cubeFaceID != Texture::CUBE_FACE_INVALID) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
     
     state = STATE_DATA_LOADED;
 }

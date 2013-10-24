@@ -1888,57 +1888,67 @@ uint32 Landscape::GetDrawIndices() const
 	
 void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 {
+	RenderSystem* curRenderSystem = renderSystem;
+	bool renderSystemChanged = _renderSystem != curRenderSystem;
 	RenderObject::SetRenderSystem(_renderSystem);
 	
-	if(NULL == _renderSystem) return;
-	
-	if(NULL == tileMaskMaterial)
+	if(NULL == _renderSystem ||
+	   renderSystemChanged)
 	{
-		MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
-		
-		tileMaskMaterial = matSystem->CreateChild("Global.Landscape.TileMask");
-		fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
-		
-#ifdef LANDSCAPE_SPECULAR_LIT
-		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
-		fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
-#endif
+		SafeRelease(tileMaskMaterial);
+		SafeRelease(fullTiledMaterial);		
+	}
 
-	}
-	
-	LandscapeChunk * chunk = new LandscapeChunk(this);
-	chunk->SetMaterial(tileMaskMaterial);
-    AddRenderBatch(chunk);
-    SafeRelease(chunk);
-	
-	bool curContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode);
-	NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
-	DVASSERT(globalLandscape);
-	
-	if(curContainsDetailMask)
+	if(_renderSystem)
 	{
-		globalLandscape->AddMaterialDefine("DETAILMASK");
+		if(NULL == tileMaskMaterial)
+		{
+			MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
+			
+			tileMaskMaterial = matSystem->CreateChild("Global.Landscape.TileMask");
+			fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
+			
+#ifdef LANDSCAPE_SPECULAR_LIT
+			tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+			fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
+#endif
+			
+		}
+		
+		LandscapeChunk * chunk = new LandscapeChunk(this);
+		chunk->SetMaterial(tileMaskMaterial);
+		AddRenderBatch(chunk);
+		SafeRelease(chunk);
+		
+		bool curContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode);
+		NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
+		DVASSERT(globalLandscape);
+		
+		if(curContainsDetailMask)
+		{
+			globalLandscape->AddMaterialDefine("DETAILMASK");
+		}
+		else
+		{
+			globalLandscape->RemoveMaterialDefine("DETAILMASK");
+		}
+		
+		NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+		DVASSERT(global);
+		
+		if(isFogEnabled)
+		{
+			global->AddMaterialDefine("VERTEX_FOG");
+		}
+		else
+		{
+			global->RemoveMaterialDefine("VERTEX_FOG");
+		}
+		
+		global->Rebuild();
+		
+		SetupMaterialProperties();
 	}
-	else
-	{
-		globalLandscape->RemoveMaterialDefine("DETAILMASK");
-	}
-	
-	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
-	DVASSERT(global);
-	
-	if(isFogEnabled)
-	{
-		global->AddMaterialDefine("VERTEX_FOG");
-	}
-	else
-	{
-		global->RemoveMaterialDefine("VERTEX_FOG");
-	}
-	
-	global->Rebuild();
-	
-	SetupMaterialProperties();
 }
 
 #ifdef LANDSCAPE_SPECULAR_LIT

@@ -698,6 +698,11 @@ namespace DAVA
 	NMaterial::~NMaterial()
 	{
 		SetParent(NULL);
+		
+		if(materialSystem)
+		{
+			materialSystem->RemoveMaterial(this);
+		}
 	}
     
 	bool NMaterial::LoadFromFile(const String & pathname)
@@ -953,6 +958,9 @@ namespace DAVA
 	
 	void NMaterial::ResetParent()
 	{
+		activeTechnique = NULL;
+		activeTechniqueName.Reset();
+		
 		//TODO: clear parent states such as textures, defines, etc
 		effectiveLayers.Clear();
 		effectiveLayers.Combine(layers);
@@ -1434,6 +1442,24 @@ namespace DAVA
 		}
 		
 		clonedMaterial->materialSystem = materialSystem;
+		
+		if(clonedMaterial->materialSystem)
+		{
+			clonedMaterial->materialSystem->AddMaterial(clonedMaterial);
+			
+			if(clonedMaterial->IsSwitchable())
+			{
+				clonedMaterial->SwitchState(clonedMaterial->currentStateName, clonedMaterial->materialSystem, true);
+			}
+			else if(clonedMaterial->parentName.IsValid())
+			{
+				NMaterial* newParent = clonedMaterial->materialSystem->GetMaterial(clonedMaterial->parentName);
+				if(newParent)
+				{
+					clonedMaterial->SetParent(newParent);
+				}
+			}
+		}
 		
 		return clonedMaterial;
 	}
