@@ -283,6 +283,14 @@ DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
 
 void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 {
+	if (!CheckForEnabledLandscapeEditors() || !TexturesCouldBeReloaded())
+	{
+		ShowErrorDialog("Reload canceled!");
+		return;
+	}
+
+	PrepareReload();
+
 	EditorSettings::Instance()->SetTextureViewGPU(gpu);
 	DAVA::Texture::SetDefaultGPU(gpu);
 
@@ -291,20 +299,6 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	{
 		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
 		SceneHelper::EnumerateTextures(scene, allScenesTextures);
-		Landscape* landscape = scene->landscapeEditorDrawSystem->GetBaseLandscape();
-		if (landscape != NULL)
-		{
-			Texture* t = landscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
-			if (t != NULL && t->GetPathname().GetType() == FilePath::PATH_IN_MEMORY)
-			{
-				FilePath fp = landscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
-				DAVA::Map<DAVA::String, DAVA::Texture *>::iterator it = allScenesTextures.find(fp.GetAbsolutePathname());
-				if (it != allScenesTextures.end())
-				{
-					allScenesTextures.erase(it);
-				}
-			}
-		}
 	}
 
 	if(allScenesTextures.size() > 0)
@@ -1043,21 +1037,11 @@ void QtMainWindow::OnRedo()
 
 void QtMainWindow::OnReloadTextures()
 {
-	if (!IsTextureReloadAllowed())
-	{
-		return;
-	}
-
 	SetGPUFormat(GetGPUFormat());
 }
 
 void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 {
-	if (!IsTextureReloadAllowed())
-	{
-		return;
-	}
-
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
 	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
@@ -1839,7 +1823,10 @@ void QtMainWindow::OnCustomColorsEditor()
 	}
 	else
 	{
-		sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
+		if (LoadAppropriateTextureFormat())
+		{
+			sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
+		}
 	}
 }
 
@@ -1857,7 +1844,10 @@ void QtMainWindow::OnHeightmapEditor()
 	}
 	else
 	{
-		sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
+		if (LoadAppropriateTextureFormat())
+		{
+			sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
+		}
 	}
 }
 
@@ -1875,7 +1865,10 @@ void QtMainWindow::OnRulerTool()
 	}
 	else
 	{
-		sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
+		if (LoadAppropriateTextureFormat())
+		{
+			sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
+		}
 	}
 }
 
@@ -1893,21 +1886,7 @@ void QtMainWindow::OnTilemaskEditor()
 	}
 	else
 	{
-		if (GetGPUFormat() != GPU_UNKNOWN)
-		{
-			int answer = ShowQuestion("Inappropriate texture format",
-									  "Tile mask editing is only allowed in PNG texture format.\nDo you want to reload textures in PNG format?",
-									  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
-			if (answer == MB_FLAG_NO)
-			{
-				return;
-			}
-
-			sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-			OnReloadTexturesTriggered(ui->actionReloadPNG);
-		}
-
-		if (GetGPUFormat() == GPU_UNKNOWN)
+		if (LoadAppropriateTextureFormat())
 		{
 			sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
 		}
@@ -1928,7 +1907,10 @@ void QtMainWindow::OnVisibilityTool()
 	}
 	else
 	{
-		sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
+		if (LoadAppropriateTextureFormat())
+		{
+			sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
+		}
 	}
 }
 
@@ -1946,7 +1928,10 @@ void QtMainWindow::OnNotPassableTerrain()
 	}
 	else
 	{
-		scene->Exec(new ActionEnableNotPassable(scene));
+		if (LoadAppropriateTextureFormat())
+		{
+			scene->Exec(new ActionEnableNotPassable(scene));
+		}
 	}
 }
 
@@ -1999,24 +1984,6 @@ bool QtMainWindow::IsSavingAllowed()
 	}
 
 	return true;
-}
-
-bool QtMainWindow::IsTextureReloadAllowed()
-{
-	bool allowed = true;
-
-	for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
-	{
-		SceneEditor2* scene = GetSceneWidget()->GetTabScene(tab);
-		allowed &= (scene->GetEnabledTools() == 0);
-	}
-
-	if (!allowed)
-	{
-		QMessageBox::warning(this, "Operation is not allowed", "Disable landscape editing in every tab before reload textures!");
-	}
-
-	return allowed;
 }
 
 void QtMainWindow::OnObjectsTypeChanged( QAction *action )
@@ -2239,4 +2206,115 @@ void QtMainWindow::OnEmptyEntity()
 	scene->selectionSystem->SetSelection(newEntity);
 
 	newEntity->Release();
+}
+
+bool QtMainWindow::LoadAppropriateTextureFormat()
+{
+	if (GetGPUFormat() != GPU_UNKNOWN)
+	{
+		int answer = ShowQuestion("Inappropriate texture format",
+								  "Landscape editing is only allowed in PNG texture format.\nDo you want to reload textures in PNG format?",
+								  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+		if (answer == MB_FLAG_NO)
+		{
+			return false;
+		}
+
+		OnReloadTexturesTriggered(ui->actionReloadPNG);
+	}
+
+	return (GetGPUFormat() == GPU_UNKNOWN);
+}
+
+bool QtMainWindow::TexturesCouldBeReloaded()
+{
+	int currentTab = GetSceneWidget()->GetCurrentTab();
+
+	for (int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
+	{
+		if (!TexturesCouldBeReloadedForTab(tab))
+		{
+			GetSceneWidget()->SetCurrentTab(currentTab);
+			return false;
+		}
+	}
+
+	if (GetSceneWidget()->GetCurrentTab() != currentTab)
+	{
+		GetSceneWidget()->SetCurrentTab(currentTab);
+	}
+	return true;
+}
+
+bool QtMainWindow::TexturesCouldBeReloadedForTab(int tab)
+{
+	SceneEditor2* scene = GetSceneWidget()->GetTabScene(tab);
+	/*
+	if (scene->GetCommandsById(CMDID_TILEMASK_MODIFY) != 0)
+	{
+		GetSceneWidget()->SetCurrentTab(tab);
+
+		int answer = ShowQuestion("Tile mask was modified",
+								  "Tile mask should be saved. This will remove all tile mask commands from undo queue.\nDo you want to proceed?",
+								  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+		return (answer == MB_FLAG_YES);
+	}
+	*/
+
+	return true;
+}
+
+// returns false if reload should be stopped
+bool QtMainWindow::CheckForEnabledLandscapeEditors()
+{
+	bool enabledEditors = false;
+	for (int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
+	{
+		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
+		enabledEditors |= (scene->GetEnabledTools() != 0);
+	}
+
+	if (enabledEditors)
+	{
+		int answer = ShowQuestion("Found enabled editors",
+								  "Every landscape editor should be disabled before reload.\nDo you want to proceed?",
+								  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+
+		return (answer == MB_FLAG_YES);
+	}
+
+	return true;
+}
+
+void QtMainWindow::PrepareReload()
+{
+	for (int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
+	{
+		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
+
+		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+
+		Landscape* landscape = scene->landscapeEditorDrawSystem->GetBaseLandscape();
+		if (!landscape)
+		{
+			continue;
+		}
+
+		Texture* texture = landscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
+		if (!texture)
+		{
+			continue;
+		}
+
+		bool tilemaskWasChanged = scene->ClearCommands(CMDID_TILEMASK_MODIFY);
+		tilemaskWasChanged |= (texture->GetPathname().GetType() != FilePath::PATH_IN_FILESYSTEM);
+
+		if (tilemaskWasChanged)
+		{
+			scene->landscapeEditorDrawSystem->SaveTileMaskTexture();
+
+			FilePath filePath = landscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+			landscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
+		}
+	}
 }
