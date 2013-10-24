@@ -41,7 +41,10 @@ CommandBatch::~CommandBatch()
 
 	for(; i != end; i++)
 	{
-		delete *i;
+		if(NULL != *i)
+		{
+			delete *i;
+		}
 	}
 
 	commandList.clear();
@@ -94,4 +97,38 @@ Command2 * CommandBatch::GetCommand( int index ) const
 		return commandList[index];
 
 	return NULL;
+}
+
+bool CommandBatch::Clear(int commandId)
+{
+	bool ret = false;
+
+	for(int i = 0; i < commandList.size(); ++i)
+	{
+		Command2 *command = commandList[i];
+		if(NULL != command && command->GetId() == commandId)
+		{
+			delete command;
+			commandList[i] = NULL;
+
+			ret = true;
+		}
+	}
+
+	bool allCommandsAreNULL = true;
+	for(int i = 0; i < commandList.size(); ++i)
+	{
+		if(commandList[i] != NULL)
+		{
+			allCommandsAreNULL = false;
+			break;
+		}
+	}
+
+	if(allCommandsAreNULL)
+	{
+		commandList.clear();
+	}
+
+	return ret;
 }

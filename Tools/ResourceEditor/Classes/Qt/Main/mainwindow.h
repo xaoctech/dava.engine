@@ -259,8 +259,12 @@ private:
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
 
+	bool CheckForEnabledLandscapeEditors();
+	bool TexturesCouldBeReloaded();
+	bool TexturesCouldBeReloadedForTab(int tab);
+	void PrepareReload();
+	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
-	bool IsTextureReloadAllowed();
     void CreateObjectTypesCombobox();
 };
 

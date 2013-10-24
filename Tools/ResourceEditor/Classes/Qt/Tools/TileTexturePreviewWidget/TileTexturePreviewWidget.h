@@ -29,6 +29,7 @@ public:
 	~TileTexturePreviewWidget();
 
 	void AddTexture(Image* previewTexture, const Color& color = Color::White());
+	void UpdateColor(int32 index, const Color& color);
 
 	int32 GetSelectedTexture();
 	void SetSelectedTexture(int32 number);
