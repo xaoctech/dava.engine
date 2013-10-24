@@ -253,6 +253,8 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 {
 	if(!IsLandscapeAffectedByCommand(command))
 	{
+		//invoke Update frequently than timeout interval
+		propEditor->Update();
 		return;
 	}
 	
