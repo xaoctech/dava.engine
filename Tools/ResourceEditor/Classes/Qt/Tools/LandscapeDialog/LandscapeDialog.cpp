@@ -68,6 +68,13 @@
 #define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
+const int32 LandscapeDialog::landscapeRelatedCommandIDs[] = {
+	CMDID_ENTITY_ADD,
+	CMDID_ENTITY_REMOVE,
+	CMDID_LANDSCAPE_SET_TEXTURE,
+	CMDID_LANDSCAPE_SET_HEIGHTMAP
+};
+
 LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 :BaseAddEntityDialog(parent)
 {
@@ -244,11 +251,15 @@ void LandscapeDialog::showEvent ( QShowEvent * event )
 
 void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	int id = command->GetId() ;
+	if(!IsLandscapeAffectedByCommand(command))
+	{
+		return;
+	}
+	
+	int id = command->GetId();
+	Entity* commandEntity = command->GetEntity();
 	if( id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_REMOVE)
 	{
-		Entity* commandEntity = command->GetEntity();
-			
 		bool isAddEntityCommand = id == CMDID_ENTITY_ADD;
 		
 		if((isAddEntityCommand && !redo)||(!isAddEntityCommand && redo))
@@ -261,12 +272,31 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 			SetLandscapeEntity(commandEntity);
 		}
 	}
-	if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
+	else if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
 	{
 		FillWidgetsWithContent();
 	}
 
 	propEditor->Update();
+}
+
+
+bool LandscapeDialog::IsLandscapeAffectedByCommand(const Command2* command)
+{
+	int id = command->GetId();
+	for (int32 i = 0; i < COUNT_OF(landscapeRelatedCommandIDs); ++i)
+	{
+		if (landscapeRelatedCommandIDs[i] != id)
+		{
+			continue;
+		}
+
+		Entity* commandEntity = command->GetEntity();
+		//check if it's landscapeEntity for case of addition from library
+		return (NULL != FindLandscape(commandEntity));
+	}
+
+	return false;
 }
 
 void LandscapeDialog::ActionButtonClicked()

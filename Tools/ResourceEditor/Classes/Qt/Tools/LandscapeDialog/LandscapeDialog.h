@@ -86,11 +86,15 @@ protected:
 	
 	Vector3 GetSizeOfCurrentLandscape();
 	
+	bool IsLandscapeAffectedByCommand(const Command2* command);
+	
 	Landscape*				innerLandscape;
 	QPushButton*			actionButton;
 
 	DAVA::Map<SelectPathWidgetBase*, int32>  widgetMap;
 	Vector3	landscapeSize;
+	
+	static const int32 landscapeRelatedCommandIDs[];
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */
