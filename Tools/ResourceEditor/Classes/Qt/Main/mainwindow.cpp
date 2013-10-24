@@ -2231,6 +2231,28 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
 	return (GetGPUFormat() == GPU_UNKNOWN);
 }
 
+bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
+{
+	if (cmd->GetId() == CMDID_TILEMASK_MODIFY)
+	{
+		return true;
+	}
+
+	if (cmd->GetId() == CMDID_BATCH)
+	{
+		CommandBatch* batch = (CommandBatch*)cmd;
+		for (int32 i = 0; i < batch->Size(); ++i)
+		{
+			if (IsTilemaskModificationCommand(batch->GetCommand(i)))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 bool QtMainWindow::SaveTilemask()
 {
 	SceneTabWidget *sceneWidget = GetSceneWidget();
@@ -2248,7 +2270,7 @@ bool QtMainWindow::SaveTilemask()
 			for(size_t j = cmdStack->GetCleanIndex(); j < cmdStack->GetNextIndex(); j++)
 			{
 				const Command2 *cmd = cmdStack->GetCommand(j);
-				if(cmd->GetId() == CMDID_TILEMASK_MODIFY)
+				if(IsTilemaskModificationCommand(cmd))
 				{
 					// ask user about saving tilemask changes
 					sceneWidget->SetCurrentTab(i);
