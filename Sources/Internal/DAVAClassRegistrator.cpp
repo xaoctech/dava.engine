@@ -36,6 +36,10 @@ void DAVA::RegisterDAVAClasses()
     Logger::FrameworkDebug("RegisterDAVAClasses");
 }
 
+#if !defined(__DAVAENGINE_ANDROID__)
+REGISTER_CLASS(TheoraPlayer);
+#endif
+
 REGISTER_CLASS(SpeedTreeLeafBatch);
 REGISTER_CLASS(ParticleEmitter);
 REGISTER_CLASS(ParticleEmitter3D);
@@ -48,7 +52,6 @@ REGISTER_CLASS(UISpinner);
 REGISTER_CLASS(UIStaticText);
 REGISTER_CLASS(LandscapeChunk);
 REGISTER_CLASS(UISwitch);
-REGISTER_CLASS(TheoraPlayer);
 REGISTER_CLASS(UITextField);
 REGISTER_CLASS(Landscape);
 REGISTER_CLASS(UIAggregatorControl);
