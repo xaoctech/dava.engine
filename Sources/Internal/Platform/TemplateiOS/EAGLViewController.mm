@@ -88,9 +88,9 @@
         return UIInterfaceOrientationMaskLandscape;
     if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE)
         return UIInterfaceOrientationMaskPortrait;
-    return FALSE;
     return UIInterfaceOrientationPortrait;
 }
+
 
 
 - (void)didReceiveMemoryWarning 
