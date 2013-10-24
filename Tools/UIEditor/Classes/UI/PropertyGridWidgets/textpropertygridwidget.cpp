@@ -115,16 +115,18 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	ui->isReturnKeyAutomatically->setVisible(isUITextField);
 		
 	bool enableMultilineContols = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+
+	multilineCheckBox->setEnabled(enableMultilineContols);
+	multilineCheckBox->setVisible(enableMultilineContols);
+	multilineBySymbolCheckBox->setEnabled(false); // false by default - this checkbox depends on multilineCheckBox one.
+	multilineBySymbolCheckBox->setVisible(enableMultilineContols);
+
 	// Register checkbox widget for property Multiline only for UIStaticText
 	if (enableMultilineContols)
 	{
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE_BY_SYMBOL, multilineBySymbolCheckBox, false, true);
 	}
-	multilineCheckBox->setEnabled(enableMultilineContols);
-	multilineCheckBox->setVisible(enableMultilineContols);
-	multilineBySymbolCheckBox->setEnabled(enableMultilineContols);
-	multilineBySymbolCheckBox->setVisible(enableMultilineContols);
 
 	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
 	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
@@ -173,6 +175,7 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	multilineBySymbolCheckBox->setObjectName(QString::fromUtf8("multilineBySymbolCheckBox"));
 	multilineBySymbolCheckBox->setGeometry(QRect(10, 145, 200, 20));
 	multilineBySymbolCheckBox->setText(QString::fromUtf8("Multiline by Symbol"));
+	multilineBySymbolCheckBox->setEnabled(false);
 
 	ui->fontNameLabel->setGeometry(QRect(10, 175, 31, 16));
 	ui->fontSizeSpinBox->setGeometry(QRect(234, 171, 57, 25));
@@ -252,4 +255,22 @@ void TextPropertyGridWidget::HandleChangePropertyFailed(const QString& propertyN
         // Localization Key is updated - update the value.
         UpdateLocalizationValue();
     }
+}
+
+void TextPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty)
+{
+    // Yuri Coder, 2013/10/24. "Multiline By Symbol" checkbox should be unchecked and disabled if
+    // "Multiline" one is unchecked - see please DF-2393.
+    if (checkBoxWidget && multilineCheckBox && checkBoxWidget == multilineCheckBox)
+    {
+        bool multilineChecked = (checkBoxWidget->checkState() == Qt::Checked);
+        multilineBySymbolCheckBox->setEnabled(multilineChecked);
+
+        if (!multilineChecked)
+        {
+            multilineBySymbolCheckBox->setCheckState(Qt::Unchecked);
+        }
+    }
+
+    UITextFieldPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
 }
