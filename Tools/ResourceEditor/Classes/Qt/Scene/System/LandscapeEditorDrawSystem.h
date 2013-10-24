@@ -96,6 +96,7 @@ public:
 	Rect GetLandscapeRect();
 
 	void SaveTileMaskTexture();
+	void ResetTileMaskTexture();
 
 	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
 
