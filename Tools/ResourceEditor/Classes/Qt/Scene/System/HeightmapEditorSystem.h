@@ -125,6 +125,10 @@ protected:
 
 	Image* tilemaskImage;
 
+	eHeightmapDrawType activeDrawingType;
+	bool activeCopyPasteHeightmap;
+	bool activeCopyPasteTilemask;
+
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool(float32 timeElapsed);
@@ -144,6 +148,8 @@ protected:
 	void CreateTilemaskCopyPasteTool();
 
 	bool IsCanBeEnabled();
+
+	void FinishEditing();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORSYSTEM__) */
