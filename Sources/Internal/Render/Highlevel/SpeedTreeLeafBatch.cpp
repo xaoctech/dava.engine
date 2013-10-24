@@ -33,8 +33,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 namespace DAVA
 {
 
-REGISTER_CLASS(SpeedTreeLeafBatch);
-
 SpeedTreeLeafBatch::SpeedTreeLeafBatch(DAVA::Texture * tex)
 {	
     shader = new Shader();

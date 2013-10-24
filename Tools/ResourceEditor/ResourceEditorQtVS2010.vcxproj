@@ -636,8 +636,6 @@
     <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\UIFileTree.cpp" />
     <ClCompile Include="Classes\UIFileTreeCell.cpp" />
-    <ClCompile Include="Classes\UIScrollView.cpp" />
-    <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
     <ClCompile Include="_GeneratedQt\CubemapEditor\ClickableQLabel_moc.cpp" />
@@ -1341,8 +1339,6 @@
     <ClInclude Include="Classes\StringConstants.h" />
     <ClInclude Include="Classes\UIFileTree.h" />
     <ClInclude Include="Classes\UIFileTreeCell.h" />
-    <ClInclude Include="Classes\UIScrollView.h" />
-    <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="_GeneratedQt\ui_ActionComponentEditor.h" />
     <ClInclude Include="_GeneratedQt\ui_BaseAddEntityDialog.h" />

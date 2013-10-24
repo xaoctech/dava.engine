@@ -26,47 +26,60 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "DAVAEngine.h"
+#include "DAVAClassRegistrator.h"
 
+using namespace DAVA;
 
-
-#ifndef __DAVAENGINE_UISPRITEEDITOR_H__
-#define __DAVAENGINE_UISPRITEEDITOR_H__
-
-#include "Base/BaseTypes.h"
-#include "UI/UIList.h"
-#include "UIScrollView.h"
-
-namespace DAVA 
+void DAVA::RegisterDAVAClasses()
 {
-	
-// comment: use namespace and standard prefix because probably this class can be moved to framework later
-class UISpriteEditor: public UIControl
-{
-public:
-	UISpriteEditor(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	~UISpriteEditor();
-	
-	UIControl * GetSpritePreview();
-//	UISlider * GetFrameSlider();
-	
-	void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-	void SetPreviewSprite(const FilePath & spriteName);
-	
-	void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-	void LoadFromYamlNodeCompleted();
-	
-	
-private:
-	void OnCurrentFrameChanged(BaseObject * obj, void * userData, void * systemData);
-	
+    Logger::FrameworkDebug("RegisterDAVAClasses");
+}
 
-	// UIGrid * grid;
-	UIScrollView * spriteScrollView;
-	UIControl * spritePreview;
-	UIStaticText * frameCount;
-	UIStaticText * currentFrame;
-	UISlider * frameSlider;
-};
-};
+REGISTER_CLASS(SpeedTreeLeafBatch);
+REGISTER_CLASS(ParticleEmitter);
+REGISTER_CLASS(ParticleEmitter3D);
+REGISTER_CLASS(PolygonGroup);
+REGISTER_CLASS(StaticMesh);
+REGISTER_CLASS(Camera);
+REGISTER_CLASS(UIScrollViewContainer);
+REGISTER_CLASS(UISlider);
+REGISTER_CLASS(UISpinner);
+REGISTER_CLASS(UIStaticText);
+REGISTER_CLASS(LandscapeChunk);
+REGISTER_CLASS(UISwitch);
+REGISTER_CLASS(TheoraPlayer);
+REGISTER_CLASS(UITextField);
+REGISTER_CLASS(Landscape);
+REGISTER_CLASS(UIAggregatorControl);
+REGISTER_CLASS(Light);
+REGISTER_CLASS(Mesh);
+REGISTER_CLASS(RenderBatch);
+REGISTER_CLASS(RenderObject);
+REGISTER_CLASS(ShadowVolume);
+REGISTER_CLASS(SkyboxRenderObject);
+REGISTER_CLASS(InstanceMaterialState);
+REGISTER_CLASS(Material);
+REGISTER_CLASS(ImposterNode);
+REGISTER_CLASS(BillboardNode);
+REGISTER_CLASS(BoneNode);
+REGISTER_CLASS(DataNode);
+REGISTER_CLASS(Entity);
+REGISTER_CLASS(LodNode);
+REGISTER_CLASS(MeshInstanceNode);
+REGISTER_CLASS(ParticleEffectNode);
+REGISTER_CLASS(ParticleEmitterNode);
+REGISTER_CLASS(ProxyNode);
+REGISTER_CLASS(Scene);
+REGISTER_CLASS(ShadowVolumeNode);
+REGISTER_CLASS(SkeletonNode);
+REGISTER_CLASS(SwitchNode);
+REGISTER_CLASS(UserNode);
+REGISTER_CLASS(UIButton);
+REGISTER_CLASS(UIControl);
+REGISTER_CLASS(UIList);
+REGISTER_CLASS(UIListCell);
+REGISTER_CLASS(UIScrollBar);
+REGISTER_CLASS(UIScrollView);
 
-#endif // __DAVAENGINE_UISPRITEEDITOR_H__
+

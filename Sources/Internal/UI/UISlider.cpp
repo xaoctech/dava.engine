@@ -41,8 +41,6 @@ namespace DAVA
 {
 	
 	
-REGISTER_CLASS(UISlider);
-
 // Use these names for children buttons to define UISlider in .yaml
 static const String UISLIDER_THUMB_SPRITE_CONTROL_NAME = "thumbSpriteControl";
 static const String UISLIDER_MIN_SPRITE_CONTROL_NAME = "minSpriteControl";

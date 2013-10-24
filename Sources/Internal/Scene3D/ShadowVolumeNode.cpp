@@ -39,7 +39,6 @@
 namespace DAVA
 {
 
-REGISTER_CLASS(ShadowVolumeNode);
 
 ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
