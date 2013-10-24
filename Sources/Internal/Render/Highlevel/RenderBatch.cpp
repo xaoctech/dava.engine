@@ -339,6 +339,11 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 	{
 		if(NULL == matSystem)
 		{
+			if(prevSystem)
+			{
+				prevSystem->RemoveMaterial(material);
+			}
+			
 			material->SetMaterialSystem(NULL);
 		}
 		else
