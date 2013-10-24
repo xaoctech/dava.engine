@@ -29,6 +29,7 @@
 
 
 #include "Render/Highlevel/SkyboxRenderObject.h"
+#include <Render/TextureDescriptor.h>
 
 namespace DAVA
 {
@@ -185,8 +186,7 @@ namespace DAVA
 	
 	void SkyboxRenderObject::UpdateMaterial()
 	{
-		if(renderBatchArray.size() > 0 &&
-		   !texturePath.IsEmpty())
+		if(renderBatchArray.size() > 0)
 		{
 			Material* skyboxMaterial = renderBatchArray[0]->GetMaterial();
 			
@@ -194,19 +194,21 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, NULL);
-			
-			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-			if(NULL != tx && tx->textureType == Texture::TEXTURE_CUBE)
-			{
-				skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
-			}
-			else
-			{
-				tx = Texture::CreatePink("", Texture::TEXTURE_CUBE);
-				skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
-			}
-			SafeRelease(tx);
+            DAVA::Texture* tx = NULL;
+            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePath);
+            if(descriptor && descriptor->IsCubeMap())
+            {
+                tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
+            }
+            else
+            {
+				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
+            }
+            
+            skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+
+            SafeRelease(descriptor);
+            tx->Release();
 		}
 	}
 	
@@ -238,6 +240,7 @@ namespace DAVA
 		
 		skyboxRenderObject->type = type;
 		skyboxRenderObject->flags = flags;
+		skyboxRenderObject->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);
 		skyboxRenderObject->debugFlags = debugFlags;
 		skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
 		
@@ -267,7 +270,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			archive->SetString("skbxro.texture", texturePath.GetRelativePathname());
+			archive->SetString("skbxro.texture", texturePath.GetRelativePathname(sceneFile->GetScenePath()));
 			archive->SetFloat("skbxro.verticalOffset", offsetZ);
 			archive->SetFloat("skbxro.rotation", rotationZ);
 			archive->SetFloat("skbxro.noclipdist", nonClippingDistance);
@@ -280,7 +283,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			texturePath = archive->GetString("skbxro.texture");
+			texturePath = sceneFile->GetScenePath() + archive->GetString("skbxro.texture");
 			offsetZ = archive->GetFloat("skbxro.verticalOffset");
 			rotationZ = archive->GetFloat("skbxro.rotation");
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");

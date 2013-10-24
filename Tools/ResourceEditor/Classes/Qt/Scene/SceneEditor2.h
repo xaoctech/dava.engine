@@ -117,6 +117,8 @@ public:
 	void EndBatch();
 
 	void Exec(Command2 *command);
+	void ClearCommands(int commandId);
+	const CommandStack* GetCommandStack() const;
 
 	// checks whether the scene changed since the last save
 	bool IsLoaded() const;

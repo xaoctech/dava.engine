@@ -58,23 +58,28 @@ class LandQuadTreeNode
 public:
     LandQuadTreeNode()
     {
-        childs = 0;
+        children = 0;
         parent = 0;
         for (int32 k = 0; k < 4; ++k)
             neighbours[k] = 0;
     }
     ~LandQuadTreeNode()
     {
-        SafeDeleteArray(childs);
+        ReleaseChildren();
     }
     
-    void AllocChilds()
+    void AllocChildren()
     {
-		SafeDeleteArray(childs);
-        childs = new LandQuadTreeNode[4];
+        ReleaseChildren();
+        children = new LandQuadTreeNode[4];
     }
     
-    LandQuadTreeNode * childs;  // It's array of 4 child nodes
+    void ReleaseChildren()
+    {
+        SafeDeleteArray(children);
+    }
+    
+    LandQuadTreeNode * children;  // It's array of 4 child nodes
     LandQuadTreeNode * parent;
     LandQuadTreeNode * neighbours[4]; 
     T data;

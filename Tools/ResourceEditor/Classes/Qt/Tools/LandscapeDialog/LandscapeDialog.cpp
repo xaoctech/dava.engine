@@ -36,6 +36,7 @@
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "../Qt/Main/QtUtils.h"
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -53,8 +54,8 @@
 
 #define OPEN_TEXTURE_TITLE "Open texture"
 #define OPEN_HEIGHTMAP_TITLE "Open height map"
-#define TEXTURE_FILE_FILTER "PNG(*.png);; TEX(*.tex)"
-#define HEIGHTMAP_FILE_FILTER "PNG(*.png);;HeightMap(*.heightmap)"
+#define TEXTURE_FILE_FILTER "PNG (*.png);;TEX (*.tex);;All (*.png *.tex)"
+#define HEIGHTMAP_FILE_FILTER "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap) "
 #define HEIGHT_MAP_ID 0xABCD
 
 #define TAB_CONTENT_WIDTH 450
@@ -66,6 +67,13 @@
 
 #define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
+
+const int32 LandscapeDialog::landscapeRelatedCommandIDs[] = {
+	CMDID_ENTITY_ADD,
+	CMDID_ENTITY_REMOVE,
+	CMDID_LANDSCAPE_SET_TEXTURE,
+	CMDID_LANDSCAPE_SET_HEIGHTMAP
+};
 
 LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 :BaseAddEntityDialog(parent)
@@ -243,11 +251,18 @@ void LandscapeDialog::showEvent ( QShowEvent * event )
 
 void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
-	int id = command->GetId() ;
+	if(!IsLandscapeAffectedByCommand(command))
+	{
+		//invoke Update frequently than timeout interval
+		propEditor->Update();
+		return;
+	}
+	
+	int id = command->GetId();
 	if( id == CMDID_ENTITY_ADD || id == CMDID_ENTITY_REMOVE)
 	{
 		Entity* commandEntity = command->GetEntity();
-			
+		
 		bool isAddEntityCommand = id == CMDID_ENTITY_ADD;
 		
 		if((isAddEntityCommand && !redo)||(!isAddEntityCommand && redo))
@@ -257,16 +272,34 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 		}
 		else if((isAddEntityCommand && redo)||(!isAddEntityCommand && !redo))
 		{
-			
 			SetLandscapeEntity(commandEntity);
 		}
 	}
-	if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
+	else if(id == CMDID_LANDSCAPE_SET_TEXTURE || id == CMDID_LANDSCAPE_SET_HEIGHTMAP )
 	{
 		FillWidgetsWithContent();
 	}
 
 	propEditor->Update();
+}
+
+
+bool LandscapeDialog::IsLandscapeAffectedByCommand(const Command2* command)
+{
+	int id = command->GetId();
+	for (int32 i = 0; i < COUNT_OF(landscapeRelatedCommandIDs); ++i)
+	{
+		if (landscapeRelatedCommandIDs[i] != id)
+		{
+			continue;
+		}
+
+		Entity* commandEntity = command->GetEntity();
+		//check if it's landscapeEntity for case of addition from library
+		return (NULL != FindLandscape(commandEntity));
+	}
+
+	return false;
 }
 
 void LandscapeDialog::ActionButtonClicked()
@@ -283,7 +316,9 @@ void LandscapeDialog::ActionButtonClicked()
 		
 		for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)
 		{
-			newLandscape->SetTexture((Landscape::eTextureLevel)i, Texture::CreatePink());
+			Texture* pinkTexture = Texture::CreatePink();
+			newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
+			SafeRelease(pinkTexture);
 		}
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
@@ -456,27 +491,31 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 	if(widgetMap[sender] == HEIGHT_MAP_ID)
 	{
 		FilePath presentPath = innerLandscape->GetHeightmapPathname();
+//		if(filePath != presentPath && filePath.Exists())
 		if(filePath != presentPath)
 		{
-			Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
-			if(imageVector.size() == 0)
+			if(filePath.IsEqualToExtension(".png"))
 			{
-				return;
+				Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
+				DVASSERT(imageVector.size());
+			
+				PixelFormat format = imageVector[0]->GetPixelFormat();
+				Q_FOREACH(Image* image, imageVector)
+				{
+					SafeRelease(image);
+				}
+				
+				if( !(format == FORMAT_A8 ||format == FORMAT_A16))
+				{
+					sender->EraseWidget();
+					ShowErrorDialog(ResourceEditor::LANDSCAPE_DIALOG_WRONG_PNG_ERROR);
+					return;
+				}
 			}
-			PixelFormat format = imageVector[0]->GetPixelFormat();
-			if(format == FORMAT_A8 ||format == FORMAT_A16)
-			{
-				LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath, innerLandscape->GetBoundingBox());
-				sceneEditor->Exec(command);
-			}
-			else
-			{
-				ShowErrorDialog(ResourceEditor::LANDSCAPE_DIALOG_WRONG_PNG_ERROR);
-			}
-			Q_FOREACH(Image* image, imageVector)
-			{
-				SafeRelease(image);
-			}
+			
+			LandscapeSetHeightMapCommand* command = new LandscapeSetHeightMapCommand(entity, filePath,
+																					 innerLandscape->GetBoundingBox());
+			sceneEditor->Exec(command);
 		}
 	}
 	else
@@ -485,7 +524,10 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		FilePath presentName = innerLandscape->GetTextureName((Landscape::eTextureLevel)id);
 		if(filePath != presentName)
 		{
-			TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
+			if(filePath.Exists())
+			{
+				TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
+			}
 			LandscapeSetTexturesCommand* command = new LandscapeSetTexturesCommand(entity, (Landscape::eTextureLevel)id, filePath);
 			sceneEditor->Exec(command);
 
