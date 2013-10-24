@@ -64,7 +64,7 @@ void Thread::StartAndroid()
 
 bool Thread::IsMainThread()
 {
-    return (mainThreadId == gettid());
+    return (mainThreadId == pthread_self());
 }
 
 void Thread::InitMainThread()
