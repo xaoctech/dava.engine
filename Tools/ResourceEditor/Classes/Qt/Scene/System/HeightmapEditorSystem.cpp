@@ -65,6 +65,9 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	copyPasteHeightmap(false)
 ,	copyPasteTilemask(false)
 ,	curHeight(0.f)
+,	activeDrawingType(drawingType)
+,	activeCopyPasteHeightmap(copyPasteHeightmap)
+,	activeCopyPasteTilemask(copyPasteTilemask)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -131,7 +134,9 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
-	
+
+	FinishEditing();
+
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
 	
@@ -151,6 +156,7 @@ void HeightmapEditorSystem::Update(DAVA::float32 timeElapsed)
 	
 	if (editingIsEnabled && isIntersectsLandscape)
 	{
+		UpdateToolImage();
 		UpdateBrushTool(timeElapsed);
 	}
 }
@@ -187,7 +193,6 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
-							return;
 						}
 						else
 						{
@@ -202,6 +207,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 								StoreOriginalHeightmap();
 							}
 						}
+						activeCopyPasteHeightmap = copyPasteHeightmap;
+						activeCopyPasteTilemask = copyPasteTilemask;
 					}
 					else
 					{
@@ -214,27 +221,34 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					UpdateToolImage();
 					editingIsEnabled = true;
 				}
+
+				activeDrawingType = drawingType;
 				break;
 				
 			case UIEvent::PHASE_DRAG:
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					if (drawingType == HEIGHTMAP_COPY_PASTE)
-					{
-						CreateCopyPasteUndo();
-					}
-					else if (drawingType != HEIGHTMAP_DROPPER)
-					{
-						CreateHeightmapUndo();
-					}
-
-					editingIsEnabled = false;
-				}
+				FinishEditing();
 				break;
 		}
+	}
+}
+
+void HeightmapEditorSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		if (activeDrawingType == HEIGHTMAP_COPY_PASTE)
+		{
+			CreateCopyPasteUndo();
+		}
+		else if (activeDrawingType != HEIGHTMAP_DROPPER)
+		{
+			CreateHeightmapUndo();
+		}
+
+		editingIsEnabled = false;
 	}
 }
 
@@ -326,7 +340,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	int32 scaleSize = toolImage->GetWidth();
 	Vector2 pos = cursorPosition - Vector2((float32)scaleSize, (float32)scaleSize) / 2.0f;
 	{
-		switch (drawingType)
+		switch (activeDrawingType)
 		{
 			case HEIGHTMAP_DRAW_ABSOLUTE:
 			{
@@ -377,7 +391,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					return;
 				}
 
-				if (copyPasteHeightmap)
+				if (activeCopyPasteHeightmap)
 				{
 					Vector2 posTo = pos;
 					
@@ -389,7 +403,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					editorHeightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
 				}
 
-				if (copyPasteTilemask && prevCursorPosition != cursorPosition)
+				if (activeCopyPasteTilemask && prevCursorPosition != cursorPosition)
 				{
 					int32 tilemaskSize = drawSystem->GetTextureSize();
 					int32 heightmapSize = drawSystem->GetHeightmapProxy()->Size();
@@ -497,7 +511,7 @@ void HeightmapEditorSystem::CreateHeightmapUndo()
 
 void HeightmapEditorSystem::CreateCopyPasteUndo()
 {
-	if (!copyPasteHeightmap && !copyPasteTilemask)
+	if (!activeCopyPasteHeightmap && !activeCopyPasteTilemask)
 	{
 		return;
 	}
@@ -505,7 +519,7 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 	SceneEditor2* scene = (SceneEditor2*)GetScene();
 
 	scene->BeginBatch("Height Map Copy/Paste");
-	if (copyPasteHeightmap)
+	if (activeCopyPasteHeightmap)
 	{
 		Rect heightmapRect = GetHeightmapUpdatedRect();
 		ModifyHeightmapCommand* cmd = new ModifyHeightmapCommand(drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect);
@@ -513,7 +527,7 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 		SafeRelease(originalHeightmap);
 	}
 
-	if (copyPasteTilemask)
+	if (activeCopyPasteTilemask)
 	{
 		Rect tilemaskRect = GetTilemaskUpdatedRect();
 		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
