@@ -273,7 +273,7 @@ public:
     
     virtual void SetMaterialName(const String& name);
 	
-	//VI: these 2 methods are used for old maerial conversion and for setting lightmap props during lightmap generation
+	//VI: these 2 methods are used for old material conversion and for setting lightmap props during lightmap generation
 	//VI: need to multiplex single old state to LOD states
 	uint32 GetStateCount() const;
 	NMaterialState* GetState(uint32 index);
@@ -281,6 +281,8 @@ public:
 	inline void SetMaterialSystem(MaterialSystem* system) {materialSystem = system;}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
 	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
+	
+	static NMaterial* CreateUnbinded(const FastName& parentName);
 	
 protected:
     

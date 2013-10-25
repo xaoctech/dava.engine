@@ -302,7 +302,7 @@ public:
 
     uint32 GetDrawIndices() const;
 	
-	virtual void SetRenderSystem(RenderSystem * _renderSystem);
+	//virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 protected:	
     
@@ -420,8 +420,8 @@ protected:
     Color   fogColor;
     
 	NMaterial* tileMaskMaterial;
-	NMaterial* fullTiledMaterial;
-	NMaterial* currentMaterial;
+	//NMaterial* fullTiledMaterial;
+	//NMaterial* currentMaterial;
 	
 	uint32 drawIndices;
     

@@ -1499,4 +1499,12 @@ namespace DAVA
 		SetMaterialName(Format("%lu", (uint64)this));
 	}
 
+	NMaterial* NMaterial::CreateUnbinded(const FastName& parentName)
+	{
+		NMaterial* mat = new NMaterial();
+		mat->GenerateName();
+		mat->parentName = parentName;
+		
+		return mat;
+	}
 };
