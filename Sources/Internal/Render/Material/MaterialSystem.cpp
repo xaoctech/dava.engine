@@ -416,16 +416,9 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 	
 NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 {
-	NMaterial* child = parent->CreateChild();
+	NMaterial* child = MaterialSystem::CreateNamed();
 	
-	if(child->IsSwitchable())
-	{
-		child->SwitchState(currentMaterialQuality, this);
-	}
-	else
-	{
-		child->SetParent(parent);
-	}
+	child->SetParent(parent);
 	
 	return child;
 }
@@ -446,6 +439,14 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 		{
 			newMaterial->SetParent(newParent);
 		}
+	}
+	
+	NMaterial* MaterialSystem::CreateNamed()
+	{
+		NMaterial* mat = new NMaterial();
+		mat->GenerateName();
+		
+		return mat;
 	}
 };
 

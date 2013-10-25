@@ -49,19 +49,19 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	renderData = new RenderDataObject();
 	this->emitter = parent;
 	
-	frameBlendMaterial = NULL;
-	regularMaterial = NULL;
+	material = MaterialSystem::CreateNamed();
+	material->SwitchParent("Global.Textured.VertexColor.ParticlesBlend");
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
+	renderBatch->SetMaterial(material);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
 {
 	SafeRelease(renderData);
 	
-	SafeRelease(regularMaterial);
-	SafeRelease(frameBlendMaterial);
+	SafeRelease(material);
 }
 
 void ParticleLayer3D::Draw(Camera * camera)
@@ -479,11 +479,12 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	ParticleLayer::SetFrameBlend(enable);
 	if (enableFrameBlend)
 	{
-		renderBatch->SetMaterial(frameBlendMaterial);
+		material->SwitchParent("Global.Textured.VertexColor.ParticlesFrameBlend");
 	}
 	else
 	{
-		renderBatch->SetMaterial(regularMaterial);
+		material->SwitchParent("Global.Textured.VertexColor.ParticlesBlend");
+		
 		SafeRelease(renderData); //to remove unnecessary vertex streams
 		renderData = new RenderDataObject();
 		textures2.resize(0);
@@ -532,13 +533,4 @@ void ParticleLayer3D::CreateInnerEmitter()
 	SafeRelease(this->innerEmitter);
 	this->innerEmitter = new ParticleEmitter3D();
 }
-	
-void ParticleLayer3D::MaterialSystemReady(MaterialSystem* materialSystem)
-{
-	regularMaterial = SafeRetain(materialSystem->CreateChild("Global.Textured.VertexColor.ParticlesBlend"));
-	frameBlendMaterial = SafeRetain(materialSystem->CreateChild("Global.Textured.VertexColor.ParticlesFrameBlend"));
-    
-	SetFrameBlend(enableFrameBlend);
-}
-
 };

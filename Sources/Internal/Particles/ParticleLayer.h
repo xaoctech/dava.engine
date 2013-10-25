@@ -291,9 +291,7 @@ public:
 
 	bool IsLodActive(int32 lod);
 	void SetLodActive(int32 lod, bool active);
-	
-	virtual void MaterialSystemReady(MaterialSystem* materialSystem);
-	
+		
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();

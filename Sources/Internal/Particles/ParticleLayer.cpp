@@ -1707,10 +1707,5 @@ void ParticleLayer::HandleRemoveFromSystem()
 {
 	DeleteAllParticles();
 }
-	
-void ParticleLayer::MaterialSystemReady(MaterialSystem* materialSystem)
-{
-	//do nothing here
-}
-	
+		
 };

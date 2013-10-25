@@ -1083,15 +1083,7 @@ namespace DAVA
 			effectiveLayers.Combine(parentLayers);
 		}
 	}
-	
-	NMaterial* NMaterial::CreateChild()
-	{
-		NMaterial* childMaterial = new NMaterial();
-		childMaterial->GenerateName();
-		      
-		return childMaterial;
-	}
-	
+		
 	void NMaterial::SetupPerFrameProperties(Camera* camera)
 	{
 		//VI: this is vertex or pixel lit material
@@ -1498,13 +1490,18 @@ namespace DAVA
 	{
 		SetMaterialName(Format("%lu", (uint64)this));
 	}
-
-	NMaterial* NMaterial::CreateUnbinded(const FastName& parentName)
+	
+	void NMaterial::SwitchParent(const FastName& newParent)
 	{
-		NMaterial* mat = new NMaterial();
-		mat->GenerateName();
-		mat->parentName = parentName;
-		
-		return mat;
+		if(materialSystem)
+		{
+			NMaterial* parent = materialSystem->GetMaterial(newParent);
+			
+			SetParent(parent);
+		}
+		else
+		{
+			parentName = newParent;
+		}
 	}
 };

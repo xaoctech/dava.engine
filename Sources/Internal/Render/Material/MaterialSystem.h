@@ -81,6 +81,8 @@ public:
 	
 	void BindMaterial(NMaterial* material);
 	
+	static NMaterial* CreateNamed();
+	
 private:
 	
 	friend class NMaterial;
