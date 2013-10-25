@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/land_settings.png</file>
     <file>QtIcons/land_visibility.png</file>
     <file>QtIcons/land_custcolor.png</file>
     <file>QtIcons/land_ruler.png</file>

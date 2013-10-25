@@ -292,13 +292,6 @@
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
     <addaction name="separator"/>
-    <addaction name="actionHeightMapEditor"/>
-    <addaction name="actionTileMapEditor"/>
-    <addaction name="actionShowNotPassableLandscape"/>
-    <addaction name="actionRulerTool"/>
-    <addaction name="actionCustomColorsEditor"/>
-    <addaction name="actionVisibilityCheckTool"/>
-    <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -374,7 +367,7 @@
     </widget>
     <widget class="QMenu" name="menuLandscape_2">
      <property name="title">
-      <string>Landscape tools</string>
+      <string>Landscape save</string>
      </property>
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
@@ -408,6 +401,12 @@
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
     <addaction name="actionLandscape"/>
+    <addaction name="actionHeightMapEditor"/>
+    <addaction name="actionTileMapEditor"/>
+    <addaction name="actionShowNotPassableLandscape"/>
+    <addaction name="actionRulerTool"/>
+    <addaction name="actionCustomColorsEditor"/>
+    <addaction name="actionVisibilityCheckTool"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
@@ -732,6 +731,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSkyboxEditor"/>
+   <addaction name="actionLandscape"/>
+   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
@@ -768,8 +770,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionReloadSprites"/>
-   <addaction name="actionLandscape"/>
-   <addaction name="actionSkyboxEditor"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -843,7 +843,7 @@
   <action name="actionLandscape">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/map.png</normaloff>:/QtIcons/map.png</iconset>
+     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
    </property>
    <property name="text">
     <string>Landscape...</string>
