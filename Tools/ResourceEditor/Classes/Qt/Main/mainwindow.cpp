@@ -2278,6 +2278,9 @@ bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
 
 bool QtMainWindow::SaveTilemask()
 {
+	const QMessageBox::StandardButtons longButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll;
+	const QMessageBox::StandardButtons shortButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+
 	SceneTabWidget *sceneWidget = GetSceneWidget();
 	
 	int lastSceneTab = sceneWidget->GetCurrentTab();
@@ -2304,7 +2307,8 @@ bool QtMainWindow::SaveTilemask()
 						QString message = tabEditor->GetScenePath().GetFilename().c_str();
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
-						answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::NoButton);
+						QMessageBox::StandardButtons buttons = (sceneWidget->GetTabCount() == 1) ? shortButtons : longButtons;
+						answer = QMessageBox::warning(this, "", message, buttons);
 
 						askedForCurrentTab = true;
 					}
