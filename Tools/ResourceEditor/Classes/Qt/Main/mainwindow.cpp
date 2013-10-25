@@ -51,7 +51,7 @@
 #include "Tools/QtFileDialog/QtFileDialog.h"
 
 #ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImporter.h"
+#include "Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.h"
 #endif
 
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
@@ -1016,13 +1016,8 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 void QtMainWindow::OnImportSpeedTreeXML()
 {
 #ifdef __DAVAENGINE_SPEEDTREE__
-    QString projectPath = ProjectManager::Instance()->CurProjectPath();
-    QString path = QtFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
-    if (!path.isEmpty())
-    {
-        DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
-        QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
-    }
+    SpeedTreeImportDialog importDialog(this);
+    importDialog.exec();
 #endif //__DAVAENGINE_SPEEDTREE__
 }
 
@@ -1994,10 +1989,21 @@ void QtMainWindow::OnRemoveActionComponent()
 bool QtMainWindow::IsSavingAllowed()
 {
 	SceneEditor2* scene = GetCurrentScene();
-
+	QString titleString = "Saving is not allowed";
 	if (!scene || scene->GetEnabledTools() != 0)
 	{
-		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
+		QMessageBox::warning(this, titleString, "Disable landscape editing before save!");
+		return false;
+	}
+	Landscape* sceneLandscape = FindLandscape(scene);
+	if (!sceneLandscape)
+	{
+		QMessageBox::warning(this, titleString, "There is no landscape in scene!");
+		return false;
+	}
+	if (!sceneLandscape->GetHeightmap()->Size())
+	{
+		QMessageBox::warning(this, titleString, "There is no heightmap in landscape!");
 		return false;
 	}
 
@@ -2188,6 +2194,8 @@ void QtMainWindow::DiableUIForFutureUsing()
 	ui->actionUniteEntitiesWithLODs->setVisible(false);
 
 	ui->menuFile->removeAction(ui->menuImport->menuAction());
+	
+	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
 }
 
@@ -2223,6 +2231,28 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
 	return (GetGPUFormat() == GPU_UNKNOWN);
 }
 
+bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
+{
+	if (cmd->GetId() == CMDID_TILEMASK_MODIFY)
+	{
+		return true;
+	}
+
+	if (cmd->GetId() == CMDID_BATCH)
+	{
+		CommandBatch* batch = (CommandBatch*)cmd;
+		for (int32 i = 0; i < batch->Size(); ++i)
+		{
+			if (IsTilemaskModificationCommand(batch->GetCommand(i)))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 bool QtMainWindow::SaveTilemask()
 {
 	SceneTabWidget *sceneWidget = GetSceneWidget();
@@ -2240,7 +2270,7 @@ bool QtMainWindow::SaveTilemask()
 			for(size_t j = cmdStack->GetCleanIndex(); j < cmdStack->GetNextIndex(); j++)
 			{
 				const Command2 *cmd = cmdStack->GetCommand(j);
-				if(cmd->GetId() == CMDID_TILEMASK_MODIFY)
+				if(IsTilemaskModificationCommand(cmd))
 				{
 					// ask user about saving tilemask changes
 					sceneWidget->SetCurrentTab(i);

@@ -34,8 +34,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(UISwitch);
-
 //use these names for children controls to define UISwitch in .yaml
 static const String UISWITCH_BUTTON_LEFT_NAME = "buttonLeft";
 static const String UISWITCH_BUTTON_RIGHT_NAME = "buttonRight";

@@ -36,8 +36,6 @@
 namespace DAVA 
 {
     
-REGISTER_CLASS(PolygonGroup);
-	
 PolygonGroup::PolygonGroup()
 :	DataNode(),
     vertexCount(0),
