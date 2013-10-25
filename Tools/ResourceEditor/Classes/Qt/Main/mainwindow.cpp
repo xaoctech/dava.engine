@@ -966,9 +966,7 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
 	}
 
-    int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?",
-                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-    
+    int answer = QMessageBox::warning(NULL, "Scene was changed", "Do you want to save changes, made to scene?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
     if(answer == QMessageBox::Cancel)
     {
         closeRequest->Cancel();
@@ -1183,6 +1181,8 @@ void QtMainWindow::OnResetTransform()
 		EntityGroup selection = scene->selectionSystem->GetSelection();
 		scene->modifSystem->ResetTransform(selection);
 	}
+
+	DAVA::Core::Instance()->ToggleFullscreen();
 }
 
 void QtMainWindow::OnMaterialEditor()
@@ -2292,7 +2292,6 @@ bool QtMainWindow::SaveTilemask()
 		if(NULL != tabEditor)
 		{
 			const CommandStack *cmdStack = tabEditor->GetCommandStack();
-			bool askedForCurrentTab = false;
 			for(size_t j = cmdStack->GetCleanIndex(); j < cmdStack->GetNextIndex(); j++)
 			{
 				const Command2 *cmd = cmdStack->GetCommand(j);
@@ -2301,15 +2300,20 @@ bool QtMainWindow::SaveTilemask()
 					// ask user about saving tilemask changes
 					sceneWidget->SetCurrentTab(i);
 
-					if(needQuestion && !askedForCurrentTab)
+					if(needQuestion)
 					{
 						QString message = tabEditor->GetScenePath().GetFilename().c_str();
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
-						QMessageBox::StandardButtons buttons = (sceneWidget->GetTabCount() == 1) ? shortButtons : longButtons;
-						answer = QMessageBox::warning(this, "", message, buttons);
+						int flags = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
 
-						askedForCurrentTab = true;
+						// if more than one scene to precess
+						if((i + 1) < sceneWidget->GetCurrentTab())
+						{
+							flags |= (QMessageBox::YesToAll | QMessageBox::NoToAll);
+						}
+
+						answer = QMessageBox::warning(this, "", message, flags, QMessageBox::NoButton);
 					}
 
 					switch(answer)
@@ -2343,6 +2347,9 @@ bool QtMainWindow::SaveTilemask()
 						}
 						break;
 					}
+
+					// finish for cycle going through commands
+					break;
 				}
 			}
 
