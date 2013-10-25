@@ -314,9 +314,8 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 
 			WaitStop();
 		}
-
-		LoadGPUFormat();
 	}
+	LoadGPUFormat();
 }
 
 void QtMainWindow::WaitStart(const QString &title, const QString &message, int min /* = 0 */, int max /* = 100 */)
