@@ -197,7 +197,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
 	}
 
 	int32 verticesCount = 0;
@@ -461,11 +461,6 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 	ParticleLayer::Clone(dstLayer);
 
 	return dstLayer;
-}
-
-NMaterial * ParticleLayer3D::GetMaterial()
-{
-	return renderBatch->GetMaterial();
 }
 
 void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)

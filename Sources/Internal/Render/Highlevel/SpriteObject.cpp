@@ -130,7 +130,7 @@ void SpriteObject::SetFrame(int32 newFrame)
 	int32 count = GetRenderBatchCount();
 	if(count)
 	{
-		GetRenderBatch(0)->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(frame));
+		GetRenderBatch(0)->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
 	}
 }
 

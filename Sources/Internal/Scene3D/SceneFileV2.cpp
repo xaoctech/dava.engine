@@ -809,11 +809,11 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
                 MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
 
                 tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
-                batch->GetMaterial()->SetTexture(TEXTURE_LIGHTMAP, oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap);
+                batch->GetMaterial()->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap);
 
                 
-                batch->GetMaterial()->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset);
-                batch->GetMaterial()->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
+                batch->GetMaterial()->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset);
+                batch->GetMaterial()->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
             }
         }
         

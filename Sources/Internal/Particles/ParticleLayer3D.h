@@ -54,8 +54,6 @@ public:
 
 	// Draw method for generic and long emitters. former DrawLayer
 	virtual void PrepareRenderData(Camera * camera);
-
-	NMaterial * GetMaterial();
 	
 	virtual void SetBlendMode(eBlendMode sFactor, eBlendMode dFactor);
 
