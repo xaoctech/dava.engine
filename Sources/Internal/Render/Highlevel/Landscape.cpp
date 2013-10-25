@@ -100,7 +100,8 @@ static FastName FULL_TILED_TEXTURE_PROPS_NAMES[] =
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 Landscape::Landscape()
-    : indices(0), currentMaterial(NULL)
+    : indices(0)//,
+	  //currentMaterial(NULL)
 {
 	drawIndices = 0;
     textureNames.resize(TEXTURE_COUNT);
@@ -125,11 +126,24 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	tileMaskMaterial = NULL;
-	fullTiledMaterial = NULL;
-			
+	//tileMaskMaterial = NULL;
+	//fullTiledMaterial = NULL;
+	
+	tileMaskMaterial = NMaterial::CreateUnbinded("Global.Landscape.TileMask");
+	
 	tiledShaderMode = TILED_MODE_COUNT;
-	SetTiledShaderMode(TILED_MODE_MIXED);
+	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
+	
+	//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
+	
+#ifdef LANDSCAPE_SPECULAR_LIT
+	tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+#endif
+	
+	LandscapeChunk * chunk = new LandscapeChunk(this);
+	chunk->SetMaterial(tileMaskMaterial);
+	AddRenderBatch(chunk);
+	SafeRelease(chunk);	
 }
 
 Landscape::~Landscape()
@@ -150,13 +164,13 @@ Landscape::~Landscape()
 		tileMaskMaterial->SetParent(NULL);
 	}
 	
-	if(fullTiledMaterial)
-	{
-		fullTiledMaterial->SetParent(NULL);
-	}
+	//if(fullTiledMaterial)
+	//{
+	//	fullTiledMaterial->SetParent(NULL);
+	//}
 	
 	SafeRelease(tileMaskMaterial);
-	SafeRelease(fullTiledMaterial);
+	//SafeRelease(fullTiledMaterial);
 }
     
 
@@ -634,10 +648,10 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 	if(TEXTURE_TILE_FULL != level)
 	{
 		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], textures[level]);
-		if(TEXTURE_COLOR == level)
+		/*if(TEXTURE_COLOR == level)
 		{
 			fullTiledMaterial->SetTexture(FULL_TILED_TEXTURE_PROPS_NAMES[level], textures[level]);
-		}
+		}*/
 	}
 }
     
@@ -674,10 +688,10 @@ void Landscape::SetTexture(eTextureLevel level, Texture *texture)
 	if(TEXTURE_TILE_FULL != level)
 	{
 		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], textures[level]);
-		if(TEXTURE_COLOR == level)
+		/*if(TEXTURE_COLOR == level)
 		{
 			fullTiledMaterial->SetTexture(FULL_TILED_TEXTURE_PROPS_NAMES[level], textures[level]);
-		}
+		}*/
 	}
 }
 
@@ -691,7 +705,8 @@ void Landscape::FlushQueue()
 {
     if (queueRenderCount == 0)return;
     
-	currentMaterial->Draw(landscapeRDOArray[queueRdoQuad], indices, queueRenderCount);
+	//currentMaterial->Draw(landscapeRDOArray[queueRdoQuad], indices, queueRenderCount);
+	tileMaskMaterial->Draw(landscapeRDOArray[queueRdoQuad], indices, queueRenderCount);
 	
 	drawIndices += queueRenderCount;
 
@@ -1109,7 +1124,7 @@ void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
     //    UnbindMaterial();
     //}
 
-    if(0 == lodLayer)
+    /*if(0 == lodLayer)
     {
 		if(currentMaterial == tileMaskMaterial) return;
 		
@@ -1123,7 +1138,10 @@ void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
     }
 	
 	currentMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
-	currentMaterial->BindMaterialTechnique("Landscape", camera);
+	currentMaterial->BindMaterialTechnique("Landscape", camera);*/
+	
+	tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+	tileMaskMaterial->BindMaterialTechnique("Landscape", camera);
     
     prevLodLayer = lodLayer;
 }
@@ -1150,7 +1168,7 @@ void Landscape::Draw(Camera * camera)
 		return;
 	}
 	
-	currentMaterial = NULL;
+	//currentMaterial = NULL;
 
 	//Dizz: uniformFogDensity != -1 is a check if fog is inabled in shader
 	//if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
@@ -1428,18 +1446,14 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 {
 	RenderObject::Load(archive, serializationContext);
 	
-	if(NULL == tileMaskMaterial)
-	{
-		MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
-		tileMaskMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.TileMask"));
-		fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
+	//MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
+	SetRenderSystem(serializationContext->GetScene()->renderSystem);
+		
+	//fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
 		
 #ifdef LANDSCAPE_SPECULAR_LIT
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
-		fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
 #endif
-
-	}
 
     FilePath path(serializationContext->GetScenePath());
     path += archive->GetString("hmap");
@@ -1447,7 +1461,7 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
     
-    eTiledShaderMode tiledMode = (eTiledShaderMode)archive->GetInt32("tiledShaderMode", TILED_MODE_MIXED);
+    eTiledShaderMode tiledMode = (eTiledShaderMode)archive->GetInt32("tiledShaderMode", TILED_MODE_TILE_DETAIL_MASK);
     SetTiledShaderMode(tiledMode);
     
     fogColor = archive->GetByteArrayAsType("fogcolor", fogColor);
@@ -1496,11 +1510,6 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     }
 	
 	SetupMaterialProperties();
-
-#ifdef LANDSCAPE_SPECULAR_LIT
-	//HACK
-	tileMaskMaterial->SetTexture("specularMap", SafeRetain(textures[TEXTURE_COLOR]));
-#endif
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1717,14 +1726,14 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
             
         case TILED_MODE_MIXED:
-			//DVASSERT(false && "Not supported with new materials!");
+			DVASSERT(false && "Not supported with new materials!");
             nearLodIndex = 0;
             farLodIndex = 1;
 			
             break;
 
         case TILED_MODE_TEXTURE:
-			//DVASSERT(false && "Not supported with new materials!");
+			DVASSERT(false && "Not supported with new materials!");
             nearLodIndex = 1;
             farLodIndex = 1;
 			
@@ -1734,22 +1743,18 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
     }
 	
-	if(renderSystem &&
-	   prevContainsDetailMask != curContainsDetailMask)
+	if(prevContainsDetailMask != curContainsDetailMask)
 	{
-		NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
-		DVASSERT(globalLandscape);
-		
 		if(curContainsDetailMask)
 		{
-			globalLandscape->AddMaterialDefine("DETAILMASK");
+			tileMaskMaterial->AddMaterialDefine("DETAILMASK");
 		}
 		else
 		{
-			globalLandscape->RemoveMaterialDefine("DETAILMASK");
+			tileMaskMaterial->RemoveMaterialDefine("DETAILMASK");
 		}
 		
-		globalLandscape->Rebuild();
+		tileMaskMaterial->Rebuild();
 	}
 }
     
@@ -1788,7 +1793,7 @@ void Landscape::SetFogDensity(float32 _fogDensity)
     fogDensity = _fogDensity;
 	
 	tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
-	fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+	//fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
 }
 
 float32 Landscape::GetFogDensity() const
@@ -1801,7 +1806,7 @@ void Landscape::SetFogColor(const Color & _fogColor)
     fogColor = _fogColor;
 	
 	tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
-	fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	//fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
 }
 
 const Color & Landscape::GetFogColor() const
@@ -1875,12 +1880,12 @@ void Landscape::SetupMaterialProperties()
 		tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	}
 	
-	if(fullTiledMaterial)
+	/*if(fullTiledMaterial)
 	{
 		fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
 		fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC3, 1, &fogColor);
 		fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
-	}
+	}*/
 }
 	
 uint32 Landscape::GetDrawIndices() const
@@ -1888,7 +1893,7 @@ uint32 Landscape::GetDrawIndices() const
 	return drawIndices;
 }
 	
-void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
+/*void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 {
 	RenderSystem* curRenderSystem = renderSystem;
 	bool renderSystemChanged = _renderSystem != curRenderSystem;
@@ -1898,7 +1903,7 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 	   renderSystemChanged)
 	{
 		SafeRelease(tileMaskMaterial);
-		SafeRelease(fullTiledMaterial);		
+		//SafeRelease(fullTiledMaterial);
 	}
 
 	if(_renderSystem)
@@ -1908,7 +1913,7 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 			MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
 			
 			tileMaskMaterial = matSystem->CreateChild("Global.Landscape.TileMask");
-			fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
+			//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
 			
 #ifdef LANDSCAPE_SPECULAR_LIT
 			tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
@@ -1935,23 +1940,23 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 			globalLandscape->RemoveMaterialDefine("DETAILMASK");
 		}
 		
-		/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
-		DVASSERT(global);
+		//NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+		//DVASSERT(global);
 		
-		if(isFogEnabled)
-		{
-			global->AddMaterialDefine("VERTEX_FOG");
-		}
-		else
-		{
-			global->RemoveMaterialDefine("VERTEX_FOG");
-		}
+		//if(isFogEnabled)
+		//{
+		//	global->AddMaterialDefine("VERTEX_FOG");
+		//}
+		//else
+		//{
+		//	global->RemoveMaterialDefine("VERTEX_FOG");
+		//}
 		
-		global->Rebuild();*/
+		//global->Rebuild();
 		
 		SetupMaterialProperties();
 	}
-}
+}*/
 
 #ifdef LANDSCAPE_SPECULAR_LIT
 	
