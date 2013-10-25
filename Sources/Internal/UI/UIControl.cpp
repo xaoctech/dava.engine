@@ -2042,12 +2042,12 @@ namespace DAVA
 	void UIControl::DidRemoveHovered()
     {
     }
-    
 
 	void UIControl::Input(UIEvent *currentInput)
 	{
-		
+		currentInput->SetInputHandledType(UIEvent::INPUT_NOT_HANDLED);
 	}
+
 	void UIControl::InputCancelled(UIEvent *currentInput)
 	{
 	}
