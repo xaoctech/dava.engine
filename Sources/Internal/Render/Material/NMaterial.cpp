@@ -451,7 +451,6 @@ namespace DAVA
 		if(copyNames)
 		{
 			targetState->parentName = parentName;
-			targetState->materialName = materialName;
 		}
 		
 		targetState->layers.Combine(layers);
@@ -637,7 +636,6 @@ namespace DAVA
 		targetState->textureNamesArray.clear();
 
         if(parentName.IsValid()) targetState->parentName = parentName;
-		if(materialName.IsValid()) targetState->materialName = materialName;
 		targetState->layers.Combine(layers);
 		targetState->nativeDefines.Combine(nativeDefines);
 		
@@ -1088,13 +1086,9 @@ namespace DAVA
 	
 	NMaterial* NMaterial::CreateChild()
 	{
-		String childName = Format("%s.%lu", materialName.c_str(), uniqueIdSequence++);
-		
 		NMaterial* childMaterial = new NMaterial();
-		        
-        childMaterial->SetMaterialName(childName);
-		childMaterial->SetMaterialSystem(materialSystem);
-		
+		childMaterial->GenerateName();
+		      
 		return childMaterial;
 	}
 	
@@ -1131,6 +1125,8 @@ namespace DAVA
 	
 	void NMaterial::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 	{
+		archive->SetString("materialName", (materialName.IsValid()) ? materialName.c_str() : "");
+		
 		if(!IsSwitchable())
 		{
 			KeyedArchive* defaultStateArchive = new KeyedArchive();
@@ -1171,21 +1167,20 @@ namespace DAVA
 					states.Insert(it->first, matState);
 				}
 			}
-			
-			SetMaterialName(states.Begin().GetValue()->GetMaterialName().c_str());
 		}
 		else
 		{
 			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
 			Deserialize(*this, stateArchive, serializationContext);
 		}
+		
+		SetMaterialName(archive->GetString("materialName"));
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
 							  KeyedArchive * archive,
 							  SerializationContext * serializationContext)
 	{
-		archive->SetString("materialName", materialState.materialName.c_str());
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
 		
 		KeyedArchive* materialLayers = new KeyedArchive();
@@ -1425,9 +1420,7 @@ namespace DAVA
 		if(this->IsSwitchable())
 		{
 			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
-			
-			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
-			
+						
 			while(stateIter != states.End())
 			{
 				clonedMaterial->states.Insert(stateIter.GetKey(),
@@ -1441,7 +1434,16 @@ namespace DAVA
 			DeepCopyTo(clonedMaterial);
 		}
 		
-		clonedMaterial->materialSystem = materialSystem;
+		if(IsConfigMaterial())
+		{
+			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+		}
+		else
+		{
+			clonedMaterial->GenerateName();
+		}
+		
+		clonedMaterial->SetMaterialSystem(materialSystem);
 		
 		if(clonedMaterial->materialSystem)
 		{
@@ -1466,16 +1468,6 @@ namespace DAVA
     
     void NMaterial::SetMaterialName(const String& name)
     {
-        if(IsSwitchable())
-        {
-            HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
-			while(stateIter != states.End())
-			{
-				stateIter.GetValue()->SetMaterialName(name);
-				++stateIter;
-			}
-        }
-        
         NMaterialState::SetMaterialName(name);
     }
 	
@@ -1500,6 +1492,11 @@ namespace DAVA
 		matState = stateIter.GetValue();
 
 		return matState;
+	}
+	
+	void NMaterial::GenerateName()
+	{
+		SetMaterialName(Format("%lu", (uint64)this));
 	}
 
 };
