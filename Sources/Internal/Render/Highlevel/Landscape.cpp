@@ -1717,12 +1717,14 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
             
         case TILED_MODE_MIXED:
+			//DVASSERT(false && "Not supported with new materials!");
             nearLodIndex = 0;
             farLodIndex = 1;
 			
             break;
 
         case TILED_MODE_TEXTURE:
+			//DVASSERT(false && "Not supported with new materials!");
             nearLodIndex = 1;
             farLodIndex = 1;
 			
@@ -1933,7 +1935,7 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 			globalLandscape->RemoveMaterialDefine("DETAILMASK");
 		}
 		
-		NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+		/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
 		DVASSERT(global);
 		
 		if(isFogEnabled)
@@ -1945,7 +1947,7 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 			global->RemoveMaterialDefine("VERTEX_FOG");
 		}
 		
-		global->Rebuild();
+		global->Rebuild();*/
 		
 		SetupMaterialProperties();
 	}

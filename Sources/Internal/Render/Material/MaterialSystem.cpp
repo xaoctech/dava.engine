@@ -41,7 +41,7 @@
 namespace DAVA
 {
 	
-MaterialSystem::MaterialSystem()
+	MaterialSystem::MaterialSystem() : materials(8192)
 {
 	defaultMaterial = NULL;
 }
@@ -366,6 +366,8 @@ void MaterialSystem::Clear()
 	{
 		RemoveMaterial(*it);
 	}
+	
+	
 	
 	DVASSERT(materials.Size() == 0);
 }

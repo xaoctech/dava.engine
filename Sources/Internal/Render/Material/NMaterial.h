@@ -328,6 +328,8 @@ protected:
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
 	
 	NMaterial* CreateChild();
+	
+	void GenerateName();
 
 //public:
     //INTROSPECTION_EXTEND(NMaterial, DataNode,
