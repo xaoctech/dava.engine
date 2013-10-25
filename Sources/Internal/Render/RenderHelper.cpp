@@ -799,7 +799,17 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		if(0 != lineWidth && from != to)
 		{
 			Vector3 d = to - from;
-			Vector3 c = to - d / Min(arrowLength, d.Length());
+			float32 ln = Min(arrowLength, d.Length());
+
+			Vector3 c;
+			if(ln < 1)
+			{
+				c = to - d * ln;
+			}
+			else
+			{
+				c = to - d / ln;
+			}
 
 			DAVA::float32 k = (to - c).Length() / 4;
 
