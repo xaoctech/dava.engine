@@ -314,9 +314,8 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 
 			WaitStop();
 		}
-
-		LoadGPUFormat();
 	}
+	LoadGPUFormat();
 }
 
 void QtMainWindow::WaitStart(const QString &title, const QString &message, int min /* = 0 */, int max /* = 100 */)
@@ -967,9 +966,7 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
 	}
 
-    int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?",
-                                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-    
+    int answer = QMessageBox::warning(NULL, "Scene was changed", "Do you want to save changes, made to scene?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
     if(answer == QMessageBox::Cancel)
     {
         closeRequest->Cancel();
@@ -1184,6 +1181,8 @@ void QtMainWindow::OnResetTransform()
 		EntityGroup selection = scene->selectionSystem->GetSelection();
 		scene->modifSystem->ResetTransform(selection);
 	}
+
+	DAVA::Core::Instance()->ToggleFullscreen();
 }
 
 void QtMainWindow::OnMaterialEditor()
@@ -2278,6 +2277,9 @@ bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
 
 bool QtMainWindow::SaveTilemask()
 {
+	const QMessageBox::StandardButtons longButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll;
+	const QMessageBox::StandardButtons shortButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+
 	SceneTabWidget *sceneWidget = GetSceneWidget();
 	
 	int lastSceneTab = sceneWidget->GetCurrentTab();
@@ -2303,7 +2305,15 @@ bool QtMainWindow::SaveTilemask()
 						QString message = tabEditor->GetScenePath().GetFilename().c_str();
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
-						answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::NoButton);
+						int flags = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+
+						// if more than one scene to precess
+						if((i + 1) < sceneWidget->GetCurrentTab())
+						{
+							flags |= (QMessageBox::YesToAll | QMessageBox::NoToAll);
+						}
+
+						answer = QMessageBox::warning(this, "", message, flags, QMessageBox::NoButton);
 					}
 
 					switch(answer)
@@ -2337,6 +2347,9 @@ bool QtMainWindow::SaveTilemask()
 						}
 						break;
 					}
+
+					// finish for cycle going through commands
+					break;
 				}
 			}
 
