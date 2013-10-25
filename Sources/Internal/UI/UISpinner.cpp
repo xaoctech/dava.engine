@@ -237,6 +237,8 @@ void UISpinner::Input(UIEvent *currentInput)
             totalGestureDx = 0;
         }
     }
+
+    currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
 }
     
 void UISpinner::OnSelectWithSlide(bool isPrevious)
