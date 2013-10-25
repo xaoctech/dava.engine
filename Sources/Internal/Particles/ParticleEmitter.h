@@ -393,8 +393,6 @@ public:
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
 	
-	virtual void SetRenderSystem(RenderSystem * _renderSystem);
-
 	Matrix3 GetRotationMatrix();
 
 protected:

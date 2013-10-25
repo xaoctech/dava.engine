@@ -981,20 +981,4 @@ void ParticleEmitter::HandleRemoveFromSystem()
 		(*it)->HandleRemoveFromSystem();
 	}
 }
-	
-void ParticleEmitter::SetRenderSystem(RenderSystem * _renderSystem)
-{
-	RenderObject::SetRenderSystem(_renderSystem);
-	
-	if(_renderSystem)
-	{
-		MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
-		for(int i = 0; i < layers.size(); ++i)
-		{
-			ParticleLayer* layer = layers[i];
-			layer->MaterialSystemReady(matSystem);
-		}
-	}
-}
-
 }; 

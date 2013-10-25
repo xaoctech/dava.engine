@@ -129,7 +129,8 @@ Landscape::Landscape()
 	//tileMaskMaterial = NULL;
 	//fullTiledMaterial = NULL;
 	
-	tileMaskMaterial = NMaterial::CreateUnbinded("Global.Landscape.TileMask");
+	tileMaskMaterial = MaterialSystem::CreateNamed();
+	tileMaskMaterial->SwitchParent("Global.Landscape.TileMask");
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);

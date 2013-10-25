@@ -281,8 +281,8 @@ public:
 	inline void SetMaterialSystem(MaterialSystem* system) {materialSystem = system;}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
 	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
-	
-	static NMaterial* CreateUnbinded(const FastName& parentName);
+		
+	void SwitchParent(const FastName& newParent);
 	
 protected:
     
@@ -328,9 +328,7 @@ protected:
 	
 	void SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive);
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
-	
-	NMaterial* CreateChild();
-	
+		
 	void GenerateName();
 
 //public:
