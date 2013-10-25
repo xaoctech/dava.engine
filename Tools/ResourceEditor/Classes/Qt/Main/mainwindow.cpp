@@ -1564,12 +1564,12 @@ void QtMainWindow::OnSaveHeightmapToPNG()
 	if (!landscape)
 	{
 		QMessageBox::warning(this, titleString, "There is no landscape in scene!");
-		return false;
+		return;
 	}
 	if (!landscape->GetHeightmap()->Size())
 	{
 		QMessageBox::warning(this, titleString, "There is no heightmap in landscape!");
-		return false;
+		return;
 	}
 	
     Heightmap * heightmap = landscape->GetHeightmap();
