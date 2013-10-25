@@ -2292,9 +2292,8 @@ bool QtMainWindow::SaveTilemask()
 							// turn off editor
 							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 
-							// save and reset
+							// save
 							tabEditor->landscapeEditorDrawSystem->SaveTileMaskTexture();
-							tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 						}
 						break;
 
@@ -2304,9 +2303,6 @@ bool QtMainWindow::SaveTilemask()
 						{
 							// turn off editor
 							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
-							// nothing to do with tilemask, just reset it
-							tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 						}
 						break;
 
@@ -2320,6 +2316,9 @@ bool QtMainWindow::SaveTilemask()
 					}
 				}
 			}
+
+			//reset tilemask
+			tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 
 			// clear all tilemask commands in commandStack because they will be
 			// invalid after tilemask reloading
