@@ -57,6 +57,7 @@ public:
 		,	PHASE_ENDED		//!<Screen touch or mouse button press is ended.
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 		,	PHASE_MOVE		//!<Mouse move event. Mouse moves without pressing any buttons. Works only with mouse controller.
+        ,   PHASE_WHEEL     //!<Mouse wheel event. MacOS & Win32 only
 #endif //#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) 
 		,	PHASE_CANCELLED	//!<Event was cancelled by the platform or by the control system for the some reason.  
 

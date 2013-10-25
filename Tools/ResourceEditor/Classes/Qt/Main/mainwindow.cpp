@@ -1557,11 +1557,21 @@ void QtMainWindow::OnSaveHeightmapToPNG()
 	}
 
 	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
+	
     Landscape *landscape = FindLandscape(scene);
-    if(!landscape) return;
-    
+	QString titleString = "Saving is not allowed";
+	
+	if (!landscape)
+	{
+		QMessageBox::warning(this, titleString, "There is no landscape in scene!");
+		return false;
+	}
+	if (!landscape->GetHeightmap()->Size())
+	{
+		QMessageBox::warning(this, titleString, "There is no heightmap in landscape!");
+		return false;
+	}
+	
     Heightmap * heightmap = landscape->GetHeightmap();
     FilePath heightmapPath = landscape->GetHeightmapPathname();
     FilePath requestedPngPath = FilePath::CreateWithNewExtension(heightmapPath, ".png");
