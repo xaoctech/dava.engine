@@ -66,7 +66,7 @@ protected slots:
 
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
 	
-	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	
 protected:
 
