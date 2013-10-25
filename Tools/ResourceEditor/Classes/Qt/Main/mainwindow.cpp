@@ -2290,6 +2290,7 @@ bool QtMainWindow::SaveTilemask()
 		if(NULL != tabEditor)
 		{
 			const CommandStack *cmdStack = tabEditor->GetCommandStack();
+			bool askedForCurrentTab = false;
 			for(size_t j = cmdStack->GetCleanIndex(); j < cmdStack->GetNextIndex(); j++)
 			{
 				const Command2 *cmd = cmdStack->GetCommand(j);
@@ -2298,12 +2299,14 @@ bool QtMainWindow::SaveTilemask()
 					// ask user about saving tilemask changes
 					sceneWidget->SetCurrentTab(i);
 
-					if(needQuestion)
+					if(needQuestion && !askedForCurrentTab)
 					{
 						QString message = tabEditor->GetScenePath().GetFilename().c_str();
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
 						answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::NoButton);
+
+						askedForCurrentTab = true;
 					}
 
 					switch(answer)
