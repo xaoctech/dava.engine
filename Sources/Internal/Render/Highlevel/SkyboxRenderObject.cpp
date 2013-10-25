@@ -33,7 +33,6 @@
 
 namespace DAVA
 {
-	REGISTER_CLASS(SkyboxRenderObject);
 
 	//do not create lower cube face
 	const int SKYBOX_VERTEX_COUNT = (5 * 6);
@@ -270,7 +269,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			archive->SetString("skbxro.texture", texturePath.GetRelativePathname());
+			archive->SetString("skbxro.texture", texturePath.GetRelativePathname(sceneFile->GetScenePath()));
 			archive->SetFloat("skbxro.verticalOffset", offsetZ);
 			archive->SetFloat("skbxro.rotation", rotationZ);
 			archive->SetFloat("skbxro.noclipdist", nonClippingDistance);
@@ -283,7 +282,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			texturePath = archive->GetString("skbxro.texture");
+			texturePath = sceneFile->GetScenePath() + archive->GetString("skbxro.texture");
 			offsetZ = archive->GetFloat("skbxro.verticalOffset");
 			rotationZ = archive->GetFloat("skbxro.rotation");
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");
