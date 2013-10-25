@@ -2192,8 +2192,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
 	ui->actionUniteEntitiesWithLODs->setVisible(false);
-
-	ui->menuFile->removeAction(ui->menuImport->menuAction());
 	
 	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
