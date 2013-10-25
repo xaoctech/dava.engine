@@ -463,6 +463,7 @@ void QtMainWindow::SetupToolBars()
 		hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
 		ui->sceneToolBar->addSeparator();
 		ui->sceneToolBar->addWidget(hangingBtn);
+		hangingBtn->setAutoRaise(false);
 	}
 
 	// outline by object type
@@ -482,8 +483,9 @@ void QtMainWindow::SetupToolBars()
 		}
 
 		objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE + 1);
-
 		QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
+
+		ui->sceneToolBar->addSeparator();
 		ui->sceneToolBar->addWidget(objectTypesWidget);
 	}
 }
