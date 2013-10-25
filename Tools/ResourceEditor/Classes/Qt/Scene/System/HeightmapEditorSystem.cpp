@@ -273,6 +273,11 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
+	}
 }
 
 void HeightmapEditorSystem::UpdateToolImage(bool force)
