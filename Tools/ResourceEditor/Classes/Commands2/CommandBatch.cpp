@@ -91,7 +91,7 @@ int CommandBatch::Size() const
 	return commandList.size();
 }
 
-Command2 * CommandBatch::GetCommand( int index ) const
+Command2 * CommandBatch::GetCommand(int index) const
 {
 	if(index >= 0 && index < commandList.size())
 		return commandList[index];
@@ -101,28 +101,21 @@ Command2 * CommandBatch::GetCommand( int index ) const
 
 void CommandBatch::Clear(int commandId)
 {
-	for(int i = 0; i < commandList.size(); ++i)
+	std::vector<Command2 *>::iterator i = commandList.begin();
+	std::vector<Command2 *>::iterator next; 
+
+	while(i != commandList.end())
 	{
-		Command2 *command = commandList[i];
+		next = i;
+		next++;
+
+		Command2 *command = *i;
 		if(NULL != command && command->GetId() == commandId)
 		{
 			delete command;
-			commandList[i] = NULL;
+			commandList.erase(i);
 		}
-	}
 
-	bool allCommandsAreNULL = true;
-	for(int i = 0; i < commandList.size(); ++i)
-	{
-		if(commandList[i] != NULL)
-		{
-			allCommandsAreNULL = false;
-			break;
-		}
-	}
-
-	if(allCommandsAreNULL)
-	{
-		commandList.clear();
+		i = next;
 	}
 }
