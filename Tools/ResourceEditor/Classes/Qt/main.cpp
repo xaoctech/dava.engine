@@ -143,7 +143,6 @@ int main(int argc, char *argv[])
 		ret = a.exec();
 
 		QtMainWindow::Instance()->Release();
-		ProjectManager::Instance()->Release();
 		ControlsFactory::ReleaseFonts();
 
 		TextureSquarenessChecker::Instance()->Release();
