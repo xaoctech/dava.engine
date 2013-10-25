@@ -1852,6 +1852,10 @@ void QtMainWindow::OnCustomColorsEditor()
 		{
 			sceneEditor->Exec(new ActionEnableCustomColors(sceneEditor));
 		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
+		}
 	}
 }
 
@@ -1872,6 +1876,10 @@ void QtMainWindow::OnHeightmapEditor()
 		if (LoadAppropriateTextureFormat())
 		{
 			sceneEditor->Exec(new ActionEnableHeightmapEditor(sceneEditor));
+		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
 }
@@ -1894,6 +1902,10 @@ void QtMainWindow::OnRulerTool()
 		{
 			sceneEditor->Exec(new ActionEnableRulerTool(sceneEditor));
 		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
+		}
 	}
 }
 
@@ -1914,6 +1926,10 @@ void QtMainWindow::OnTilemaskEditor()
 		if (LoadAppropriateTextureFormat())
 		{
 			sceneEditor->Exec(new ActionEnableTilemaskEditor(sceneEditor));
+		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
 }
@@ -1936,26 +1952,34 @@ void QtMainWindow::OnVisibilityTool()
 		{
 			sceneEditor->Exec(new ActionEnableVisibilityTool(sceneEditor));
 		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
+		}
 	}
 }
 
 void QtMainWindow::OnNotPassableTerrain()
 {
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
 	{
 		return;
 	}
 	
-	if (scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+	if (sceneEditor->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
 	{
-		scene->Exec(new ActionDisableNotPassable(scene));
+		sceneEditor->Exec(new ActionDisableNotPassable(sceneEditor));
 	}
 	else
 	{
 		if (LoadAppropriateTextureFormat())
 		{
-			scene->Exec(new ActionEnableNotPassable(scene));
+			sceneEditor->Exec(new ActionEnableNotPassable(sceneEditor));
+		}
+		else
+		{
+			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
 }
