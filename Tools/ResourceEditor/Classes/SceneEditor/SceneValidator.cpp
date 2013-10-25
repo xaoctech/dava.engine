@@ -394,6 +394,12 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			{
 				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 			}
+
+			Color color = landscape->GetTileColor(texLevel);
+			if (!ValidateColor(color))
+			{
+				landscape->SetTileColor(texLevel, color);
+			}
 		}
 	}
 	else
@@ -760,7 +766,19 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 	}
 }
 
-
+bool SceneValidator::ValidateColor(Color& color)
+{
+	bool ok = true;
+	for(int32 i = 0; i < 4; ++i)
+	{
+		if (color.color[i] < 0.f || color.color[i] > 1.f)
+		{
+			color.color[i] = Clamp(color.color[i], 0.f, 1.f);
+			ok = false;
+		}
+	}
+	return ok;
+}
 
 
 

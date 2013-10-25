@@ -372,10 +372,7 @@ void LandscapeProxy::DecreaseTilemaskChanges()
 
 void LandscapeProxy::InitTilemaskImageCopy()
 {
-	if (tilemaskImageCopy)
-	{
-		SafeRelease(tilemaskImageCopy);
-	}
+	SafeRelease(tilemaskImageCopy);
 
 	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();

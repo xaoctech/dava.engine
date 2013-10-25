@@ -85,6 +85,18 @@ public:
 		,	CONTROL_STATE_OUTSIDE			//!<Input processed outside of the control rerct for now
 	};
 	
+	/**
+	 \ Input can be handled in the different ways.
+	 */
+	enum eInputHandledType
+	{
+		INPUT_NOT_HANDLED		= 0,//!<Input is not handled at all.
+		INPUT_HANDLED_SOFT		= 1,//!<Input is handled, but input control can be changed by UIControlSystem::Instance()->SwitchInputToControl() method.
+		INPUT_HANDLED_HARD		= 2,//!<Input is handled completely, input control can't be changed.
+	};
+
+	friend class UIControlSystem;
+
 	enum eButtonID 
 	{
 			BUTTON_NONE	= 0
@@ -118,6 +130,18 @@ public:
 	int32 tapCount;//!< count of the continuous inputs (clicks for mouse)
 	char16 keyChar;//!< unicode/translated character produced by key using current language, caps etc. Used only with PHASE_KEYCHAR.
 
+    inline void SetInputHandledType(eInputHandledType value)
+    {
+        // Input Handled Type can be only increased.
+        if (inputHandledType < value)
+        {
+            inputHandledType = value;
+        }
+    }
+
+    eInputHandledType GetInputHandledType() { return inputHandledType; };
+    void ResetInputHandledType() { inputHandledType = INPUT_NOT_HANDLED; };
+
 	UIEvent() :
         tid(0),
         timestamp(0.f),
@@ -126,8 +150,12 @@ public:
         activeState(ACTIVITY_STATE_INACTIVE),
         controlState(CONTROL_STATE_RELEASED),
         tapCount(0),
-        keyChar(0)
+        keyChar(0),
+        inputHandledType(INPUT_NOT_HANDLED)
 	{ }
+
+protected:
+	eInputHandledType inputHandledType;//!< input handled type, INPUT_NOT_HANDLED by default. 
 };
 };
 
