@@ -2348,6 +2348,9 @@ bool QtMainWindow::SaveTilemask()
 						}
 						break;
 					}
+
+					// finish for cycle going through commands
+					break;
 				}
 			}
 
