@@ -1742,7 +1742,12 @@ namespace DAVA
 					return true;
 				}
 			}
-				break;
+			break;
+            case UIEvent::PHASE_WHEEL:
+            {
+                 Input(currentInput);
+            }
+            break;
 #endif
 			case UIEvent::PHASE_BEGAN:
 			{
