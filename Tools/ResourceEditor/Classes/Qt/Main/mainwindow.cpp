@@ -1991,24 +1991,13 @@ void QtMainWindow::OnRemoveActionComponent()
 bool QtMainWindow::IsSavingAllowed()
 {
 	SceneEditor2* scene = GetCurrentScene();
-	QString titleString = "Saving is not allowed";
+	
 	if (!scene || scene->GetEnabledTools() != 0)
 	{
-		QMessageBox::warning(this, titleString, "Disable landscape editing before save!");
+		QMessageBox::warning(this, "Saving is not allowed", "Disable landscape editing before save!");
 		return false;
 	}
-	Landscape* sceneLandscape = FindLandscape(scene);
-	if (!sceneLandscape)
-	{
-		QMessageBox::warning(this, titleString, "There is no landscape in scene!");
-		return false;
-	}
-	if (!sceneLandscape->GetHeightmap()->Size())
-	{
-		QMessageBox::warning(this, titleString, "There is no heightmap in landscape!");
-		return false;
-	}
-
+	
 	return true;
 }
 
@@ -2194,8 +2183,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
 	ui->actionUniteEntitiesWithLODs->setVisible(false);
-
-	ui->menuFile->removeAction(ui->menuImport->menuAction());
 	
 	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
@@ -2294,9 +2281,8 @@ bool QtMainWindow::SaveTilemask()
 							// turn off editor
 							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 
-							// save and reset
+							// save
 							tabEditor->landscapeEditorDrawSystem->SaveTileMaskTexture();
-							tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 						}
 						break;
 
@@ -2306,9 +2292,6 @@ bool QtMainWindow::SaveTilemask()
 						{
 							// turn off editor
 							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
-							// nothing to do with tilemask, just reset it
-							tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 						}
 						break;
 
@@ -2322,6 +2305,9 @@ bool QtMainWindow::SaveTilemask()
 					}
 				}
 			}
+
+			//reset tilemask
+			tabEditor->landscapeEditorDrawSystem->ResetTileMaskTexture();
 
 			// clear all tilemask commands in commandStack because they will be
 			// invalid after tilemask reloading
