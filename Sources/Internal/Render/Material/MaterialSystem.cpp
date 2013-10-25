@@ -81,7 +81,7 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 	}
 	else
 	{
-		for(int i = 0; i < parent->NMaterialState::children.size(); ++i)
+		for(size_t i = 0; i < parent->NMaterialState::children.size(); ++i)
 		{
 			NMaterial* material = parent->NMaterialState::children[i];
 			materialList.push_back(material);

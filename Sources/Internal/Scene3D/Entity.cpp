@@ -1169,6 +1169,19 @@ namespace DAVA
 		{
 			LoadComponentsV7(compsArch, serializationContext);
 		}
+		
+		if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
+		{
+			KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
+			
+			if(customProps != NULL)
+			{
+				CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
+				customPropsComponent->LoadFromArchive(*customProps, serializationContext);
+				
+				SafeRelease(customProps);
+			}
+		}
 	}
     
 	void Entity::LoadComponentsV6(KeyedArchive *compsArch, SerializationContext * serializationContext)
@@ -1207,20 +1220,6 @@ namespace DAVA
 					}
 				}
 			}
-			
-			if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
-			{
-				KeyedArchive* customProps = compsArch->GetArchiveFromByteArray("customprops");
-				
-				if(customProps != NULL)
-				{
-					CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
-					customPropsComponent->LoadFromArchive(*customProps, serializationContext);
-					
-					SafeRelease(customProps);
-				}
-			}
-
 		}		
 	}
 	
