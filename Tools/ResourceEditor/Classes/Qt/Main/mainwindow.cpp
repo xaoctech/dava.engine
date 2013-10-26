@@ -1181,8 +1181,6 @@ void QtMainWindow::OnResetTransform()
 		EntityGroup selection = scene->selectionSystem->GetSelection();
 		scene->modifSystem->ResetTransform(selection);
 	}
-
-	DAVA::Core::Instance()->ToggleFullscreen();
 }
 
 void QtMainWindow::OnMaterialEditor()
