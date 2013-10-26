@@ -112,7 +112,7 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
+void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 {
 	KeyedArchive * customProperties = entity->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
@@ -121,7 +121,7 @@ inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 {
 	if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 	{
@@ -150,7 +150,7 @@ inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 {
 	DAVA::LightComponent *comp = (DAVA::LightComponent *) entity->GetComponent(DAVA::Component::LIGHT_COMPONENT);
 	if(NULL != comp)
@@ -191,7 +191,7 @@ inline void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
 {
 	if(NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT))
 	{
