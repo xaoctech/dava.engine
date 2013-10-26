@@ -343,7 +343,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
             ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
             FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-            if(!IsTextureDescriptorPath(matTexName))
+            if(!matTexName.IsEmpty() && !IsTextureDescriptorPath(matTexName))
             {
                 material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
             }
