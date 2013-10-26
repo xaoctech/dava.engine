@@ -2305,15 +2305,15 @@ bool QtMainWindow::SaveTilemask()
 						QString message = tabEditor->GetScenePath().GetFilename().c_str();
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
-						int flags = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
-
 						// if more than one scene to precess
 						if((i + 1) < sceneWidget->GetCurrentTab())
 						{
-							flags |= (QMessageBox::YesToAll | QMessageBox::NoToAll);
+							answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::Cancel);
 						}
-
-						answer = QMessageBox::warning(this, "", message, flags, QMessageBox::NoButton);
+						else
+						{
+							answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+						}
 					}
 
 					switch(answer)
