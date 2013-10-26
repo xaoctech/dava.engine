@@ -619,8 +619,8 @@ namespace DAVA
         {
             UIEvent newTouch;
             newTouch.tid = 0;
-            newTouch.physPoint.x = ((SHORT)buttonData) / 120.f;
-            newTouch.physPoint.y = ((SHORT)buttonData) / 120.f;
+            newTouch.physPoint.x = 0;
+            newTouch.physPoint.y = ((SHORT)buttonData) / (float32)(WHEEL_DELTA);
             newTouch.phase = touchPhase = UIEvent::PHASE_WHEEL;
             touches.push_back(newTouch);
         }

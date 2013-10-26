@@ -203,6 +203,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
+							return;
 						}
 						else
 						{

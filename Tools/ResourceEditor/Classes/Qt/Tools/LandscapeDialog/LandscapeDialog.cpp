@@ -133,7 +133,6 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	ui->lowerLayOut->addWidget(actionButton, 0, 0);
 	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
 	
-	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool )));
 	landscapeSize = Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 }
 
@@ -251,10 +250,10 @@ void LandscapeDialog::showEvent ( QShowEvent * event )
 
 void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
+    BaseAddEntityDialog::CommandExecuted(scene, command, redo);
+    
 	if(!IsLandscapeAffectedByCommand(command))
 	{
-		//invoke Update frequently than timeout interval
-		propEditor->Update();
 		return;
 	}
 	
@@ -268,7 +267,6 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 		if((isAddEntityCommand && !redo)||(!isAddEntityCommand && redo))
 		{
 			SetLandscapeEntity(NULL);
-			
 		}
 		else if((isAddEntityCommand && redo)||(!isAddEntityCommand && !redo))
 		{
@@ -279,8 +277,6 @@ void LandscapeDialog::CommandExecuted(SceneEditor2 *scene, const Command2* comma
 	{
 		FillWidgetsWithContent();
 	}
-
-	propEditor->Update();
 }
 
 
