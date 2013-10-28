@@ -59,7 +59,7 @@ public:
 		NOTCOMPRESSED_FILE = 0x00EE00EE
 	};
     
-    struct Compression : public BaseObject
+    struct Compression
     {
         int32 format;
         mutable uint32 sourceFileCrc;
@@ -79,8 +79,9 @@ public:
 			)
     };
     
-    struct TextureSettings : public BaseObject
+    struct TextureSettings
     {
+    public:
         TextureSettings() { SetDefaultValues(); }
         
         int8 wrapModeS;
@@ -101,10 +102,10 @@ public:
 			MEMBER(magFilter, InspDesc("magFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 		)
     };
-
+protected:
+    virtual ~TextureDescriptor();
 public:
     TextureDescriptor();
-    virtual ~TextureDescriptor();
 
     void SetDefaultValues();
 

@@ -91,9 +91,11 @@ public:
 		Vector2 uvOffset;
 		Vector2 uvScale;
 	};
-
-	MeshInstanceNode();
+protected:
 	~MeshInstanceNode();
+public:
+	MeshInstanceNode();
+
 	
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
 

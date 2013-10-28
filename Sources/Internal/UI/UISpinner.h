@@ -71,9 +71,9 @@ public:
         virtual void OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged) = 0;
 
     };
-
+protected:
     virtual ~SpinnerAdapter() {};
-
+public:
     /*
      * This method actually displays selected element in a manner specific for particular control (it can be text or image or whatever).
      *
