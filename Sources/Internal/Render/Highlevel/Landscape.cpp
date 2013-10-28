@@ -1765,7 +1765,7 @@ void Landscape::SetFog(const bool& fogState)
     {
         isFogEnabled = fogState;
 		
-		if(renderSystem)
+		/*if(renderSystem)
 		{
 			NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
 			DVASSERT(global);
@@ -1780,7 +1780,7 @@ void Landscape::SetFog(const bool& fogState)
 			}
 			
 			global->Rebuild();
-		}
+		}*/
     }
 }
 

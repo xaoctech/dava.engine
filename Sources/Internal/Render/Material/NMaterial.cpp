@@ -847,7 +847,8 @@ namespace DAVA
 		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
-			if (uniform->id == Shader::UNIFORM_NONE)
+			if (Shader::UNIFORM_NONE == uniform->id  ||
+				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 			{
 				NMaterial * currentMaterial = this;
 				
