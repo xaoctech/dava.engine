@@ -132,8 +132,14 @@ String AutotestingSystem::GetDeviceName()
 		return Format("%s", DeviceInfo::GetName());
 	}
 	*/
-	
-	return WStringToString(DeviceInfo::GetName());
+	if (AUTOTESTING_PLATFORM_NAME == "Android")
+	{
+		return DeviceInfo::GetModel();
+	}
+	else
+	{
+		return WStringToString(DeviceInfo::GetName());
+	}	
 }
 // Get test parameters from id.tx
 void AutotestingSystem::FetchParametersFromIdTxt()
