@@ -102,20 +102,18 @@ Command2 * CommandBatch::GetCommand(int index) const
 void CommandBatch::Clear(int commandId)
 {
 	std::vector<Command2 *>::iterator i = commandList.begin();
-	std::vector<Command2 *>::iterator next; 
 
 	while(i != commandList.end())
 	{
-		next = i;
-		next++;
-
 		Command2 *command = *i;
 		if(NULL != command && command->GetId() == commandId)
 		{
 			delete command;
-			commandList.erase(i);
+			i = commandList.erase(i);
 		}
-
-		i = next;
+		else
+		{
+			i++;
+		}
 	}
 }
