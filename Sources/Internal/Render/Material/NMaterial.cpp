@@ -1058,7 +1058,8 @@ namespace DAVA
 		materialDynamicLit = (parent) ? parent->IsDynamicLit() : false;
 		materialDynamicLit = materialDynamicLit ||
 							inheritedDefines.IsKey("VERTEX_LIT") ||
-							inheritedDefines.IsKey("PIXEL_LIT");
+							inheritedDefines.IsKey("PIXEL_LIT") ||
+							effectiveLayers.IsKey("ShadowVolumeRenderLayer");
 		//END TODO}
 		
 		NotifyChildrenOnChange();

@@ -49,7 +49,8 @@ public:
 	ShadowVolume();
 	virtual ~ShadowVolume();
 
-    virtual void Draw(Camera * camera);
+    //virtual void Draw(Camera * camera);
+	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
 
 	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
     void SetPolygonGroup(PolygonGroup * polygonGroup);
@@ -63,7 +64,7 @@ public:
 	virtual void UpdateAABBoxFromSource();
 
 private:
-	Shader * shader;
+	//Shader * shader;
 
 	//shadow mesh generation
 	PolygonGroup * shadowPolygonGroup;

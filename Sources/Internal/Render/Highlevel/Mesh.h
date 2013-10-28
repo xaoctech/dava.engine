@@ -37,7 +37,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
-namespace DAVA
+namespace DAVA    
 {
 
 class PolygonGroup;

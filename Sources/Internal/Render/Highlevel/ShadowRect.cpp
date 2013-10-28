@@ -35,29 +35,15 @@
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
 #include "FileSystem/FilePath.h"
+#include "REnder/Material/MaterialSystem.h"
 
 namespace DAVA
 {
 
-ShadowRect * ShadowRect::instance = 0;
-
-
-ShadowRect * ShadowRect::Create()
-{
-	if(instance)
-	{
-		instance->Retain();
-	}
-	else
-	{
-		instance = new ShadowRect();
-	}
-
-	return instance;
-}
-
 ShadowRect::ShadowRect()
 {
+	aabbox = AABBox3(Vector3(), Vector3());
+	
 	rdo = new RenderDataObject();
 
 	Vector3 vert3[4] = {Vector3(-100.f, 100.f, -50), Vector3(100.f, 100.f, -50), Vector3(-100.f, -100.f, -50), Vector3(100.f, -100.f, -50)};
@@ -71,41 +57,50 @@ ShadowRect::ShadowRect()
 
 	rdo->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, vertices);
 
-    
+    rectMode = ShadowRect::SHADOW_RECT_MULTIPLY; //set to opposite value so state will be different and material will be switched
     shadowColor = Color(0, 0, 0, 0.5f);
-    
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
-	shader->Recompile();
-    
-    uniformShadowColor = shader->FindUniformIndexByName("shadowColor");
-    DVASSERT(uniformShadowColor != -1);
+
+    NMaterial* mat = MaterialSystem::CreateNamed();
+	SetMaterial(mat);
+	
+	SetShadowMode(ShadowRect::SHADOW_RECT_ALPHA);
 }
 
 ShadowRect::~ShadowRect()
 {
-    uniformShadowColor = -1;
-	SafeRelease(shader);
-	SafeRelease(rdo);
-
-	instance = 0;
+}
+	
+void ShadowRect::SetShadowMode(ShadowRect::eShadowRectMode mode)
+{
+	if(mode != rectMode)
+	{
+		FastName parentName = (ShadowRect::SHADOW_RECT_ALPHA == mode) ? "LodShadowRectAlpha" : "LodShadowRectMultiply";
+		material->SwitchParent(parentName);
+		
+		rectMode = mode;
+	}
+}
+	
+ShadowRect::eShadowRectMode ShadowRect::GetShadowMode() const
+{
+	return rectMode;
 }
 
-void ShadowRect::Draw()
+void ShadowRect::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
-	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(rdo);
-	RenderManager::Instance()->FlushState();
-    
-    shader->SetUniformColor4ByIndex(uniformShadowColor, shadowColor);
-    
+	material->BindMaterialTechnique(ownerRenderPass, camera);
+	
+	RenderManager::Instance()->SetRenderData(rdo);    
 	RenderManager::Instance()->AttachRenderData();
+	
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 }
     
 void ShadowRect::SetColor(const Color &color)
 {
     shadowColor = color;
+	
+	material->SetPropertyValue("shadowColor", Shader::UT_FLOAT_VEC4, 1, &shadowColor);
 }
 
 const Color & ShadowRect::GetColor() const

@@ -35,6 +35,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "FileSystem/FilePath.h"
+#include "Render/Material/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -44,18 +45,23 @@ REGISTER_CLASS(ShadowVolume);
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)
 {
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	shader->Recompile();
+	//shader = new Shader();
+	//shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
+	//shader->Recompile();
 
-    SetOwnerLayerName(LAYER_SHADOW_VOLUME);
+    //SetOwnerLayerName(LAYER_SHADOW_VOLUME);
     
     aabbox = AABBox3(Vector3(), Vector3());
+	
+	NMaterial* mat = MaterialSystem::CreateNamed();
+	mat->SwitchParent("LodShadowVolume");
+	
+	SetMaterial(mat);
 }
 
 ShadowVolume::~ShadowVolume()
 {
-	SafeRelease(shader);
+	//SafeRelease(shader);
 	SafeRelease(shadowPolygonGroup);
 }
 
@@ -66,7 +72,7 @@ ShadowVolume::~ShadowVolume()
 
 static const uint32 SHADOW_VOLUME_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
     
-void ShadowVolume::Draw(Camera * camera)
+void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
     if(!renderObject)return;
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
@@ -84,9 +90,14 @@ void ShadowVolume::Draw(Camera * camera)
 	{
 		return;
 	}
-    
+	
+	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+	
+    material->BindMaterialTechnique(ownerRenderPass, camera);
+    material->Draw(shadowPolygonGroup);
 
-    Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
+    /*Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
 	Matrix4 projMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
@@ -114,7 +125,7 @@ void ShadowVolume::Draw(Camera * camera)
 	else
 	{
 		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, shadowPolygonGroup->indexCount, EIF_16, shadowPolygonGroup->indexArray);
-	}
+	}*/
 }
 
 int32 ShadowVolume::FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count)

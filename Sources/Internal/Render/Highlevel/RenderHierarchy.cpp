@@ -135,7 +135,7 @@ namespace DAVA
 		for (uint32 pos = 0; pos < size; ++pos)
 		{
 			RenderObject * node = renderObjectArray[pos];
-			
+						
 			if ((node->GetFlags() & RenderObject::CLIPPING_VISIBILITY_CRITERIA) != RenderObject::CLIPPING_VISIBILITY_CRITERIA)
 			{
 				continue;
