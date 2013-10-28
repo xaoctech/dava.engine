@@ -63,6 +63,16 @@ class KeyedArchive;
 	
 class BaseObject
 {
+protected:
+	//! Destructor
+	virtual ~BaseObject()
+	{
+		DVASSERT( referenceCount == 0 );
+#ifdef ENABLE_BASE_OBJECT_CHECKS
+		BaseObjectChecker::UnregisterBaseObject(this);
+#endif 
+	}
+
 public:
 	
 	//! Constructor
@@ -71,14 +81,6 @@ public:
 	{
 #ifdef ENABLE_BASE_OBJECT_CHECKS
 		BaseObjectChecker::RegisterBaseObject(this);
-#endif 
-	}
-
-	//! Destructor
-	virtual ~BaseObject()
-	{
-#ifdef ENABLE_BASE_OBJECT_CHECKS
-		BaseObjectChecker::UnregisterBaseObject(this);
 #endif 
 	}
 
@@ -127,7 +129,7 @@ public:
         \returns name of the class you've passed to REGISTER_CLASS function. For example if you register class UIButton with the following line:
         REGISTER_CLASS(UIButton); you'll get "UIButton" as result.
      */
-    const String & GetClassName();
+    const String & GetClassName() const;
     
     virtual void Save(KeyedArchive * archive);
 	virtual void Load(KeyedArchive * archive);

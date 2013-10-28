@@ -55,7 +55,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     currentState(),
     hardwareState(),
     needGLScreenShot(false),
-    screenShotCallback(NULL)
+    screenShotCallback(NULL),
+    glMutex( new Mutex() )
 {
 //	Logger::FrameworkDebug("[RenderManager] created");
 
@@ -528,11 +529,11 @@ void RenderManager::DrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 void RenderManager::Lock()
 {
-	glMutex.Lock();
+	glMutex->Lock();
 }
 void RenderManager::Unlock()
 {
-	glMutex.Unlock();
+	glMutex->Unlock();
 }
 	
 void RenderManager::LockNonMain()
