@@ -378,14 +378,19 @@ void MainWindow::RefreshBranchesList()
     //Add favorites branches
     if(favs.size())
     {
+        bool hasFavorite = false;
         for(int i = 0; i < branchesCount; i++)
         {
             const QString & branchID = branchesList[i];
             if(favs.contains(branchID))
+            {
                 ui->listWidget->addItem(CreateListItem(branchID));
+                hasFavorite = true;
+            }
         }
 
-        ui->listWidget->addItem(CreateSeparatorItem());
+        if(hasFavorite)
+            ui->listWidget->addItem(CreateSeparatorItem());
     }
 
     //Add Others
@@ -410,7 +415,7 @@ QListWidgetItem * MainWindow::CreateSeparatorItem()
 {
     QListWidgetItem * item = new QListWidgetItem();
     item->setFlags(Qt::NoItemFlags);
-    item->setBackground(QBrush(QColor(200, 200, 200), Qt::HorPattern));
+    item->setBackground(QBrush(QColor(180, 180, 180), Qt::HorPattern));
     item->setSizeHint(QSize(0, 7));
     return item;
 }
