@@ -38,7 +38,7 @@ namespace DAVA
 ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
     :   RenderPass(_name)
 {
-    shadowRect = ShadowRect::Create();
+    //shadowRect = ShadowRect::Create();
 	blendMode = MODE_BLEND_ALPHA;
 }
 

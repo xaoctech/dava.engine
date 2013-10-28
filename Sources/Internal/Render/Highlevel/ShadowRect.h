@@ -33,6 +33,7 @@
 
 #include "Base/StaticSingleton.h"
 #include "Render/Shader.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
@@ -40,33 +41,39 @@ namespace DAVA
 class RenderDataObject;
 class RenderDataStream;
 class Scene;
-class ShadowRect : public BaseObject
+
+class ShadowRect : public RenderBatch
 {
 public:
-	static ShadowRect * Create();
-
+	
+	enum eShadowRectMode
+	{
+		SHADOW_RECT_ALPHA,
+		SHADOW_RECT_MULTIPLY
+	};
+	
+public:
+	
+	ShadowRect();
 	virtual ~ShadowRect();
 
-	void Draw();
+	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
     
     void SetColor(const Color &color);
     const Color & GetColor() const;
-
+	
+	void SetShadowMode(ShadowRect::eShadowRectMode mode);
+	ShadowRect::eShadowRectMode GetShadowMode() const;
+	
 private:
-	ShadowRect();
 
 	RenderDataObject * rdo;
 	RenderDataStream * vertexStream;
 
-	Shader * shader;
-
 	float32 vertices[12];
 
-	static ShadowRect * instance;
-    
     Color shadowColor;
-    int32 uniformShadowColor;
-
+	eShadowRectMode rectMode;
 };
 
 };

@@ -55,7 +55,8 @@ RenderSystem::RenderSystem()
 {
     // Register available passes & layers
     renderPassesMap.Insert(PASS_FORWARD, new RenderPass(PASS_FORWARD));
-    renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
+    //renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
+	renderPassesMap.Insert(PASS_SHADOW_VOLUME, new RenderPass(PASS_SHADOW_VOLUME));
 
     renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE));
 	renderLayersMap.Insert(LAYER_AFTER_OPAQUE, new RenderLayer(LAYER_AFTER_OPAQUE));
@@ -65,6 +66,7 @@ RenderSystem::RenderSystem()
     renderLayersMap.Insert(LAYER_AFTER_TRANSLUCENT, new RenderLayer(LAYER_AFTER_TRANSLUCENT));
     
     renderLayersMap.Insert(LAYER_SHADOW_VOLUME, new RenderLayer(LAYER_SHADOW_VOLUME));
+	renderLayersMap.Insert(LAYER_SHADOW_RECT, new RenderLayer(LAYER_SHADOW_RECT));
     
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
@@ -74,8 +76,9 @@ RenderSystem::RenderSystem()
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_TRANSLUCENT], LAST_LAYER);
 
-    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
+    RenderPass * shadowVolumePass = renderPassesMap[PASS_SHADOW_VOLUME];
     shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
+	shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_RECT], LAST_LAYER);
 
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
@@ -372,6 +375,7 @@ RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const Fas
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
+	DVASSERT(false);
     ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
     DVASSERT(shadowVolume);
 
@@ -383,6 +387,7 @@ void RenderSystem::SetShadowRectColor(const Color &color)
     
 const Color & RenderSystem::GetShadowRectColor()
 {
+	DVASSERT(false);
     ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
     DVASSERT(shadowVolume);
     

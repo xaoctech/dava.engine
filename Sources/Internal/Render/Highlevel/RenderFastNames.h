@@ -49,6 +49,7 @@ static const FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
 static const FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
 static const FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
 static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
+static const FastName LAYER_SHADOW_RECT("ShadowRectRenderLayer");
     
 static const FastName INHERIT_FROM_MATERIAL("Inherit from material");
 static const FastName LAST_LAYER("Last layer");
