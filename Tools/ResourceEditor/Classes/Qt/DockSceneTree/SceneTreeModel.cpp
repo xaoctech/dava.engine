@@ -435,8 +435,13 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 		{
 			ret = true;
 
-			// 1. don't accept entity to be dropped anywhere except other entity
+			// don't accept entity to be dropped anywhere except other entity
 			if(NULL != parentItem && parentItem->ItemType() != SceneTreeItem::EIT_Entity)
+			{
+				ret = false;
+			}
+			// don't accept drops inside disabled (by custom flags) entity 
+			else if(GetCustomFlags(parent) & CF_Disabled)
 			{
 				ret = false;
 			}
@@ -453,21 +458,21 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 						DAVA::Entity *entity = (DAVA::Entity *) entities->at(i);
 						QModelIndex entityIndex = GetIndex(entity);
 
-						// 2. we don't accept drops if it has locked items
+						// 1. we don't accept drops if it has locked items
 						if(NULL != entity && entity->GetLocked()) 
 						{
 							ret = false;
 							break;
 						}
 
-						// 3. or it has entity with CF_Disabled flag
+						// 2. or it has entity with CF_Disabled flag
 						if(GetCustomFlags(entityIndex) & CF_Disabled)
 						{
 							ret = false;
 							break;
 						}
 
-						// 4. or this is self-drop
+						// 3. or this is self-drop
 						if( targetEntity == entity || // dropping into
 							entityIndex == index(row, column, parent) || // dropping above
 							entityIndex == index(row - 1, column, parent)) // dropping below
@@ -476,7 +481,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 							break;
 						}
 
-						// 5. or we are dropping last element to the bottom of the list
+						// 4. or we are dropping last element to the bottom of the list
 						if( NULL == targetEntity && row == -1 && // dropping to be bottom of the list
 							!entityIndex.parent().isValid() && // no parent
 							entityIndex.row() == (rowCount(entityIndex.parent()) - 1)) // dropped item is already bottom

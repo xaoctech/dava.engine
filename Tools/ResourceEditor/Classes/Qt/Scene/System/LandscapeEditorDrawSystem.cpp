@@ -252,7 +252,11 @@ void LandscapeEditorDrawSystem::Update(DAVA::float32 timeElapsed)
 		
 		if (landscapeProxy)
 		{
-			landscapeProxy->GetRenderer()->RebuildVertexes(changedRect);
+			LandscapeRenderer* renderer = landscapeProxy->GetRenderer();
+			if (renderer)
+			{
+				renderer->RebuildVertexes(changedRect);
+			}
 		}
 		
 		if (notPassableTerrainProxy && notPassableTerrainProxy->IsEnabled())
@@ -527,6 +531,16 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		}
 
 		DeinitLandscape();
+
+		Entity* entity = FindLandscapeEntity(sceneEditor);
+		if (entity != NULL)
+		{
+			Landscape* landscape = FindLandscape(entity);
+			if (landscape != NULL)
+			{
+				InitLandscape(entity, landscape);
+			}
+		}
 	}
 }
 
