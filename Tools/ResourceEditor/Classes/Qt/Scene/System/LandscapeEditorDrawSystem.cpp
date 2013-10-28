@@ -535,11 +535,7 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		Entity* entity = FindLandscapeEntity(sceneEditor);
 		if (entity != NULL)
 		{
-			Landscape* landscape = FindLandscape(entity);
-			if (landscape != NULL)
-			{
-				InitLandscape(entity, landscape);
-			}
+			InitLandscape(entity, FindLandscape(entity));
 		}
 	}
 }
