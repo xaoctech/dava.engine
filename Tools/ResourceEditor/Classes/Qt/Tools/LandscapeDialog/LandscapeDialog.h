@@ -88,6 +88,10 @@ protected:
 	
 	bool IsLandscapeAffectedByCommand(const Command2* command);
 	
+	SelectPathWidgetBase* InitPathWidget( QWidget* parent,
+										 int32 widgetNum,
+										 const DAVA::List<DAVA::String>& formats);
+	
 	Landscape*				innerLandscape;
 	QPushButton*			actionButton;
 
