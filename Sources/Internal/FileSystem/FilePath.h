@@ -242,7 +242,7 @@ public:
      */
     inline ePathType GetType() const;
     
-    
+	static bool ContainPath(const FilePath& basePath, const FilePath& partPath);
     static void AddResourcesFolder(const FilePath & folder);
 	static void AddTopResourcesFolder(const FilePath & folder);
     static void RemoveResourcesFolder(const FilePath & folder);

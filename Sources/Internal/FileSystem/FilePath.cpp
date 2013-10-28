@@ -160,6 +160,10 @@ FilePath FilePath::FilepathInDocuments(const String & relativePathname)
     return FilepathInDocuments(relativePathname.c_str());
 }
 
+bool FilePath::ContainPath(const FilePath& basePath, const FilePath& partPath)
+{
+	return basePath.GetAbsolutePathname().find(partPath.GetAbsolutePathname()) != std::string::npos;
+}
 
 FilePath::FilePath()
 {
