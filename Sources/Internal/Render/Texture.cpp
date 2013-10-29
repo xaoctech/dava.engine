@@ -410,6 +410,13 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	
 void Texture::GenerateMipmaps()
 {
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::GenerateMipmapsInternal));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
+}
+
+void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData)
+{
 	if(IsCompressedFormat(format))
     {
 		return;
