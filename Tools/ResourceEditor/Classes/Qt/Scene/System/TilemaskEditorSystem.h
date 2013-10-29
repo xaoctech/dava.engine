@@ -123,6 +123,8 @@ protected:
 
 	void InitSprites();
 
+	void FinishEditing();
+
 	MetaObjModifyCommand* CreateTileColorCommand(Landscape::eTextureLevel level,
 												 const Color& color);
 };

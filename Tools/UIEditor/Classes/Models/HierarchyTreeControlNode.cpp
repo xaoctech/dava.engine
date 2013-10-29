@@ -214,6 +214,16 @@ void HierarchyTreeControlNode::SetParent(HierarchyTreeNode* node, HierarchyTreeN
 			}
 			newParentUI->InsertChildBelow(uiObject, belowControl);
 		}
+		// DF-2395 - Recalculate scrollContainer content each time we add controls to it
+		UIScrollViewContainer *container = dynamic_cast<UIScrollViewContainer*>(newParentUI);
+		if (container)
+		{
+			UIScrollView *scroll =  dynamic_cast<UIScrollView*>(container->GetParent());
+			if (scroll)
+			{
+				scroll->RecalculateContentSize();
+			}
+		}
 	}
 	
 	parent = node;
