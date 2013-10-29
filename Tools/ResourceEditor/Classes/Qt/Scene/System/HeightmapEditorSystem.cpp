@@ -84,6 +84,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
+	SafeRelease(tilemaskImage);
 	SafeRelease(cursorTexture);
 	SafeRelease(squareTexture);
 }
@@ -551,6 +552,7 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 		Rect tilemaskRect = GetTilemaskUpdatedRect();
 		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
 		scene->Exec(cmd);
+		SafeRelease(tilemaskImage);
 	}
 	scene->EndBatch();
 }
