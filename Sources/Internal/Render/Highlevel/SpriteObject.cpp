@@ -95,7 +95,9 @@ void SpriteObject::SetupRenderBatch()
 //	material->SetName("SpriteObject_material");
 //	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
-    NMaterial * material = renderSystem->GetMaterialSystem()->CreateChild("Global.Textured.Alphablend");
+    //NMaterial * material = renderSystem->GetMaterialSystem()->CreateChild("Global.Textured.Alphablend");
+	NMaterial * material = MaterialSystem::CreateNamed();
+	material->SwitchParent("Global.Textured.Alphablend"); //TODO: think if should use LOD material here
 	material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
         
 	SpriteRenderBatch *batch = new SpriteRenderBatch();

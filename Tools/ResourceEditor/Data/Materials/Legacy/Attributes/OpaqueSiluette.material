@@ -1,9 +1,7 @@
 Material:
     MaterialState:
         Name: "Default"
-        Layers: ["TransclucentRenderLayer"]
-        Uniforms:
-            flatColor: ["1", "1", "1", "1"]
+        Layers: ["OpaqueRenderLayer"]
 
         RenderPass:
             Name: "ForwardPass"
@@ -15,15 +13,15 @@ Material:
                 blendSrc: "BLEND_ONE"
                 cullMode: "FACE_BACK"
                 depthFunc: "CMP_LESS"
-                state: "STATE_DEPTH_WRITE | STATE_STENCIL_TEST | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+                state: "STATE_DEPTH_TEST | STATE_STENCIL_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
                 stencil:
                     failBack: "STENCILOP_KEEP"
-                    failFront: "STENCILOP_KEEP"
+                    failFront: "STENCILOP_REPLACE"
                     funcBack: "CMP_ALWAYS"
-                    funcFront: "CMP_NOTEQUAL"
-                    mask: -1
+                    funcFront: "CMP_ALWAYS"
+                    mask: 240
                     passBack: "STENCILOP_KEEP"
-                    passFront: "STENCILOP_KEEP"
+                    passFront: "STENCILOP_REPLACE"
                     ref: 64
                     zFailBack: "STENCILOP_KEEP"
-                    zFailFront: "STENCILOP_KEEP"
+                    zFailFront: "STENCILOP_REPLACE"

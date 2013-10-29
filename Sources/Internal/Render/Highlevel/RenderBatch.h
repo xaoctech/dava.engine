@@ -167,7 +167,7 @@ public:
         MEMBER(aabbox, "AABBox",  I_SAVE | I_VIEW | I_EDIT )
         MEMBER(material, "Material", I_VIEW | I_EDIT)
                          
-        PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
+       // PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT)
 
         //MEMBER(materialInstance, "Material Instance", I_VIEW | I_EDIT)

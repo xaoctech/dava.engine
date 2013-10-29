@@ -57,7 +57,12 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
 	NMaterial* material = materials.GetValue(name);
 		
-	DVASSERT(material);
+	//DVASSERT(material);
+	if(NULL == material)
+	{
+		Logger::FrameworkDebug("[MaterialSystem::GetMaterial] Couldn't find material %s! Returning default material.", name.c_str());
+		material = defaultMaterial;
+	}
 	
 	return material;
 }
