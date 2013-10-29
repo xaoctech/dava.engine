@@ -245,7 +245,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 		if(NULL != oldScene)
 		{
-			oldScene->selectionSystem->LockSelection(true);
+			oldScene->selectionSystem->SetLocked(true);
 			SceneSignals::Instance()->EmitDeactivated(oldScene);
 		}
 
@@ -257,7 +257,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->SetViewportRect(dava3DView->GetRect());
 
 			SceneSignals::Instance()->EmitActivated(curScene);
-			curScene->selectionSystem->LockSelection(false);
+			curScene->selectionSystem->SetLocked(false);
 
 			davaWidget->setEnabled(true);
 //			topPlaceholder->setVisible(true); //VK: disabled for future.
