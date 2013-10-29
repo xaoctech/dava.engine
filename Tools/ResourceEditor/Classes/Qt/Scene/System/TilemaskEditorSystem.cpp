@@ -122,6 +122,8 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
 		return true;
 	}
 
+	FinishEditing();
+
 	drawSystem->GetLandscapeProxy()->UpdateFullTiledTexture(true);
 	
 	selectionSystem->SetLocked(false);
@@ -197,15 +199,20 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					needCreateUndo = true;
-					editingIsEnabled = false;
-				}
-				prevCursorPos = Vector2(-1.f, -1.f);
+				FinishEditing();
 				break;
 		}
 	}
+}
+
+void TilemaskEditorSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		needCreateUndo = true;
+		editingIsEnabled = false;
+	}
+	prevCursorPos = Vector2(-1.f, -1.f);
 }
 
 void TilemaskEditorSystem::SetBrushSize(int32 brushSize)
@@ -262,6 +269,11 @@ void TilemaskEditorSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 		
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 

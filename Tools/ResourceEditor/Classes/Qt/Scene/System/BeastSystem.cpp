@@ -37,7 +37,10 @@ BeastSystem::~BeastSystem(){}
 
 void BeastSystem::AddEntity(Entity * entity)
 {
-	SetDefaultPropertyValues(entity);
+    if(NULL == GetSkybox(entity))
+    {
+        SetDefaultPropertyValues(entity);
+    }
 }
 
 void BeastSystem::SetDefaultPropertyValues(Entity * entity)

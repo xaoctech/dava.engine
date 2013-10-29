@@ -48,7 +48,6 @@
 
 namespace DAVA
 {
-REGISTER_CLASS(Landscape);
 
 //#define DRAW_OLD_STYLE
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
@@ -267,7 +266,7 @@ void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathn
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
     SafeDeleteArray(indices); //TODO: need here or no?
-    
+
 	heightmapPath = heightmapPathname;
 	bbox = _box;
 
@@ -302,12 +301,13 @@ bool Landscape::BuildHeightmap()
     {
         retValue = heightmap->Load(heightmapPath);
     }
-	else if(!heightmapPath.IsEmpty())
+	else
 	{
-		// SZ: don't assert here, and it will be possible to load landscape in editor and 
+		// SZ: don't assert here, and it will be possible to load landscape in editor and
 		// fix wrong path to heightmap
 		// 
 		//DVASSERT(false && "wrong extension");
+        heightmap->ReleaseData();
 	}
 
     return retValue;
@@ -317,7 +317,6 @@ void Landscape::BuildLandscape()
 {
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
-    quadTreeHead.data.size = heightmap->Size() - 1;
     quadTreeHead.data.rdoQuad = -1;
     
     SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
@@ -326,10 +325,17 @@ void Landscape::BuildLandscape()
 
     if(heightmap->Size())
     {
+        quadTreeHead.data.size = heightmap->Size() - 1;
+        
         RecursiveBuild(&quadTreeHead, 0, lodLevelsCount);
         FindNeighbours(&quadTreeHead);
         
         indices = new uint16[INDEX_ARRAY_COUNT];
+    }
+    else
+    {
+        quadTreeHead.ReleaseChildren();
+        quadTreeHead.data.size = 0;
     }
     
 //    Logger::FrameworkDebug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
@@ -468,7 +474,7 @@ void Landscape::RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, in
     }
     
     // alloc and process childs
-    currentNode->AllocChilds();
+    currentNode->AllocChildren();
     
     int16 minIndexX = currentNode->data.x;
     int16 minIndexY = currentNode->data.y;
@@ -481,28 +487,28 @@ void Landscape::RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, in
     // We should be able to divide landscape by 2 here
     DVASSERT((size & 1) == 0);
 
-    LandQuadTreeNode<LandscapeQuad> * child0 = &currentNode->childs[0];
+    LandQuadTreeNode<LandscapeQuad> * child0 = &currentNode->children[0];
     child0->data.x = minIndexX;
     child0->data.y = minIndexY;
     //child0->data.xbuf = bufMinIndexX;
     //child0->data.ybuf = bufMinIndexY;
     child0->data.size = size / 2;
     
-    LandQuadTreeNode<LandscapeQuad> * child1 = &currentNode->childs[1];
+    LandQuadTreeNode<LandscapeQuad> * child1 = &currentNode->children[1];
     child1->data.x = minIndexX + size / 2;
     child1->data.y = minIndexY;
     //child1->data.xbuf = bufMinIndexX + size / 2;
     //child1->data.ybuf = bufMinIndexY;
     child1->data.size = size / 2;
 
-    LandQuadTreeNode<LandscapeQuad> * child2 = &currentNode->childs[2];
+    LandQuadTreeNode<LandscapeQuad> * child2 = &currentNode->children[2];
     child2->data.x = minIndexX;
     child2->data.y = minIndexY + size / 2;
     //child2->data.xbuf = bufMinIndexX;
     //child2->data.ybuf = bufMinIndexY + size / 2;
     child2->data.size = size / 2;
 
-    LandQuadTreeNode<LandscapeQuad> * child3 = &currentNode->childs[3];
+    LandQuadTreeNode<LandscapeQuad> * child3 = &currentNode->children[3];
     child3->data.x = minIndexX + size / 2;
     child3->data.y = minIndexY + size / 2;
     //child3->data.xbuf = bufMinIndexX + size / 2;
@@ -511,7 +517,7 @@ void Landscape::RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, in
     
     for (int32 index = 0; index < 4; ++index)
     {
-        LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+        LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
         child->parent = currentNode;
         RecursiveBuild(child, level + 1, maxLevels);
         
@@ -548,11 +554,11 @@ LandQuadTreeNode<Landscape::LandscapeQuad> * Landscape::FindNodeWithXY(LandQuadT
         if ((currentNode->data.y <= quadY) && (quadY < currentNode->data.y + currentNode->data.size))
     {
         if (currentNode->data.size == quadSize)return currentNode;
-        if (currentNode->childs)
+        if (currentNode->children)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
                 LandQuadTreeNode<LandscapeQuad> * result = FindNodeWithXY(child, quadX, quadY, quadSize);
                 if (result)
                     return result;
@@ -570,11 +576,11 @@ void Landscape::FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode)
     currentNode->neighbours[TOP] = FindNodeWithXY(&quadTreeHead, currentNode->data.x, currentNode->data.y - 1, currentNode->data.size);
     currentNode->neighbours[BOTTOM] = FindNodeWithXY(&quadTreeHead, currentNode->data.x, currentNode->data.y + currentNode->data.size, currentNode->data.size);
     
-    if (currentNode->childs)
+    if (currentNode->children)
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
             FindNeighbours(child);
         }
     }
@@ -588,11 +594,11 @@ void Landscape::MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 
         depth++;
         return;
     }
-    if (currentNode->childs)
+    if (currentNode->children)
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
             MarkFrames(child, depth);
         }
     }
@@ -925,11 +931,11 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippi
      */
     if (currentNode->data.rdoQuad == -1)
     {
-        if (currentNode->childs)
+        if (currentNode->children)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
                 Draw(child, clippingFlags); 
             }
         }
@@ -1079,11 +1085,11 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippi
     //
     
     {
-        if (currentNode->childs)
+        if (currentNode->children)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->children[index];
                 Draw(child, clippingFlags); 
             }
         }
@@ -1523,6 +1529,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
+        if(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)) continue;
         
         String textureName = archive->GetString(Format("tex_%d", k));
         

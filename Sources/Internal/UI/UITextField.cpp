@@ -47,8 +47,6 @@ extern void CloseKeyboard();
 namespace DAVA 
 {
 
-REGISTER_CLASS(UITextField);
-
 void UITextFieldDelegate::TextFieldShouldReturn(UITextField * /*textField*/)
 {
 }
@@ -501,6 +499,7 @@ void UITextField::Input(UIEvent *currentInput)
         }
     }
 
+    currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_SOFT); // Drag is not handled - see please DF-2508.
 #endif
 }
     

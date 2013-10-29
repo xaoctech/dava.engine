@@ -109,6 +109,8 @@ protected:
 	FilePath GetAbsolutePathFromProjectPath(const String& relativePath);
 
 	bool IsCanBeEnabled();
+
+	void FinishEditing();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSSYSTEM__) */
