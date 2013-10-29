@@ -199,6 +199,7 @@ void Scene::RegisterNode(Entity * node)
 	{
 		RegisterImposter(imposter);
 	}
+	
     
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)

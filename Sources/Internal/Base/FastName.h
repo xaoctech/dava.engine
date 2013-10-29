@@ -41,7 +41,7 @@ struct FastNameDB : public StaticSingleton<FastNameDB>
 {
 	FastNameDB()
 		// namesHash init. size will be 4096 and default values for int will be -1
-		: namesHash(HashMap<const char *, int>(4096, -1))
+		: namesHash(HashMap<const char *, int>(8192, -1))
 	{};
 
 	~FastNameDB()

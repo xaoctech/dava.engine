@@ -40,7 +40,7 @@ namespace DAVA
 SpriteRenderBatch::SpriteRenderBatch()
 	: RenderBatch()
 {
-    SetOwnerLayerName(LAYER_TRANSLUCENT);
+    //SetOwnerLayerName(LAYER_TRANSLUCENT);
 }
 
 SpriteRenderBatch::~SpriteRenderBatch()
