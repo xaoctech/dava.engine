@@ -91,7 +91,6 @@ protected:
 	SceneSelectionSystem* selectionSystem;
 	EntityModificationSystem* modifSystem;
 	LandscapeEditorDrawSystem* drawSystem;
-	HoodSystem *hoodSystem;
 	
 	int32 landscapeSize;
 	Texture* cursorTexture;
