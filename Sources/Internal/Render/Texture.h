@@ -335,6 +335,7 @@ private:
     
 	static uint32 ConvertToPower2FBOValue(uint32 value);
 
+	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
 
 	static PixelFormat defaultRGBAFormat;
 	Texture();
