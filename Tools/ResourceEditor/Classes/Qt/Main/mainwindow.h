@@ -103,11 +103,12 @@ public slots:
 	void OnUndo();
 	void OnRedo();
 
+	void OnEditorGizmoToggle(bool show);
+
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
+	void OnReloadSprites();
 
-    void OnReloadSprites();
-    
 	void OnSelectMode();
 	void OnMoveMode();
 	void OnRotateMode();
@@ -250,6 +251,7 @@ private:
 	void EnableProjectActions(bool enable);
 	void EnableGPUReloadActions(bool enable);
 
+	void LoadViewState(SceneEditor2 *scene);
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);

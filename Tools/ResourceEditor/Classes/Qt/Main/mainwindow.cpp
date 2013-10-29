@@ -546,6 +546,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
 
 	
+	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
 	QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
@@ -711,6 +713,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 {
 	EnableSceneActions(true);
 
+	LoadViewState(scene);
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
@@ -1044,6 +1047,15 @@ void QtMainWindow::OnRedo()
 	if(NULL != scene)
 	{
 		scene->Redo();
+	}
+}
+
+void QtMainWindow::OnEditorGizmoToggle(bool show)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->SetHUDVisible(show);
 	}
 }
 
@@ -1408,6 +1420,14 @@ void QtMainWindow::OnOpenHelp()
 // ###################################################################################################
 // Mainwindow load state functions
 // ###################################################################################################
+
+void QtMainWindow::LoadViewState(SceneEditor2 *scene)
+{
+	if(NULL != scene)
+	{
+		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
+	}
+}
 
 void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 {
@@ -2357,9 +2377,6 @@ bool QtMainWindow::SaveTilemask()
 			// clear all tilemask commands in commandStack because they will be
 			// invalid after tilemask reloading
 			tabEditor->ClearCommands(CMDID_TILEMASK_MODIFY);
-
-			// Update "*" on tabname
-			sceneWidget->SceneModifyStatusChanged(tabEditor, false);
 		}
 	}
 
