@@ -24,10 +24,5 @@ void main()
 {
 	varTexCoord0 = inTexCoord0;
 	varVertexColor = inColor;
-	mat4 scaleMatrix = mat4(1.0);
-	scaleMatrix[0][0] = worldScale.x;
-	scaleMatrix[1][1] = worldScale.y;
-	scaleMatrix[2][2] = worldScale.z;
-	vec4 pivot = vec4(inTangent, 0.0);
-	gl_Position = projectionMatrix * scaleMatrix * (inPosition - pivot) + projectionMatrix * vec4(worldTranslate, 0.0) + modelViewProjectionMatrix * pivot;
+	gl_Position = projectionMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
 }
