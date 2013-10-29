@@ -170,7 +170,8 @@ UITextField::~UITextField()
 #elif defined (__DAVAENGINE_IPHONE__)
 	SafeDelete(textFieldiPhone);
 #else
-	SafeRelease(textFont);    
+    SafeRelease(textFont);
+
     RemoveAllControls();
     SafeRelease(staticText);
 #endif
