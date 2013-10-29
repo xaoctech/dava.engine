@@ -54,7 +54,7 @@ public:
     ShadowVolumeRenderPass(const FastName & name);
     virtual ~ShadowVolumeRenderPass();
     
-    virtual void Draw(Camera * camera);
+    void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
     
     ShadowRect * GetShadowRect() const;
 
