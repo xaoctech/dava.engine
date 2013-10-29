@@ -316,7 +316,6 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		}
 
 		// Update "*" on tabs
-		DAVA::Map<DAVA::String, DAVA::Texture *> allScenesTextures;
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
