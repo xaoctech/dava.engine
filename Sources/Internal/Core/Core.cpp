@@ -256,10 +256,7 @@ Core::eScreenOrientation Core::GetScreenOrientation()
 
 void Core::CalculateScaleMultipliers()
 {
-	needTorecalculateMultipliers = false;
-	
-	rotatedScreenWidth = screenWidth;
-	rotatedScreenHeight = screenHeight;
+	needTorecalculateMultipliers = false;		
 
 	virtualScreenWidth = requestedVirtualScreenWidth;
 	virtualScreenHeight = requestedVirtualScreenHeight;
@@ -425,7 +422,7 @@ float32 Core::GetVirtualScreenXMin()
 	
 float32 Core::GetVirtualScreenXMax()
 {
-	return ((float32)(rotatedScreenWidth - drawOffset.x) * physicalToVirtual);
+	return ((float32)(screenWidth - drawOffset.x) * physicalToVirtual);
 }
 	
 float32 Core::GetVirtualScreenYMin()
@@ -435,7 +432,7 @@ float32 Core::GetVirtualScreenYMin()
 	
 float32 Core::GetVirtualScreenYMax()
 {
-	return ((float32)(rotatedScreenHeight - drawOffset.y) * physicalToVirtual);
+	return ((float32)(screenHeight - drawOffset.y) * physicalToVirtual);
 }
 	
 Core::eScreenMode Core::GetScreenMode()

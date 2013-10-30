@@ -334,10 +334,7 @@ protected:
 
 private:
 	float32 screenWidth;
-	float32 screenHeight;
-	
-	float32 rotatedScreenWidth;
-	float32 rotatedScreenHeight;
+	float32 screenHeight;	
 	
 	int desirableIndex;
 	
