@@ -113,9 +113,8 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //    uint32 flags = renderObject->GetFlags();
 //    if ((flags & visiblityCriteria) != visiblityCriteria)
 //        return;
-    
-    if(!GetVisible())
-        return;
+//    if(!GetVisible())
+//        return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
