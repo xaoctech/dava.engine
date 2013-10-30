@@ -214,6 +214,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\AllocatorFactory.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseIntrospection.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\EnumMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FastName.h" />
@@ -634,6 +635,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\AllocatorFactory.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseIntrospection.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp" />

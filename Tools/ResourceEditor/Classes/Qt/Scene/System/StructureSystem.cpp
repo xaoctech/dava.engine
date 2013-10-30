@@ -491,8 +491,8 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool optimize
 
 			if(optimize)
 			{
-				SceneFileV2 sceneFile;
-				sceneFile.OptimizeScene(parentForOptimize);
+				ScopedPtr<SceneFileV2> sceneFile( new SceneFileV2() );
+				sceneFile->OptimizeScene(parentForOptimize);
 			}
 
 			if(parentForOptimize->GetChildrenCount())
