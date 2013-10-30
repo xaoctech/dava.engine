@@ -1260,6 +1260,8 @@ private:
 
 	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
+	
+	void SetGenerateTilesArraysFlag(bool hierarchic = true);
 
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);

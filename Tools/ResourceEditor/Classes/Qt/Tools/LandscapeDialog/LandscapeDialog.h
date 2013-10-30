@@ -66,7 +66,7 @@ protected slots:
 
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
 	
-	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	
 protected:
 
@@ -86,11 +86,19 @@ protected:
 	
 	Vector3 GetSizeOfCurrentLandscape();
 	
+	bool IsLandscapeAffectedByCommand(const Command2* command);
+	
+	SelectPathWidgetBase* InitPathWidget( QWidget* parent,
+										 int32 widgetNum,
+										 const DAVA::List<DAVA::String>& formats);
+	
 	Landscape*				innerLandscape;
 	QPushButton*			actionButton;
 
 	DAVA::Map<SelectPathWidgetBase*, int32>  widgetMap;
 	Vector3	landscapeSize;
+	
+	static const int32 landscapeRelatedCommandIDs[];
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEDIALOG__) */

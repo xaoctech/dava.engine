@@ -45,7 +45,6 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
-	, selectionLocked(false)
 	, selectionHasChanges(false)
 {
 
@@ -233,7 +232,7 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		Clear();
 
@@ -249,7 +248,7 @@ void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		if(NULL != entity)
 		{
@@ -272,7 +271,7 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		if(curSelections.HasEntity(entity))
 		{
@@ -288,7 +287,7 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::Clear()
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		while(curSelections.Size() > 0)
 		{
@@ -333,9 +332,17 @@ ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 	return curPivotPoint;
 }
 
-void SceneSelectionSystem::LockSelection(bool lock)
+void SceneSelectionSystem::SetLocked(bool lock)
 {
-	selectionLocked = lock;
+	SceneSystem::SetLocked(lock);
+
+	hoodSystem->LockAxis(lock);
+	hoodSystem->SetVisible(!lock);
+
+	if(!lock)
+	{
+		UpdateHoodPos();
+	}
 }
 
 void SceneSelectionSystem::UpdateHoodPos() const
@@ -366,12 +373,12 @@ void SceneSelectionSystem::UpdateHoodPos() const
 
 		hoodSystem->LockModif(lockHoodModif);
 		hoodSystem->SetPosition(p);
-		hoodSystem->Show(true);
+		hoodSystem->SetVisible(true);
 	}
 	else
 	{
 		hoodSystem->LockModif(false);
-		hoodSystem->Show(false);
+		hoodSystem->SetVisible(false);
 	}
     
     SceneEditor2 *sc = (SceneEditor2 *)GetScene();

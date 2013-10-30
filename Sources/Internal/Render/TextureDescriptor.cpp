@@ -492,8 +492,6 @@ FilePath TextureDescriptor::GetDescriptorPathname(const FilePath &texturePathnam
         return texturePathname;
     }
     
-    DVASSERT(GPUFamilyDescriptor::GetGPUForPathname(texturePathname) == GPU_UNKNOWN);
-    
     return FilePath::CreateWithNewExtension(texturePathname, GetDescriptorExtension());
 }
 

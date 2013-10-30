@@ -54,6 +54,8 @@ public:
     
     virtual void Save(const FilePath &filePathname);
     virtual bool Load(const FilePath &filePathname);
+
+    void ReleaseData();
     
     uint16 * Data();
     int32 Size() const;
@@ -70,7 +72,6 @@ protected:
     Heightmap *CreateHeightmapForSize(int32 newSize);
     
     bool AllocateData(int32 newSize);
-    void ReleaseData();    
     
 protected:
     

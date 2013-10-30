@@ -44,10 +44,7 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 
 	for(int32 n = 0; n < (int32)nodes.size(); ++n)
 	{
-		RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
-		if(!rc) continue;
-
-		RenderObject *ro = rc->GetRenderObject();
+		RenderObject *ro = GetRenderObject(nodes[n]);
 		if(!ro) continue;
 
 		uint32 count = ro->GetRenderBatchCount();

@@ -68,7 +68,8 @@ public:
 	void SetPivotPoint(ST_PivotPoint pp);
 	ST_PivotPoint GetPivotPoint() const;
 
-	void LockSelection(bool lock);
+	//void LockSelection(bool lock);
+	virtual void SetLocked(bool lock);
 
 	DAVA::AABBox3 GetSelectionAABox(int index) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
@@ -93,7 +94,6 @@ protected:
 private:
 	int drawMode;
 	bool applyOnPhaseEnd;
-	bool selectionLocked;
 
 	SceneCollisionSystem *collisionSystem;
 	HoodSystem* hoodSystem;

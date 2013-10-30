@@ -63,6 +63,7 @@ public:
 private:
 	Shader * shader;
 
+    int32 uniformLightPosition0;
 
 	//shadow mesh generation
 	PolygonGroup * shadowPolygonGroup;
