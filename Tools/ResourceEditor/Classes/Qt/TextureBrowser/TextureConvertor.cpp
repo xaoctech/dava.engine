@@ -99,25 +99,21 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 
 	if(NULL != descriptor)
 	{
-		// check if requested texture isn't the same that is loading now
-		if(NULL == curJobConverted || curJobConverted->identity != descriptor || curJobConverted->type != gpu)
+		JobItem newJob;
+		newJob.id = jobIdCounter++;
+		newJob.force = forceConver;
+		newJob.type = gpu;
+		newJob.data = new TextureDescriptor(*descriptor);
+		newJob.identity = descriptor;
+
+		if(jobStackConverted.push(newJob))
 		{
-			JobItem newJob;
-			newJob.id = jobIdCounter++;
-			newJob.force = forceConver;
-			newJob.type = gpu;
-			newJob.data = new TextureDescriptor(*descriptor);
-			newJob.identity = descriptor;
-
-			if(jobStackConverted.push(newJob))
-			{
-				convertJobQueueSize++;
-			}
-
-			jobRunNextConvert();
-
-			ret = newJob.id;
+			convertJobQueueSize++;
 		}
+
+		jobRunNextConvert();
+
+		ret = newJob.id;
 	}
 
 	return ret;

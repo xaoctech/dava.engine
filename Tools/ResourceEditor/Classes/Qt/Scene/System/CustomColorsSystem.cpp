@@ -132,7 +132,9 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
-	
+
+	FinishEditing();
+
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
 	
@@ -197,13 +199,18 @@ void CustomColorsSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					CreateUndoPoint();
-					editingIsEnabled = false;
-				}
+				FinishEditing();
 				break;
 		}
+	}
+}
+
+void CustomColorsSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		CreateUndoPoint();
+		editingIsEnabled = false;
 	}
 }
 
@@ -227,6 +234,11 @@ void CustomColorsSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 
