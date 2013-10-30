@@ -124,9 +124,10 @@ protected:
  */
 class UISpinner : public UIControl, SpinnerAdapter::SelectionObserver
 {
+protected:
+    virtual ~UISpinner();
 public:
     UISpinner(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-    virtual ~UISpinner();
 
     SpinnerAdapter * GetAdater() {return adapter;}
     void SetAdapter(SpinnerAdapter * adapter);

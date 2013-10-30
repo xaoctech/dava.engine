@@ -161,8 +161,9 @@ protected:
 	int32 referenceCount;
 
 public:
-		INTROSPECTION(BaseObject,
-		MEMBER(referenceCount, "referenceCount", I_SAVE))
+	INTROSPECTION_EXTEND(BaseObject, BaseIntrospection,
+		MEMBER(referenceCount, "referenceCount", I_SAVE)
+	);
 };
 
 
