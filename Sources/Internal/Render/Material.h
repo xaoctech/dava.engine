@@ -193,8 +193,10 @@ public:
     
     static const char8 * GetTypeName(eType type);
 
-    Material();
+protected:
     virtual ~Material();
+public:
+    Material();
     
     Material * Clone(Material *newMaterial = NULL);
 	void CopySettings(Material *fromMaterial);

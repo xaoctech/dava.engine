@@ -51,9 +51,10 @@ class NMaterialInstance;
 
 class PolygonGroupWithMaterial : public RenderBatch
 {
+protected:
+    virtual ~PolygonGroupWithMaterial();
 public:
     PolygonGroupWithMaterial();
-    virtual ~PolygonGroupWithMaterial();
     
     void Setup(StaticMesh * mesh, int32 polygroupIndex, Material * material, TransformComponent * transform);
     virtual void Draw();
