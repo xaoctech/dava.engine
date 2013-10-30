@@ -60,11 +60,6 @@ void UI3DView::SetScene(Scene * _scene)
     if(scene)
     {
         float32 aspect = size.dx / size.dy;
-        if ((Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)||
-            (Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT))
-        {
-            aspect = size.dy / size.dx;
-        }
         for (int32 k = 0; k < scene->GetCameraCount(); ++k)
         {
             scene->GetCamera(k)->SetAspect(aspect);
@@ -157,11 +152,6 @@ void UI3DView::SetSize(const DAVA::Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
     float32 aspect = size.dx / size.dy;
-    if ((Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)||
-        (Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT))
-    {
-        aspect = size.dy / size.dx;
-    }
     
     if(scene)
     {

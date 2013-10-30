@@ -71,24 +71,65 @@
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation 
 {
-    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)
-        return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft)||(interfaceOrientation == UIInterfaceOrientationLandscapeRight);
-    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE)
-        return (interfaceOrientation == UIInterfaceOrientationPortrait)||(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
-    return FALSE;
+    DAVA::Core::eScreenOrientation orientation = DAVA::Core::Instance()->GetScreenOrientation();
+    switch (orientation) {
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+            return interfaceOrientation == UIInterfaceOrientationLandscapeLeft;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+            return interfaceOrientation == UIInterfaceOrientationLandscapeRight;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
+            return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft)||(interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT:
+            return interfaceOrientation == UIInterfaceOrientationPortrait;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN:
+            return interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE:
+            return (interfaceOrientation == UIInterfaceOrientationPortrait)||(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
+            break;
+        default:
+            return FALSE;
+            break;
+    }
+    
 }
 
 -(BOOL)shouldAutorotate
 {
-    return (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)||(DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE);
+    /*return (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)||(DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE);*/
+    return TRUE;
 }
 -(NSUInteger)supportedInterfaceOrientations
 {
-    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)
-        return UIInterfaceOrientationMaskLandscape;
-    if (DAVA::Core::Instance()->GetScreenOrientation()==DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE)
-        return UIInterfaceOrientationMaskPortrait;
-    return UIInterfaceOrientationPortrait;
+    DAVA::Core::eScreenOrientation orientation = DAVA::Core::Instance()->GetScreenOrientation();
+    switch (orientation) {
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+            return UIInterfaceOrientationMaskLandscapeLeft;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+            return UIInterfaceOrientationMaskLandscapeRight;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE:
+            return UIInterfaceOrientationMaskLandscape;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT:
+            return UIInterfaceOrientationMaskPortrait;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN:
+            return UIInterfaceOrientationMaskPortraitUpsideDown;
+            break;
+        case DAVA::Core::SCREEN_ORIENTATION_PORTRAIT_AUTOROTATE:
+            return UIInterfaceOrientationMaskPortrait;
+            break;
+        default:
+            return UIInterfaceOrientationMaskPortrait;
+            break;
+    }
+
 }
 
 

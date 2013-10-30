@@ -650,18 +650,8 @@ const UIGeometricData &UIControlSystem::GetBaseGeometricData()
 	
 void UIControlSystem::SetInputScreenAreaSize(int32 width, int32 height)
 {
-	if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-        inputWidth = height;
-		inputHeight = width;
-    }
-	else
-	{
-        inputWidth = width;
-		inputHeight = height;
-
-
-	}
+    inputWidth = width;
+    inputHeight = height;
 }
 
 void UIControlSystem::CalculateScaleMultipliers()
@@ -690,24 +680,7 @@ void UIControlSystem::RecalculatePointToPhysical(const Vector2 &virtualPoint, Ve
     calcPoint -= inputOffset;
     calcPoint /= scaleFactor;
     
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-        calcPoint.x = inputWidth - calcPoint.x;
-        
-        physicalPoint.x = calcPoint.y;
-        physicalPoint.y = calcPoint.x;
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-        calcPoint.y = inputHeight - calcPoint.y;
-        
-        physicalPoint.x = calcPoint.y;
-        physicalPoint.y = calcPoint.x;
-	}
-	else
-	{
-        physicalPoint = calcPoint;
-	}
+    physicalPoint = calcPoint;
 }
 
 void UIControlSystem::RecalculatePointToVirtual(const Vector2 &physicalPoint, Vector2 &virtualPoint)
@@ -717,20 +690,8 @@ void UIControlSystem::RecalculatePointToVirtual(const Vector2 &physicalPoint, Ve
 		return;
 	}
 
-	if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-		virtualPoint.x = (inputWidth - physicalPoint.y);
-		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-		virtualPoint.x = (physicalPoint.y);
-		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-		virtualPoint = physicalPoint;
-	}
+	
+    virtualPoint = physicalPoint;
 	
 	virtualPoint *= scaleFactor;
 	virtualPoint += inputOffset;

@@ -36,7 +36,9 @@ int DAVA::Core::Run(int argc, char * argv[], AppHandle handle)
 		::UIScreen* mainScreen = [::UIScreen mainScreen];
 		unsigned int width = [mainScreen bounds].size.width;
 		unsigned int height = [mainScreen bounds].size.height;
-        if (Instance()->GetScreenOrientation() == SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE)
+        eScreenOrientation orientation = Instance()->GetScreenOrientation();
+        //if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation]))
+        if ((orientation==SCREEN_ORIENTATION_LANDSCAPE_LEFT)||(orientation==SCREEN_ORIENTATION_LANDSCAPE_RIGHT)||(orientation==SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE))
         {
             width = [mainScreen bounds].size.height;
             height = [mainScreen bounds].size.width;
