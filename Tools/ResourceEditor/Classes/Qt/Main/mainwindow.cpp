@@ -2248,6 +2248,7 @@ void QtMainWindow::UpdateConflictingActionsState(bool enable)
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->menuExport->setEnabled(enable);
 	ui->menuBeast->setEnabled(enable);
+    ui->actionSaveToFolder->setEnabled(enable);
 }
 
 void QtMainWindow::DiableUIForFutureUsing()
