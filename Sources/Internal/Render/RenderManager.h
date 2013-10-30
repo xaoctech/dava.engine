@@ -543,7 +543,8 @@ protected:
     Matrix3 uniformMatrixNormal;
     
 
-    void RectFromRenderOrientationToViewport(Rect & rect);
+    //do nothing right now
+    DAVA_DEPRECATED(void RectFromRenderOrientationToViewport(Rect & rect));
     
 	// SHOULD BE REPLACED WITH MATRICES IN FUTURE
 	Vector2 userDrawOffset;

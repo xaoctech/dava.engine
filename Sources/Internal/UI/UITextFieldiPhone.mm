@@ -73,15 +73,9 @@ float GetUITextViewSizeDivider()
 	if (self = [super init])
 	{
         float divider = GetUITextViewSizeDivider();
-        if (DAVA::Core::Instance()->GetScreenOrientation() == DAVA::Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-        {
-            self.transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
-            self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider);
-        }
-        else
-        {
-            self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider);
-        }
+        
+        self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider);
+        
 		self.center = CGPointMake(DAVA::Core::Instance()->GetPhysicalScreenWidth()/2/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/2/divider);
 		self.userInteractionEnabled = TRUE;
 		textInputAllowed = YES;
