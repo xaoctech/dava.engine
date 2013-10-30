@@ -896,6 +896,7 @@ namespace DAVA
 	{
 		if (activeProgram != program)
 		{
+            RenderManager::Instance()->GetStats().shaderBindCount++;
 			RENDER_VERIFY(glUseProgram(program));
 			activeProgram = program;
 		}
