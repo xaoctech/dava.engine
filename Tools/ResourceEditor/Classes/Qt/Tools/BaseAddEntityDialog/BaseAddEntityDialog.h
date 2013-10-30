@@ -58,6 +58,8 @@ public:
 
 	virtual DAVA::Entity* GetEntity();
 	void virtual SetEntity(DAVA::Entity* );
+	
+	void AddButton( QWidget* widget, bool addToLeftSide);
 
 protected slots:
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
