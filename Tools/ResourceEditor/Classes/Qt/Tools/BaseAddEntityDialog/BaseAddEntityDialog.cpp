@@ -125,6 +125,18 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	entity = SafeRetain(_entity);
 }
 
+void BaseAddEntityDialog::AddButton( QWidget* widget, bool addToLeftSide)
+{
+	if(addToLeftSide)
+	{
+		ui->lowerLayOut->insertWidget(0, widget);
+	}
+	else
+	{
+		ui->lowerLayOut->addWidget(widget);
+	}
+}
+
 DAVA::Entity* BaseAddEntityDialog::GetEntity()
 {
 	return entity;
