@@ -56,9 +56,10 @@ public:
 
 		MODES_COUNT
 	};
-
-	LandscapeProxy(Landscape* landscape);
+protected:
 	virtual ~LandscapeProxy();
+public:
+	LandscapeProxy(Landscape* landscape);
 
 	void SetMode(LandscapeProxy::eLandscapeMode mode);
 	void SetDisplayingTexture(Texture* texture);

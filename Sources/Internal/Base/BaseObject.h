@@ -39,6 +39,7 @@
 #include "Base/ScopedPtr.h"
 #include "Render/RenderBase.h"
 #include <typeinfo>
+#include "BaseIntrospection.h"
 
 namespace DAVA
 {
@@ -61,7 +62,7 @@ namespace DAVA
 class InspInfo;
 class KeyedArchive;
 	
-class BaseObject
+class BaseObject: public BaseIntrospection
 {
 protected:
 	//! Destructor

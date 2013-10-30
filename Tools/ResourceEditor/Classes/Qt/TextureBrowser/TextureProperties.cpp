@@ -164,7 +164,7 @@ void TextureProperties::ReloadProperties()
 		curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
 		QtPropertyItem *header;
-		DAVA::BaseObject *object;
+		DAVA::BaseIntrospection *object;
 
 		object = &curTextureDescriptor->settings;
 
@@ -287,7 +287,7 @@ void TextureProperties::ReloadEnumWrap()
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
 }
 
-QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent)
+QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::BaseIntrospection *object, QtPropertyItem *parent)
 {
 	QtPropertyDataMetaObject* ret = NULL;
 	const DAVA::InspInfo* info = object->GetTypeInfo();
