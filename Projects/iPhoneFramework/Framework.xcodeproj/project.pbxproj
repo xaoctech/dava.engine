@@ -47,6 +47,8 @@
 		17F53E3416D3705E004D5099 /* WebViewControliOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E3216D3705E004D5099 /* WebViewControliOS.h */; };
 		17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E3316D3705E004D5099 /* WebViewControliOS.mm */; };
 		1AD7C35E17D8951C00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C35D17D8951C00B9977C /* Vector.cpp */; };
+		1ADD71D918213152009D06A1 /* BaseIntrospection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1ADD71D718213152009D06A1 /* BaseIntrospection.cpp */; };
+		1ADD71DA18213152009D06A1 /* BaseIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ADD71D818213152009D06A1 /* BaseIntrospection.h */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
 		4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */; };
@@ -758,6 +760,8 @@
 		17F53E3216D3705E004D5099 /* WebViewControliOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewControliOS.h; sourceTree = "<group>"; };
 		17F53E3316D3705E004D5099 /* WebViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControliOS.mm; sourceTree = "<group>"; };
 		1AD7C35D17D8951C00B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
+		1ADD71D718213152009D06A1 /* BaseIntrospection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseIntrospection.cpp; sourceTree = "<group>"; };
+		1ADD71D818213152009D06A1 /* BaseIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseIntrospection.h; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
 		4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
@@ -1556,6 +1560,8 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				1ADD71D718213152009D06A1 /* BaseIntrospection.cpp */,
+				1ADD71D818213152009D06A1 /* BaseIntrospection.h */,
 				17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */,
 				17816B7F17B2748900B067E1 /* AllocatorFactory.h */,
 				E8679182175F62D600C5A6A2 /* EnumMap.cpp */,
@@ -2744,6 +2750,7 @@
 				E8B3CD0C16B9326E002BD35F /* UIMoveInTransition.h in Headers */,
 				E8B3CD0E16B9326E002BD35F /* UIPopup.h in Headers */,
 				E8B3CD1016B9326E002BD35F /* UIScreen.h in Headers */,
+				1ADD71DA18213152009D06A1 /* BaseIntrospection.h in Headers */,
 				E8B3CD1116B9326E002BD35F /* UIScreenManager.h in Headers */,
 				E8B3CD1416B9326E002BD35F /* UIScreenManageriPhone.h in Headers */,
 				E8B3CD1616B9326E002BD35F /* UIScreenManageriPhoneImpl.h in Headers */,
@@ -3072,6 +3079,7 @@
 				E8B3CC7C16B9326E002BD35F /* UpdatableComponent.cpp in Sources */,
 				E8B3CC7E16B9326E002BD35F /* DataNode.cpp in Sources */,
 				E8B3CC8316B9326E002BD35F /* ImposterManager.cpp in Sources */,
+				1ADD71D918213152009D06A1 /* BaseIntrospection.cpp in Sources */,
 				E8B3CC8516B9326E002BD35F /* ImposterNode.cpp in Sources */,
 				E8B3CC8716B9326E002BD35F /* LodNode.cpp in Sources */,
 				E8B3CC8916B9326E002BD35F /* MeshInstance.cpp in Sources */,
