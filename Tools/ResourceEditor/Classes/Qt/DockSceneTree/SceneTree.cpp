@@ -379,26 +379,41 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 				unlockAction->setDisabled(true);
 			}
 
-			// save model as
-			contextMenu.addSeparator();
-			contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
-
-			DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
-			if(NULL != customProp)
+			DAVA::ParticleEmitter* emitter = DAVA::GetEmitter(entity);
+			// show save as/reload/edit for regular entity
+			if(NULL == emitter)
 			{
-				DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-				if(!ownerRef.IsEmpty())
-				{
-					if(selectionSize == 1)
-					{
-						QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
-					}
+				// save model as
+				contextMenu.addSeparator();
+				contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 
-					QAction *reloadModelAction = contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
+				DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
+				if(NULL != customProp)
+				{
+					DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+					if(!ownerRef.IsEmpty())
+					{
+						if(selectionSize == 1)
+						{
+							QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+						}
+
+						QAction *reloadModelAction = contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
+					}
 				}
+				//DF-2004: Reload for every entity at scene
+				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
 			}
-			//DF-2004: Reload for every entity at scene
-			QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
+			// but particle emitter has it own menu actions
+			else
+			{
+				contextMenu.addSeparator();
+				contextMenu.addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
+				contextMenu.addSeparator();
+				contextMenu.addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
+				contextMenu.addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
+				contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
+			}
 
 			// particle effect
 			DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
@@ -412,20 +427,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 				particleEffectMenu->addAction(QIcon(":/QtIcons/play.png"), "Start", this, SLOT(StartEmitter()));
 				particleEffectMenu->addAction(QIcon(":/QtIcons/stop.png"), "Stop", this, SLOT(StopEmitter()));
 				particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Restart", this, SLOT(RestartEmitter()));
-			}
-
-			// particle emitter
-			DAVA::ParticleEmitter* emitter = DAVA::GetEmitter(entity);
-			if (NULL != emitter)
-			{
-				contextMenu.addSeparator();
-				QMenu *particleEffectMenu = contextMenu.addMenu("Particle Emitter");
-
-				particleEffectMenu->addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
-				particleEffectMenu->addSeparator();
-				particleEffectMenu->addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 			}
 
 			if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
