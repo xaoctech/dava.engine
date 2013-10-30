@@ -71,7 +71,7 @@ void AccelerometeriPhoneImpl::SetAccelerationData(float x, float y, float z)
 
 EventDispatcher * AccelerometeriPhoneImpl::GetEventDispatcher()
 {
-	return &eventDispatcher;
+	return eventDispatcher.Get();
 }
 };
 
