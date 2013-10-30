@@ -234,8 +234,6 @@ bool TextBlock::IsSpriteReady()
 void TextBlock::Prepare()
 {
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
