@@ -249,7 +249,7 @@ private:
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
-	void EnableGPUReloadActions(bool enable);
+	void UpdateConflictingActionsState(bool enable);
 
 	void LoadViewState(SceneEditor2 *scene);
 	void LoadUndoRedoState(SceneEditor2 *scene);
@@ -261,7 +261,7 @@ private:
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
 
-	bool SaveTilemask();
+	bool SaveTilemask(bool forAllTabs = true);
 
 	// Landscape editor specific
 	// TODO: remove later -->
