@@ -48,11 +48,49 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {
+    renderLayerBatchArray->Sort(camera);
+    
+#if CAN_INSTANCE_CHECK
+    RenderBatch * prevBatch = 0;
+    uint32 canBeInstanced = 0;
+    
+    Vector<int32> chain;
+#endif
     uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
+    
     for (uint32 k = 0; k < size; ++k)
     {
-        renderLayerBatchArray->Get(k)->Draw(ownerRenderPass, camera);
+        RenderBatch * batch = renderLayerBatchArray->Get(k);
+
+#if CAN_INSTANCE_CHECK
+        if (prevBatch && batch->GetPolygonGroup() == prevBatch->GetPolygonGroup() && batch->GetMaterial()->GetParent() == prevBatch->GetMaterial()->GetParent())
+        {
+            canBeInstanced++;
+        }else
+        {
+            if (canBeInstanced > 0)
+                chain.push_back(canBeInstanced + 1);
+            canBeInstanced = 0;
+        }
+#endif
+        batch->Draw(ownerRenderPass, camera);
+#if CAN_INSTANCE_CHECK
+        prevBatch = batch;
+#endif
     }
+#if CAN_INSTANCE_CHECK
+    int32 realDrawEconomy = 0;
+    for (uint32 k = 0; k < chain.size(); ++k)
+    {
+        realDrawEconomy += (chain[k] - 1);
+    }
+    
+    Logger::Debug("Pass: %s Layer: %s Size: %d Can be instanced: %d Econ: %d", ownerRenderPass.c_str(), name.c_str(), size, chain.size(), realDrawEconomy);
+    for (uint32 k = 0; k < chain.size(); ++k)
+    {
+        Logger::Debug("%d - %d", k, chain[k]);
+    }
+#endif
 }
 
 const FastName & RenderLayer::GetName()

@@ -155,18 +155,25 @@ namespace DAVA
 			
 		}
 		
+        //uint32 addedToRendering = 0;
 		if (spatialTree)
+        {
 			spatialTree->ProcessClipping(frustum);
+            //addedToRendering = 10000000;
+		}
 		
 		for (uint32 pos = 0; pos < size; ++pos)
 		{
 			RenderObject * renderObject = renderObjectArray[pos];
-			//renderObject->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			
 			uint32 flags = renderObject->GetFlags();
-			if ((flags & RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME) == 0)
+            bool isObjectVisible = ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA);
+
+			if (!isObjectVisible)
 				continue;
 			
+            //addedToRendering ++;
+            
 			uint32 batchCount = renderObject->GetRenderBatchCount();
 			for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 			{
