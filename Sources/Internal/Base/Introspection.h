@@ -213,20 +213,6 @@ namespace DAVA
 	};
 };
 
-// Определение пустой интоспекции внутри класса.
-#define EMPTY_INTROSPECTION(_type) \
-	static const DAVA::InspInfo* TypeInfo() \
-	{ \
-		typedef _type ObjectT; \
-		static DAVA::InspInfo info = DAVA::InspInfo(#_type, NULL, 0); \
-		info.OneTimeMetaSafeSet<_type>(); \
-		return &info; \
-	} \
-	virtual const DAVA::InspInfo* GetTypeInfo() const \
-	{ \
-		return _type::TypeInfo(); \
-	}
-
 // Определение интоспекции внутри класса. См. пример в описании класса IntrospectionInfo
 #define INTROSPECTION(_type, _members) \
 	static const DAVA::InspInfo* TypeInfo() \
