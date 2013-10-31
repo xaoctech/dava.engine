@@ -83,7 +83,7 @@ RenderSystem::RenderSystem()
     renderHierarchy = new RenderHierarchy();
     globalBatchArray = new RenderPassBatchArray();
 	materialSystem = new MaterialSystem();
-	materialSystem->SetDefaultMaterialQuality("Normal"); //TODO: add code setting material quality based on device specs
+	materialSystem->SetDefaultMaterialQuality(FastName("Normal")); //TODO: add code setting material quality based on device specs
 	materialSystem->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
 
 	markedObjects.reserve(100);
