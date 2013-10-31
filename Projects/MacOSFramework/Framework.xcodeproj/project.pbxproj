@@ -695,12 +695,6 @@
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
-		1A75AE691821264A00214921 /* BaseIntrospection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A75AE671821264A00214921 /* BaseIntrospection.cpp */; };
-		1A75AE6A1821264A00214921 /* BaseIntrospection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A75AE671821264A00214921 /* BaseIntrospection.cpp */; };
-		1A75AE6B1821264A00214921 /* BaseIntrospection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A75AE671821264A00214921 /* BaseIntrospection.cpp */; };
-		1A75AE6C1821264A00214921 /* BaseIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A75AE681821264A00214921 /* BaseIntrospection.h */; };
-		1A75AE6D1821264A00214921 /* BaseIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A75AE681821264A00214921 /* BaseIntrospection.h */; };
-		1A75AE6E1821264A00214921 /* BaseIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A75AE681821264A00214921 /* BaseIntrospection.h */; };
 		1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
 		1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
 		1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
@@ -2131,8 +2125,6 @@
 		17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIPluginMacOS.h; sourceTree = "<group>"; };
 		17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIPluginMacOS.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
-		1A75AE671821264A00214921 /* BaseIntrospection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseIntrospection.cpp; sourceTree = "<group>"; };
-		1A75AE681821264A00214921 /* BaseIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseIntrospection.h; sourceTree = "<group>"; };
 		1AD7C36617D895AE00B9977C /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -3010,8 +3002,6 @@
 		E8989AD916BD24E400732C04 /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				1A75AE671821264A00214921 /* BaseIntrospection.cpp */,
-				1A75AE681821264A00214921 /* BaseIntrospection.h */,
 				4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */,
 				4F64848017AFB73C00034454 /* AllocatorFactory.h */,
 				4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */,
@@ -3970,7 +3960,6 @@
 				176DE918174B5561007A983B /* IntrospectionProperty.h in Headers */,
 				176DE919174B5561007A983B /* Mallocator.h in Headers */,
 				176DE91A174B5561007A983B /* Message.h in Headers */,
-				1A75AE6E1821264A00214921 /* BaseIntrospection.h in Headers */,
 				176DE91B174B5561007A983B /* Meta.h in Headers */,
 				176DE91C174B5561007A983B /* ObjectCreator.h in Headers */,
 				176DE91D174B5561007A983B /* ObjectFactory.h in Headers */,
@@ -4442,7 +4431,6 @@
 				E8989EF816BD24E500732C04 /* ColorOnlyEffect.h in Headers */,
 				E8989EFA16BD24E500732C04 /* MultiTextureEffect.h in Headers */,
 				E8989EFC16BD24E500732C04 /* TextureMulColorAlphaTestEffect.h in Headers */,
-				1A75AE6C1821264A00214921 /* BaseIntrospection.h in Headers */,
 				E8989EFE16BD24E500732C04 /* TextureMulColorEffect.h in Headers */,
 				E8989F2616BD24E500732C04 /* Image.h in Headers */,
 				E8989F2816BD24E500732C04 /* ImageConvert.h in Headers */,
@@ -4750,7 +4738,6 @@
 				E898A0B816BD265400732C04 /* MathHelpers.h in Headers */,
 				E898A0B916BD265400732C04 /* Matrix2.h in Headers */,
 				E898A0BA16BD265400732C04 /* Matrix3.h in Headers */,
-				1A75AE6D1821264A00214921 /* BaseIntrospection.h in Headers */,
 				E898A0BB16BD265400732C04 /* Matrix4.h in Headers */,
 				E898A0BC16BD265400732C04 /* NeonMath.h in Headers */,
 				E898A0BD16BD265400732C04 /* OOBBox.h in Headers */,
@@ -5197,7 +5184,6 @@
 				176DEAA1174B5561007A983B /* CorePlatformMacOS.cpp in Sources */,
 				176DEAA2174B5561007A983B /* MainWindowController.mm in Sources */,
 				176DEAA3174B5561007A983B /* NSFullScreenWindow.m in Sources */,
-				1A75AE6B1821264A00214921 /* BaseIntrospection.cpp in Sources */,
 				176DEAA4174B5561007A983B /* OpenGLView.mm in Sources */,
 				176DEAA5174B5561007A983B /* Thread.cpp in Sources */,
 				176DEAA6174B5561007A983B /* ThreadMacOS.mm in Sources */,
@@ -5606,7 +5592,6 @@
 				E8989FD216BD24E500732C04 /* SwitchNode.cpp in Sources */,
 				E8989FD416BD24E500732C04 /* BaseProcessSystem.cpp in Sources */,
 				E8989FD616BD24E500732C04 /* DebugRenderSystem.cpp in Sources */,
-				1A75AE691821264A00214921 /* BaseIntrospection.cpp in Sources */,
 				E8989FDA16BD24E500732C04 /* EventSystem.cpp in Sources */,
 				E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */,
 				E8989FDE16BD24E500732C04 /* LodSystem.cpp in Sources */,
@@ -5887,7 +5872,6 @@
 				E898A23C16BD265400732C04 /* RenderResource.cpp in Sources */,
 				E898A23E16BD265400732C04 /* Shader.cpp in Sources */,
 				E898A23F16BD265400732C04 /* ShaderGL.cpp in Sources */,
-				1A75AE6A1821264A00214921 /* BaseIntrospection.cpp in Sources */,
 				E898A24016BD265400732C04 /* SharedFBO.cpp in Sources */,
 				E898A24116BD265400732C04 /* Texture.cpp in Sources */,
 				E898A24216BD265400732C04 /* TextureDescriptor.cpp in Sources */,
