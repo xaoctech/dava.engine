@@ -41,7 +41,7 @@ AddSkyboxDialog::AddSkyboxDialog(QWidget* parent)
 {
 	controlButton = new QPushButton(this);
 	
-	AddButton(controlButton, true);
+	AddButton(controlButton);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }
