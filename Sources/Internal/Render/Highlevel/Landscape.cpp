@@ -51,6 +51,30 @@ namespace DAVA
 {
 REGISTER_CLASS(Landscape);
 
+const FastName Landscape::PARAM_CAMERA_POSITION = "cameraPosition";
+const FastName Landscape::PARAM_FOG_DENSITY = "fogDensity";
+const FastName Landscape::PARAM_FOG_COLOR = "fogColor";
+const FastName Landscape::PARAM_TEXTURE0_TILING = "texture0Tiling";
+const FastName Landscape::PARAM_TEXTURE1_TILING = "texture1Tiling";
+const FastName Landscape::PARAM_TEXTURE2_TILING = "texture2Tiling";
+const FastName Landscape::PARAM_TEXTURE3_TILING = "texture3Tiling";
+const FastName Landscape::PARAM_TILE_COLOR0 = "tileColor0";
+const FastName Landscape::PARAM_TILE_COLOR1 = "tileColor1";
+const FastName Landscape::PARAM_TILE_COLOR2 = "tileColor2";
+const FastName Landscape::PARAM_TILE_COLOR3 = "tileColor3";
+const FastName Landscape::PARAM_PROP_SPECULAR_COLOR = "prop_specularColor";
+const FastName Landscape::PARAM_SPECULAR_SHININESS = "materialSpecularShininess";
+const FastName Landscape::TEXTURE_SPECULAR_MAP = "specularMap";
+const FastName Landscape::TECHNIQUE_TILEMASK_NAME = "Landscape";
+	
+	const int TEXTURE_NAME_COLOR = 0;
+	const int TEXTURE_NAME_TILEMASK = 1;
+	const int TEXTURE_NAME_TILE0 = 2;
+	const int TEXTURE_NAME_TILE1 = 3;
+	const int TEXTURE_NAME_TILE2 = 4;
+	const int TEXTURE_NAME_TILE3 = 5;
+	
+	
 static FastName TILEMASK_TEXTURE_PROPS_NAMES[] =
 {
 	"colorTexture",
@@ -1138,11 +1162,11 @@ void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
 		currentMaterial = fullTiledMaterial;
     }
 	
-	currentMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+	currentMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	currentMaterial->BindMaterialTechnique("Landscape", camera);*/
 	
-	tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
-	tileMaskMaterial->BindMaterialTechnique("Landscape", camera);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+	tileMaskMaterial->BindMaterialTechnique(TECHNIQUE_TILEMASK_NAME, camera);
     
     prevLodLayer = lodLayer;
 }
@@ -1793,7 +1817,7 @@ void Landscape::SetFogDensity(float32 _fogDensity)
 {
     fogDensity = _fogDensity;
 	
-	tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
 	//fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
 }
 
@@ -1806,7 +1830,7 @@ void Landscape::SetFogColor(const Color & _fogColor)
 {
     fogColor = _fogColor;
 	
-	tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
 	//fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
 }
 
@@ -1858,27 +1882,27 @@ void Landscape::SetupMaterialProperties()
 {
 	if(tileMaskMaterial)
 	{
-		tileMaskMaterial->SetTexture("tileTexture0", textures[TEXTURE_TILE0]);
-		tileMaskMaterial->SetTexture("tileTexture1", textures[TEXTURE_TILE1]);
-		tileMaskMaterial->SetTexture("tileTexture2", textures[TEXTURE_TILE2]);
-		tileMaskMaterial->SetTexture("tileTexture3", textures[TEXTURE_TILE3]);
-		tileMaskMaterial->SetTexture("tileMask", textures[TEXTURE_TILE_MASK]);
-		tileMaskMaterial->SetTexture("colorTexture", textures[TEXTURE_COLOR]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_TILE0], textures[TEXTURE_TILE0]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_TILE1], textures[TEXTURE_TILE1]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_TILE2], textures[TEXTURE_TILE2]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_TILE3], textures[TEXTURE_TILE3]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_TILEMASK], textures[TEXTURE_TILE_MASK]);
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[TEXTURE_NAME_COLOR], textures[TEXTURE_COLOR]);
 		
-		tileMaskMaterial->SetPropertyValue("texture0Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue("texture1Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue("texture2Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue("texture3Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE0_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE1_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE2_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE3_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
 		
-		tileMaskMaterial->SetPropertyValue("tileColor0", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue("tileColor1", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue("tileColor2", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue("tileColor3", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
 		
-		tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC3, 1, &fogColor);
-		tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
 		
-		tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	}
 	
 	/*if(fullTiledMaterial)
@@ -1963,13 +1987,13 @@ uint32 Landscape::GetDrawIndices() const
 	
 void Landscape::SetSpecularColor(const Color& color)
 {
-	tileMaskMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &color);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &color);
 }
 	
 Color Landscape::GetSpecularColor()
 {
 	Color specularColor = Color(1, 1, 1, 1);
-	NMaterialProperty* specularColorProp = tileMaskMaterial->GetMaterialProperty("prop_specularColor");
+	NMaterialProperty* specularColorProp = tileMaskMaterial->GetMaterialProperty(Landscape::PARAM_PROP_SPECULAR_COLOR);
 	
 	if(specularColorProp)
 	{
@@ -1981,13 +2005,13 @@ Color Landscape::GetSpecularColor()
 	
 void Landscape::SetSpecularShininess(const float32& shininess)
 {
-	tileMaskMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &shininess);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
 }
 	
 float32 Landscape::GetSpecularShininess()
 {
 	float32 shininess = 1.0f;
-	NMaterialProperty* shininessProp = tileMaskMaterial->GetMaterialProperty("materialSpecularShininess");
+	NMaterialProperty* shininessProp = tileMaskMaterial->GetMaterialProperty(Landscape::PARAM_SPECULAR_SHININESS);
 	
 	if(shininessProp)
 	{
@@ -2000,7 +2024,7 @@ float32 Landscape::GetSpecularShininess()
 void Landscape::SetSpecularMapPath(const FilePath& path)
 {
 	bool needReload = true;
-	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
+	Texture* specularMapTexture = tileMaskMaterial->GetTexture(TEXTURE_SPECULAR_MAP);
 	if(specularMapTexture)
 	{
 		needReload = (specularMapTexture->GetPathname().GetAbsolutePathname() != path.GetAbsolutePathname());
@@ -2011,7 +2035,7 @@ void Landscape::SetSpecularMapPath(const FilePath& path)
 		Texture* specularMapTexture = Texture::CreateFromFile(path);
 		if(specularMapTexture)
 		{
-			tileMaskMaterial->SetTexture("specularMap", specularMapTexture);
+			tileMaskMaterial->SetTexture(TEXTURE_SPECULAR_MAP, specularMapTexture);
 		}
 	}
 }

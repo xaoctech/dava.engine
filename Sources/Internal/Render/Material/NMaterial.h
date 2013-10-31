@@ -71,6 +71,14 @@ private:
     Map<String, uint32> slotNameMap;
     Map<String, uint32> uniformNameMap;
 };
+	
+class NMaterial;
+class MaterialChangeListener
+{
+public:
+	virtual void ParentChanged(NMaterial* material) = 0;
+	virtual void SystemChanged(NMaterial* material) = 0;
+};
     
 class NMaterialProperty
 {
@@ -107,26 +115,46 @@ public:
 		return prop;
 	}
 };
-	
-    
+	    
 class MaterialTechnique
 {
 public:
+	
+	struct TextureParamCacheEntry
+	{
+		FastName textureName;
+		int32 slot;
+	};
+	
+	struct UniformCacheEntry
+	{
+		Shader::Uniform* uniform;
+		int32 index;
+	};
+		
+public:
+	
     MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
     ~MaterialTechnique();
     
 	void RecompileShader(const FastNameSet& materialDefines);
 
     const FastName & GetShaderName() const { return shaderName; }
-    Shader * GetShader() const { return shader; }
-    RenderState * GetRenderState() const { return renderState; }
-    const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; } 
+    inline Shader * GetShader() const { return shader; }
+    inline RenderState * GetRenderState() const { return renderState; }
+    const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
+	
+	inline Vector<TextureParamCacheEntry>& GetTextureParamsCache() {return textureParamsCache;}
+	inline Vector<UniformCacheEntry>& GetActiveUniformsCache() {return activeUniformsCache;}
     
 protected:
     FastName shaderName;
     Shader * shader;
     RenderState * renderState;
     FastNameSet uniqueDefines;
+	
+	Vector<TextureParamCacheEntry> textureParamsCache;
+	Vector<UniformCacheEntry> activeUniformsCache;
 };
 
 class NMaterial;
@@ -134,14 +162,6 @@ class NMaterialState
 {
 	friend class NMaterial;
 	
-protected:
-	
-	struct TextureBucket
-	{
-		Texture* texture;
-		size_t index;
-	};
-
 public:
 			
 	NMaterialState();
@@ -172,6 +192,12 @@ public:
 	inline NMaterial* GetParent() {return parent;}
 			
 protected:
+	
+	struct TextureBucket
+	{
+		Texture* texture;
+		int32 index;
+	};
 	
 	FastName parentName;
 	FastName materialName;
@@ -227,6 +253,15 @@ public:
     static const FastName TEXTURE_DETAIL;
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
+	
+	static const FastName PARAM_LIGHT_POSITION0;
+	static const FastName PARAM_PROP_AMBIENT_COLOR;
+	static const FastName PARAM_PROP_DIFFUSE_COLOR;
+	static const FastName PARAM_PROP_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_AMBIENT_COLOR;
+	static const FastName PARAM_LIGHT_DIFFUSE_COLOR;
+	static const FastName PARAM_LIGHT_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_INTENSITY0;
     
 	NMaterial();
     virtual ~NMaterial();
@@ -245,7 +280,7 @@ public:
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
     uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light) { lights[index] = light; };
+    void SetLight(uint32 index, Light * light);
     Light * GetLight(uint32 index) { return lights[index]; };
 	inline bool IsDynamicLit() {return materialDynamicLit;}
 	//}END TODO
@@ -278,11 +313,23 @@ public:
 	uint32 GetStateCount() const;
 	NMaterialState* GetState(uint32 index);
 	
-	inline void SetMaterialSystem(MaterialSystem* system) {materialSystem = system;}
+	inline void SetMaterialSystem(MaterialSystem* system)
+	{
+		bool changed = (materialSystem != system);
+		materialSystem = system;
+		
+		if(stateListener && changed)
+		{
+			stateListener->SystemChanged(this);
+		}
+	}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
 	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
 		
 	void SwitchParent(const FastName& newParent);
+	
+	inline MaterialChangeListener* GetChangeListener() {return stateListener;}
+	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}
 	
 protected:
     
@@ -309,6 +356,8 @@ protected:
 	
 	MaterialSystem* materialSystem;
 	
+	MaterialChangeListener* stateListener;
+	
 protected:
 	
 	void ResetParent();
@@ -330,6 +379,9 @@ protected:
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
 		
 	void GenerateName();
+	
+	void BuildTextureParamsCache(MaterialTechnique& technique);
+	void BuildActiveUniformsCache(MaterialTechnique& technique);
 
 //public:
     //INTROSPECTION_EXTEND(NMaterial, DataNode,

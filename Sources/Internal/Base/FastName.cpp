@@ -118,56 +118,6 @@ void FastName::Init(const char * name)
 #endif
 }
 
-const char* FastName::c_str() const
-{
-	DVASSERT(index >= -1 && index < (int)FastNameDB::Instance()->namesTable.size());
-	if(index >= 0)
-	{
-        return FastNameDB::Instance()->namesTable[index];
-	}
-    
-	return NULL;
-}
-
-FastName& FastName::operator=(const FastName &_name)
-{
-	RemRef(index);
-
-	index = _name.index;
-
-#ifdef DAVA_DEBUG
-	debug_str_ptr = _name.debug_str_ptr;
-#endif
-
-	AddRef(index);
-	return *this;
-}
-
-bool FastName::operator==(const FastName &_name) const
-{
-	return index == _name.index;
-}
-
-bool FastName::operator!=(const FastName &_name) const
-{
-	return index != _name.index;
-}
-
-const char* FastName::operator*() const
-{
-    return c_str();
-}
-
-int FastName::Index() const
-{
-	return index;
-}
-	
-bool FastName::IsValid() const
-{
-	return (index >= 0);
-}
-
 void FastName::AddRef(int i) const
 {
 	FastNameDB *db = FastNameDB::Instance();

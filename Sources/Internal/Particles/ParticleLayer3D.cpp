@@ -50,6 +50,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	this->emitter = parent;
 	
 	material = MaterialSystem::CreateNamed();
+	material->SetChangeListener(this);
 	material->SwitchParent("Global.Textured.VertexColor.ParticlesBlend");
 	
 	renderBatch->SetIndices(&indices);
@@ -59,6 +60,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
 ParticleLayer3D::~ParticleLayer3D()
 {
+	material->SetChangeListener(NULL);
 	SafeRelease(renderData);
 	
 	SafeRelease(material);
@@ -466,6 +468,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 {
 	ParticleLayer::SetBlendMode(sFactor, dFactor);
+	UpdateBlendState();
 }
 
 
@@ -475,10 +478,12 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	if (enableFrameBlend)
 	{
 		material->SwitchParent("Global.Textured.VertexColor.ParticlesFrameBlend");
+		UpdateBlendState();
 	}
 	else
 	{
 		material->SwitchParent("Global.Textured.VertexColor.ParticlesBlend");
+		UpdateBlendState();
 		
 		SafeRelease(renderData); //to remove unnecessary vertex streams
 		renderData = new RenderDataObject();
@@ -489,6 +494,19 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	}
 }
 
+void ParticleLayer3D::UpdateBlendState()
+{
+	if(material &&
+	   material->GetParent() != NULL)
+	{
+		MaterialTechnique* technique = material->GetTechnique("ForwardPass");
+		if(technique)
+		{
+			RenderState* rs = technique->GetRenderState();
+			rs->SetBlendMode(srcBlendFactor, dstBlendFactor);
+		}
+	}
+}
 
 bool ParticleLayer3D::IsLong()
 {
@@ -528,4 +546,15 @@ void ParticleLayer3D::CreateInnerEmitter()
 	SafeRelease(this->innerEmitter);
 	this->innerEmitter = new ParticleEmitter3D();
 }
+	
+void ParticleLayer3D::ParentChanged(NMaterial* material)
+{
+	UpdateBlendState();
+}
+	
+void ParticleLayer3D::SystemChanged(NMaterial* material)
+{
+	//do nothing here
+}
+
 };

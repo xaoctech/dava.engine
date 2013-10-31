@@ -304,7 +304,23 @@ public:
 	
 	//virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
-protected:	
+protected:
+	
+	const static FastName PARAM_CAMERA_POSITION;
+	const static FastName PARAM_FOG_DENSITY;
+	const static FastName PARAM_FOG_COLOR;
+	const static FastName PARAM_TEXTURE0_TILING;
+	const static FastName PARAM_TEXTURE1_TILING;
+	const static FastName PARAM_TEXTURE2_TILING;
+	const static FastName PARAM_TEXTURE3_TILING;
+	const static FastName PARAM_TILE_COLOR0;
+	const static FastName PARAM_TILE_COLOR1;
+	const static FastName PARAM_TILE_COLOR2;
+	const static FastName PARAM_TILE_COLOR3;
+	const static FastName PARAM_PROP_SPECULAR_COLOR;
+	const static FastName PARAM_SPECULAR_SHININESS;
+	const static FastName TEXTURE_SPECULAR_MAP;
+	const static FastName TECHNIQUE_TILEMASK_NAME;
     
     class LandscapeQuad
     {
