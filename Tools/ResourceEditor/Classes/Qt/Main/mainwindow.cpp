@@ -314,13 +314,6 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 
 			WaitStop();
 		}
-
-		// Update "*" on tabs
-		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
-		{
-			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			GetSceneWidget()->SceneModifyStatusChanged(scene, false);
-		}
 	}
 	LoadGPUFormat();
 }
