@@ -322,12 +322,11 @@ void StructureSystem::Reload(const DAVA::FilePath &oldModelPath, const DAVA::Fil
 	if(NULL != sceneEditor)
 	{
 		EntityGroup group;
-		DAVA::Vector<DAVA::Entity *> entities;
 
-		sceneEditor->GetChildNodes(entities);
-		for (int i = 0; i < entities.size(); i++)
+		// reload only 1 level childs
+		for (int i = 0; i < sceneEditor->GetChildrenCount(); i++)
 		{
-			DAVA::Entity *entity = entities[i];
+			DAVA::Entity *entity = sceneEditor->GetChild(i);
 			if(NULL != entity->GetCustomProperties())
 			{
 				if(DAVA::FilePath(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER)) == oldModelPath)
