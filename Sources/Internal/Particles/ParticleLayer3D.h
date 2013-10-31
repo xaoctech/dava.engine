@@ -42,7 +42,7 @@ class RenderDataObject;
 class NMaterial;
 class Camera;
 class MaterialSystem;
-class ParticleLayer3D : public ParticleLayer
+class ParticleLayer3D : public ParticleLayer, public MaterialChangeListener
 {
 public:
 	ParticleLayer3D(ParticleEmitter* parent);
@@ -71,6 +71,10 @@ public:
 	virtual void CreateInnerEmitter();
 	
 protected:
+	
+	virtual void ParentChanged(NMaterial* material);
+	virtual void SystemChanged(NMaterial* material);
+	
 	void CalcNonLong(Particle* current,
 							Vector3& topLeft,
 							Vector3& topRight,
@@ -86,9 +90,11 @@ protected:
 
 	// Update the current particle position according to the current emitter type.
 	void UpdateCurrentParticlePosition(Particle* particle);
+	
+	void UpdateBlendState();
 
 	bool isLong;
-
+	
 	RenderDataObject * renderData;
 	Vector<float32> verts;
 	Vector<float32> textures;

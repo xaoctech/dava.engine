@@ -79,6 +79,7 @@ RenderLayerBatchArray::RenderLayerBatchArray()
     : flags(0)
 {
     flags = SORT_ENABLED | SORT_BY_MATERIAL;
+	//renderBatchArray.reserve(4096);
 }
     
 RenderLayerBatchArray::~RenderLayerBatchArray()
