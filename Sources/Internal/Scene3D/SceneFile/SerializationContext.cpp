@@ -152,15 +152,15 @@ namespace DAVA
 					if(mat->GetAlphablend() ||
                        Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
                     {
-                        name = "LodAlphablend";
+                        name = FastName("LodAlphablend");
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = "LodAlphatest";
+                        name = FastName("LodAlphatest");
                     }
                     else
                     {
-                        name = "LodTextured";
+                        name = FastName("LodTextured");
                     }
                     
 					break;
@@ -170,11 +170,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = "LodLightmapAlphatest";
+                        name = FastName("LodLightmapAlphatest");
                     }
                     else
                     {
-                        name = "LodLightmap";
+                        name = FastName("LodLightmap");
                     }
 
 					break;
@@ -185,11 +185,11 @@ namespace DAVA
 					if(mat->GetAlphablend() ||
                        Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
                     {
-                        name = "LodDecalAlphablend";
+                        name = FastName("LodDecalAlphablend");
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = "LodDecalAlphatest";
+                        name = FastName("LodDecalAlphatest");
                     }
 
 					break;
@@ -199,11 +199,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = "LodDetailAlphatest";
+                        name = FastName("LodDetailAlphatest");
                     }
                     else
                     {
-                        name = "LodDetail";
+                        name = FastName("LodDetail");
                     }
                     
 					break;
@@ -213,42 +213,42 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = "LodVertexLitAlphatest";
+                        name = FastName("LodVertexLitAlphatest");
                     }
                     else
                     {
-                        name = "LodVertexLit";
+                        name = FastName("LodVertexLit");
                     }
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
 				{
-					name = "LodTextured";
+					name = FastName("LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
 				{
-					name = "LodTextured";
+					name = FastName("LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
 				{
-					name = "LodTextured";
+					name = FastName("LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 				{
-					name = "LodTextured";
+					name = FastName("LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_SKYBOX:
 				{
-					name = "Skybox";
+					name = FastName("Skybox");
 					break;
 				}
 					
@@ -320,7 +320,7 @@ namespace DAVA
 					targetState->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
 				}
 			}
-			
+						
 			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
 			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
 			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
@@ -329,32 +329,32 @@ namespace DAVA
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
 			{
-				targetState->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+				targetState->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
 				
-				targetState->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-				targetState->SetPropertyValue("prop_diffuseColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-				targetState->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
 			}
 			
-			targetState->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-			targetState->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
+			targetState->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
+			targetState->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
 			
 			if(oldMaterial->isFlatColorEnabled)
 			{
-				targetState->SetPropertyValue("flatColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
+				targetState->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
 			}
 			
 			if(oldMaterial->isTexture0ShiftEnabled)
 			{
-				targetState->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+				targetState->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
 			}
 			
 			if(oldMaterialState)
 			{
 				if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 				{
-					targetState->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-					targetState->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+					targetState->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+					targetState->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
 				}
 			}
 		}
@@ -364,7 +364,7 @@ namespace DAVA
 	
 	NMaterial* SerializationContext::GetNewMaterial(const String& name)
 	{
-		return scene->renderSystem->GetMaterialSystem()->GetMaterial(name);
+		return scene->renderSystem->GetMaterialSystem()->GetMaterial(FastName(name));
 	}
 	
 	MaterialSystem* SerializationContext::GetMaterialSystem()

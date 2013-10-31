@@ -34,6 +34,10 @@ namespace DAVA
 {
 
 REGISTER_CLASS(SpeedTreeLeafBatch);
+	
+static const FastName PARAM_WORLD_TRANSLATE("worldTranslate");
+static const FastName PARAM_WORLD_SCALE("worldScale");
+static const FastName PARAM_TEXTURE0("texture0");
 
 SpeedTreeLeafBatch::SpeedTreeLeafBatch(DAVA::Texture * tex)
 {	
@@ -82,19 +86,19 @@ void SpeedTreeLeafBatch::Draw(Camera * camera)
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->AttachRenderData();
 
-    int32 uniformWorldTranslate = shader->FindUniformIndexByName("worldTranslate");
+    int32 uniformWorldTranslate = shader->FindUniformIndexByName(PARAM_WORLD_TRANSLATE);
     if(uniformWorldTranslate != -1)
     {
         shader->SetUniformValueByIndex(uniformWorldTranslate, finalMatrix.GetTranslationVector());
     }
 
-    int32 uniformTexture0 = shader->FindUniformIndexByName("texture0");
+    int32 uniformTexture0 = shader->FindUniformIndexByName(PARAM_TEXTURE0);
     if(uniformTexture0 != -1)
     {
         shader->SetUniformValueByIndex(uniformTexture0, 0);
     }
     
-    int32 uniformWorldScale = shader->FindUniformIndexByName("worldScale");
+    int32 uniformWorldScale = shader->FindUniformIndexByName(PARAM_WORLD_SCALE);
     if(uniformWorldScale != -1)
     {
         shader->SetUniformValueByIndex(uniformWorldScale, worldTransformPtr->GetScaleVector());

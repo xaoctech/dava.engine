@@ -66,9 +66,9 @@ class FastName
 {
 public:
 	FastName();
-	FastName(const char * name);
+	explicit FastName(const char * name);
 	FastName(const FastName & _name);
-    FastName(const String & name);
+    explicit FastName(const String & name);
 	~FastName();
 
 	void Reset();

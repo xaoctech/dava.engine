@@ -78,7 +78,7 @@ namespace DAVA
 		shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
 		shader->Recompile();
 		
-		uniformShadowColor = shader->FindUniformIndexByName("shadowColor");
+		uniformShadowColor = shader->FindUniformIndexByName(FastName("shadowColor"));
 		DVASSERT(uniformShadowColor != -1);
 	}
 	
