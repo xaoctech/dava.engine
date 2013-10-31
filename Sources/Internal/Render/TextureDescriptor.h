@@ -59,7 +59,7 @@ public:
 		NOTCOMPRESSED_FILE = 0x00EE00EE
 	};
     
-    struct Compression: public BaseIntrospection
+    struct Compression: public InspBase
     {
         int32 format;
         mutable uint32 sourceFileCrc;
@@ -79,7 +79,7 @@ public:
 			)
     };
     
-    struct TextureSettings: public BaseIntrospection
+    struct TextureSettings: public InspBase
     {
     public:
         TextureSettings() { SetDefaultValues(); }
