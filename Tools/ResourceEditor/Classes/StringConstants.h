@@ -107,6 +107,8 @@ namespace ResourceEditor
 
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush\nsize:";
 	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
+	static const String TILEMASK_EDITOR_DRAW_CAPTION		= "Normal draw";
+	static const String TILEMASK_EDITOR_COPY_PASTE_CAPTION	= "Copy/paste";
 	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile texture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MIN		= "tilemask-editor.brush-size.min";
@@ -194,8 +196,8 @@ namespace ResourceEditor
 	static const String SHORTCUT_SET_AVERAGE						= "heightmap-editor.set-average";
 	static const String SHORTCUT_SET_ABS_DROP						= "heightmap-editor.set-abs-drop";
 	static const String SHORTCUT_SET_DROPPER						= "heightmap-editor.set-dropper";
-	static const String SHORTCUT_COPY_PASTE_HEIGHTMAP				= "heightmap-editor.copy-paste.heightmap";
-	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "heightmap-editor.copy-paste.tilemask";
+	static const String SHORTCUT_NORMAL_DRAW_TILEMASK				= "tilemaskeditor-editor.set-normal-draw";
+	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "tilemaskeditor-editor.set-copy-paste";
 
 	static const String NO_LANDSCAPE_ERROR_MESSAGE					= "Error. Check is there landscape at the scene.";
 	static const String INVALID_LANDSCAPE_MESSAGE					= "Error. Check if all necessary properties of the landscape are set.";

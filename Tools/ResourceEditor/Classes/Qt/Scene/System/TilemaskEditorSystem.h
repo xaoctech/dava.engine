@@ -45,7 +45,7 @@ class TilemaskEditorSystem: public DAVA::SceneSystem
 public:
 	enum eTilemaskDrawType
 	{
-		TILEMASK_DRAW_NORMAl = 0,
+		TILEMASK_DRAW_NORMAL = 0,
 		TILEMASK_DRAW_COPY_PASTE,
 		
 		TILEMASK_DRAW_TYPES_COUNT
