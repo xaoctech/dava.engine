@@ -107,6 +107,8 @@ SceneTree::~SceneTree()
 void SceneTree::SetFilter(const QString &filter)
 {
 	filteringProxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+    
+    SyncSelectionToTree();
 }
 
 void SceneTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
