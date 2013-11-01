@@ -27,8 +27,8 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_RENDER_CULLINGSYSTEM_H__
-#define	__DAVAENGINE_RENDER_CULLINGSYSTEM_H__
+#ifndef __DAVAENGINE_RENDER_HIERARCHY_H__
+#define	__DAVAENGINE_RENDER_HIERARCHY_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
@@ -39,36 +39,37 @@ namespace DAVA
 class RenderPassBatchArray;
 class RenderObject;
 class Camera;
-class AbstractSpatialTree;
 	
 class RenderHierarchy
 {
-public:
-    RenderHierarchy();
-    ~RenderHierarchy();
+public:    
+	~RenderHierarchy(){};
     
-    virtual void AddRenderObject(RenderObject * renderObject);
-    virtual void RemoveRenderObject(RenderObject * renderObject);
+    virtual void AddRenderObject(RenderObject * renderObject) = 0;
+    virtual void RemoveRenderObject(RenderObject * renderObject) = 0;
+	virtual void ObjectUpdated(RenderObject * renderObject) = 0;
+    virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray) = 0;
+	
+	virtual void Initialize(){};
+	virtual void Update(){};
+	virtual void DebugDraw(){};
+
+protected:
+	void AddToRender(RenderObject * renderObject);
+	RenderPassBatchArray * currRenderPassBatchArray;
+};
+
+class LinearRenderHierarchy : public RenderHierarchy
+{
+	virtual void AddRenderObject(RenderObject * renderObject);
+	virtual void RemoveRenderObject(RenderObject * renderObject);
 	virtual void ObjectUpdated(RenderObject * renderObject);
-
-    /**
-        Clip objects & update nearest lights for them
-     */
-    virtual void Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray);
-	   
+	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);	
 private:
-	
-	void CreateSpatialTree();
-	void DebugDrawSpatialTree();
-
-private:
-    Vector<RenderObject*> renderObjectArray;
-    Camera * camera;
-	
-	AbstractSpatialTree *spatialTree;
+    Vector<RenderObject*> renderObjectArray;    
 };
     
 } // ns
 
-#endif	/* __DAVAENGINE_RENDER_CULLINGSYSTEM_H__ */
+#endif	/* __DAVAENGINE_RENDER_HIERARCHY_H__ */
 
