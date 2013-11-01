@@ -69,7 +69,7 @@ void SoundComponent::SetEventName(const String & _eventName)
 	DVASSERT(_eventName != "");
 
 	eventName = _eventName;
-	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::SOUND_CHANGED);
+	GlobalEventSystem::Instance()->Event(entity, EventSystem::SOUND_CHANGED);
 }
 
 Component * SoundComponent::Clone(Entity * toEntity)

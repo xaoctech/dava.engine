@@ -137,7 +137,7 @@ void AddSwitchEntityDialog::accept()
 		
 		Entity* affectedEntity = command->GetEntity();
 		scene->selectionSystem->SetSelection(affectedEntity);
-        GlobalEventSystem::Instance()->Event(affectedEntity, affectedEntity->GetComponent(Component::SWITCH_COMPONENT),EventSystem::SWITCH_CHANGED);
+        GlobalEventSystem::Instance()->Event(affectedEntity,EventSystem::SWITCH_CHANGED);
     }
 	
 	BaseAddEntityDialog::accept();

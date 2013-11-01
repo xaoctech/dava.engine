@@ -37,7 +37,7 @@ namespace DAVA
 {
     
 
-void GlobalEventSystem::Event(Entity * entity, Component * component, uint32 event)
+void GlobalEventSystem::Event(Entity * entity, uint32 event)
 {
     if (entity)
     {
@@ -49,31 +49,19 @@ void GlobalEventSystem::Event(Entity * entity, Component * component, uint32 eve
         }
     }
     
-	List<uint32> & list = eventsCache[component];
-	list.push_back(event);
+	List<uint32> & events = eventsCache[entity];
+	events.push_back(event);
 }
-    
+
 void GlobalEventSystem::PerformAllEventsFromCache(Entity * entity)
 {
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
-    {
-        Component * component = entity->GetComponent(k);
-        if (component)
-            PerformAllEventsFromCache(component);
-    }
-}
-    
-void GlobalEventSystem::PerformAllEventsFromCache(Component * component)
-{
-    Map<Component*, List<uint32> >::iterator it = eventsCache.find(component);
+    Map<Entity*, List<uint32> >::iterator it = eventsCache.find(entity);
     if (it != eventsCache.end())
     {
         List<uint32> & list = it->second;
         
         for (List<uint32>::iterator listIt = list.begin(); listIt != list.end();  ++listIt)
         {
-            //component->GetEntity()->GetScene()->ImmediateEvent(component->GetEntity(), component->GetType(), *listIt);
-            Entity * entity = component->GetEntity();
             entity->GetScene()->GetEventSystem()->NotifyAllSystems(entity, *listIt);
         }
         

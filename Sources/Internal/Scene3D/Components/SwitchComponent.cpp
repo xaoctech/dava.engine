@@ -50,7 +50,7 @@ Component * SwitchComponent::Clone(Entity * toEntity)
 {
 	SwitchComponent * newComponent = new SwitchComponent();
 	newComponent->SetEntity(toEntity);
-	GlobalEventSystem::Instance()->Event(toEntity, this, EventSystem::SWITCH_CHANGED);
+	GlobalEventSystem::Instance()->Event(toEntity, EventSystem::SWITCH_CHANGED);
 	return newComponent;
 }
 
@@ -78,7 +78,7 @@ void SwitchComponent::SetSwitchIndex(const int32 & _switchIndex)
 {
 	newSwitchIndex = _switchIndex;
 
-	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::SWITCH_CHANGED);
+	GlobalEventSystem::Instance()->Event(entity, EventSystem::SWITCH_CHANGED);
 }
 
 int32 SwitchComponent::GetSwitchIndex() const
