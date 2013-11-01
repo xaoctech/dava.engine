@@ -615,7 +615,7 @@ void Scene::Draw()
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
-	//renderSystem->DebugDrawHierarchy();
+	renderSystem->DebugDrawHierarchy();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     

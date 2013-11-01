@@ -192,7 +192,15 @@ Camera * RenderSystem::GetCamera()
     
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
-    markedObjects.push_back(renderObject);
+	uint32 flags = renderObject->GetFlags();
+	if (flags&RenderObject::MARKED_FOR_UPDATE) return;
+	flags|=RenderObject::NEED_UPDATE;
+	if ((flags&RenderObject::CLIPPING_VISIBILITY_CRITERIA) == RenderObject::CLIPPING_VISIBILITY_CRITERIA)
+	{
+		markedObjects.push_back(renderObject);
+		flags|=RenderObject::MARKED_FOR_UPDATE;
+	}
+	renderObject->SetFlags(flags);
 }
   
 void RenderSystem::MarkForUpdate(Light * lightNode)
@@ -335,6 +343,7 @@ void RenderSystem::Update(float32 timeElapsed)
 		if (obj->GetTreeNodeIndex()!=INVALID_TREE_NODE_INDEX)
 			renderHierarchy->ObjectUpdated(obj);
 		
+		obj->RemoveFlag(RenderObject::NEED_UPDATE | RenderObject::MARKED_FOR_UPDATE);
         objectBoxesUpdated++;
     }
     markedObjects.clear();

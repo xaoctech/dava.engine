@@ -88,6 +88,8 @@ public:
 		VISIBLE_SWITCH = 1 << 3,
 		ALWAYS_CLIPPING_VISIBLE = 1 << 4,
 		TREE_NODE_NEED_UPDATE = 1 << 5,
+		NEED_UPDATE = 1 << 6,
+		MARKED_FOR_UPDATE = 1 << 7,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
