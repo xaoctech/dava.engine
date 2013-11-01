@@ -306,13 +306,13 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
 	
-	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName("texture0");
+	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture0"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex0, 0);
-	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName("texture1");
+	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture1"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex1, 1);
-	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName("colorType");
+	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("colorType"));
 	tileMaskEditorShader->SetUniformValueByIndex(colorTypeUniform, colorType);
-	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName("intensity");
+	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("intensity"));
 	
 	tileMaskEditorShader->SetUniformValueByIndex(intensityUniform, strength);
 	
