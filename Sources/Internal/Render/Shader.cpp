@@ -88,28 +88,28 @@ namespace DAVA
     
 	FastName uniformStrings[Shader::UNIFORM_COUNT] =
     {
-        "none",
-        "modelViewProjectionMatrix",
-        "modelViewMatrix",
-		"projectionMatrix",
-        "normalMatrix",
-        "flatColor",
-        "globalTime",
+        FastName("none"),
+        FastName("modelViewProjectionMatrix"),
+        FastName("modelViewMatrix"),
+		FastName("projectionMatrix"),
+        FastName("normalMatrix"),
+        FastName("flatColor"),
+        FastName("globalTime"),
     };
 	
 	FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     {
-        "inPosition",
-        "inNormal",
-        "inColor",
-        "inTexCoord0",
-        "inTexCoord1",
-        "inTexCoord2",
-        "inTexCoord3",
-        "inTangent",
-        "inBinormal",
-        "inJointWeight",
-		"inTime"
+        FastName("inPosition"),
+        FastName("inNormal"),
+        FastName("inColor"),
+        FastName("inTexCoord0"),
+        FastName("inTexCoord1"),
+        FastName("inTexCoord2"),
+        FastName("inTexCoord3"),
+        FastName("inTangent"),
+        FastName("inBinormal"),
+        FastName("inJointWeight"),
+		FastName("inTime")
     };
     
 	Shader::eUniform Shader::GetUniformByName(const FastName & name)
@@ -443,9 +443,9 @@ namespace DAVA
 			GLint size;
 			GLenum type;
 			RENDER_VERIFY(glGetActiveAttrib(program, k, 512, 0, &size, &type, attributeName));
-			attributeNames[k] = attributeName;
+			attributeNames[k] = FastName(attributeName);
 			
-			int32 flagIndex = GetAttributeIndexByName(attributeName);
+			int32 flagIndex = GetAttributeIndexByName(attributeNames[k]);
 			vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
 		}
 		
@@ -478,8 +478,9 @@ namespace DAVA
 			Uniform* uniformStruct = GET_UNIFORM(k);
 			new (&uniformStruct->name) FastName(); //VI: FastName is not a POD so a constructor should be called
 			
-			eUniform uniform = GetUniformByName(attributeName);
-			uniformStruct->name = attributeName;
+			FastName attrName(attributeName);
+			eUniform uniform = GetUniformByName(attrName);
+			uniformStruct->name = attrName;
 			uniformStruct->location = glGetUniformLocation(program, uniformStruct->name.c_str());
 			uniformStruct->id = uniform;
 			uniformStruct->type = (eUniformType)type;
@@ -955,7 +956,7 @@ namespace DAVA
 		Logger::FrameworkDebug("Attributes: ");
 		for (int32 k = 0; k < activeAttributes; ++k)
 		{
-			int32 flagIndex = GetAttributeIndexByName(attributeNames[k].c_str());
+			int32 flagIndex = GetAttributeIndexByName(attributeNames[k]);
 			Logger::FrameworkDebug("Attribute: %s location: %d vertexFormatIndex:%x", attributeNames[k].c_str(), vertexFormatAttribIndeces[flagIndex], flagIndex);
 		}
 		
@@ -972,7 +973,7 @@ namespace DAVA
 			//        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
 			//        uniformIDs[k] = uniform;
 			//        uniformTypes[k] = (eUniformType)type;
-			eUniform uniform = GetUniformByName(currentUniform->name.c_str());
+			eUniform uniform = GetUniformByName(currentUniform->name);
 			Logger::FrameworkDebug("uniform: %s(%d) type: %s", currentUniform->name.c_str(), uniform, VertexTypeStringFromEnum(currentUniform->type).c_str());
 		}
 	}
