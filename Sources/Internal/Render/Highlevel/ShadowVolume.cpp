@@ -54,7 +54,7 @@ ShadowVolume::ShadowVolume()
     aabbox = AABBox3(Vector3(), Vector3());
 	
 	NMaterial* mat = MaterialSystem::CreateNamed();
-	mat->SwitchParent("LodShadowVolume");
+	mat->SwitchParent(FastName("LodShadowVolume"));
 	
 	SetMaterial(mat);
 }

@@ -242,6 +242,7 @@
 #include "Scene3D/UserNode.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 //Components
 #include "Scene3D/Components/ComponentHelpers.h"
