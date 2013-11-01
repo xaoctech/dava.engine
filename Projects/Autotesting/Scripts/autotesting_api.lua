@@ -300,6 +300,19 @@ function GetCenter(element)
 	end
 end
 
+function GetText(element)
+	local control
+	if (type(element) == "string") then
+		control = autotestingSystem:FindControl(element)
+		--Log(tostring(control))
+	else
+		control = element
+	end
+	Yield()
+	
+	return autotestingSystem:GetText(control)
+end
+
 function IsVisible(element, background)
 	Yield()
 	local control = autotestingSystem:FindControl(element)
