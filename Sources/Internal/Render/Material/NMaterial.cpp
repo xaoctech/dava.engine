@@ -46,7 +46,10 @@
 namespace DAVA
 {
     
-    
+	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
+	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
+    static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
+	
 	NMaterialDescriptor::NMaterialDescriptor()
 	{
 		
@@ -121,6 +124,23 @@ namespace DAVA
 	const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 	const FastName NMaterial::TEXTURE_DECAL("decal");
 	
+	
+	const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
+	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("prop_ambientColor");
+	const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("prop_diffuseColor");
+	const FastName NMaterial::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
+	const FastName NMaterial::PARAM_LIGHT_AMBIENT_COLOR("materialLightAmbientColor");
+	const FastName NMaterial::PARAM_LIGHT_DIFFUSE_COLOR("materialLightDiffuseColor");
+	const FastName NMaterial::PARAM_LIGHT_SPECULAR_COLOR("materialLightSpecularColor");
+	const FastName NMaterial::PARAM_LIGHT_INTENSITY0("lightIntensity0");
+	const FastName NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS("materialSpecularShininess");
+	const FastName NMaterial::PARAM_FOG_COLOR("fogColor");
+	const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
+	const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
+	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
+	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
+	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
+		
 	static FastName TEXTURE_NAME_PROPS[] = {
 		NMaterial::TEXTURE_ALBEDO,
 		NMaterial::TEXTURE_NORMAL,
@@ -161,7 +181,7 @@ namespace DAVA
 	
 	void NMaterialState::AddMaterialProperty(const String & keyName, const YamlNode * uniformNode)
 	{
-		FastName uniformName = keyName;
+		FastName uniformName(keyName);
 		Logger::Debug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
 		
 		Shader::eUniformType type = Shader::UT_FLOAT;
@@ -287,7 +307,7 @@ namespace DAVA
 	
 	void NMaterialState::SetMaterialName(const String& name)
 	{
-		materialName = name;
+		materialName = FastName(name);
 	}
 	
 	const FastName& NMaterialState::GetMaterialName() const
@@ -375,8 +395,6 @@ namespace DAVA
 				bucket = currentMaterial->textures.GetValue(textureFastName);
 				if (bucket)
 				{
-					// TODO: Find effective way to store parent techniques in children, to avoid cycling through them
-					// As a first decision we can use just store of this technique in child material map.
 					break;
 				}
 				currentMaterial = currentMaterial->parent;
@@ -410,7 +428,7 @@ namespace DAVA
 	void NMaterialState::SetParentToState(NMaterial* material)
 	{
 		parent = SafeRetain(material);
-		parentName = (NULL == parent) ? "" : parent->GetMaterialName();
+		parentName = (NULL == parent) ? FastName("") : parent->GetMaterialName();
 	}
 	
 	void NMaterialState::AddChildToState(NMaterial* material)
@@ -509,7 +527,7 @@ namespace DAVA
 		const YamlNode * parentNameNode = stateNode->Get("Parent");
 		if (parentNameNode)
 		{
-			parentName = parentNameNode->AsString();
+			parentName = FastName(parentNameNode->AsString());
 		}
 
 		
@@ -610,7 +628,7 @@ namespace DAVA
 				FastName renderPassName;
 				if (renderPassNameNode)
 				{
-					renderPassName = renderPassNameNode->AsString();
+					renderPassName = FastName(renderPassNameNode->AsString());
 				}
 				
 				MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
@@ -684,6 +702,7 @@ namespace DAVA
 	effectiveLayers(8),
 	states(4)
 	{
+		stateListener = NULL;
 		activeTechnique = 0;
 		ready = false;
 		materialDynamicLit = false;
@@ -745,7 +764,7 @@ namespace DAVA
 				
 				if(materialStateNameNode)
 				{
-					String materialStateName = materialStateNameNode->AsString();
+					FastName materialStateName(materialStateNameNode->AsString());
 					
 					if(!states.IsKey(materialStateName))
 					{
@@ -800,12 +819,22 @@ namespace DAVA
 		{
 			activeTechnique = GetTechnique(techniqueName);
 			if (activeTechnique)
+			{
 				activeTechniqueName = techniqueName;
+			}
+			else
+			{
+				DVASSERT(activeTechnique);
+				return;
+			}
 		}
 		
 		if(!ready)
 		{
 			Rebuild(false);
+			
+			BuildTextureParamsCache(*activeTechnique);
+			BuildActiveUniformsCache(*activeTechnique);
 		}
 		
 		SetupPerFrameProperties(camera);
@@ -814,56 +843,40 @@ namespace DAVA
 				
 		Shader * shader = activeTechnique->GetShader();
 		
-		//VI: need to set textures BEFORE FlushState since they will be bind there
-		uint32 uniformCount = shader->GetUniformCount();
-		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = activeTechnique->GetTextureParamsCache();
+		size_t textureCount = cache.size();
+		for(size_t i = 0; i < textureCount; ++i)
 		{
-			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
-			if (uniform->id == Shader::UNIFORM_NONE)
-			{
-				if(uniform->type == Shader::UT_SAMPLER_2D ||
-				   uniform->type == Shader::UT_SAMPLER_CUBE)
-				{
-					//TODO: add texture -> textureSlot mapping cache
-					Texture* texture = GetTexture(uniform->name);
-					NMaterialProperty* slotProp = GetMaterialProperty(uniform->name);
-					DVASSERT(slotProp); //material has wrong setup if there's no property for sampler
-					
-					if(slotProp &&
-					   texture)
-					{
-						uint32 textureSlot = *(int32*)slotProp->data;
-						renderState->SetTexture(texture, textureSlot);
-					}
-				}
-			}
+			MaterialTechnique::TextureParamCacheEntry& textureEntry = cache[i];
+			Texture* texture = GetTexture(textureEntry.textureName);
+			renderState->SetTexture(texture, textureEntry.slot);
 		}
-
+		
 		renderState->SetShader(shader);
 		
 		RenderManager::Instance()->FlushState(renderState);
 		
 		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
-		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		Vector<MaterialTechnique::UniformCacheEntry>& uniformsCache = activeTechnique->GetActiveUniformsCache();
+		size_t uniformCount = uniformsCache.size();
+		for(size_t i = 0; i < uniformCount; ++i)
 		{
-			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
-			if (Shader::UNIFORM_NONE == uniform->id  ||
-				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+			MaterialTechnique::UniformCacheEntry& uniformEntry = uniformsCache[i];
+			
+			NMaterial * currentMaterial = this;
+			
+			while(currentMaterial != 0)
 			{
-				NMaterial * currentMaterial = this;
-				
-				while(currentMaterial != 0)
+				NMaterialProperty * property = currentMaterial->materialProperties.GetValue(uniformEntry.uniform->name);
+				if (property)
 				{
-					NMaterialProperty * property = currentMaterial->materialProperties.GetValue(uniform->name);
-					if (property)
-					{
-						shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data, property->GetDataSize());
-						break;
-					}
-					currentMaterial = currentMaterial->parent;
+					shader->SetUniformValueByIndex(uniformEntry.index, uniformEntry.uniform->type, uniformEntry.uniform->size, property->data, property->GetDataSize());
+					break;
 				}
+				currentMaterial = currentMaterial->parent;
 			}
-		}
+
+		}		
 	}
 	
 	void NMaterial::Draw(PolygonGroup * polygonGroup)
@@ -1057,12 +1070,17 @@ namespace DAVA
 		
 		materialDynamicLit = (parent) ? parent->IsDynamicLit() : false;
 		materialDynamicLit = materialDynamicLit ||
-							inheritedDefines.IsKey("VERTEX_LIT") ||
-							inheritedDefines.IsKey("PIXEL_LIT") ||
-							effectiveLayers.IsKey("ShadowVolumeRenderLayer");
+							inheritedDefines.IsKey(DEFINE_VERTEX_LIT) ||
+							inheritedDefines.IsKey(DEFINE_PIXEL_LIT) ||
+							effectiveLayers.IsKey(LAYER_SHADOW_VOLUME);
 		//END TODO}
 		
 		NotifyChildrenOnChange();
+		
+		if(stateListener)
+		{
+			stateListener->ParentChanged(this);
+		}
 	}
 	
 	void NMaterial::NotifyChildrenOnChange()
@@ -1086,6 +1104,16 @@ namespace DAVA
 		}
 	}
 		
+	
+	static const FastName PARAM_LIGHT_POSITION0;
+	static const FastName PARAM_PROP_AMBIENT_COLOR;
+	static const FastName PARAM_PROP_DIFFUSE_COLOR;
+	static const FastName PARAM_PROP_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_AMBIENT_COLOR;
+	static const FastName PARAM_LIGHT_DIFFUSE_COLOR;
+	static const FastName PARAM_LIGHT_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_INTENSITY0;
+
 	void NMaterial::SetupPerFrameProperties(Camera* camera)
 	{
 		//VI: this is vertex or pixel lit material
@@ -1093,12 +1121,24 @@ namespace DAVA
 		//VI: TODO: deal with multiple lights
 		if(camera && materialDynamicLit && lights[0])
 		{
-			NMaterialProperty* propAmbientColor = GetMaterialProperty("prop_ambientColor");
-			NMaterialProperty* propDiffuseColor = GetMaterialProperty("prop_diffuseColor");
-			NMaterialProperty* propSpecularColor = GetMaterialProperty("prop_specularColor");
-			
 			const Matrix4 & matrix = camera->GetMatrix();
 			Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
+			
+			SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC3, 1, lightPosition0InCameraSpace.data);
+		}
+	}
+	
+	void NMaterial::SetLight(uint32 index, Light * light)
+	{
+		bool changed = (light != lights[index]);
+		lights[index] = light;
+		
+		if(changed && materialDynamicLit && lights[0])
+		{
+			NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+			NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+			NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+			
 			Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color(1, 1, 1, 1);
 			Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color(1, 1, 1, 1);
 			Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color(1, 1, 1, 1);
@@ -1108,13 +1148,12 @@ namespace DAVA
 			materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
 			materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
 			
-			SetPropertyValue("lightPosition0", Shader::UT_FLOAT_VEC3, 1, lightPosition0InCameraSpace.data);
-			
-			SetPropertyValue("materialLightAmbientColor", Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-			SetPropertyValue("materialLightDiffuseColor", Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-			SetPropertyValue("materialLightSpecularColor", Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-			SetPropertyValue("lightIntensity0", Shader::UT_FLOAT, 1, &intensity);
+			SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+			SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+			SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+			SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
 		}
+		
 	}
 	
 	void NMaterial::Save(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1158,7 +1197,7 @@ namespace DAVA
 				{
 					NMaterialState* matState = new NMaterialState();
 					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
-					states.Insert(it->first, matState);
+					states.Insert(FastName(it->first), matState);
 				}
 			}
 		}
@@ -1255,8 +1294,8 @@ namespace DAVA
 								KeyedArchive * archive,
 								SerializationContext * serializationContext)
 	{
-		materialState.parentName = archive->GetString("parentName");
-		materialState.materialName = archive->GetString("materialName");
+		materialState.parentName = FastName(archive->GetString("parentName"));
+		materialState.materialName = FastName(archive->GetString("materialName"));
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
 		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
@@ -1272,7 +1311,7 @@ namespace DAVA
 			
 			const uint8* ptr = propVariant->AsByteArray();
 			
-			materialState.SetPropertyValue(it->first, (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
+			materialState.SetPropertyValue(FastName(it->first), (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
 		}
 		
 		const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
@@ -1301,7 +1340,7 @@ namespace DAVA
 				tex = Texture::CreateFromFile(texturePath);
 			}
 			
-			materialState.SetTexture(it->first, tex);
+			materialState.SetTexture(FastName(it->first), tex);
 		}
 		
 		const Map<String, VariantType*>& techniquesMap = archive->GetArchive("techniques")->GetArchieveData();
@@ -1321,8 +1360,8 @@ namespace DAVA
 			RenderState* renderState = new RenderState();
 			renderState->Deserialize(renderStateArchive, serializationContext);
 			
-			MaterialTechnique* technique = new MaterialTechnique(shaderName, techniqueDefines, renderState);
-			materialState.AddMaterialTechnique(renderPassName, technique);
+			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
+			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
 		}		
 	}
 	
@@ -1333,7 +1372,7 @@ namespace DAVA
 			it != setData.end();
 			++it)
 		{
-			targetSet.Insert(it->first);
+			targetSet.Insert(FastName(it->first));
 		}
 	}
 	
@@ -1504,6 +1543,60 @@ namespace DAVA
 		else
 		{
 			parentName = newParent;
+		}
+	}
+	
+	void NMaterial::BuildTextureParamsCache(MaterialTechnique& technique)
+	{
+		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = technique.GetTextureParamsCache();
+		cache.clear();
+		Shader * shader = technique.GetShader();
+		
+		uint32 uniformCount = shader->GetUniformCount();
+		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		{
+			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+			if (uniform->id == Shader::UNIFORM_NONE)
+			{
+				if(uniform->type == Shader::UT_SAMPLER_2D ||
+				   uniform->type == Shader::UT_SAMPLER_CUBE)
+				{
+					NMaterialProperty* slotProp = GetMaterialProperty(uniform->name);
+					DVASSERT(slotProp); //material has wrong setup if there's no property for sampler
+					
+					if(slotProp)
+					{
+						MaterialTechnique::TextureParamCacheEntry entry;
+						entry.textureName = uniform->name;
+						entry.slot = *(int32*)slotProp->data;
+						
+						cache.push_back(entry);
+					}
+				}
+			}
+		}
+	}
+	
+	void NMaterial::BuildActiveUniformsCache(MaterialTechnique& technique)
+	{
+		Vector<MaterialTechnique::UniformCacheEntry>& cache = technique.GetActiveUniformsCache();
+		cache.clear();
+		
+		Shader * shader = technique.GetShader();
+		
+		uint32 uniformCount = shader->GetUniformCount();
+		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		{
+			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+			if (Shader::UNIFORM_NONE == uniform->id  ||
+				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+			{
+				MaterialTechnique::UniformCacheEntry entry;
+				entry.uniform = uniform;
+				entry.index = uniformIndex;
+				
+				cache.push_back(entry);
+			}
 		}
 	}
 };

@@ -660,8 +660,11 @@ inline eBlendMode RenderState::GetDestBlend()
 // STATE_TEXTURE
 inline void RenderState::SetTexture(Texture *texture, uint32 textureLevel)
 {
-	SafeRelease(currentTexture[textureLevel]);
-    currentTexture[textureLevel] = SafeRetain(texture);
+	if(texture != currentTexture[textureLevel])
+	{
+		SafeRelease(currentTexture[textureLevel]);
+		currentTexture[textureLevel] = SafeRetain(texture);
+	}
 }
 
 inline Texture * RenderState::GetTexture(uint32 textureLevel)

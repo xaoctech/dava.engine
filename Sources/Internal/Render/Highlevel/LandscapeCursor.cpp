@@ -43,9 +43,9 @@ LandscapeCursor::LandscapeCursor()
 	shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
 	shader->Recompile();
 
-	uniformTexture = shader->FindUniformIndexByName("texture0");
-	uniformPosition = shader->FindUniformIndexByName("position");
-	uniformScale = shader->FindUniformIndexByName("scale");
+	uniformTexture = shader->FindUniformIndexByName(FastName("texture0"));
+	uniformPosition = shader->FindUniformIndexByName(FastName("position"));
+	uniformScale = shader->FindUniformIndexByName(FastName("scale"));
 }
 
 void LandscapeCursor::Prepare()
