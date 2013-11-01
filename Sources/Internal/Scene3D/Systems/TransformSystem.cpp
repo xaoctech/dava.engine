@@ -91,7 +91,7 @@ void TransformSystem::HierahicFindUpdatableTransform(Entity * entity, bool force
 		if(transform->parentMatrix)
 		{
 			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
-            GlobalEventSystem::Instance()->Event(entity, transform, EventSystem::WORLD_TRANSFORM_CHANGED);
+            GlobalEventSystem::Instance()->Event(entity, EventSystem::WORLD_TRANSFORM_CHANGED);
 		}
 	}
 

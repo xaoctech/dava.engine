@@ -51,21 +51,21 @@ namespace DAVA
 {
 REGISTER_CLASS(Landscape);
 
-const FastName Landscape::PARAM_CAMERA_POSITION = "cameraPosition";
-const FastName Landscape::PARAM_FOG_DENSITY = "fogDensity";
-const FastName Landscape::PARAM_FOG_COLOR = "fogColor";
-const FastName Landscape::PARAM_TEXTURE0_TILING = "texture0Tiling";
-const FastName Landscape::PARAM_TEXTURE1_TILING = "texture1Tiling";
-const FastName Landscape::PARAM_TEXTURE2_TILING = "texture2Tiling";
-const FastName Landscape::PARAM_TEXTURE3_TILING = "texture3Tiling";
-const FastName Landscape::PARAM_TILE_COLOR0 = "tileColor0";
-const FastName Landscape::PARAM_TILE_COLOR1 = "tileColor1";
-const FastName Landscape::PARAM_TILE_COLOR2 = "tileColor2";
-const FastName Landscape::PARAM_TILE_COLOR3 = "tileColor3";
-const FastName Landscape::PARAM_PROP_SPECULAR_COLOR = "prop_specularColor";
-const FastName Landscape::PARAM_SPECULAR_SHININESS = "materialSpecularShininess";
-const FastName Landscape::TEXTURE_SPECULAR_MAP = "specularMap";
-const FastName Landscape::TECHNIQUE_TILEMASK_NAME = "Landscape";
+const FastName Landscape::PARAM_CAMERA_POSITION("cameraPosition");
+const FastName Landscape::PARAM_FOG_DENSITY("fogDensity");
+const FastName Landscape::PARAM_FOG_COLOR("fogColor");
+const FastName Landscape::PARAM_TEXTURE0_TILING("texture0Tiling");
+const FastName Landscape::PARAM_TEXTURE1_TILING("texture1Tiling");
+const FastName Landscape::PARAM_TEXTURE2_TILING("texture2Tiling");
+const FastName Landscape::PARAM_TEXTURE3_TILING("texture3Tiling");
+const FastName Landscape::PARAM_TILE_COLOR0("tileColor0");
+const FastName Landscape::PARAM_TILE_COLOR1("tileColor1");
+const FastName Landscape::PARAM_TILE_COLOR2("tileColor2");
+const FastName Landscape::PARAM_TILE_COLOR3("tileColor3");
+const FastName Landscape::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
+const FastName Landscape::PARAM_SPECULAR_SHININESS("materialSpecularShininess");
+const FastName Landscape::TEXTURE_SPECULAR_MAP("specularMap");
+const FastName Landscape::TECHNIQUE_TILEMASK_NAME("Landscape");
 	
 	const int TEXTURE_NAME_COLOR = 0;
 	const int TEXTURE_NAME_TILEMASK = 1;
@@ -77,46 +77,46 @@ const FastName Landscape::TECHNIQUE_TILEMASK_NAME = "Landscape";
 	
 static FastName TILEMASK_TEXTURE_PROPS_NAMES[] =
 {
-	"colorTexture",
-	"tileMask",
-	"tileTexture0",
-	"tileTexture1",
-	"tileTexture2",
-	"tileTexture3",
-	""
+	FastName("colorTexture"),
+	FastName("tileMask"),
+	FastName("tileTexture0"),
+	FastName("tileTexture1"),
+	FastName("tileTexture2"),
+	FastName("tileTexture3"),
+	FastName("")
 };
 
 static FastName TILEMASK_TILING_PROPS_NAMES[] =
 {
-	"",
-	"",
-	"texture0Tiling",
-	"texture1Tiling",
-	"texture2Tiling",
-	"texture3Tiling",
-	""
+	FastName(""),
+	FastName(""),
+	FastName("texture0Tiling"),
+	FastName("texture1Tiling"),
+	FastName("texture2Tiling"),
+	FastName("texture3Tiling"),
+	FastName("")
 };
 
 static FastName TILEMASK_COLOR_PROPS_NAMES[] =
 {
-	"",
-	"",
-	"tileColor0",
-	"tileColor1",
-	"tileColor2",
-	"tileColor3",
-	""
+	FastName(""),
+	FastName(""),
+	FastName("tileColor0"),
+	FastName("tileColor1"),
+	FastName("tileColor2"),
+	FastName("tileColor3"),
+	FastName("")
 };
 	
 static FastName FULL_TILED_TEXTURE_PROPS_NAMES[] =
 {
-	"sampler2d",
-	"tileMask",
-	"tileTexture0",
-	"tileTexture1",
-	"tileTexture2",
-	"tileTexture3",
-	""
+	FastName("sampler2d"),
+	FastName("tileMask"),
+	FastName("tileTexture0"),
+	FastName("tileTexture1"),
+	FastName("tileTexture2"),
+	FastName("tileTexture3"),
+	FastName("")
 };
 
 	
@@ -154,7 +154,7 @@ Landscape::Landscape()
 	//fullTiledMaterial = NULL;
 	
 	tileMaskMaterial = MaterialSystem::CreateNamed();
-	tileMaskMaterial->SwitchParent("Global.Landscape.TileMask");
+	tileMaskMaterial->SwitchParent(FastName("Global.Landscape.TileMask"));
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
@@ -162,7 +162,7 @@ Landscape::Landscape()
 	//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
-	tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
+	tileMaskMaterial->AddMaterialDefine(FastName("SPECULAR_LAND"));
 #endif
 	
 	LandscapeChunk * chunk = new LandscapeChunk(this);
@@ -1772,11 +1772,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	{
 		if(curContainsDetailMask)
 		{
-			tileMaskMaterial->AddMaterialDefine("DETAILMASK");
+			tileMaskMaterial->AddMaterialDefine(FastName("DETAILMASK"));
 		}
 		else
 		{
-			tileMaskMaterial->RemoveMaterialDefine("DETAILMASK");
+			tileMaskMaterial->RemoveMaterialDefine(FastName("DETAILMASK"));
 		}
 		
 		tileMaskMaterial->Rebuild();

@@ -35,8 +35,8 @@
 #include "SceneEditor/EditorSettings.h"
 #include <QLabel>
 #include "Classes/Commands2/EntityAddCommand.h"
-
 #include "ui_BaseAddEntityDialog.h"
+
 
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 		:BaseAddEntityDialog(parent)
@@ -137,8 +137,8 @@ void AddSwitchEntityDialog::accept()
 		
 		Entity* affectedEntity = command->GetEntity();
 		scene->selectionSystem->SetSelection(affectedEntity);
-		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
-	}
+        GlobalEventSystem::Instance()->Event(affectedEntity,EventSystem::SWITCH_CHANGED);
+    }
 	
 	BaseAddEntityDialog::accept();
 }

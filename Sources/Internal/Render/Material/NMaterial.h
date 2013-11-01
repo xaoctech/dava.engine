@@ -262,6 +262,13 @@ public:
 	static const FastName PARAM_LIGHT_DIFFUSE_COLOR;
 	static const FastName PARAM_LIGHT_SPECULAR_COLOR;
 	static const FastName PARAM_LIGHT_INTENSITY0;
+	static const FastName PARAM_MATERIAL_SPECULAR_SHININESS;
+	static const FastName PARAM_FOG_COLOR;
+	static const FastName PARAM_FOG_DENSITY;
+	static const FastName PARAM_FLAT_COLOR;
+	static const FastName PARAM_TEXTURE0_SHIFT;
+	static const FastName PARAM_UV_OFFSET;
+	static const FastName PARAM_UV_SCALE;
     
 	NMaterial();
     virtual ~NMaterial();

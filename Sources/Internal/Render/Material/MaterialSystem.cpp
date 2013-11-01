@@ -240,7 +240,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		for(size_t i = 0; i < rootCount; ++i)
 		{
 			MaterialData& currentData = roots[i];
-			LoadMaterial(currentData.name,
+			LoadMaterial(FastName(currentData.name),
 						 currentData.path,
 						 NULL,
 						 currentData.isLod,
@@ -250,7 +250,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		for(size_t i = 0; i < lodNodes.size(); ++i)
 		{
 			MaterialData& currentData = lodNodes[i];
-			LoadMaterial(currentData.name,
+			LoadMaterial(FastName(currentData.name),
 						 currentData.path,
 						 NULL,
 						 currentData.isLod,
@@ -263,7 +263,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 		return false;
 	}
 	
-	defaultMaterial = SafeRetain(GetMaterial(defaultParentName));
+	defaultMaterial = SafeRetain(GetMaterial(FastName(defaultParentName)));
 	DVASSERT(defaultMaterial);
 	
 	return true;
@@ -295,7 +295,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			for(size_t i = 0; i < materialCount; ++i)
 			{
 				MaterialData& currentData = materials[i];
-				LoadMaterial(currentData.name,
+				LoadMaterial(FastName(currentData.name),
 							 currentData.path,
 							 material,
 							 currentData.isLod,
@@ -331,7 +331,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			while(true)
 			{
 				String uniqueName = Format("%s.%d", baseName.c_str(), i);
-				if(!materials.IsKey(uniqueName.c_str()))
+				if(!materials.IsKey(FastName(uniqueName.c_str())))
 				{
 					material->SetMaterialName(uniqueName);
 					break;

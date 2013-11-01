@@ -178,7 +178,7 @@ void LandscapeRenderer::SetMaterial(DAVA::NMaterial* material)
 	SafeRelease(landscapeMaterial);
 
 	landscapeMaterial = SafeRetain(material);
-	shader = SafeRetain(landscapeMaterial->GetTechnique("Landscape.FullTiled")->GetShader());
+	shader = SafeRetain(landscapeMaterial->GetTechnique(FastName("Landscape.FullTiled"))->GetShader());
 	
 	bool isFogEnabled = false;
     
@@ -191,8 +191,8 @@ void LandscapeRenderer::SetMaterial(DAVA::NMaterial* material)
     
     if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
-        uniformFogColor = shader->FindUniformIndexByName("fogColor");
-        uniformFogDensity = shader->FindUniformIndexByName("fogDensity");
+        uniformFogColor = shader->FindUniformIndexByName(FastName("fogColor"));
+        uniformFogDensity = shader->FindUniformIndexByName(FastName("fogDensity"));
     }
     else
     {

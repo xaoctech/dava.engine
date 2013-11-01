@@ -124,6 +124,7 @@ void SceneInfo::Initialize3DDrawSection()
 
     AddChild("ArraysCalls", header);
     AddChild("ElementsCalls",  header);
+    AddChild("ShaderBindCount",  header);
     AddChild("PointsList", header);
     AddChild("LineList", header);
     AddChild("LineStrip", header);
@@ -142,6 +143,7 @@ void SceneInfo::Refresh3DDrawInfo()
     
     SetChild("ArraysCalls", renderStats.drawArraysCalls, header);
     SetChild("ElementsCalls", renderStats.drawElementsCalls, header);
+    SetChild("ShaderBindCount", renderStats.shaderBindCount, header);
     SetChild("PointsList", renderStats.primitiveCount[PRIMITIVETYPE_POINTLIST], header);
     SetChild("LineList", renderStats.primitiveCount[PRIMITIVETYPE_LINELIST], header);
     SetChild("LineStrip", renderStats.primitiveCount[PRIMITIVETYPE_LINESTRIP], header);

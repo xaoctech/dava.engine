@@ -61,9 +61,13 @@ public:
 	void Insert(const K &key, const V &value);
 	void Remove(const K &key);
 	void Clear();
-
-	V GetValue(const K &key) const;
-	V operator[](const K &key) const;
+    
+	V & GetValue(const K &key);
+	const V & GetValue(const K &key) const;
+    
+	V & operator[](const K &key);
+    const V & operator[] (const K & key) const;
+    
 	HashMap<K, V>& operator=(const HashMap<K, V> &hm);
 
 	void Resize(size_t newSize);
@@ -107,7 +111,7 @@ protected:
 	V defaultV;
 
 	inline size_t GetIndex(const K &key) const;
-	inline const HashMapItem* GetItem(const K &key) const;
+	inline HashMapItem* GetItem(const K &key) const;
 	inline void InsertItem(HashMapItem* item);
 
 protected:
@@ -215,23 +219,41 @@ bool HashMap<K, V>::IsKey(const K &key) const
 {
 	return (NULL != GetItem(key));
 }
-
+    
 template <typename K, typename V>
-V HashMap<K, V>::GetValue(const K &key) const
+V & HashMap<K, V>::GetValue(const K &key)
 {
-	const HashMapItem* item = GetItem(key);
-	if(NULL != item)
-	{
-		return item->value;
-	}
-
-	return defaultV;
+    HashMapItem* item = GetItem(key);
+    if(NULL != item)
+    {
+        return item->value;
+    }
+    
+    return defaultV;
+}
+    
+template <typename K, typename V>
+const V & HashMap<K, V>::GetValue(const K &key) const
+{
+    const HashMapItem* item = GetItem(key);
+    if(NULL != item)
+    {
+        return item->value;
+    }
+    
+    return defaultV;
 }
 
 template <typename K, typename V>
-V HashMap<K, V>::operator[](const K &key) const
+V & HashMap<K, V>::operator[](const K &key)
 {
 	return GetValue(key);
+}
+    
+template <typename K, typename V>
+const V & HashMap<K, V>::operator[](const K &key) const
+{
+    return GetValue(key);
 }
 
 template <typename K, typename V>
@@ -340,7 +362,7 @@ inline size_t HashMap<K, V>::GetIndex(const K &key) const
 }
 
 template <typename K, typename V>
-inline const typename HashMap<K, V>::HashMapItem* HashMap<K, V>::GetItem(const K &key) const
+inline typename HashMap<K, V>::HashMapItem* HashMap<K, V>::GetItem(const K &key) const
 {
 	size_t index = GetIndex(key);
 
