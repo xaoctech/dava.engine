@@ -30,6 +30,7 @@
 
 #include "Scene3D/Systems/EventSystem.h"
 #include "Entity/SceneSystem.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -52,6 +53,20 @@ void EventSystem::UnregisterSystemForEvent(SceneSystem * system, uint32 event)
 			return;
 		}
 	}
+}
+    
+void EventSystem::NotifyAllSystems(Entity * entity, uint32 event)
+{
+	Vector<SceneSystem*> & container = registeredSystems[event];
+	uint32 size = container.size();
+    uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        SceneSystem * system = container[i];
+        uint32 requiredComponentFlags = system->GetRequiredComponents();
+        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
+            system->ImmediateEvent(entity, event);
+    }
 }
 
 void EventSystem::NotifySystem(SceneSystem * system, Entity * entity, uint32 event)

@@ -106,9 +106,10 @@ public:
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
-	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
+	//virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
+    //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
     TransformSystem * transformSystem;
     RenderUpdateSystem * renderUpdateSystem;
 	LodSystem * lodSystem;
