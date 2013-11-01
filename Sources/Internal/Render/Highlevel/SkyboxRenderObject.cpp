@@ -236,6 +236,7 @@ namespace DAVA
 		
 		skyboxRenderObject->type = type;
 		skyboxRenderObject->flags = flags;
+		skyboxRenderObject->RemoveFlag(RenderObject::MARKED_FOR_UPDATE);
 		skyboxRenderObject->debugFlags = debugFlags;
 		skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
 		

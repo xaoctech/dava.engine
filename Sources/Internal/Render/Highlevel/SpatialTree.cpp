@@ -475,13 +475,10 @@ void QuadTree::Update()
 	{
 		RenderObject *object = *it;		
 		it = dirtyObjects.erase(it);		
-		if ((object->GetFlags()&RenderObject::CLIPPING_VISIBILITY_CRITERIA)!=RenderObject::CLIPPING_VISIBILITY_CRITERIA) //object is invisible anyway - update it later
-		{
-			dirtyObjects.push_back(object);
-		}
-		else
-		{
-			object->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);
+		//as now invisible render objects are updeted after becoming visible no no need to store them in this list for all that time
+		object->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);		
+		if ((object->GetFlags()&RenderObject::CLIPPING_VISIBILITY_CRITERIA)==RenderObject::CLIPPING_VISIBILITY_CRITERIA) 		
+		{			
 			uint16 startNode = object->GetTreeNodeIndex();
 			if ((!startNode)&&(!worldBox.IsInside(object->GetWorldBoundingBox())))
 				continue; //object is out of world - leave it in root node
