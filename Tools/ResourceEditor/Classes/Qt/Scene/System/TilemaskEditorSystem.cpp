@@ -57,7 +57,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	toolSpriteUpdated(false)
 ,	needCreateUndo(false)
 ,	toolImageIndex(0)
-,	drawingType(TILEMASK_DRAW_COPY_PASTE)
+,	drawingType(TILEMASK_DRAW_NORMAL)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -168,7 +168,7 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 			Vector2 toolSize = Vector2(cursorSize, cursorSize);
 			Vector2 toolPos = cursorPosition - toolSize / 2.f;
 
-			if (drawingType == TILEMASK_DRAW_NORMAl)
+			if (activeDrawingType == TILEMASK_DRAW_NORMAL)
 			{
 				RenderManager::Instance()->SetRenderTarget(toolSprite);
 				toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
@@ -178,7 +178,7 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 
 				toolSpriteUpdated = true;
 			}
-			else if (drawingType == TILEMASK_DRAW_COPY_PASTE)
+			else if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 			{
 				if (copyPasteFrom == Vector2(-1.f, -1.f) || copyPasteTo == Vector2(-1.f, -1.f))
 				{
@@ -268,6 +268,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 					UpdateToolImage();
 					ResetAccumulatorRect();
 					editingIsEnabled = true;
+					activeDrawingType = drawingType;
 				}
 				break;
 				
@@ -385,7 +386,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 
 	Shader* shader = tileMaskEditorShader;
-	if (drawingType == TILEMASK_DRAW_COPY_PASTE)
+	if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 	{
 		shader = tileMaskCopyPasteShader;
 	}
@@ -395,7 +396,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->SetRenderData(srcSprite->spriteRenderObject);
 	RenderManager::Instance()->SetTexture(srcSprite->GetTexture(), 0);
 	RenderManager::Instance()->SetTexture(toolSprite->GetTexture(), 1);
-	if (drawingType == TILEMASK_DRAW_COPY_PASTE)
+	if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 	{
 		RenderManager::Instance()->SetTexture(stencilSprite->GetTexture(), 2);
 	}
@@ -407,7 +408,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	int32 tex1 = shader->FindUniformIndexByName("texture1");
 	shader->SetUniformValueByIndex(tex1, 1);
 
-	if (drawingType == TILEMASK_DRAW_NORMAl)
+	if (activeDrawingType == TILEMASK_DRAW_NORMAL)
 	{
 		int32 colorType = (int32)tileTextureNum;
 		int32 colorTypeUniform = shader->FindUniformIndexByName("colorType");
@@ -416,7 +417,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
 		shader->SetUniformValueByIndex(intensityUniform, strength);
 	}
-	else if (drawingType == TILEMASK_DRAW_COPY_PASTE)
+	else if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 	{
 		int32 tex2 = shader->FindUniformIndexByName("texture2");
 		shader->SetUniformValueByIndex(tex2, 2);
@@ -437,7 +438,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	RenderManager::Instance()->RestoreRenderTarget();
 
-	if (drawingType == TILEMASK_DRAW_COPY_PASTE)
+	if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 	{
 		RenderManager::Instance()->SetRenderTarget(stencilSprite);
 		RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
@@ -656,4 +657,17 @@ void TilemaskEditorSystem::InitSprites()
 
 	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
 	CreateMaskTexture();
+}
+
+void TilemaskEditorSystem::SetDrawingType(eTilemaskDrawType type)
+{
+	if (type >= TILEMASK_DRAW_NORMAL && type < TILEMASK_DRAW_TYPES_COUNT)
+	{
+		drawingType = type;
+	}
+}
+
+TilemaskEditorSystem::eTilemaskDrawType TilemaskEditorSystem::GetDrawingType()
+{
+	return drawingType;
 }

@@ -71,4 +71,7 @@ void LandscapeEditorShortcutManager::InitDefaultShortcuts()
 	CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_ABS_DROP,	Qt::CTRL | Qt::Key_4, false);
 	CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_DROPPER,	Qt::CTRL | Qt::Key_5, false);
 	CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_COPY_PASTE,	Qt::CTRL | Qt::Key_6, false);
+
+	CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_NORMAL_DRAW_TILEMASK,	Qt::CTRL | Qt::Key_1, false);
+	CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK,	Qt::CTRL | Qt::Key_2, false);
 }
