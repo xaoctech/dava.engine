@@ -29,6 +29,7 @@
 
 
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Entity/Component.h"
 
@@ -43,7 +44,7 @@ void GlobalEventSystem::Event(Entity * entity, Component * component, uint32 eve
         Scene * scene = entity->GetScene();
         if (scene)
         {
-            scene->ImmediateEvent(entity, component->GetType(), event);
+            scene->GetEventSystem()->NotifyAllSystems(entity, event);
             return;
         }
     }
@@ -71,7 +72,9 @@ void GlobalEventSystem::PerformAllEventsFromCache(Component * component)
         
         for (List<uint32>::iterator listIt = list.begin(); listIt != list.end();  ++listIt)
         {
-            component->GetEntity()->GetScene()->ImmediateEvent(component->GetEntity(), component->GetType(), *listIt);
+            //component->GetEntity()->GetScene()->ImmediateEvent(component->GetEntity(), component->GetType(), *listIt);
+            Entity * entity = component->GetEntity();
+            entity->GetScene()->GetEventSystem()->NotifyAllSystems(entity, *listIt);
         }
         
         eventsCache.erase(it);

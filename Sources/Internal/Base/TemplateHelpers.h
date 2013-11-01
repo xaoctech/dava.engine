@@ -175,7 +175,7 @@ public:
         if (!c)
         {//assert emulation )
             int i = 0;
-            *((int*)i) = 0;
+            *((int*)i) = (int)0;
         }
         return c;
 #else

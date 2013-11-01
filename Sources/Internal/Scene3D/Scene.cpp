@@ -268,25 +268,43 @@ void Scene::RemoveComponent(Entity * entity, Component * component)
     }
 }
     
+#if 0 // Removed temporarly if everything will work with events can be removed fully.
 void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 {
+#if 1
     uint32 systemsCount = systems.size();
     uint32 updatedComponentFlag = 1 << componentType;
+    uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+
     for (uint32 k = 0; k < systemsCount; ++k)
     {
         uint32 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        uint32 componentsInEntity = entity->GetAvailableComponentFlags();
         
         if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
         {
 			eventSystem->NotifySystem(systems[k], entity, event);
         }
     }
+#else
+    uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+    Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentsInEntity);
+    
+    for (Set<SceneSystem*>::iterator it = systemSetForType.begin(); it != systemSetForType.end(); ++it)
+    {
+        SceneSystem * system = *it;
+        uint32 requiredComponentFlags = system->GetRequiredComponents();
+        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
+            eventSystem->NotifySystem(system, entity, event);
+    }
+#endif
 }
+#endif
     
 void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
+    //Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentFlags);
+    //systemSetForType.insert(sceneSystem);
     systems.push_back(sceneSystem);
 }
     
