@@ -49,10 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->tableWidget->setStyleSheet(TABLE_STYLESHEET);
 
-#ifdef Q_OS_WIN
-    listFont.setPointSize(11);
-    tableFont.setPointSize(10);
-#endif
+    listFontFav.setPointSize(listFontFav.pointSize() + 1);
+    listFontFav.setBold(true);
 
     setWindowTitle(QString("DAVA Launcher %1").arg(LAUNCHER_VER));
 
@@ -353,7 +351,7 @@ void MainWindow::RefreshBranchesList()
 
     if(!localConfig->GetWebpageURL().isEmpty())
     {
-        ui->listWidget->addItem(CreateListItem(CONFIG_LAUNCHER_WEBPAGE_KEY));
+        ui->listWidget->addItem(CreateListItem(CONFIG_LAUNCHER_WEBPAGE_KEY, LIST_ITEM_NEWS));
         ui->listWidget->addItem(CreateSeparatorItem());
     }
 
@@ -384,7 +382,7 @@ void MainWindow::RefreshBranchesList()
             const QString & branchID = branchesList[i];
             if(favs.contains(branchID))
             {
-                ui->listWidget->addItem(CreateListItem(branchID));
+                ui->listWidget->addItem(CreateListItem(branchID, LIST_ITEM_FAVORITES));
                 hasFavorite = true;
             }
         }
@@ -398,15 +396,20 @@ void MainWindow::RefreshBranchesList()
     {
         const QString & branchID = branchesList[i];
         if(!favs.contains(branchID))
-            ui->listWidget->addItem(CreateListItem(branchID));
+            ui->listWidget->addItem(CreateListItem(branchID, LIST_ITEM_BRANCH));
     }
 }
 
-QListWidgetItem * MainWindow::CreateListItem(const QString &stringID)
+QListWidgetItem * MainWindow::CreateListItem(const QString &stringID, ListItemType type)
 {
     QListWidgetItem * item = new QListWidgetItem(appManager->GetString(stringID));
-    item->setSizeHint(QSize(-1, 40));
-    item->setFont(listFont);
+    item->setSizeHint(QSize(-1, 34));
+    if(type == LIST_ITEM_FAVORITES)
+        item->setFont(listFontFav);
+    else
+        item->setFont(listFont);
+    if(type == LIST_ITEM_BRANCH)
+        item->setTextColor(QColor(100, 100, 100));
     item->setData(DAVA_WIDGET_ROLE, stringID);
     return item;
 }
