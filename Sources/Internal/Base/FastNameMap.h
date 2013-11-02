@@ -78,6 +78,20 @@ public:
 	}
     
     inline bool operator == (const FastNameSet & _another) const;
+	
+	//VI: this is slow method! Use it for debug purposes only
+	void ToString(String& targetStr) const
+	{
+		FastNameSet::Iterator it = Begin();
+        const FastNameSet::Iterator & endIt = End();
+        for (; it !=  endIt; ++it)
+        {
+            const FastName & key = it.GetKey();
+			targetStr += key.c_str();
+			targetStr += " ";
+
+		}
+	}
 
 private:
 	int Insert(const char *name, const int &value);
@@ -89,14 +103,28 @@ template<> struct Hash <FastNameSet>
 {
     size_t operator()(const FastNameSet & set) const
     {
-        size_t hashVal = 2166136261;
-        FastNameSet::Iterator it = set.Begin();
+		size_t i = 0;
+		Vector<int> indices;
+		indices.resize(set.Size());
+		
+		FastNameSet::Iterator it = set.Begin();
         const FastNameSet::Iterator & endIt = set.End();
         for (; it !=  endIt; ++it)
         {
             const FastName & key = it.GetKey();
-            hashVal += ( hashVal * 16777619 ) ^ key.Index();
-        }
+			indices[i] = key.Index();
+			i++;
+		}
+		
+		std::stable_sort(indices.begin(), indices.end());
+		
+		size_t keyCount = indices.size();
+		size_t hashVal = 2166136261;
+		for(i = 0; i < keyCount; ++i)
+		{
+			hashVal += ( hashVal * 16777619 ) ^ indices[i];
+		}
+
         return hashVal;
     }
     

@@ -103,7 +103,7 @@ bool RenderLayerBatchArray::MaterialCompareFunction(const RenderBatchSortItem & 
 {
     return a.sortingKey > b.sortingKey;
 }
-
+	
 void RenderLayerBatchArray::Sort(Camera * camera)
 {
     // Need sort
@@ -118,10 +118,13 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatchSortItem & item = sortArray[k];
                 RenderBatch * batch = renderBatchArray[k];
                 item.renderBatch = batch;
-                item.sortingKey = (((pointer_size)renderBatchArray[k]->GetMaterial()->GetParent() & 0xfffffff0) >> 4) | (batch->GetSortingKey() << 28);
+								
+                item.sortingKey = (pointer_size)(batch->GetMaterial()->GetParent()->GetMaterialName().Index() | (batch->GetSortingKey() << 28));
             }
             
-            std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+			//VI: revert to stable_sort in case of visual artifacts
+             //std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+			std::sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
             
             for (uint32 k = 0; k < renderBatchCount; ++k)
             {
@@ -130,6 +133,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 //item.renderBatch->SetRemoveIndex(this, k);
                 //removeIndex[item.renderBatch] = k;
             }
+						
             flags &= ~SORT_REQUIRED;
         }
         

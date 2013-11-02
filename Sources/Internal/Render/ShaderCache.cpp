@@ -73,6 +73,18 @@ void ShaderAsset::Remove(const FastNameSet & defines)
     
 Shader * ShaderAsset::Get(const FastNameSet & defines)
 {
+	/*String str;
+	defines.ToString(str);
+	
+	if(dbgMap.find(str) == dbgMap.end())
+	{
+		dbgMap[str] = 0;
+	}
+	else
+	{
+		DVASSERT(compiledShaders.GetValue(defines));
+	}*/
+	
     Shader * shader = compiledShaders.GetValue(defines);
     
     if (!shader)
