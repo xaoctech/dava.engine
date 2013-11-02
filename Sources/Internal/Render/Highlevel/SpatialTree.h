@@ -1,9 +1,8 @@
 #ifndef __DAVAENGINE_RENDER_SPATIAL_TREE_H__
 #define	__DAVAENGINE_RENDER_SPATIAL_TREE_H__
 
-#include "Base/BaseObject.h"
 #include "Math/AABBox3.h"
-//#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderHierarchy.h"
 
 namespace DAVA
 {
@@ -11,18 +10,9 @@ namespace DAVA
 const static uint16 INVALID_TREE_NODE_INDEX = (uint16)(-1);
 class RenderObject;
 class Frustum;
-class AbstractSpatialTree : public BaseObject
-{
-public:	
-	virtual void AddObject(RenderObject *object) = 0;
-	virtual void RemoveObject(RenderObject *object) = 0;	
-	virtual void ObjectUpdated(RenderObject *object) = 0;  
-	virtual void ProcessClipping(Frustum *frustum) = 0;
-	virtual void UpdateTree() = 0; //theoretically for some trees that require re balance notify it's good time to do it
-	virtual void DebugDraw() = 0;
-};
 
-class QuadTree : public AbstractSpatialTree
+
+class QuadTree : public RenderHierarchy
 {	
 	struct QuadTreeNode //still basic implementation - later move it to more compact
 	{
@@ -57,11 +47,7 @@ class QuadTree : public AbstractSpatialTree
 	Frustum *currFrustum;
 
 	List<int32> dirtyZNodes;    
-	
-	/*to compare*/
-	int32 objFrustrumCalls;	
-	int32 nodeFrustrumCalls;
-	int32 processClippingCalls;
+	List<RenderObject *> dirtyObjects;    	
 	
 	bool CheckObjectFitNode(const AABBox3& objBox, const AABBox3& nodeBox);
 	bool CheckBoxIntersectBranch(const AABBox3& objBox, float32 xmin, float32 ymin, float32 xmax, float32 ymax);		
@@ -75,18 +61,24 @@ class QuadTree : public AbstractSpatialTree
 	uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
 	
 	static const int32 RECALCULATE_Z_PER_FRAME = 10;
+	static const int32 RECALCULATE_OBJECTS_PER_FRAME = 10;
 	void RecalculateNodeZLimits(uint16 nodeId);
 	void MarkNodeDirty(uint16 nodeId);
+	void MarkObjectDirty(RenderObject *object);
+
+	bool worldInitialized;
+	List<RenderObject *> worldInitObjects;	
 
 public:
-	QuadTree(const AABBox3 &worldBox, int32 maxTreeDepth);
+	QuadTree(int32 maxTreeDepth);
 	
-	virtual void AddObject(RenderObject *object);
-	virtual void RemoveObject(RenderObject *object);	
-	virtual void ObjectUpdated(RenderObject *object);  
+	virtual void AddRenderObject(RenderObject * renderObject);
+	virtual void RemoveRenderObject(RenderObject * renderObject);
+	virtual void ObjectUpdated(RenderObject * renderObject);
+	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);	
+	virtual void Initialize();
 
-	virtual void ProcessClipping(Frustum *frustum);
-	virtual void UpdateTree();
+	virtual void Update();
 	virtual void DebugDraw();
 };
 
