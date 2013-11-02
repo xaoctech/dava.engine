@@ -75,7 +75,7 @@
          <x>0</x>
          <y>0</y>
          <width>558</width>
-         <height>69</height>
+         <height>76</height>
         </rect>
        </property>
        <property name="maximumSize">
@@ -126,8 +126,8 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="lowerLayOut">
-     <item row="0" column="0">
+    <layout class="QHBoxLayout" name="lowerLayOut">
+     <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="minimumSize">
         <size>

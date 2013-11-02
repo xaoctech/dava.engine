@@ -314,13 +314,6 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 
 			WaitStop();
 		}
-
-		// Update "*" on tabs
-		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
-		{
-			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			GetSceneWidget()->SceneModifyStatusChanged(scene, false);
-		}
 	}
 	LoadGPUFormat();
 }
@@ -731,7 +724,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
-	EnableGPUReloadActions(tools == 0);
+	UpdateConflictingActionsState(tools == 0);
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
     if(materialEditor)
@@ -1010,6 +1003,11 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
+
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
     
 	WaitStart("Export", "Please wait...");
 
@@ -1728,6 +1726,10 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 
 void QtMainWindow::OnBeast()
 {
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
 	RunBeast();
 }
  
@@ -1735,6 +1737,11 @@ void QtMainWindow::OnBeastAndSave()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
+
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
 
 	RunBeast();
 	SaveScene(scene);
@@ -1830,7 +1837,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	int32 tools = scene->GetEnabledTools();
 
 	SetLandscapeSettingsEnabled(tools == 0);
-	EnableGPUReloadActions(tools == 0);
+	UpdateConflictingActionsState(tools == 0);
 
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
@@ -2228,10 +2235,13 @@ void QtMainWindow::OnHangingObjectsHeight( double value)
 	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
 }
 
-void QtMainWindow::EnableGPUReloadActions(bool enable)
+void QtMainWindow::UpdateConflictingActionsState(bool enable)
 {
 	ui->menuTexturesForGPU->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
+	ui->menuExport->setEnabled(enable);
+	ui->menuBeast->setEnabled(enable);
+    ui->actionSaveToFolder->setEnabled(enable);
 }
 
 void QtMainWindow::DiableUIForFutureUsing()
@@ -2300,18 +2310,19 @@ bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
 	return false;
 }
 
-bool QtMainWindow::SaveTilemask()
+bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 {
-	const QMessageBox::StandardButtons longButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll;
-	const QMessageBox::StandardButtons shortButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
-
 	SceneTabWidget *sceneWidget = GetSceneWidget();
 	
 	int lastSceneTab = sceneWidget->GetCurrentTab();
 	int answer = QMessageBox::Cancel;
 	bool needQuestion = true;
 
-	for(int i = 0; i < sceneWidget->GetTabCount(); ++i)
+	// tabs range where tilemask should be saved
+	int32 firstTab = forAllTabs ? 0 : sceneWidget->GetCurrentTab();
+	int32 lastTab = forAllTabs ? sceneWidget->GetTabCount() : sceneWidget->GetCurrentTab() + 1;
+
+	for(int i = firstTab; i < lastTab; ++i)
 	{
 		SceneEditor2 *tabEditor = sceneWidget->GetTabScene(i);
 		if(NULL != tabEditor)
@@ -2331,7 +2342,7 @@ bool QtMainWindow::SaveTilemask()
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
 						// if more than one scene to precess
-						if((i + 1) < sceneWidget->GetCurrentTab())
+						if((lastTab - firstTab) > 1)
 						{
 							answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::Cancel);
 						}

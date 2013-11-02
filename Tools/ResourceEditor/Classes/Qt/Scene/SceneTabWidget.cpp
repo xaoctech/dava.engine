@@ -355,16 +355,22 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
 {
+	static QCursor cursorMove(QPixmap(":/QtIcons/curcor_move.png"));
+	static QCursor cursorRotate(QPixmap(":/QtIcons/curcor_rotate.png"));
+	static QCursor cursorScale(QPixmap(":/QtIcons/curcor_scale.png"));
+
 	if(GetCurrentScene() == scene && NULL != entities)
 	{
 		switch(scene->modifSystem->GetModifMode())
 		{
 		case ST_MODIF_MOVE:
-			setCursor(Qt::SizeAllCursor);
+			setCursor(cursorMove);
 			break;
 		case ST_MODIF_ROTATE:
+			setCursor(cursorRotate);
 			break;
 		case ST_MODIF_SCALE:
+			setCursor(cursorScale);
 			break;
 		case ST_MODIF_OFF:
 		default:

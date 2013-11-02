@@ -105,9 +105,7 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	}
 	actionButton = new QPushButton(btnTitle, this);
 	connect(actionButton, SIGNAL(clicked()), this, SLOT(ActionButtonClicked()));
-	ui->lowerLayOut->removeWidget(ui->buttonBox);
-	ui->lowerLayOut->addWidget(actionButton, 0, 0);
-	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
+	AddButton(actionButton);
 	
 	landscapeSize = Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 }

@@ -79,6 +79,8 @@ public slots:
 
 	void SetCurrentCamera();
 	void CollapseSwitch();
+	
+	void SetEntityNameAsFilter();
 
 	// Particle Emitter handlers.
 	void AddEmitter();
@@ -104,7 +106,6 @@ public slots:
 	void EditModel();
 	void ReloadModel();
 	void ReloadModelAs();
-    void ReloadModelWithoutLightmaps();
 	void SaveEntityAs();
 
 protected slots:
@@ -130,9 +131,6 @@ protected slots:
 	void ShowContextMenuInnerEmitter(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer *parentLayer, const QPoint &pos);
 
 	void OnRefreshTimeout();
-
-	void OnFindSameEntity();
-
 
 protected:
 	// Helpers for Particles.
