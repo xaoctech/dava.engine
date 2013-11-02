@@ -876,11 +876,14 @@ namespace DAVA
 				currentMaterial = currentMaterial->parent;
 			}
 
-		}		
+		}
+		
+		DVASSERT(ready);
 	}
 	
 	void NMaterial::Draw(PolygonGroup * polygonGroup)
 	{
+		DVASSERT(ready);
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
 		RenderManager::Instance()->AttachRenderData();
@@ -898,6 +901,7 @@ namespace DAVA
 	
 	void NMaterial::Draw(RenderDataObject*	renderData, uint16* indices, uint16 indexCount)
 	{
+		DVASSERT(ready);
 		DVASSERT(renderData);
 		
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
@@ -1064,6 +1068,9 @@ namespace DAVA
 		if(!IsConfigMaterial())
 		{
 			techniqueForRenderPass.Clear(); //VI: will copy parent techniques
+			
+			activeTechnique = NULL;
+			activeTechniqueName.Reset();
 		}
 		
 		//{TODO: remove this!
