@@ -264,7 +264,7 @@ public:
         Function should be used if you want to render something with this material.
      */
     //void BindMaterial();
-	void PrepareRenderState(Matrix4 * worldMxPtr = 0, InstanceMaterialState * instanceMaterialState = 0);
+	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0, Matrix4 * worldMxPtr = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state, Matrix4 * worldMxPtr);
     
     // TODO: remove const &
