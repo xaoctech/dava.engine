@@ -64,7 +64,7 @@ namespace DAVA
 		INTROSPECTION(SkyboxRenderObject,
 					  PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
 					  PROPERTY("verticalOffset", "Vertical Offset", GetOffsetZ, SetOffsetZ, I_SAVE | I_VIEW | I_EDIT)
-					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE | I_VIEW | I_EDIT)
+					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE)
 					  );
 
 		
