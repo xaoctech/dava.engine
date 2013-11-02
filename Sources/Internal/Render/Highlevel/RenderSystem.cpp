@@ -379,6 +379,8 @@ void RenderSystem::Render()
     {
         renderPassOrder[k]->Draw(camera, globalBatchArray);
     }
+    
+    //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
 }
 
 RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)

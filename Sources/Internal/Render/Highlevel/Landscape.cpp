@@ -1789,22 +1789,51 @@ void Landscape::SetFog(const bool& fogState)
     {
         isFogEnabled = fogState;
 		
-		/*if(renderSystem)
+		if(renderSystem)
 		{
-			NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
+		//VI: TODO: Fog should be set in adifferent way
+			
+			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
 			DVASSERT(global);
 			
 			if(isFogEnabled)
 			{
-				global->AddMaterialDefine("VERTEX_FOG");
+				global->AddMaterialDefine(FastName("VERTEX_FOG"));
 			}
 			else
 			{
-				global->RemoveMaterialDefine("VERTEX_FOG");
+				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
+			}
+			
+			global->Rebuild();*/
+			
+			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Textured.Lightmap"));
+			DVASSERT(global);
+			
+			if(isFogEnabled)
+			{
+				global->AddMaterialDefine(FastName("VERTEX_FOG"));
+			}
+			else
+			{
+				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
 			}
 			
 			global->Rebuild();
-		}*/
+			
+			global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Landscape"));
+			
+			if(isFogEnabled)
+			{
+				global->AddMaterialDefine(FastName("VERTEX_FOG"));
+			}
+			else
+			{
+				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
+			}
+			
+			global->Rebuild();*/
+		}
     }
 }
 
