@@ -152,6 +152,7 @@ protected:
 
 	AABBox3 aabbox;
     OcclusionQuery * occlusionQuery;
+    int32 queryRequested;
 
 	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     
