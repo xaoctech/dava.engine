@@ -500,6 +500,8 @@
 		E81B674318253247000E8390 /* LibraryComplexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81B673F18253247000E8390 /* LibraryComplexView_moc.cpp */; };
 		E81B674418253247000E8390 /* LibraryFileSystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81B674018253247000E8390 /* LibraryFileSystemModel_moc.cpp */; };
 		E81B674518253247000E8390 /* LibraryTabWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81B674118253247000E8390 /* LibraryTabWidget_moc.cpp */; };
+		E81B674918259151000E8390 /* LibraryFilteringModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81B674718259151000E8390 /* LibraryFilteringModel.cpp */; };
+		E81B674B182593D0000E8390 /* LibraryFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81B674A182593D0000E8390 /* LibraryFilteringModel_moc.cpp */; };
 		E825797A17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */; };
 		E825797B17D886B400070B9C /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */; };
 		E825797C17D886B400070B9C /* QtPropertyDataInspColl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797217D886B400070B9C /* QtPropertyDataInspColl.cpp */; };
@@ -1634,6 +1636,9 @@
 		E81B673F18253247000E8390 /* LibraryComplexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryComplexView_moc.cpp; sourceTree = "<group>"; };
 		E81B674018253247000E8390 /* LibraryFileSystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel_moc.cpp; sourceTree = "<group>"; };
 		E81B674118253247000E8390 /* LibraryTabWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryTabWidget_moc.cpp; sourceTree = "<group>"; };
+		E81B674718259151000E8390 /* LibraryFilteringModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFilteringModel.cpp; sourceTree = "<group>"; };
+		E81B674818259151000E8390 /* LibraryFilteringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryFilteringModel.h; sourceTree = "<group>"; };
+		E81B674A182593D0000E8390 /* LibraryFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFilteringModel_moc.cpp; sourceTree = "<group>"; };
 		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
 		E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaKeyedArchive.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.cpp; sourceTree = SOURCE_ROOT; };
 		E825796F17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataDavaKeyedArchive.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h; sourceTree = SOURCE_ROOT; };
@@ -3598,6 +3603,8 @@
 				E81B67341824F3CC000E8390 /* LibraryComplexView.h */,
 				E81B673B18252EC1000E8390 /* LibraryFileSystemModel.cpp */,
 				E81B673C18252EC1000E8390 /* LibraryFileSystemModel.h */,
+				E81B674718259151000E8390 /* LibraryFilteringModel.cpp */,
+				E81B674818259151000E8390 /* LibraryFilteringModel.h */,
 				E81B670D1824D7EC000E8390 /* LibraryTabWidget.cpp */,
 				E81B670E1824D7EC000E8390 /* LibraryTabWidget.h */,
 			);
@@ -3611,6 +3618,7 @@
 				E81B673E18253247000E8390 /* LibraryBaseModel_moc.cpp */,
 				E81B673F18253247000E8390 /* LibraryComplexView_moc.cpp */,
 				E81B674018253247000E8390 /* LibraryFileSystemModel_moc.cpp */,
+				E81B674A182593D0000E8390 /* LibraryFilteringModel_moc.cpp */,
 				E81B674118253247000E8390 /* LibraryTabWidget_moc.cpp */,
 			);
 			name = DockLibrary2;
@@ -4633,6 +4641,7 @@
 				E838D57D16AFFED4006F1721 /* SceneGraphItem.cpp in Build Sources */,
 				E838D57E16AFFED4006F1721 /* SceneGraphModel.cpp in Build Sources */,
 				E838D58016AFFED4006F1721 /* davaglwidget.cpp in Build Sources */,
+				E81B674B182593D0000E8390 /* LibraryFilteringModel_moc.cpp in Build Sources */,
 				E838D58316AFFED4006F1721 /* mainwindow.cpp in Build Sources */,
 				E838D58616AFFED4006F1721 /* QtUtils.cpp in Build Sources */,
 				E838D58816AFFED4006F1721 /* main.cpp in Build Sources */,
@@ -4767,6 +4776,7 @@
 				4FAD0CE91785EC6E00B05A35 /* ParticleTimeLineWidget_moc.cpp in Build Sources */,
 				4FAD0CEA1785EC6E00B05A35 /* ScrollZoomWidget_moc.cpp in Build Sources */,
 				4FAD0CEB1785EC6E00B05A35 /* TimeLineWidget_moc.cpp in Build Sources */,
+				E81B674918259151000E8390 /* LibraryFilteringModel.cpp in Build Sources */,
 				4FAD0CEC1785EC6E00B05A35 /* PropertyEditor_moc.cpp in Build Sources */,
 				4FAD0CED1785EC6E00B05A35 /* PropertyEditorStateHelper_moc.cpp in Build Sources */,
 				4FAD0CEE1785EC6E00B05A35 /* ExtraUserData_moc.cpp in Build Sources */,
