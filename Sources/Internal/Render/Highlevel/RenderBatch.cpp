@@ -61,6 +61,7 @@ RenderBatch::RenderBatch()
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 	aabbox = AABBox3(Vector3(), Vector3());
     occlusionQuery = new OcclusionQuery();
+    queryRequested = -1;
 }
     
 RenderBatch::~RenderBatch()
@@ -113,18 +114,27 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
-        if (occlusionQuery->IsResultAvailable())
+        if ((queryRequested >= 0) && occlusionQuery->IsResultAvailable())
         {
             uint32 result = 0;
             occlusionQuery->GetQuery(&result);
             if (result == 0)
             {
-                RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
+                //RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
                 occlusionQuery->ResetResult();
-                return;
+                queryRequested = -3;
             }
+            else queryRequested = -1;
         }
     }
+    
+    if (queryRequested < -1)
+    {
+        queryRequested++;
+        RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
+        return;
+    }
+    
 //    if (!worldTransformPtr)
 //    {
 //        return;
@@ -142,14 +152,22 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
-        occlusionQuery->BeginQuery();
+        if (queryRequested == -1)
+        {
+            occlusionQuery->BeginQuery();
+            queryRequested = 0;
+        }
+        else queryRequested++;
     }
     
     material->Draw(dataSource);
     
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
-        occlusionQuery->EndQuery();
+        if (queryRequested == 0)
+        {
+            occlusionQuery->EndQuery();
+        }
     }
 }
     
