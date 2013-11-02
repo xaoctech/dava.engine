@@ -119,7 +119,7 @@ enum eSceneObjectType
 };
 
 // coefficient for converting brush size from UI value to system value for landscape editors
-const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
+const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
 
 // default coefficient for converting brush size from UI value to system value for heightmap editors
 // heightmap size in heightmap editor is almost 4 times smaller than landscape texture size
