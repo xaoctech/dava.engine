@@ -28,66 +28,26 @@
 
 
 
-#ifndef __LIBRARY_COMPLEX_VIEW_H__
-#define __LIBRARY_COMPLEX_VIEW_H__
+#ifndef __LIBRARY_FILTERING_MODEL_H__
+#define __LIBRARY_FILTERING_MODEL_H__
 
-#include <QWidget>
-#include <QItemSelection>
+#include <QModelIndex>
 #include <QSortFilterProxyModel>
 
-class QToolBar;
-class QSplitter;
-class QTreeView;
-class QListView;
-class QAction;
-class QLineEdit;
-
-class LibraryBaseModel;
-class LibraryFilteringModel;
-class LibraryComplexView : public QWidget
+class QAbstractItemModel;
+class LibraryFilteringModel : public QSortFilterProxyModel
 {
-	Q_OBJECT
-
 public:
-	LibraryComplexView(QWidget *parent = 0);
-	~LibraryComplexView();
-
-    void SetModel(LibraryBaseModel * newModel);
+	LibraryFilteringModel(QObject *parent = NULL);
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     
+    void SetModel(QAbstractItemModel *newModel);
     
-protected slots:
-
-    void ViewAsList();
-    void ViewAsIcons();
+protected:
+	QAbstractItemModel *model;
     
-    void TreeSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-	void ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-
-    void ShowListContextMenu(const QPoint & point);
-    
-    void SetFilter(const QString &filter);
-    void ResetFilter();
-    
-private:
-    
-    void SetupToolbar();
-    void SetupViews();
-    void SetupLayout();
-    
-private:
-
-    QToolBar *toolbar;
-    QSplitter *splitter;
-    QTreeView *leftTree;
-    QListView *rightList;
-    
-    QLineEdit *searchFilter;
-    
-    QAction *actionViewAsList;
-    QAction *actionViewAsIcons;
-    
-    LibraryBaseModel *model;
-    LibraryFilteringModel *filteringModel;
+	bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
+	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
-#endif // __LIBRARY_COMPLEX_VIEW_H__
+#endif // v

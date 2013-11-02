@@ -30,6 +30,7 @@
 
 #include "LibraryComplexView.h"
 #include "LibraryBaseModel.h"
+#include "LibraryFilteringModel.h"
 
 #include <QToolBar>
 #include <QSplitter>
@@ -37,17 +38,18 @@
 #include <QListView>
 #include <QVBoxLayout>
 #include <QAction>
-
-
-#include <QFileSystemModel>
+#include <QLineEdit>
 
 LibraryComplexView::LibraryComplexView(QWidget *parent /* = 0 */)
 	: QWidget(parent)
     , model(NULL)
 {
+    filteringModel = new LibraryFilteringModel(this);
+
     SetupToolbar();
 
     splitter = new QSplitter(this);
+    
 
     SetupViews();
     SetupLayout();
@@ -67,6 +69,13 @@ void LibraryComplexView::SetupToolbar()
     toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     toolbar->setMovable(false);
 
+    searchFilter = new QLineEdit(toolbar);
+    searchFilter->setToolTip("Search something at right list view");
+    searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+    
+    QIcon resetIcon(QString::fromUtf8(":/QtIcons/reset.png"));
+    QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
+
     QIcon asListIcon(QString::fromUtf8(":/QtIconsTextureDialog/view_list.png"));
     actionViewAsList = new QAction(asListIcon, "View as list", toolbar);
     actionViewAsList->setCheckable(true);
@@ -77,10 +86,14 @@ void LibraryComplexView::SetupToolbar()
     actionViewAsIcons->setCheckable(true);
     actionViewAsIcons->setChecked(false);
 
+    QObject::connect(searchFilter, SIGNAL(textChanged(const QString &)), this, SLOT(SetFilter(const QString &)));
+    QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
     QObject::connect(actionViewAsIcons, SIGNAL(triggered()), this, SLOT(ViewAsIcons()));
     
-    
+    toolbar->addWidget(searchFilter);
+    toolbar->addAction(actionResetFilter);
+    toolbar->addSeparator();
     toolbar->addAction(actionViewAsList);
     toolbar->addAction(actionViewAsIcons);
 }
@@ -142,8 +155,10 @@ void LibraryComplexView::SetModel(LibraryBaseModel * newModel)
     leftTree->setModel(newModel->GetTreeModel());
     leftTree->setRootIndex(newModel->GetTreeRootIndex());
     
-    rightList->setModel(newModel->GetListModel());
-    rightList->setRootIndex(newModel->GetListRootIndex());
+    filteringModel->SetModel(newModel->GetListModel());
+    
+    rightList->setModel(filteringModel);
+    rightList->setRootIndex(filteringModel->mapFromSource(newModel->GetListRootIndex()));
     
     // hide columns with size/modif date etc.
 	for(int i = 1; i < newModel->GetTreeModel()->columnCount(); ++i)
@@ -162,14 +177,14 @@ void LibraryComplexView::TreeSelectionChanged(const QItemSelection &selected, co
     if(0 == selected.count()) return;
     
     model->TreeItemSelected(selected);
-    rightList->setRootIndex(model->GetListRootIndex());
+    rightList->setRootIndex(filteringModel->mapFromSource(model->GetListRootIndex()));
 }
 
 void LibraryComplexView::ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     if(0 == selected.count()) return;
 
-    model->TreeItemSelected(selected);
+    model->TreeItemSelected(filteringModel->mapSelectionToSource(selected));
 }
 
 void LibraryComplexView::ShowListContextMenu(const QPoint & point)
@@ -180,10 +195,21 @@ void LibraryComplexView::ShowListContextMenu(const QPoint & point)
 
     QMenu contextMenu(this);
     
-    if(model->PrepareListContextMenu(contextMenu, index))
+    if(model->PrepareListContextMenu(contextMenu, filteringModel->mapToSource(index)))
     {
         contextMenu.exec(rightList->mapToGlobal(point));
     }
+}
+
+void LibraryComplexView::SetFilter(const QString &filter)
+{
+    filteringModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+    rightList->setRootIndex(filteringModel->mapFromSource(model->GetListRootIndex()));
+}
+
+void LibraryComplexView::ResetFilter()
+{
+    searchFilter->setText("");
 }
 
 

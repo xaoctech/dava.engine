@@ -28,66 +28,75 @@
 
 
 
-#ifndef __LIBRARY_COMPLEX_VIEW_H__
-#define __LIBRARY_COMPLEX_VIEW_H__
+#include "LibraryFilteringModel.h"
 
-#include <QWidget>
-#include <QItemSelection>
-#include <QSortFilterProxyModel>
-
-class QToolBar;
-class QSplitter;
-class QTreeView;
-class QListView;
-class QAction;
-class QLineEdit;
-
-class LibraryBaseModel;
-class LibraryFilteringModel;
-class LibraryComplexView : public QWidget
+LibraryFilteringModel::LibraryFilteringModel(QObject *parent /* = NULL */)
+    : QSortFilterProxyModel(parent)
+    , model(NULL)
 {
-	Q_OBJECT
+}
 
-public:
-	LibraryComplexView(QWidget *parent = 0);
-	~LibraryComplexView();
+bool LibraryFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    if(model == NULL) return false;
 
-    void SetModel(LibraryBaseModel * newModel);
+    // check self accept
+    if(selfAcceptRow(sourceRow, sourceParent))
+    {
+        return true;
+    }
     
+    //accept if any of the parents is accepted
+    QModelIndex parent = sourceParent;
+    while(parent.isValid())
+    {
+        if(selfAcceptRow(parent.row(), parent.parent()))
+        {
+            return true;
+        }
+        
+        parent = parent.parent();
+    }
     
-protected slots:
+    // accept if any child is accepted
+    if(childrenAcceptRow(sourceRow, sourceParent))
+    {
+        return true;
+    }
 
-    void ViewAsList();
-    void ViewAsIcons();
-    
-    void TreeSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-	void ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+	return false;
+}
 
-    void ShowListContextMenu(const QPoint & point);
-    
-    void SetFilter(const QString &filter);
-    void ResetFilter();
-    
-private:
-    
-    void SetupToolbar();
-    void SetupViews();
-    void SetupLayout();
-    
-private:
+void LibraryFilteringModel::SetModel(QAbstractItemModel *newModel)
+{
+    model = newModel;
+    setSourceModel(model);
+}
 
-    QToolBar *toolbar;
-    QSplitter *splitter;
-    QTreeView *leftTree;
-    QListView *rightList;
-    
-    QLineEdit *searchFilter;
-    
-    QAction *actionViewAsList;
-    QAction *actionViewAsIcons;
-    
-    LibraryBaseModel *model;
-    LibraryFilteringModel *filteringModel;
-};
+bool LibraryFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+}
 
-#endif // __LIBRARY_COMPLEX_VIEW_H__
+bool LibraryFilteringModel::childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    if(model == NULL) return false;
+    
+	bool ret = false;
+    
+	QModelIndex index = model->index(sourceRow, 0, sourceParent);
+	if(model->rowCount(index) > 0)
+	{
+		for(int i = 0; i < model->rowCount(index); i++)
+		{
+			if(selfAcceptRow(i, index) || childrenAcceptRow(i, index))
+			{
+				ret = true;
+				break;
+			}
+		}
+	}
+    
+	return ret;
+}
+
