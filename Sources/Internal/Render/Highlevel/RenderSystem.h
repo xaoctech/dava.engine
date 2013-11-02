@@ -113,7 +113,7 @@ public:
 	
 	inline MaterialSystem* GetMaterialSystem() {return materialSystem;}
 
-	void DebugDrawSpatialTree();
+	void DebugDrawHierarchy();
     
 private:
 	void CreateSpatialTree();
@@ -139,6 +139,8 @@ private:
     Vector<Light*> lights;
     
     RenderHierarchy * renderHierarchy;
+	bool hierarchyInitialized;
+
     RenderPassBatchArray * globalBatchArray;
     
 

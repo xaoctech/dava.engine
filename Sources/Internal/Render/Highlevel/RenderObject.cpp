@@ -115,6 +115,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 
 	newObject->type = type;
 	newObject->flags = flags;
+	newObject->RemoveFlag(MARKED_FOR_UPDATE);
 	newObject->debugFlags = debugFlags;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;

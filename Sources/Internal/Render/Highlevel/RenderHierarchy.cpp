@@ -31,41 +31,36 @@
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Frustum.h"
-#include "Render/Highlevel/SpatialTree.h"
 
 namespace DAVA
 {
-	
-	RenderHierarchy::RenderHierarchy()
-	{
-		spatialTree = NULL;
-	}
-	
-	RenderHierarchy::~RenderHierarchy()
-	{
-		SafeDelete(spatialTree);
-	}
-	
-    
-	void RenderHierarchy::AddRenderObject(RenderObject * object)
-	{
-		/*on add calculate valid world bbox*/
-		object->RecalculateWorldBoundingBox();
 		
-		if (spatialTree && !object->GetBoundingBox().IsEmpty())
+	void RenderHierarchy::AddToRender(RenderObject * renderObject)
+	{
+		uint32 batchCount = renderObject->GetRenderBatchCount();
+		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 		{
-			if (!(object->GetFlags() & RenderObject::ALWAYS_CLIPPING_VISIBLE))
-				spatialTree->AddObject(object);
+			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+			NMaterial * material = batch->GetMaterial();
+			if (material)
+			{
+				const FastNameSet & layers = material->GetRenderLayers();
+				FastNameSet::Iterator layerEnd = layers.End();
+				for (FastNameSet::Iterator layerIt = layers.Begin(); layerIt != layerEnd; ++layerIt)
+				{
+					currRenderPassBatchArray->AddRenderBatch(layerIt.GetKey(), batch);
+				}
+			}
 		}
-		
+	}
+    
+	void LinearRenderHierarchy::AddRenderObject(RenderObject * object)
+	{		
 		renderObjectArray.push_back(object);
 	}
 	
-	void RenderHierarchy::RemoveRenderObject(RenderObject *renderObject)
-	{
-		if (renderObject->GetTreeNodeIndex() != INVALID_TREE_NODE_INDEX)
-			spatialTree->RemoveObject(renderObject);
-		
+	void LinearRenderHierarchy::RemoveRenderObject(RenderObject *renderObject)
+	{				
 		uint32 size = renderObjectArray.size();
 		for (uint32 k = 0; k < size; ++k)
 		{
@@ -79,117 +74,34 @@ namespace DAVA
 		DVASSERT(0 && "Failed to find object");
 	}
 	
-	void RenderHierarchy::ObjectUpdated(RenderObject * renderObject)
-	{
-		DVASSERT(spatialTree);
-		if(spatialTree)
-		{
-			spatialTree->ObjectUpdated(renderObject);
-		}
-	}
-	
-	void RenderHierarchy::CreateSpatialTree()
-	{
-		SafeDelete(spatialTree);
-		AABBox3 worldBox;
-		uint32 size = renderObjectArray.size();
-		for (uint32 pos = 0; pos < size; ++pos)
-		{
-			worldBox.AddAABBox(renderObjectArray[pos]->GetWorldBoundingBox());
-			/*if (RenderObject::TYPE_LANDSCAPE == renderObjectArray[pos]->GetType())
-			 worldBox = renderObjectArray[pos]->GetWorldBoundingBox();*/
-			renderObjectArray[pos]->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);
-		}
-		if (worldBox.IsEmpty())
-			worldBox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
-		spatialTree = new QuadTree(worldBox, 10);
-		for (uint32 pos = 0; pos < size; ++pos)
-		{
-			if (!(renderObjectArray[pos]->GetFlags()&RenderObject::ALWAYS_CLIPPING_VISIBLE))
-			{
-				spatialTree->AddObject(renderObjectArray[pos]);
-			}
-			
-		}
-		
-	}
-	
-	void RenderHierarchy::DebugDrawSpatialTree()
-	{
-		if (spatialTree)
-			spatialTree->DebugDraw();
-	}
-	
+	void LinearRenderHierarchy::ObjectUpdated(RenderObject * renderObject)
+	{		
+	}		
     
-	void RenderHierarchy::Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray)
-	{
-		if (!spatialTree)
-			CreateSpatialTree();
-		
-		if (spatialTree)
-			spatialTree->UpdateTree();
-		
+	void LinearRenderHierarchy::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+	{				
+		currRenderPassBatchArray = renderPassBatchArray;
 		Frustum * frustum = camera->GetFrustum();
 		int32 objectsToClip = 0;
 		uint32 size = renderObjectArray.size();
 		for (uint32 pos = 0; pos < size; ++pos)
 		{
-			RenderObject * node = renderObjectArray[pos];
-						
+			RenderObject * node = renderObjectArray[pos];						
 			if ((node->GetFlags() & RenderObject::CLIPPING_VISIBILITY_CRITERIA) != RenderObject::CLIPPING_VISIBILITY_CRITERIA)
+				continue;					
+			//still need to add flags for particles to dicede if to use DefferedUpdate
+			if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
 			{
-				continue;
-			}
-			
-			node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-			
-			if (node->GetTreeNodeIndex() == INVALID_TREE_NODE_INDEX) //process clipping if not in spatial tree for some reason (eg. no SpatialTree)
-			{
-				if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
-				{
-					node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-				}
+				node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+				AddToRender(node);
 			}
 			else
-				objectsToClip++;
-			
-		}
-		
-        //uint32 addedToRendering = 0;
-		if (spatialTree)
-        {
-			spatialTree->ProcessClipping(frustum);
-            //addedToRendering = 10000000;
-		}
-		
-		for (uint32 pos = 0; pos < size; ++pos)
-		{
-			RenderObject * renderObject = renderObjectArray[pos];
-			
-			uint32 flags = renderObject->GetFlags();
-            bool isObjectVisible = ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA);
-
-			if (!isObjectVisible)
-				continue;
-			
-            //addedToRendering ++;
-            
-			uint32 batchCount = renderObject->GetRenderBatchCount();
-			for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 			{
-				RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
-				NMaterial * material = batch->GetMaterial();
-				if (material)
-				{
-					const FastNameSet & layers = material->GetRenderLayers();
-					FastNameSet::Iterator layerEnd = layers.End();
-					for (FastNameSet::Iterator layerIt = layers.Begin(); layerIt != layerEnd; ++layerIt)
-					{
-						renderPassBatchArray->AddRenderBatch(layerIt.GetKey(), batch);
-					}
-				}
-			}
+				node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+			}			
+			
 		}
+		       
 	}
     
 };
