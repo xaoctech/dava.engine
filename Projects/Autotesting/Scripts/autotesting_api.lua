@@ -543,7 +543,7 @@ end
 
 function CheckText(name, txt)
 	Log("Check that text '" .. txt .. "' is present on control " .. name)
-	local control = GetControl(element)
+	local control = GetControl(name)
 	
 	Wait(waitTime)
 	return autotestingSystem:CheckText(control, txt)
@@ -551,7 +551,7 @@ end
 
 function CheckMsgText(name, key)
 	Log("Check that text with key [" .. key .. "] is present on control " .. name)
-	local control = GetControl(element)
+	local control = GetControl(name)
 	
 	Wait(waitTime)
 	return autotestingSystem:CheckMsgText(control, key)
@@ -733,7 +733,7 @@ function SelectFirstVertical(list)
 end
 
 function ScrollDown(list, invert)
-	local control = GetControl(element)
+	local control = GetControl(list)
 
 	local position = Vector.Vector2()
             
@@ -758,7 +758,7 @@ function ScrollDown(list, invert)
 end
 
 function ScrollLeft(list, invert)
-	local control = GetControl(element)	
+	local control = GetControl(list)	
     
     local position = Vector.Vector2()
             
