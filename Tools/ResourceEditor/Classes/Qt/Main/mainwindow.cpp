@@ -162,6 +162,8 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
 
+    ui->libraryTabWidget->SetupSignals();
+    
 	LoadGPUFormat();
 
     EnableGlobalTimeout(enableGlobalTimeout);
@@ -393,24 +395,16 @@ void QtMainWindow::SetupTitle()
 
 void QtMainWindow::SetupMainMenu()
 {
-	QAction *actionProperties = ui->dockProperties->toggleViewAction();
-	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
-	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
-	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
-	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
-	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
-	QAction *actionConsole = ui->dockConsole->toggleViewAction();
-	QAction *actionLandscapeEditorControls = ui->dockLandscapeEditorControls->toggleViewAction();
-
-	ui->menuView->addAction(actionSceneInfo);
-	ui->menuView->addAction(actionLibrary);
-	ui->menuView->addAction(actionProperties);
-	ui->menuView->addAction(actionParticleEditor);
-	ui->menuView->addAction(actionParticleEditorTimeLine);
-	ui->menuView->addAction(actionSceneTree);
-	ui->menuView->addAction(actionConsole);
+	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
+	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
+	ui->menuView->addAction(ui->dockLibrary2->toggleViewAction());
+	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
+	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
+	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
+	ui->menuView->addAction(ui->dockSceneTree->toggleViewAction());
+	ui->menuView->addAction(ui->dockConsole->toggleViewAction());
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
-	ui->menuView->addAction(actionLandscapeEditorControls);
+	ui->menuView->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
 	InitRecent();
 }

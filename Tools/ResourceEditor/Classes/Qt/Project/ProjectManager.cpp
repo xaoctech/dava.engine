@@ -107,9 +107,11 @@ void ProjectManager::ProjectOpen(const QString &path)
 		emit ProjectOpened(curProjectPath);
 		
 		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
-		projectPath.MakeDirectoryPathname();
-
-		DAVA::FilePath::AddTopResourcesFolder(projectPath);
+        if(!projectPath.IsEmpty())
+        {
+            projectPath.MakeDirectoryPathname();
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+        }
 	}
 }
 
@@ -140,6 +142,10 @@ void ProjectManager::ProjectClose()
 void ProjectManager::LoadProjectSettings()
 {
 	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
-	prjPath.MakeDirectoryPathname();
+    if(!prjPath.IsEmpty())
+    {
+        prjPath.MakeDirectoryPathname();
+    }
+    
 	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
 }
