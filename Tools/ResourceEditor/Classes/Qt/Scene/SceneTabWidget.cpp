@@ -34,6 +34,7 @@
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
+#include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 
 #include "Classes/Deprecated/ScenePreviewDialog.h"
 #include "Classes/Qt/Main/Request.h"
@@ -42,19 +43,6 @@
 #include <QResizeEvent>
 #include <QMessageBox>
 #include <QFileInfo>
-
-class QTransparentWidget: public QWidget
-{
-public:
-
-	QTransparentWidget(QWidget *parent) : QWidget(parent)
-	{
-		setStyleSheet(QString::fromUtf8("background-color: rgba(175, 75, 75, 0);"));
-
-//        setAttribute(Qt::WA_TranslucentBackground);
-//        setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
-	}
-};
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
@@ -97,13 +85,17 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	setLayout(layout);
 	
 	// create top widget for tool buttons
-	topPlaceholder = new QTransparentWidget(this);
-
-	topPlaceholderLayout = new QHBoxLayout(topPlaceholder);
-	topPlaceholderLayout->setMargin(2);
-	topPlaceholderLayout->setSpacing(1);
-	topPlaceholderLayout->setAlignment(Qt::AlignLeft);
-	topPlaceholder->setLayout(topPlaceholderLayout);
+	toolWidgetContainer = new QWidget(QtMainWindow::Instance());
+	toolWidgetContainer->setMaximumHeight(16);
+	toolWidgetContainer->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+	toolWidgetContainer->setAttribute(Qt::WA_NoSystemBackground, true);
+	toolWidgetContainer->setAttribute(Qt::WA_TranslucentBackground, true);  
+	toolWidgetContainer->setAttribute(Qt::WA_PaintOnScreen); // as pointed by Caveman (thanks!)
+	toolWidgetLayout = new QHBoxLayout();
+	toolWidgetLayout->setMargin(1);
+	toolWidgetLayout->setSpacing(1);
+	toolWidgetLayout->setAlignment(Qt::AlignLeft);
+	toolWidgetContainer->setLayout(toolWidgetLayout);
 
 	setAcceptDrops(true);
     
@@ -120,6 +112,16 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
 
 	SetCurrentTab(0);
+
+	//QtLabelWithActions *objectTypesLabel = new QtLabelWithActions();
+	//objectTypesLabel->setMenu(QtMainWindow::Instance()->GetUI()->menuEdit);
+	//objectTypesLabel->setDefaultAction(QtMainWindow::Instance()->GetUI()->actionNoObject);
+
+	//QtLabelWithActions *objectTypesLabel1 = new QtLabelWithActions();
+	//objectTypesLabel1->setMenu(QtMainWindow::Instance()->GetUI()->menuView);
+	//objectTypesLabel1->setDefaultAction(QtMainWindow::Instance()->GetUI()->actionNoObject);
+
+	AddToolWidget(new QPushButton(QIcon(":/QtIcons/edit_redo.png"), "11"));
 }
 
 SceneTabWidget::~SceneTabWidget()
@@ -236,7 +238,7 @@ int SceneTabWidget::GetCurrentTab() const
 void SceneTabWidget::SetCurrentTab(int index)
 {
 	davaWidget->setEnabled(false);
- 	topPlaceholder->setVisible(false);
+ 	toolWidgetContainer->setVisible(false);
 
 	if(index >= 0 && index < tabBar->count())
 	{
@@ -260,7 +262,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->selectionSystem->SetLocked(false);
 
 			davaWidget->setEnabled(true);
-//			topPlaceholder->setVisible(true); //VK: disabled for future.
+			// toolWidgetContainer->setVisible(true); //VK: disabled for future.
 		}
 	}
 }
@@ -355,16 +357,22 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
 {
+	static QCursor cursorMove(QPixmap(":/QtIcons/curcor_move.png"));
+	static QCursor cursorRotate(QPixmap(":/QtIcons/curcor_rotate.png"));
+	static QCursor cursorScale(QPixmap(":/QtIcons/curcor_scale.png"));
+
 	if(GetCurrentScene() == scene && NULL != entities)
 	{
 		switch(scene->modifSystem->GetModifMode())
 		{
 		case ST_MODIF_MOVE:
-			setCursor(Qt::SizeAllCursor);
+			setCursor(cursorMove);
 			break;
 		case ST_MODIF_ROTATE:
+			setCursor(cursorRotate);
 			break;
 		case ST_MODIF_SCALE:
+			setCursor(cursorScale);
 			break;
 		case ST_MODIF_OFF:
 		default:
@@ -422,7 +430,7 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
 
-		topPlaceholder->setGeometry(0, 25, width(), 20);
+		UpdateToolWidget();
 	}
 
 	return QWidget::eventFilter(object, event);
@@ -470,6 +478,16 @@ void SceneTabWidget::UpdateTabName(int index)
 	}
 }
 
+void SceneTabWidget::UpdateToolWidget()
+{
+	QRect rect = davaWidget->geometry();
+	QPoint leftTop = davaWidget->mapToGlobal(QPoint(2, 2));
+	QPoint rightBot = davaWidget->mapToGlobal(QPoint(rect.width() - 2 * 2, 16));
+
+	//toolWidgetContainer->setGeometry(QRect(toolWidgetContainer->mapFromParent(mapFromGlobal(leftTop)), mapFromGlobal(rightBot)));
+	toolWidgetContainer->setGeometry(QRect(leftTop, rightBot));
+}
+
 SceneEditor2* SceneTabWidget::GetCurrentScene() const
 {
 	return curScene;
@@ -500,12 +518,12 @@ void SceneTabWidget::HideScenePreview()
 	}
 }
 
-void SceneTabWidget::AddTopToolWidget(QWidget *widget)
+void SceneTabWidget::AddToolWidget(QWidget *widget)
 {
     if(widget)
     {
-        widget->setParent(topPlaceholder);
-		topPlaceholderLayout->addWidget(widget);
+        widget->setParent(toolWidgetContainer);
+		toolWidgetLayout->addWidget(widget);
     }
 }
 
