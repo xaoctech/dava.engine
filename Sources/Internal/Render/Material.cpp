@@ -967,7 +967,7 @@ const Color & Material::GetFogColor() const
     return fogColor;
 }
 
-void Material::PrepareRenderState(Matrix4 * worldMxPtr, InstanceMaterialState * instanceMaterialState)
+void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState, Matrix4 * worldMxPtr)
 {
     ///float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
@@ -1208,7 +1208,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		oldDst = RenderManager::Instance()->GetDestBlend();
 	}
 
-	PrepareRenderState(worldMxPtr, instanceMaterialState);
+	PrepareRenderState(instanceMaterialState, worldMxPtr);
 
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
