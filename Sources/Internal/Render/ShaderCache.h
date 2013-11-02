@@ -55,6 +55,10 @@ protected:
     Data * vertexShaderData;
     Data * fragmentShaderData;
     HashMap < FastNameSet, Shader *> compiledShaders;
+	
+	
+	//DEBUG
+	//Map<String, int> dbgMap;
 };
     
 class ShaderCache : public Singleton<ShaderCache>
