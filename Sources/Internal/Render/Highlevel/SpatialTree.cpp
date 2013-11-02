@@ -421,8 +421,10 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 	{
 		for (int32 i = 0; i<objectsSize; ++i)
 		{
+
 			currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-			AddToRender(currNode.objects[i]);
+			if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
+				AddToRender(currNode.objects[i]);
 		}
 	}
 	else
@@ -435,7 +437,8 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 				if ((flags&RenderObject::ALWAYS_CLIPPING_VISIBLE)||currFrustum->IsInside(currNode.objects[i]->GetWorldBoundingBox(), clippingFlags, currNode.objects[i]->startClippingPlane))
 				{
 					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-					AddToRender(currNode.objects[i]);
+					if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
+						AddToRender(currNode.objects[i]);
 				}
 			}				
 		}
