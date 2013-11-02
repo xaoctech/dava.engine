@@ -525,11 +525,6 @@ void HeightmapEditorPanel::ConnectToShortcuts()
 			this, SLOT(SetAbsDropDrawing()));
 	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			this, SLOT(SetDropper()));
-
-	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
-			this, SLOT(ShortcutSetCopyPasteHeightmap()));
-	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
-			this, SLOT(ShortcutSetCopyPasteTilemask()));
 }
 
 void HeightmapEditorPanel::DisconnectFromShortcuts()
@@ -580,11 +575,6 @@ void HeightmapEditorPanel::DisconnectFromShortcuts()
 			   this, SLOT(SetAbsDropDrawing()));
 	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			   this, SLOT(SetDropper()));
-
-	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
-			   this, SLOT(ShortcutSetCopyPasteHeightmap()));
-	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
-			   this, SLOT(ShortcutSetCopyPasteTilemask()));
 }
 
 void HeightmapEditorPanel::IncreaseBrushSize()
