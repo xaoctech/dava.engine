@@ -179,8 +179,17 @@ bool HashMap<K, V>::IsEmpty() const
 template <typename K, typename V>
 void HashMap<K, V>::Insert(const K &key, const V &value)
 {
-	HashMapItem* item = new HashMapItem(key, value);
-	InsertItem(item);
+	HashMapItem* item = GetItem(key);
+	
+	if(item)
+	{
+		item->value = value;
+	}
+	else
+	{
+		item = new HashMapItem(key, value);
+		InsertItem(item);
+	}
 }
 
 template <typename K, typename V>
