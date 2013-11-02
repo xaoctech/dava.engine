@@ -617,25 +617,13 @@ void SceneTree::ReloadModel()
 	if(NULL != sceneEditor)
 	{
 		QDialog *dlg = new QDialog(this);
+
 		QVBoxLayout *dlgLayout = new QVBoxLayout();
+		dlgLayout->setMargin(10);
 
 		dlg->setWindowTitle("Reload Model options");
 		dlg->setLayout(dlgLayout);
 	
-		QGroupBox *group = new QGroupBox(dlg);
-		dlgLayout->addWidget(group);
-
-		QVBoxLayout *groupLayout = new QVBoxLayout();
-		group->setLayout(groupLayout);
-
-		QRadioButton *radioSelected = new QRadioButton("Reload selected entities", group);
-		groupLayout->addWidget(radioSelected);
-
-		QRadioButton *radioByRef = new QRadioButton("Reload all entities, with same reference", group);
-		groupLayout->addWidget(radioByRef);
-
-		radioSelected->setChecked(true);
-
 		QCheckBox *lightmapsChBox = new QCheckBox("Reload lightmaps", dlg);
 		dlgLayout->addWidget(lightmapsChBox);
 		lightmapsChBox->setCheckState(Qt::Checked);
@@ -649,30 +637,7 @@ void SceneTree::ReloadModel()
 		if(QDialog::Accepted == dlg->exec())
 		{
 			EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-			bool reloadLightmaps = lightmapsChBox->isChecked();
-
-			if(radioSelected->isChecked())
-			{
-				sceneEditor->structureSystem->Reload(selection, "", reloadLightmaps);
-			}
-			else
-			{
-				DAVA::Set<DAVA::FilePath> reloadedOwnerPath;
-
-				for (int i = 0; i < selection.Size(); i++)
-				{
-					DAVA::Entity *entity = selection.GetEntity(i);
-					if(NULL != entity && NULL != entity->GetCustomProperties())
-					{
-						DAVA::FilePath refPath = entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-						if(0 == reloadedOwnerPath.count(refPath))
-						{
-							sceneEditor->structureSystem->Reload(refPath, "", reloadLightmaps);
-							reloadedOwnerPath.insert(refPath);
-						}
-					}
-				}
-			}
+			sceneEditor->structureSystem->ReloadEntities(selection, lightmapsChBox->isChecked());
 		}
 
 		delete dlg;
@@ -704,7 +669,7 @@ void SceneTree::ReloadModelAs()
 			QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
-				sceneEditor->structureSystem->Reload(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
+				sceneEditor->structureSystem->ReloadEntitiesAs(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
 			}
 		}
 	}
