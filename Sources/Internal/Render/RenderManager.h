@@ -98,6 +98,7 @@ public:
         uint32 drawArraysCalls;
         uint32 drawElementsCalls;
         uint32 shaderBindCount;
+        uint32 occludedRenderBatchCount;
         uint32 primitiveCount[PRIMITIVETYPE_COUNT];
     };
     

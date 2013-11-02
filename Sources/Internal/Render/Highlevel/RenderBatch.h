@@ -66,6 +66,7 @@ class RenderObject;
 class RenderBatch;
 class NMaterial;
 class NMaterialInstance;
+class OcclusionQuery;
 
     
 /*
@@ -150,6 +151,7 @@ protected:
     uint32 removeIndex;
 
 	AABBox3 aabbox;
+    OcclusionQuery * occlusionQuery;
 
 	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     

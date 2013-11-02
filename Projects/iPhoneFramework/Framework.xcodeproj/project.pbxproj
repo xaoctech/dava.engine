@@ -49,6 +49,8 @@
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
 		4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */; };
 		4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */; };
+		505EB41C18250C53009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */; };
+		505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 505EB41B18250C53009BEA3C /* OcclusionQuery.h */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
@@ -773,6 +775,8 @@
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
 		4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
 		4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialOptimazer.h; sourceTree = "<group>"; };
+		505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcclusionQuery.cpp; sourceTree = "<group>"; };
+		505EB41B18250C53009BEA3C /* OcclusionQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcclusionQuery.h; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
@@ -1979,6 +1983,8 @@
 				E8B3C95416B9326E002BD35F /* LibPngHelpers.h */,
 				E8B3C95516B9326E002BD35F /* LibPVRHelper.cpp */,
 				E8B3C95616B9326E002BD35F /* LibPVRHelper.h */,
+				505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */,
+				505EB41B18250C53009BEA3C /* OcclusionQuery.h */,
 				E8B3C95716B9326E002BD35F /* Material */,
 				E8B3C96116B9326E002BD35F /* Material.cpp */,
 				E8B3C96216B9326E002BD35F /* Material.h */,
@@ -2653,6 +2659,7 @@
 				E8B3CBC716B9326E002BD35F /* Sprite.h in Headers */,
 				E8B3CBC916B9326E002BD35F /* TextBlock.h in Headers */,
 				E8B3CBCB16B9326E002BD35F /* AnimatedMesh.h in Headers */,
+				505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */,
 				E8B3CBCD16B9326E002BD35F /* EdgeAdjacency.h in Headers */,
 				E8B3CBCF16B9326E002BD35F /* PolygonGroup.h in Headers */,
 				E8B3CBD116B9326E002BD35F /* StaticMesh.h in Headers */,
@@ -2953,6 +2960,7 @@
 				E8B3CA8D16B9326E002BD35F /* Action.cpp in Sources */,
 				E8B3CA8F16B9326E002BD35F /* AssertAction.cpp in Sources */,
 				E8B3CA9116B9326E002BD35F /* AutotestingSystem.cpp in Sources */,
+				505EB41C18250C53009BEA3C /* OcclusionQuery.cpp in Sources */,
 				E8B3CA9416B9326E002BD35F /* MongodbUpdateObject.cpp in Sources */,
 				E8B3CA9616B9326E002BD35F /* TouchAction.cpp in Sources */,
 				E8B3CA9816B9326E002BD35F /* BaseMath.cpp in Sources */,
