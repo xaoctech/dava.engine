@@ -631,7 +631,7 @@ void QtMainWindow::SetupActions()
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
  	objectTypesLabel->setDefaultAction(ui->actionNoObject);
 	
-    ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
+    ui->sceneTabWidget->AddToolWidget(objectTypesLabel);
 
 	ui->actionObjectTypesOff->setData(ResourceEditor::ESOT_NONE);
 	ui->actionNoObject->setData(ResourceEditor::ESOT_NO_COLISION);

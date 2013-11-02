@@ -80,7 +80,7 @@ public:
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
 	void HideScenePreview();
     
-    void AddTopToolWidget(QWidget *widget);
+    void AddToolWidget(QWidget *widget);
 
 	DavaGLWidget * GetDavaWidget() const;
 
@@ -109,13 +109,13 @@ protected:
 	const int davaUIScreenID;
 	const int dava3DViewMargin;
 
-	QWidget *topPlaceholder;
-	QLayout *topPlaceholderLayout;
-
+	QWidget *toolWidgetContainer;
+	QLayout *toolWidgetLayout;
 
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 	void UpdateTabName(int index);
+	void UpdateToolWidget();
 
 	void SetTabScene(int index, SceneEditor2* scene);
 
