@@ -38,7 +38,8 @@ using namespace DAVA;
 
 class FormatsTest : public TestTemplate<FormatsTest>
 {
-    
+protected:
+    ~FormatsTest(){}
 public:
 	FormatsTest();
 
