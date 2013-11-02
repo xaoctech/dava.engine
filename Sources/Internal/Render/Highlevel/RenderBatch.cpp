@@ -38,6 +38,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Debug/DVAssert.h"
 #include "Render/Material/MaterialSystem.h"
+#include "Render/OcclusionQuery.h"
 
 namespace DAVA
 {
@@ -59,10 +60,12 @@ RenderBatch::RenderBatch()
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 	aabbox = AABBox3(Vector3(), Vector3());
+    occlusionQuery = new OcclusionQuery();
 }
     
 RenderBatch::~RenderBatch()
 {
+    SafeDelete(occlusionQuery);
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	
@@ -103,13 +106,29 @@ void RenderBatch::SetMaterial(NMaterial * _material)
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
-	if(!renderObject)return;
+//	if(!renderObject)return;
+    DVASSERT(renderObject != 0);
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
-    if (!worldTransformPtr)
+    DVASSERT(worldTransformPtr != 0);
+
+    if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
-        return;
+        if (occlusionQuery->IsResultAvailable())
+        {
+            uint32 result = 0;
+            occlusionQuery->GetQuery(&result);
+            if (result == 0)
+            {
+                RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
+                occlusionQuery->ResetResult();
+                return;
+            }
+        }
     }
-    
+//    if (!worldTransformPtr)
+//    {
+//        return;
+//    }
 //    uint32 flags = renderObject->GetFlags();
 //    if ((flags & visiblityCriteria) != visiblityCriteria)
 //        return;
@@ -120,7 +139,18 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
+
+    if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
+    {
+        occlusionQuery->BeginQuery();
+    }
+    
     material->Draw(dataSource);
+    
+    if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
+    {
+        occlusionQuery->EndQuery();
+    }
 }
     
     

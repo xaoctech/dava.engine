@@ -796,6 +796,7 @@ void RenderManager::Stats::Clear()
     drawArraysCalls = 0;
     drawElementsCalls = 0;
     shaderBindCount = 0;
+    occludedRenderBatchCount = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
 }
