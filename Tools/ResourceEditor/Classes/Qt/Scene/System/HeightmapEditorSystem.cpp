@@ -41,6 +41,9 @@
 #include "../../../Commands2/TilemaskEditorCommands.h"
 #include "../../Main/QtUtils.h"
 #include "../../../SceneEditor/EditorSettings.h"
+#include "HoodSystem.h"
+
+#include <QApplication>
 
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -80,6 +83,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
+	SafeRelease(tilemaskImage);
 	SafeRelease(cursorTexture);
 	SafeRelease(squareTexture);
 }
@@ -189,10 +193,12 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if (drawingType == HEIGHTMAP_COPY_PASTE)
 					{
-						if (IsKeyModificatorPressed(DVKEY_ALT))
+						int32 curKeyModifiers = QApplication::keyboardModifiers();
+						if (curKeyModifiers & Qt::AltModifier)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
+							return;
 						}
 						else
 						{
@@ -272,6 +278,11 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 
@@ -532,6 +543,7 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 		Rect tilemaskRect = GetTilemaskUpdatedRect();
 		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
 		scene->Exec(cmd);
+		SafeRelease(tilemaskImage);
 	}
 	scene->EndBatch();
 }
