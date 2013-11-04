@@ -698,6 +698,27 @@ void SceneTree::SaveEntityAs()
 	}
 }
 
+void SceneTree::CollapseAll()
+{
+	QTreeView::collapseAll();
+	bool needSync = false;
+	QModelIndexList indexList = selectionModel()->selection().indexes();
+	for (int i = 0; i < indexList.size(); ++i)
+	{
+		QModelIndex childIndex = indexList[i];
+		if(childIndex.parent().isValid())
+		{
+			selectionModel()->select(childIndex, QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
+			needSync = true;
+		}
+	}
+
+	if(needSync)
+	{
+		SyncSelectionFromTree();
+	}
+}
+
 void SceneTree::TreeItemCollapsed(const QModelIndex &index)
 {
 	treeModel->SetSolid(filteringProxyModel->mapToSource(index), true);
