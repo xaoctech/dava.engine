@@ -139,6 +139,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon cameraIcon(":/QtIcons/camera.png");
 	static QIcon lightIcon(":/QtIcons/light.png");
 	static QIcon shadowIcon(":/QtIcons/shadow.png");
+	static QIcon switchIcon(":/QtIcons/switch.png");
 
 	QIcon ret;
 
@@ -159,6 +160,10 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		else if(NULL != GetLodComponent(entity))
 		{
 			ret = lodobjIcon;
+		}
+		else if(NULL != GetSwitchComponent(entity))
+		{
+			ret = switchIcon;
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
