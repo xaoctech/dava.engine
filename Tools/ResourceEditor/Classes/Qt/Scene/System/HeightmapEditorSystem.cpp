@@ -43,6 +43,8 @@
 #include "../../../SceneEditor/EditorSettings.h"
 #include "HoodSystem.h"
 
+#include <QApplication>
+
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	enabled(false)
@@ -77,11 +79,11 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
-	hoodSystem = ((SceneEditor2 *) GetScene())->hoodSystem;
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
+	SafeRelease(tilemaskImage);
 	SafeRelease(cursorTexture);
 	SafeRelease(squareTexture);
 }
@@ -114,9 +116,7 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	}
 
 	selectionSystem->SetLocked(true);
-	selectionSystem->LockSelection(true);
 	modifSystem->SetLocked(true);
-	hoodSystem->Show(false);
 
 	landscapeSize = drawSystem->GetHeightmapProxy()->Size();
 	copyPasteFrom = Vector2(-1.f, -1.f);
@@ -141,14 +141,8 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 
 	FinishEditing();
 
-	selectionSystem->LockSelection(false);
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
-
-	if(selectionSystem->GetSelectionCount() > 0)
-	{
-		hoodSystem->Show(true);
-	}
 	
 	drawSystem->DisableCursor();
 	drawSystem->DisableCustomDraw();
@@ -199,7 +193,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if (drawingType == HEIGHTMAP_COPY_PASTE)
 					{
-						if (IsKeyModificatorPressed(DVKEY_ALT))
+						int32 curKeyModifiers = QApplication::keyboardModifiers();
+						if (curKeyModifiers & Qt::AltModifier)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
@@ -548,6 +543,7 @@ void HeightmapEditorSystem::CreateCopyPasteUndo()
 		Rect tilemaskRect = GetTilemaskUpdatedRect();
 		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
 		scene->Exec(cmd);
+		SafeRelease(tilemaskImage);
 	}
 	scene->EndBatch();
 }

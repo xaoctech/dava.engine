@@ -327,13 +327,15 @@ void CommandStack::ClearCommand(size_t index)
 			nextCommandIndex--;
 		}
 
-		if(cleanCommandIndex > 0 && index <= cleanCommandIndex)
+		if(cleanCommandIndex > 0 && index < cleanCommandIndex)
 		{
 			cleanCommandIndex--;
 		}
 
 		delete command;
 	}
+
+	CleanCheck();
 }
 
 void CommandStack::CleanCheck()

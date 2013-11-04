@@ -51,6 +51,13 @@ class BaseAddEntityDialog: public QDialog
 	Q_OBJECT
 
 public:
+	
+	enum eButtonAlign
+	{
+		BUTTON_ALIGN_LEFT = 0,
+		BUTTON_ALIGN_RIGHT
+	};
+	
 	explicit BaseAddEntityDialog( QWidget* parent = 0, QDialogButtonBox::StandardButtons buttons = QDialogButtonBox::Close);
 	virtual ~BaseAddEntityDialog();
 	
@@ -58,6 +65,8 @@ public:
 
 	virtual DAVA::Entity* GetEntity();
 	void virtual SetEntity(DAVA::Entity* );
+	
+	void AddButton( QWidget* widget, eButtonAlign orientation = BUTTON_ALIGN_LEFT);
 
 protected slots:
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
