@@ -978,8 +978,8 @@ void QtMainWindow::OnImportSpeedTreeXML()
     QString path = QFileDialog::getOpenFileName(this, "Import SpeedTree", projectPath, "SpeedTree RAW File (*.xml)");
     if (!path.isEmpty())
     {
-        DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
-        QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
+//         DAVA::FilePath filePath = DAVA::SpeedTreeImporter::ImportSpeedTreeFromXML(path.toStdString(), ProjectManager::Instance()->CurProjectDataSourcePath().toStdString() + "Trees/");
+//         QMessageBox::information(this, "SpeedTree Import", QString(("SpeedTree model was imported to " + filePath.GetAbsolutePathname()).c_str()), QMessageBox::Ok);
     }
 #endif //__DAVAENGINE_SPEEDTREE__
 }
