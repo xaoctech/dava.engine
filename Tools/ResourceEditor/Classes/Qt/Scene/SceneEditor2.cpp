@@ -50,6 +50,7 @@
 SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
+	, isHUDVisible(true)
 {
 	renderStats.Clear();
 
@@ -293,6 +294,17 @@ bool SceneEditor2::IsLoaded() const
 	return isLoaded;
 }
 
+void SceneEditor2::SetHUDVisible(bool visible)
+{
+	isHUDVisible = visible;
+	hoodSystem->LockAxis(!visible);
+}
+
+bool SceneEditor2::IsHUDVisible() const
+{
+	return isHUDVisible;
+}
+
 bool SceneEditor2::IsChanged() const
 {
 	return ((!commandStack.IsClean()) || wasChanged);
@@ -367,25 +379,32 @@ void SceneEditor2::Draw()
 	Scene::Draw();
     renderStats = RenderManager::Instance()->GetStats();
 
-	gridSystem->Draw();
-	cameraSystem->Draw();
+	if(isHUDVisible)
+	{
+		gridSystem->Draw();
+		cameraSystem->Draw();
 
-	if(collisionSystem)
-		collisionSystem->Draw();
+		if(collisionSystem)
+			collisionSystem->Draw();
 
-	modifSystem->Draw();
+		modifSystem->Draw();
 
-	if(structureSystem)
-		structureSystem->Draw();
+		if(structureSystem)
+			structureSystem->Draw();
+	}
 
 	tilemaskEditorSystem->Draw();
-	particlesSystem->Draw();
-	debugDrawSystem->Draw();
 
-	// should be last
-	selectionSystem->Draw();
-	hoodSystem->Draw();
-	textDrawSystem->Draw();
+	if(isHUDVisible)
+	{
+		particlesSystem->Draw();
+		debugDrawSystem->Draw();
+
+		// should be last
+		selectionSystem->Draw();
+		hoodSystem->Draw();
+		textDrawSystem->Draw();
+	}
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)

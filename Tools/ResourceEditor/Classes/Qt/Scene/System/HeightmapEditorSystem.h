@@ -38,6 +38,7 @@ class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
 class LandscapeEditorDrawSystem;
+class HoodSystem;
 
 class HeightmapEditorSystem: public DAVA::SceneSystem
 {

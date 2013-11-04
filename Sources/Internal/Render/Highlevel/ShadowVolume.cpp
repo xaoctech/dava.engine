@@ -50,6 +50,8 @@ ShadowVolume::ShadowVolume()
     SetOwnerLayerName(LAYER_SHADOW_VOLUME);
     
     aabbox = AABBox3(Vector3(), Vector3());
+
+    uniformLightPosition0 = shader->FindUniformIndexByName("lightPosition0");;
 }
 
 ShadowVolume::~ShadowVolume()
@@ -96,7 +98,6 @@ void ShadowVolume::Draw(Camera * camera)
 	RenderManager::Instance()->AttachRenderData();
 
 	//Vector3 position = Vector3() * GetWorldTransform();
-	int32 uniformLightPosition0 = shader->FindUniformIndexByName("lightPosition0");
 	if (light && uniformLightPosition0 != -1)
 	{
 		Vector3 lightPosition0 = light->GetPosition();

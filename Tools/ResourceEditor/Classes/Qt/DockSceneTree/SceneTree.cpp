@@ -32,6 +32,10 @@
 #include "Main/mainwindow.h"
 #include "StringConstants.h"
 #include <QBoxLayout>
+#include <QGroupBox>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QDialogButtonBox>
 #include <QDropEvent>
 #include <QMenu>
 
@@ -103,6 +107,8 @@ SceneTree::~SceneTree()
 void SceneTree::SetFilter(const QString &filter)
 {
 	filteringProxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+    
+    SyncSelectionToTree();
 }
 
 void SceneTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
@@ -298,7 +304,7 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 		switch (item->ItemType())
 		{
 		case SceneTreeItem::EIT_Entity:
-			ShowContextMenuEntity(SceneTreeItemEntity::GetEntity(item), mapToGlobal(pos));
+			ShowContextMenuEntity(SceneTreeItemEntity::GetEntity(item), treeModel->GetCustomFlags(index), mapToGlobal(pos));
 			break;
 
 		case SceneTreeItem::EIT_Layer:
@@ -332,7 +338,7 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 	}
 }
 
-void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
+void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlags, const QPoint &pos)
 {
 	if(NULL != entity)
 	{
@@ -341,10 +347,10 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		SceneSelectionSystem *selSystem = scene->selectionSystem;
 		size_t selectionSize = selSystem->GetSelectionCount();
 
-
 		QMenu contextMenu;
-		if(IsAnyEditorEntityIsSelected())
+		if(entityCustomFlags & SceneTreeModel::CF_Disabled)
 		{
+			// disabled entities can only be removed
 			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
 		}
 		else
@@ -375,30 +381,43 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 				unlockAction->setDisabled(true);
 			}
 
-			// save model as
-			contextMenu.addSeparator();
-			contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
-
-			// custom properties
-			contextMenu.addSeparator();
-
-			DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
-			if(NULL != customProp)
+			DAVA::ParticleEmitter* emitter = DAVA::GetEmitter(entity);
+			// show save as/reload/edit for regular entity
+			if(NULL == emitter)
 			{
-				DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-				if(!ownerRef.IsEmpty())
-				{
-					if(selectionSize == 1)
-					{
-						QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
-					}
+				// save model as
+				contextMenu.addSeparator();
+				contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 
-					QAction *reloadModelAction = contextMenu.addAction("Reload Model", this, SLOT(ReloadModel()));
-					QAction *reloadModelLightmapsAction = contextMenu.addAction("Reload Model without Lightmaps", this, SLOT(ReloadModelWithoutLightmaps()));
+				DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
+				if(NULL != customProp)
+				{
+					DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+					if(!ownerRef.IsEmpty())
+					{
+						if(selectionSize == 1)
+						{
+							QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+						}
+
+						QAction *reloadModelAction = contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
+					}
 				}
+				//DF-2004: Reload for every entity at scene
+				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
 			}
-			//DF-2004: Reload for every entity at scene
-			QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
+			// but particle emitter has it own menu actions
+			else
+			{
+				contextMenu.addSeparator();
+				QMenu *particleEffectMenu = contextMenu.addMenu("Particle Emitter");
+
+				particleEffectMenu->addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
+				particleEffectMenu->addSeparator();
+				particleEffectMenu->addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
+				particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
+				particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
+			}
 
 			// particle effect
 			DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
@@ -412,20 +431,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 				particleEffectMenu->addAction(QIcon(":/QtIcons/play.png"), "Start", this, SLOT(StartEmitter()));
 				particleEffectMenu->addAction(QIcon(":/QtIcons/stop.png"), "Stop", this, SLOT(StopEmitter()));
 				particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Restart", this, SLOT(RestartEmitter()));
-			}
-
-			// particle emitter
-			DAVA::ParticleEmitter* emitter = DAVA::GetEmitter(entity);
-			if (NULL != emitter)
-			{
-				contextMenu.addSeparator();
-				QMenu *particleEffectMenu = contextMenu.addMenu("Particle Emitter");
-
-				particleEffectMenu->addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
-				particleEffectMenu->addSeparator();
-				particleEffectMenu->addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 			}
 
 			if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
@@ -449,7 +454,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			if(selectionSize == 1)
 			{
 				contextMenu.addSeparator();
-				contextMenu.addAction("Find same entities",this, SLOT(OnFindSameEntity()));
+				contextMenu.addAction(QIcon(":/QtIconsTextureDialog/filter.png"), "Set name as filter",this, SLOT(SetEntityNameAsFilter()));
 			}
 		}
 
@@ -611,8 +616,31 @@ void SceneTree::ReloadModel()
 	SceneEditor2 *sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
 	{
-		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Reload(selection);
+		QDialog *dlg = new QDialog(this);
+
+		QVBoxLayout *dlgLayout = new QVBoxLayout();
+		dlgLayout->setMargin(10);
+
+		dlg->setWindowTitle("Reload Model options");
+		dlg->setLayout(dlgLayout);
+	
+		QCheckBox *lightmapsChBox = new QCheckBox("Reload lightmaps", dlg);
+		dlgLayout->addWidget(lightmapsChBox);
+		lightmapsChBox->setCheckState(Qt::Checked);
+
+		QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
+		dlgLayout->addWidget(buttons);
+
+		QObject::connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
+		QObject::connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+		if(QDialog::Accepted == dlg->exec())
+		{
+			EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
+			sceneEditor->structureSystem->ReloadEntities(selection, lightmapsChBox->isChecked());
+		}
+
+		delete dlg;
 	}
 }
 
@@ -641,19 +669,9 @@ void SceneTree::ReloadModelAs()
 			QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 			if(!filePath.isEmpty())
 			{
-				sceneEditor->structureSystem->Reload(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
+				sceneEditor->structureSystem->ReloadEntitiesAs(sceneEditor->selectionSystem->GetSelection(), filePath.toStdString());
 			}
 		}
-	}
-}
-
-void SceneTree::ReloadModelWithoutLightmaps()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Reload(selection, "", true);
 	}
 }
 
@@ -1268,7 +1286,7 @@ void SceneTree::OnRefreshTimeout()
 	dataChanged(QModelIndex(), QModelIndex());
 }
 
-void SceneTree::OnFindSameEntity()
+void SceneTree::SetEntityNameAsFilter()
 {
 	SceneEditor2 *scene = treeModel->GetScene();
 	if(!scene) return;
@@ -1278,26 +1296,4 @@ void SceneTree::OnFindSameEntity()
 
 	Entity *entity = selection.GetEntity(0);
 	QtMainWindow::Instance()->GetUI()->sceneTreeFilterEdit->setText(entity->GetName().c_str());
-}
-
-bool SceneTree::IsAnyEditorEntityIsSelected()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(!sceneEditor)
-	{
-		return false;
-	}
-
-	EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-	for(size_t i = 0; i < selection.Size(); ++i)
-	{
-		String name = selection.GetEntity(i)->GetName();
-		if(0 == name.find(ResourceEditor::EDITOR_BASE))
-		{
-			return true;
-		}
-	}
-
-	return false;
-
 }
