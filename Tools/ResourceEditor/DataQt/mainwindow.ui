@@ -320,6 +320,7 @@
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
+    <addaction name="actionOnSceneSelection"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -336,7 +337,6 @@
     <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionConvertToShadow"/>
    </widget>
@@ -1643,6 +1643,21 @@
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionOnSceneSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/object_select.png</normaloff>:/QtIcons/object_select.png</iconset>
+   </property>
+   <property name="text">
+    <string>On Scene Selection</string>
    </property>
   </action>
  </widget>

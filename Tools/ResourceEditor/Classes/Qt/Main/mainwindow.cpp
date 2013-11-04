@@ -547,6 +547,7 @@ void QtMainWindow::SetupActions()
 
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
 
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -1064,6 +1065,15 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 	}
 }
 
+void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->selectionSystem->SetSelectionAllowed(allow);
+	}
+}
+
 void QtMainWindow::OnReloadTextures()
 {
 	SetGPUFormat(GetGPUFormat());
@@ -1431,6 +1441,7 @@ void QtMainWindow::LoadViewState(SceneEditor2 *scene)
 	if(NULL != scene)
 	{
 		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
+		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
 	}
 }
 
