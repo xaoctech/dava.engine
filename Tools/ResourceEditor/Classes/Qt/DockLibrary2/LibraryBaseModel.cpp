@@ -29,6 +29,7 @@
 
 
 #include "LibraryBaseModel.h"
+#include "LibraryFilteringModel.h"
 
 #include <DAVAEngine.h>
 
@@ -37,14 +38,13 @@
 LibraryBaseModel::LibraryBaseModel(const QString &modelName)
     : treeModel(NULL)
     , listModel(NULL)
+	, filteringModel(NULL)
     , name(modelName)
 {
 }
 
 LibraryBaseModel::~LibraryBaseModel()
 {
-    DAVA::SafeDelete(treeModel);
-    DAVA::SafeDelete(listModel);
 }
 
 QAbstractItemModel * LibraryBaseModel::GetTreeModel() const
@@ -54,12 +54,28 @@ QAbstractItemModel * LibraryBaseModel::GetTreeModel() const
 
 QAbstractItemModel * LibraryBaseModel::GetListModel() const
 {
+	if(filteringModel) 
+		return filteringModel;
+
     return listModel;
 }
 
 const QString & LibraryBaseModel::GetName() const
 {
     return name;
+}
+
+const QList<QAction *> & LibraryBaseModel::GetModelActions()
+{
+	return actions;
+}
+
+void LibraryBaseModel::SetFilter( const QString &filter )
+{
+	if(filteringModel)
+	{
+		filteringModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+	}
 }
 
 

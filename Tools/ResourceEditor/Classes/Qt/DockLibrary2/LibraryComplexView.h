@@ -43,7 +43,6 @@ class QAction;
 class QLineEdit;
 
 class LibraryBaseModel;
-class LibraryFilteringModel;
 class LibraryComplexView : public QWidget
 {
 	Q_OBJECT
@@ -74,6 +73,8 @@ private:
     void SetupViews();
     void SetupLayout();
     
+	void ResetModel();
+
 private:
 
     QToolBar *toolbar;
@@ -85,9 +86,10 @@ private:
     
     QAction *actionViewAsList;
     QAction *actionViewAsIcons;
+
+	QAction *modelSeparator;
     
     LibraryBaseModel *model;
-    LibraryFilteringModel *filteringModel;
 };
 
 #endif // __LIBRARY_COMPLEX_VIEW_H__

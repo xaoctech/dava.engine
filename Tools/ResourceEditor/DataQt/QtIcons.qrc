@@ -104,5 +104,7 @@
     <file>QtImages/sky_example5.png</file>
     <file>QtImages/sky_example6.png</file>
     <file>QtImages/sky_example7.png</file>
+    <file>QtLibraryIcons/sc2Icon.png</file>
+    <file>QtLibraryIcons/daeIcon.png</file>
   </qresource>
 </RCC>

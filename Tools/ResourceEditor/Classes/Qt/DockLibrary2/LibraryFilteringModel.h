@@ -39,15 +39,10 @@ class LibraryFilteringModel : public QSortFilterProxyModel
 {
 public:
 	LibraryFilteringModel(QObject *parent = NULL);
-	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    
     void SetModel(QAbstractItemModel *newModel);
     
 protected:
 	QAbstractItemModel *model;
-    
-	bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
-	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
-#endif // v
+#endif //__LIBRARY_FILTERING_MODEL_H__

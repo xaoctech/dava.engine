@@ -30,73 +30,18 @@
 
 #include "LibraryFilteringModel.h"
 
+#include <QFileSystemModel>
+
 LibraryFilteringModel::LibraryFilteringModel(QObject *parent /* = NULL */)
     : QSortFilterProxyModel(parent)
     , model(NULL)
 {
 }
 
-bool LibraryFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
-{
-    if(model == NULL) return false;
-
-    // check self accept
-    if(selfAcceptRow(sourceRow, sourceParent))
-    {
-        return true;
-    }
-    
-    //accept if any of the parents is accepted
-    QModelIndex parent = sourceParent;
-    while(parent.isValid())
-    {
-        if(selfAcceptRow(parent.row(), parent.parent()))
-        {
-            return true;
-        }
-        
-        parent = parent.parent();
-    }
-    
-    // accept if any child is accepted
-    if(childrenAcceptRow(sourceRow, sourceParent))
-    {
-        return true;
-    }
-
-	return false;
-}
 
 void LibraryFilteringModel::SetModel(QAbstractItemModel *newModel)
 {
     model = newModel;
     setSourceModel(model);
-}
-
-bool LibraryFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
-{
-	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-}
-
-bool LibraryFilteringModel::childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
-{
-    if(model == NULL) return false;
-    
-	bool ret = false;
-    
-	QModelIndex index = model->index(sourceRow, 0, sourceParent);
-	if(model->rowCount(index) > 0)
-	{
-		for(int i = 0; i < model->rowCount(index); i++)
-		{
-			if(selfAcceptRow(i, index) || childrenAcceptRow(i, index))
-			{
-				ret = true;
-				break;
-			}
-		}
-	}
-    
-	return ret;
 }
 

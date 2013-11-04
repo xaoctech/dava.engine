@@ -28,49 +28,23 @@
 
 
 
-#ifndef __LIBRARY_FILE_SYSTEM_MODEL_H__
-#define __LIBRARY_FILE_SYSTEM_MODEL_H__
+#ifndef __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+#define __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
 
-#include "LibraryBaseModel.h"
-#include "DAVAEngine.h"
+#include "../LibraryFilteringModel.h"
 
-class LibraryFileSystemModel: public LibraryBaseModel
+class  LibraryFileSystemFilteringModel: public LibraryFilteringModel
 {
-    Q_OBJECT
-    
 public:
-    LibraryFileSystemModel();
+	LibraryFileSystemFilteringModel(QObject *parent = NULL);
     
-    virtual void TreeItemSelected(const QItemSelection & selection);
-    virtual void ListItemSelected(const QItemSelection & selection);
+	void SetSourceRoot(const QModelIndex &root);
 
-    virtual void SetProjectPath(const QString & path);
-    
-    virtual const QModelIndex GetTreeRootIndex() const;
-    virtual const QModelIndex GetListRootIndex() const;
-
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-
-protected slots:
-    
-	void OnModelEdit();
-	void OnModelAdd();
-	void OnDAEConvert();
-	void OnDAEConvertGeometry();
-    void OnRevealAtFolder();
-    
 protected:
-    
-    void HidePreview() const;
-    void ShowPreview(const DAVA::FilePath & pathname) const;
-    
-private:
-    
-    QString treeRootPath;
-    QString listRootPath;
+
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+	QModelIndex sourceRoot;
 };
 
-#include <QFileInfo>
-Q_DECLARE_METATYPE( QFileInfo )
-
-#endif // __LIBRARY_FILE_SYSTEM_MODEL_H__
+#endif // __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
