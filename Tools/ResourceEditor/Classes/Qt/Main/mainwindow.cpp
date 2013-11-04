@@ -651,6 +651,9 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SetupShortCuts()
 {
+	// select mode
+	QObject::connect(ui->sceneTabWidget, SIGNAL(Escape()), this, SLOT(OnSelectMode()));
+	
 	// look at
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_Z), this), SIGNAL(activated()), ui->sceneTree, SLOT(LookAtSelection()));
 	
