@@ -87,6 +87,7 @@ public:
 signals:
     
     void CloseTabRequest(int index, Request *closeRequest);
+	void Escape();
     
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
@@ -122,6 +123,7 @@ protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dropEvent(QDropEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent * event);
 
 	ScenePreviewDialog *previewDialog;
 
