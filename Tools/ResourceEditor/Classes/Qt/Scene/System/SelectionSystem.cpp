@@ -45,6 +45,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
+	, selectionAllowed(true)
 	, selectionHasChanges(false)
 {
 
@@ -81,7 +82,7 @@ void SceneSelectionSystem::ForceEmitSignals()
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
-	if (IsLocked())
+	if (IsLocked() || !selectionAllowed)
 	{
 		return;
 	}
@@ -330,6 +331,16 @@ void SceneSelectionSystem::SetPivotPoint(ST_PivotPoint pp)
 ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 {
 	return curPivotPoint;
+}
+
+void SceneSelectionSystem::SetSelectionAllowed(bool allowed)
+{
+	selectionAllowed = allowed;
+}
+
+bool SceneSelectionSystem::IsSelectionAllowed() const
+{
+	return selectionAllowed;
 }
 
 void SceneSelectionSystem::SetLocked(bool lock)
