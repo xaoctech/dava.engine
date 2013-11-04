@@ -38,7 +38,7 @@ namespace DAVA
 InputSystem::InputSystem()
 {
     keyboard = new KeyboardDevice();
-    AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD | INPUT_DEVICE_JOYSTICK));
+    AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD));
     pinCursor = false;
 }
     
