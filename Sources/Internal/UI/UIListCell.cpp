@@ -56,6 +56,7 @@ namespace DAVA
 			loader->Load(aggregator, aggregatorPath);
 			
 			this->AddControl(aggregator);
+			SafeRelease(aggregator);
 		}
     }
         
