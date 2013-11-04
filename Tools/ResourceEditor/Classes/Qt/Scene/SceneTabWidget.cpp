@@ -459,6 +459,16 @@ void SceneTabWidget::dropEvent(QDropEvent *event)
 	}
 }
 
+void SceneTabWidget::keyReleaseEvent(QKeyEvent * event)
+{
+	if(event->modifiers() == Qt::NoModifier)
+	{
+		if(event->key() == Qt::Key_Escape)
+		{
+			emit Escape();
+		}
+	}
+}
 
 void SceneTabWidget::UpdateTabName(int index)
 {
