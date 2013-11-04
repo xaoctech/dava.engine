@@ -104,6 +104,7 @@ public slots:
 	void OnRedo();
 
 	void OnEditorGizmoToggle(bool show);
+	void OnAllowOnSceneSelectionToggle(bool allow);
 
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
