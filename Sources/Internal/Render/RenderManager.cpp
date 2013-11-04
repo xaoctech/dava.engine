@@ -168,7 +168,7 @@ RenderManager::~RenderManager()
 {
     ShaderCache::Instance()->Release();
     
-    SafeRelease(currentRenderData);
+    currentRenderData = 0;
 	SafeRelease(currentRenderEffect);
     SafeRelease(FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
@@ -403,8 +403,7 @@ Shader * RenderManager::GetShader()
 
 void RenderManager::SetRenderData(RenderDataObject * object)
 {
-    SafeRelease(currentRenderData);
-    currentRenderData = SafeRetain(object);
+    currentRenderData = object;
 }
 		
 void RenderManager::SetClip(const Rect &rect)

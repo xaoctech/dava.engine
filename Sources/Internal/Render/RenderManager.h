@@ -105,7 +105,7 @@ public:
     static void Create(Core::eRenderer renderer);
 
 	RenderManager(Core::eRenderer renderer);
-	virtual ~RenderManager();
+	~RenderManager();
     
     
     Core::eRenderer GetRenderer() { return renderer; };
@@ -324,7 +324,7 @@ public:
     
     
     void SetRenderData(RenderDataObject * object);
-	virtual void AttachRenderData();
+	void AttachRenderData();
 	
 	/** 
 	 \brief 
@@ -348,55 +348,55 @@ public:
 	 \brief Sets the clip rect
 	 \param[in] rect
 	 */
-	virtual void SetClip(const Rect &rect);
+	void SetClip(const Rect &rect);
 
 	/** 
 	 \brief Sets the clip rect as an intersection of the current rect and rect sent to method
 	 \param[in] rect
 	 */
-	virtual void ClipRect(const Rect &rect);
+	void ClipRect(const Rect &rect);
 	
 	/** 
 	 \brief Sets clip yo the full screen
 	 */
-	virtual void RemoveClip();
+	void RemoveClip();
 
 	/** 
 	 \brief Store current clip
 	 */
-	virtual void ClipPush();
+	void ClipPush();
 
 	/** 
 	 \brief Restore current screen
 	 */
-	virtual void ClipPop();
+	void ClipPop();
     
-    virtual void Clear(const Color & color, float32 depth, int32 stencil);
+    void Clear(const Color & color, float32 depth, int32 stencil);
 	
 	/** 
         \brief Clear rendering surface with required color 
         \param[in] r,g,b,a Clear color components
 	 */
-	virtual void ClearWithColor(float32 r, float32 g, float32 b, float32 a);
+	void ClearWithColor(float32 r, float32 g, float32 b, float32 a);
     
     /** 
         \brief Clear attached depth buffer with requested depth
         \param[in] depth by default 1.0f, means clear the depth
      */
-    virtual void ClearDepthBuffer(float32 depth = 1.0f);
+    void ClearDepthBuffer(float32 depth = 1.0f);
 
 	/** 
         \brief Clear stencil buffer with requested value
         \param[in] stencil specifies the index used when the stencil buffer is cleared
      */
-	virtual void ClearStencilBuffer(int32 stencil = 0);
+	void ClearStencilBuffer(int32 stencil = 0);
 
 	/** 
 	 \brief Sets the sprite to use as a render target. Sprite should be created with CreateAsRenderTarget method.
 			Call RestoreRenderTarget when you finish drawing to your sprite 
 	 \param[in] renderTarget - Render target sprite. If NULL 0 render manager will draw to the screen.
 	 */
-	virtual void SetRenderTarget(Sprite *renderTarget);
+	void SetRenderTarget(Sprite *renderTarget);
 
 	/** 
 	 \brief Sets the texture to use as a render target. Texture should be created with CreateFBO method.
@@ -408,52 +408,52 @@ public:
 	/** 
         \brief Restores the previous render target
 	 */
-	virtual void RestoreRenderTarget();
+	void RestoreRenderTarget();
 
 	/** 
 	 \brief Checks is render target using for drawing now
 	 \param[out] true if render manager sets to a render targe. false if render manager draws to the screen now
 	 */
-	virtual bool IsRenderTarget();
+	bool IsRenderTarget();
 	
 	/** 
         \brief Sets the effect for the rendering. 
         \param[in] renderEffect - if 0, sets the effect to none
 	 */
-	virtual void SetRenderEffect(RenderEffect *renderEffect);
+	void SetRenderEffect(RenderEffect *renderEffect);
 
 	/** 
 	 \brief Sets the requested framerate. For iPhone can be set to 60, 30, 20, 15
 	 \param[in] newFps requested frames per second
 	 */
-	virtual void SetFPS(int32 newFps);
+	void SetFPS(int32 newFps);
 
 	/** 
 	 \brief Returns current requested framerate
 	 \returns frames per second
 	 */
-    virtual int32 GetFPS();
+    int32 GetFPS();
 
-	virtual void SetDebug(bool isDebugEnabled);
+	void SetDebug(bool isDebugEnabled);
 
 
 	/** 
 	 \brief 
 	 \param[in] offset
 	 */
-	virtual void SetDrawTranslate(const Vector2 &offset);
+	void SetDrawTranslate(const Vector2 &offset);
     
-	virtual void SetDrawTranslate(const Vector3 &offset);
+	void SetDrawTranslate(const Vector3 &offset);
 
 	/** 
 	 \brief 
 	 \param[in] offset
 	 */
-	virtual void SetDrawScale(const Vector2 &scale);
+	void SetDrawScale(const Vector2 &scale);
 
-	virtual void IdentityDrawMatrix();
-	virtual void IdentityMappingMatrix();
-	virtual void IdentityModelMatrix();
+	void IdentityDrawMatrix();
+	void IdentityMappingMatrix();
+	void IdentityModelMatrix();
 	
 	/*
 		TODO:	Hottych - напиши пожалуйста что делают эти функции детально, 
@@ -461,16 +461,16 @@ public:
 				Думаю что пока воспоминания свежи, напиши документацию по системе виртуальных преобразований
 				Можешь писать на русском - я переведу потом.
 	 */
-	virtual void SetPhysicalViewScale();
-	virtual void SetPhysicalViewOffset();
-	virtual void SetVirtualViewScale();
-	virtual void SetVirtualViewOffset();
+	void SetPhysicalViewScale();
+	void SetPhysicalViewOffset();
+	void SetVirtualViewScale();
+	void SetVirtualViewOffset();
 
-	virtual void PushDrawMatrix();
-    virtual void PopDrawMatrix();
+	void PushDrawMatrix();
+    void PopDrawMatrix();
 
-    virtual void PushMappingMatrix();
-	virtual void PopMappingMatrix();
+    void PushMappingMatrix();
+	void PopMappingMatrix();
     
     void SetRenderContextId(uint64 contextId);
 	uint64 GetRenderContextId();
@@ -493,11 +493,11 @@ public:
         UNIFORM_MATRIX_COUNT,
     };
     
-    virtual void SetMatrix(eMatrixType type, const Matrix4 & matrix);
-    virtual const Matrix4 & GetMatrix(eMatrixType type);
-    virtual const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
-    virtual const Matrix3 & GetNormalMatrix();
-    virtual void  ClearUniformMatrices();
+    void SetMatrix(eMatrixType type, const Matrix4 & matrix);
+    const Matrix4 & GetMatrix(eMatrixType type);
+    const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
+    const Matrix3 & GetNormalMatrix();
+    void  ClearUniformMatrices();
 
 
 	/**
@@ -505,7 +505,7 @@ public:
 		It acts differently in different operation systems but idea is common. 
 		When you call this function on next refresh cursor will be changed to the new one.
 	*/
-	virtual void SetCursor(Cursor * cursor);
+	void SetCursor(Cursor * cursor);
 
 	/**
 		\brief This function get hardware cursor that actively set
@@ -513,7 +513,7 @@ public:
 		we use default cursor that is provided by operational system. 
 		\returns pointer to custom cursor or null if there is no cursor set by default.
 	 */
-	virtual Cursor * GetCursor();
+	Cursor * GetCursor();
 
 	RenderOptions * GetOptions();
 
