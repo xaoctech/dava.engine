@@ -980,6 +980,10 @@
    </property>
   </action>
   <action name="actionSwitchNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/switch.png</normaloff>:/QtIcons/switch.png</iconset>
+   </property>
    <property name="text">
     <string>Switch</string>
    </property>
