@@ -495,6 +495,18 @@ void QtMainWindow::SetupStatusBar()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), ui->statusBar, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->statusBar, SLOT(UpdateByTimer()));
 
+	QToolButton *gizmoStatusBtn = new QToolButton();
+	gizmoStatusBtn->setDefaultAction(ui->actionShowEditorGizmo);
+	gizmoStatusBtn->setAutoRaise(true);
+	gizmoStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, gizmoStatusBtn);
+
+	QToolButton *onSceneSelectStatusBtn = new QToolButton();
+	onSceneSelectStatusBtn->setDefaultAction(ui->actionOnSceneSelection);
+	onSceneSelectStatusBtn->setAutoRaise(true);
+	onSceneSelectStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, onSceneSelectStatusBtn);
+
 	QObject::connect(ui->sceneTabWidget->GetDavaWidget(), SIGNAL(Resized(int, int)), ui->statusBar, SLOT(OnSceneGeometryChaged(int, int)));
 }
 
