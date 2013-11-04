@@ -1642,6 +1642,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/gizmo.png</normaloff>:/QtIcons/gizmo.png</iconset>
+   </property>
    <property name="text">
     <string>Show Editor Gizmo</string>
    </property>
