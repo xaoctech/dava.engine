@@ -535,7 +535,7 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		Entity* entity = FindLandscapeEntity(sceneEditor);
 		if (entity != NULL)
 		{
-			InitLandscape(entity, FindLandscape(entity));
+			InitLandscape(entity, GetLandscape(entity));
 		}
 	}
 }
@@ -621,7 +621,8 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 		return false;
 	}
 
-	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (t == NULL || t->IsPinkPlaceholder())
 	{
 		landscapeProxy->UpdateFullTiledTexture(true);
 	}

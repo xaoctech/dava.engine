@@ -52,7 +52,7 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::Stan
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);	
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow); // on top of all applications
 
-	propEditor = ui->propertyEditor; //new QtPropertyEditor(this);
+	propEditor = ui->propertyEditor;
 	propEditor->setMouseTracking(false);
 	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	propEditor->setTabKeyNavigation(false);
@@ -123,6 +123,21 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 {
 	SafeRelease(entity);
 	entity = SafeRetain(_entity);
+}
+
+void BaseAddEntityDialog::AddButton( QWidget* widget, eButtonAlign orientation)
+{
+	switch (orientation)
+	{
+		case BUTTON_ALIGN_LEFT:
+			ui->lowerLayOut->insertWidget(0, widget);
+			break;
+		case BUTTON_ALIGN_RIGHT:
+			ui->lowerLayOut->addWidget(widget);
+			break;
+		default:
+			break;
+	}
 }
 
 DAVA::Entity* BaseAddEntityDialog::GetEntity()

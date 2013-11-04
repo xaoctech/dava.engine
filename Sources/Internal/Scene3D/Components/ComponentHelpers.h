@@ -45,6 +45,7 @@ class Landscape;
 class Camera;
 class LodComponent;
 class SkyboxRenderObject;
+class SwitchComponent;
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
@@ -58,6 +59,7 @@ Landscape *GetLandscape(Entity * fromEntity);
 Camera * GetCamera(Entity * fromEntity);
 
 LodComponent * GetLodComponent(Entity *fromEntity);
+SwitchComponent* GetSwitchComponent(Entity *fromEntity);
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
 void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
 

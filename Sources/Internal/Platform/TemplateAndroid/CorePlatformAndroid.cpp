@@ -276,8 +276,6 @@ namespace DAVA
 		height = 0;
 	}
 
-	static Vector<DAVA::UIEvent> activeTouches;
-
 	void CorePlatformAndroid::KeyUp(int32 keyCode)
 	{
 		InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(keyCode);
@@ -357,12 +355,7 @@ namespace DAVA
 
 	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
-
 		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
-		Vector<DAVA::UIEvent> activeTouches;
-		activeTouches.push_back(touchEvent);
 
 		bool isFound = false;
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
@@ -375,6 +368,7 @@ namespace DAVA
 				(*it).tapCount = touchEvent.tapCount;
 
 				isFound = true;
+				break;
 			}
 		}
 		if(!isFound)
@@ -382,7 +376,7 @@ namespace DAVA
 			totalTouches.push_back(touchEvent);
 		}
 
-		UIControlSystem::Instance()->OnInput(touchEvent.phase, activeTouches, totalTouches);
+		UIControlSystem::Instance()->OnInput(touchEvent.phase, totalTouches, totalTouches);
 
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
 		{
@@ -395,7 +389,6 @@ namespace DAVA
 				++it;
 			}
 		}
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] OUT totalTouches.size = %d", totalTouches.size());
 	}
 
 	bool CorePlatformAndroid::DownloadHttpFile(const String & url, const String & documentsPathname)

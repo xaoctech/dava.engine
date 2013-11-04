@@ -41,9 +41,7 @@ AddSkyboxDialog::AddSkyboxDialog(QWidget* parent)
 {
 	controlButton = new QPushButton(this);
 	
-	ui->lowerLayOut->removeWidget(ui->buttonBox);
-	ui->lowerLayOut->addWidget(controlButton, 0, 0);
-	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
+	AddButton(controlButton);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }
@@ -69,7 +67,6 @@ void AddSkyboxDialog::FillPropertyEditorWithContent()
     {
         AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("texture"));
         AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("verticalOffset"));
-        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("rotationAngle"));
     }
 }
 
