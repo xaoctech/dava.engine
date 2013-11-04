@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/gizmo.png</file>
     <file>QtIcons/object_select.png</file>
     <file>QtIcons/switch.png</file>
     <file>QtIcons/curcor_move.png</file>
