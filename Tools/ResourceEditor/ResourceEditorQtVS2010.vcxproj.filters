@@ -235,6 +235,9 @@
     <Filter Include="Classes\Qt\DockLibrary2">
       <UniqueIdentifier>{b5a674b6-dcba-4197-9446-7c092919b7df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\DockLibrary2\FileSystem">
+      <UniqueIdentifier>{d399e5d0-7bb9-4cbd-abf5-2b62fb9a63f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2238,9 +2241,6 @@
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryComplexView.cpp">
       <Filter>Classes\Qt\DockLibrary2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.cpp">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.cpp">
       <Filter>Classes\Qt\DockLibrary2</Filter>
     </ClCompile>
@@ -2253,13 +2253,22 @@
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryComplexView_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFileSystemModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFilteringModel_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryTabWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.cpp">
+      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.cpp">
+      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemModel_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3893,14 +3902,17 @@
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryComplexView.h">
       <Filter>Classes\Qt\DockLibrary2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.h">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.h">
       <Filter>Classes\Qt\DockLibrary2</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryTabWidget.h">
       <Filter>Classes\Qt\DockLibrary2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.h">
+      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.h">
+      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

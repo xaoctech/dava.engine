@@ -427,9 +427,10 @@
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.cpp" />
     <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.cpp" />
+    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryBaseModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryComplexView.cpp" />
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
@@ -657,9 +658,10 @@
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryBaseModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryComplexView_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFileSystemModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFilteringModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryTabWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
@@ -1132,9 +1134,10 @@
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel.h" />
     <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorShortcutManager.h" />
+    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.h" />
+    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryBaseModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryComplexView.h" />
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryTabWidget.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />

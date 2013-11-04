@@ -32,7 +32,7 @@
 #include "LibraryComplexView.h"
 
 #include "LibraryBaseModel.h"
-#include "LibraryFileSystemModel.h"
+#include "FileSystem/LibraryFileSystemModel.h"
 
 #include "Project/ProjectManager.h"
 

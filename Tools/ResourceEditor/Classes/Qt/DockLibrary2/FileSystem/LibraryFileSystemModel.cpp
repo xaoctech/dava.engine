@@ -29,6 +29,7 @@
 
 
 #include "LibraryFileSystemModel.h"
+#include "LibraryFileSystemFilteringModel.h"
 
 #include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
@@ -42,16 +43,16 @@
 LibraryFileSystemModel::LibraryFileSystemModel()
     : LibraryBaseModel("File System")
 {
-    treeModel = new QFileSystemModel();
-    listModel = new QFileSystemModel();
-    
-    ((QFileSystemModel *)treeModel)->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
-    
-    QStringList nameFilters;
-    nameFilters << QString("*.dae");
-    nameFilters << QString("*.sc2");
-    ((QFileSystemModel *)listModel)->setNameFilters(nameFilters);
-    ((QFileSystemModel *)listModel)->setFilter(QDir::Files);
+    treeModel = new QFileSystemModel(this);
+    listModel = new QFileSystemModel(this);
+    filteringModel = new LibraryFileSystemFilteringModel(this);
+	filteringModel->SetModel(listModel);
+
+	CreateActions();
+
+	((QFileSystemModel *)treeModel)->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
+	((QFileSystemModel *)listModel)->setFilter(QDir::Files|QDir::NoDotAndDotDot);
+	SetNameFilters();
 }
 
 void LibraryFileSystemModel::TreeItemSelected(const QItemSelection & selection)
@@ -59,30 +60,27 @@ void LibraryFileSystemModel::TreeItemSelected(const QItemSelection & selection)
     const QModelIndex index = selection.indexes().first();
 
     QFileInfo fileInfo = ((QFileSystemModel *)treeModel)->fileInfo(index);
-    if(fileInfo.isDir())
-    {
-        listRootPath = fileInfo.filePath();
-    }
-    else
-    {
-        listRootPath = treeRootPath;
-    }
+	listRootPath = fileInfo.filePath();
 
     ((QFileSystemModel *)listModel)->setRootPath(listRootPath);
+	filteringModel->invalidate();
+	((LibraryFileSystemFilteringModel *)filteringModel)->SetSourceRoot(((QFileSystemModel *)listModel)->index(listRootPath));
     
-    //qt magic to avoid showing of folders
-    //-->
-    ((QFileSystemModel *)listModel)->setFilter(QDir::Dirs);
-    ((QFileSystemModel *)listModel)->setFilter(QDir::Files);
-    //<--
+//     //qt magic to avoid showing of folders
+//     //-->
+//     ((QFileSystemModel *)listModel)->setFilter(QDir::Dirs);
+//     ((QFileSystemModel *)listModel)->setFilter(QDir::Files);
+//     //<--
 }
 
 void LibraryFileSystemModel::ListItemSelected(const QItemSelection & selection)
 {
-    const QModelIndex index = selection.indexes().first();
+	QItemSelection listSelection = filteringModel->mapSelectionToSource(selection);
+
+    const QModelIndex index = listSelection.indexes().first();
 	if(index.isValid())
     {
-        QFileInfo fileInfo = ((QFileSystemModel *)treeModel)->fileInfo(index);
+        QFileInfo fileInfo = ((QFileSystemModel *)listModel)->fileInfo(index);
 		if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
 		{
 			ShowPreview(fileInfo.filePath().toStdString());
@@ -103,6 +101,7 @@ void LibraryFileSystemModel::SetProjectPath(const QString & path)
     
     ((QFileSystemModel *)treeModel)->setRootPath(rootDir.canonicalPath());
     ((QFileSystemModel *)listModel)->setRootPath(rootDir.canonicalPath());
+	((LibraryFileSystemFilteringModel *)filteringModel)->SetSourceRoot(((QFileSystemModel *)listModel)->index(listRootPath));
 }
 
 const QModelIndex LibraryFileSystemModel::GetTreeRootIndex() const
@@ -112,14 +111,16 @@ const QModelIndex LibraryFileSystemModel::GetTreeRootIndex() const
 
 const QModelIndex LibraryFileSystemModel::GetListRootIndex() const
 {
-    return ((QFileSystemModel *)listModel)->index(listRootPath);
+	const QModelIndex index = ((QFileSystemModel *)listModel)->index(listRootPath);
+    return filteringModel->mapFromSource(index);
 }
 
 bool LibraryFileSystemModel::PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
     HidePreview();
     
-    QFileInfo fileInfo = ((QFileSystemModel *)listModel)->fileInfo(index);
+	const QModelIndex listIndex = filteringModel->mapToSource(index);
+    QFileInfo fileInfo = ((QFileSystemModel *)listModel)->fileInfo(listIndex);
     if(fileInfo.isFile())
     {
         QString fileExtension = fileInfo.suffix();
@@ -245,5 +246,40 @@ void LibraryFileSystemModel::ShowPreview(const DAVA::FilePath & pathname) const
     widget->ShowScenePreview(pathname);
 }
 
+void LibraryFileSystemModel::CreateActions()
+{
+	QIcon daeIcon(QString::fromUtf8(":/QtLibraryIcons/daeIcon"));
+	QIcon sc2Icon(QString::fromUtf8(":/QtLibraryIcons/sc2Icon"));
 
+	showDAE = new QAction(daeIcon, "Display *.dae", this);
+	showSC2 = new QAction(sc2Icon, "Display *.sc2", this);
+
+	showDAE->setCheckable(true);
+	showDAE->setChecked(true);
+	showSC2->setCheckable(true);
+	showSC2->setChecked(true);
+
+	QObject::connect(showDAE, SIGNAL(triggered()), this, SLOT(SetNameFilters()));
+	QObject::connect(showSC2, SIGNAL(triggered()), this, SLOT(SetNameFilters()));
+
+	actions.push_back(showSC2);
+	actions.push_back(showDAE);
+}
+
+void LibraryFileSystemModel::SetNameFilters()
+{
+	QStringList nameFilters;
+
+	if(showDAE->isChecked())
+	{
+		nameFilters << QString("*.dae");
+	}
+	if(showSC2->isChecked())
+	{
+		nameFilters << QString("*.sc2");
+	}
+
+	((QFileSystemModel *)listModel)->setNameFilters(nameFilters);
+	((QFileSystemModel *)listModel)->setNameFilterDisables(false);
+}
 

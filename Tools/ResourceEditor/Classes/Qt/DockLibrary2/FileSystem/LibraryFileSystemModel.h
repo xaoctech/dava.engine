@@ -28,58 +28,55 @@
 
 
 
-#ifndef __LIBRARY_BASE_MODEL_H__
-#define __LIBRARY_BASE_MODEL_H__
+#ifndef __LIBRARY_FILE_SYSTEM_MODEL_H__
+#define __LIBRARY_FILE_SYSTEM_MODEL_H__
 
-#include <QString>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QMenu>
+#include "../LibraryBaseModel.h"
+#include "DAVAEngine.h"
 
-class QAbstractItemModel;
-
-class LibraryFilteringModel;
-class LibraryBaseModel: public QObject
+class LibraryFileSystemModel: public LibraryBaseModel
 {
     Q_OBJECT
     
 public:
-    LibraryBaseModel(const QString &modelName);
-    virtual ~LibraryBaseModel();
-
-    QAbstractItemModel * GetTreeModel() const;
-    QAbstractItemModel * GetListModel() const;
+    LibraryFileSystemModel();
     
-    const QString & GetName() const;
+    virtual void TreeItemSelected(const QItemSelection & selection);
+    virtual void ListItemSelected(const QItemSelection & selection);
+
+    virtual void SetProjectPath(const QString & path);
     
-    virtual void TreeItemSelected(const QItemSelection & selection) = 0;
-    virtual void ListItemSelected(const QItemSelection & selection) = 0;
+    virtual const QModelIndex GetTreeRootIndex() const;
+    virtual const QModelIndex GetListRootIndex() const;
+
+    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+
+protected slots:
     
-    virtual void SetProjectPath(const QString & path) = 0;
-
-    virtual const QModelIndex GetTreeRootIndex() const = 0;
-    virtual const QModelIndex GetListRootIndex() const = 0;
+	void OnModelEdit();
+	void OnModelAdd();
+	void OnDAEConvert();
+	void OnDAEConvertGeometry();
+    void OnRevealAtFolder();
+	void SetNameFilters();
     
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-	const QList<QAction *> & GetModelActions();
-
-	void SetFilter(const QString &filter);
-
-protected:
-
-	virtual void CreateActions() = 0;
-
-
 protected:
     
-    QAbstractItemModel *treeModel;
-    
-	QAbstractItemModel *listModel;
-    LibraryFilteringModel *filteringModel;
+	virtual void CreateActions();
 
-    QString name;
+    void HidePreview() const;
+    void ShowPreview(const DAVA::FilePath & pathname) const;
     
-	QList<QAction *> actions;
+private:
+    
+    QString treeRootPath;
+    QString listRootPath;
+
+	QAction *showDAE;
+	QAction *showSC2;
 };
 
-#endif // __LIBRARY_BASE_MODEL_H__
+#include <QFileInfo>
+Q_DECLARE_METATYPE( QFileInfo )
+
+#endif // __LIBRARY_FILE_SYSTEM_MODEL_H__

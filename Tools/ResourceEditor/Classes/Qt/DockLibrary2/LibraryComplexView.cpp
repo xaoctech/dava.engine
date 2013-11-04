@@ -30,7 +30,6 @@
 
 #include "LibraryComplexView.h"
 #include "LibraryBaseModel.h"
-#include "LibraryFilteringModel.h"
 
 #include <QToolBar>
 #include <QSplitter>
@@ -44,12 +43,9 @@ LibraryComplexView::LibraryComplexView(QWidget *parent /* = 0 */)
 	: QWidget(parent)
     , model(NULL)
 {
-    filteringModel = new LibraryFilteringModel(this);
-
     SetupToolbar();
 
     splitter = new QSplitter(this);
-    
 
     SetupViews();
     SetupLayout();
@@ -94,6 +90,7 @@ void LibraryComplexView::SetupToolbar()
     toolbar->addWidget(searchFilter);
     toolbar->addAction(actionResetFilter);
     toolbar->addSeparator();
+	modelSeparator = toolbar->addSeparator();
     toolbar->addAction(actionViewAsList);
     toolbar->addAction(actionViewAsIcons);
 }
@@ -142,49 +139,62 @@ void LibraryComplexView::ViewAsIcons()
 
 void LibraryComplexView::SetModel(LibraryBaseModel * newModel)
 {
-    if(model)
-    {
-        QObject::disconnect(leftTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(TreeSelectionChanged(const QItemSelection &, const QItemSelection &)));
-        
-        QObject::disconnect(rightList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(ListSelectionChanged(const QItemSelection &, const QItemSelection &)));
-        
-    }
-    
+	ResetModel();
+
     model = newModel;
     
-    leftTree->setModel(newModel->GetTreeModel());
-    leftTree->setRootIndex(newModel->GetTreeRootIndex());
+	toolbar->insertActions(modelSeparator, model->GetModelActions());
+
+    leftTree->setModel(model->GetTreeModel());
+    leftTree->setRootIndex(model->GetTreeRootIndex());
     
-    filteringModel->SetModel(newModel->GetListModel());
-    
-    rightList->setModel(filteringModel);
-    rightList->setRootIndex(filteringModel->mapFromSource(newModel->GetListRootIndex()));
-    
+    rightList->setModel(model->GetListModel());
+    rightList->setRootIndex(model->GetListRootIndex());
+
     // hide columns with size/modif date etc.
-	for(int i = 1; i < newModel->GetTreeModel()->columnCount(); ++i)
+	for(int i = 1; i < model->GetTreeModel()->columnCount(); ++i)
 	{
         leftTree->setColumnHidden(i, true);
 	}
     
     QObject::connect(leftTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(TreeSelectionChanged(const QItemSelection &, const QItemSelection &)));
-    
     QObject::connect(rightList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(ListSelectionChanged(const QItemSelection &, const QItemSelection &)));
 
+	SetFilter(searchFilter->text());
 }
+
+void LibraryComplexView::ResetModel()
+{
+	if(!model) return;
+
+	QObject::disconnect(leftTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(TreeSelectionChanged(const QItemSelection &, const QItemSelection &)));
+	QObject::disconnect(rightList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(ListSelectionChanged(const QItemSelection &, const QItemSelection &)));
+
+	const QList<QAction *> & actions = model->GetModelActions();
+	
+	auto endIt = actions.end();
+	for(auto it = actions.begin(); it != endIt; ++it)
+	{
+		toolbar->removeAction(*it);
+	}
+
+	model = NULL;
+}
+
 
 void LibraryComplexView::TreeSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     if(0 == selected.count()) return;
     
-    model->TreeItemSelected(selected);
-    rightList->setRootIndex(filteringModel->mapFromSource(model->GetListRootIndex()));
+	model->TreeItemSelected(selected);
+    rightList->setRootIndex(model->GetListRootIndex());
 }
 
 void LibraryComplexView::ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     if(0 == selected.count()) return;
 
-    model->TreeItemSelected(filteringModel->mapSelectionToSource(selected));
+    model->ListItemSelected(selected);
 }
 
 void LibraryComplexView::ShowListContextMenu(const QPoint & point)
@@ -195,7 +205,7 @@ void LibraryComplexView::ShowListContextMenu(const QPoint & point)
 
     QMenu contextMenu(this);
     
-    if(model->PrepareListContextMenu(contextMenu, filteringModel->mapToSource(index)))
+    if(model->PrepareListContextMenu(contextMenu, index))
     {
         contextMenu.exec(rightList->mapToGlobal(point));
     }
@@ -203,13 +213,13 @@ void LibraryComplexView::ShowListContextMenu(const QPoint & point)
 
 void LibraryComplexView::SetFilter(const QString &filter)
 {
-    filteringModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-    rightList->setRootIndex(filteringModel->mapFromSource(model->GetListRootIndex()));
+	model->SetFilter(filter);
 }
 
 void LibraryComplexView::ResetFilter()
 {
     searchFilter->setText("");
 }
+
 
 
