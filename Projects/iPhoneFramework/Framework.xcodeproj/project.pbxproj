@@ -67,6 +67,9 @@
 		84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */; };
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
+		9A0116A10B6B8EB02414FE5E /* GamepadIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A011940DC1323F8602043A8 /* GamepadIOS.mm */; };
+		9A011AB41681FCD53B724E35 /* GamepadIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011DD5C175324331C58EF5 /* GamepadIOS.h */; };
+		9A011C77BA90F38DCDB7F4E6 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A0118E18AC6866222998E4C /* GameController.framework */; };
 		A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */; };
 		A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A66BC2F017AB98E800B6252E /* SkyboxSystem.h */; };
 		A679102917B3CF2D000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */; };
@@ -778,6 +781,9 @@
 		84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		84E5E100174D02F60001C74F /* OpenUDIDios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDios.h; sourceTree = "<group>"; };
 		84E5E101174D02F60001C74F /* OpenUDIDios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDios.mm; sourceTree = "<group>"; };
+		9A0118E18AC6866222998E4C /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		9A011940DC1323F8602043A8 /* GamepadIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadIOS.mm; sourceTree = "<group>"; };
+		9A011DD5C175324331C58EF5 /* GamepadIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadIOS.h; sourceTree = "<group>"; };
 		A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A66BC2F017AB98E800B6252E /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
 		A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
@@ -1442,6 +1448,7 @@
 				5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */,
 				FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */,
 				EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */,
+				9A011C77BA90F38DCDB7F4E6 /* GameController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1490,6 +1497,7 @@
 			isa = PBXGroup;
 			children = (
 				EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */,
+				9A0118E18AC6866222998E4C /* GameController.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1909,6 +1917,8 @@
 				E8B3C8E416B9326D002BD35F /* HelperAppDelegate.mm */,
 				17DC600D17DE18460075813E /* MovieViewControliOS.mm */,
 				17DC600E17DE18460075813E /* MovieViewControliOS.h */,
+				9A011940DC1323F8602043A8 /* GamepadIOS.mm */,
+				9A011DD5C175324331C58EF5 /* GamepadIOS.h */,
 			);
 			path = TemplateiOS;
 			sourceTree = "<group>";
@@ -2817,6 +2827,7 @@
 				EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */,
 				7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */,
 				7A8F772C17E73E720048A43D /* GameAPI.h in Headers */,
+				9A011AB41681FCD53B724E35 /* GamepadIOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3205,6 +3216,7 @@
 				EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */,
 				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
 				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,
+				9A0116A10B6B8EB02414FE5E /* GamepadIOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

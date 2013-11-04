@@ -50,6 +50,7 @@ namespace DAVA
 class KeyboardDevice;
 class InputSystem : public Singleton<InputSystem>
 {
+public:
 	enum eInputDevice
 	{
 		INPUT_DEVICE_TOUCH		= 1,
