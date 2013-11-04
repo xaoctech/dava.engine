@@ -213,7 +213,7 @@ void LibraryFileSystemModel::OnRevealAtFolder()
     QVariant indexAsVariant = ((QAction *)sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
     
-#ifdef Q_WS_MAC
+#if defined (Q_WS_MAC)
     QStringList args;
     args << "-e";
     args << "tell application \"Finder\"";
@@ -224,7 +224,7 @@ void LibraryFileSystemModel::OnRevealAtFolder()
     args << "-e";
     args << "end tell";
     QProcess::startDetached("osascript", args);
-#elif Q_WS_WIN
+#elif defined (Q_WS_WIN)
     QStringList args;
     args << "/select," << QDir::toNativeSeparators(fileInfo.absoluteFilePath());
     QProcess::startDetached("explorer", args);
