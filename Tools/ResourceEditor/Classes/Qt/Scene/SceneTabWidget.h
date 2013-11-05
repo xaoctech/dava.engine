@@ -80,13 +80,14 @@ public:
 	void ShowScenePreview(const DAVA::FilePath &scenePath);
 	void HideScenePreview();
     
-    void AddTopToolWidget(QWidget *widget);
+    void AddToolWidget(QWidget *widget);
 
 	DavaGLWidget * GetDavaWidget() const;
 
 signals:
     
     void CloseTabRequest(int index, Request *closeRequest);
+	void Escape();
     
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
@@ -109,19 +110,20 @@ protected:
 	const int davaUIScreenID;
 	const int dava3DViewMargin;
 
-	QWidget *topPlaceholder;
-	QLayout *topPlaceholderLayout;
-
+	QWidget *toolWidgetContainer;
+	QLayout *toolWidgetLayout;
 
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 	void UpdateTabName(int index);
+	void UpdateToolWidget();
 
 	void SetTabScene(int index, SceneEditor2* scene);
 
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dropEvent(QDropEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent * event);
 
 	ScenePreviewDialog *previewDialog;
 
