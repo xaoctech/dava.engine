@@ -106,6 +106,8 @@ protected:
 
 	Vector2 visibilityPoint;
 
+	Landscape::eTextureLevel textureLevel;
+
 	void UpdateCursorPosition(int32 landscapeSize);
 
 	void AddRectToAccumulator(const Rect& rect);
