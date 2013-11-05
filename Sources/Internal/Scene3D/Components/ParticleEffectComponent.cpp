@@ -261,6 +261,28 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 		}
 	}
 }
+
+void ParticleEffectComponent::SetExtertnalValue(String name, float32 value)
+{
+	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalParams.lower_bound(name), e=externalParams.upper_bound(name); it!=e; ++it)
+		(*it).second->SetModifier(value);
+}
+
+void ParticleEffectComponent::RegisterModifiable(String name, ModifiablePropertyLineI *propertyLine)
+{
+	externalParams.insert(std::make_pair(name, propertyLine));
+}
+void ParticleEffectComponent::UnRegisterModifiable(String name, ModifiablePropertyLineI *propertyLine)
+{
+	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalParams.lower_bound(name), e=externalParams.upper_bound(name); it!=e; ++it)
+	{
+		if ((*it).second == propertyLine) 
+		{
+			externalParams.erase(it);
+			return;
+		}
+	}
+}
 	
 int32 ParticleEffectComponent::GetActiveParticlesCount()
 {

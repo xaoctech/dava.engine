@@ -182,6 +182,42 @@ public:
 	}	
 };
 
+class ModifiablePropertyLineI
+{	
+public:
+	virtual void SetModifier(float32 v) = 0;
+};
+
+template <class T> class ModifiablePropertyLine : public ModifiablePropertyLineI
+{
+public:
+	virtual void SetModifier(float32 v){modifer = modificationLine->Get(v);}
+
+protected:
+	T modifer;
+	RefPtr<PropertyLine<T> > modificationLine;
+};
+
+
+template <class T> class ModifiablePropertyLineValue : public ModifiablePropertyLine<T>, PropertyLineValue<T>
+{
+public:
+	const T & GetValue(float32 t)
+	{
+		return modifier * PropertyLineValue<T>::GetValue(t);
+	}
+
+};
+
+template <class T> class ModifiablePropertyLineKeyframes : public ModifiablePropertyLine<T>, PropertyLineKeyframes<T>
+{
+public:
+	const T & GetValue(float32 t)
+	{
+		return modifier * PropertyLineKeyframes<T>::GetValue(t);
+	}
+};
+
 template <class T> class PropValue
 {
 public:
