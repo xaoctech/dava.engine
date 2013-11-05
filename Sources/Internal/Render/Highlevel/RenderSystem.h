@@ -111,7 +111,7 @@ public:
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
 	
-	inline MaterialSystem* GetMaterialSystem() {return materialSystem;}
+	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
 
 	void DebugDrawHierarchy();
     

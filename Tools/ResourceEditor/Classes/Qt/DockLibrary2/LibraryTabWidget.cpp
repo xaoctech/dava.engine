@@ -33,6 +33,7 @@
 
 #include "LibraryBaseModel.h"
 #include "FileSystem/LibraryFileSystemModel.h"
+#include "Materials/LibraryMaterialsModel.h"
 
 #include "Project/ProjectManager.h"
 
@@ -57,6 +58,7 @@ LibraryTabWidget::LibraryTabWidget(QWidget *parent)
 
     //Add models
     AddModel(new LibraryFileSystemModel());
+    AddModel(new LibraryMaterialsModel());
 }
 
 LibraryTabWidget::~LibraryTabWidget()

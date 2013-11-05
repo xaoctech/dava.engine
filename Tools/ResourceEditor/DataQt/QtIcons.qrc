@@ -106,5 +106,6 @@
     <file>QtImages/sky_example7.png</file>
     <file>QtLibraryIcons/sc2Icon.png</file>
     <file>QtLibraryIcons/daeIcon.png</file>
+    <file>QtLibraryIcons/orientation.png</file>
   </qresource>
 </RCC>

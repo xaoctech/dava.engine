@@ -115,6 +115,11 @@ const QModelIndex LibraryFileSystemModel::GetListRootIndex() const
     return filteringModel->mapFromSource(index);
 }
 
+bool LibraryFileSystemModel::PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const
+{
+    return false;
+}
+
 bool LibraryFileSystemModel::PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
     HidePreview();

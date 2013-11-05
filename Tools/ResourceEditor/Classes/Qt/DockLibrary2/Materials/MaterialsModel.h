@@ -28,59 +28,42 @@
 
 
 
-#ifndef __LIBRARY_BASE_MODEL_H__
-#define __LIBRARY_BASE_MODEL_H__
+#ifndef __MATERIALS_MODEL_H__
+#define __MATERIALS_MODEL_H__
 
+#include "DAVAEngine.h"
+
+#include <QStandardItemModel>
 #include <QString>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QMenu>
 
-class QAbstractItemModel;
-
-class LibraryFilteringModel;
-class LibraryBaseModel: public QObject
+class QStandardItem;
+class MaterialsModel: public QStandardItemModel
 {
     Q_OBJECT
     
 public:
-    LibraryBaseModel(const QString &modelName);
-    virtual ~LibraryBaseModel();
-
-    QAbstractItemModel * GetTreeModel() const;
-    QAbstractItemModel * GetListModel() const;
+    MaterialsModel(QObject *parent = 0);
+    virtual ~MaterialsModel();
     
-    const QString & GetName() const;
+    void SetScene(DAVA::Scene *scene);
+    void SetRootMaterial(DAVA::NMaterial *material);
     
-    virtual void TreeItemSelected(const QItemSelection & selection) = 0;
-    virtual void ListItemSelected(const QItemSelection & selection) = 0;
+    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     
-    virtual void SetProjectPath(const QString & path) = 0;
-
-    virtual const QModelIndex GetTreeRootIndex() const = 0;
-    virtual const QModelIndex GetListRootIndex() const = 0;
-    
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-	const QList<QAction *> & GetModelActions();
-
-	void SetFilter(const QString &filter);
-
-protected:
-
-	virtual void CreateActions() = 0;
-
-
 protected:
     
-    QAbstractItemModel *treeModel;
+    void RebuildModel();
+    int AddMaterialToItem(DAVA::NMaterial *material, QStandardItem * item);
     
-	QAbstractItemModel *listModel;
-    LibraryFilteringModel *filteringModel;
-
-    QString name;
+    QString GetName(DAVA::NMaterial *material);
     
-	QList<QAction *> actions;
+private:
+    
+    DAVA::Vector<DAVA::NMaterial*> materials;
+    DAVA::NMaterial *rootMaterial;
 };
 
-#endif // __LIBRARY_BASE_MODEL_H__
+Q_DECLARE_METATYPE( DAVA::NMaterial * )
+
+
+#endif // __MATERIALS_MODEL_H__
