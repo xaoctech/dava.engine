@@ -391,7 +391,7 @@ public:
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
 
-	Matrix3 GetRotationMatrix();
+	Matrix3 GetRotationMatrix();	
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
