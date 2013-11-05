@@ -58,9 +58,13 @@ protected slots:
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
 
+    void OnEdit();
+    
 protected:
     
 	virtual void CreateActions();
+    
+    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
     
 private:
     

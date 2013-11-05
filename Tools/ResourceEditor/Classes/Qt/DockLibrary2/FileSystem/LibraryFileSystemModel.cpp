@@ -65,12 +65,6 @@ void LibraryFileSystemModel::TreeItemSelected(const QItemSelection & selection)
     ((QFileSystemModel *)listModel)->setRootPath(listRootPath);
 	filteringModel->invalidate();
 	((LibraryFileSystemFilteringModel *)filteringModel)->SetSourceRoot(((QFileSystemModel *)listModel)->index(listRootPath));
-    
-//     //qt magic to avoid showing of folders
-//     //-->
-//     ((QFileSystemModel *)listModel)->setFilter(QDir::Dirs);
-//     ((QFileSystemModel *)listModel)->setFilter(QDir::Files);
-//     //<--
 }
 
 void LibraryFileSystemModel::ListItemSelected(const QItemSelection & selection)

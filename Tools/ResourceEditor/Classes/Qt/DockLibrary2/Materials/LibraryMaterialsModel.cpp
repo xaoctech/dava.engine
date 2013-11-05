@@ -75,22 +75,28 @@ void LibraryMaterialsModel::SetProjectPath(const QString & path)
 
 const QModelIndex LibraryMaterialsModel::GetTreeRootIndex() const
 {
-    return ((MaterialsModel *)treeModel)->index(0, 0);
+    return ((MaterialsModel *)treeModel)->index(-1, -1);
 }
 
 const QModelIndex LibraryMaterialsModel::GetListRootIndex() const
 {
-    return ((MaterialsModel *)listModel)->index(0, 0);
+    const QModelIndex index = ((MaterialsModel *)listModel)->index(-1, -1);
+    return filteringModel->mapFromSource(index);
 }
 
 bool LibraryMaterialsModel::PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
-    return false;
+    DAVA::NMaterial * material = ((MaterialsModel *)treeModel)->GetMaterial(index);
+
+    return PrepareContextMenu(contextMenu, material);
 }
 
 bool LibraryMaterialsModel::PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
-    return false;
+    const QModelIndex listIndex = filteringModel->mapToSource(index);
+    
+    DAVA::NMaterial * material = ((MaterialsModel *)listModel)->GetMaterial(listIndex);
+    return PrepareContextMenu(contextMenu, NULL);
 }
 
 
@@ -102,11 +108,31 @@ void LibraryMaterialsModel::SceneActivated(SceneEditor2 *scene)
 {
     ((MaterialsModel *)treeModel)->SetScene(scene);
     ((MaterialsModel *)listModel)->SetScene(scene);
+    filteringModel->invalidate();
 }
 
 void LibraryMaterialsModel::SceneDeactivated(SceneEditor2 *scene)
 {
     ((MaterialsModel *)treeModel)->SetScene(NULL);
     ((MaterialsModel *)listModel)->SetScene(NULL);
+	filteringModel->invalidate();
 }
+
+bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const
+{
+    QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
+
+    
+    QAction * actionEdit = contextMenu.addAction("Edit Material", this, SLOT(OnEdit()));
+    actionEdit->setData(materialAsVariant);
+    
+    return true;
+}
+
+void LibraryMaterialsModel::OnEdit()
+{
+    QVariant materialAsVariant = ((QAction *)sender())->data();
+    DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
+}
+
 
