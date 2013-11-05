@@ -151,8 +151,8 @@ public:
 	virtual void	Draw();
 	
 	// properties
-	void SetVisible(bool isVisible);
-	inline bool GetVisible();
+	void SetVisible(const bool & isVisible);
+	inline const bool GetVisible();
 	void SetLodVisible(bool isLodVisible);
 	void SetSwitchVisible(bool isSwitchVisible);
 	inline Entity * GetParent();
@@ -379,12 +379,14 @@ public:
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 
+        PROPERTY("isVisible", "isVisible", GetVisible, SetVisible, I_VIEW | I_EDIT)
+
 		//COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		//COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 	
-inline bool Entity::GetVisible(void)
+inline const bool Entity::GetVisible()
 {
 	return (flags & NODE_VISIBLE) != 0;
 }

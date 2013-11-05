@@ -621,7 +621,8 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 		return false;
 	}
 
-	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (t == NULL || t->IsPinkPlaceholder())
 	{
 		landscapeProxy->UpdateFullTiledTexture(true);
 	}
