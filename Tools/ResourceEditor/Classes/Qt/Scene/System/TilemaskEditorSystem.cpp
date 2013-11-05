@@ -77,27 +77,30 @@ TilemaskEditorSystem::~TilemaskEditorSystem()
 	SafeRelease(toolImageSprite);
 }
 
-bool TilemaskEditorSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool TilemaskEditorSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		return canBeEnabledError;
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableTilemaskEditing();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		return enableCustomDrawError;
 	}
 
-	if (!IsCanBeEnabled())
-	{
-		return false;
-	}
-
-	if (!drawSystem->EnableTilemaskEditing())
-	{
-		return false;
-	}
 
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
@@ -113,7 +116,7 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	InitSprites();
 
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool TilemaskEditorSystem::DisableLandscapeEdititing()
