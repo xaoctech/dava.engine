@@ -53,7 +53,7 @@ StatusBar::StatusBar(QWidget *parent)
 
 	layout()->setContentsMargins(0, 0, 0, 0);
 	layout()->setMargin(0);
-	layout()->setSpacing(2);
+	layout()->setSpacing(1);
     setStyleSheet("QStatusBar::item {border: none;}");
 }
 
