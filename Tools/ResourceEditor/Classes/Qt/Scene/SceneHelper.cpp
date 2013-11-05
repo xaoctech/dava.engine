@@ -61,7 +61,8 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 				for(int32 t = 0; t < material->GetTextureCount(); ++t)
 				{
 					Texture* tex = material->GetTexture(t);
-					CollectTexture(textures, tex->relativePathname.GetAbsolutePathname(), tex);
+                    if(tex)
+                        CollectTexture(textures, tex->relativePathname.GetAbsolutePathname(), tex);
 				}
 				
 				material = material->GetParent();

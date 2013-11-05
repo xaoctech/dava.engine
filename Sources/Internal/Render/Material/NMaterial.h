@@ -276,6 +276,9 @@ public:
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
+    
+    int32 GetChildrenCount() const;
+    NMaterial *GetChild(int32 index) const;
 	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild

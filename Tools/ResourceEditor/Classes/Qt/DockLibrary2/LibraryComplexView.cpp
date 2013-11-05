@@ -38,6 +38,7 @@
 #include <QVBoxLayout>
 #include <QAction>
 #include <QLineEdit>
+#include <QHeaderView>
 
 LibraryComplexView::LibraryComplexView(QWidget *parent /* = 0 */)
 	: QWidget(parent)
@@ -82,10 +83,15 @@ void LibraryComplexView::SetupToolbar()
     actionViewAsIcons->setCheckable(true);
     actionViewAsIcons->setChecked(false);
 
+    QIcon orientationIcon(QString::fromUtf8(":/QtLibraryIcons/orientation.png"));
+    QAction *actionOrientation = new QAction(orientationIcon, "Changed orientation", toolbar);
+
+    
     QObject::connect(searchFilter, SIGNAL(textChanged(const QString &)), this, SLOT(SetFilter(const QString &)));
     QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
     QObject::connect(actionViewAsIcons, SIGNAL(triggered()), this, SLOT(ViewAsIcons()));
+    QObject::connect(actionOrientation, SIGNAL(triggered()), this, SLOT(ChangeSplitterOrientation()));
     
     toolbar->addWidget(searchFilter);
     toolbar->addAction(actionResetFilter);
@@ -93,17 +99,22 @@ void LibraryComplexView::SetupToolbar()
 	modelSeparator = toolbar->addSeparator();
     toolbar->addAction(actionViewAsList);
     toolbar->addAction(actionViewAsIcons);
+    toolbar->addSeparator();
+    toolbar->addAction(actionOrientation);
 }
 
 void LibraryComplexView::SetupViews()
 {
     leftTree = new QTreeView(splitter);
+    leftTree->setContextMenuPolicy(Qt::CustomContextMenu);
+    leftTree->header()->setVisible(false);
     
     rightList = new QListView(splitter);
     rightList->setContextMenuPolicy(Qt::CustomContextMenu);
     rightList->setDragDropMode(QAbstractItemView::DragOnly);
 	rightList->setDragEnabled(true);
     
+    QObject::connect(leftTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowTreeContextMenu(const QPoint &)));
     QObject::connect(rightList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowListContextMenu(const QPoint &)));
 }
 
@@ -197,6 +208,21 @@ void LibraryComplexView::ListSelectionChanged(const QItemSelection &selected, co
     model->ListItemSelected(selected);
 }
 
+void LibraryComplexView::ShowTreeContextMenu(const QPoint & point)
+{
+    QModelIndex index = leftTree->indexAt(point);
+    
+	if(!index.isValid()) return;
+    
+    QMenu contextMenu(this);
+    
+    if(model->PrepareTreeContextMenu(contextMenu, index))
+    {
+        contextMenu.exec(leftTree->mapToGlobal(point));
+    }
+}
+
+
 void LibraryComplexView::ShowListContextMenu(const QPoint & point)
 {
     QModelIndex index = rightList->indexAt(point);
@@ -222,4 +248,16 @@ void LibraryComplexView::ResetFilter()
 }
 
 
+void LibraryComplexView::ChangeSplitterOrientation()
+{
+    Qt::Orientation o = splitter->orientation();
+    if(o == Qt::Vertical)
+    {
+        splitter->setOrientation(Qt::Horizontal);
+    }
+    else
+    {
+        splitter->setOrientation(Qt::Vertical);
+    }
+}
 

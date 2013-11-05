@@ -67,7 +67,7 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 	return material;
 }
 	
-void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList)
+void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const
 {
 	if(NULL == parent)
 	{
