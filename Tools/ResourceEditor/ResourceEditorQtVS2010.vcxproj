@@ -433,6 +433,9 @@
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryComplexView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary2\LibraryTabWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockLibrary2\Materials\LibraryMaterialsFilteringModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockLibrary2\Materials\LibraryMaterialsModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockLibrary2\Materials\MaterialsModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp" />
@@ -1140,6 +1143,9 @@
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryComplexView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary2\LibraryTabWidget.h" />
+    <ClInclude Include="Classes\Qt\DockLibrary2\Materials\LibraryMaterialsFilteringModel.h" />
+    <ClInclude Include="Classes\Qt\DockLibrary2\Materials\LibraryMaterialsModel.h" />
+    <ClInclude Include="Classes\Qt\DockLibrary2\Materials\MaterialsModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h" />
