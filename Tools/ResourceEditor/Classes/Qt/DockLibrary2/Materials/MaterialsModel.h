@@ -47,6 +47,7 @@ public:
     
     void SetScene(DAVA::Scene *scene);
     void SetRootMaterial(DAVA::NMaterial *material);
+    DAVA::NMaterial * GetRootMaterial() const;
     
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     

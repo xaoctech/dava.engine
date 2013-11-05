@@ -66,6 +66,12 @@ void MaterialsModel::SetRootMaterial(DAVA::NMaterial *material)
     RebuildModel();
 }
 
+DAVA::NMaterial * MaterialsModel::GetRootMaterial() const
+{
+    return rootMaterial;
+}
+
+
 void MaterialsModel::RebuildModel()
 {
     //clear all data;
