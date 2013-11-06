@@ -95,12 +95,11 @@ LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditi
 		return canBeEnabledError;
 	}
 	
-	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableTilemaskEditing();
-	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	LandscapeEditorDrawSystem::eErrorType enablingError = drawSystem->EnableTilemaskEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return enableCustomDrawError;
+		return enablingError;
 	}
-
 
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
