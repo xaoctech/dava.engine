@@ -108,6 +108,7 @@ public:
     bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
     
 	void Recompile();
+	void RecompileAsync();
 	void RecompileInternal(BaseObject * caller, void * param, void *callerData);
 
     Shader * RecompileNewInstance(const String & combination);

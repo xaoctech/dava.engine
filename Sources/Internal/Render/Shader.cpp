@@ -394,6 +394,11 @@ void Shader::Recompile()
 	waiter.Wait();
 }
 
+void Shader::RecompileAsync()
+{
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::RecompileInternal));
+}
+
 void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerData)
 {
     DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
@@ -710,6 +715,10 @@ void Shader::DeleteShaders()
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::DeleteShadersInternal));
     JobInstanceWaiter waiter(job);
 	waiter.Wait();
+
+	static int32 DeleteShaders = 1;
+	Logger::FrameworkDebug("DeleteShaders = %d", DeleteShaders);
+	DeleteShaders++;
 
     vertexShader = 0;
     fragmentShader = 0;
