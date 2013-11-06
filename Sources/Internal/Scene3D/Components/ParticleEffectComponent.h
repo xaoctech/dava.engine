@@ -100,9 +100,12 @@ public:
 	void SetPlaybackSpeed(float32 value);
 
 
-	void SetExtertnalValue(String name, float32 value);
-	void RegisterModifiable(String name, ModifiablePropertyLineI *propertyLine);
-	void UnRegisterModifiable(String name, ModifiablePropertyLineI *propertyLine);
+	void SetExtertnalValue(const String& name, float32 value);
+	float32 GetExternalValue(const String& name);
+	
+	void RebuildEffectModifiables();
+	void RegisterModifiable(const String& name, ModifiablePropertyLineI *propertyLine);
+	void UnRegisterModifiable(const String& name, ModifiablePropertyLineI *propertyLine);
 
 	/**
      \brief Returns the total active particles count for the whole effect.
@@ -151,7 +154,8 @@ private:
 	// should be loaded in "stopped" state.
 	bool stopOnLoad;
 
-	MultiMap<String, ModifiablePropertyLineI *> externalParams;	
+	MultiMap<String, ModifiablePropertyLineI *> externalModifiables;	
+	Map<String, float32> externalValues;
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,

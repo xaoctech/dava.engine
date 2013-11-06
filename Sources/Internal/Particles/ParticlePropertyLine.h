@@ -192,6 +192,7 @@ template <class T> class ModifiablePropertyLine : public ModifiablePropertyLineI
 {
 public:
 	virtual void SetModifier(float32 v){modifer = modificationLine->Get(v);}
+	void SetModificationLine(RefPtr<PropertyLine<T> > line){this->modificationLine = line;}
 
 protected:
 	T modifer;
