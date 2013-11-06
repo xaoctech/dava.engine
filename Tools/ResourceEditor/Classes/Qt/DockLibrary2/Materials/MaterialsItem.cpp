@@ -28,52 +28,37 @@
 
 
 
-#ifndef __LIBRARY_MATERIALS_MODEL_H__
-#define __LIBRARY_MATERIALS_MODEL_H__
+#include "MaterialsItem.h"
+#include "MaterialsModel.h"
 
-#include "../LibraryBaseModel.h"
-#include "DAVAEngine.h"
-
-class SceneEditor2;
-class EntityGroup;
-class LibraryMaterialsModel: public LibraryBaseModel
+MaterialsItem::MaterialsItem(DAVA::NMaterial * _material, MaterialsModel * _model)
+    : QStandardItem()
+    , material(_material)
+    , model(_model)
 {
-    Q_OBJECT
+    DVASSERT(model);
+    DVASSERT(material);
     
-public:
-    LibraryMaterialsModel();
-    
-    virtual void TreeItemSelected(const QItemSelection & selection);
-    virtual void ListItemSelected(const QItemSelection & selection);
+    setText(model->GetName(material));
+    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+    setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    setEditable(false);
+}
 
-    virtual void SetProjectPath(const QString & path);
-    
-    virtual const QModelIndex GetTreeRootIndex() const;
-    virtual const QModelIndex GetListRootIndex() const;
+MaterialsItem::~MaterialsItem()
+{
+}
 
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+QVariant MaterialsItem::data(int role) const
+{
+    if(role == Qt::BackgroundColorRole)
+    {
+        if(model && model->IsMaterialSelected(material))
+        {
+            return QColor(235, 215, 210);
+        }
+    }
+    
+    return QStandardItem::data(role);
+}
 
-protected slots:
-    
-    void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
-
-    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
-	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-
-    
-    void OnEdit();
-    
-protected:
-    
-	virtual void CreateActions();
-    
-    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
-    
-private:
-    
-};
-
-
-#endif // __LIBRARY_MATERIALS_MODEL_H__
