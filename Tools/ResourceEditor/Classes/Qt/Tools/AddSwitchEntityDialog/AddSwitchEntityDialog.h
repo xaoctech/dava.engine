@@ -42,7 +42,7 @@ class AddSwitchEntityDialog: public BaseAddEntityDialog
 	Q_OBJECT
 
 public:
-	AddSwitchEntityDialog( QWidget* parent = 0);
+	AddSwitchEntityDialog(QWidget* parent = 0);
 	
 	~AddSwitchEntityDialog();
 	
@@ -60,11 +60,13 @@ public:
 	void reject();
 
 protected:
+
+	virtual void FillPropertyEditorWithContent(){}
 	
 	DAVA::Vector<SelectEntityPathWidget*> pathWidgets;
 	
 	DAVA::Vector<QWidget*>			additionalWidgets;
-	
+
 };
 
 #endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */

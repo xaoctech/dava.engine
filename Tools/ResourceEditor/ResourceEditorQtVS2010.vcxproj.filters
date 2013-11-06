@@ -208,9 +208,6 @@
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\SpeedTree">
-      <UniqueIdentifier>{e22291cd-1e6a-41a0-909a-dc1b06a4a034}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\DockLandscapeEditorControls">
       <UniqueIdentifier>{69848df9-8843-43e4-80a6-8a929925294f}</UniqueIdentifier>
     </Filter>
@@ -232,11 +229,14 @@
     <Filter Include="Classes\Qt\Tools\SliderWidget">
       <UniqueIdentifier>{77209fd5-5cd1-4465-9f21-223b539f5da1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\DockLibrary2">
-      <UniqueIdentifier>{b5a674b6-dcba-4197-9446-7c092919b7df}</UniqueIdentifier>
+    <Filter Include="Classes\Qt\Tools\QtFileDialog">
+      <UniqueIdentifier>{bd109383-7ec3-4aa9-98e4-92206aa6b482}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\DockLibrary2\FileSystem">
-      <UniqueIdentifier>{d399e5d0-7bb9-4cbd-abf5-2b62fb9a63f4}</UniqueIdentifier>
+    <Filter Include="Classes\Qt\Tools\TileTexturePreviewWidget">
+      <UniqueIdentifier>{db27caa7-9656-4101-a102-5e4083d818d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\SpeedTree">
+      <UniqueIdentifier>{e22291cd-1e6a-41a0-909a-dc1b06a4a034}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -343,12 +343,6 @@
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UIFileTreeCell.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIScrollView.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UISpriteEditor.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="Classes\VertexOctTree.cpp">
@@ -2098,7 +2092,7 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp">
-      <Filter>Classes\SpeedTree</Filter>
+      <Filter>Classes\Qt\SpeedTree</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp">
       <Filter>Classes\Commands2</Filter>
@@ -2151,13 +2145,7 @@
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp">
@@ -2184,12 +2172,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\BeastSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\EntityOwnerPropertyHelper_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2200,12 +2182,6 @@
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.cpp">
-      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp">
@@ -2235,40 +2211,28 @@
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryBaseModel.cpp">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
+    <ClCompile Include="Classes\Qt\Scene\System\OwnersSignatureSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryComplexView.cpp">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.cpp">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryTabWidget.cpp">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryBaseModel_moc.cpp">
+    <ClCompile Include="Classes\Commands2\LandscapeSetTexturesCommands.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryComplexView_moc.cpp">
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.cpp">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFilteringModel_moc.cpp">
+    <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryTabWidget_moc.cpp">
-      <Filter>QtGenerated</Filter>
+    <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp">
+      <Filter>Classes\Qt\SpeedTree</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.cpp">
-      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.cpp">
-      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemModel_moc.cpp">
+    <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2388,12 +2352,6 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UIFileTreeCell.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIScrollView.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UISpriteEditor.h">
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VertexOctTree.h">
@@ -3813,7 +3771,7 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
-      <Filter>Classes\SpeedTree</Filter>
+      <Filter>Classes\Qt\SpeedTree</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h">
       <Filter>Classes\Commands2</Filter>
@@ -3845,9 +3803,6 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
       <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\LandscapeDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\AddComponentCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3866,9 +3821,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\BeastSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\EntityOwnerPropertyHelper.h">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3877,9 +3829,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\TileTexturePreviewWidget.h">
-      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h">
       <Filter>Classes\Commands2</Filter>
@@ -3896,23 +3845,26 @@
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h">
       <Filter>Classes\Qt\Tools\SliderWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryBaseModel.h">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
+    <ClInclude Include="Classes\Qt\Scene\System\OwnersSignatureSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryComplexView.h">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
+    <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h">
+      <Filter>Classes\Qt\Tools\QtFileDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFilteringModel.h">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
+    <ClInclude Include="Classes\Commands2\LandscapeSetTexturesCommands.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryTabWidget.h">
-      <Filter>Classes\Qt\DockLibrary2</Filter>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel.h">
-      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
+    <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h">
+      <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockLibrary2\FileSystem\LibraryFileSystemModel.h">
-      <Filter>Classes\Qt\DockLibrary2\FileSystem</Filter>
+    <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h">
+      <Filter>Classes\Qt\SpeedTree</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_treeimportdialog.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4120,6 +4072,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\CubeMapTextureBrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\treeimportdialog.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

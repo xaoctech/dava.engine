@@ -112,12 +112,14 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 
-    
-    propertyList->AddBoolProperty("property.material.isalphatest");
-    propertyList->SetBoolPropertyValue("property.material.isalphatest", material->GetAlphatest());
+
+	/*
+    propertyList->AddBoolProperty("property.material.isopaque");
+    propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
     
     propertyList->AddBoolProperty("property.material.twosided");
     propertyList->SetBoolPropertyValue("property.material.twosided", material->GetTwoSided());
+	*/
 
 	bool isAlphablend = material->GetAlphablend();
 	propertyList->AddBoolProperty("property.material.alphablend");
@@ -184,10 +186,10 @@ void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
 
 void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("property.material.isalphatest" == forKey)
+    if("property.material.isopaque" == forKey)
     {
-        Material *material = dynamic_cast<Material *> (currentDataNode);
-        material->SetAlphatest(newValue);
+        //Material *material = dynamic_cast<Material *> (currentDataNode);
+        //material->SetOpaque(newValue);
     }
     else if("property.material.twosided" == forKey)
     {
@@ -244,7 +246,7 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         
         ReadFrom(currentDataNode);
         
-        SceneValidator::Instance()->ValidateSceneAndShowErrors(material->GetScene());
+        SceneValidator::Instance()->ValidateSceneAndShowErrors(material->GetScene(), EditorSettings::Instance()->GetDataSourcePath());
     }
 	else if ("property.material.blendSrc" == forKey) 
 	{

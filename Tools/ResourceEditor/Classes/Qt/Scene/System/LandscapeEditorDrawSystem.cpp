@@ -252,7 +252,11 @@ void LandscapeEditorDrawSystem::Update(DAVA::float32 timeElapsed)
 		
 		if (landscapeProxy)
 		{
-			landscapeProxy->GetRenderer()->RebuildVertexes(changedRect);
+			LandscapeRenderer* renderer = landscapeProxy->GetRenderer();
+			if (renderer)
+			{
+				renderer->RebuildVertexes(changedRect);
+			}
 		}
 		
 		if (notPassableTerrainProxy && notPassableTerrainProxy->IsEnabled())
@@ -527,6 +531,12 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		}
 
 		DeinitLandscape();
+
+		Entity* entity = FindLandscapeEntity(sceneEditor);
+		if (entity != NULL)
+		{
+			InitLandscape(entity, GetLandscape(entity));
+		}
 	}
 }
 
@@ -582,6 +592,17 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 	}
 }
 
+void LandscapeEditorDrawSystem::ResetTileMaskTexture()
+{
+	if (!baseLandscape)
+	{
+		return;
+	}
+
+	FilePath filePath = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
+}
+
 Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
 {
 	return baseLandscape->GetTiledShaderMode();
@@ -600,7 +621,8 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 		return false;
 	}
 
-	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (t == NULL || t->IsPinkPlaceholder())
 	{
 		landscapeProxy->UpdateFullTiledTexture(true);
 	}
@@ -624,10 +646,7 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE2) != NULL) &&
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE3) != NULL);
 
-		if (!ok)
-		{
-			return false;
-		}
+		return ok;
 	}
 
 	return true;

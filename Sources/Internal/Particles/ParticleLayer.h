@@ -291,7 +291,6 @@ public:
 
 	bool IsLodActive(int32 lod);
 	void SetLodActive(int32 lod, bool active);
-		
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();

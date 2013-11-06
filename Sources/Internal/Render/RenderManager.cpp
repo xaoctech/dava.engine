@@ -61,7 +61,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     ShaderCache * cache = new ShaderCache();
     cache = 0;
     
-//	Logger::Debug("[RenderManager] created");
+//	Logger::FrameworkDebug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();

@@ -37,10 +37,12 @@
 
 class SceneEditor2;
 class BeastManager;
+class QtWaitDialog;
+
 class BeastAction: public CommandAction
 {
 public:
-	BeastAction(SceneEditor2 *scene);
+	BeastAction(SceneEditor2 *scene, QtWaitDialog *_waitDialog);
 	~BeastAction();
 
 	virtual void Redo();
@@ -55,6 +57,7 @@ private:
 	DAVA::FilePath GetLightmapDirectoryPath();
 
 	BeastManager * beastManager;
+	QtWaitDialog * waitDialog;
 
 	SceneEditor2 *workingScene;
 

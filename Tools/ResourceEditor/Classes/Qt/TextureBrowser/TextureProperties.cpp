@@ -172,6 +172,14 @@ void TextureProperties::ReloadProperties()
 		header = AddHeader("Texture settings");
 		propMipMap = AddPropertyItem("generateMipMaps", object, header);
 		propMipMap->SetFlags(QtPropertyData::FLAG_IS_CHECKABLE | QtPropertyData::FLAG_IS_NOT_EDITABLE);
+        
+        //TODO: magic to display introspection info as bool, not int
+        bool savedValue = propMipMap->GetValue().toBool();
+        propMipMap->SetValue(!savedValue);
+        propMipMap->SetValue(savedValue);
+        //END of TODO
+
+
 		propWrapModeS = AddPropertyItem("wrapModeS", object, header);
 		propWrapModeT = AddPropertyItem("wrapModeT", object, header);
 		propMinFilter = AddPropertyItem("minFilter", object, header);

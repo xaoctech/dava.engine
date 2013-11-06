@@ -421,7 +421,7 @@ void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command
     {
 		CommandBatch *batch = (CommandBatch *)command;
 		Command2 *firstCommand = batch->GetCommand(0);
-		if(firstCommand && (firstCommand->GetId() == CMDID_CHANGE_LOD_DISTANCE))
+		if(firstCommand && (firstCommand->GetId() == CMDID_LOD_DISTANCE_CHANGE))
 		{
 			GetDataFromSelection();
 		}

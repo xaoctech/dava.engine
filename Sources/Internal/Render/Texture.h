@@ -187,7 +187,7 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
-	static Texture * CreatePink(const FilePath &path = FilePath(), TextureType requestedType = Texture::TEXTURE_2D);
+	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D);
 
 
 	/**
@@ -311,7 +311,7 @@ private:
     
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
-	static void AddToMap(Texture *tex, const FilePath & pathname);
+	static void AddToMap(Texture *tex);
     
 	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
 

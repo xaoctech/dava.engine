@@ -332,7 +332,7 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 	SceneEditor2* activeScene = (SceneEditor2 *) GetScene();
 	switch (command->GetId())
 	{
-		case CMDID_UPDATE_PARTICLE_EMITTER:
+		case CMDID_PARTICLE_EMITTER_UPDATE:
 		{
 			const CommandUpdateEmitter* castedCmd = static_cast<const CommandUpdateEmitter*>(command);
 			SceneSignals::Instance()->EmitParticleEmitterValueChanged(activeScene,
@@ -340,9 +340,9 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 
-		case CMDID_UPDATE_PARTICLE_LAYER:
-		case CMDID_UPDATE_PARTILCE_LAYER_TIME:
-		case CMDID_UPDATE_PARTICLE_LAYER_ENABLED:
+		case CMDID_PARTICLE_LAYER_UPDATE:
+		case CMDID_PARTILCE_LAYER_UPDATE_TIME:
+		case CMDID_PARTICLE_LAYER_UPDATE_ENABLED:
 		{
 			const CommandUpdateParticleLayerBase* castedCmd = static_cast<const CommandUpdateParticleLayerBase*>(command);
 			SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene,
@@ -350,7 +350,7 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 
-		case CMDID_UPDATE_PARTICLE_FORCE:
+		case CMDID_PARTICLE_FORCE_UPDATE:
 		{
 			const CommandUpdateParticleForce* castedCmd = static_cast<const CommandUpdateParticleForce*>(command);
 			SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene,
@@ -359,7 +359,7 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 
-		case CMDID_START_STOP_PARTICLE_EFFECT:
+		case CMDID_PARTICLE_EFFECT_START_STOP:
 		{
 			const CommandStartStopParticleEffect* castedCmd = static_cast<const CommandStartStopParticleEffect*>(command);
 			SceneSignals::Instance()->EmitParticleEffectStateChanged(activeScene,
@@ -368,7 +368,7 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 			
-		case CMDID_RESTART_PARTICLE_EFFECT:
+		case CMDID_PARTICLE_EFFECT_RESTART:
 		{
 			const CommandRestartParticleEffect* castedCmd = static_cast<const CommandRestartParticleEffect*>(command);
 			
@@ -382,21 +382,21 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 
-		case CMDID_LOAD_PARTICLE_EMITTER_FROM_YAML:
+		case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
 		{
 			const CommandLoadParticleEmitterFromYaml* castedCmd = static_cast<const CommandLoadParticleEmitterFromYaml*>(command);
 			SceneSignals::Instance()->EmitParticleEmitterLoaded(activeScene, castedCmd->GetEmitter());
 			break;
 		}
 
-		case CMDID_SAVE_PARTICLE_EMITTER_TO_YAML:
+		case CMDID_PARTICLE_EMITTER_SAVE_TO_YAML:
 		{
 			const CommandSaveParticleEmitterToYaml* castedCmd = static_cast<const CommandSaveParticleEmitterToYaml*>(command);
 			SceneSignals::Instance()->EmitParticleEmitterSaved(activeScene, castedCmd->GetEmitter());
 			break;
 		}
 
-		case CMDID_ADD_PARTICLE_EMITTER_LAYER:
+		case CMDID_PARTICLE_EMITTER_LAYER_ADD:
 		{
 			const CommandAddParticleEmitterLayer* castedCmd = static_cast<const CommandAddParticleEmitterLayer*>(command);
 			SceneSignals::Instance()->EmitParticleLayerAdded(activeScene, castedCmd->GetCreatedLayer());

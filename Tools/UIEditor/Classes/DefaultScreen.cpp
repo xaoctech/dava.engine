@@ -324,10 +324,13 @@ void DefaultScreen::SmartGetSelectedControl(SmartSelection* list, const Hierarch
 		UIControl* control = controlNode->GetUIObject();
 		if (!control)
 			continue;
-		
-		if (!control->GetVisible())
+
+		// Control can be selected if at least its subcontrol is visible (see pls DF-2420).
+		if (!IsControlVisible(control))
+		{
 			continue;
-		
+		}
+
 		if (!control->GetVisibleForUIEditor())
 		{
 			continue;
@@ -678,9 +681,28 @@ void DefaultScreen::ApplySizeDelta(const Vector2& delta)
 			
 		default:break;
 	}
-		
+	// DF-2009 - Don't allow to "turn out" controls. Now dx and dy can't be less than zero.
+	if (rect.dx < MIN_CONTROL_SIZE)
+	{
+		rect.dx = MIN_CONTROL_SIZE;
+		// Keep control position when current size is equal 1.
+		if ((resizeType == ResizeTypeLeft) || (resizeType == ResizeTypeLeftBottom) || (resizeType == ResizeTypeLeftTop))
+		{
+			rect.x = resizeRect.x + resizeRect.dx - MIN_CONTROL_SIZE;
+		}
+	}
+	
+	if (rect.dy < MIN_CONTROL_SIZE)
+	{
+		rect.dy = MIN_CONTROL_SIZE;
+				
+		if ((resizeType == ResizeTypeTop) || (resizeType == ResizeTypeRigthTop) || (resizeType == ResizeTypeLeftTop))
+		{			
+			rect.y = resizeRect.y + resizeRect.dy - MIN_CONTROL_SIZE;
+		}
+	}
+	
 	lastSelectedControl->GetUIObject()->SetRect(rect);
-
 }
 
 void DefaultScreen::ResetSizeDelta()
@@ -700,17 +722,6 @@ void DefaultScreen::ResizeControl()
 		return;
 	
 	Rect rect = lastSelectedControl->GetUIObject()->GetRect();
-	if (rect.dx < 0)
-	{
-		rect.x += rect.dx;
-		rect.dx = -rect.dx;
-	}
-	
-	if (rect.dy < 0)
-	{
-		rect.y += rect.dy;
-		rect.dy = -rect.dy;
-	}
 
 	ResetSizeDelta();
 	ControlResizeCommand* cmd = new ControlResizeCommand(lastSelectedControl->GetId(), resizeRect, rect);
@@ -1260,3 +1271,29 @@ void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 		inputPos = pos;
 	}
 }
+
+bool DefaultScreen::IsControlVisible(UIControl* uiControl)
+{
+	bool isVisible = false;
+	IsControlVisibleRecursive(uiControl, isVisible);
+
+	return isVisible;
+}
+
+void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible)
+{
+	if (!uiControl)
+	{
+		isVisible = false;
+		return;
+	}
+
+	isVisible |= uiControl->GetVisible();
+
+	const List<UIControl*>& children = uiControl->GetChildren();
+	for(List<UIControl*>::const_iterator iter = children.begin(); iter != children.end(); iter ++)
+	{
+		IsControlVisibleRecursive(*iter, isVisible);
+	}
+}
+

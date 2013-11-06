@@ -91,9 +91,6 @@
     <Filter Include="Internal\Render\Effects">
       <UniqueIdentifier>{61100d52-442d-45fd-b286-f3baf188d2bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Scene3D\Imposter">
-      <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Autotesting">
       <UniqueIdentifier>{9c48b596-2306-460c-82bd-f3a4279468b9}</UniqueIdentifier>
     </Filter>
@@ -128,7 +125,7 @@
       <UniqueIdentifier>{8b6654bd-b8b7-4415-97cd-58c934760ce1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Internal\Scene3D\SceneFile">
-      <UniqueIdentifier>{5c15aa3c-b138-4ba8-b96c-3c3498b9930f}</UniqueIdentifier>
+      <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -864,12 +861,6 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
       <Filter>Internal\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -880,15 +871,6 @@
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
@@ -1188,9 +1170,6 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -1335,20 +1314,35 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
       <Filter>Internal\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.h">
-      <Filter>Internal\Scene3D\SceneFile</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h">
+      <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h">
-      <Filter>Internal\Render</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DAVAClassRegistrator.h">
+      <Filter>Internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialSystem.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h">
-      <Filter>Internal\Render</Filter>
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.h">
+      <Filter>Internal\Scene3D\SceneFile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\OcclusionQuery.h">
       <Filter>Internal\Render</Filter>
@@ -1970,12 +1964,6 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
       <Filter>Internal\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -1995,12 +1983,6 @@
       <Filter>Internal\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp">
@@ -2261,9 +2243,6 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
@@ -2372,6 +2351,9 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Vector.cpp">
       <Filter>Internal\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
@@ -2390,20 +2372,35 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.cpp">
-      <Filter>Internal\Scene3D\SceneFile</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
+      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ShaderCache.cpp">
-      <Filter>Internal\Render</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\GameAPI.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DAVAClassRegistrator.cpp">
+      <Filter>Internal</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialSystem.cpp">
       <Filter>Internal\Render\Material</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp">
-      <Filter>Internal\Render</Filter>
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.cpp">
+      <Filter>Internal\Scene3D\SceneFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderCache.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\OcclusionQuery.cpp">
       <Filter>Internal\Render</Filter>

@@ -122,6 +122,8 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
 		return true;
 	}
 
+	FinishEditing();
+
 	drawSystem->GetLandscapeProxy()->UpdateFullTiledTexture(true);
 	
 	selectionSystem->SetLocked(false);
@@ -197,15 +199,20 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					needCreateUndo = true;
-					editingIsEnabled = false;
-				}
-				prevCursorPos = Vector2(-1.f, -1.f);
+				FinishEditing();
 				break;
 		}
 	}
+}
+
+void TilemaskEditorSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		needCreateUndo = true;
+		editingIsEnabled = false;
+	}
+	prevCursorPos = Vector2(-1.f, -1.f);
 }
 
 void TilemaskEditorSystem::SetBrushSize(int32 brushSize)
@@ -263,6 +270,11 @@ void TilemaskEditorSystem::UpdateCursorPosition()
 		
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
+	}
 }
 
 void TilemaskEditorSystem::UpdateToolImage(bool force)
@@ -306,13 +318,13 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
 	
-	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture0"));
+	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("texture0"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex0, 0);
-	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture1"));
+	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("texture1"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex1, 1);
-	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("colorType"));
+	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("colorType"));
 	tileMaskEditorShader->SetUniformValueByIndex(colorTypeUniform, colorType);
-	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("intensity"));
+	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("intensity"));
 	
 	tileMaskEditorShader->SetUniformValueByIndex(intensityUniform, strength);
 	
@@ -423,8 +435,30 @@ void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
 		return;
 	}
 
-	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
-	drawSystem->GetLandscapeProxy()->SetLandscapeTileColor(level, color);
+	if (GetTileColor(index) != color)
+	{
+		MetaObjModifyCommand* command = CreateTileColorCommand((Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index),
+															   color);
+		((SceneEditor2*)GetScene())->Exec(command);
+	}
+}
+
+MetaObjModifyCommand* TilemaskEditorSystem::CreateTileColorCommand(Landscape::eTextureLevel level, const Color& color)
+{
+	Landscape* landscape = drawSystem->GetBaseLandscape();
+	const InspMember* inspMember = landscape->GetTypeInfo()->Member("tileColor");
+	const InspColl* inspColl = inspMember->Collection();
+	void* object = inspMember->Data(landscape);
+
+	InspColl::Iterator it = inspColl->Begin(object);
+
+	int32 i = level;
+	while (i--)
+	{
+		it = inspColl->Next(it);
+	}
+
+	return new MetaObjModifyCommand(inspColl->ItemType(), inspColl->ItemPointer(it), VariantType(color));
 }
 
 void TilemaskEditorSystem::CreateMaskTexture()

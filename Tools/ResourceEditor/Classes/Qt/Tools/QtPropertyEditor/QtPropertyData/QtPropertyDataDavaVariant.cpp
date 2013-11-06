@@ -34,11 +34,11 @@
 #include "QtPropertyDataDavaVariant.h"
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
 #include "../QtPropertyWidgets/QtComboFake.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QColorDialog>
 #include <QListWidget>
 #include <QComboBox>
-#include <QFileDialog>
 #include <QPushButton>
 #include <QToolButton>
 #include <QPainter>
@@ -173,7 +173,7 @@ QVariant QtPropertyDataDavaVariant::GetValueAlias()
 	{
 		for (int i = 0; i < allowedValues.size(); ++i)
 		{
-			DAVA::VariantType v = allowedValues[i].realValue;
+			DAVA::VariantType v = DAVA::VariantType::Convert(allowedValues[i].realValue, curVariantValue.type);
 			if(v == curVariantValue)
 			{
 				ret = allowedValues[i].visibleValue;
@@ -775,7 +775,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 
 void QtPropertyDataDavaVariant::FilePathOWPressed()
 {
-	QString path = QFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
+	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
 	if(!path.isEmpty())
 	{
 		SetValue(path, QtPropertyData::VALUE_EDITED);
@@ -887,7 +887,8 @@ void QtPropertyDataDavaVariant::SetAllowedValueEditorData(QWidget *editorWidget)
 		// that matches current value
 		for(int i = 0; i < allowedValues.size(); ++i)
 		{
-			if(allowedValues[i].realValue == curVariantValue)
+			DAVA::VariantType v = DAVA::VariantType::Convert(allowedValues[i].realValue, curVariantValue.type);
+			if(v == curVariantValue)
 			{
 				index = i;
 				break;
@@ -908,7 +909,8 @@ void QtPropertyDataDavaVariant::ApplyAllowedValueFromEditor(QWidget *editorWidge
 		int index = allowedWidget->currentIndex();
 		if(index >= 0 && index < allowedValues.size())
 		{
-			if(curVariantValue != allowedValues[index].realValue)
+			DAVA::VariantType v = DAVA::VariantType::Convert(allowedValues[index].realValue, curVariantValue.type);
+			if(curVariantValue != v)
 			{
 				SetValue(FromDavaVariant(allowedValues[index].realValue), QtPropertyData::VALUE_EDITED);
 			}
