@@ -33,6 +33,8 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
+#include "Scene/EntityGroup.h"
+#include "Scene/System/SelectionSystem.h"
 
 #include "MaterialsModel.h"
 
@@ -51,6 +53,8 @@ LibraryMaterialsModel::LibraryMaterialsModel()
     
     QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 }
 
 void LibraryMaterialsModel::TreeItemSelected(const QItemSelection & selection)
@@ -109,6 +113,9 @@ void LibraryMaterialsModel::SceneActivated(SceneEditor2 *scene)
     ((MaterialsModel *)treeModel)->SetScene(scene);
     ((MaterialsModel *)listModel)->SetScene(scene);
     filteringModel->invalidate();
+    
+    ((MaterialsModel *)treeModel)->SetSelection(scene->selectionSystem->GetSelection());
+    ((MaterialsModel *)listModel)->SetSelection(scene->selectionSystem->GetSelection());
 }
 
 void LibraryMaterialsModel::SceneDeactivated(SceneEditor2 *scene)
@@ -117,6 +124,23 @@ void LibraryMaterialsModel::SceneDeactivated(SceneEditor2 *scene)
     ((MaterialsModel *)listModel)->SetScene(NULL);
 	filteringModel->invalidate();
 }
+
+void LibraryMaterialsModel::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
+    ((MaterialsModel *)treeModel)->SceneStructureChanged(scene);
+    ((MaterialsModel *)listModel)->SceneStructureChanged(scene);
+	filteringModel->invalidate();
+
+    ((MaterialsModel *)treeModel)->SetSelection(scene->selectionSystem->GetSelection());
+    ((MaterialsModel *)listModel)->SetSelection(scene->selectionSystem->GetSelection());
+}
+
+void LibraryMaterialsModel::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+    ((MaterialsModel *)treeModel)->SetSelection(*selected);
+    ((MaterialsModel *)listModel)->SetSelection(*selected);
+}
+
 
 bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const
 {

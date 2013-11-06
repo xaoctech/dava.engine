@@ -28,71 +28,27 @@
 
 
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
+#ifndef __MATERIALS_ITEM_H__
+#define __MATERIALS_ITEM_H__
 
 #include "DAVAEngine.h"
 
-#include <QStandardItemModel>
-#include <QString>
+#include <QStandardItem>
 
-class QMimeData;
-class QStandardItem;
-class EntityGroup;
-class MaterialsItem;
-class MaterialsModel: public QStandardItemModel
+class MaterialsModel;
+class MaterialsItem: public QStandardItem
 {
-    Q_OBJECT
-    
-    static const char * mimeFormatMaterial;
-
 public:
-    MaterialsModel(QObject *parent = 0);
-    virtual ~MaterialsModel();
+    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
+    virtual ~MaterialsItem();
     
-    void SetScene(DAVA::Scene *scene);
-    void SetRootMaterial(DAVA::NMaterial *material);
-    DAVA::NMaterial * GetRootMaterial() const;
-
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-    
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-    
-    void SceneStructureChanged(DAVA::Scene * scene);
-    void SetSelection(const EntityGroup & selected);
-    bool IsMaterialSelected(DAVA::NMaterial * material) const;
-
-    QString GetName(DAVA::NMaterial * material);
-    
-protected:
-    
-    void PrepareLodMaterials();
-    void RebuildModelFromMaterial();
-    void RebuildModelFromAllMaterials();
-    void Clear();
-    
-    int AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
-    
-    QMimeData * EncodeMimeData(const QVector<void *> & data, const QString & format) const;
-	QVector<void *> * DecodeMimeData(const QMimeData * data, const QString & format) const;
-
-    void RetrieveMaterialRecursive(DAVA::Entity *entity);
-    void BuildMaterialsFromRootRecursive(DAVA::NMaterial *root);
+    QVariant data(int role = Qt::UserRole + 1) const;
     
 private:
     
-    DAVA::Vector<DAVA::NMaterial *> materials;
-    DAVA::Vector<DAVA::NMaterial *> lodMaterials;
-
-    DAVA::Set<DAVA::NMaterial *> selectedMaterials;
-
-    
-    DAVA::NMaterial * rootMaterial;
+    DAVA::NMaterial * material;
+    MaterialsModel * model;
 };
 
-Q_DECLARE_METATYPE( DAVA::NMaterial * )
 
-
-#endif // __MATERIALS_MODEL_H__
+#endif // __MATERIALS_ITEM_H__

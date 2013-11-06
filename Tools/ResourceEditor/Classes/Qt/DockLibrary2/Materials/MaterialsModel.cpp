@@ -29,9 +29,11 @@
 
 
 #include "MaterialsModel.h"
+#include "MaterialsItem.h"
+#include "Scene/EntityGroup.h"
 
-#include <QStandardItem>
 #include <QMimeData>
+#include <QStandardItem>
 
 const char * MaterialsModel::mimeFormatMaterial = "application/dava.nmaterial";
 
@@ -43,6 +45,7 @@ MaterialsModel::MaterialsModel(QObject * parent)
 
 MaterialsModel::~MaterialsModel()
 {
+    selectedMaterials.clear();
     Clear();
 }
 
@@ -59,6 +62,7 @@ void MaterialsModel::Clear()
 
 void MaterialsModel::SetScene(DAVA::Scene * scene)
 {
+    selectedMaterials.clear();
     Clear();
     
     if(scene)
@@ -78,6 +82,8 @@ void MaterialsModel::SetRootMaterial(DAVA::NMaterial * material)
     Clear();
     
     rootMaterial = material;
+    BuildMaterialsFromRootRecursive(rootMaterial);
+    
     RebuildModelFromMaterial();
 }
 
@@ -103,8 +109,7 @@ void MaterialsModel::RebuildModelFromMaterial()
 {
     if(!rootMaterial) return;
 
-    QStandardItem * rootItem = invisibleRootItem();
-    AddMaterialToItem(rootMaterial, rootItem);
+    AddMaterialToItem(rootMaterial, (MaterialsItem *)invisibleRootItem());
 }
 
 void MaterialsModel::RebuildModelFromAllMaterials()
@@ -112,50 +117,66 @@ void MaterialsModel::RebuildModelFromAllMaterials()
     QStandardItem * rootItem = invisibleRootItem();
     for(int i = 0; i < (int)materials.size(); )
     {
-        QStandardItem *item = new QStandardItem();
-        
-        DAVA::NMaterial *mat = materials[i];
-        i += AddMaterialToItem(mat, item);
+        MaterialsItem *item = new MaterialsItem(materials[i], this);
+        i += AddMaterialToItem(materials[i], item);
         
         rootItem->appendRow(item);
     }
     
-    for(int i = 0; i < (int)lodMaterials.size(); ++i)
-    {
-        QStandardItem *item = new QStandardItem();
-        
-        DAVA::NMaterial *mat = materials[i];
-        SetMaterialToItem(mat, item);
-        
-        rootItem->appendRow(item);
-    }
+//    for(int i = 0; i < (int)lodMaterials.size(); ++i)
+//    {
+//        MaterialsItem *item = new MaterialsItem(materials[i], this);
+//        rootItem->appendRow(item);
+//    }
 }
 
-int MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, QStandardItem * rootItem)
+void MaterialsModel::SceneStructureChanged(DAVA::Scene * scene)
 {
-    SetMaterialToItem(material, rootItem);
+    DAVA::NMaterial *material = rootMaterial;
+
+    selectedMaterials.clear();
+    Clear();
     
+    if(scene)
+    {
+        const DAVA::RenderSystem * rSystem = scene->GetRenderSystem();
+        const DAVA::MaterialSystem * matSystem = rSystem->GetMaterialSystem();
+        
+        matSystem->BuildMaterialList(NULL, materials);
+    }
+    
+    if(material)
+    {
+        for(int i = 0; i < (int)materials.size(); ++i)
+        {
+            if(material == materials[i])
+            {
+                SetRootMaterial(material);
+                return;
+            }
+        }
+        
+    }
+    
+    PrepareLodMaterials();
+    RebuildModelFromAllMaterials();
+}
+
+int MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * rootItem)
+{
     int counter = 1;
     for(int i = 0; i < (int)material->GetChildrenCount(); ++i)
     {
-        QStandardItem *item = new QStandardItem();
-        rootItem->appendRow(item);
-        
         DAVA::NMaterial *mat = material->GetChild(i);
+
+        MaterialsItem *item = new MaterialsItem(mat, this);
         counter += AddMaterialToItem(mat, item);
+
+        rootItem->appendRow(item);
     }
     
     return counter;
 }
-
-void MaterialsModel::SetMaterialToItem(DAVA::NMaterial * material, QStandardItem * item)
-{
-    item->setText(GetName(material));
-    item->setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    item->setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
-    item->setEditable(false);
-}
-
 
 QString MaterialsModel::GetName(DAVA::NMaterial * material)
 {
@@ -256,3 +277,55 @@ QVector<void *> * MaterialsModel::DecodeMimeData(const QMimeData * data, const Q
 }
 
 
+void MaterialsModel::SetSelection(const EntityGroup & selected)
+{
+    selectedMaterials.clear();
+    
+    for(size_t i = 0; i < selected.Size(); ++i)
+    {
+        RetrieveMaterialRecursive(selected.GetEntity(i));
+    }
+}
+
+void MaterialsModel::RetrieveMaterialRecursive(DAVA::Entity *entity)
+{
+    for(DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
+    {
+        RetrieveMaterialRecursive(entity->GetChild(i));
+    }
+    
+    
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+    if(!ro) return;
+    
+    DAVA::uint32 count = ro->GetRenderBatchCount();
+    for(DAVA::uint32 b = 0; b < count; ++b)
+    {
+        DAVA::RenderBatch *renderBatch = ro->GetRenderBatch(b);
+        
+        DAVA::NMaterial *material = renderBatch->GetMaterial();
+        
+        while (material)
+        {
+            selectedMaterials.insert(material);
+            material = material->GetParent();
+        }
+    }
+}
+
+void MaterialsModel::BuildMaterialsFromRootRecursive(DAVA::NMaterial *root)
+{
+    materials.push_back(root);
+    
+    for(DAVA::int32 i = 0; i < root->GetChildrenCount(); ++i)
+    {
+        BuildMaterialsFromRootRecursive(root->GetChild(i));
+    }
+}
+
+
+
+bool MaterialsModel::IsMaterialSelected(DAVA::NMaterial * material) const
+{
+    return (selectedMaterials.find(material) != selectedMaterials.end());
+}
