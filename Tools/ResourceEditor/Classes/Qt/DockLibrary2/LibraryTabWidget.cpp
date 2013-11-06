@@ -59,6 +59,8 @@ LibraryTabWidget::LibraryTabWidget(QWidget *parent)
     //Add models
     AddModel(new LibraryFileSystemModel());
     AddModel(new LibraryMaterialsModel());
+    
+    posSaver.Attach(this);
 }
 
 LibraryTabWidget::~LibraryTabWidget()

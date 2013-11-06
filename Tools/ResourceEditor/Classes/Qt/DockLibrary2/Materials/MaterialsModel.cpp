@@ -31,8 +31,11 @@
 #include "MaterialsModel.h"
 
 #include <QStandardItem>
+#include <QMimeData>
 
-MaterialsModel::MaterialsModel(QObject *parent)
+const char * MaterialsModel::mimeFormatMaterial = "application/dava.nmaterial";
+
+MaterialsModel::MaterialsModel(QObject * parent)
     : QStandardItemModel(parent)
     , rootMaterial(NULL)
 {
@@ -40,14 +43,23 @@ MaterialsModel::MaterialsModel(QObject *parent)
 
 MaterialsModel::~MaterialsModel()
 {
-    rootMaterial = NULL;
-    materials.clear();
+    Clear();
 }
 
-void MaterialsModel::SetScene(DAVA::Scene *scene)
+void MaterialsModel::Clear()
 {
     rootMaterial = NULL;
+
     materials.clear();
+    lodMaterials.clear();
+    
+    QStandardItem * rootItem = invisibleRootItem();
+    rootItem->removeRows(0, rowCount());
+}
+
+void MaterialsModel::SetScene(DAVA::Scene * scene)
+{
+    Clear();
     
     if(scene)
     {
@@ -57,13 +69,16 @@ void MaterialsModel::SetScene(DAVA::Scene *scene)
         matSystem->BuildMaterialList(NULL, materials);
     }
     
-    RebuildModel();
+    PrepareLodMaterials();
+    RebuildModelFromAllMaterials();
 }
 
-void MaterialsModel::SetRootMaterial(DAVA::NMaterial *material)
+void MaterialsModel::SetRootMaterial(DAVA::NMaterial * material)
 {
+    Clear();
+    
     rootMaterial = material;
-    RebuildModel();
+    RebuildModelFromMaterial();
 }
 
 DAVA::NMaterial * MaterialsModel::GetRootMaterial() const
@@ -71,38 +86,54 @@ DAVA::NMaterial * MaterialsModel::GetRootMaterial() const
     return rootMaterial;
 }
 
-
-void MaterialsModel::RebuildModel()
+void MaterialsModel::PrepareLodMaterials()
 {
-    //clear all data;
-    QStandardItem *rootItem = invisibleRootItem();
-    rootItem->removeRows(0, rowCount());
+    if(rootMaterial != NULL) return;
     
-    if(rootMaterial)
+    for(int i = 0; i < (int)materials.size(); ++i)
     {
-        AddMaterialToItem(rootMaterial, rootItem);
-    }
-    else
-    {
-        //build new model
-        for(int i = 0; i < (int)materials.size(); )
+        if(materials[i]->IsSwitchable() && NULL != materials[i]->GetParent())
         {
-            QStandardItem *item = new QStandardItem();
-            
-            DAVA::NMaterial *mat = materials[i];
-            i += AddMaterialToItem(mat, item);
-            
-            rootItem->appendRow(item);
+            lodMaterials.push_back(materials[i]);
         }
     }
 }
 
-int MaterialsModel::AddMaterialToItem(DAVA::NMaterial *material, QStandardItem *rootItem)
+void MaterialsModel::RebuildModelFromMaterial()
 {
-    rootItem->setText(GetName(material));
-    rootItem->setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    rootItem->setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
-    rootItem->setEditable(false);
+    if(!rootMaterial) return;
+
+    QStandardItem * rootItem = invisibleRootItem();
+    AddMaterialToItem(rootMaterial, rootItem);
+}
+
+void MaterialsModel::RebuildModelFromAllMaterials()
+{
+    QStandardItem * rootItem = invisibleRootItem();
+    for(int i = 0; i < (int)materials.size(); )
+    {
+        QStandardItem *item = new QStandardItem();
+        
+        DAVA::NMaterial *mat = materials[i];
+        i += AddMaterialToItem(mat, item);
+        
+        rootItem->appendRow(item);
+    }
+    
+    for(int i = 0; i < (int)lodMaterials.size(); ++i)
+    {
+        QStandardItem *item = new QStandardItem();
+        
+        DAVA::NMaterial *mat = materials[i];
+        SetMaterialToItem(mat, item);
+        
+        rootItem->appendRow(item);
+    }
+}
+
+int MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, QStandardItem * rootItem)
+{
+    SetMaterialToItem(material, rootItem);
     
     int counter = 1;
     for(int i = 0; i < (int)material->GetChildrenCount(); ++i)
@@ -117,8 +148,16 @@ int MaterialsModel::AddMaterialToItem(DAVA::NMaterial *material, QStandardItem *
     return counter;
 }
 
+void MaterialsModel::SetMaterialToItem(DAVA::NMaterial * material, QStandardItem * item)
+{
+    item->setText(GetName(material));
+    item->setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+    item->setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    item->setEditable(false);
+}
 
-QString MaterialsModel::GetName(DAVA::NMaterial *material)
+
+QString MaterialsModel::GetName(DAVA::NMaterial * material)
 {
     if(!material) return QString();
     
@@ -146,5 +185,74 @@ DAVA::NMaterial * MaterialsModel::GetMaterial(const QModelIndex & index) const
     return material;
 }
 
+QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
+{
+	QMimeData* ret = NULL;
+    
+	if(indexes.size() > 0)
+	{
+        QVector<void*> data;
+        foreach(QModelIndex index, indexes)
+        {
+            data.push_back(GetMaterial(index));
+        }
+        
+        ret = EncodeMimeData(data, mimeFormatMaterial);
+    }
+    
+	return ret;
+}
+
+QStringList MaterialsModel::mimeTypes() const
+{
+	QStringList types;
+    
+	types << mimeFormatMaterial;
+    
+	return types;
+}
+
+
+QMimeData * MaterialsModel::EncodeMimeData(const QVector<void *> & data, const QString & format) const
+{
+	QMimeData *mimeData = NULL;
+	
+	if(data.size() > 0)
+	{
+		mimeData = new QMimeData();
+		QByteArray encodedData;
+        
+		QDataStream stream(&encodedData, QIODevice::WriteOnly);
+		for (int i = 0; i < data.size(); ++i)
+		{
+			stream.writeRawData((char *) &data[i], sizeof(void *));
+		}
+        
+		mimeData->setData(format, encodedData);
+	}
+    
+	return mimeData;
+}
+
+QVector<void *> * MaterialsModel::DecodeMimeData(const QMimeData * data, const QString & format) const
+{
+	QVector<void*> * ret = NULL;
+    
+	if(data->hasFormat(format))
+	{
+		void* object = NULL;
+		QByteArray encodedData = data->data(format);
+		QDataStream stream(&encodedData, QIODevice::ReadOnly);
+        
+		ret = new QVector<void *>();
+		while(!stream.atEnd())
+		{
+			stream.readRawData((char *) &object, sizeof(void *));
+			ret->push_back(object);
+		}
+	}
+    
+	return ret;
+}
 
 
