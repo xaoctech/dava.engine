@@ -91,6 +91,8 @@ void ApplicationManager::CheckUpdates(QQueue<UpdateTask> & tasks)
         version.id = remoteConfig->GetLauncherVersion();
         version.url = remoteConfig->GetLauncherURL();
         tasks.push_back(UpdateTask("", "", version, true));
+
+        return;
     }
 
     //check applications update
