@@ -972,6 +972,19 @@ namespace DAVA
 		}
 	}
 	
+    int32 NMaterial::GetChildrenCount() const
+    {
+        return (int32)NMaterialState::children.size();
+    }
+    
+    NMaterial * NMaterial::GetChild(int32 index) const
+    {
+        DVASSERT((0 <= index) && (index < (int32)NMaterialState::children.size()));
+        
+        return NMaterialState::children[index];
+    }
+
+    
 	void NMaterial::ResetParent()
 	{
 		activeTechnique = NULL;

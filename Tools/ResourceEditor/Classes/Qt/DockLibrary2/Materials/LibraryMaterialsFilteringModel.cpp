@@ -28,59 +28,25 @@
 
 
 
-#ifndef __LIBRARY_BASE_MODEL_H__
-#define __LIBRARY_BASE_MODEL_H__
+#include "LibraryMaterialsFilteringModel.h"
 
-#include <QString>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QMenu>
-
-class QAbstractItemModel;
-
-class LibraryFilteringModel;
-class LibraryBaseModel: public QObject
+LibraryMaterialsFilteringModel::LibraryMaterialsFilteringModel(QObject *parent /* = NULL */)
+    : LibraryFilteringModel(parent)
 {
-    Q_OBJECT
-    
-public:
-    LibraryBaseModel(const QString &modelName);
-    virtual ~LibraryBaseModel();
-
-    QAbstractItemModel * GetTreeModel() const;
-    QAbstractItemModel * GetListModel() const;
-    
-    const QString & GetName() const;
-    
-    virtual void TreeItemSelected(const QItemSelection & selection) = 0;
-    virtual void ListItemSelected(const QItemSelection & selection) = 0;
-    
-    virtual void SetProjectPath(const QString & path) = 0;
-
-    virtual const QModelIndex GetTreeRootIndex() const = 0;
-    virtual const QModelIndex GetListRootIndex() const = 0;
-    
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-	const QList<QAction *> & GetModelActions();
-
-	void SetFilter(const QString &filter);
-
-protected:
-
-	virtual void CreateActions() = 0;
+}
 
 
-protected:
-    
-    QAbstractItemModel *treeModel;
-    
-	QAbstractItemModel *listModel;
-    LibraryFilteringModel *filteringModel;
+bool LibraryMaterialsFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	if(model == NULL) return true;
 
-    QString name;
-    
-	QList<QAction *> actions;
-};
+    // First we see if we're the source root node
+	QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+	if (!sourceIndex.isValid())
+		return true; // viewer will handle filtering
 
-#endif // __LIBRARY_BASE_MODEL_H__
+    QString data = sourceModel()->data(sourceIndex).toString();
+    return (data.contains(filterRegExp()));
+}
+
+

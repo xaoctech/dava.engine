@@ -28,59 +28,19 @@
 
 
 
-#ifndef __LIBRARY_BASE_MODEL_H__
-#define __LIBRARY_BASE_MODEL_H__
+#ifndef __LIBRARY_MATERIALS_FILTERING_MODEL_H__
+#define __LIBRARY_MATERIALS_FILTERING_MODEL_H__
 
-#include <QString>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QMenu>
+#include "../LibraryFilteringModel.h"
 
-class QAbstractItemModel;
-
-class LibraryFilteringModel;
-class LibraryBaseModel: public QObject
+class  LibraryMaterialsFilteringModel: public LibraryFilteringModel
 {
-    Q_OBJECT
-    
 public:
-    LibraryBaseModel(const QString &modelName);
-    virtual ~LibraryBaseModel();
-
-    QAbstractItemModel * GetTreeModel() const;
-    QAbstractItemModel * GetListModel() const;
+	LibraryMaterialsFilteringModel(QObject *parent = NULL);
     
-    const QString & GetName() const;
-    
-    virtual void TreeItemSelected(const QItemSelection & selection) = 0;
-    virtual void ListItemSelected(const QItemSelection & selection) = 0;
-    
-    virtual void SetProjectPath(const QString & path) = 0;
-
-    virtual const QModelIndex GetTreeRootIndex() const = 0;
-    virtual const QModelIndex GetListRootIndex() const = 0;
-    
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-	const QList<QAction *> & GetModelActions();
-
-	void SetFilter(const QString &filter);
-
 protected:
 
-	virtual void CreateActions() = 0;
-
-
-protected:
-    
-    QAbstractItemModel *treeModel;
-    
-	QAbstractItemModel *listModel;
-    LibraryFilteringModel *filteringModel;
-
-    QString name;
-    
-	QList<QAction *> actions;
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
-#endif // __LIBRARY_BASE_MODEL_H__
+#endif // __LIBRARY_MATERIALS_FILTERING_MODEL_H__
