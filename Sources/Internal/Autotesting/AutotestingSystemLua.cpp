@@ -431,7 +431,7 @@ String AutotestingSystemLua::GetText(UIControl *control)
 	{
 		return WStringToString(uiTextField->GetText());
 	}
-	return "Doesn't contain text value";
+	return "";
 }
 
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
