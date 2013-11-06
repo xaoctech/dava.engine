@@ -71,6 +71,8 @@ public:
 
 	virtual QString ItemName() const = 0;
 	virtual QVariant ItemData() const = 0;
+    
+    virtual QVariant ItemBackgroundColor() const;
 
 protected:
 	eItemType type;
@@ -89,6 +91,7 @@ public:
 	virtual QString ItemName() const;
 	virtual QVariant ItemData() const;
 	virtual QIcon ItemIcon() const;
+    virtual QVariant ItemBackgroundColor() const;
 
 	DAVA::Entity *entity;
 };

@@ -114,6 +114,9 @@ public:
 	Sprite* GetTilemaskSprite(int32 number);
 	void SwapTilemaskSprites();
 
+	bool IsFogEnabled();
+	void SetFogEnabled(bool enabled);
+
 protected:
 	enum eTextureType
 	{

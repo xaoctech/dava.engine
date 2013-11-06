@@ -381,6 +381,7 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	
 	clonedEmitter->emitterType = this->emitterType;
 	clonedEmitter->currentColor = this->currentColor;
+	clonedEmitter->SetShortEffect(shortEffect);
 	
 	// Now can add Layers. Need to update their parents.
 	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end();

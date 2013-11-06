@@ -152,6 +152,15 @@ LodComponent * GetLodComponent(Entity *fromEntity)
     return NULL;
 }
 
+SwitchComponent * GetSwitchComponent(Entity *fromEntity)
+{
+	if(fromEntity)
+	{
+		return (SwitchComponent*) fromEntity->GetComponent(Component::SWITCH_COMPONENT);
+	}
+
+	return NULL;
+}
 
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))
 {
