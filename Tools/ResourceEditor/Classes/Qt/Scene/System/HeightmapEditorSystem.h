@@ -38,6 +38,7 @@ class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
 class LandscapeEditorDrawSystem;
+class HoodSystem;
 
 class HeightmapEditorSystem: public DAVA::SceneSystem
 {
@@ -124,7 +125,10 @@ protected:
 	bool copyPasteTilemask;
 
 	Image* tilemaskImage;
-	Image* originalTilemaskImage;
+
+	eHeightmapDrawType activeDrawingType;
+	bool activeCopyPasteHeightmap;
+	bool activeCopyPasteTilemask;
 
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
@@ -145,6 +149,8 @@ protected:
 	void CreateTilemaskCopyPasteTool();
 
 	bool IsCanBeEnabled();
+
+	void FinishEditing();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORSYSTEM__) */

@@ -77,7 +77,7 @@ void MeshInstancePropertyControl::ReadFrom(Entity * sceneNode)
 	{
 		workingScene->GetDataNodes(materials);
 		//VI: remove skybox materials so they not to appear in the lists
-		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+		//MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 
     int32 matCount = (int32)materials.size();

@@ -46,6 +46,7 @@ namespace ResourceEditor
 	static const String SWITCH_NODE_NAME = "SwitchNode";
 	static const String PARTICLE_EFFECT_NODE_NAME = "Particle Effect";
 	static const String LAYER_NODE_NAME = "Layer";
+	static const String ENTITY_NAME = "Entity";
 
 	// Base node names
 	static const String EDITOR_BASE = "editor.";
@@ -143,6 +144,7 @@ namespace ResourceEditor
 	static const String RULER_TOOL_PREVIEW_LENGTH_CAPTION	= "Preview length:";
 	static const String RULER_TOOL_ENABLE_ERROR				= "Error enabling Ruler Tool. Make sure there is valid landscape at the scene.";
 	static const String RULER_TOOL_DISABLE_ERROR			= "Error disabling Ruler Tool";
+	static const String LANDSCAPE_DIALOG_WRONG_PNG_ERROR	= "PNG file should be in format A8 or A16.";
 
 	static const String HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION			= "Brush\nsize:";
 	static const String HEIGHTMAP_EDITOR_STRENGTH_CAPTION			= "Strength:";
@@ -203,6 +205,8 @@ namespace ResourceEditor
 
 	static const String SLIDER_WIDGET_CHANGE_VALUE_TOOLTIP			= "Double click to change value";
 	static const String SLIDER_WIDGET_CURRENT_VALUE					= "Current value";
+
+	static const String TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP	= "Click to change color";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

@@ -82,7 +82,6 @@
 namespace DAVA 
 {
     
-REGISTER_CLASS(Scene);
     
 Scene::Scene()
 	:   Entity()
@@ -615,7 +614,6 @@ void Scene::Draw()
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
-	//renderSystem->DebugDrawHierarchy();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     

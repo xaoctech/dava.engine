@@ -50,7 +50,10 @@
 SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
+	, isHUDVisible(true)
 {
+	renderStats.Clear();
+
 	EditorCommandNotify *notify = new EditorCommandNotify(this);
 	commandStack.SetNotify(notify);
 	SafeRelease(notify);
@@ -108,6 +111,9 @@ SceneEditor2::SceneEditor2()
 	
 	beastSystem = new BeastSystem(this);
 	AddSystem(beastSystem, 0);
+	
+	ownersSignatureSystem = new OwnersSignatureSystem(this);
+	AddSystem(ownersSignatureSystem, 0);
 
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 
@@ -137,7 +143,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 	UpdateShadowColorFromLandscape();
 
-    SceneValidator::Instance()->ValidateSceneAndShowErrors(this);
+    SceneValidator::Instance()->ValidateSceneAndShowErrors(this, path);
     
 	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;
@@ -273,9 +279,30 @@ void SceneEditor2::Exec(Command2 *command)
 	commandStack.Exec(command);
 }
 
+void SceneEditor2::ClearCommands(int commandId)
+{
+	commandStack.Clear(commandId);
+}
+
+const CommandStack* SceneEditor2::GetCommandStack() const
+{
+	return (&commandStack);
+}
+
 bool SceneEditor2::IsLoaded() const
 {
 	return isLoaded;
+}
+
+void SceneEditor2::SetHUDVisible(bool visible)
+{
+	isHUDVisible = visible;
+	hoodSystem->LockAxis(!visible);
+}
+
+bool SceneEditor2::IsHUDVisible() const
+{
+	return isHUDVisible;
 }
 
 bool SceneEditor2::IsChanged() const
@@ -352,25 +379,32 @@ void SceneEditor2::Draw()
 	Scene::Draw();
     renderStats = RenderManager::Instance()->GetStats();
 
-	gridSystem->Draw();
-	cameraSystem->Draw();
+	if(isHUDVisible)
+	{
+		gridSystem->Draw();
+		cameraSystem->Draw();
 
-	if(collisionSystem)
-		collisionSystem->Draw();
+		if(collisionSystem)
+			collisionSystem->Draw();
 
-	modifSystem->Draw();
+		modifSystem->Draw();
 
-	if(structureSystem)
-		structureSystem->Draw();
+		if(structureSystem)
+			structureSystem->Draw();
+	}
 
 	tilemaskEditorSystem->Draw();
-	particlesSystem->Draw();
-	debugDrawSystem->Draw();
 
-	// should be last
-	selectionSystem->Draw();
-	hoodSystem->Draw();
-	textDrawSystem->Draw();
+	if(isHUDVisible)
+	{
+		particlesSystem->Draw();
+		debugDrawSystem->Draw();
+
+		// should be last
+		selectionSystem->Draw();
+		hoodSystem->Draw();
+		textDrawSystem->Draw();
+	}
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
@@ -392,6 +426,9 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 
 	if(editorLightSystem)
 		editorLightSystem->ProcessCommand(command, redo);
+	
+	if(ownersSignatureSystem)
+		ownersSignatureSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )

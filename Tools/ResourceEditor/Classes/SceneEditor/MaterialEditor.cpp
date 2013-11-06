@@ -118,7 +118,7 @@ MaterialEditor::MaterialEditor(const Rect &rect)
     {
         v.push_back(Material::GetTypeName((Material::eType)i));
     }
-    
+
     materialProps = new MaterialPropertyControl(Rect(size.x * materialListPart, 
                                                       size.y * previewHeightPart, 
                                                       size.x - size.x * materialListPart, 
@@ -130,26 +130,26 @@ MaterialEditor::MaterialEditor(const Rect &rect)
 
 MaterialEditor::~MaterialEditor()
 {
-    SafeRelease(btnSetupFog);
-	SafeRelease(btnSetupColor);
-    SafeRelease(line);
-
 	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
-    materials.clear();
+	materials.clear();
 
 	for_each(workingNodeMaterials.begin(), workingNodeMaterials.end(),  SafeRelease<Material>);
-    workingNodeMaterials.clear();
+	workingNodeMaterials.clear();
 
-    SafeRelease(workingMaterial);
-    SafeRelease(workingSceneNode);
-    SafeRelease(workingScene);
-    
-    SafeRelease(noMaterials);
-    SafeRelease(btnSelected);
-    SafeRelease(btnAll);
-    SafeRelease(materialsList);
-    
-    SafeRelease(materialProps);
+	SafeRelease(workingMaterial);
+	SafeRelease(workingSceneNode);
+	SafeRelease(workingScene);
+
+	SafeRelease(btnAll);
+	SafeRelease(btnSelected);
+	SafeRelease(btnSetupFog);
+	SafeRelease(btnSetupColor);
+	SafeRelease(line);
+	SafeRelease(fogControl);
+	SafeRelease(colorControl);
+	SafeRelease(materialsList);
+	SafeRelease(noMaterials);
+	SafeRelease(materialProps);
 }
 
 void MaterialEditor::UpdateInternalMaterialsVector()
@@ -159,7 +159,7 @@ void MaterialEditor::UpdateInternalMaterialsVector()
     
     workingScene->GetDataNodes(materials);
 	//VI: remove skybox materials so they not to appear in the lists
-	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+	//MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
     
     for (int32 k = 0; k < (int32)materials.size(); ++k)
     {
@@ -175,7 +175,7 @@ void MaterialEditor::UpdateNodeMaterialsVector()
     {
         workingSceneNode->GetDataNodes(workingNodeMaterials);
 		//VI: remove skybox materials so they not to appear in the lists
-		MaterialHelper::FilterMaterialsByType(workingNodeMaterials, DAVA::Material::MATERIAL_SKYBOX);
+		//MaterialHelper::FilterMaterialsByType(workingNodeMaterials, DAVA::Material::MATERIAL_SKYBOX);
 
     }
     else if(workingMaterial)

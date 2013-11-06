@@ -35,6 +35,9 @@
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
 #include "DockProperties/PropertyEditorDialog.h"
+#include <QDialogButtonBox>
+
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
 class DAVA::Entity;
 
@@ -48,41 +51,46 @@ class BaseAddEntityDialog: public QDialog
 	Q_OBJECT
 
 public:
-	explicit BaseAddEntityDialog( QWidget* parent = 0);
-
+	
+	enum eButtonAlign
+	{
+		BUTTON_ALIGN_LEFT = 0,
+		BUTTON_ALIGN_RIGHT
+	};
+	
+	explicit BaseAddEntityDialog( QWidget* parent = 0, QDialogButtonBox::StandardButtons buttons = QDialogButtonBox::Close);
 	virtual ~BaseAddEntityDialog();
 	
 	void GetIncludedControls(QList<QWidget*>& includedWidgets);
 
-	void hideEvent ( QHideEvent * event );
+	virtual DAVA::Entity* GetEntity();
+	void virtual SetEntity(DAVA::Entity* );
 	
-	virtual DAVA::Entity* GetEntity()
-	{
-		return entity;
-	}
-	
-	void SetEntity(DAVA::Entity* );
-	
-protected:
+	void AddButton( QWidget* widget, eButtonAlign orientation = BUTTON_ALIGN_LEFT);
 
-	void showEvent ( QShowEvent * event );
-	
-	virtual void InitPropertyEditor();
+protected slots:
+	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+    virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+    
+
+protected:
+	virtual void FillPropertyEditorWithContent() = 0;
+
+	virtual QtPropertyData* AddInspMemberToEditor(void *object, const DAVA::InspMember *);
+	virtual QtPropertyData* AddKeyedArchiveMember(DAVA::KeyedArchive* _archive, const DAVA::String& _key, const DAVA::String& rowName);
+	virtual QtPropertyData* AddMetaObject(void *_object, const DAVA::MetaInfo *_meta, const String& rowName);
+
+	void AddControlToUserContainer(QWidget* widget);
+	void AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString);
+	void RemoveControlFromUserContainer(QWidget* widget);
+	void RemoveAllControlsFromUserContainer();
+
+	void showEvent(QShowEvent * event);
 	
 	void PerformResize();
 	
-	void AddControlToUserContainer(QWidget* widget);
-	
-	void AddControlToUserContainer(QWidget* widget, const DAVA::String& labelString);
-	
-	void RemoveControlFromUserContainer(QWidget* widget);
-	
-	void RemoveAllControlsFromUserContainer();
-
 	DAVA::Entity* entity;
-	
-	PropertyEditorDialog *propEditor;
-	
+	QtPropertyEditor *propEditor;
 	Ui::BaseAddEntityDialog *ui;
 	
 	DAVA::Map<QWidget*, QWidget*> additionalWidgetMap;

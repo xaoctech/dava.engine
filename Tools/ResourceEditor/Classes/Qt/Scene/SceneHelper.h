@@ -37,14 +37,9 @@ class SceneHelper
 {
 public:
 	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
-	static void EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors);
-	static void EnumerateMaterials(DAVA::Entity *forNode, DAVA::Vector<DAVA::Material *> &materials);
 
 protected:
-	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::Landscape *forNode);
 	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
-	static void CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, DAVA::Landscape *forNode);
-	static void CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname);
 };
 
 #endif // __SCENE_HELPER_H__

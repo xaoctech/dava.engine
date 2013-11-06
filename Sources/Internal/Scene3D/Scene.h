@@ -257,8 +257,8 @@ public:
 
 	EventSystem * GetEventSystem();
 	RenderSystem * GetRenderSystem() const;
-	
 	virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
+
     
 protected:	
     

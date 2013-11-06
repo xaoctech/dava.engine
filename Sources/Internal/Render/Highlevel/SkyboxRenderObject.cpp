@@ -30,10 +30,10 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/MaterialSystem.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
+#include <Render/TextureDescriptor.h>
 
 namespace DAVA
 {
-	REGISTER_CLASS(SkyboxRenderObject);
 
 	//do not create lower cube face
 	const int SKYBOX_VERTEX_COUNT = (5 * 6);
@@ -42,8 +42,7 @@ namespace DAVA
 	:
 	offsetZ(0.0f),
 	rotationZ(0.0f),
-	nonClippingDistance(0.0f),
-	textureValidator(NULL)
+	nonClippingDistance(0.0f)
 	{
 		type = RenderObject::TYPE_SKYBOX;
 		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
@@ -51,7 +50,6 @@ namespace DAVA
 	
 	SkyboxRenderObject::~SkyboxRenderObject()
 	{
-		SafeDelete(textureValidator);
 	}
 		
 	void SkyboxRenderObject::SetRenderSystem(RenderSystem * renderSystem)
@@ -70,16 +68,16 @@ namespace DAVA
 		if(adding || switching)
 		{
 			GetRenderSystem()->RegisterForUpdate(this);
-			
-			CreateRenderData();
-			BuildSkybox();
-			UpdateMaterial();
 		}
 	}
 	
 	void SkyboxRenderObject::Initialize(AABBox3& box)
 	{
-		bbox = box;		
+		bbox = box;
+		
+		CreateRenderData();
+		BuildSkybox();
+		UpdateMaterial();
 	}
 	
 	void SkyboxRenderObject::CreateRenderData()
@@ -199,11 +197,20 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, NULL);
-			
-			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-						
+            DAVA::Texture* tx = NULL;
+            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePath);
+            if(descriptor && descriptor->IsCubeMap())
+            {
+                tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
+            }
+            else
+            {
+				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
+            }
+            
 			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, tx);
+
+            SafeRelease(descriptor);
 			SafeRelease(tx);
 		}
 	}
@@ -266,7 +273,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			archive->SetString("skbxro.texture", texturePath.GetRelativePathname());
+			archive->SetString("skbxro.texture", texturePath.GetRelativePathname(serializationContext->GetScenePath()));
 			archive->SetFloat("skbxro.verticalOffset", offsetZ);
 			archive->SetFloat("skbxro.rotation", rotationZ);
 			archive->SetFloat("skbxro.noclipdist", nonClippingDistance);
@@ -279,7 +286,7 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			texturePath = archive->GetString("skbxro.texture");
+			texturePath = serializationContext->GetScenePath() + archive->GetString("skbxro.texture");
 			offsetZ = archive->GetFloat("skbxro.verticalOffset");
 			rotationZ = archive->GetFloat("skbxro.rotation");
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");
@@ -290,12 +297,6 @@ namespace DAVA
 
 	void SkyboxRenderObject::SetTexture(const FilePath& texPath)
 	{
-		if(textureValidator)
-		{
-			bool result = textureValidator->IsValid(texPath);
-			if(!result) return;
-		}
-		
 		texturePath = texPath;
 		UpdateMaterial();
 	}
@@ -344,15 +345,5 @@ namespace DAVA
 	{
 		return rotationZ;
 	}
-	
-	SkyboxRenderObject::SkyboxTextureValidator* SkyboxRenderObject::GetTextureValidator()
-	{
-		return textureValidator;
-	}
-	
-	void SkyboxRenderObject::SetTextureValidator(SkyboxRenderObject::SkyboxTextureValidator* validator)
-	{
-		SafeDelete(textureValidator);
-		textureValidator = validator;
-	}
+
 };

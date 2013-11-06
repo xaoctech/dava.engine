@@ -59,7 +59,7 @@ protected:
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
 
 public:
-	explicit QtMainWindow(bool enableGlobalTimeout, QWidget *parent = 0);
+	explicit QtMainWindow(QWidget *parent = 0);
 	~QtMainWindow();
 
 	Ui::MainWindow* GetUI();
@@ -78,16 +78,13 @@ public:
 	void WaitSetValue(int value);
 	void WaitStop();
 
-    void EnableGlobalTimeout(bool enable);
-
-#if defined (__DAVAENGINE_BEAST__)
 	void BeastWaitSetMessage(const QString &messsage);
 	bool BeastWaitCanceled();
-#endif //#if defined (__DAVAENGINE_BEAST__)
+
+	void EnableGlobalTimeout(bool enable);
 
 signals:
     void GlobalInvalidateTimeout();
-
     
 // qt actions slots
 public slots:
@@ -106,11 +103,13 @@ public slots:
 	void OnUndo();
 	void OnRedo();
 
+	void OnEditorGizmoToggle(bool show);
+	void OnAllowOnSceneSelectionToggle(bool allow);
+
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
+	void OnReloadSprites();
 
-    void OnReloadSprites();
-    
 	void OnSelectMode();
 	void OnMoveMode();
 	void OnRotateMode();
@@ -131,7 +130,7 @@ public slots:
 	void OnLandscapeDialog();
 	void OnLightDialog();
 	void OnCameraDialog();
-	void OnImposterDialog();
+	void OnEmptyEntity();
 
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
@@ -173,8 +172,6 @@ public slots:
 	void OnTilemaskEditor();
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
-
-    
 	
 	void OnAddActionComponent();
 	void OnRemoveActionComponent();
@@ -189,7 +186,6 @@ public slots:
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
-
 
 	void SetupMainMenu();
 	void SetupToolBars();
@@ -211,6 +207,10 @@ protected:
 
 	bool IsAnySceneChanged();
 
+	void SetLandscapeSettingsEnabled(bool);
+
+	void DiableUIForFutureUsing();
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -229,12 +229,10 @@ protected slots:
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
-    
-#if defined (__DAVAENGINE_BEAST__)
 	QtWaitDialog *beastWaitDialog;
-#endif //#if defined (__DAVAENGINE_BEAST__)
 
 	QtPosSaver posSaver;
+	bool globalInvalidate;
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
@@ -248,12 +246,13 @@ private:
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
 	LandscapeDialog*		landscapeDialog;
-
-	HangingObjectsHeight *hangingObjectsWidget;
+	HangingObjectsHeight*	hangingObjectsWidget;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
+	void UpdateConflictingActionsState(bool enable);
 
+	void LoadViewState(SceneEditor2 *scene);
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
@@ -263,12 +262,14 @@ private:
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
 
-    bool globalInvalidateTimeoutEnabled;
+	bool SaveTilemask(bool forAllTabs = true);
 
+	// Landscape editor specific
+	// TODO: remove later -->
+	bool IsTilemaskModificationCommand(const Command2* cmd);
+	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
-    
-    void CreateObjectTypesCombobox();
-
+	// <--
 };
 
 

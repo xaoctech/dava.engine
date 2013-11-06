@@ -116,7 +116,7 @@ FTFont * FTFont::Create(const FilePath& path)
 	}
 	
 	if(!iFont)
-	{//TODO: for now internal fonts is never released, need to be fixed later
+	{	
 		iFont = new FTInternalFont(path);
         if( !iFont->face )
         {
@@ -135,15 +135,11 @@ FTFont * FTFont::Create(const FilePath& path)
 
 void FTFont::ClearCache()
 {
-	Map<String,FTInternalFont*>::iterator endIt = fontMap.end();
-	Map<String,FTInternalFont*>::iterator it = fontMap.begin();
-	while(it != endIt)
+	while (fontMap.size())
 	{
-		SafeRelease(it->second);
-		++it;
+		SafeRelease(fontMap.begin()->second);
+		fontMap.erase(fontMap.begin());
 	}
-
-	fontMap.clear();
 }
 
 	
@@ -174,7 +170,12 @@ bool FTFont::IsEqual(const Font *font) const
 
 	return true;
 }
-	
+
+String FTFont::GetRawHashString()
+{
+	return fontPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
+}
+
 Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded )
 {
 	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, size, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
@@ -266,10 +267,10 @@ FTInternalFont::~FTInternalFont()
 
 int32 FTInternalFont::Release()
 {
-	if(1 == GetRetainCount())
-	{
-		fontMap.erase(fontPath.GetAbsolutePathname());
-	}
+// 	if(1 == GetRetainCount())
+// 	{
+// 		fontMap.erase(fontPath.GetAbsolutePathname());
+// 	}
 	
 	return BaseObject::Release();
 }

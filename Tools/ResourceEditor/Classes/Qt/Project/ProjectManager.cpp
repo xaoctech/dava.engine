@@ -28,9 +28,9 @@
 
 
 
-#include <QFileDialog>
 #include "Project/ProjectManager.h"
 #include "Main/QtUtils.h"
+#include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/SceneValidator.h"
 #include "Classes/SceneEditor/EditorConfig.h"
@@ -68,7 +68,7 @@ QString ProjectManager::CurProjectDataSourcePath()
 
 QString ProjectManager::ProjectOpenDialog()
 {
-	return QFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+	return QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
 }
 
 void ProjectManager::ProjectOpen(const QString &path)
@@ -91,27 +91,17 @@ void ProjectManager::ProjectOpen(const QString &path)
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 			EditorSettings::Instance()->Save();
 
+			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
+            SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
+
+            LoadProjectSettings();
             
-            SpritePackerHelper::Instance()->UpdateParticleSprites();
-		}
-
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->UpdateModificationPanel();
-		}
-
-		LoadProjectSettings();
-
-		emit ProjectOpened(curProjectPath);
-		
-		DAVA::FilePath projectPath = PathnameToDAVAStyle(curProjectPath);
-        if(!projectPath.IsEmpty())
-        {
-            projectPath.MakeDirectoryPathname();
+            emit ProjectOpened(curProjectPath);
+            
             DAVA::FilePath::AddTopResourcesFolder(projectPath);
-        }
+		}
 	}
 }
 
@@ -142,10 +132,6 @@ void ProjectManager::ProjectClose()
 void ProjectManager::LoadProjectSettings()
 {
 	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
-    if(!prjPath.IsEmpty())
-    {
-        prjPath.MakeDirectoryPathname();
-    }
-    
+	prjPath.MakeDirectoryPathname();
 	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
 }

@@ -32,7 +32,7 @@
 #include "DAVAEngine.h"
 
 AddComponentCommand::AddComponentCommand(DAVA::Entity* entity, DAVA::Component * component)
-	: Command2(CMDID_ADD_COMPONENT, "Add Component")
+	: Command2(CMDID_COMPONENT_ADD, "Add Component")
     , entityToAdd(entity)
 {
 	DVASSERT(entityToAdd);

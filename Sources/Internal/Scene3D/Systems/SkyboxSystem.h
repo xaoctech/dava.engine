@@ -61,7 +61,7 @@ namespace DAVA
 		//this method used by editor to add new skybox
 		//returns pointer to skybox (newly added or already present)
 		Entity* AddSkybox();
-		Entity* GetSkybox();
+		Entity* GetSkyboxEntity() const;
 		
 		bool IsSkyboxPresent();
 		void Reload();
