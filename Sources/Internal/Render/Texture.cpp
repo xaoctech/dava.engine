@@ -374,7 +374,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	if(!image) return NULL;
 
 	Texture * texture = new Texture();
-	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
+	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
 	texture->images.push_back(image);
 	
     texture->SetParamsFromImages();
@@ -557,7 +557,7 @@ void Texture::SetParamsFromImages()
 	height = images[0]->height;
 	format = images[0]->format;
 
-	textureType = (images[0]->cubeFaceID != (uint32)-1) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
+	textureType = (images[0]->cubeFaceID != CUBE_FACE_INVALID) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
     
     state = STATE_DATA_LOADED;
 }
