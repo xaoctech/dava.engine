@@ -773,6 +773,15 @@
    </attribute>
    <addaction name="actionReloadSprites"/>
   </widget>
+  <widget class="QDockWidget" name="dockLibrary2">
+   <property name="windowTitle">
+    <string>Library2</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="LibraryTabWidget" name="libraryTabWidget"/>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1738,6 +1747,12 @@
    <class>LandscapeEditorControlsPlaceholder</class>
    <extends>QWidget</extends>
    <header>DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LibraryTabWidget</class>
+   <extends>QWidget</extends>
+   <header>DockLibrary2/LibraryTabWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

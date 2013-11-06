@@ -36,11 +36,14 @@
 #include <QStandardItemModel>
 #include <QString>
 
+class QMimeData;
 class QStandardItem;
 class MaterialsModel: public QStandardItemModel
 {
     Q_OBJECT
     
+    static const char * mimeFormatMaterial;
+
 public:
     MaterialsModel(QObject *parent = 0);
     virtual ~MaterialsModel();
@@ -51,17 +54,32 @@ public:
     
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     
+    
+    // drag and drop support
+	QMimeData *	mimeData(const QModelIndexList & indexes) const;
+	QStringList	mimeTypes() const;
+    
 protected:
     
-    void RebuildModel();
-    int AddMaterialToItem(DAVA::NMaterial *material, QStandardItem * item);
+    void PrepareLodMaterials();
+    void RebuildModelFromMaterial();
+    void RebuildModelFromAllMaterials();
+    void Clear();
     
-    QString GetName(DAVA::NMaterial *material);
+    int AddMaterialToItem(DAVA::NMaterial * material, QStandardItem * item);
+    void SetMaterialToItem(DAVA::NMaterial * material, QStandardItem * item);
     
+    QString GetName(DAVA::NMaterial * material);
+    
+    QMimeData * EncodeMimeData(const QVector<void *> & data, const QString & format) const;
+	QVector<void *> * DecodeMimeData(const QMimeData * data, const QString & format) const;
+
 private:
     
-    DAVA::Vector<DAVA::NMaterial*> materials;
-    DAVA::NMaterial *rootMaterial;
+    DAVA::Vector<DAVA::NMaterial *> materials;
+    DAVA::Vector<DAVA::NMaterial *> lodMaterials;
+    
+    DAVA::NMaterial * rootMaterial;
 };
 
 Q_DECLARE_METATYPE( DAVA::NMaterial * )

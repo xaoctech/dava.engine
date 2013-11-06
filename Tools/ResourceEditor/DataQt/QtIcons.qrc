@@ -104,6 +104,7 @@
     <file>QtIcons/clone.png</file>
     <file>QtIcons/remove_layer.png</file>
     <file>QtIcons/remove_force.png</file>
+    <file>QtIcons/reset.png</file>
     <file>QtIcons/btn_rotate_ccw.png</file>
     <file>QtIcons/btn_rotate_cw.png</file>
     <file>QtIcons/skybox.png</file>
