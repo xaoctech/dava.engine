@@ -127,6 +127,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	new ProjectManager();
 	new SettingsManager();
 	ui->setupUi(this);
+    
+    SetupTitle();
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
