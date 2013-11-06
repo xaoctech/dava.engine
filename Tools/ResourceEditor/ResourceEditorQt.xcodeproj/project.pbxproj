@@ -564,16 +564,6 @@
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8A1091817944416007FF496 /* EditorLightSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A1091617944416007FF496 /* EditorLightSystem.cpp */; };
 		E8A34A6017F966AF00B0649E /* CollisionBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */; };
-		E8A587481827EEF40022E4A1 /* LibraryFileSystemFilteringModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A587441827EEF40022E4A1 /* LibraryFileSystemFilteringModel.cpp */; };
-		E8A587491827EEF40022E4A1 /* LibraryFileSystemModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A587461827EEF40022E4A1 /* LibraryFileSystemModel.cpp */; };
-		E8A5874D1827EF360022E4A1 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A5874B1827EF360022E4A1 /* LibraryFileSystemFilteringModel_moc.cpp */; };
-		E8A5874E1827EF360022E4A1 /* LibraryFileSystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A5874C1827EF360022E4A1 /* LibraryFileSystemModel_moc.cpp */; };
-		E8B10A771828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A731828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.cpp */; };
-		E8B10A781828FACC00CEB8F9 /* LibraryMaterialsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A751828FACC00CEB8F9 /* LibraryMaterialsModel.cpp */; };
-		E8B10A7C1828FE3C00CEB8F9 /* LibraryMaterialsFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A7A1828FE3C00CEB8F9 /* LibraryMaterialsFilteringModel_moc.cpp */; };
-		E8B10A7D1828FE3C00CEB8F9 /* LibraryMaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A7B1828FE3C00CEB8F9 /* LibraryMaterialsModel_moc.cpp */; };
-		E8B10A80182900AD00CEB8F9 /* MaterialsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A7E182900AD00CEB8F9 /* MaterialsModel.cpp */; };
-		E8B10A821829042900CEB8F9 /* MaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B10A811829042900CEB8F9 /* MaterialsModel_moc.cpp */; };
 		E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B6213E17E1FD6400C5678E /* Request.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39CD17B4BA8E00C63420 /* LabeledSlider.cpp */; };
@@ -1761,21 +1751,6 @@
 		E8A1091717944416007FF496 /* EditorLightSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightSystem.h; sourceTree = "<group>"; };
 		E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionBox.cpp; sourceTree = "<group>"; };
 		E8A34A5F17F966AF00B0649E /* CollisionBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionBox.h; sourceTree = "<group>"; };
-		E8A587441827EEF40022E4A1 /* LibraryFileSystemFilteringModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemFilteringModel.cpp; sourceTree = "<group>"; };
-		E8A587451827EEF40022E4A1 /* LibraryFileSystemFilteringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryFileSystemFilteringModel.h; sourceTree = "<group>"; };
-		E8A587461827EEF40022E4A1 /* LibraryFileSystemModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel.cpp; sourceTree = "<group>"; };
-		E8A587471827EEF40022E4A1 /* LibraryFileSystemModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryFileSystemModel.h; sourceTree = "<group>"; };
-		E8A5874B1827EF360022E4A1 /* LibraryFileSystemFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemFilteringModel_moc.cpp; sourceTree = "<group>"; };
-		E8A5874C1827EF360022E4A1 /* LibraryFileSystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel_moc.cpp; sourceTree = "<group>"; };
-		E8B10A731828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsFilteringModel.cpp; sourceTree = "<group>"; };
-		E8B10A741828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryMaterialsFilteringModel.h; sourceTree = "<group>"; };
-		E8B10A751828FACC00CEB8F9 /* LibraryMaterialsModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsModel.cpp; sourceTree = "<group>"; };
-		E8B10A761828FACC00CEB8F9 /* LibraryMaterialsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryMaterialsModel.h; sourceTree = "<group>"; };
-		E8B10A7A1828FE3C00CEB8F9 /* LibraryMaterialsFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsFilteringModel_moc.cpp; sourceTree = "<group>"; };
-		E8B10A7B1828FE3C00CEB8F9 /* LibraryMaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsModel_moc.cpp; sourceTree = "<group>"; };
-		E8B10A7E182900AD00CEB8F9 /* MaterialsModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsModel.cpp; sourceTree = "<group>"; };
-		E8B10A7F182900AD00CEB8F9 /* MaterialsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsModel.h; sourceTree = "<group>"; };
-		E8B10A811829042900CEB8F9 /* MaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsModel_moc.cpp; sourceTree = "<group>"; };
 		E8B6213E17E1FD6400C5678E /* Request.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Request.cpp; sourceTree = "<group>"; };
 		E8B6213F17E1FD6400C5678E /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
 		E8B836241740FCC800D11EAE /* ImageTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTools.cpp; sourceTree = "<group>"; };
@@ -3635,7 +3610,6 @@
 		E835201818103ACA0056D14D /* QtFileDialog */ = {
 			isa = PBXGroup;
 			children = (
-				E8B10A721828FACC00CEB8F9 /* Materials */,
 				E835201918103ACA0056D14D /* QtFileDialog.cpp */,
 				E835201A18103ACA0056D14D /* QtFileDialog.h */,
 			);
@@ -3649,20 +3623,6 @@
 				E835202418103BB30056D14D /* QtFileDialog_moc.cpp */,
 			);
 			path = QtFileDialog;
-			sourceTree = "<group>";
-		};
-		E81B67291824ECAA000E8390 /* DockLibrary2 */ = {
-			isa = PBXGroup;
-			children = (
-				E8A5874A1827EF360022E4A1 /* FileSystem */,
-				E8B10A791828FE3C00CEB8F9 /* Materials */,
-				E81B673E18253247000E8390 /* LibraryBaseModel_moc.cpp */,
-				E81B673F18253247000E8390 /* LibraryComplexView_moc.cpp */,
-				E81B674A182593D0000E8390 /* LibraryFilteringModel_moc.cpp */,
-				E81B674118253247000E8390 /* LibraryTabWidget_moc.cpp */,
-			);
-			name = DockLibrary2;
-			path = _GeneratedQt/DockLibrary2;
 			sourceTree = "<group>";
 		};
 		E838D4D916AFFED4006F1721 /* DockLibrary */ = {
@@ -3967,29 +3927,6 @@
 				4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */,
 			);
 			name = GeneratedQt;
-			sourceTree = "<group>";
-		};
-		E8B10A721828FACC00CEB8F9 /* Materials */ = {
-			isa = PBXGroup;
-			children = (
-				E8B10A731828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.cpp */,
-				E8B10A741828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.h */,
-				E8B10A751828FACC00CEB8F9 /* LibraryMaterialsModel.cpp */,
-				E8B10A761828FACC00CEB8F9 /* LibraryMaterialsModel.h */,
-				E8B10A7E182900AD00CEB8F9 /* MaterialsModel.cpp */,
-				E8B10A7F182900AD00CEB8F9 /* MaterialsModel.h */,
-			);
-			path = Materials;
-			sourceTree = "<group>";
-		};
-		E8B10A791828FE3C00CEB8F9 /* Materials */ = {
-			isa = PBXGroup;
-			children = (
-				E8B10A7A1828FE3C00CEB8F9 /* LibraryMaterialsFilteringModel_moc.cpp */,
-				E8B10A7B1828FE3C00CEB8F9 /* LibraryMaterialsModel_moc.cpp */,
-				E8B10A811829042900CEB8F9 /* MaterialsModel_moc.cpp */,
-			);
-			path = Materials;
 			sourceTree = "<group>";
 		};
 		E8B836231740FCC700D11EAE /* ImageTools */ = {
@@ -4782,7 +4719,6 @@
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
-				E8B10A771828FACC00CEB8F9 /* LibraryMaterialsFilteringModel.cpp in Build Sources */,
 				E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */,
 				4FFE5C8E1770C04100728624 /* StructureSystem.cpp in Build Sources */,
 				4FFE5C9D1770C08600728624 /* EntityParentChangeCommand.cpp in Build Sources */,
@@ -4804,7 +4740,6 @@
 				4FAD0B281785EB8E00B05A35 /* EventFilterDoubleSpinBox.cpp in Build Sources */,
 				4FAD0B291785EB8E00B05A35 /* QResourceEditorProgressDialog.cpp in Build Sources */,
 				4FAD0B2A1785EB8E00B05A35 /* QtPosSaver.cpp in Build Sources */,
-				E8B10A80182900AD00CEB8F9 /* MaterialsModel.cpp in Build Sources */,
 				4FAD0B2B1785EB8E00B05A35 /* QtPropertyData.cpp in Build Sources */,
 				4FAD0B2C1785EB8E00B05A35 /* QtPropertyEditor.cpp in Build Sources */,
 				4FAD0B2D1785EB8E00B05A35 /* QtPropertyItem.cpp in Build Sources */,
@@ -4812,7 +4747,6 @@
 				4FAD0B2F1785EB8E00B05A35 /* QtPropertyModel.cpp in Build Sources */,
 				4FAD0B301785EB8E00B05A35 /* QtColorLineEdit.cpp in Build Sources */,
 				4FAD0CD71785EC6E00B05A35 /* CommandSignals_moc.cpp in Build Sources */,
-				E8B10A821829042900CEB8F9 /* MaterialsModel_moc.cpp in Build Sources */,
 				4FAD0CD81785EC6E00B05A35 /* Console_moc.cpp in Build Sources */,
 				4FAD0CD91785EC6E00B05A35 /* ConsoleView_moc.cpp in Build Sources */,
 				4FAD0CDD1785EC6E00B05A35 /* LibraryModel_moc.cpp in Build Sources */,
@@ -4862,7 +4796,6 @@
 				4FAD0D0B1785EC6E00B05A35 /* MaterialView_moc.cpp in Build Sources */,
 				4FAD0D0C1785EC6E00B05A35 /* MaterialViewModel_moc.cpp in Build Sources */,
 				4FAD0D0D1785EC6E00B05A35 /* MaterialEditor_moc.cpp in Build Sources */,
-				E8B10A781828FACC00CEB8F9 /* LibraryMaterialsModel.cpp in Build Sources */,
 				4FAD0D0E1785EC6E00B05A35 /* ProjectManager_moc.cpp in Build Sources */,
 				4FAD0D0F1785EC6E00B05A35 /* QtIcons_qrc.cpp in Build Sources */,
 				4FAD0D101785EC6E00B05A35 /* EntityGroup_moc.cpp in Build Sources */,
@@ -4964,7 +4897,6 @@
 				E8BD39D617B4BB4D00C63420 /* LabeledSlider_moc.cpp in Build Sources */,
 				E8BD39FC17B52A8200C63420 /* DistanceSlider.cpp in Build Sources */,
 				E8BD3A0217B52BC600C63420 /* DistanceSlider_moc.cpp in Build Sources */,
-				E8B10A7D1828FE3C00CEB8F9 /* LibraryMaterialsModel_moc.cpp in Build Sources */,
 				4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */,
 				4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */,
 				62A7CA6917B8D05A000AEBF5 /* GeneralSettingsEditor.cpp in Build Sources */,
