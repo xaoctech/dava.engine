@@ -195,6 +195,10 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						}
 						else
 						{
+							if (copyPasteFrom == Vector2(-1.f, -1.f))
+							{
+								return;
+							}
 							copyPasteTo = cursorPosition;
 							StoreOriginalHeightmap();
 						}

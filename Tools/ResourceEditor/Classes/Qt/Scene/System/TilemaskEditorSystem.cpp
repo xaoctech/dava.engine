@@ -58,6 +58,8 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	needCreateUndo(false)
 ,	toolImageIndex(0)
 ,	drawingType(TILEMASK_DRAW_NORMAL)
+,	copyPasteFrom(-1.f, -1.f)
+,	copyPasteTo(-1.f, -1.f)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -113,6 +115,7 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	modifSystem->SetLocked(true);
 
 	landscapeSize = drawSystem->GetTextureSize();
+	copyPasteFrom = Vector2(-1.f, -1.f);
 
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
@@ -261,6 +264,10 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 						}
 						else
 						{
+							if (copyPasteFrom == Vector2(-1.f, -1.f))
+							{
+								return;
+							}
 							copyPasteTo = cursorPosition;
 						}
 					}
