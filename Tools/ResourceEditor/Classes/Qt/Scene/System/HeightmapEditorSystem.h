@@ -130,6 +130,8 @@ protected:
 	bool activeCopyPasteHeightmap;
 	bool activeCopyPasteTilemask;
 
+	Landscape::eTextureLevel textureLevel;
+
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool(float32 timeElapsed);
