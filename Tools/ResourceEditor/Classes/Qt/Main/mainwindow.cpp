@@ -122,6 +122,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
+    , modificationWidget(NULL)
 {
 	new Console();
 	new ProjectManager();
@@ -806,7 +807,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionPivotCommon->setEnabled(enable);
 	ui->actionManualModifMode->setEnabled(enable);
 
-	modificationWidget->setEnabled(enable);
+    if(modificationWidget)
+        modificationWidget->setEnabled(enable);
 
 	ui->actionTextureConverter->setEnabled(enable);
 	ui->actionMaterialEditor->setEnabled(enable);
