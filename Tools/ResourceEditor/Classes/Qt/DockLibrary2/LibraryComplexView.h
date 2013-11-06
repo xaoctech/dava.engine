@@ -62,11 +62,14 @@ protected slots:
     void TreeSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 	void ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
+    void ShowTreeContextMenu(const QPoint & point);
     void ShowListContextMenu(const QPoint & point);
     
     void SetFilter(const QString &filter);
     void ResetFilter();
-    
+
+    void ChangeSplitterOrientation();
+
 private:
     
     void SetupToolbar();

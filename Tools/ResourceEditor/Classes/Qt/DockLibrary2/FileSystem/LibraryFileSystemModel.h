@@ -49,6 +49,7 @@ public:
     virtual const QModelIndex GetTreeRootIndex() const;
     virtual const QModelIndex GetListRootIndex() const;
 
+    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
     virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
 
 protected slots:

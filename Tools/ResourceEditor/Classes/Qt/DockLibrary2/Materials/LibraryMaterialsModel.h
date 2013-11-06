@@ -28,59 +28,47 @@
 
 
 
-#ifndef __LIBRARY_BASE_MODEL_H__
-#define __LIBRARY_BASE_MODEL_H__
+#ifndef __LIBRARY_MATERIALS_MODEL_H__
+#define __LIBRARY_MATERIALS_MODEL_H__
 
-#include <QString>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QMenu>
+#include "../LibraryBaseModel.h"
+#include "DAVAEngine.h"
 
-class QAbstractItemModel;
-
-class LibraryFilteringModel;
-class LibraryBaseModel: public QObject
+class SceneEditor2;
+class LibraryMaterialsModel: public LibraryBaseModel
 {
     Q_OBJECT
     
 public:
-    LibraryBaseModel(const QString &modelName);
-    virtual ~LibraryBaseModel();
-
-    QAbstractItemModel * GetTreeModel() const;
-    QAbstractItemModel * GetListModel() const;
+    LibraryMaterialsModel();
     
-    const QString & GetName() const;
+    virtual void TreeItemSelected(const QItemSelection & selection);
+    virtual void ListItemSelected(const QItemSelection & selection);
+
+    virtual void SetProjectPath(const QString & path);
     
-    virtual void TreeItemSelected(const QItemSelection & selection) = 0;
-    virtual void ListItemSelected(const QItemSelection & selection) = 0;
+    virtual const QModelIndex GetTreeRootIndex() const;
+    virtual const QModelIndex GetListRootIndex() const;
+
+    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+
+protected slots:
     
-    virtual void SetProjectPath(const QString & path) = 0;
+    void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
 
-    virtual const QModelIndex GetTreeRootIndex() const = 0;
-    virtual const QModelIndex GetListRootIndex() const = 0;
+    void OnEdit();
     
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const = 0;
-	const QList<QAction *> & GetModelActions();
-
-	void SetFilter(const QString &filter);
-
-protected:
-
-	virtual void CreateActions() = 0;
-
-
 protected:
     
-    QAbstractItemModel *treeModel;
+	virtual void CreateActions();
     
-	QAbstractItemModel *listModel;
-    LibraryFilteringModel *filteringModel;
-
-    QString name;
+    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
     
-	QList<QAction *> actions;
+private:
+    
 };
 
-#endif // __LIBRARY_BASE_MODEL_H__
+
+#endif // __LIBRARY_MATERIALS_MODEL_H__
