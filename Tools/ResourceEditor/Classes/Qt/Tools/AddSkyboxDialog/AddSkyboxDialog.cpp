@@ -67,7 +67,6 @@ void AddSkyboxDialog::FillPropertyEditorWithContent()
     {
         AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("texture"));
         AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("verticalOffset"));
-        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("rotationAngle"));
     }
 }
 

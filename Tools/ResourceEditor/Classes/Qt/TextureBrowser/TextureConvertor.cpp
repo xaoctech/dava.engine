@@ -75,8 +75,8 @@ int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 		// check if requested texture isn't the same that is loading now
 		if(NULL == curJobOriginal || curJobOriginal->identity != descriptor)
 		{
-			DAVA::Vector<DAVA::TextureDescriptor> *textures = new DAVA::Vector<DAVA::TextureDescriptor>();
-			textures->push_back(*descriptor);
+// 			DAVA::Vector<DAVA::TextureDescriptor> *textures = new DAVA::Vector<DAVA::TextureDescriptor>(); TODO: WTF? unusable code?
+// 			textures->push_back(*descriptor);
 
 			JobItem newJob;
 			newJob.id = jobIdCounter++;
@@ -200,7 +200,7 @@ void TextureConvertor::CancelConvert()
 		TextureDescriptor* desc = (TextureDescriptor*) item->data;
 		if(NULL != desc)
 		{
-			delete desc;
+			SafeRelease(desc);
 		}
 
 		delete item;
@@ -296,7 +296,7 @@ void TextureConvertor::threadOriginalFinished()
 		DAVA::Vector<QImage> watcherResult = originalWatcher.result();
 		emit ReadyOriginal(originalDescriptor, watcherResult);
 
-		delete descriptor;
+		SafeRelease(descriptor);
 		delete curJobOriginal;
 		curJobOriginal = NULL;
 	}
@@ -314,7 +314,7 @@ void TextureConvertor::threadConvertedFinished()
 		DAVA::Vector<QImage> watcherResult = convertedWatcher.result();
 		emit ReadyConverted(convertedDescriptor, (DAVA::eGPUFamily) curJobConverted->type, watcherResult);
 
-		delete descriptor;
+		SafeRelease(descriptor);
 		delete curJobConverted;
 		curJobConverted = NULL;
 	}

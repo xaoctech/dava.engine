@@ -116,6 +116,8 @@ protected:
 
 	eHeightmapDrawType activeDrawingType;
 
+	Landscape::eTextureLevel textureLevel;
+
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool(float32 timeElapsed);

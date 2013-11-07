@@ -60,6 +60,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	drawingType(TILEMASK_DRAW_NORMAL)
 ,	copyPasteFrom(-1.f, -1.f)
 ,	copyPasteTo(-1.f, -1.f)
+,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -114,7 +115,7 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
 
-	landscapeSize = drawSystem->GetTextureSize();
+	landscapeSize = drawSystem->GetTextureSize(textureLevel);
 	copyPasteFrom = Vector2(-1.f, -1.f);
 
 	drawSystem->EnableCursor(landscapeSize);
@@ -501,7 +502,7 @@ void TilemaskEditorSystem::ResetAccumulatorRect()
 Rect TilemaskEditorSystem::GetUpdatedRect()
 {
 	Rect r = updatedRectAccumulator;
-	drawSystem->ClampToTexture(r);
+	drawSystem->ClampToTexture(textureLevel, r);
 
 	return r;
 }
@@ -650,7 +651,7 @@ uint32 TilemaskEditorSystem::GetTileTextureIndex()
 
 void TilemaskEditorSystem::InitSprites()
 {
-	float32 texSize = drawSystem->GetTextureSize();
+	float32 texSize = drawSystem->GetTextureSize(textureLevel);
 
 	if (toolSprite == NULL)
 	{
