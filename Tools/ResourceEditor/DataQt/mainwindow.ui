@@ -224,7 +224,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -320,6 +320,7 @@
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
+    <addaction name="actionOnSceneSelection"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -336,7 +337,6 @@
     <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionConvertToShadow"/>
    </widget>
@@ -772,6 +772,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionReloadSprites"/>
+   <addaction name="actionSetShadowColor"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -980,6 +981,10 @@
    </property>
   </action>
   <action name="actionSwitchNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/switch.png</normaloff>:/QtIcons/switch.png</iconset>
+   </property>
    <property name="text">
     <string>Switch</string>
    </property>
@@ -1638,11 +1643,30 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/gizmo.png</normaloff>:/QtIcons/gizmo.png</iconset>
+   </property>
    <property name="text">
     <string>Show Editor Gizmo</string>
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionOnSceneSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/object_select.png</normaloff>:/QtIcons/object_select.png</iconset>
+   </property>
+   <property name="text">
+    <string>On Scene Selection</string>
    </property>
   </action>
  </widget>

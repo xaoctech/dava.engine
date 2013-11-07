@@ -4586,6 +4586,37 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_GetText(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::UIControl *arg2 = (DAVA::UIControl *) 0 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::GetText",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetText",1,"DAVA::AutotestingSystemLua *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetText",2,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_GetText",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_GetText",2,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (arg1)->GetText(arg2);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_WriteState(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -5017,6 +5048,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"SetText", _wrap_AutotestingSystemLua_SetText}, 
     {"CheckText", _wrap_AutotestingSystemLua_CheckText}, 
     {"CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText}, 
+    {"GetText", _wrap_AutotestingSystemLua_GetText}, 
     {"WriteState", _wrap_AutotestingSystemLua_WriteState}, 
     {"WriteCommand", _wrap_AutotestingSystemLua_WriteCommand}, 
     {"ReadState", _wrap_AutotestingSystemLua_ReadState}, 

@@ -65,6 +65,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	toolImageIndex(0)
 ,	curHeight(0.f)
 ,	activeDrawingType(drawingType)
+,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);

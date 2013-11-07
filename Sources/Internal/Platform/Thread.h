@@ -132,6 +132,7 @@ public:
     static void SleepThread(uint32 timeMS);
 
 private:
+    ~Thread() {};
 	Thread() {};
 	Thread(const Thread& t);
 	Thread(const Message& msg);

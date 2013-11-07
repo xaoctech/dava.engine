@@ -122,11 +122,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
+    , modificationWidget(NULL)
 {
 	new Console();
 	new ProjectManager();
 	new SettingsManager();
 	ui->setupUi(this);
+    
+    SetupTitle();
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -495,6 +498,18 @@ void QtMainWindow::SetupStatusBar()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), ui->statusBar, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->statusBar, SLOT(UpdateByTimer()));
 
+	QToolButton *gizmoStatusBtn = new QToolButton();
+	gizmoStatusBtn->setDefaultAction(ui->actionShowEditorGizmo);
+	gizmoStatusBtn->setAutoRaise(true);
+	gizmoStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, gizmoStatusBtn);
+
+	QToolButton *onSceneSelectStatusBtn = new QToolButton();
+	onSceneSelectStatusBtn->setDefaultAction(ui->actionOnSceneSelection);
+	onSceneSelectStatusBtn->setAutoRaise(true);
+	onSceneSelectStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, onSceneSelectStatusBtn);
+
 	QObject::connect(ui->sceneTabWidget->GetDavaWidget(), SIGNAL(Resized(int, int)), ui->statusBar, SLOT(OnSceneGeometryChaged(int, int)));
 }
 
@@ -547,6 +562,7 @@ void QtMainWindow::SetupActions()
 
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
 
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -650,6 +666,9 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SetupShortCuts()
 {
+	// select mode
+	QObject::connect(ui->sceneTabWidget, SIGNAL(Escape()), this, SLOT(OnSelectMode()));
+	
 	// look at
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_Z), this), SIGNAL(activated()), ui->sceneTree, SLOT(LookAtSelection()));
 	
@@ -788,7 +807,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionPivotCommon->setEnabled(enable);
 	ui->actionManualModifMode->setEnabled(enable);
 
-	modificationWidget->setEnabled(enable);
+    if(modificationWidget)
+        modificationWidget->setEnabled(enable);
 
 	ui->actionTextureConverter->setEnabled(enable);
 	ui->actionMaterialEditor->setEnabled(enable);
@@ -1061,6 +1081,15 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 	if(NULL != scene)
 	{
 		scene->SetHUDVisible(show);
+	}
+}
+
+void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->selectionSystem->SetSelectionAllowed(allow);
 	}
 }
 
@@ -1431,6 +1460,7 @@ void QtMainWindow::LoadViewState(SceneEditor2 *scene)
 	if(NULL != scene)
 	{
 		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
+		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
 	}
 }
 

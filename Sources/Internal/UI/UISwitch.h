@@ -54,10 +54,10 @@ class UISwitch : public UIControl
 {
 
     friend class TogglePositionAnimation;
-
+protected:
+    virtual ~UISwitch();
 public:
     UISwitch(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-    virtual ~UISwitch();
 
     virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
