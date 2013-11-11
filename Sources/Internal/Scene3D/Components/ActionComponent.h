@@ -53,7 +53,7 @@ namespace DAVA
 
 			enum eEvent
 			{
-				EVENT_SWITCH_CHNGED = 0,
+				EVENT_SWITCH_CHANGED = 0,
 				EVENT_ADDED_TO_SCENE,
 
 				EVENTS_COUNT
@@ -69,7 +69,7 @@ namespace DAVA
 			bool stopWhenEmpty;
 
 			
-			Action() : type(TYPE_NONE), eventType(EVENT_SWITCH_CHNGED), delay(0.0f), switchIndex(-1),
+			Action() : type(TYPE_NONE), eventType(EVENT_SWITCH_CHANGED), delay(0.0f), switchIndex(-1),
 						stopAfterNRepeats(-1), stopWhenEmpty(false)
 			{				
 			}

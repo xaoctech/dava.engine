@@ -79,7 +79,7 @@ namespace DAVA
 	
 	void ActionComponent::StartSwitch(int32 switchIndex)
 	{
-		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHNGED))
+		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
 			return;
 
 		StopSwitch(switchIndex);		
@@ -87,7 +87,7 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHNGED) && (actions[i].action.switchIndex == switchIndex))
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].markedForUpdate = true;
 				markedCount++;
@@ -164,7 +164,7 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHNGED) && (actions[i].action.switchIndex == switchIndex))
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
