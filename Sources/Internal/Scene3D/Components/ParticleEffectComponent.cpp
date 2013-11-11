@@ -44,6 +44,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 	effectDuration = 0.0f;
 	emittersCurrentlyStopped = 0;
 	stopOnLoad = false;
+	requireRebuildEffectModifiables = true;
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
@@ -64,6 +65,11 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 
 void ParticleEffectComponent::Start()
 {
+	if (requireRebuildEffectModifiables)
+	{
+		RebuildEffectModifiables();
+		requireRebuildEffectModifiables = false;
+	}
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -152,7 +158,7 @@ void ParticleEffectComponent::StopWhenEmpty(bool value /*= true*/)
 }
 
 void ParticleEffectComponent::EffectUpdate(float32 timeElapsed)
-{
+{	
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -293,6 +299,26 @@ void ParticleEffectComponent::UnRegisterModifiable(const String& name, Modifiabl
 		}
 	}
 }
+
+void ParticleEffectComponent::RebuildEffectModifiables()
+{
+	externalModifiables.clear();
+	List<ModifiablePropertyLineI *> modifiables;
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
+		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
+			emitter->GetModifableLines(modifiables);			
+		}
+	}
+
+	for (List<ModifiablePropertyLineI *>::iterator it = modifiables.begin(), e=modifiables.end(); it!=e; ++it)
+		externalModifiables.insert(std::make_pair((*it)->GetValueName(), (*it)));
+}
+
 	
 int32 ParticleEffectComponent::GetActiveParticlesCount()
 {

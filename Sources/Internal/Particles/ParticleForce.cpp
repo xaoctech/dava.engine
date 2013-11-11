@@ -63,3 +63,10 @@ void ParticleForce::Update(RefPtr<PropertyLine<Vector3> > force,
 	this->forceVariation = forceVariation;
 	this->forceOverLife = forceOverLife;
 }
+
+void ParticleForce::GetModifableLines(List<ModifiablePropertyLineI *> &modifiables)
+{
+	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(forceVariation.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
+}

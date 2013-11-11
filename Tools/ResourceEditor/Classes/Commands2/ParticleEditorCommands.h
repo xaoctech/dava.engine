@@ -286,8 +286,7 @@ protected:
 
 	RefPtr< PropertyLine<Color> > colorRandom;
 	RefPtr< PropertyLine<float32> > alphaOverLife;
-	RefPtr< PropertyLine<Color> > colorOverLife;
-	RefPtr< PropertyLine<float32> > frameOverLife;
+	RefPtr< PropertyLine<Color> > colorOverLife;	
 	RefPtr< PropertyLine<float32> > angle;
 	RefPtr< PropertyLine<float32> > angleVariation;
 

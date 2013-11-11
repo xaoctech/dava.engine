@@ -542,10 +542,10 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	if (emitterNode)
 	{
 		if (emitterNode->Get("emissionAngle"))
-			emissionAngle = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionAngle");
+			emissionAngle = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionAngle"));
         
 		if (emitterNode->Get("emissionVector"))
-			emissionVector = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "emissionVector");
+			emissionVector = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("emissionVector"));
         
 		const YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
 		if (!emissionVectorInvertedNode)
@@ -556,12 +556,12 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		}
 
 		if (emitterNode->Get("emissionRange"))
-			emissionRange = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionRange");
+			emissionRange = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionRange"));
         
 		if (emitterNode->Get("colorOverLife"))
-			colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(emitterNode, "colorOverLife");
+			colorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(emitterNode->Get("colorOverLife"));
 		if (emitterNode->Get("radius"))
-			radius = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "radius");
+			radius = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("radius"));
 		
 		emitPointsCount = -1; 
 		const YamlNode * emitAtPointsNode = emitterNode->Get("emitAtPoints");
@@ -611,7 +611,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		}else
 			emitterType = EMITTER_POINT;
 		
-        size = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "size");
+        size = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("size"));
         
         if(size == 0)
         {
@@ -696,7 +696,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
 
-    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
@@ -710,6 +710,20 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
 
     parser->SaveToYamlFile(filename, rootYamlNode, true);
     parser->Release();
+}
+
+void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineI *> &modifiables)
+{
+	PropertyLineHelper::AddIfModifiable(emissionVector.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(emissionRange.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(radius.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(size.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(colorOverLife.Get(), modifiables);
+	int32 layersCount = this->layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->GetModifableLines(modifiables);
+	}
 }
     
 int32 ParticleEmitter::GetParticleCount()
