@@ -120,6 +120,11 @@
     <file>QtImages/sky_example7.png</file>
     <file>QtLibraryIcons/sc2Icon.png</file>
     <file>QtLibraryIcons/daeIcon.png</file>
+    <file>QtLibraryIcons/texIcon.png</file>
+    <file>QtLibraryIcons/pngIcon.png</file>
+    <file>QtLibraryIcons/pvrIcon.png</file>
+    <file>QtLibraryIcons/ddsIcon.png</file>
     <file>QtLibraryIcons/orientation.png</file>
+    <file>QtLibraryIcons/lodmaterial.png</file>
   </qresource>
 </RCC>

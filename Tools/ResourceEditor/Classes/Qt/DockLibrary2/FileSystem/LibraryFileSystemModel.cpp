@@ -31,28 +31,22 @@
 #include "LibraryFileSystemModel.h"
 #include "LibraryFileSystemFilteringModel.h"
 
-#include "Main/mainwindow.h"
-#include "Scene/SceneTabWidget.h"
-#include "Scene/SceneEditor2.h"
-#include "Commands2/DAEConvertAction.h"
+#include "Main/QtUtils.h"
 
 #include <QFileSystemModel>
 #include <QProcess>
 
 
-LibraryFileSystemModel::LibraryFileSystemModel()
-    : LibraryBaseModel("File System")
+LibraryFileSystemModel::LibraryFileSystemModel(const QString &modelName)
+    : LibraryBaseModel(modelName)
 {
     treeModel = new QFileSystemModel(this);
     listModel = new QFileSystemModel(this);
     filteringModel = new LibraryFileSystemFilteringModel(this);
 	filteringModel->SetModel(listModel);
 
-	CreateActions();
-
 	((QFileSystemModel *)treeModel)->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
 	((QFileSystemModel *)listModel)->setFilter(QDir::Files|QDir::NoDotAndDotDot);
-	SetNameFilters();
 }
 
 void LibraryFileSystemModel::TreeItemSelected(const QItemSelection & selection)
@@ -65,6 +59,8 @@ void LibraryFileSystemModel::TreeItemSelected(const QItemSelection & selection)
     ((QFileSystemModel *)listModel)->setRootPath(listRootPath);
 	filteringModel->invalidate();
 	((LibraryFileSystemFilteringModel *)filteringModel)->SetSourceRoot(((QFileSystemModel *)listModel)->index(listRootPath));
+    
+    TreeFileSelected(fileInfo);
 }
 
 void LibraryFileSystemModel::ListItemSelected(const QItemSelection & selection)
@@ -75,14 +71,8 @@ void LibraryFileSystemModel::ListItemSelected(const QItemSelection & selection)
 	if(index.isValid())
     {
         QFileInfo fileInfo = ((QFileSystemModel *)listModel)->fileInfo(index);
-		if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
-		{
-			ShowPreview(fileInfo.filePath().toStdString());
-            return;
-		}
+        TreeFileSelected(fileInfo);
     }
-    
-    HidePreview();
 }
 
 
@@ -111,101 +101,32 @@ const QModelIndex LibraryFileSystemModel::GetListRootIndex() const
 
 bool LibraryFileSystemModel::PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
+    if(index.isValid())
+    {
+        QFileInfo fileInfo = ((QFileSystemModel *)treeModel)->fileInfo(index);
+        return PrepareTreeContextMenuInternal(contextMenu, fileInfo);
+    }
+
     return false;
 }
 
 bool LibraryFileSystemModel::PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
-    HidePreview();
-    
 	const QModelIndex listIndex = filteringModel->mapToSource(index);
     QFileInfo fileInfo = ((QFileSystemModel *)listModel)->fileInfo(listIndex);
     if(fileInfo.isFile())
     {
-        QString fileExtension = fileInfo.suffix();
-
         QVariant fileInfoAsVariant = QVariant::fromValue<QFileInfo>(fileInfo);
-        if(0 == fileExtension.compare("sc2", Qt::CaseInsensitive))
-        {
-            QAction * actionAdd = contextMenu.addAction("Add Model", this, SLOT(OnModelAdd()));
-            QAction * actionEdit = contextMenu.addAction("Edit Model", this, SLOT(OnModelEdit()));
-            contextMenu.addSeparator();
-            QAction * actionRevealAt = contextMenu.addAction("Reveal at folder", this, SLOT(OnRevealAtFolder()));
-            
-            actionAdd->setData(fileInfoAsVariant);
-            actionEdit->setData(fileInfoAsVariant);
-            actionRevealAt->setData(fileInfoAsVariant);
-            
-            return true;
-        }
-        else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))
-        {
-            QAction * actionConvert = contextMenu.addAction("Convert", this, SLOT(OnDAEConvert()));
-            QAction * actionConvertGeometry = contextMenu.addAction("Convert geometry", this, SLOT(OnDAEConvertGeometry()));
-            contextMenu.addSeparator();
-            QAction * actionRevealAt = contextMenu.addAction("Reveal at folder", this, SLOT(OnRevealAtFolder()));
+        PrepareListContextMenuInternal(contextMenu, fileInfo);
 
-            actionConvert->setData(fileInfoAsVariant);
-            actionConvertGeometry->setData(fileInfoAsVariant);
-            actionRevealAt->setData(fileInfoAsVariant);
+        contextMenu.addSeparator();
+        QAction * actionRevealAt = contextMenu.addAction("Reveal at folder", this, SLOT(OnRevealAtFolder()));
+        actionRevealAt->setData(fileInfoAsVariant);
 
-            return true;
-        }
+        return true;
     }
 
     return false;
-}
-
-void LibraryFileSystemModel::OnModelEdit()
-{
-    QVariant indexAsVariant = ((QAction *)sender())->data();
-    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
- 
-    QtMainWindow::Instance()->OpenScene(fileInfo.absoluteFilePath());
-}
-
-void LibraryFileSystemModel::OnModelAdd()
-{
-    QVariant indexAsVariant = ((QAction *)sender())->data();
-    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
-    
-    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
-    if(NULL != scene)
-    {
-        QtMainWindow::Instance()->WaitStart("Add object to scene", fileInfo.absoluteFilePath());
-
-        scene->structureSystem->Add(fileInfo.absoluteFilePath().toStdString());
-        
-        QtMainWindow::Instance()->WaitStop();
-    }
-}
-
-void LibraryFileSystemModel::OnDAEConvert()
-{
-    QVariant indexAsVariant = ((QAction *)sender())->data();
-    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
-    
-    QtMainWindow::Instance()->WaitStart("DAE to SC2 Conversion", fileInfo.absoluteFilePath());
-    
-    Command2 *daeCmd = new DAEConvertAction(fileInfo.absoluteFilePath().toStdString());
-    daeCmd->Redo();
-    delete daeCmd;
-    
-    QtMainWindow::Instance()->WaitStop();
-}
-
-void LibraryFileSystemModel::OnDAEConvertGeometry()
-{
-    QVariant indexAsVariant = ((QAction *)sender())->data();
-    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
-
-    QtMainWindow::Instance()->WaitStart("DAE to SC2 Conversion", fileInfo.absoluteFilePath());
-    
-    Command2 *daeCmd = new DAEConvertWithSettingsAction(fileInfo.absoluteFilePath().toStdString());
-    daeCmd->Redo();
-    delete daeCmd;
-    
-    QtMainWindow::Instance()->WaitStop();
 }
 
 void LibraryFileSystemModel::OnRevealAtFolder()
@@ -232,53 +153,40 @@ void LibraryFileSystemModel::OnRevealAtFolder()
 }
 
 
-
-void LibraryFileSystemModel::HidePreview() const
+QAction * LibraryFileSystemModel::CreateAction(const QIcon & icon, const QString & hint, const QString &dataString)
 {
-    SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
-    widget->HideScenePreview();
+    QAction *action = new QAction(icon, hint, this);
+	action->setCheckable(true);
+	action->setChecked(true);
+    action->setData(dataString);
+    
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(SetNameFilters()));
+    
+	actions.push_back(action);
+    return action;
 }
 
-void LibraryFileSystemModel::ShowPreview(const DAVA::FilePath & pathname) const
-{
-    SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
-    widget->ShowScenePreview(pathname);
-}
-
-void LibraryFileSystemModel::CreateActions()
-{
-	QIcon daeIcon(QString::fromUtf8(":/QtLibraryIcons/daeIcon"));
-	QIcon sc2Icon(QString::fromUtf8(":/QtLibraryIcons/sc2Icon"));
-
-	showDAE = new QAction(daeIcon, "Display *.dae", this);
-	showSC2 = new QAction(sc2Icon, "Display *.sc2", this);
-
-	showDAE->setCheckable(true);
-	showDAE->setChecked(true);
-	showSC2->setCheckable(true);
-	showSC2->setChecked(true);
-
-	QObject::connect(showDAE, SIGNAL(triggered()), this, SLOT(SetNameFilters()));
-	QObject::connect(showSC2, SIGNAL(triggered()), this, SLOT(SetNameFilters()));
-
-	actions.push_back(showSC2);
-	actions.push_back(showDAE);
-}
 
 void LibraryFileSystemModel::SetNameFilters()
 {
 	QStringList nameFilters;
 
-	if(showDAE->isChecked())
-	{
-		nameFilters << QString("*.dae");
-	}
-	if(showSC2->isChecked())
-	{
-		nameFilters << QString("*.sc2");
-	}
+    auto endIt = actions.end();
+    for(auto it = actions.begin(); it != endIt; ++it)
+    {
+        nameFilters << (*it)->data().toString();
+    }
+    
+    ((QFileSystemModel *)listModel)->setNameFilters(nameFilters);
+    ((QFileSystemModel *)listModel)->setNameFilterDisables(false);
 
-	((QFileSystemModel *)listModel)->setNameFilters(nameFilters);
-	((QFileSystemModel *)listModel)->setNameFilterDisables(false);
+    if(nameFilters.size())
+    {
+        ((QFileSystemModel *)listModel)->setFilter(QDir::Files|QDir::NoDotAndDotDot);
+    }
+    else
+    {
+        ((QFileSystemModel *)listModel)->setFilter(QDir::NoDotAndDotDot);
+    }
 }
 

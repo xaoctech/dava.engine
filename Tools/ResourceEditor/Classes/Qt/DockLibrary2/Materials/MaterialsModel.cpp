@@ -100,7 +100,7 @@ void MaterialsModel::PrepareLodMaterials()
     {
         if(materials[i]->IsSwitchable() && NULL != materials[i]->GetParent())
         {
-            lodMaterials.push_back(materials[i]);
+            lodMaterials[materials[i]->GetMaterialName().c_str()] = materials[i];
         }
     }
 }
@@ -123,11 +123,13 @@ void MaterialsModel::RebuildModelFromAllMaterials()
         rootItem->appendRow(item);
     }
     
-//    for(int i = 0; i < (int)lodMaterials.size(); ++i)
-//    {
-//        MaterialsItem *item = new MaterialsItem(materials[i], this);
-//        rootItem->appendRow(item);
-//    }
+    
+    auto endIt = lodMaterials.end();
+    for(auto it = lodMaterials.begin(); it != endIt; ++it)
+    {
+        MaterialsItem *item = new MaterialsItem(it->second, this);
+        rootItem->appendRow(item);
+    }
 }
 
 void MaterialsModel::SceneStructureChanged(DAVA::Scene * scene)
@@ -186,11 +188,6 @@ QString MaterialsModel::GetName(DAVA::NMaterial * material)
     if(!material->IsConfigMaterial())
     {
         name = QString(material->GetParentName().c_str()) + "." + name;
-    }
-    
-    if(material->IsSwitchable())
-    {
-        name += "_[SW]";
     }
     
     return name;
