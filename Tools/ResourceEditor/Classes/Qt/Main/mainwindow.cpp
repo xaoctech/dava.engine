@@ -685,6 +685,9 @@ void QtMainWindow::SetupShortCuts()
 
 	// scene tree collapse/expand
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
+	
+	//tab closing
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
 }
 
 void QtMainWindow::InitRecent()
