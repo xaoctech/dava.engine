@@ -1782,6 +1782,7 @@
 		E860839A17BCF05500FF798D /* SaveEntityAsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveEntityAsAction.h; sourceTree = "<group>"; };
 		E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MetaObjModifyCommand.cpp; sourceTree = "<group>"; };
 		E862903B17BBD20100C88FC0 /* MetaObjModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaObjModifyCommand.h; sourceTree = "<group>"; };
+		E863181E183172FA0022626A /* MimeDataHelper2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MimeDataHelper2.h; sourceTree = "<group>"; };
 		E8637C4917B37DCF00ECA297 /* LODEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LODEditor.cpp; sourceTree = "<group>"; };
 		E8637C4A17B37DCF00ECA297 /* LODEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LODEditor.h; sourceTree = "<group>"; };
 		E8637C5117B37F5500ECA297 /* LODEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LODEditor_moc.cpp; sourceTree = "<group>"; };
@@ -3454,6 +3455,7 @@
 				4F64847717AFB5AB00034454 /* QtWaitDialog */,
 				624C2AD717A26BC00031DC68 /* BaseAddEntityDialog */,
 				6295E406178B07EB0007F9EC /* MimeDataHelper */,
+				E863181C183172FA0022626A /* MimeDataHelper2 */,
 				4FAD0B061785EB8E00B05A35 /* EventFilterDoubleSpinBox */,
 				4FAD0B091785EB8E00B05A35 /* QResourceEditorProgressDialog */,
 				4FAD0B0C1785EB8E00B05A35 /* QtPosSaver */,
@@ -3972,6 +3974,15 @@
 				E846D4C017F32B72007383E3 /* QtLabelWithActions_moc.cpp */,
 			);
 			path = QtLabelWithActions;
+			sourceTree = "<group>";
+		};
+		E863181C183172FA0022626A /* MimeDataHelper2 */ = {
+			isa = PBXGroup;
+			children = (
+				E863181E183172FA0022626A /* MimeDataHelper2.h */,
+			);
+			name = MimeDataHelper2;
+			path = Classes/Qt/Tools/MimeDataHelper2;
 			sourceTree = "<group>";
 		};
 		E8637C4817B37DCF00ECA297 /* DockLODEditor */ = {
