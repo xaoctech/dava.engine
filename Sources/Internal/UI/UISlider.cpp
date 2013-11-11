@@ -107,20 +107,20 @@ void UISlider::AddControl(DAVA::UIControl *control)
 	// Synchronize the pointers to the buttons each time new control is added.
 	UIControl::AddControl(control);
 
-	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME)
+	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME && control != thumbButton)
 	{
-        DVASSERT(!thumbButton);
+        RemoveAndReleaseControl(thumbButton);
 		thumbButton = SafeRetain(control);
 	}
-	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME)
+	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME && control != bgMin)
 	{
-        DVASSERT(!bgMin);
+        RemoveAndReleaseControl(bgMin);
 		bgMin = SafeRetain(control);
 		PostInitBackground(bgMin);
 	}
-	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME)
+	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME && control != bgMax)
 	{
-        DVASSERT(!bgMax);
+        RemoveAndReleaseControl(bgMax);
 		bgMax = SafeRetain(control);
 		PostInitBackground(bgMax);
 	}
@@ -152,23 +152,9 @@ void UISlider::InitMaxBackground()
 
 void UISlider::ReleaseAllSubcontrols()
 {
-	if (thumbButton)
-	{
-		RemoveControl(thumbButton);
-		SafeRelease(thumbButton);
-	}
-	
-	if (bgMin)
-	{
-		RemoveControl(bgMin);
-		SafeRelease(bgMin);
-	}
-	
-	if (bgMax)
-	{
-		RemoveControl(bgMax);
-		SafeRelease(bgMax);
-	}
+    RemoveAndReleaseControl(thumbButton);
+    RemoveAndReleaseControl(bgMin);
+    RemoveAndReleaseControl(bgMax);
 }
 
 void UISlider::InitInactiveParts(Sprite* spr)
@@ -183,9 +169,8 @@ void UISlider::InitInactiveParts(Sprite* spr)
 
 void UISlider::SetThumb(UIControl *newThumb)
 {
-    RemoveControl(thumbButton);
-    SafeRelease(thumbButton);
-    
+    RemoveAndReleaseControl(thumbButton);
+
     thumbButton = SafeRetain(newThumb);
 	thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 	thumbButton->SetInputEnabled(false);
@@ -678,6 +663,17 @@ void UISlider::PostInitBackground(UIControl* backgroundControl)
 	// DF-1379 for details.
 	backgroundControl->SetInputEnabled(false);
 	backgroundControl->SetPosition(Vector2(0.0f, 0.0f));
+}
+    
+void UISlider::RemoveAndReleaseControl(UIControl* &control)
+{
+    if (!control)
+    {
+        return;
+    }
+    
+    RemoveControl(control);
+    SafeRelease(control);
 }
 	
 } // ns
