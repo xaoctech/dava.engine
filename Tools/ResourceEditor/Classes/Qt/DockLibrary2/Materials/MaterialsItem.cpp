@@ -41,7 +41,14 @@ MaterialsItem::MaterialsItem(DAVA::NMaterial * _material, MaterialsModel * _mode
     
     setText(model->GetName(material));
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    if(material->IsSwitchable())
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
+    }
+    else
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    }
     setEditable(false);
 }
 

@@ -146,7 +146,6 @@ bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMateri
 {
     QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
 
-    
     QAction * actionEdit = contextMenu.addAction("Edit Material", this, SLOT(OnEdit()));
     actionEdit->setData(materialAsVariant);
     

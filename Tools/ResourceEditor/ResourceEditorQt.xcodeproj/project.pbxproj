@@ -515,16 +515,6 @@
 		E82D3195182ADB8E00696233 /* LibraryMaterialsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D3188182ADB8E00696233 /* LibraryMaterialsModel.cpp */; };
 		E82D3196182ADB8E00696233 /* MaterialsItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D318A182ADB8E00696233 /* MaterialsItem.cpp */; };
 		E82D3197182ADB8E00696233 /* MaterialsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D318C182ADB8E00696233 /* MaterialsModel.cpp */; };
-		E82D31A4182ADBA500696233 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D3199182ADBA500696233 /* LibraryFileSystemFilteringModel_moc.cpp */; };
-		E82D31A5182ADBA500696233 /* LibraryFileSystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D319A182ADBA500696233 /* LibraryFileSystemModel_moc.cpp */; };
-		E82D31A6182ADBA500696233 /* LibraryBaseModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D319B182ADBA500696233 /* LibraryBaseModel_moc.cpp */; };
-		E82D31A7182ADBA500696233 /* LibraryComplexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D319C182ADBA500696233 /* LibraryComplexView_moc.cpp */; };
-		E82D31A8182ADBA500696233 /* LibraryFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D319D182ADBA500696233 /* LibraryFilteringModel_moc.cpp */; };
-		E82D31A9182ADBA500696233 /* LibraryTabWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D319E182ADBA500696233 /* LibraryTabWidget_moc.cpp */; };
-		E82D31AA182ADBA500696233 /* LibraryMaterialsFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D31A0182ADBA500696233 /* LibraryMaterialsFilteringModel_moc.cpp */; };
-		E82D31AB182ADBA500696233 /* LibraryMaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D31A1182ADBA500696233 /* LibraryMaterialsModel_moc.cpp */; };
-		E82D31AC182ADBA500696233 /* MaterialsItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D31A2182ADBA500696233 /* MaterialsItem_moc.cpp */; };
-		E82D31AD182ADBA500696233 /* MaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E82D31A3182ADBA500696233 /* MaterialsModel_moc.cpp */; };
 		E835201B18103ACA0056D14D /* QtFileDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E835201918103ACA0056D14D /* QtFileDialog.cpp */; };
 		E835202518103BB30056D14D /* QtFileDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E835202418103BB30056D14D /* QtFileDialog_moc.cpp */; };
 		E838D56F16AFFED4006F1721 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */; };
@@ -609,6 +599,20 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8CFEB7A1830D6CE00FC2FC3 /* LibraryTexturesModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */; };
+		E8CFEB8A1830E77200FC2FC3 /* LibraryObjectsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */; };
+		E8CFEB9B183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB8C183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp */; };
+		E8CFEB9C183104C400FC2FC3 /* LibraryFileSystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB8D183104C400FC2FC3 /* LibraryFileSystemModel_moc.cpp */; };
+		E8CFEB9D183104C400FC2FC3 /* LibraryBaseModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB8E183104C400FC2FC3 /* LibraryBaseModel_moc.cpp */; };
+		E8CFEB9E183104C400FC2FC3 /* LibraryComplexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB8F183104C400FC2FC3 /* LibraryComplexView_moc.cpp */; };
+		E8CFEB9F183104C400FC2FC3 /* LibraryFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB90183104C400FC2FC3 /* LibraryFilteringModel_moc.cpp */; };
+		E8CFEBA0183104C400FC2FC3 /* LibraryTabWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB91183104C400FC2FC3 /* LibraryTabWidget_moc.cpp */; };
+		E8CFEBA1183104C400FC2FC3 /* LibraryMaterialsFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB93183104C400FC2FC3 /* LibraryMaterialsFilteringModel_moc.cpp */; };
+		E8CFEBA2183104C400FC2FC3 /* LibraryMaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB94183104C400FC2FC3 /* LibraryMaterialsModel_moc.cpp */; };
+		E8CFEBA3183104C400FC2FC3 /* MaterialsItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB95183104C400FC2FC3 /* MaterialsItem_moc.cpp */; };
+		E8CFEBA4183104C400FC2FC3 /* MaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB96183104C400FC2FC3 /* MaterialsModel_moc.cpp */; };
+		E8CFEBA5183104C400FC2FC3 /* LibraryObjectsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB98183104C400FC2FC3 /* LibraryObjectsModel_moc.cpp */; };
+		E8CFEBA6183104C400FC2FC3 /* LibraryTexturesModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB9A183104C400FC2FC3 /* LibraryTexturesModel_moc.cpp */; };
 		E8D50ADE18058D250047D7C9 /* DynamicShadowCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */; };
 		E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC0417E75A0B00561D52 /* BeastAction.cpp */; };
 		E8DADC2F17E9ED3C00561D52 /* AddComponentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */; };
@@ -1679,16 +1683,6 @@
 		E82D318B182ADB8E00696233 /* MaterialsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsItem.h; sourceTree = "<group>"; };
 		E82D318C182ADB8E00696233 /* MaterialsModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsModel.cpp; sourceTree = "<group>"; };
 		E82D318D182ADB8E00696233 /* MaterialsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsModel.h; sourceTree = "<group>"; };
-		E82D3199182ADBA500696233 /* LibraryFileSystemFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemFilteringModel_moc.cpp; sourceTree = "<group>"; };
-		E82D319A182ADBA500696233 /* LibraryFileSystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel_moc.cpp; sourceTree = "<group>"; };
-		E82D319B182ADBA500696233 /* LibraryBaseModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryBaseModel_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryBaseModel_moc.cpp; sourceTree = SOURCE_ROOT; };
-		E82D319C182ADBA500696233 /* LibraryComplexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryComplexView_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryComplexView_moc.cpp; sourceTree = SOURCE_ROOT; };
-		E82D319D182ADBA500696233 /* LibraryFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFilteringModel_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryFilteringModel_moc.cpp; sourceTree = SOURCE_ROOT; };
-		E82D319E182ADBA500696233 /* LibraryTabWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryTabWidget_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryTabWidget_moc.cpp; sourceTree = SOURCE_ROOT; };
-		E82D31A0182ADBA500696233 /* LibraryMaterialsFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsFilteringModel_moc.cpp; sourceTree = "<group>"; };
-		E82D31A1182ADBA500696233 /* LibraryMaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsModel_moc.cpp; sourceTree = "<group>"; };
-		E82D31A2182ADBA500696233 /* MaterialsItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsItem_moc.cpp; sourceTree = "<group>"; };
-		E82D31A3182ADBA500696233 /* MaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsModel_moc.cpp; sourceTree = "<group>"; };
 		E835201918103ACA0056D14D /* QtFileDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtFileDialog.cpp; sourceTree = "<group>"; };
 		E835201A18103ACA0056D14D /* QtFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtFileDialog.h; sourceTree = "<group>"; };
 		E835202418103BB30056D14D /* QtFileDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtFileDialog_moc.cpp; sourceTree = "<group>"; };
@@ -1850,6 +1844,22 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryTexturesModel.cpp; sourceTree = "<group>"; };
+		E8CFEB781830D6CE00FC2FC3 /* LibraryTexturesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTexturesModel.h; sourceTree = "<group>"; };
+		E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryObjectsModel.cpp; sourceTree = "<group>"; };
+		E8CFEB891830E77200FC2FC3 /* LibraryObjectsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryObjectsModel.h; sourceTree = "<group>"; };
+		E8CFEB8C183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemFilteringModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB8D183104C400FC2FC3 /* LibraryFileSystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB8E183104C400FC2FC3 /* LibraryBaseModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryBaseModel_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryBaseModel_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E8CFEB8F183104C400FC2FC3 /* LibraryComplexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryComplexView_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryComplexView_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E8CFEB90183104C400FC2FC3 /* LibraryFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFilteringModel_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryFilteringModel_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E8CFEB91183104C400FC2FC3 /* LibraryTabWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryTabWidget_moc.cpp; path = _GeneratedQt/DockLibrary2/LibraryTabWidget_moc.cpp; sourceTree = SOURCE_ROOT; };
+		E8CFEB93183104C400FC2FC3 /* LibraryMaterialsFilteringModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsFilteringModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB94183104C400FC2FC3 /* LibraryMaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryMaterialsModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB95183104C400FC2FC3 /* MaterialsItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsItem_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB96183104C400FC2FC3 /* MaterialsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB98183104C400FC2FC3 /* LibraryObjectsModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryObjectsModel_moc.cpp; sourceTree = "<group>"; };
+		E8CFEB9A183104C400FC2FC3 /* LibraryTexturesModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryTexturesModel_moc.cpp; sourceTree = "<group>"; };
 		E8D50ADC18058D250047D7C9 /* DynamicShadowCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicShadowCommands.cpp; sourceTree = "<group>"; };
 		E8D50ADD18058D250047D7C9 /* DynamicShadowCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicShadowCommands.h; sourceTree = "<group>"; };
 		E8DADC0417E75A0B00561D52 /* BeastAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastAction.cpp; sourceTree = "<group>"; };
@@ -3662,6 +3672,8 @@
 			isa = PBXGroup;
 			children = (
 				E82D3178182ADB8E00696233 /* FileSystem */,
+				E8CFEB871830E77200FC2FC3 /* Objects */,
+				E8CFEB741830D6CE00FC2FC3 /* Textures */,
 				E82D317D182ADB8E00696233 /* LibraryBaseModel.cpp */,
 				E82D317E182ADB8E00696233 /* LibraryBaseModel.h */,
 				E82D317F182ADB8E00696233 /* LibraryComplexView.cpp */,
@@ -3679,12 +3691,14 @@
 		E82D3160182ACFB100696233 /* DockLibrary2 */ = {
 			isa = PBXGroup;
 			children = (
-				E82D3198182ADBA500696233 /* FileSystem */,
-				E82D319B182ADBA500696233 /* LibraryBaseModel_moc.cpp */,
-				E82D319C182ADBA500696233 /* LibraryComplexView_moc.cpp */,
-				E82D319D182ADBA500696233 /* LibraryFilteringModel_moc.cpp */,
-				E82D319E182ADBA500696233 /* LibraryTabWidget_moc.cpp */,
-				E82D319F182ADBA500696233 /* Materials */,
+				E8CFEB8B183104C400FC2FC3 /* FileSystem */,
+				E8CFEB8E183104C400FC2FC3 /* LibraryBaseModel_moc.cpp */,
+				E8CFEB8F183104C400FC2FC3 /* LibraryComplexView_moc.cpp */,
+				E8CFEB90183104C400FC2FC3 /* LibraryFilteringModel_moc.cpp */,
+				E8CFEB91183104C400FC2FC3 /* LibraryTabWidget_moc.cpp */,
+				E8CFEB92183104C400FC2FC3 /* Materials */,
+				E8CFEB97183104C400FC2FC3 /* Objects */,
+				E8CFEB99183104C400FC2FC3 /* Textures */,
 			);
 			name = DockLibrary2;
 			path = ../../../../../Downloads/Save/dava.framework/Tools/ResourceEditor/_GeneratedQt/DockLibrary2;
@@ -3716,28 +3730,6 @@
 			);
 			name = Materials;
 			path = Classes/Qt/DockLibrary2/Materials;
-			sourceTree = SOURCE_ROOT;
-		};
-		E82D3198182ADBA500696233 /* FileSystem */ = {
-			isa = PBXGroup;
-			children = (
-				E82D3199182ADBA500696233 /* LibraryFileSystemFilteringModel_moc.cpp */,
-				E82D319A182ADBA500696233 /* LibraryFileSystemModel_moc.cpp */,
-			);
-			name = FileSystem;
-			path = _GeneratedQt/DockLibrary2/FileSystem;
-			sourceTree = SOURCE_ROOT;
-		};
-		E82D319F182ADBA500696233 /* Materials */ = {
-			isa = PBXGroup;
-			children = (
-				E82D31A0182ADBA500696233 /* LibraryMaterialsFilteringModel_moc.cpp */,
-				E82D31A1182ADBA500696233 /* LibraryMaterialsModel_moc.cpp */,
-				E82D31A2182ADBA500696233 /* MaterialsItem_moc.cpp */,
-				E82D31A3182ADBA500696233 /* MaterialsModel_moc.cpp */,
-			);
-			name = Materials;
-			path = _GeneratedQt/DockLibrary2/Materials;
 			sourceTree = SOURCE_ROOT;
 		};
 		E835201818103ACA0056D14D /* QtFileDialog */ = {
@@ -4145,6 +4137,66 @@
 			name = Beast;
 			sourceTree = "<group>";
 		};
+		E8CFEB741830D6CE00FC2FC3 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */,
+				E8CFEB781830D6CE00FC2FC3 /* LibraryTexturesModel.h */,
+			);
+			name = Textures;
+			path = Classes/Qt/DockLibrary2/Textures;
+			sourceTree = SOURCE_ROOT;
+		};
+		E8CFEB871830E77200FC2FC3 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */,
+				E8CFEB891830E77200FC2FC3 /* LibraryObjectsModel.h */,
+			);
+			name = Objects;
+			path = Classes/Qt/DockLibrary2/Objects;
+			sourceTree = SOURCE_ROOT;
+		};
+		E8CFEB8B183104C400FC2FC3 /* FileSystem */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB8C183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp */,
+				E8CFEB8D183104C400FC2FC3 /* LibraryFileSystemModel_moc.cpp */,
+			);
+			name = FileSystem;
+			path = _GeneratedQt/DockLibrary2/FileSystem;
+			sourceTree = SOURCE_ROOT;
+		};
+		E8CFEB92183104C400FC2FC3 /* Materials */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB93183104C400FC2FC3 /* LibraryMaterialsFilteringModel_moc.cpp */,
+				E8CFEB94183104C400FC2FC3 /* LibraryMaterialsModel_moc.cpp */,
+				E8CFEB95183104C400FC2FC3 /* MaterialsItem_moc.cpp */,
+				E8CFEB96183104C400FC2FC3 /* MaterialsModel_moc.cpp */,
+			);
+			name = Materials;
+			path = _GeneratedQt/DockLibrary2/Materials;
+			sourceTree = SOURCE_ROOT;
+		};
+		E8CFEB97183104C400FC2FC3 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB98183104C400FC2FC3 /* LibraryObjectsModel_moc.cpp */,
+			);
+			name = Objects;
+			path = _GeneratedQt/DockLibrary2/Objects;
+			sourceTree = SOURCE_ROOT;
+		};
+		E8CFEB99183104C400FC2FC3 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				E8CFEB9A183104C400FC2FC3 /* LibraryTexturesModel_moc.cpp */,
+			);
+			name = Textures;
+			path = _GeneratedQt/DockLibrary2/Textures;
+			sourceTree = SOURCE_ROOT;
+		};
 		E8EE7E56160DBC8800645405 /* RulerTool */ = {
 			isa = PBXGroup;
 			children = (
@@ -4521,7 +4573,6 @@
 				5C7F48C415B44B4D0038AF3A /* ColladaMaterial.cpp in Build Sources */,
 				5C7F48C515B44B4D0038AF3A /* ColladaMesh.cpp in Build Sources */,
 				5C7F48C615B44B4D0038AF3A /* ColladaMeshInstance.cpp in Build Sources */,
-				E82D31A8182ADBA500696233 /* LibraryFilteringModel_moc.cpp in Build Sources */,
 				5C7F48C715B44B4D0038AF3A /* ColladaPolygonGroup.cpp in Build Sources */,
 				5C7F48C815B44B4D0038AF3A /* ColladaPolygonGroupInstance.cpp in Build Sources */,
 				5C7F48C915B44B4D0038AF3A /* ColladaScene.cpp in Build Sources */,
@@ -4532,7 +4583,6 @@
 				5C7F496915B44B7A0038AF3A /* CameraController.cpp in Build Sources */,
 				5C7F496B15B44B7A0038AF3A /* CameraPropertyControl.cpp in Build Sources */,
 				5C7F496C15B44B7A0038AF3A /* ColorPicker.cpp in Build Sources */,
-				E82D31A6182ADBA500696233 /* LibraryBaseModel_moc.cpp in Build Sources */,
 				5C7F496D15B44B7A0038AF3A /* ComboBox.cpp in Build Sources */,
 				5C7F496F15B44B7A0038AF3A /* ControlsFactory.cpp in Build Sources */,
 				5C7F497015B44B7A0038AF3A /* CreateNodesDialog.cpp in Build Sources */,
@@ -4613,7 +4663,6 @@
 				5C574E4215C9463C0015537A /* btSimpleBroadphase.cpp in Build Sources */,
 				5C574E4315C9463C0015537A /* btActivatingCollisionAlgorithm.cpp in Build Sources */,
 				5C574E4415C9463C0015537A /* btBox2dBox2dCollisionAlgorithm.cpp in Build Sources */,
-				E82D31A9182ADBA500696233 /* LibraryTabWidget_moc.cpp in Build Sources */,
 				5C574E4515C9463C0015537A /* btBoxBoxCollisionAlgorithm.cpp in Build Sources */,
 				5C574E4615C9463C0015537A /* btBoxBoxDetector.cpp in Build Sources */,
 				5C574E4715C9463C0015537A /* btCollisionDispatcher.cpp in Build Sources */,
@@ -4623,6 +4672,7 @@
 				5C574E4B15C9463C0015537A /* btConvex2dConvex2dAlgorithm.cpp in Build Sources */,
 				5C574E4C15C9463C0015537A /* btConvexConcaveCollisionAlgorithm.cpp in Build Sources */,
 				5C574E4D15C9463C0015537A /* btConvexConvexAlgorithm.cpp in Build Sources */,
+				E8CFEB9E183104C400FC2FC3 /* LibraryComplexView_moc.cpp in Build Sources */,
 				5C574E4E15C9463C0015537A /* btConvexPlaneCollisionAlgorithm.cpp in Build Sources */,
 				5C574E4F15C9463C0015537A /* btDefaultCollisionConfiguration.cpp in Build Sources */,
 				E8526CED17F1D9B300E87C1A /* DebugDrawSystem.cpp in Build Sources */,
@@ -4643,6 +4693,7 @@
 				62A7AD26180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp in Build Sources */,
 				5C574E5E15C9463C0015537A /* btCollisionShape.cpp in Build Sources */,
 				5C574E5F15C9463C0015537A /* btCompoundShape.cpp in Build Sources */,
+				E8CFEBA5183104C400FC2FC3 /* LibraryObjectsModel_moc.cpp in Build Sources */,
 				5C574E6015C9463C0015537A /* btConcaveShape.cpp in Build Sources */,
 				49E626CC180C0DF000B62B59 /* SliderWidget.cpp in Build Sources */,
 				5C574E6115C9463C0015537A /* btConeShape.cpp in Build Sources */,
@@ -4660,9 +4711,9 @@
 				5C574E6D15C9463C0015537A /* btMultimaterialTriangleMeshShape.cpp in Build Sources */,
 				5C574E6E15C9463C0015537A /* btMultiSphereShape.cpp in Build Sources */,
 				5C574E6F15C9463C0015537A /* btOptimizedBvh.cpp in Build Sources */,
-				E82D31AC182ADBA500696233 /* MaterialsItem_moc.cpp in Build Sources */,
 				5C574E7015C9463C0015537A /* btPolyhedralConvexShape.cpp in Build Sources */,
 				5C574E7115C9463C0015537A /* btScaledBvhTriangleMeshShape.cpp in Build Sources */,
+				E8CFEB9D183104C400FC2FC3 /* LibraryBaseModel_moc.cpp in Build Sources */,
 				5C574E7215C9463C0015537A /* btShapeHull.cpp in Build Sources */,
 				5C574E7315C9463C0015537A /* btSphereShape.cpp in Build Sources */,
 				5C574E7415C9463C0015537A /* btStaticPlaneShape.cpp in Build Sources */,
@@ -4685,6 +4736,7 @@
 				5C574E8415C9463C0015537A /* btTriangleShapeEx.cpp in Build Sources */,
 				5C574E8515C9463C0015537A /* gim_box_set.cpp in Build Sources */,
 				495247A1180FE75300DD089E /* TileTexturePreviewWidget_moc.cpp in Build Sources */,
+				E8CFEB8A1830E77200FC2FC3 /* LibraryObjectsModel.cpp in Build Sources */,
 				5C574E8615C9463C0015537A /* gim_contact.cpp in Build Sources */,
 				5C574E8715C9463C0015537A /* gim_memory.cpp in Build Sources */,
 				5C574E8815C9463C0015537A /* gim_tri_collision.cpp in Build Sources */,
@@ -4721,6 +4773,7 @@
 				5C574EA615C9463C0015537A /* btRaycastVehicle.cpp in Build Sources */,
 				5C574EA715C9463C0015537A /* btWheelInfo.cpp in Build Sources */,
 				5C574EA815C9463C0015537A /* btAlignedAllocator.cpp in Build Sources */,
+				E8CFEBA3183104C400FC2FC3 /* MaterialsItem_moc.cpp in Build Sources */,
 				5C574EA915C9463C0015537A /* btConvexHull.cpp in Build Sources */,
 				5C574EAA15C9463C0015537A /* btConvexHullComputer.cpp in Build Sources */,
 				5C574EAB15C9463C0015537A /* btGeometryUtil.cpp in Build Sources */,
@@ -4742,7 +4795,6 @@
 				E82D318F182ADB8E00696233 /* LibraryFileSystemModel.cpp in Build Sources */,
 				E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */,
 				4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */,
-				E82D31AD182ADBA500696233 /* MaterialsModel_moc.cpp in Build Sources */,
 				4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */,
 				4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */,
 				498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */,
@@ -4759,7 +4811,6 @@
 				1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */,
 				E838D56F16AFFED4006F1721 /* LibraryModel.cpp in Build Sources */,
 				E838D57016AFFED4006F1721 /* LibraryView.cpp in Build Sources */,
-				E82D31A7182ADBA500696233 /* LibraryComplexView_moc.cpp in Build Sources */,
 				E838D57116AFFED4006F1721 /* EmitterLayerWidget.cpp in Build Sources */,
 				E838D57216AFFED4006F1721 /* GradientPickerWidget.cpp in Build Sources */,
 				E838D57316AFFED4006F1721 /* LayerForceWidget.cpp in Build Sources */,
@@ -4769,6 +4820,7 @@
 				E838D57616AFFED4006F1721 /* ParticlesEditorController.cpp in Build Sources */,
 				495247A2180FE75300DD089E /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */,
 				E838D57716AFFED4006F1721 /* ParticleTimeLineWidget.cpp in Build Sources */,
+				E8CFEB7A1830D6CE00FC2FC3 /* LibraryTexturesModel.cpp in Build Sources */,
 				E838D57816AFFED4006F1721 /* TimeLineWidget.cpp in Build Sources */,
 				E838D57A16AFFED4006F1721 /* GraphItem.cpp in Build Sources */,
 				E838D57B16AFFED4006F1721 /* GraphModel.cpp in Build Sources */,
@@ -4802,7 +4854,6 @@
 				E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */,
 				496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */,
 				496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */,
-				E82D31A5182ADBA500696233 /* LibraryFileSystemModel_moc.cpp in Build Sources */,
 				021413F9181970C400925E51 /* SpeedTreeImportDialog_moc.cpp in Build Sources */,
 				493BAC5D16BFD655000E5F84 /* EditorBodyControlCommands.cpp in Build Sources */,
 				49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */,
@@ -4810,13 +4861,12 @@
 				49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */,
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
-				E82D31AA182ADBA500696233 /* LibraryMaterialsFilteringModel_moc.cpp in Build Sources */,
 				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
 				CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */,
 				50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */,
-				E82D31AB182ADBA500696233 /* LibraryMaterialsModel_moc.cpp in Build Sources */,
 				50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */,
 				4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */,
+				E8CFEB9B183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */,
 				0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */,
 				0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */,
 				178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */,
@@ -4851,6 +4901,7 @@
 				E8FB1E2A172EAC0A00D1428F /* CleanFolderTool.cpp in Build Sources */,
 				E8FB1E37172EE7A100D1428F /* SceneExporterTool.cpp in Build Sources */,
 				E82D3196182ADB8E00696233 /* MaterialsItem.cpp in Build Sources */,
+				E8CFEB9F183104C400FC2FC3 /* LibraryFilteringModel_moc.cpp in Build Sources */,
 				E8FB1E3D172EF12500D1428F /* SceneSaverTool.cpp in Build Sources */,
 				02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */,
 				02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */,
@@ -4915,6 +4966,7 @@
 				4FAD0CEB1785EC6E00B05A35 /* TimeLineWidget_moc.cpp in Build Sources */,
 				4FAD0CEC1785EC6E00B05A35 /* PropertyEditor_moc.cpp in Build Sources */,
 				4952479A180FE50400DD089E /* TileTexturePreviewWidget.cpp in Build Sources */,
+				E8CFEBA0183104C400FC2FC3 /* LibraryTabWidget_moc.cpp in Build Sources */,
 				4FAD0CED1785EC6E00B05A35 /* PropertyEditorStateHelper_moc.cpp in Build Sources */,
 				4FAD0CEE1785EC6E00B05A35 /* ExtraUserData_moc.cpp in Build Sources */,
 				4FAD0CEF1785EC6E00B05A35 /* GraphItem_moc.cpp in Build Sources */,
@@ -5005,7 +5057,6 @@
 				499E4A8B178ABDDD0067FA56 /* CustomLandscape.cpp in Build Sources */,
 				499E4A8C178ABDDD0067FA56 /* HeightmapProxy.cpp in Build Sources */,
 				499E4A8D178ABDDD0067FA56 /* LandscapeProxy.cpp in Build Sources */,
-				E82D31A4182ADBA500696233 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */,
 				499E4A8E178ABDDD0067FA56 /* NotPassableTerrainProxy.cpp in Build Sources */,
 				499E4A8F178ABDDD0067FA56 /* VisibilityToolProxy.cpp in Build Sources */,
 				499E4A98178ABDF00067FA56 /* CustomColorsCommands2.cpp in Build Sources */,
@@ -5027,6 +5078,7 @@
 				A69AA3B11796F1A60008B683 /* CubemapEditorDialog_moc.cpp in Build Sources */,
 				A69AA3B21796F1A60008B683 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
 				E8EF3BE6180832EA00494E24 /* ToolButtonWithWidget_moc.cpp in Build Sources */,
+				E8CFEBA1183104C400FC2FC3 /* LibraryMaterialsFilteringModel_moc.cpp in Build Sources */,
 				A69AA3B31796F1A60008B683 /* CubemapUtils_moc.cpp in Build Sources */,
 				A69AA3B41796F1A60008B683 /* MaterialHelper_moc.cpp in Build Sources */,
 				176D7F0E179D5C6800795610 /* ParticleEditorCommands.cpp in Build Sources */,
@@ -5048,6 +5100,7 @@
 				62A0B78F180D788C00DA3BE6 /* OwnersSignatureSystem.cpp in Build Sources */,
 				E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */,
 				E8BD39D617B4BB4D00C63420 /* LabeledSlider_moc.cpp in Build Sources */,
+				E8CFEBA2183104C400FC2FC3 /* LibraryMaterialsModel_moc.cpp in Build Sources */,
 				E8BD39FC17B52A8200C63420 /* DistanceSlider.cpp in Build Sources */,
 				E8BD3A0217B52BC600C63420 /* DistanceSlider_moc.cpp in Build Sources */,
 				4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */,
@@ -5062,6 +5115,7 @@
 				62A66F5717BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp in Build Sources */,
 				49E626CF180C0E0B00B62B59 /* PopupEditorDialog_moc.cpp in Build Sources */,
 				62A43E0B17BCFCDE0003287B /* SettingsManager.cpp in Build Sources */,
+				E8CFEB9C183104C400FC2FC3 /* LibraryFileSystemModel_moc.cpp in Build Sources */,
 				62A43E0E17BCFF090003287B /* SettingsManager_moc.cpp in Build Sources */,
 				62B805D417CDFDFD0055EF1E /* GroupEntitiesForMultiselectCommand.cpp in Build Sources */,
 				E8EBEDFE17CF92B400104156 /* StatusBar.cpp in Build Sources */,
@@ -5069,6 +5123,7 @@
 				6247842117D71FB1005022DB /* SettingsStateDialog.cpp in Build Sources */,
 				6247842A17D72A5F005022DB /* SettingsStateDialog_moc.cpp in Build Sources */,
 				E825797A17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */,
+				E8CFEBA6183104C400FC2FC3 /* LibraryTexturesModel_moc.cpp in Build Sources */,
 				E825797B17D886B400070B9C /* QtPropertyDataDavaVariant.cpp in Build Sources */,
 				E825797C17D886B400070B9C /* QtPropertyDataInspColl.cpp in Build Sources */,
 				E825797D17D886B400070B9C /* QtPropertyDataInspMember.cpp in Build Sources */,
@@ -5096,6 +5151,7 @@
 				02F8B06217E32B9400D5A334 /* SpeedTreeImporter.cpp in Build Sources */,
 				E84551EB17DF48A70041F0B1 /* ConvertToShadowCommand.cpp in Build Sources */,
 				E8DADC0617E75A0B00561D52 /* BeastAction.cpp in Build Sources */,
+				E8CFEBA4183104C400FC2FC3 /* MaterialsModel_moc.cpp in Build Sources */,
 				49FE771C17E349D30010B8E1 /* LandscapeEditorControlsPlaceholder.cpp in Build Sources */,
 				49FE772017E34B8C0010B8E1 /* LandscapeEditorBasePanel.cpp in Build Sources */,
 				495A601D17E6F15E00039A43 /* CustomColorsPanel.cpp in Build Sources */,
