@@ -40,7 +40,13 @@ bool LibraryMaterialsFilteringModel::filterAcceptsRow(int sourceRow, const QMode
 {
 	if(model == NULL) return true;
 
-	return true; // nothing matched
+    // First we see if we're the source root node
+	QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+	if (!sourceIndex.isValid())
+		return true; // viewer will handle filtering
+
+    QString data = sourceModel()->data(sourceIndex).toString();
+    return (data.contains(filterRegExp()));
 }
 
 

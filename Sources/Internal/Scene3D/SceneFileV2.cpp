@@ -72,6 +72,9 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
+#include "Scene3D/Scene.h"
+
+
 namespace DAVA
 {
     
@@ -185,8 +188,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     // save data objects
     if(isDebugLogEnabled)
     {
-        Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
+        Logger::FrameworkDebug("+ save data objects");
+        Logger::FrameworkDebug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths
@@ -198,7 +201,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //            if (material->names[k].length() > 0)
 //            {
 //                replace(material->names[k], rootNodePath, String(""));
-//                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
+//                Logger::FrameworkDebug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
 //            }
 //        }   
 //    }
@@ -219,7 +222,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     // save hierarchy
     if(isDebugLogEnabled)
-        Logger::Debug("+ save hierarchy");
+        Logger::FrameworkDebug("+ save hierarchy");
 	
 	SaveMaterialSystem(file, &serializationContext);
 
@@ -528,7 +531,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         Landscape * landscapeRenderObject = new Landscape();
         landscapeRenderObject->Load(archive, &serializationContext);
         
-        node->AddComponent(new RenderComponent(landscapeRenderObject));
+        node->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeRenderObject)));
 
         parent->AddNode(node);
         
@@ -546,7 +549,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         Camera * cameraObject = new Camera();
         cameraObject->Load(archive);
         
-        node->AddComponent(new CameraComponent(cameraObject));
+        node->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(cameraObject)));
         parent->AddNode(node);
         
         SafeRelease(cameraObject);
@@ -565,7 +568,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         light->Load(archive, &serializationContext);
         light->SetDynamic(isDynamic);
         
-        node->AddComponent(new LightComponent(light));
+        node->AddComponent(ScopedPtr<LightComponent> (new LightComponent(light)));
         parent->AddNode(node);
         
         SafeRelease(light);
@@ -1055,8 +1058,9 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     
 	//ConvertShadows(rootNode);
     //RemoveEmptySceneNodes(rootNode);
-    RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
+	RemoveEmptyHierarchy(rootNode);
+	
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {

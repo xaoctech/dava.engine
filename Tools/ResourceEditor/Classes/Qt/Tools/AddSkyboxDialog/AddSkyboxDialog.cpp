@@ -32,108 +32,63 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "CubemapEditor/CubemapUtils.h"
 #include "AddSkyboxDialog.h"
+#include "Classes/Commands2/EntityAddCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 
-AddSkyboxDialog::AddSkyboxDialog(QWidget* parent) : BaseAddEntityDialog(parent)
+AddSkyboxDialog::AddSkyboxDialog(QWidget* parent) 
+	: BaseAddEntityDialog(parent)
+	, editorScene(NULL)
 {
-	controlButton = new QPushButton();
-	closeHandled = false;
-	editorScene = NULL;
-	initialState.initialSkyboxNode = NULL;
+	controlButton = new QPushButton(this);
 	
-	ui->lowerLayOut->removeWidget(ui->buttonBox);
-	ui->lowerLayOut->addWidget(controlButton, 0, 0);
-	ui->lowerLayOut->addWidget(ui->buttonBox, 0, 1);
-	
-	QObject::connect(this, SIGNAL(finished(int)), this, SLOT(OnFinished(int)));
+	AddButton(controlButton);
+
+	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }
 
 AddSkyboxDialog::~AddSkyboxDialog()
 {
-	QObject::disconnect(this, SIGNAL(finished(int)), this, SLOT(OnFinished(int)));
-	
-	if(!closeHandled)
-	{
-		OnFinished(QDialog::Rejected);
-	}
-	
-	SafeRelease(initialState.initialSkyboxNode);
-	
-	delete controlButton;
 	SafeRelease(editorScene);
 }
 
-void AddSkyboxDialog::OnFinished(int code)
+void AddSkyboxDialog::FillPropertyEditorWithContent()
 {
-	closeHandled = true;
-	
-	if(code != QDialog::Accepted)
-	{
-		Entity* currentSkybox = editorScene->skyboxSystem->GetSkybox();
-		
-		if(NULL == initialState.initialSkyboxNode)
-		{
-			if(currentSkybox)
-			{
-				currentSkybox->GetParent()->RemoveNode(currentSkybox);
-			}
-		}
-		else
-		{
-			if(NULL == currentSkybox)
-			{
-				currentSkybox = editorScene->skyboxSystem->AddSkybox();
-			}
-			
-			SkyboxRenderObject* curRenderObj = static_cast<SkyboxRenderObject*>(GetRenderObject(currentSkybox));
-			
-			curRenderObj->ForceSetOffsetZ(initialState.offset);
-			curRenderObj->SetRotationZ(initialState.rotation);
-			curRenderObj->SetTexture(initialState.texture);
-			if(curRenderObj->GetTextureValidator() == NULL)
-			{
-				curRenderObj->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}
-		}
-	}
+    if(propEditor == NULL)
+        return;
+    
+	propEditor->RemovePropertyAll();
+	if(NULL == entity)
+		return;
+
+    AddInspMemberToEditor(entity, entity->GetTypeInfo()->Member("name"));
+
+    SkyboxRenderObject *skyBox = GetSkybox(entity);
+    if(skyBox)
+    {
+        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("texture"));
+        AddInspMemberToEditor( skyBox, skyBox->GetTypeInfo()->Member("verticalOffset"));
+    }
 }
 
 void AddSkyboxDialog::OnCreateButtonClicked()
 {
 	if(editorScene)
 	{
-		Entity* skyboxNode = editorScene->skyboxSystem->AddSkybox();
-		RenderObject* ro = GetRenderObject(skyboxNode);
-		
-		if(ro &&
-		   ro->GetType() == RenderObject::TYPE_SKYBOX)
-		{
-			SkyboxRenderObject* renderObject = static_cast<SkyboxRenderObject*>(ro);
-			
-			if(renderObject->GetTextureValidator() == NULL)
-			{
-				renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
-			}			
-		}
-		
-		MakeDeleteButton();
-		UpdateEntity(skyboxNode);
-	}
-	else
-	{
-		DVASSERT(false);
+		Entity* skyboxEntity = editorScene->skyboxSystem->AddSkybox();
+        skyboxEntity->Retain();
+
+		skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
+        editorScene->Exec(new EntityAddCommand(skyboxEntity, editorScene)); //To enable Ctrl+Z operation
+        skyboxEntity->Release();
 	}
 }
 
 void  AddSkyboxDialog::OnDeleteButtonClicked()
 {
 	Entity* skyboxEntity = GetEntity();
-		
-	if(skyboxEntity)
+	if(skyboxEntity && editorScene)
 	{
-		skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
-		UpdateEntity(NULL);
-		
-		MakeCreateButton();
+        editorScene->Exec(new EntityRemoveCommand(skyboxEntity));
 	}
 }
 
@@ -151,41 +106,35 @@ void AddSkyboxDialog::MakeDeleteButton()
 	controlButton->setText("Delete");	
 }
 
-void AddSkyboxDialog::UpdateEntity(Entity* newEntity)
+void AddSkyboxDialog::SetEntity(DAVA::Entity* newEntity)
 {
-	SafeRelease(entity);
-	
-	entity = newEntity;
-	SafeRetain(entity);
-
-	PropertyEditor* pEditor = propEditor;
-	if(NULL == pEditor)
-	{
-		return;
-	}
-
-	pEditor->SetNode(entity);
-	
-	if(entity)
-	{
-		pEditor->expandAll();
-		PerformResize();
-	}
+    BaseAddEntityDialog::SetEntity(newEntity);
+    
+    if(entity)
+    {
+        MakeDeleteButton();
+    }
+    else
+    {
+        MakeCreateButton();
+    }
+    
+    FillPropertyEditorWithContent();
 }
 
 void AddSkyboxDialog::Show(QWidget* parent, SceneEditor2* scene)
 {
-	DVASSERT(scene);
+	if(NULL != scene)	
+	{
+		Entity* currentSkybox = scene->skyboxSystem->GetSkyboxEntity();
 	
-	Entity* currentSkybox = scene->skyboxSystem->GetSkybox();
-	
-	AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
-	dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-	dlg->SetEditorScene(scene);
-	dlg->UpdateEntity(currentSkybox);
-	dlg->SetInitialState(currentSkybox);
-	dlg->setWindowTitle("Set up Skybox");
-	dlg->show();
+		AddSkyboxDialog* dlg = new AddSkyboxDialog(parent);
+		dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+		dlg->SetEditorScene(scene);
+		dlg->SetEntity(currentSkybox);
+		dlg->setWindowTitle("Set up Skybox");
+		dlg->show();
+	}
 }
 
 void AddSkyboxDialog::SetEditorScene(SceneEditor2* scene)
@@ -199,25 +148,28 @@ SceneEditor2* AddSkyboxDialog::GetEditorScene() const
 	return editorScene;
 }
 
-void AddSkyboxDialog::SetInitialState(Entity* skyboxState)
+void AddSkyboxDialog::OnSceneActivated(SceneEditor2 *sceneEditor)
 {
-	SafeRelease(initialState.initialSkyboxNode);
-	initialState.initialSkyboxNode = SafeRetain(skyboxState);
-	
-	if(initialState.initialSkyboxNode)
-	{
-		SkyboxRenderObject* curRenderObj = static_cast<SkyboxRenderObject*>(GetRenderObject(initialState.initialSkyboxNode));
-		
-		DVASSERT(curRenderObj);
-		initialState.offset = curRenderObj->GetOffsetZ();
-		initialState.rotation = curRenderObj->GetRotationZ();
-		initialState.texture = curRenderObj->GetTexture();
-		
-		MakeDeleteButton();
-	}
-	else
-	{
-		MakeCreateButton();
-	}
+    SetEditorScene(sceneEditor);
+    SetEntity(sceneEditor->skyboxSystem->GetSkyboxEntity());
 }
 
+void AddSkyboxDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    BaseAddEntityDialog::CommandExecuted(scene, command, redo);
+    
+    if(NULL == GetSkybox(command->GetEntity()))
+    {
+        return;
+    }
+
+    int id = command->GetId();
+    if((id == CMDID_ENTITY_ADD && redo) || (id == CMDID_ENTITY_REMOVE && !redo))
+    {
+        SetEntity(command->GetEntity());
+    }
+    else if((id == CMDID_ENTITY_ADD && !redo) || (id == CMDID_ENTITY_REMOVE && redo))
+    {
+        SetEntity(NULL);
+    }
+}

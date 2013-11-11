@@ -47,7 +47,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -214,7 +213,7 @@ void InstanceMaterialState::InitFromState(const InstanceMaterialState * state)
 
 
 
-REGISTER_CLASS(Material);
+
     
 UberShader * Material::uberShader = 0;
     
@@ -944,9 +943,10 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
-        if (!instanceMaterialState->lightmapTexture)
+        if (NULL == instanceMaterialState->lightmapTexture)
         {
             SetSetupLightmap(true);
+			renderStateBlock.SetTexture(NULL, 1);
         }
 		else
         {

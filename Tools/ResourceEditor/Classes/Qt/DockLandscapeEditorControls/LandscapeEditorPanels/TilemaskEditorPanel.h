@@ -3,6 +3,7 @@
 
 #include "LandscapeEditorBasePanel.h"
 #include "DAVAEngine.h"
+#include "Commands2/Command2.h"
 
 using namespace DAVA;
 
@@ -46,6 +47,8 @@ private slots:
 
 	void PrevTool();
 	void NextTool();
+
+	void OnCommandExecuted(SceneEditor2* scene, const Command2* command, bool redo);
 
 protected:
 	virtual bool GetEditorEnabled();

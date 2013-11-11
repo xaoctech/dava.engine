@@ -84,14 +84,12 @@ bool BeastCommandLineTool::InitializeFromCommandLine()
 
 void BeastCommandLineTool::Process()
 {
-	PrepareEditorSettings();
-
 	SceneEditor2 *scene = new SceneEditor2();
 	if(scene->Load(scenePathname))
 	{
 		scene->Update(0.1f);
 
-		scene->Exec(new BeastAction(scene));
+		scene->Exec(new BeastAction(scene, NULL));
 
 		scene->Save();
 	}
@@ -101,18 +99,6 @@ void BeastCommandLineTool::Process()
 const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
 {
     return scenePathname;
-}
-
-void BeastCommandLineTool::PrepareEditorSettings()
-{
-	String path = scenePathname.GetAbsolutePathname();
-	String dataSourceFolder = "/DataSource/3d/";
-	String::size_type pos = path.find(dataSourceFolder);
-	if(pos != String::npos)
-	{
-		EditorSettings::Instance()->SetProjectPath(path.substr(0, pos + 1));
-		EditorSettings::Instance()->SetDataSourcePath(path.substr(0, pos + dataSourceFolder.length()));
-	}
 }
 
 #endif //#if defined (__DAVAENGINE_BEAST__)

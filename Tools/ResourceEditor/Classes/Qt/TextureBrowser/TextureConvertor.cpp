@@ -72,18 +72,22 @@ int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 
 	if(NULL != descriptor)
 	{
-		DAVA::Vector<DAVA::TextureDescriptor> *textures = new DAVA::Vector<DAVA::TextureDescriptor>();
-		textures->push_back(*descriptor);
+		// check if requested texture isn't the same that is loading now
+		if(NULL == curJobOriginal || curJobOriginal->identity != descriptor)
+		{
+			DAVA::Vector<DAVA::TextureDescriptor> *textures = new DAVA::Vector<DAVA::TextureDescriptor>();
+			textures->push_back(*descriptor);
 
-		JobItem newJob;
-		newJob.id = jobIdCounter++;
-		newJob.data = new TextureDescriptor(*descriptor);
-		newJob.identity = descriptor;
+			JobItem newJob;
+			newJob.id = jobIdCounter++;
+			newJob.data = new TextureDescriptor(*descriptor);
+			newJob.identity = descriptor;
 
-		jobStackOriginal.push(newJob);
-		jobRunNextOriginal();
+			jobStackOriginal.push(newJob);
+			jobRunNextOriginal();
 
-		ret = newJob.id;
+			ret = newJob.id;
+		}
 	}
 
 	return ret;
@@ -102,7 +106,11 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 		newJob.data = new TextureDescriptor(*descriptor);
 		newJob.identity = descriptor;
 
-		jobStackConverted.push(newJob);
+		if(jobStackConverted.push(newJob))
+		{
+			convertJobQueueSize++;
+		}
+
 		jobRunNextConvert();
 
 		ret = newJob.id;
@@ -230,11 +238,6 @@ void TextureConvertor::jobRunNextConvert()
 			QFuture< DAVA::Vector<QImage> > f = QtConcurrent::run(this, &TextureConvertor::GetConvertedThread, curJobConverted);
 			convertedWatcher.setFuture(f);
 
-			if(0 == convertJobQueueSize)
-			{
-				convertJobQueueSize = 1;
-			}
-
 			emit ConvertStatusImg(desc->pathname.GetAbsolutePathname().c_str(), curJobConverted->type);
 			emit ConvertStatusQueue(convertJobQueueSize - jobStackConverted.size(), convertJobQueueSize);
 
@@ -274,7 +277,6 @@ void TextureConvertor::jobRunNextConvert()
 	}
 	else
 	{
-		convertJobQueueSize++;
 		emit ConvertStatusQueue(convertJobQueueSize - jobStackConverted.size(), convertJobQueueSize);
 
 		if(NULL != waitDialog)

@@ -98,8 +98,9 @@ protected:
 	DAVA::Vector3 lastLandRayTo;
 	DAVA::Vector3 lastLandCollision;
 	bool landIntersectCached;
+	bool landIntersectCachedResult;
 
-	DAVA::Landscape *curLandscape;
+	DAVA::Entity *curLandscapeEntity;
 
 	btDefaultCollisionConfiguration* objectsCollConf;
 	btCollisionDispatcher* objectsCollDisp;

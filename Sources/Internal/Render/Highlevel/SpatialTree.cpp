@@ -20,7 +20,9 @@ void QuadTree::QuadTreeNode::Reset()
 	
 }
 
-QuadTree::QuadTree(int32 _maxTreeDepth): maxTreeDepth(_maxTreeDepth), worldInitialized(false)
+QuadTree::QuadTree(int32 _maxTreeDepth)
+	: maxTreeDepth(_maxTreeDepth)
+	, worldInitialized(false)
 {		    
 }
 

@@ -71,6 +71,7 @@ float32 LodComponent::LodDistance::GetFarDistance() const
 	return sqrtf(farDistanceSq);
 }
 
+
 Component * LodComponent::Clone(Entity * toEntity)
 {
 	LodComponent * newLod = new LodComponent();

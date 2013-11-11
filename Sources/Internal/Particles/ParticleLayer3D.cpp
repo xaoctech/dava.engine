@@ -367,7 +367,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		{
 			renderData->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &textures2.front());
 			renderData->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
-		}
+		}				
 	}
 	
 }
@@ -507,6 +507,7 @@ void ParticleLayer3D::UpdateBlendState()
 		}
 	}
 }
+
 
 bool ParticleLayer3D::IsLong()
 {

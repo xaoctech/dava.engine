@@ -32,7 +32,6 @@
 
 #include "DAVAEngine.h"
 
-class DAVA::NMaterial;
 class LandscapeRenderer: public DAVA::BaseObject
 {
 
@@ -48,11 +47,10 @@ public:
     void DrawLandscape();
     
     DAVA::uint32 * Indicies();
-	
-	void SetMaterial(DAVA::NMaterial* material);
     
 protected:
 
+    void InitShader();
     void RebuildIndexes();
     void SetHeightmap(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box);
     void SetBoundingBox(const DAVA::AABBox3 &box);
@@ -61,7 +59,6 @@ protected:
     DAVA::int32 uniformFogDensity;
     DAVA::int32 uniformFogColor;
     DAVA::Shader * shader;
-	DAVA::NMaterial* landscapeMaterial;
     
     DAVA::Vector<DAVA::Landscape::LandscapeVertex> vertices;
     DAVA::Vector<DAVA::uint32> indices;

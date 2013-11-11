@@ -32,8 +32,9 @@
 #include "LibraryComplexView.h"
 
 #include "LibraryBaseModel.h"
-#include "FileSystem/LibraryFileSystemModel.h"
+#include "Objects/LibraryObjectsModel.h"
 #include "Materials/LibraryMaterialsModel.h"
+#include "Textures/LibraryTexturesModel.h"
 
 #include "Project/ProjectManager.h"
 
@@ -57,8 +58,11 @@ LibraryTabWidget::LibraryTabWidget(QWidget *parent)
 	setLayout(layout);
 
     //Add models
-    AddModel(new LibraryFileSystemModel());
+    AddModel(new LibraryObjectsModel());
+    AddModel(new LibraryTexturesModel());
     AddModel(new LibraryMaterialsModel());
+    
+    posSaver.Attach(this);
 }
 
 LibraryTabWidget::~LibraryTabWidget()

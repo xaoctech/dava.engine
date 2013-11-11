@@ -111,17 +111,8 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 		
 		
 		Rect2i reducedRect;
-        if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
-        {
-            reducedRect = Rect2i(0, 0, frameX.GetWidth(), frameX.GetHeight());
-            Logger::Info("%s - NOT reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
-        }
-        else
-        {
-            frameX.FindNonOpaqueRect(reducedRect);
-            Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
-        }
-		
+		frameX.FindNonOpaqueRect(reducedRect);
+		Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 		
 		PngImageExt frameX2;
 		frameX2.Create(reducedRect.dx, reducedRect.dy);
@@ -222,6 +213,38 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	Logger::FrameworkDebug("Loaded definition: %s frames: %d",filename.GetAbsolutePathname().c_str(), frameCount);
 	
 	return true;
+}
+
+
+DAVA::Size2i DefinitionFile::GetFrameSize(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return Size2i(spriteWidth, spriteHeight);
+	}
+
+	return Size2i(frameRects[frame].dx, frameRects[frame].dy);
+}
+
+
+int DefinitionFile::GetFrameWidth(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return spriteWidth;
+	}
+
+	return frameRects[frame].dx;
+}
+
+int DefinitionFile::GetFrameHeight(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return spriteHeight;
+	}
+
+	return frameRects[frame].dy;
 }
 
 

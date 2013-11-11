@@ -34,11 +34,14 @@
 #include "QScrollBar.h"
 #include "Scene/System/BeastSystem.h"
 
-#define PROPERTY_EDITOR_HEIGHT	300
-#define QT_HEIGHT_LIMIT			16777215
-#define WINDOW_HEIGHT_LIMIT		800
 
-BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Main/mainwindow.h"
+
+BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::StandardButtons buttons)
 :	QDialog(parent),
 	entity(NULL),
 	ui(new Ui::BaseAddEntityDialog)
@@ -46,92 +49,105 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 	ui->setupUi(this);
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
-	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
-	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);	
+	setAttribute( Qt::WA_MacAlwaysShowToolWindow); // on top of all applications
 
-	ui->scrollArea->setVisible(false);
-	propEditor = NULL;
+	propEditor = ui->propertyEditor;
+	propEditor->setMouseTracking(false);
+	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	propEditor->setTabKeyNavigation(false);
+	propEditor->setAlternatingRowColors(true);
+	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+	propEditor->setIndentation(16);
+	propEditor->SetEditTracking(true);
+	connect(propEditor, SIGNAL(PropertyEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)));
+
+	ui->buttonBox->setStandardButtons(buttons);
+    
+    connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
-	delete ui;
-	delete propEditor;
+	propEditor->RemovePropertyAll();
 	SafeRelease(entity);
+
 	for(DAVA::Map<QWidget*, QWidget*>::iterator it = additionalWidgetMap.begin(); it != additionalWidgetMap.end(); ++it)
 	{
 		delete it->second;
 	}
 	additionalWidgetMap.clear();
+
+	delete ui;
 }
 
-void BaseAddEntityDialog::showEvent ( QShowEvent * event )
+void BaseAddEntityDialog::showEvent(QShowEvent * event)
 {
 	QDialog::showEvent(event);
-	InitPropertyEditor();
-	if(entity)
-	{
-		propEditor->SetNode(entity);
-		propEditor->expandAll();
-		PerformResize();
-	}
+	propEditor->expandAll();
+	PerformResize();
 }
 
 void BaseAddEntityDialog::PerformResize()
 {
-	propEditor->expandAll();
-	QRect rectEditor = propEditor->geometry();
-	rectEditor.setHeight(PROPERTY_EDITOR_HEIGHT);
-	propEditor->setGeometry(rectEditor);
-	
-	QScrollArea* area = ui->scrollArea;
-	int scrollAreaHeight = area->sizeHint().height();
-	
-	QRect areaEditor = area->geometry();
-	areaEditor.setHeight(scrollAreaHeight);
-	area->setGeometry(areaEditor);
-	
-	int currentMax  = ui->lowerLayOut->geometry().height() + ui->lowerLayOut->verticalSpacing() * 4 + scrollAreaHeight + PROPERTY_EDITOR_HEIGHT;
-	int maxHeight = currentMax < WINDOW_HEIGHT_LIMIT ? currentMax : WINDOW_HEIGHT_LIMIT;
-	QRect rect = geometry();
-	rect.setHeight(maxHeight);
-	setGeometry(rect);
+	QList<int> sizes;
+	sizes.push_back(geometry().height() - ui->scrollAreaWidgetContents_2->geometry().height() - ui->buttonBox->height() - layout()->spacing() * 4);
+	sizes.push_back(ui->scrollAreaWidgetContents_2->geometry().height());
+	ui->splitter->setSizes(sizes);
 }
 
-void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
+QtPropertyData* BaseAddEntityDialog::AddInspMemberToEditor(void *object, const DAVA::InspMember * member)
 {
-	QDialog::hideEvent(event);
-	if(entity && propEditor)
-	{
-		propEditor->SetNode(NULL);
-	}
+	int flags = DAVA::I_VIEW | DAVA::I_EDIT;
+	QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
+	propEditor->AppendProperty(member->Name(), propData);
+	return propData;
+}
+
+QtPropertyData* BaseAddEntityDialog::AddKeyedArchiveMember(DAVA::KeyedArchive* _archive, const DAVA::String& _key, const DAVA::String& rowName)
+{
+	QtPropertyData*  propData = new QtPropertyKeyedArchiveMember(_archive, _key);
+	propEditor->AppendProperty(rowName.c_str(), propData);
+	return propData;
+}
+
+QtPropertyData* BaseAddEntityDialog::AddMetaObject(void *_object, const DAVA::MetaInfo *_meta, const String& rowName)
+{
+	QtPropertyData*  propData = new QtPropertyDataMetaObject( _object, _meta);
+	propEditor->AppendProperty(rowName.c_str(), propData);
+	return propData;
 }
 
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 {
 	SafeRelease(entity);
-	
-	entity = _entity;
-	SafeRetain(entity);
-	if(entity)
-	{
-		BeastSystem::SetDefaultPropertyValues(entity);
-			
-		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
+	entity = SafeRetain(_entity);
+}
 
-		if(propEditor)
-		{
-			propEditor->SetNode(entity);
-			propEditor->expandAll();
-			PerformResize();
-		}
+void BaseAddEntityDialog::AddButton( QWidget* widget, eButtonAlign orientation)
+{
+	switch (orientation)
+	{
+		case BUTTON_ALIGN_LEFT:
+			ui->lowerLayOut->insertWidget(0, widget);
+			break;
+		case BUTTON_ALIGN_RIGHT:
+			ui->lowerLayOut->addWidget(widget);
+			break;
+		default:
+			break;
 	}
+}
+
+DAVA::Entity* BaseAddEntityDialog::GetEntity()
+{
+	return entity;
 }
 
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 {
 	ui->userContentLayout->addWidget(widget);
-	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
 }
 
 
@@ -142,7 +158,6 @@ void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget, const DAVA:
 	ui->userContentLayout->addWidget(label, rowCount, 0);
 	ui->userContentLayout->addWidget(widget, rowCount, 1);
 	additionalWidgetMap[widget] = label;
-	ui->scrollArea->setVisible(ui->userContentLayout->rowCount()>0);
 }
 
 void BaseAddEntityDialog::RemoveControlFromUserContainer(QWidget* widget)
@@ -187,25 +202,23 @@ void BaseAddEntityDialog::GetIncludedControls(QList<QWidget*>& includedWidgets)
 	}
 }
 
-void BaseAddEntityDialog::InitPropertyEditor()
+void BaseAddEntityDialog::OnItemEdited(const QString &name, QtPropertyData *data)
 {
-	propEditor = new PropertyEditorDialog(this);
-	propEditor->setObjectName(QString::fromUtf8("propEditor"));
-	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	sizePolicy.setHeightForWidth(propEditor->sizePolicy().hasHeightForWidth());
-	propEditor->setSizePolicy(sizePolicy);
-	propEditor->setMinimumSize(QSize(0, 0));
-	propEditor->setMaximumSize(QSize(16777215, 9999));
-	propEditor->setMouseTracking(false);
-	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	propEditor->setTabKeyNavigation(false);
-	propEditor->setAlternatingRowColors(true);
-	propEditor->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
-	propEditor->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-	propEditor->setIndentation(16);
-	propEditor->setAnimated(false);
-	
-	ui->verticalLayout_4->addWidget(propEditor);
-	propEditor->setMinimumHeight(PROPERTY_EDITOR_HEIGHT);
-	
+	Command2 *command = (Command2 *) data->CreateLastCommand();
+	if(NULL != command)
+	{
+		SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+		if(NULL != curScene)
+		{
+			curScene->Exec(command);
+		}
+	}
+}
+
+void BaseAddEntityDialog::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    if(propEditor)
+    {
+        propEditor->Update();
+    }
 }

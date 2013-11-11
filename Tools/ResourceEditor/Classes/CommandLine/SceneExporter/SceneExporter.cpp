@@ -128,7 +128,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     }
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
-    SceneValidator::Instance()->ValidateScene(scene, errorLog);
+    SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportDescriptors(scene, errorLog);
@@ -164,28 +164,6 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
         {
             node->GetParent()->RemoveNode(node);
         }
-//TODO: NEWMATERIAL: check if this code works as designed
-		/*
-		else
-		{
-			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent *>(node->GetComponent(DAVA::Component::RENDER_COMPONENT));
-			if(renderComponent)
-			{
-				DAVA::RenderObject *ro = renderComponent->GetRenderObject();
-				if(ro && ro->GetType() != RenderObject::TYPE_LANDSCAPE)
-				{
-					DAVA::uint32 count = ro->GetRenderBatchCount();
-					for(DAVA::uint32 ri = 0; ri < count; ++ri)
-					{
-						DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
-						if(material)
-							material->SetStaticLightingParams(0);
-					}
-				}
-
-			}
-		}
-		*/
     }
 }
 
@@ -211,7 +189,6 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 //    "editor.staticlight.shadowangle"
 //    "editor.staticlight.shadowsamples"
 //    "editor.staticlight.shadowradius"
-//    "editor.dynamiclight.enable"
 //    "editor.intensity"
     
     Vector<Entity *>::const_iterator endIt = scenenodes.end();
@@ -244,7 +221,11 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
-    Set<FilePath> descriptorsForExport;
+	Set<FilePath> descriptorsForExport;
+
+	DVASSERT(0 && "Need reimplement for new materials");
+
+	/*
     SceneHelper::EnumerateDescriptors(scene, descriptorsForExport);
 
     Set<FilePath>::const_iterator endIt = descriptorsForExport.end();
@@ -253,6 +234,7 @@ void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
     {
         ExportTextureDescriptor(*it, errorLog);
     }
+	*/
     
     descriptorsForExport.clear();
 }

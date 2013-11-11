@@ -151,6 +151,8 @@ private slots:
 
 	void convertStatusImg(const QString &curPath, int curGpu);
 	void convertStatusQueue(int curJob, int jobCount);
+    
+    void clearFilter();
 };
 
 #endif // __TEXTURE_BROWSER_H__

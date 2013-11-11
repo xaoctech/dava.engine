@@ -42,6 +42,8 @@ class DefaultScreen : public QObject, public UIScreen
 {
 	Q_OBJECT
 	
+	const static int32 MIN_CONTROL_SIZE = 1;
+	
 public:
 	DefaultScreen();
 	virtual ~DefaultScreen();
@@ -181,6 +183,10 @@ private:
 
 	// Get the state of the "Move Screen" key.
 	bool IsMoveScreenKeyPressed();
+
+	// Check control's visibility in a recursive way.
+	bool IsControlVisible(UIControl* uiControl);
+	void IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible);
 
 private slots:
 	void ControlContextMenuTriggered(QAction* action);

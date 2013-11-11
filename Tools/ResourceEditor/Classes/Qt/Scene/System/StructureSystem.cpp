@@ -62,30 +62,36 @@ StructureSystem::~StructureSystem()
 bool StructureSystem::Init(const DAVA::FilePath & path)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL == sceneEditor) return false;
+	if(NULL == sceneEditor)
+	{
+		return false;
+	}
 
-	Entity * rootNode = Load(path);
-	if(!rootNode) return false;
-    
-    DAVA::Vector<DAVA::Entity*> tmpEntities;
-    int entitiesCount = rootNode->GetChildrenCount();
-    
-    // remember all child pointers, but don't add them to scene in this cycle
-    // because when entity is adding it is automatically removing from its old hierarchy
-    tmpEntities.reserve(entitiesCount);
-    for (DAVA::int32 i = 0; i < entitiesCount; ++i)
-    {
-        tmpEntities.push_back(rootNode->GetChild(i));
-    }
-    
-    // now we can safely add entities into our hierarchy
-    for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
-    {
-        sceneEditor->AddNode(tmpEntities[i]);
-    }
+	Entity* entity = Load(path, false);
+	if(NULL == entity)
+	{
+		return false;
+	}
 
-    rootNode->Release();
-    return true;
+	DAVA::Vector<DAVA::Entity*> tmpEntities;
+	int entitiesCount = entity->GetChildrenCount();
+
+	// remember all child pointers, but don't add them to scene in this cycle
+	// because when entity is adding it is automatically removing from its old hierarchy
+	tmpEntities.reserve(entitiesCount);
+	for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+	{
+		tmpEntities.push_back(entity->GetChild(i));
+	}
+
+	// now we can safely add entities into our hierarchy
+	for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+	{
+		sceneEditor->AddNode(tmpEntities[i]);
+	}
+
+	entity->Release();
+	return true;
 }
 
 void StructureSystem::Move(const EntityGroup &entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore)
@@ -234,73 +240,104 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 	}
 }
 
-void StructureSystem::Reload(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
+void StructureSystem::ReloadEntities(const EntityGroup& entityGroup, bool saveLightmapSettings)
 {
-	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
-	if(NULL != sceneEditor && entityGroup.Size() > 0)
+	if(entityGroup.Size() > 0)
 	{
-		DAVA::Vector<DAVA::Entity*> newEntities;
-		SceneCollisionSystem *collisionSystem = sceneEditor->collisionSystem;
+		DAVA::Set<DAVA::FilePath> refsToReload;
 
-		bool loadSuccess = false;
-
-		// load new models
-		for(size_t i = 0; i < entityGroup.Size(); ++i)
+		for(int i = 0; i < entityGroup.Size(); ++i)
 		{
-			DAVA::FilePath loadModelPath = newModelPath;
 			DAVA::Entity *entity = entityGroup.GetEntity(i);
-
-			newEntities.push_back(NULL);
-
-			if(loadModelPath.IsEmpty())
+			if(NULL != entity)
 			{
-				DAVA::KeyedArchive *entityProperties = entity->GetCustomProperties();
-				if(NULL != entityProperties)
+				DAVA::FilePath pathToReload(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));
+				if(!pathToReload.IsEmpty())
 				{
-					loadModelPath = entityProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+					refsToReload.insert(pathToReload);
 				}
-			}
-
-			DAVA::Entity *loadedEntity = Load(loadModelPath);
-			if(NULL != loadedEntity)
-			{
-				loadedEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, loadModelPath.GetAbsolutePathname());
-				newEntities[i] = loadedEntity;
-
-				loadSuccess = true;
 			}
 		}
 
-		// replace old models with new
-		if(loadSuccess)
+		DAVA::Set<DAVA::FilePath>::iterator it = refsToReload.begin();
+		for(; it != refsToReload.end(); ++it)
 		{
-			sceneEditor->BeginBatch("Reload model");
-			for(size_t i = 0; i < entityGroup.Size(); ++i)
+			ReloadRefs(*it, saveLightmapSettings);
+		}
+	}
+}
+
+void StructureSystem::ReloadRefs(const DAVA::FilePath &modelPath, bool saveLightmapSettings)
+{
+	if(!modelPath.IsEmpty())
+	{
+		DAVA::Set<DAVA::Entity *> entitiesToReload;
+		SearchEntityByRef(GetScene(), modelPath, entitiesToReload);
+		ReloadInternal(entitiesToReload, modelPath, saveLightmapSettings);
+	}
+}
+
+void StructureSystem::ReloadEntitiesAs(const EntityGroup& entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
+{
+	if(entityGroup.Size() > 0)
+	{
+		DAVA::Set<DAVA::Entity *> entitiesToReload;
+
+		for (int i = 0; i < entityGroup.Size(); i++)
+		{
+			entitiesToReload.insert(entityGroup.GetEntity(i));
+		}
+
+		ReloadInternal(entitiesToReload, newModelPath, saveLightmapSettings);
+	}
+}
+
+void StructureSystem::ReloadInternal(DAVA::Set<DAVA::Entity *> &entitiesToReload, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		// also we should reload all entities, that already has reference to the same newModelPath
+		SearchEntityByRef(GetScene(), newModelPath, entitiesToReload);
+
+		if(entitiesToReload.size() > 0)
+		{
+			// try to load new model
+			DAVA::Entity *loadedEntity = Load(newModelPath, true);
+
+			if(NULL != loadedEntity)
 			{
-				DAVA::Entity *origEntity = entityGroup.GetEntity(i);
-				DAVA::Entity *newEntity = newEntities[i];
+				DAVA::Set<DAVA::Entity *>::iterator it = entitiesToReload.begin();
+				DAVA::Set<DAVA::Entity *>::iterator end = entitiesToReload.end();
 
-				if(NULL != origEntity && NULL != newEntity && NULL != origEntity->GetParent())
+				sceneEditor->BeginBatch("Reload model");
+
+				for(; it != end; ++it)
 				{
-					DAVA::Entity *before = origEntity->GetParent()->GetNextChild(origEntity);
+					DAVA::Entity *newEntityInstance = loadedEntity->Clone();
+					DAVA::Entity *origEntity = *it;
 
-					newEntity->SetLocalTransform(origEntity->GetLocalTransform());
-                    
-                    if(saveLightmapSettings)
-                    {
-                        CopyLightmapSettings(origEntity, newEntity);
-                    }
-					
-					sceneEditor->Exec(new EntityParentChangeCommand(newEntity, origEntity->GetParent(), before));
-					sceneEditor->Exec(new EntityRemoveCommand(origEntity));
+					if(NULL != origEntity && NULL != newEntityInstance && NULL != origEntity->GetParent())
+					{
+						DAVA::Entity *before = origEntity->GetParent()->GetNextChild(origEntity);
 
-					newEntity->Release();
+						newEntityInstance->SetLocalTransform(origEntity->GetLocalTransform());
+
+						if(saveLightmapSettings)
+						{
+							CopyLightmapSettings(origEntity, newEntityInstance);
+						}
+
+						sceneEditor->Exec(new EntityParentChangeCommand(newEntityInstance, origEntity->GetParent(), before));
+						sceneEditor->Exec(new EntityRemoveCommand(origEntity));
+
+						newEntityInstance->Release();
+					}
 				}
-			}
-			sceneEditor->EndBatch();
 
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
-			EmitChanged();
+				sceneEditor->EndBatch();
+				loadedEntity->Release();
+			}
 		}
 	}
 }
@@ -310,7 +347,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor)
 	{
-		DAVA::Entity *loadedEntity = Load(newModelPath);
+		DAVA::Entity *loadedEntity = Load(newModelPath, true);
 		if(NULL != loadedEntity)
 		{
 			DAVA::Vector3 entityPos = pos;
@@ -341,9 +378,11 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
+			// 
+			// Перенести в Load и завалидейтить только подгруженную Entity
 			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
-            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
 			// <--
             
 			EmitChanged();
@@ -459,39 +498,53 @@ void StructureSystem::MarkLocked(DAVA::Entity *entity)
 	}
 }
 
-DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
+DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool optimize)
+{
+	return LoadInternal(sc2path, optimize, false);
+}
+
+DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool optimize, bool clearCache)
 {
 	DAVA::Entity* loadedEntity = NULL;
-	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor && sc2path.IsEqualToExtension(".sc2") && sc2path.Exists())
 	{
-        sceneEditor->ReleaseRootNode(sc2path);
-        Entity *rootNode = sceneEditor->GetRootNode(sc2path);
+		if(clearCache)
+		{
+			// if there is already entity for such file, we should release it
+			// to be sure that latest version will be loaded 
+			sceneEditor->ReleaseRootNode(sc2path);
+		}
+
+		// load entity from file
+		Entity *rootNode = sceneEditor->GetRootNode(sc2path);
         if(rootNode)
         {
-            loadedEntity = rootNode->Clone();
-            
             Entity *parentForOptimize = new Entity();
-			parentForOptimize->AddNode(loadedEntity);
-            SafeRelease(loadedEntity);
-            
-			SceneFileV2 sceneFile;
-			sceneFile.OptimizeScene(parentForOptimize);
+			parentForOptimize->AddNode(rootNode->Clone());
+
+			if(optimize)
+			{
+				SceneFileV2 sceneFile;
+				sceneFile.OptimizeScene(parentForOptimize);
+			}
+
 			if(parentForOptimize->GetChildrenCount())
 			{
 				loadedEntity = parentForOptimize->GetChild(0);
 				loadedEntity->SetSolid(true);
 				loadedEntity->Retain();
+
+				loadedEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, sc2path.GetAbsolutePathname());
                 
                 CheckAndMarkLocked(loadedEntity);
                 CheckAndMarkSolid(loadedEntity);
 			}
 
-			parentForOptimize->Release();
-        }
-
-		sceneEditor->ReleaseRootNode(sc2path);
+			// release loaded entity
+			SafeRelease(parentForOptimize);
+		}
 	}
 
 	return loadedEntity;
@@ -499,11 +552,7 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
 {
-	//TODO: NEWMATERIAL
-	DVASSERT(false && "TODO: re-implement for new materials if needed.");
-	return true;
-
-/*    DAVA::Vector<DAVA::RenderObject *> fromMeshes;
+    DAVA::Vector<DAVA::RenderObject *> fromMeshes;
     FindMeshesRecursive(fromEntity, fromMeshes);
 
     DAVA::Vector<DAVA::RenderObject *> toMeshes;
@@ -524,7 +573,10 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
             {
                 DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
                 DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
-                
+
+				DVASSERT(0 && "Need reimplement for new materials");
+
+				/*
                 DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
                 DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
                 
@@ -532,14 +584,14 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
                 {
                     toState->InitFromState(fromState);
                 }
-                
+				*/
             }
         }
         
         return true;
     }
 
-    return false;*/
+    return false;
 }
 
 void StructureSystem::FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const
@@ -557,4 +609,25 @@ void StructureSystem::FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAV
 	}
 }
 
+void StructureSystem::SearchEntityByRef(DAVA::Entity *parent, const DAVA::FilePath &refToOwner, DAVA::Set<DAVA::Entity *> &result)
+{
+	if(NULL != parent)
+	{
+		for(int i = 0; i < parent->GetChildrenCount(); ++i)
+		{
+			DAVA::Entity *entity = parent->GetChild(i);
+			DAVA::KeyedArchive *arch = entity->GetCustomProperties();
 
+			// if this entity has searched reference - add it to the set
+			if(DAVA::FilePath(arch->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "")) == refToOwner)
+			{
+				result.insert(entity);
+			}
+			// else continue searching in child entities
+			else
+			{
+				SearchEntityByRef(entity, refToOwner, result);
+			}
+		}
+	}
+}

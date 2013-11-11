@@ -171,7 +171,7 @@ public:
 	/**
         \brief Function to modify absolute to be path to folder. For example "Users/Document" after function call will be "Users/Document/"
 	 */
-    void MakeDirectoryPathname();
+    FilePath & MakeDirectoryPathname();
 
 	/**
         \brief Function to truncate extension from path

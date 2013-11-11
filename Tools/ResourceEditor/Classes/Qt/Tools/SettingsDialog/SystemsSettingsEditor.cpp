@@ -43,12 +43,12 @@
 
 #define INIT_PROPERTY(propertyName, getter, rowName, handlerName) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter)));
 
 #define INIT_PROPERTY_WITH_BTN(propertyName, propertyNameBtn, getter, rowName, handlerName,drawStateMap) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
-	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
+	connect(propertyName,SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)),this, SLOT(handlerName));\
 	propertiesMap.push_back(PropertyInfo(propertyName, QVariant(getter), &drawStateMap));\
 	propertyName->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);\
 	QPushButton * propertyNameBtn = CreatePushBtn();\
@@ -136,7 +136,7 @@ void SystemsSettingsEditor::InitializeProperties()
 	collisionSysDrawStateMap[ST_COLL_DRAW_ALL_NAME]				= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_ALL, false);
 	int debugDrawFlags = sceneEditor->collisionSystem->GetDebugDrawFlags();
 	InitMapWithFlag(&collisionSysDrawStateMap, debugDrawFlags);
-	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn, debugDrawFlags, "Collision draw mode", HandleCollisionDrawMode(),collisionSysDrawStateMap);
+	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn, debugDrawFlags, "Collision draw mode", HandleCollisionDrawMode(QtPropertyData::ValueChangeReason),collisionSysDrawStateMap);
 
 	ADD_HEADER("Selection system settings:");
 	selectionSysDrawStateMap[ST_SELDRAW_NOTHING_NAME]		= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NOTHING, false);
@@ -146,11 +146,11 @@ void SystemsSettingsEditor::InitializeProperties()
 	selectionSysDrawStateMap[ST_SELDRAW_NO_DEEP_TEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NO_DEEP_TEST, false);
 	selectionSysDrawStateMap[ST_SELDRAW_ALL_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_ALL, false);
 	InitMapWithFlag(&selectionSysDrawStateMap, sceneEditor->selectionSystem->GetDrawMode());
-	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, sceneEditor->selectionSystem->GetDrawMode(), "Draw mode", HandleSelectionDrawMode(),selectionSysDrawStateMap);
+	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, sceneEditor->selectionSystem->GetDrawMode(), "Draw mode", HandleSelectionDrawMode(QtPropertyData::ValueChangeReason),selectionSysDrawStateMap);
 
 	ADD_HEADER("Grid system settings:");
-	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax());
-	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep());
+	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax(QtPropertyData::ValueChangeReason));
+	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep(QtPropertyData::ValueChangeReason));
 }
 
 void SystemsSettingsEditor::RestoreInitialSettings()
@@ -282,27 +282,27 @@ QPushButton * SystemsSettingsEditor::CreatePushBtn()
 	return configBtn;
 }
 
-void SystemsSettingsEditor::HandleGridMax()
+void SystemsSettingsEditor::HandleGridMax(QtPropertyData::ValueChangeReason reason)
 {
 	GET_SENDER_CONTENT
 	float32 value = senderContent.AsFloat();
 	sceneEditor->gridSystem->SetGridMax(value);
 }
 
-void SystemsSettingsEditor::HandleGridStep()
+void SystemsSettingsEditor::HandleGridStep(QtPropertyData::ValueChangeReason reason)
 {
 	GET_SENDER_CONTENT
 	float32 value = senderContent.AsFloat();
 	sceneEditor->gridSystem->SetGridStep(value);
 }
 
-void SystemsSettingsEditor::HandleCollisionDrawMode()
+void SystemsSettingsEditor::HandleCollisionDrawMode(QtPropertyData::ValueChangeReason reason)
 {
 	DAVA::uint32 value = ResolveMapToUint(collisionSysDrawStateMap);
 	sceneEditor->collisionSystem->SetDrawMode(value);
 }
 
-void SystemsSettingsEditor::HandleSelectionDrawMode()
+void SystemsSettingsEditor::HandleSelectionDrawMode(QtPropertyData::ValueChangeReason reason)
 {
 	uint32 value = ResolveMapToUint(selectionSysDrawStateMap);
 	sceneEditor->selectionSystem->SetDrawMode(value);

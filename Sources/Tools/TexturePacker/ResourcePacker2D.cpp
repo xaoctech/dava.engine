@@ -236,11 +236,6 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			Magick::Image & currentLayer = layers[k];
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-            
-            if (CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
-            {
-                currentLayer.extent(Magick::Geometry(width,height, 0, 0), Magick::Color(QuantumRange, QuantumRange, QuantumRange, QuantumRange));
-            }
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
 
@@ -508,13 +503,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 
 	if (Core::Instance()->IsConsoleMode())
 	{
-        Logger::FrameworkDebug("[%d files packed with flags: %s]", (int)definitionFileList.size(), currentFlags.c_str());
+        Logger::Info("[%d files packed with flags: %s]", (int)definitionFileList.size(), currentFlags.c_str());
 	
 		String result = "[unchanged]";
 		if (modified)
 			result = "[REPACKED]";
 
-		Logger::FrameworkDebug("[%s - %.2lf secs] - %s", inputPath.GetAbsolutePathname().c_str(), (float64)packTime / 1000.0f, result.c_str());
+		Logger::Info("[%s - %.2lf secs] - %s", inputPath.GetAbsolutePathname().c_str(), (float64)packTime / 1000.0f, result.c_str());
 	}
 
 	

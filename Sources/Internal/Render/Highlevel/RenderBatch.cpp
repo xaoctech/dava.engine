@@ -43,7 +43,6 @@
 namespace DAVA
 {
 
-REGISTER_CLASS(RenderBatch)
     
 RenderBatch::RenderBatch()
     :   ownerLayer(0)

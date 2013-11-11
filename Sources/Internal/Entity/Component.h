@@ -31,6 +31,7 @@
 #define __DAVAENGINE_SCENE3D_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
 #include "Base/Serializable.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"

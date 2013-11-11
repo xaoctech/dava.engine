@@ -59,21 +59,28 @@ SceneValidator::~SceneValidator()
 {
 }
 
-bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
+bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene, const DAVA::FilePath &scenePath)
 {
     errorMessages.clear();
 
-    ValidateScene(scene, errorMessages);
+    ValidateScene(scene, scenePath, errorMessages);
 
     ShowErrorDialog(errorMessages);
     return (!errorMessages.empty());
 }
 
 
-void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
+void SceneValidator::ValidateScene(Scene *scene, const DAVA::FilePath &scenePath, Set<String> &errorsLog)
 {
     if(scene) 
     {
+		DAVA::String tmp = scenePath.GetAbsolutePathname();
+		size_t pos = tmp.find("/Data");
+		if(pos != String::npos)
+		{
+			SetPathForChecking(tmp.substr(0, pos + 1));
+		}
+
         ValidateSceneNode(scene, errorsLog);
 
         for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
@@ -296,26 +303,55 @@ void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderB
 {
     ownerNode->RemoveFlag(Entity::NODE_INVALID);
     
-    //TODO: NEWMATERIAL: add material validation
-	//DVASSERT(false && "SceneValidator::ValidateRenderBatch not implemented for new materials");
-}
-
-void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog)
-{
-    for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
+    
+    NMaterial *material = renderBatch->GetMaterial();
+    if(material)
     {
-        Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
-        if(texture)
+        ValidateMaterial(material, errorsLog);
+    }
+    
+//     InstanceMaterialState *materialState = renderBatch->GetMaterialInstance();
+//     if(materialState)
+//     {
+//         ValidateInstanceMaterialState(materialState, errorsLog);
+// 		ConvertLightmapSizeFromProperty(ownerNode, materialState);
+//     }
+    
+    
+    PolygonGroup *polygonGroup = renderBatch->GetPolygonGroup();
+    if(polygonGroup)
+    {
+        if(material)
         {
-            ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
-            
-            FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-            if(!IsTextureDescriptorPath(matTexName))
-            {
-                material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
-            }
+//             if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
+//             {
+//                 ownerNode->AddFlag(Entity::NODE_INVALID);
+//                 errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
+//                 errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
+//             }
         }
     }
+}
+
+void SceneValidator::ValidateMaterial(NMaterial *material, Set<String> &errorsLog)
+{
+	if(NULL != material)
+	{
+		for(int32 iTex = 0; iTex < material->GetTextureCount(); ++iTex)
+		{
+			Texture *texture = material->GetTexture(iTex);
+			if(texture)
+			{
+// 				ValidateTexture(texture, texture->GetTextureMap((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
+// 
+// 				FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
+// 				if(!matTexName.IsEmpty() && !IsTextureDescriptorPath(matTexName))
+// 				{
+// 					material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
+// 				}
+			}
+		}
+	}
 }
 
 
@@ -361,6 +397,12 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			{
 				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 			}
+
+			Color color = landscape->GetTileColor(texLevel);
+			if (!ValidateColor(color))
+			{
+				landscape->SetTileColor(texLevel, color);
+			}
 		}
 	}
 	else
@@ -379,7 +421,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 		}
 	}
-
+    
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -438,7 +480,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 {
 	if(!texture) return;
 	
-	String path = texturePathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+	String path = texturePathname.GetRelativePathname(pathForChecking);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
 	if(texture->IsPinkPlaceholder())
@@ -716,12 +758,30 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 		FilePath path = "/" + currentSaveName;
 		if(!path.IsEqualToExtension(".png"))
 		{
-			errorsLog.insert("Need to reassign custom colors texture.");
+			errorsLog.insert("Custom colors texture has to have .png extension.");
 		}
+        
+        String::size_type foundPos = currentSaveName.find("DataSource/3d/");
+        if(String::npos == foundPos)
+        {
+			errorsLog.insert("Custom colors texture has to begin from DataSource/3d/.");
+        }
 	}
 }
 
-
+bool SceneValidator::ValidateColor(Color& color)
+{
+	bool ok = true;
+	for(int32 i = 0; i < 4; ++i)
+	{
+		if (color.color[i] < 0.f || color.color[i] > 1.f)
+		{
+			color.color[i] = Clamp(color.color[i], 0.f, 1.f);
+			ok = false;
+		}
+	}
+	return ok;
+}
 
 
 

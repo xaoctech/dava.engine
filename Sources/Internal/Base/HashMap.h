@@ -428,19 +428,20 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 	if(NULL != table && szTable > 0)
 	{
 		for (uint32 k = 0; k < szTable; ++k)
+		{
 			if (table[k] != 0)
 			{
 				current_item = table[k];
 				current_index = k;
 				break;
 			}
+		}
 
-			if(NULL == current_item)
-			{
-				GoEnd();
-			}
+		if(NULL == current_item)
+		{
+			GoEnd();
+		}
 	}
-    // DVASSERT(current_index < szTable);
 }
 
 template <typename K, typename V>
@@ -477,7 +478,10 @@ typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operato
 			while(current_index < szTable && current_item == 0)
 			{
 				current_item = table[current_index];
-                if(!current_item) current_index++;
+                if(!current_item) 
+				{
+					current_index++;
+				}
 			}
 
 			if (current_item == 0)

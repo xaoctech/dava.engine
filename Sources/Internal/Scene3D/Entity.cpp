@@ -48,23 +48,19 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
 
-#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
-
-
+#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 10
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
 const int COMPONENT_COUNT_V6 = 16;
 const int COMPONENTS_IN_MAP_COUNT = 4;
 const int COMPONENTS_IN_VECTOR_COUNT = 3;
-const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 7;
+const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION;
 
 namespace DAVA
 {
     
 	uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (1 << Component::LOD_COMPONENT);
-    
-	REGISTER_CLASS(Entity);
-	
+
 	// Property Names.
 	const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 	const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
@@ -113,6 +109,9 @@ namespace DAVA
 		
 		SetScene(0);
 		//  Logger::Debug("~Entity: %p", this);
+
+
+
 	}
     
 	void Entity::AddComponent(Component * component)
@@ -122,6 +121,8 @@ namespace DAVA
 		uint32 componentType = component->GetType();
 		if(USE_VECTOR(componentType))
 		{
+			DVASSERT(NULL == components[component->GetType()]);
+
 			SafeRelease(components[componentType]);
 			components[componentType] = SafeRetain(component);
 		}
@@ -370,6 +371,7 @@ namespace DAVA
 		{
 			ret = Component::CreateByType(componentType);
 			AddComponent(ret);
+		ret->Release();
 		}
 		
 		return ret;
@@ -454,7 +456,7 @@ namespace DAVA
 		{
 			return;
 		}
-		// Сheck
+		// РЎheck
 		if (scene)
 		{
 			scene->UnregisterNode(this);
@@ -1215,7 +1217,9 @@ namespace DAVA
 						if(NULL != comp)
 						{
 							comp->Deserialize(compArch, serializationContext);
+							RemoveComponent(comp->GetType());
 							AddComponent(comp);
+							comp->Release();
 						}
 					}
 				}
@@ -1267,13 +1271,11 @@ namespace DAVA
     
 	void Entity::SetSolid(bool isSolid)
 	{
-		//    isSolidNode = isSolid;
 		GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 	}
     
 	bool Entity::GetSolid()
 	{
-		//    return isSolidNode;
 		return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	}
 	

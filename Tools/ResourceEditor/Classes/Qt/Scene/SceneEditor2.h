@@ -56,6 +56,7 @@
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
+#include "Scene/System/OwnersSignatureSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -94,6 +95,7 @@ public:
 	TextDrawSystem *textDrawSystem;
 	DebugDrawSystem *debugDrawSystem;
 	BeastSystem	*beastSystem;
+	OwnersSignatureSystem *ownersSignatureSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -115,14 +117,21 @@ public:
 	void EndBatch();
 
 	void Exec(Command2 *command);
+	void ClearCommands(int commandId);
+	const CommandStack* GetCommandStack() const;
 
 	// checks whether the scene changed since the last save
 	bool IsLoaded() const;
 	bool IsChanged() const;
 	void SetChanged(bool changed);
 
+	// enable/disable drawing custom HUD
+	void SetHUDVisible(bool visible);
+	bool IsHUDVisible() const;
+
 	// DAVA events
 	void PostUIEvent(DAVA::UIEvent *event);
+	virtual void Update(float timeElapsed);
 
 	// this function should be called each time UI3Dview changes its position
 	// viewport rect is used to calc. ray from camera to any 2d point on this viewport
@@ -144,8 +153,6 @@ public:
 	bool IsToolsEnabled(int32 toolFlags);
 	int32 GetEnabledTools();
 
-	virtual void Update(float timeElapsed);
-
 	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
 	virtual Entity* Clone(Entity *dstNode = NULL);
 
@@ -153,6 +160,7 @@ public:
 
 protected:
 	bool isLoaded;
+	bool isHUDVisible;
 
 	DAVA::FilePath curScenePath;
 	CommandStack commandStack;
