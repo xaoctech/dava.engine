@@ -2286,6 +2286,39 @@
     <ClCompile Include="Classes\Qt\DockLibrary2\Textures\LibraryTexturesModel.cpp">
       <Filter>Classes\Qt\DockLibrary2\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\LibraryMaterialsFilteringModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\LibraryMaterialsModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\MaterialsModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryBaseModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryComplexView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFilteringModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryTabWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Objects\LibraryObjectsModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Textures\LibraryTexturesModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">

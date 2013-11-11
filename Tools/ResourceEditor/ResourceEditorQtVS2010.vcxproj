@@ -665,6 +665,17 @@
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\RulerToolPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\TilemaskEditorPanel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\VisibilityToolPanel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemFilteringModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\FileSystem\LibraryFileSystemModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryBaseModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryComplexView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFilteringModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryTabWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\LibraryMaterialsFilteringModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\LibraryMaterialsModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Materials\MaterialsModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Objects\LibraryObjectsModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLibrary2\Textures\LibraryTexturesModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLODEditor\DistanceSlider_moc.cpp" />
