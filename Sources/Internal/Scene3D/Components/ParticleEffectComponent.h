@@ -154,6 +154,7 @@ private:
 	// should be loaded in "stopped" state.
 	bool stopOnLoad;
 
+	 bool requireRebuildEffectModifiables;
 	MultiMap<String, ModifiablePropertyLineI *> externalModifiables;	
 	Map<String, float32> externalValues;
 

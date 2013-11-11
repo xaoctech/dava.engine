@@ -54,6 +54,8 @@ public:
 	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
 	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
 	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
+
+	void GetModifableLines(List<ModifiablePropertyLineI *> &modifiables);
 	
 protected:
 	RefPtr<PropertyLine<Vector3> > force;
