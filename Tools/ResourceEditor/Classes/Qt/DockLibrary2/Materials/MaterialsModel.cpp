@@ -30,12 +30,12 @@
 
 #include "MaterialsModel.h"
 #include "MaterialsItem.h"
+
 #include "Scene/EntityGroup.h"
+#include "Tools/MimeDataHelper2/MimeDataHelper2.h"
 
 #include <QMimeData>
 #include <QStandardItem>
-
-const char * MaterialsModel::mimeFormatMaterial = "application/dava.nmaterial";
 
 MaterialsModel::MaterialsModel(QObject * parent)
     : QStandardItemModel(parent)
@@ -205,74 +205,28 @@ DAVA::NMaterial * MaterialsModel::GetMaterial(const QModelIndex & index) const
 
 QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
 {
-	QMimeData* ret = NULL;
-    
 	if(indexes.size() > 0)
 	{
-        QVector<void*> data;
+        QVector<DAVA::NMaterial*> data;
         foreach(QModelIndex index, indexes)
         {
             data.push_back(GetMaterial(index));
         }
         
-        ret = EncodeMimeData(data, mimeFormatMaterial);
+        return MimeDataHelper2<DAVA::NMaterial>::EncodeMimeData(data);
     }
     
-	return ret;
+	return NULL;
 }
 
 QStringList MaterialsModel::mimeTypes() const
 {
 	QStringList types;
     
-	types << mimeFormatMaterial;
+	types << MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName();
     
 	return types;
 }
-
-
-QMimeData * MaterialsModel::EncodeMimeData(const QVector<void *> & data, const QString & format) const
-{
-	QMimeData *mimeData = NULL;
-	
-	if(data.size() > 0)
-	{
-		mimeData = new QMimeData();
-		QByteArray encodedData;
-        
-		QDataStream stream(&encodedData, QIODevice::WriteOnly);
-		for (int i = 0; i < data.size(); ++i)
-		{
-			stream.writeRawData((char *) &data[i], sizeof(void *));
-		}
-        
-		mimeData->setData(format, encodedData);
-	}
-    
-	return mimeData;
-}
-
-QVector<void *> * MaterialsModel::DecodeMimeData(const QMimeData * data, const QString & format) const
-{
-	QVector<void*> * ret = NULL;
-    
-	if(data->hasFormat(format))
-	{
-		void* object = NULL;
-		QByteArray encodedData = data->data(format);
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        
-		ret = new QVector<void *>();
-		while(!stream.atEnd())
-		{
-			stream.readRawData((char *) &object, sizeof(void *));
-			ret->push_back(object);
-		}
-	}
-    
-	return ret;
-}
-
 
 void MaterialsModel::SetSelection(const EntityGroup & selected)
 {
