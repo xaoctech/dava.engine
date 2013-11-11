@@ -177,7 +177,7 @@ void ActionComponentEditor::OnSelectedItemChanged()
 DAVA::ActionComponent::Action ActionComponentEditor::GetDefaultAction()
 {
 	DAVA::ActionComponent::Action action;
-	action.eventType = DAVA::ActionComponent::Action::EVENT_SWITCH_CHNGED;
+	action.eventType = DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED;
 	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT;	
 	action.entityName = targetComponent->GetEntity()->GetName();
 	action.delay = 0.0f;
@@ -194,7 +194,7 @@ bool ActionComponentEditor::IsActionPresent(const DAVA::ActionComponent::Action 
 		const DAVA::ActionComponent::Action& innerAction = targetComponent->Get(i);
 		if((innerAction.type == action.type) &&  //different type
 			(innerAction.eventType == action.eventType) && //different event
-			((action.eventType!=DAVA::ActionComponent::Action::EVENT_SWITCH_CHNGED) || (innerAction.switchIndex == action.switchIndex)) && //different switch for EVENT_SWITCH_CHNGED only
+			((action.eventType!=DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED) || (innerAction.switchIndex == action.switchIndex)) && //different switch for EVENT_SWITCH_CHNGED only
 			(innerAction.entityName == action.entityName)) //different entity
 		{
 			actionPresent = true;
