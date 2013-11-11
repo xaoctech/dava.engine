@@ -71,6 +71,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	activeDrawingType(drawingType)
 ,	activeCopyPasteHeightmap(copyPasteHeightmap)
 ,	activeCopyPasteTilemask(copyPasteTilemask)
+,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -416,7 +417,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 
 				if (activeCopyPasteTilemask && prevCursorPosition != cursorPosition)
 				{
-					int32 tilemaskSize = drawSystem->GetTextureSize();
+					int32 tilemaskSize = drawSystem->GetTextureSize(textureLevel);
 					int32 heightmapSize = drawSystem->GetHeightmapProxy()->Size();
 					float32 multiplier = (float32)tilemaskSize / (float32)heightmapSize;
 					int32 tilemaskCursorSize = (float32)((int32)(cursorSize * multiplier));
@@ -489,7 +490,7 @@ Rect HeightmapEditorSystem::GetHeightmapUpdatedRect()
 Rect HeightmapEditorSystem::GetTilemaskUpdatedRect()
 {
 	Rect r = tilemaskUpdatedRect;
-	drawSystem->ClampToTexture(r);
+	drawSystem->ClampToTexture(textureLevel, r);
 	return r;
 }
 

@@ -198,9 +198,9 @@ bool KeyedArchive::SaveToYamlFile(const FilePath & pathName)
 	if (NULL == archive)
         return false;
     
-	YamlNode node(YamlNode::TYPE_STRING);
-    node.InitFromKeyedArchive(this);
-    node.PrintToFile(archive);
+	ScopedPtr<YamlNode> node( new YamlNode(YamlNode::TYPE_STRING) );
+    node->InitFromKeyedArchive(this);
+    node->PrintToFile(archive);
  
 	SafeRelease(archive);
 	return true;
