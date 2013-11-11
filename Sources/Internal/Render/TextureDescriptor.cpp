@@ -97,8 +97,8 @@ TextureDescriptor * TextureDescriptor::CreateDescriptor(Texture::TextureWrap wra
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 	
-	descriptor->settings.wrapModeS = wrap;
-	descriptor->settings.wrapModeT = wrap;
+    descriptor->settings.wrapModeS = wrap;
+    descriptor->settings.wrapModeT = wrap;
     
     descriptor->settings.generateMipMaps = generateMipmaps;
 	if(descriptor->settings.generateMipMaps)

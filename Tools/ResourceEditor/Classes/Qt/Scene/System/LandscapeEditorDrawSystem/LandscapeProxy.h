@@ -56,9 +56,10 @@ public:
 
 		MODES_COUNT
 	};
-
-	LandscapeProxy(Landscape* landscape);
+protected:
 	virtual ~LandscapeProxy();
+public:
+	LandscapeProxy(Landscape* landscape);
 
 	void SetMode(LandscapeProxy::eLandscapeMode mode);
 	void SetDisplayingTexture(Texture* texture);
@@ -112,6 +113,9 @@ public:
 	void InitTilemaskSprites();
 	Sprite* GetTilemaskSprite(int32 number);
 	void SwapTilemaskSprites();
+
+	bool IsFogEnabled();
+	void SetFogEnabled(bool enabled);
 
 protected:
 	enum eTextureType

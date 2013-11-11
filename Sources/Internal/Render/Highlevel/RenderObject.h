@@ -92,9 +92,10 @@ public:
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH;
 	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
-
-    RenderObject();
+protected:
     virtual ~RenderObject();
+public:
+    RenderObject();
     
     
     inline void SetRemoveIndex(uint32 removeIndex);
