@@ -80,4 +80,8 @@ int ShowSaveSceneQuestion(DAVA::Scene *scene);
 DAVA::String ReplaceInString(const DAVA::String & sourceString, const DAVA::String & what, const DAVA::String & on);
 
 
+#include <QFileInfo>
+Q_DECLARE_METATYPE( QFileInfo )
+
+
 #endif // __QT_UTILS_H__

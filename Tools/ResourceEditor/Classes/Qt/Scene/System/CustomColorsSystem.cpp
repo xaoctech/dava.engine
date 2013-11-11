@@ -40,6 +40,7 @@
 #include "../SceneEditor/EditorConfig.h"
 #include "../../../Commands2/CustomColorsCommands2.h"
 #include "../SceneSignals.h"
+#include "SceneEditor/EditorSettings.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -55,6 +56,8 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+
+	SetColor(colorIndex);
 	
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
@@ -129,7 +132,9 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
-	
+
+	FinishEditing();
+
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
 	
@@ -194,13 +199,18 @@ void CustomColorsSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					CreateUndoPoint();
-					editingIsEnabled = false;
-				}
+				FinishEditing();
 				break;
 		}
+	}
+}
+
+void CustomColorsSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		CreateUndoPoint();
+		editingIsEnabled = false;
 	}
 }
 
@@ -224,6 +234,11 @@ void CustomColorsSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 
@@ -403,7 +418,7 @@ void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
 	if (customProps)
 	{
-		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(filePath));
 	}
 }
 
@@ -417,7 +432,7 @@ FilePath CustomColorsSystem::GetCurrentSaveFileName()
 		currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 	}
 
-	return GetAbsolutePathFromScenePath(currentSaveName);
+	return GetAbsolutePathFromProjectPath(currentSaveName);
 }
 
 FilePath CustomColorsSystem::GetScenePath()
@@ -439,6 +454,22 @@ FilePath CustomColorsSystem::GetAbsolutePathFromScenePath(const String &relative
 		return FilePath();
 
 	return (GetScenePath() + relativePath);
+}
+
+String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolutePath)
+{
+	if(absolutePath.IsEmpty())
+		return String();
+
+	return absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+}
+
+FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
+{
+	if(relativePath.empty())
+		return FilePath();
+	
+	return (EditorSettings::Instance()->GetProjectPath() + relativePath);
 }
 
 int32 CustomColorsSystem::GetBrushSize()

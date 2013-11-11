@@ -35,6 +35,7 @@
 #include "DAVAEngine.h"
 
 class SceneEditor2;
+class EntityGroup;
 class LibraryMaterialsModel: public LibraryBaseModel
 {
     Q_OBJECT
@@ -58,9 +59,17 @@ protected slots:
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
 
+    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+
+    
+    void OnEdit();
+    
 protected:
     
 	virtual void CreateActions();
+    
+    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
     
 private:
     

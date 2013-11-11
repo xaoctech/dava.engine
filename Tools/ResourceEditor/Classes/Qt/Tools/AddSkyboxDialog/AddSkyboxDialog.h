@@ -41,49 +41,33 @@ class AddSkyboxDialog : public BaseAddEntityDialog
 	Q_OBJECT
 	
 public:
-	
-	AddSkyboxDialog(QWidget* parent = 0);
-	
-	~AddSkyboxDialog();
-	
 	static void Show(QWidget* parent, SceneEditor2* scene);
+
+    void virtual SetEntity(DAVA::Entity* newEntity);
+
+	//void SetInitialState(Entity* skyboxState);
 	
-	void SetInitialState(Entity* skyboxState);
+protected:
+	AddSkyboxDialog(QWidget* parent = 0);
+	~AddSkyboxDialog();
+
 	void SetEditorScene(SceneEditor2* scene);
-	
-	SceneEditor2* GetEditorScene() const;
-	
+    SceneEditor2* GetEditorScene() const;
+    
+	virtual void FillPropertyEditorWithContent();
+	void MakeCreateButton();
+	void MakeDeleteButton();
+
 protected slots:
-	
-	void OnFinished(int code);
+	void OnSceneActivated(SceneEditor2 *sceneEditor);
+    virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+    
 	void OnCreateButtonClicked();
 	void OnDeleteButtonClicked();
 	
-private:
-	
-	void MakeCreateButton();
-	void MakeDeleteButton();
-	
-	void UpdateEntity(Entity* newEntity);
-	
-private:
-	
-	struct InitialSkyboxState
-	{
-		Entity* initialSkyboxNode;
-		DAVA::float32 offset;
-		DAVA::float32 rotation;
-		FilePath texture;
-	};
-	
-private:
-	
+protected:
 	QPushButton* controlButton;
-	bool closeHandled;
 	SceneEditor2* editorScene;
-
-	InitialSkyboxState initialState;
-	
 };
 
 #endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */

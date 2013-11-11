@@ -44,8 +44,6 @@ namespace DAVA
 
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
 #define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
-	
-REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
 {
@@ -60,6 +58,7 @@ ParticleEmitter::ParticleEmitter()
 	desiredLodLevel = 0;
 	shortEffect = false;
 	lodLevelLocked = false;
+	particleCount = 0;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -81,7 +80,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	radius = 0;
 
 	// number = new PropertyLineValue<float>(1.0f);
-
+	particleCount = 0;
 	time = 0.0f;
 	repeatCount = 0;
 	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
@@ -198,8 +197,7 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	{
 		layer->GetEmitter()->RemoveLayer(layer);
 	}
-	// DF-1213 - Set loopEndTime initial value
-	layer->SetLoopEndTime(this->GetLifeTime());
+		
 	layers.push_back(layer);
 	layer->SetEmitter(this);
 	AddRenderBatch(layer->GetRenderBatch());
@@ -399,11 +397,13 @@ void ParticleEmitter::Update(float32 timeElapsed)
 		}
 	}
 
+	particleCount = 0;
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
         if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed, (*it)->IsLodActive(currentLodLevel));
+		particleCount+=(*it)->GetParticleCount();
 	}
 
 	if (shortEffect)
@@ -714,13 +714,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     
 int32 ParticleEmitter::GetParticleCount()
 {
-	int32 cnt = 0;
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		cnt += (*it)->GetParticleCount();
-	}
-	return cnt;
+	return particleCount;
 }
 
 int32 ParticleEmitter::GetRepeatCount()

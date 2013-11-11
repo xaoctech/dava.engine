@@ -33,7 +33,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableRulerTool::ActionEnableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_RULER_TOOL)
+:	CommandAction(CMDID_RULER_TOOL_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -64,7 +64,7 @@ void ActionEnableRulerTool::Redo()
 }
 
 ActionDisableRulerTool::ActionDisableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_RULER_TOOL)
+:	CommandAction(CMDID_RULER_TOOL_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }

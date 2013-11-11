@@ -28,18 +28,20 @@
 
 
 
-#ifndef __LIBRARY_FILE_SYSTEM_MODEL_H__
-#define __LIBRARY_FILE_SYSTEM_MODEL_H__
+#ifndef __LIBRARY_FILESYSTEM_MODEL_H__
+#define __LIBRARY_FILESYSTEM_MODEL_H__
 
 #include "../LibraryBaseModel.h"
 #include "DAVAEngine.h"
+
+#include <QFileInfo>
 
 class LibraryFileSystemModel: public LibraryBaseModel
 {
     Q_OBJECT
     
 public:
-    LibraryFileSystemModel();
+    LibraryFileSystemModel(const QString & modelName);
     
     virtual void TreeItemSelected(const QItemSelection & selection);
     virtual void ListItemSelected(const QItemSelection & selection);
@@ -49,35 +51,28 @@ public:
     virtual const QModelIndex GetTreeRootIndex() const;
     virtual const QModelIndex GetListRootIndex() const;
 
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+    virtual bool PrepareTreeContextMenu(QMenu & contextMenu, const QModelIndex & index) const;
+    virtual bool PrepareListContextMenu(QMenu & contextMenu, const QModelIndex & index) const;
 
 protected slots:
     
-	void OnModelEdit();
-	void OnModelAdd();
-	void OnDAEConvert();
-	void OnDAEConvertGeometry();
     void OnRevealAtFolder();
 	void SetNameFilters();
     
 protected:
     
-	virtual void CreateActions();
+    QAction * CreateAction(const QIcon & icon, const QString & hint, const QString &dataString);
 
-    void HidePreview() const;
-    void ShowPreview(const DAVA::FilePath & pathname) const;
+    virtual void TreeFileSelected(const QFileInfo & fileInfo) = 0;
+    virtual void ListFileSelected(const QFileInfo & fileInfo) = 0;
     
-private:
+    virtual bool PrepareTreeContextMenuInternal(QMenu &contextMenu, const QFileInfo & fileInfo) const = 0;
+    virtual bool PrepareListContextMenuInternal(QMenu &contextMenu, const QFileInfo & fileInfo) const = 0;
+    
+protected:
     
     QString treeRootPath;
     QString listRootPath;
-
-	QAction *showDAE;
-	QAction *showSC2;
 };
 
-#include <QFileInfo>
-Q_DECLARE_METATYPE( QFileInfo )
-
-#endif // __LIBRARY_FILE_SYSTEM_MODEL_H__
+#endif // __LIBRARY_FILESYSTEM_MODEL_H__

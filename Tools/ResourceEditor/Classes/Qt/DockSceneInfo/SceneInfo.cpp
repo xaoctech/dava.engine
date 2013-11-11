@@ -42,12 +42,13 @@
 
 #include "../../ImageTools/ImageTools.h"
 
-#include "../Qt/CubemapEditor/MaterialHelper.h"
+#include "CubemapEditor/MaterialHelper.h"
 
-#include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/DockLODEditor/EditorLODData.h"
-#include "Classes/Qt/Main/mainwindow.h"
+#include "Scene/SceneSignals.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/SceneHelper.h"
+#include "DockLODEditor/EditorLODData.h"
+#include "Main/mainwindow.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -66,8 +67,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-    
-    connect(QtMainWindow::Instance(), SIGNAL(GlobalInvalidateTimeout()), SLOT(UpdateInfoByTimer()));
     
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
@@ -124,8 +123,6 @@ void SceneInfo::Initialize3DDrawSection()
 
     AddChild("ArraysCalls", header);
     AddChild("ElementsCalls",  header);
-    AddChild("ShaderBindCount",  header);
-    AddChild("OccludedRenderBatchCount",  header);
     AddChild("PointsList", header);
     AddChild("LineList", header);
     AddChild("LineStrip", header);
@@ -144,8 +141,6 @@ void SceneInfo::Refresh3DDrawInfo()
     
     SetChild("ArraysCalls", renderStats.drawArraysCalls, header);
     SetChild("ElementsCalls", renderStats.drawElementsCalls, header);
-    SetChild("ShaderBindCount", renderStats.shaderBindCount, header);
-    SetChild("OccludedRenderBatchCount", renderStats.occludedRenderBatchCount, header);
     SetChild("PointsList", renderStats.primitiveCount[PRIMITIVETYPE_POINTLIST], header);
     SetChild("LineList", renderStats.primitiveCount[PRIMITIVETYPE_LINELIST], header);
     SetChild("LineStrip", renderStats.primitiveCount[PRIMITIVETYPE_LINESTRIP], header);
@@ -306,7 +301,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
         scene->GetChildNodes(nodesAtScene);
         scene->GetDataNodes(materialsAtScene);
 		//VI: remove skybox materials so they not to appear in the lists
-		MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
+		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
         scene->GetDataNodes(dataNodesAtScene);
         
@@ -348,39 +343,7 @@ void SceneInfo::CollectSceneTextures()
 {
     for(int32 n = 0; n < (int32)nodesAtScene.size(); ++n)
     {
-        RenderObject *ro = GetRenderObject(nodesAtScene[n]);
-        if(!ro) continue;
-        
-        uint32 count = ro->GetRenderBatchCount();
-        for(uint32 b = 0; b < count; ++b)
-        {
-            RenderBatch *renderBatch = ro->GetRenderBatch(b);
-			
-			//TODO: NEWMATERIAL: check if this code works as designed
-            NMaterial *material = renderBatch->GetMaterial();
-            while(material)
-            {
-                for(int32 t = 0; t < material->GetTextureCount(); ++t)
-                {
-					Texture* matTex = material->GetTexture(t);
-					if(matTex)
-					{
-						CollectTexture(sceneTextures, matTex->relativePathname, matTex);
-					}
-                }
-				
-				material = material->GetParent();
-            }
-         }
-        
-        if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
-        {
-            Landscape *land = static_cast<Landscape *>(ro);
-            for(int32 t = 0; t < Landscape::TEXTURE_COUNT; ++t)
-            {
-                CollectTexture(sceneTextures, land->GetTextureName((Landscape::eTextureLevel)t), land->GetTexture((Landscape::eTextureLevel)t));
-            }
-        }
+		SceneHelper::EnumerateTextures(nodesAtScene[n], sceneTextures);
     }
 }
 

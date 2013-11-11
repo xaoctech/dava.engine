@@ -33,6 +33,8 @@
 
 #include "DAVAEngine.h"
 
+#include "Tools/QtPosSaver/QtPosSaver.h"
+
 #include <QWidget>
 #include <QTabBar>
 
@@ -73,6 +75,9 @@ protected:
     
     QTabBar *tabBar;
     LibraryComplexView * libraryView;
+    
+    QtPosSaver posSaver;
+
     
     DAVA::List<LibraryBaseModel *>models;
 };

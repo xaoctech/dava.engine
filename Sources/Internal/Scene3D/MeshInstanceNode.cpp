@@ -47,7 +47,6 @@ namespace DAVA
 {
     
     
-REGISTER_CLASS(MeshInstanceNode);
     
     
     
@@ -576,7 +575,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SerializationContext * seria
                 DVASSERT(pgIndex != errorIdx);
 
                 if(serializationContext->IsDebugLogEnabled())
-                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                    Logger::FrameworkDebug("+ assign material: %s", material->GetName().c_str());
                 
                 AddPolygonGroup(mesh, pgIndex, material);
             }
@@ -605,7 +604,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SerializationContext * seria
                         DVASSERT(pgIndex != errorIdx);
 
                         if(serializationContext->IsDebugLogEnabled())
-                            Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                            Logger::FrameworkDebug("+ assign material: %s", material->GetName().c_str());
                         
                         AddPolygonGroup(mesh, pgIndex, material);
                     }
@@ -624,7 +623,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SerializationContext * seria
     //                {
     //                    Material * material = sceneFile->GetMaterial(materialIndex);
     //                    StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
-    //                    Logger::Debug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
+    //                    Logger::FrameworkDebug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
     //                    
     //                    AddPolygonGroupForLayer(mesh, pgIndex, material);
     //                }

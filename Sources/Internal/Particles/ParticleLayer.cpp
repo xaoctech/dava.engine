@@ -267,7 +267,6 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->loopSpriteAnimation = loopSpriteAnimation;
 	dstLayer->particleOrientation = particleOrientation;
 
-	dstLayer->scaleVelocityBase = scaleVelocityFactor;
 	dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->isDisabled = isDisabled;
@@ -417,6 +416,8 @@ void ParticleLayer::DeleteAllParticles()
 	Particle * current = head;
 	while(current)
 	{
+		if (current->GetInnerEmitter())
+			current->GetInnerEmitter()->DoRestart(true);
 		Particle * next = current->next;
 		delete(current);
 		count--;

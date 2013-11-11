@@ -33,6 +33,8 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
+#include "Scene/EntityGroup.h"
+#include "Scene/System/SelectionSystem.h"
 
 #include "MaterialsModel.h"
 
@@ -51,6 +53,8 @@ LibraryMaterialsModel::LibraryMaterialsModel()
     
     QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 }
 
 void LibraryMaterialsModel::TreeItemSelected(const QItemSelection & selection)
@@ -75,22 +79,28 @@ void LibraryMaterialsModel::SetProjectPath(const QString & path)
 
 const QModelIndex LibraryMaterialsModel::GetTreeRootIndex() const
 {
-    return ((MaterialsModel *)treeModel)->index(0, 0);
+    return ((MaterialsModel *)treeModel)->index(-1, -1);
 }
 
 const QModelIndex LibraryMaterialsModel::GetListRootIndex() const
 {
-    return ((MaterialsModel *)listModel)->index(0, 0);
+    const QModelIndex index = ((MaterialsModel *)listModel)->index(-1, -1);
+    return filteringModel->mapFromSource(index);
 }
 
 bool LibraryMaterialsModel::PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
-    return false;
+    DAVA::NMaterial * material = ((MaterialsModel *)treeModel)->GetMaterial(index);
+
+    return PrepareContextMenu(contextMenu, material);
 }
 
 bool LibraryMaterialsModel::PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const
 {
-    return false;
+    const QModelIndex listIndex = filteringModel->mapToSource(index);
+    
+    DAVA::NMaterial * material = ((MaterialsModel *)listModel)->GetMaterial(listIndex);
+    return PrepareContextMenu(contextMenu, NULL);
 }
 
 
@@ -102,11 +112,50 @@ void LibraryMaterialsModel::SceneActivated(SceneEditor2 *scene)
 {
     ((MaterialsModel *)treeModel)->SetScene(scene);
     ((MaterialsModel *)listModel)->SetScene(scene);
+    filteringModel->invalidate();
+    
+    ((MaterialsModel *)treeModel)->SetSelection(scene->selectionSystem->GetSelection());
+    ((MaterialsModel *)listModel)->SetSelection(scene->selectionSystem->GetSelection());
 }
 
 void LibraryMaterialsModel::SceneDeactivated(SceneEditor2 *scene)
 {
     ((MaterialsModel *)treeModel)->SetScene(NULL);
     ((MaterialsModel *)listModel)->SetScene(NULL);
+	filteringModel->invalidate();
 }
+
+void LibraryMaterialsModel::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
+    ((MaterialsModel *)treeModel)->SceneStructureChanged(scene);
+    ((MaterialsModel *)listModel)->SceneStructureChanged(scene);
+	filteringModel->invalidate();
+
+    ((MaterialsModel *)treeModel)->SetSelection(scene->selectionSystem->GetSelection());
+    ((MaterialsModel *)listModel)->SetSelection(scene->selectionSystem->GetSelection());
+}
+
+void LibraryMaterialsModel::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+    ((MaterialsModel *)treeModel)->SetSelection(*selected);
+    ((MaterialsModel *)listModel)->SetSelection(*selected);
+}
+
+
+bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const
+{
+    QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
+
+    QAction * actionEdit = contextMenu.addAction("Edit Material", this, SLOT(OnEdit()));
+    actionEdit->setData(materialAsVariant);
+    
+    return true;
+}
+
+void LibraryMaterialsModel::OnEdit()
+{
+    QVariant materialAsVariant = ((QAction *)sender())->data();
+    DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
+}
+
 

@@ -51,7 +51,7 @@ public:
 
 protected slots:
 	
-void	OnValueChanged();
+void	OnValueChanged(QtPropertyData::ValueChangeReason reason);
 	
 protected:
 	
