@@ -174,7 +174,10 @@ void LibraryFileSystemModel::SetNameFilters()
     auto endIt = actions.end();
     for(auto it = actions.begin(); it != endIt; ++it)
     {
-        nameFilters << (*it)->data().toString();
+		if((*it)->isChecked())
+		{
+			nameFilters << (*it)->data().toString();
+		}
     }
     
     ((QFileSystemModel *)listModel)->setNameFilters(nameFilters);
