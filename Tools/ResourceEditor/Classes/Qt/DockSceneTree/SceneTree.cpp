@@ -645,14 +645,11 @@ void SceneTree::ReloadModel()
 			for(int i = 0; i < selection.Size(); ++i)
 			{
 				DAVA::Entity *entity = selection.GetEntity(i);
-				if(NULL != entity)
+				DAVA::FilePath pathToReload(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));
+				if(!pathToReload.Exists())
 				{
-					DAVA::FilePath pathToReload(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));
-					if(!pathToReload.Exists())
-					{
-						wrongPathes += Format("\r\n%s : %s",entity->GetName().c_str(),
-											  pathToReload.GetAbsolutePathname().c_str());
-					}
+					wrongPathes += Format("\r\n%s : %s",entity->GetName().c_str(),
+										  pathToReload.GetAbsolutePathname().c_str());
 				}
 			}
 			if(!wrongPathes.empty())
