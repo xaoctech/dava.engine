@@ -43,9 +43,10 @@ class PolygonGroup;
 
 class ShadowVolumeNode : public Entity
 {
+protected:
+	virtual ~ShadowVolumeNode();
 public:
 	ShadowVolumeNode();
-	virtual ~ShadowVolumeNode();
 
 	virtual void Draw();
 

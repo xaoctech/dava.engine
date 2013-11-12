@@ -143,13 +143,13 @@ namespace DAVA
 			it->second->push_back(SafeRetain(component));
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL == componentsVector)
 			{
-				DVASSERT(componentsMap.Size() < COMPONENTS_IN_MAP_COUNT);
+				DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);
 				
 				componentsVector = new Vector<Component*>();
-				componentsMap.Insert(componentType, componentsVector);
+				componentsMap.insert(componentType, componentsVector);
 			}
 			
 			componentsVector->reserve(componentsVector->size() + 1); //reserve memory to avoid capacity growth
@@ -196,11 +196,11 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end();
 			++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			int componentCount = componentsVector->size();
 			
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
@@ -213,7 +213,7 @@ namespace DAVA
 			SafeDelete(componentsVector);
 		}
 		
-		componentsMap.Clear();
+		componentsMap.clear();
 		
 #endif
 	}
@@ -249,7 +249,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector)
 			{
 				for(Vector<Component*>::iterator i = componentsVector->begin();
@@ -267,6 +267,7 @@ namespace DAVA
 			}
 			
 #endif
+
 		}
 		
 		CleanupComponent(component, componentCount);
@@ -297,7 +298,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector &&
 			   componentsVector->size() > index)
 			{
@@ -351,7 +352,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector &&
 			   componentsVector->size() > index)
 			{
@@ -398,20 +399,19 @@ namespace DAVA
 		
 #else
 		
-		if(componentsMap.Size() > 0)
+		if(componentsMap.size() > 0)
 		{
-			ComponentsMap::Iterator end = componentsMap.End();
-			for(ComponentsMap::Iterator it = componentsMap.Begin();
+			ComponentsMap::iterator end = componentsMap.end();
+			for(ComponentsMap::iterator it = componentsMap.begin();
 				it != end;
 				++it)
 			{
-				Vector<Component*>* componentsVector = it.GetValue();
+				Vector<Component*>* componentsVector = it->second;
 				count += componentsVector->size();
 			}
 		}
-		
+
 #endif
-		
 		return count;
 	}
 	
@@ -438,7 +438,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector)
 			{
 				componentCount = componentsVector->size();
@@ -908,11 +908,10 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
-			++it)
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end(); ++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -1120,11 +1119,11 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end();
 			++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -1313,11 +1312,10 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
-			++it)
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end(); ++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -1461,7 +1459,7 @@ namespace DAVA
 		return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 	}
 	
-	void Entity::SetVisible(bool isVisible)
+	void Entity::SetVisible(const bool &isVisible)
 	{
 		RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 		if(isVisible)

@@ -82,11 +82,10 @@ namespace DAVA
 						  NULL);
 
 		};
-		
-	public:
-		
-		ActionComponent();
+	protected:
 		virtual ~ActionComponent();
+	public:
+		ActionComponent();
 		
 		void Start(int32 switchIndex = -1);
 		bool IsStarted();

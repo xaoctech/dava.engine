@@ -985,10 +985,10 @@ namespace DAVA
 		shader->fragmentShaderData = SafeRetain(fragmentShaderData);
 		
 		String result;
-		FastNameSet::Iterator end = definesSet.End();
-		for (FastNameSet::Iterator it = definesSet.Begin(); it != end; ++it)
+		FastNameSet::iterator end = definesSet.end();
+		for (FastNameSet::iterator it = definesSet.begin(); it != end; ++it)
 		{
-			const FastName & fname = it.GetKey();
+			const FastName & fname = it->first;
 			result += Format("#define %s\n", fname.c_str());
 		}
 		shader->SetDefines(result);

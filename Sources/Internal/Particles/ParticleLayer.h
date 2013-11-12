@@ -75,9 +75,10 @@ public:
 		PARTICLE_ORIENTATION_Z_FACING = 1<<3,
 		PARTICLE_ORIENTATION_WORLD_ALIGN = 1<<4 
 	};
-	
-	ParticleLayer();
+protected:
 	virtual ~ParticleLayer();
+public:
+	ParticleLayer();
 	
 	/**
 		\brief Function to clone particle layer

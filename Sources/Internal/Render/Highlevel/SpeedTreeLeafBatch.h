@@ -39,9 +39,10 @@ class Camera;
 class Shader;
 class SpeedTreeLeafBatch : public RenderBatch
 {
+protected:
+    virtual ~SpeedTreeLeafBatch();
 public:
     SpeedTreeLeafBatch(DAVA::Texture * tex = 0);
-    virtual ~SpeedTreeLeafBatch();
 
     void SetTexture(Texture * texture);
 

@@ -41,6 +41,8 @@ namespace DAVA
 {
 	class UserComponent : public Component
 	{
+    protected:
+		~UserComponent(){};
 	public:
 		IMPLEMENT_COMPONENT_TYPE(USER_COMPONENT);
 

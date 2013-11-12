@@ -44,10 +44,10 @@ ShaderAsset::ShaderAsset(Data * _vertexShaderData, Data * _fragmentShaderData)
 
 ShaderAsset::~ShaderAsset()
 {
-    HashMap<FastNameSet, Shader *>::Iterator end = compiledShaders.End();
-    for (HashMap<FastNameSet, Shader *>::Iterator it = compiledShaders.Begin(); it != end; ++it)
+    HashMap<FastNameSet, Shader *>::iterator end = compiledShaders.end();
+    for (HashMap<FastNameSet, Shader *>::iterator it = compiledShaders.begin(); it != end; ++it)
     {
-        Shader * shader = it.GetValue();
+		Shader * shader = it->second;
         SafeRelease(shader);
     }
     
@@ -57,12 +57,12 @@ ShaderAsset::~ShaderAsset()
 
 Shader * ShaderAsset::Compile(const FastNameSet & defines)
 {
-    Shader * checkShader = compiledShaders.GetValue(defines);
+    Shader * checkShader = compiledShaders.at(defines);
     if (checkShader)return checkShader;
     
     Shader * shader = Shader::CompileShader(vertexShaderData, fragmentShaderData, defines);
 
-    compiledShaders.Insert(defines, shader);
+    compiledShaders.insert(defines, shader);
     return shader;
 }
     
@@ -85,7 +85,7 @@ Shader * ShaderAsset::Get(const FastNameSet & defines)
 		DVASSERT(compiledShaders.GetValue(defines));
 	}*/
 	
-    Shader * shader = compiledShaders.GetValue(defines);
+    Shader * shader = compiledShaders.at(defines);
     
     if (!shader)
     {
@@ -103,10 +103,10 @@ ShaderCache::ShaderCache()
     
 ShaderCache::~ShaderCache()
 {
-    FastNameMap<ShaderAsset*>::Iterator end = shaderAssetMap.End();
-    for (FastNameMap<ShaderAsset*>::Iterator it = shaderAssetMap.Begin(); it != end; ++it)
+    FastNameMap<ShaderAsset*>::iterator end = shaderAssetMap.end();
+    for (FastNameMap<ShaderAsset*>::iterator it = shaderAssetMap.begin(); it != end; ++it)
     {
-        ShaderAsset * asset = it.GetValue();
+		ShaderAsset * asset = it->second;
         SafeDelete(asset);
     }
 }
@@ -114,7 +114,7 @@ ShaderCache::~ShaderCache()
     
 ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
 {
-    ShaderAsset * checkAsset = shaderAssetMap.GetValue(shaderFastName);
+    ShaderAsset * checkAsset = shaderAssetMap.at(shaderFastName);
     DVASSERT(checkAsset == 0);
 
     String shader = shaderFastName.c_str();
@@ -141,12 +141,12 @@ ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
 
 ShaderAsset * ShaderCache::Get(const FastName & shader)
 {
-    return shaderAssetMap.GetValue(shader);
+    return shaderAssetMap.at(shader);
 }
     
 Shader * ShaderCache::Get(const FastName & shaderName, const FastNameSet & definesSet)
 {
-    ShaderAsset * asset = shaderAssetMap.GetValue(shaderName);
+    ShaderAsset * asset = shaderAssetMap.at(shaderName);
     if (!asset)
     {
         asset = Load(shaderName);

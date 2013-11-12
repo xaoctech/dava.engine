@@ -39,6 +39,8 @@ namespace DAVA {
 // Particle Force class is needed to store Particle Force data.
 class ParticleForce : public BaseObject
 {
+protected:
+	~ParticleForce(){}
 public:
 	// Initialization constructor.
 	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
