@@ -45,10 +45,10 @@ namespace DAVA
 			if (material)
 			{
 				const FastNameSet & layers = material->GetRenderLayers();
-				FastNameSet::Iterator layerEnd = layers.End();
-				for (FastNameSet::Iterator layerIt = layers.Begin(); layerIt != layerEnd; ++layerIt)
+				FastNameSet::iterator layerEnd = layers.end();
+				for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
 				{
-					currRenderPassBatchArray->AddRenderBatch(layerIt.GetKey(), batch);
+					currRenderPassBatchArray->AddRenderBatch(layerIt->first, batch);
 				}
 			}
 		}

@@ -35,6 +35,7 @@
 #include "Base/Hash.h"
 #include "Base/TemplateHelpers.h"
 #include "Debug/DVAssert.h"
+#include <map>
 
 namespace DAVA
 {
@@ -42,40 +43,52 @@ namespace DAVA
 template <typename K, typename V>
 class HashMap
 {
-protected:
-    struct HashMapItem;
-
 public:
 	struct HashMapIterator;
-	typedef HashMapIterator Iterator;
+	typedef HashMapIterator iterator;
 
 	HashMap(size_t _hashSize = 128, V _defaultV = V());
 	HashMap(const HashMap<K, V> &hm);
 	~HashMap();
 
-	size_t Size() const;
+	size_t size() const;
+	size_t count(const K &key) const;
 
-	bool IsEmpty() const;
-	bool IsKey(const K &key) const;
+	bool empty() const;
 
-	void Insert(const K &key, const V &value);
-	void Remove(const K &key);
-	void Clear();
+	iterator insert(const K &key, const V &value);
+	void erase(const K &key);
+	void clear();
     
-	V & GetValue(const K &key);
-	const V & GetValue(const K &key) const;
+	V & at(const K &key);
+	const V & at(const K &key) const;
     
 	V & operator[](const K &key);
     const V & operator[] (const K & key) const;
     
 	HashMap<K, V>& operator=(const HashMap<K, V> &hm);
 
-	void Resize(size_t newSize);
+	void resize(size_t newSize);
 
-	Iterator Begin() const;
-	Iterator End() const;
+	iterator begin() const;
+	iterator end() const;
     
 public:
+	struct HashMapItem
+	{
+		friend class HashMap;
+
+		const K first;
+		V second;
+
+		HashMapItem(const K & k, const V & v)
+			: first(k), second(v), next(NULL)
+		{ }
+
+	protected:
+		HashMapItem *next;
+	};
+
 	struct HashMapIterator
 	{
 		friend class HashMap<K, V>;
@@ -83,13 +96,17 @@ public:
 		HashMapIterator(const HashMapIterator &i);
 		HashMapIterator(const HashMap *map);
         
-		bool operator==(const HashMapIterator &i);
-		bool operator!=(const HashMapIterator &i);
+		bool operator==(const HashMapIterator &i) const;
+		bool operator!=(const HashMapIterator &i) const;
+
 		HashMapIterator& operator++();
 		HashMapIterator operator++(int count);
-        
-		const K & GetKey() const;
-		const V & GetValue() const;
+
+		HashMapItem& operator*();
+		const HashMapItem& operator*() const;
+
+		HashMapItem* operator->();
+		const HashMapItem* operator->() const;
         
 	protected:
 		size_t szTable;
@@ -112,23 +129,7 @@ protected:
 
 	inline size_t GetIndex(const K &key) const;
 	inline HashMapItem* GetItem(const K &key) const;
-	inline void InsertItem(HashMapItem* item);
-
-protected:
-	struct HashMapItemBase
-	{ };
-
-	struct HashMapItem : public HashMapItemBase
-	{
-		K key;
-		V value;
-		HashMapItem *next;
-
-		HashMapItem(const K & k, const V & v)
-            :   key(k), value(v), next(NULL)
-		{
-		}
-	};
+	inline size_t InsertItem(HashMapItem* item);
 };
 
 // 
@@ -160,40 +161,45 @@ HashMap<K, V>::HashMap(const HashMap<K, V> &hm)
 template <typename K, typename V>
 HashMap<K, V>::~HashMap()
 {
-	Clear();
+	clear();
 	delete[] table;
 }
 
 template <typename K, typename V>
-size_t HashMap<K, V>::Size() const
+size_t HashMap<K, V>::size() const
 {
 	return sz;
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::IsEmpty() const
+bool HashMap<K, V>::empty() const
 {
 	return (0 == sz);
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::Insert(const K &key, const V &value)
+typename HashMap<K, V>::iterator HashMap<K, V>::insert(const K &key, const V &value)
 {
+	iterator it(this);
+
 	HashMapItem* item = GetItem(key);
-	
 	if(item)
 	{
-		item->value = value;
+		item->second = value;
+		it.current_index = GetIndex(key);
 	}
 	else
 	{
 		item = new HashMapItem(key, value);
-		InsertItem(item);
+		it.current_index = InsertItem(item);
 	}
+
+	it.current_item = item;
+	return it;
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::Remove(const K &key)
+void HashMap<K, V>::erase(const K &key)
 {
 	size_t index = GetIndex(key);
 	HashMapItem* item = table[index];
@@ -201,7 +207,7 @@ void HashMap<K, V>::Remove(const K &key)
 
 	while(NULL != item)
 	{
-		if(hashFn.Compare(item->key, key))
+		if(hashFn.Compare(item->first, key))
 		{
 			if(NULL != prev)
 			{
@@ -224,30 +230,35 @@ void HashMap<K, V>::Remove(const K &key)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::IsKey(const K &key) const
+size_t HashMap<K, V>::count(const K &key) const
 {
-	return (NULL != GetItem(key));
+	if(GetItem(key))
+	{
+		return 1;
+	}
+
+	return 0;
 }
     
 template <typename K, typename V>
-V & HashMap<K, V>::GetValue(const K &key)
+V & HashMap<K, V>::at(const K &key)
 {
     HashMapItem* item = GetItem(key);
     if(NULL != item)
     {
-        return item->value;
+        return item->second;
     }
     
     return defaultV;
 }
     
 template <typename K, typename V>
-const V & HashMap<K, V>::GetValue(const K &key) const
+const V & HashMap<K, V>::at(const K &key) const
 {
     const HashMapItem* item = GetItem(key);
     if(NULL != item)
     {
-        return item->value;
+        return item->second;
     }
     
     return defaultV;
@@ -256,13 +267,13 @@ const V & HashMap<K, V>::GetValue(const K &key) const
 template <typename K, typename V>
 V & HashMap<K, V>::operator[](const K &key)
 {
-	return GetValue(key);
+	return at(key);
 }
     
 template <typename K, typename V>
 const V & HashMap<K, V>::operator[](const K &key) const
 {
-    return GetValue(key);
+    return at(key);
 }
 
 template <typename K, typename V>
@@ -270,7 +281,7 @@ HashMap<K, V>& HashMap<K, V>::operator=(const HashMap<K, V> &hm)
 {
 	if(NULL != table)
 	{
-		Clear();
+		clear();
 		delete[] table;
 	}
 
@@ -283,17 +294,17 @@ HashMap<K, V>& HashMap<K, V>::operator=(const HashMap<K, V> &hm)
 		table[i] = NULL;
 	}
 
-	HashMap<K, V>::Iterator i = hm.Begin();
-	for(; i != hm.End(); ++i)
+	HashMap<K, V>::iterator i = hm.begin();
+	for(; i != hm.end(); ++i)
 	{
-		Insert(i.GetKey(), i.GetValue());
+		insert(i->first, i->second);
 	}
 
 	return *this;
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::Clear()
+void HashMap<K, V>::clear()
 {
 	const HashMapItem* item = NULL;
 	const HashMapItem* next = NULL;
@@ -314,7 +325,7 @@ void HashMap<K, V>::Clear()
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::Resize(size_t newSize)
+void HashMap<K, V>::resize(size_t newSize)
 {
 	HashMapItem* item;
 	HashMapItem* next = NULL;
@@ -351,15 +362,15 @@ void HashMap<K, V>::Resize(size_t newSize)
 }
 
 template <typename K, typename V>
-typename HashMap<K, V>::Iterator HashMap<K, V>::Begin() const
+typename HashMap<K, V>::iterator HashMap<K, V>::begin() const
 {
-	return Iterator(this);
+	return iterator(this);
 }
 
 template <typename K, typename V>
-typename HashMap<K, V>::Iterator HashMap<K, V>::End() const
+typename HashMap<K, V>::iterator HashMap<K, V>::end() const
 {
-	Iterator i(this);
+	iterator i(this);
 	return i.GoEnd();
 }
 
@@ -379,7 +390,7 @@ inline typename HashMap<K, V>::HashMapItem* HashMap<K, V>::GetItem(const K &key)
 
 	while(NULL != i)
 	{
-		if(hashFn.Compare(i->key, key))
+		if(hashFn.Compare(i->first, key))
 		{
 			break;
 		}
@@ -391,14 +402,16 @@ inline typename HashMap<K, V>::HashMapItem* HashMap<K, V>::GetItem(const K &key)
 }
 
 template <typename K, typename V>
-inline void HashMap<K, V>::InsertItem(typename HashMap<K, V>::HashMapItem* item)
+inline size_t HashMap<K, V>::InsertItem(typename HashMap<K, V>::HashMapItem* item)
 {
-	size_t index = GetIndex(item->key);
+	size_t index = GetIndex(item->first);
 
 	item->next = table[index];
 	table[index] = item;
 
 	sz++;
+
+	return index;
 }
 
 // 
@@ -445,7 +458,7 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator==(const typename HashMap<K, V>::HashMapIterator &i)
+bool HashMap<K, V>::HashMapIterator::operator==(typename const HashMap<K, V>::HashMapIterator &i) const
 {
 	return (szTable == i.szTable &&
 		table == i.table &&
@@ -454,7 +467,7 @@ bool HashMap<K, V>::HashMapIterator::operator==(const typename HashMap<K, V>::Ha
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator!=(const typename HashMap<K, V>::HashMapIterator &i)
+bool HashMap<K, V>::HashMapIterator::operator!=(typename const HashMap<K, V>::HashMapIterator &i) const
 {
 	return !operator==(i);
 }
@@ -509,16 +522,29 @@ typename HashMap<K, V>::HashMapIterator HashMap<K, V>::HashMapIterator::operator
 	return tmp;
 }
 
+
 template <typename K, typename V>
-const K & HashMap<K, V>::HashMapIterator::GetKey() const
+typename HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*()
 {
-	return current_item->key;
+	return *current_item;
 }
 
 template <typename K, typename V>
-const V & HashMap<K, V>::HashMapIterator::GetValue()const
+typename const HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*() const
 {
-	return current_item->value;
+	return *current_item;
+}
+
+template <typename K, typename V>
+typename HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->()
+{
+	return current_item;
+}
+
+template <typename K, typename V>
+typename const HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->() const
+{
+	return current_item;
 }
 
 template <typename K, typename V>
