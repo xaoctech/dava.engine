@@ -56,9 +56,10 @@ class TransformComponent;
  */
 class Entity : public BaseObject
 {
+protected:
+	virtual ~Entity();
 public:	
 	Entity();
-	virtual ~Entity();
 	
     /**
         \brief Function to set scene for node and it's children. 

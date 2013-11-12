@@ -218,6 +218,8 @@ namespace ResourceEditor
 	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_ABSENT	= "Error: tile texture 2 is absent.";
 	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_ABSENT	= "Error: tile texture 3 is absent.";
 	static const String LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT		= "Error: heightmap is absent.";
+
+	static const String ADD_SWITCH_NODE_DIALOG_NO_CHILDREN			= "Error: switch node must be created with state nodes.";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

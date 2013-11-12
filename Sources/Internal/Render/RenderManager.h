@@ -667,7 +667,7 @@ protected:
 	int32 lockCount;
 	bool isInsideDraw;
 
-	Mutex glMutex;
+	RefPtr<Mutex> glMutex;
 	
 	Rect currentClip;
 	

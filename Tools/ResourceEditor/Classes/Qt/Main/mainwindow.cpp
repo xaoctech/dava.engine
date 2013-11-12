@@ -2169,7 +2169,15 @@ bool QtMainWindow::OpenScene( const QString & path )
 {
     if(path.isEmpty())
         return false;
-    
+	
+	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
+	FilePath argumentPath(path.toStdString());
+	if(!FilePath::ContainPath(argumentPath, projectPath))
+	{
+		QMessageBox::warning(this, "Open scene error.", "Selected scene file doesn't belogn to project.");
+		return false;
+	}
+	
     SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
     if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
     {
