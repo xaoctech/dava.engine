@@ -64,10 +64,6 @@ public:
 		CF_Invisible	= 0x0002,
 	};
 
-	static const char* mimeFormatEntity;
-	static const char* mimeFormatLayer;
-	static const char* mimeFormatForce;
-
 	SceneTreeModel(QObject* parent = 0);
 	~SceneTreeModel();
 
@@ -112,9 +108,6 @@ protected:
 	void AddIndexesCache(SceneTreeItem *item);
 
 	bool AreSameType(const QModelIndexList & indexes) const;
-
-	QMimeData* EncodeMimeData(const QVector<void*> &data, const QString &format) const;
-	QVector<void*>* DecodeMimeData(const QMimeData* data, const QString &format) const;
 
 protected slots:
 	void ItemChanged(QStandardItem * item);

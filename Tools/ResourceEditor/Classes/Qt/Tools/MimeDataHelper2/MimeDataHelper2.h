@@ -34,58 +34,19 @@
 #include "DAVAEngine.h"
 #include <QMimeData>
 
+
 template <class T>
 class MimeDataHelper2
 {
 public:
     
-    static const char * mimeFormatMaterial;
-	static const char * mimeFormatEntity;
-	static const char * mimeFormatLayer;
-	static const char * mimeFormatForce;
-    
-public:
-    
-    static QMimeData * EncodeMimeData(const QVector<T *> & data, const QString & format);
     static QMimeData * EncodeMimeData(const QVector<T *> & data);
-    static QVector<T *> * DecodeMimeData(const QMimeData * data, const QString & format);
+    static QVector<T *> * DecodeMimeData(const QMimeData * data);
 
-	static const QString GetSupportedTypeName();
+    static bool IsDataSupportType(const QMimeData * mimeData);
+	static inline const QString GetSupportedTypeName();
 };
 
-template <class T>
-const char * MimeDataHelper2<T>::mimeFormatMaterial = "application/dava.nmaterial";
-
-template <class T>
-const char * MimeDataHelper2<T>::mimeFormatEntity = "application/dava.entity";
-
-template <class T>
-const char * MimeDataHelper2<T>::mimeFormatLayer = "application/dava.particlelayer";
-
-template <class T>
-const char * MimeDataHelper2<T>::mimeFormatForce = "application/dava.particleforce";
-
-
-template <class T>
-QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data, const QString & format)
-{
-	if(data.size() > 0)
-	{
-		QByteArray encodedData;
-		QDataStream stream(&encodedData, QIODevice::WriteOnly);
-
-        QMimeData *mimeData = new QMimeData();
-		for (int i = 0; i < data.size(); ++i)
-		{
-			stream.writeRawData((char *) &data[i], sizeof(T *));
-		}
-        
-		mimeData->setData(format, encodedData);
-        return mimeData;
-	}
-
-    return NULL;
-}
 
 template <class T>
 QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
@@ -101,7 +62,7 @@ QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
 			stream.writeRawData((char *) &data[i], sizeof(T *));
 		}
         
-		mimeData->setData(GetSupportedTypeName(), encodedData);
+		mimeData->setData(MimeDataHelper2<T>::GetSupportedTypeName(), encodedData);
         return mimeData;
 	}
     
@@ -109,9 +70,11 @@ QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
 }
 
 
+
 template <class T>
-QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QMimeData * data, const QString & format)
+QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QMimeData * data)
 {
+    QString format = MimeDataHelper2<T>::GetSupportedTypeName();
 	if(data->hasFormat(format))
 	{
 		QByteArray encodedData = data->data(format);
@@ -131,36 +94,43 @@ QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QMimeData * data, const 
 	return NULL;
 }
 
+template<class T>
+bool MimeDataHelper2<T>::IsDataSupportType(const QMimeData * mimeData)
+{
+    return ((mimeData != NULL) && mimeData->hasFormat(MimeDataHelper2<T>::GetSupportedTypeName()));
+}
+
 
 template<>
-const QString MimeDataHelper2<DAVA::Entity>::GetSupportedTypeName()
+inline const QString MimeDataHelper2<DAVA::Entity>::GetSupportedTypeName()
 {
-    return MimeDataHelper2<DAVA::Entity>::mimeFormatEntity;
+    return "application/dava.entity";
 }
 
 template<>
-const QString MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName()
+inline const QString MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName()
 {
-    return MimeDataHelper2<DAVA::NMaterial>::mimeFormatMaterial;
+    return "application/dava.nmaterial";
 }
 
 template<>
-const QString MimeDataHelper2<DAVA::ParticleLayer>::GetSupportedTypeName()
+inline const QString MimeDataHelper2<DAVA::ParticleLayer>::GetSupportedTypeName()
 {
-    return MimeDataHelper2<DAVA::ParticleLayer>::mimeFormatLayer;
+    return "application/dava.particlelayer";
 }
 
 template<>
-const QString MimeDataHelper2<DAVA::ParticleForce>::GetSupportedTypeName()
+inline const QString MimeDataHelper2<DAVA::ParticleForce>::GetSupportedTypeName()
 {
-    return MimeDataHelper2<DAVA::ParticleForce>::mimeFormatForce;
+    return "application/dava.particleforce";
 }
 
 template<class T>
-const QString MimeDataHelper2<T>::GetSupportedTypeName()
+inline const QString MimeDataHelper2<T>::GetSupportedTypeName()
 {
-    return "Not defined";
+    return "";
 }
+
 
 
 
