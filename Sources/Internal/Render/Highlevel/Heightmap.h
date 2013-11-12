@@ -40,13 +40,14 @@ namespace DAVA
 class Image;
 class Heightmap: public BaseObject
 {
+protected:
+	virtual ~Heightmap();
 public:
 
     static const int32 MAX_VALUE = 65535;
     static const int32 IMAGE_CORRECTION = MAX_VALUE / 255;
     
     Heightmap();
-	virtual ~Heightmap();
     
     bool BuildFromImage( const Image *image);
     void SaveToImage(const FilePath & filename);

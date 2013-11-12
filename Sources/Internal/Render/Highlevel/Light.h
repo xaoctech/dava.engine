@@ -58,9 +58,10 @@ public:
         IS_DYNAMIC = 1 << 0,
         CAST_SHADOW = 1 << 1,
     };
-    
-    Light();
+protected:
     virtual ~Light();
+public:
+    Light();
     
     virtual BaseObject * Clone(BaseObject * dstNode = NULL);
 

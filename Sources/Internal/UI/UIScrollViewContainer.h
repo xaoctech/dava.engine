@@ -38,9 +38,10 @@ namespace DAVA
 
 class UIScrollViewContainer : public UIControl
 {
+protected:
+	virtual ~UIScrollViewContainer();
 public:
 	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);

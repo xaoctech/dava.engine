@@ -40,9 +40,10 @@ class UIScrollViewContainer;
 
 class UIScrollView : public UIControl, public UIScrollBarDelegate
 {
+protected:
+	virtual ~UIScrollView();
 public:
 	UIScrollView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollView();
 	
 	virtual void AddControl(UIControl *control);
 	virtual List<UIControl* >& GetRealChildren();
