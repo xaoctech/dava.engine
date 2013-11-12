@@ -1572,7 +1572,12 @@ void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
-    
+    if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
 
 	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
@@ -1591,6 +1596,12 @@ void QtMainWindow::OnShadowBlendModeAlpha()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_ALPHA));
 }
 
@@ -1598,6 +1609,12 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY));
 }
 
