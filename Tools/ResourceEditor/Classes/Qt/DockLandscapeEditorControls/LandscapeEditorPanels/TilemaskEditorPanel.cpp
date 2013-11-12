@@ -9,12 +9,17 @@
 
 #include <QLayout>
 #include <QComboBox>
+#include <QRadioButton>
 
 TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
 ,	sliderWidgetBrushSize(NULL)
 ,	sliderWidgetStrength(NULL)
 ,	comboBrushImage(NULL)
+,	radioDraw(NULL)
+,	radioCopyPaste(NULL)
+,	frameStrength(NULL)
+,	frameTileTexturesPreview(NULL)
 {
 	InitUI();
 	ConnectToSignals();
@@ -35,6 +40,8 @@ void TilemaskEditorPanel::SetWidgetsState(bool enabled)
 	sliderWidgetStrength->setEnabled(enabled);
 	comboBrushImage->setEnabled(enabled);
 	tileTexturePreviewWidget->setEnabled(enabled);
+	radioDraw->setEnabled(enabled);
+	radioCopyPaste->setEnabled(enabled);
 }
 
 void TilemaskEditorPanel::BlockAllSignals(bool block)
@@ -43,6 +50,8 @@ void TilemaskEditorPanel::BlockAllSignals(bool block)
 	sliderWidgetStrength->blockSignals(block);
 	comboBrushImage->blockSignals(block);
 	tileTexturePreviewWidget->blockSignals(block);
+	radioDraw->blockSignals(block);
+	radioCopyPaste->blockSignals(block);
 }
 
 void TilemaskEditorPanel::InitUI()
@@ -53,6 +62,8 @@ void TilemaskEditorPanel::InitUI()
 	sliderWidgetStrength = new SliderWidget(this);
 	comboBrushImage = new QComboBox(this);
 	tileTexturePreviewWidget = new TileTexturePreviewWidget(this);
+	radioDraw = new QRadioButton(this);
+	radioCopyPaste = new QRadioButton(this);
 
 	QLabel* labelBrushImageDesc = new QLabel(this);
 	QLabel* labelTileTextureDesc = new QLabel(this);
@@ -67,23 +78,32 @@ void TilemaskEditorPanel::InitUI()
 	layoutBrushSize->addWidget(labelBrushSize);
 	layoutBrushSize->addWidget(sliderWidgetBrushSize);
 
+	QGridLayout* layoutDrawTypes = new QGridLayout();
+	layoutDrawTypes->addWidget(radioDraw, 0, 0);
+	layoutDrawTypes->addWidget(radioCopyPaste, 0, 1);
+
 	QHBoxLayout* layoutStrength = new QHBoxLayout();
 	QLabel* labelStrength = new QLabel();
 	labelStrength->setText(ResourceEditor::TILEMASK_EDITOR_STRENGTH_CAPTION.c_str());
 	layoutStrength->addWidget(labelStrength);
 	layoutStrength->addWidget(sliderWidgetStrength);
+	frameStrength = new QFrame(this);
+	frameStrength->setLayout(layoutStrength);
 
 	layoutBrushImage->addWidget(labelBrushImageDesc);
 	layoutBrushImage->addWidget(comboBrushImage);
 	layoutTileTexture->addWidget(labelTileTextureDesc);
 	layoutTileTexture->QLayout::addWidget(tileTexturePreviewWidget);
+	frameTileTexturesPreview = new QFrame(this);
+	frameTileTexturesPreview->setLayout(layoutTileTexture);
 
 	frameBrushImage->setLayout(layoutBrushImage);
 
 	layout->addLayout(layoutBrushSize);
 	layout->addWidget(frameBrushImage);
-	layout->addLayout(layoutStrength);
-	layout->addLayout(layoutTileTexture);
+	layout->addLayout(layoutDrawTypes);
+	layout->addWidget(frameStrength);
+	layout->addWidget(frameTileTexturesPreview);
 	layout->addSpacerItem(spacer);
 
 	setLayout(layout);
@@ -102,10 +122,14 @@ void TilemaskEditorPanel::InitUI()
 	sliderWidgetStrength->Init(false, DEF_STRENGTH_MAX_VALUE, DEF_STRENGTH_MIN_VALUE, DEF_STRENGTH_MIN_VALUE);
 	sliderWidgetStrength->SetRangeBoundaries(DEF_STRENGTH_MIN_VALUE, STRENGTH_MAX_BOUNDARY);
 
+	radioDraw->setText(ResourceEditor::TILEMASK_EDITOR_DRAW_CAPTION.c_str());
+	radioCopyPaste->setText(ResourceEditor::TILEMASK_EDITOR_COPY_PASTE_CAPTION.c_str());
+
 	tileTexturePreviewWidget->setMaximumHeight(160);
 
 	layoutBrushImage->setContentsMargins(0, 0, 0, 0);
 	layoutTileTexture->setContentsMargins(0, 0, 0, 0);
+	layoutStrength->setContentsMargins(0, 0, 0, 0);
 
 	InitBrushImages();
 }
@@ -123,6 +147,9 @@ void TilemaskEditorPanel::ConnectToSignals()
 	connect(tileTexturePreviewWidget, SIGNAL(SelectionChanged(int)), this, SLOT(SetDrawTexture(int)));
 	connect(tileTexturePreviewWidget, SIGNAL(TileColorChanged(int32, Color)),
 			this, SLOT(OnTileColorChanged(int32, Color)));
+
+	connect(radioDraw, SIGNAL(clicked()), this, SLOT(SetNormalDrawing()));
+	connect(radioCopyPaste, SIGNAL(clicked()), this, SLOT(SetCopyPaste()));
 }
 
 void TilemaskEditorPanel::StoreState()
@@ -179,6 +206,8 @@ void TilemaskEditorPanel::RestoreState()
 	UpdateTileTextures();
 	tileTexturePreviewWidget->SetSelectedTexture(tileTexture);
 	comboBrushImage->setCurrentIndex(toolImage);
+
+	UpdateControls();
 
 	BlockAllSignals(!enabled);
 }
@@ -418,6 +447,11 @@ void TilemaskEditorPanel::ConnectToShortcuts()
 			this, SLOT(NextTool()));
 	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
 			this, SLOT(PrevTool()));
+
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_NORMAL_DRAW_TILEMASK), SIGNAL(activated()),
+			this, SLOT(SetNormalDrawing()));
+	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
+			this, SLOT(SetCopyPaste()));
 }
 
 void TilemaskEditorPanel::DisconnectFromShortcuts()
@@ -451,6 +485,11 @@ void TilemaskEditorPanel::DisconnectFromShortcuts()
 			   this, SLOT(NextTool()));
 	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
 			   this, SLOT(PrevTool()));
+
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_NORMAL_DRAW_TILEMASK), SIGNAL(activated()),
+			   this, SLOT(SetNormalDrawing()));
+	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
+			   this, SLOT(SetCopyPaste()));
 }
 
 void TilemaskEditorPanel::IncreaseBrushSize()
@@ -560,4 +599,33 @@ void TilemaskEditorPanel::OnCommandExecuted(SceneEditor2* scene, const Command2*
 		Color color = sceneEditor->tilemaskEditorSystem->GetTileColor(i);
 		tileTexturePreviewWidget->UpdateColor(i, color);
 	}
+}
+
+void TilemaskEditorPanel::SetNormalDrawing()
+{
+	GetActiveScene()->tilemaskEditorSystem->SetDrawingType(TilemaskEditorSystem::TILEMASK_DRAW_NORMAL);
+	UpdateControls();
+}
+
+void TilemaskEditorPanel::SetCopyPaste()
+{
+	GetActiveScene()->tilemaskEditorSystem->SetDrawingType(TilemaskEditorSystem::TILEMASK_DRAW_COPY_PASTE);
+	UpdateControls();
+}
+
+void TilemaskEditorPanel::UpdateControls()
+{
+	TilemaskEditorSystem::eTilemaskDrawType type = GetActiveScene()->tilemaskEditorSystem->GetDrawingType();
+
+	bool blocked = radioDraw->signalsBlocked();
+	radioDraw->blockSignals(true);
+	radioCopyPaste->blockSignals(true);
+
+	radioDraw->setChecked(type == TilemaskEditorSystem::TILEMASK_DRAW_NORMAL);
+	radioCopyPaste->setChecked(type == TilemaskEditorSystem::TILEMASK_DRAW_COPY_PASTE);
+	frameTileTexturesPreview->setVisible(type == TilemaskEditorSystem::TILEMASK_DRAW_NORMAL);
+	frameStrength->setVisible(type == TilemaskEditorSystem::TILEMASK_DRAW_NORMAL);
+
+	radioDraw->blockSignals(blocked);
+	radioCopyPaste->blockSignals(blocked);
 }
