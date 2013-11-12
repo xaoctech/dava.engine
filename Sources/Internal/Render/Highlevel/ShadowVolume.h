@@ -45,9 +45,10 @@ class Light;
     
 class ShadowVolume : public RenderBatch
 {
+protected:
+	virtual ~ShadowVolume();
 public:
 	ShadowVolume();
-	virtual ~ShadowVolume();
 
     //virtual void Draw(Camera * camera);
 	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);

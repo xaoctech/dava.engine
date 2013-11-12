@@ -42,10 +42,11 @@ namespace DAVA
 	class Scene;
 	class ShadowRect : public BaseObject
 	{
+	protected:
+		virtual ~ShadowRect();
+		
 	public:
 		static ShadowRect * Create();
-		
-		virtual ~ShadowRect();
 		
 		void Draw();
 		

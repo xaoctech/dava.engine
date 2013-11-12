@@ -45,9 +45,10 @@ class NMaterial;
     
 class RenderDataStream : public BaseObject
 {
+protected:
+    virtual ~RenderDataStream();
 public:
     RenderDataStream();
-    virtual ~RenderDataStream();
     
     void Set(eVertexDataType type, int32 size, int32 stride, const void * pointer);
     

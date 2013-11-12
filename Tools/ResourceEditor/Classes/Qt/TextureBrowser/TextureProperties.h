@@ -100,7 +100,7 @@ protected:
 	void ReloadEnumFilters();
 	void ReloadProperties();
 
-	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent);
+	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::InspBase *object, QtPropertyItem *parent);
 	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
 
 	void LoadCurSizeToProp();

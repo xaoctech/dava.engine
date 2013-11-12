@@ -55,7 +55,7 @@ MaterialSystem::~MaterialSystem()
     
 NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
-	NMaterial* material = materials.GetValue(name);
+	NMaterial* material = materials.at(name);
 		
 	//DVASSERT(material);
 	if(NULL == material)
@@ -71,10 +71,10 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 {
 	if(NULL == parent)
 	{
-		HashMap<FastName, NMaterial*>::Iterator mapIter = materials.Begin();
-		while(mapIter != materials.End())
+		HashMap<FastName, NMaterial*>::iterator mapIter = materials.begin();
+		while(mapIter != materials.end())
 		{
-			NMaterial* material = mapIter.GetValue();
+			NMaterial* material = mapIter->second;
 			if(NULL == material->parent)
 			{
 				materialList.push_back(material);
@@ -319,7 +319,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 		
 		material->SetMaterialSystem(this);
 		
-		NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
+		NMaterial* collisionMaterial = materials.at(material->GetMaterialName());
 		DVASSERT(material != collisionMaterial); //should not add same material several times
 		if(collisionMaterial != NULL &&
 		   collisionMaterial != material)
@@ -331,7 +331,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			while(true)
 			{
 				String uniqueName = Format("%s.%d", baseName.c_str(), i);
-				if(!materials.IsKey(FastName(uniqueName.c_str())))
+				if(!materials.count(FastName(uniqueName.c_str())))
 				{
 					material->SetMaterialName(uniqueName);
 					break;
@@ -343,7 +343,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			}
 		}
 		
-		materials.Insert(material->GetMaterialName(), material);
+		materials.insert(material->GetMaterialName(), material);
 		
 		if(material->IsSwitchable())
 		{
@@ -354,7 +354,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
-	materials.Remove(material->GetMaterialName());
+	materials.erase(material->GetMaterialName());
 	SafeRelease(material);
 }
 	
@@ -374,7 +374,7 @@ void MaterialSystem::Clear()
 	
 	
 	
-	DVASSERT(materials.Size() == 0);
+	DVASSERT(materials.size() == 0);
 }
 	
 	void MaterialSystem::SetDefaultMaterialQuality(const FastName& qualityLevelName)

@@ -374,7 +374,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	if(!image) return NULL;
 
 	Texture * texture = new Texture();
-	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
+	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
 	texture->images.push_back(image);
 	
     texture->SetParamsFromImages();
@@ -598,8 +598,8 @@ void Texture::FlushDataToRenderer()
 		RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
 	}
 
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)

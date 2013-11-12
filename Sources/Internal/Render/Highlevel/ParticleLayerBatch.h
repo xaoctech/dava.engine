@@ -41,9 +41,10 @@ namespace DAVA
 class ParticleLayer;
 class ParticleLayerBatch : public RenderBatch
 {
+protected:
+	virtual ~ParticleLayerBatch();
 public:
 	ParticleLayerBatch();
-	virtual ~ParticleLayerBatch();
 
 	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
 	void SetTotalCount(int32 totalCount);

@@ -96,23 +96,21 @@ RenderSystem::~RenderSystem()
     SafeDelete(renderHierarchy);
 	SafeDelete(particleEmitterSystem);
     
-    FastNameMap<RenderPass*>::Iterator endPasses = renderPassesMap.End();
-    for(FastNameMap<RenderPass*>::Iterator it = renderPassesMap.Begin(); it != endPasses; ++it)
+    FastNameMap<RenderPass*>::iterator endPasses = renderPassesMap.end();
+    for(FastNameMap<RenderPass*>::iterator it = renderPassesMap.begin(); it != endPasses; ++it)
     {
-        RenderPass *pass = it.GetValue();
+        RenderPass *pass = it->second;
         SafeDelete(pass);
     }
-    renderPassesMap.Clear();
+    renderPassesMap.clear();
     
-    FastNameMap<RenderLayer*>::Iterator endLayers = renderLayersMap.End();
-    for(FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != endLayers; ++it)
+    FastNameMap<RenderLayer*>::iterator endLayers = renderLayersMap.end();
+    for(FastNameMap<RenderLayer*>::iterator it = renderLayersMap.begin(); it != endLayers; ++it)
     {
-        RenderLayer *layer = it.GetValue();
+        RenderLayer *layer = it->second;
         SafeDelete(layer);
     }
-    renderLayersMap.Clear();
-
-	SafeDelete(materialSystem);
+    renderLayersMap.clear();
 }
     
 
@@ -189,6 +187,7 @@ Camera * RenderSystem::GetCamera()
 {
 	return camera;
 }
+
     
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
@@ -385,7 +384,7 @@ void RenderSystem::Render()
 
 RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)
 {
-	DVASSERT(false == renderLayersMap.IsKey(layerName));
+	DVASSERT(false == renderLayersMap.count(layerName));
 
 	RenderLayer * newLayer = new RenderLayer(layerName);
 	renderLayersMap.Insert(layerName, newLayer);

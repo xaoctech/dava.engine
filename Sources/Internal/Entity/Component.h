@@ -68,10 +68,12 @@ public:
         COMPONENT_COUNT
     };
 
+protected:
+    virtual ~Component();
+public:
 	static Component * CreateByType(uint32 componentType);
 
 	Component();
-    virtual ~Component();
 
     virtual uint32 GetType() = 0;
     virtual Component* Clone(Entity * toEntity) = 0;

@@ -104,7 +104,9 @@ protected:
 	Shader* tileMaskEditorShader;
 
 	bool needCreateUndo;
-	
+
+	Landscape::eTextureLevel textureLevel;
+
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool();

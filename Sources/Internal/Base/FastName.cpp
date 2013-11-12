@@ -75,7 +75,7 @@ void FastName::Init(const char * name)
     FastNameDB *db = FastNameDB::Instance();
     
     // search if that name is already in hash
-    if(db->namesHash.IsKey(name))
+    if(db->namesHash.count(name))
     {
         // already exist, so we just need to set the same index to this object
         index = db->namesHash[name];
@@ -109,7 +109,7 @@ void FastName::Init(const char * name)
         db->namesRefCounts[index] = 1;
         
         // add name and its index into hash
-        db->namesHash.Insert(nameCopy, index);
+        db->namesHash.insert(nameCopy, index);
     }
     
     DVASSERT(index != -1);
@@ -135,7 +135,7 @@ void FastName::RemRef(int i) const
 		if(0 == db->namesRefCounts[i])
 		{
 			// remove name and index from hash
-			db->namesHash.Remove(db->namesTable[i]);
+			db->namesHash.erase(db->namesTable[i]);
 
 			// delete allocated memory for this string
 			free((void *) db->namesTable[i]);

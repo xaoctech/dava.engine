@@ -40,6 +40,8 @@ using namespace DAVA;
 
 class AlignTest : public TestTemplate<AlignTest>, public ScreenShotCallbackDelegate
 {
+protected:
+    ~AlignTest(){}
 public:
 	AlignTest();
     
