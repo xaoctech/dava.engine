@@ -1645,9 +1645,10 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-	if (!scene->landscapeEditorDrawSystem->VerifyLandscape())
+	LandscapeEditorDrawSystem::eErrorType varifLandscapeError = scene->landscapeEditorDrawSystem->VerifyLandscape();
+	if (varifLandscapeError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		ShowErrorDialog(ResourceEditor::INVALID_LANDSCAPE_MESSAGE);
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(varifLandscapeError));
 		return;
 	}
 
