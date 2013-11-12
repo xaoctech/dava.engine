@@ -238,6 +238,12 @@ protected:
 	void MapTextureNameToSlot(const FastName& textureName);
 	
 	void CopyTechniquesTo(NMaterialState* targetState);
+
+public:
+	INTROSPECTION(NMaterialState,
+		COLLECTION(materialProperties, "Material properties", I_SAVE | I_EDIT | I_VIEW)
+		COLLECTION(textures, "Material textures", I_SAVE | I_EDIT | I_VIEW)
+		);
 };
 
 
@@ -397,8 +403,8 @@ protected:
 	void BuildActiveUniformsCache(MaterialTechnique& technique);
 
 public:
-    INTROSPECTION(NMaterial,
-		COLLECTION(states, "Material states", I_SAVE | I_EDIT | I_VIEW)
+    INTROSPECTION_EXTEND(NMaterial, NMaterialState,
+		COLLECTION(states, "Material states", I_SAVE | I_VIEW)
 	);
 
 };
