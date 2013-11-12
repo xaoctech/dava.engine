@@ -27,14 +27,14 @@
 =====================================================================================*/
 
 
-
+#include <QLabel>
 #include "AddSwitchEntityDialog.h"
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include "Main/mainwindow.h"
 #include "SceneEditor/EditorSettings.h"
-#include <QLabel>
 #include "Classes/Commands2/EntityAddCommand.h"
+#include "Qt/Main/QtUtils.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -123,6 +123,13 @@ void AddSwitchEntityDialog::accept()
 	
 	Vector<Entity*> vector;
 	GetPathEntities(vector, scene);
+	
+	if(vector.empty())
+	{
+		ShowErrorDialog(ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_CHILDREN);
+		return;
+	}
+	
 	CleanupPathWidgets();
 	
 	Q_FOREACH(Entity* item, vector)

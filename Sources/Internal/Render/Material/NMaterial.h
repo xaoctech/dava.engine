@@ -57,9 +57,10 @@ class MaterialGraph;
 
 class NMaterialDescriptor : public BaseObject
 {
+protected:
+    virtual ~NMaterialDescriptor();
 public:
     NMaterialDescriptor();
-    virtual ~NMaterialDescriptor();
 
     uint32 GetTextureSlotByName(const String & textureName);
     uint32 GetUniformSlotByName(const String & uniformName);
@@ -247,6 +248,9 @@ class NMaterial : public BaseObject, public NMaterialState
 {
 	friend class MaterialSystem;
 
+protected:
+	virtual ~NMaterial();
+
 public:
     static const FastName TEXTURE_ALBEDO;
     static const FastName TEXTURE_NORMAL;
@@ -271,7 +275,6 @@ public:
 	static const FastName PARAM_UV_SCALE;
     
 	NMaterial();
-    virtual ~NMaterial();
 	
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);

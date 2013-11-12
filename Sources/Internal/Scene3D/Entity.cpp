@@ -1459,7 +1459,7 @@ namespace DAVA
 		return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 	}
 	
-	void Entity::SetVisible(bool isVisible)
+	void Entity::SetVisible(const bool &isVisible)
 	{
 		RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 		if(isVisible)

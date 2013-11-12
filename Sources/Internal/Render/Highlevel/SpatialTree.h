@@ -1,6 +1,7 @@
 #ifndef __DAVAENGINE_RENDER_SPATIAL_TREE_H__
 #define	__DAVAENGINE_RENDER_SPATIAL_TREE_H__
 
+#include "Base/BaseObject.h"
 #include "Math/AABBox3.h"
 #include "Render/Highlevel/RenderHierarchy.h"
 
@@ -69,6 +70,10 @@ class QuadTree : public RenderHierarchy
 	bool worldInitialized;
 	List<RenderObject *> worldInitObjects;	
 
+protected:
+	~QuadTree()
+	{}
+	
 public:
 	QuadTree(int32 maxTreeDepth);
 	

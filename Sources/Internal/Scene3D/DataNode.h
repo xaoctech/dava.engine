@@ -45,9 +45,10 @@ namespace DAVA
  */
 class DataNode : public BaseObject
 {
+protected:
+	virtual ~DataNode();
 public:	
 	DataNode();
-	virtual ~DataNode();
     virtual int32 Release();
 
     

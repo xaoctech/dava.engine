@@ -74,7 +74,7 @@ void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMateri
 		HashMap<FastName, NMaterial*>::iterator mapIter = materials.begin();
 		while(mapIter != materials.end())
 		{
-			NMaterial* material = mapIter.GetValue();
+			NMaterial* material = mapIter->second;
 			if(NULL == material->parent)
 			{
 				materialList.push_back(material);
