@@ -334,7 +334,7 @@ public:
 		}
 	}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
-	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
+	inline bool HasDefine(const FastName& defineName) const {return (inheritedDefines.count(defineName) > 0);}
 		
 	void SwitchParent(const FastName& newParent);
 	

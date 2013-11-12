@@ -59,20 +59,20 @@ public:
 	
 	void Insert(const char *name)
 	{
-		HashMap<FastName, int>::Insert(FastName(name), 0);
+		HashMap<FastName, int>::insert(FastName(name), 0);
 	}
     
     void Insert(const FastName & name)
     {
-        HashMap<FastName, int>::Insert(name, 0);
+        HashMap<FastName, int>::insert(name, 0);
     }
 	
 	void Combine(const FastNameSet& nameSet)
 	{
-		FastNameSet::Iterator iter = nameSet.Begin();
-		while(iter != nameSet.End())
+		FastNameSet::iterator iter = nameSet.begin();
+		while(iter != nameSet.end())
 		{
-			Insert(iter.GetKey());
+			Insert(iter->first);
 			++iter;
 		}
 	}
@@ -82,11 +82,11 @@ public:
 	//VI: this is slow method! Use it for debug purposes only
 	void ToString(String& targetStr) const
 	{
-		FastNameSet::Iterator it = Begin();
-        const FastNameSet::Iterator & endIt = End();
+		FastNameSet::iterator it = begin();
+        const FastNameSet::iterator & endIt = end();
         for (; it !=  endIt; ++it)
         {
-            const FastName & key = it.GetKey();
+            const FastName & key = it->first;
 			targetStr += key.c_str();
 			targetStr += " ";
 
@@ -105,13 +105,13 @@ template<> struct Hash <FastNameSet>
     {
 		size_t i = 0;
 		Vector<int> indices;
-		indices.resize(set.Size());
+		indices.resize(set.size());
 		
-		FastNameSet::Iterator it = set.Begin();
-        const FastNameSet::Iterator & endIt = set.End();
+		FastNameSet::iterator it = set.begin();
+        const FastNameSet::iterator & endIt = set.end();
         for (; it !=  endIt; ++it)
         {
-            const FastName & key = it.GetKey();
+            const FastName & key = it->first;
 			indices[i] = key.Index();
 			i++;
 		}
@@ -140,24 +140,24 @@ class FastNameMap : public HashMap<FastName, V>
 public:
 	void Insert(const char *name, const V &value)
 	{
-		HashMap<FastName, V>::Insert(FastName(name), value);
+		HashMap<FastName, V>::insert(FastName(name), value);
 	}
 	void Insert(const FastName & name, const V &value)
 	{
-		HashMap<FastName, V>::Insert(name, value);
+		HashMap<FastName, V>::insert(name, value);
 	}
 };
     
 // Implementation
 inline bool FastNameSet::operator == (const FastNameSet & _another) const
 {
-    if (Size() != _another.Size())return false;
-    FastNameSet::Iterator it = this->Begin();
-    const FastNameSet::Iterator & endIt = this->End();
+    if (size() != _another.size())return false;
+    FastNameSet::iterator it = this->begin();
+    const FastNameSet::iterator & endIt = this->end();
     for (; it !=  endIt; ++it)
     {
-        const FastName & name = it.GetKey();
-        if (!_another.IsKey(name))return false;
+        const FastName & name = it->first;
+        if (!_another.count(name))return false;
     }
     return true;
 }

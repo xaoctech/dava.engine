@@ -39,30 +39,30 @@ RenderPassBatchArray::RenderPassBatchArray()
     
 RenderPassBatchArray::~RenderPassBatchArray()
 {
-    HashMap<FastName, RenderLayerBatchArray*>::Iterator end = layerBatchArrayMap.End();
-    for (HashMap<FastName, RenderLayerBatchArray*>::Iterator it = layerBatchArrayMap.Begin(); it != end; ++it)
+    HashMap<FastName, RenderLayerBatchArray*>::iterator end = layerBatchArrayMap.end();
+    for (HashMap<FastName, RenderLayerBatchArray*>::iterator it = layerBatchArrayMap.begin(); it != end; ++it)
     {
-        RenderLayerBatchArray * layer = it.GetValue();
+        RenderLayerBatchArray * layer = it->second;
         SafeDelete(layer);
     }
 }
 
 void RenderPassBatchArray::Clear()
 {
-    HashMap<FastName, RenderLayerBatchArray*>::Iterator end = layerBatchArrayMap.End();
-    for (HashMap<FastName, RenderLayerBatchArray*>::Iterator it = layerBatchArrayMap.Begin(); it != end; ++it)
+    HashMap<FastName, RenderLayerBatchArray*>::iterator end = layerBatchArrayMap.end();
+    for (HashMap<FastName, RenderLayerBatchArray*>::iterator it = layerBatchArrayMap.begin(); it != end; ++it)
     {
-        it.GetValue()->Clear();
+        it->second->Clear();
     }    
 }
 
 void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
 {
-    RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.GetValue(name);
+    RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
     if (!layerBatchArray)
     {
         layerBatchArray = new RenderLayerBatchArray();
-        layerBatchArrayMap.Insert(name, layerBatchArray);
+        layerBatchArrayMap.insert(name, layerBatchArray);
     }
     
     layerBatchArray->AddRenderBatch(renderBatch);
@@ -70,7 +70,7 @@ void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * r
     
 RenderLayerBatchArray * RenderPassBatchArray::Get(const FastName & name)
 {
-    return layerBatchArrayMap.GetValue(name);
+    return layerBatchArrayMap.at(name);
 }
 
     
