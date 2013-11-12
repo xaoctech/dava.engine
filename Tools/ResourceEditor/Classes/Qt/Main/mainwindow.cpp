@@ -688,7 +688,9 @@ void QtMainWindow::SetupShortCuts()
 	
 	//tab closing
 	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#if defined (__DAVAENGINE_WIN32__)
 	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#endif
 }
 
 void QtMainWindow::InitRecent()
