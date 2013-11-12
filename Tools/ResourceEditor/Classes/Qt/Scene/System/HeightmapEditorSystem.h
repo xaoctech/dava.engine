@@ -33,11 +33,11 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
+#include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
-class LandscapeEditorDrawSystem;
 class HoodSystem;
 
 class HeightmapEditorSystem: public DAVA::SceneSystem
@@ -58,7 +58,7 @@ public:
 	HeightmapEditorSystem(Scene* scene);
 	virtual ~HeightmapEditorSystem();
 	
-	bool EnableLandscapeEditing();
+	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
 	bool DisableLandscapeEdititing();
 	bool IsLandscapeEditingEnabled() const;
 	
@@ -130,7 +130,7 @@ protected:
 	void StoreOriginalHeightmap();
 	void CreateHeightmapUndo();
 
-	bool IsCanBeEnabled();
+	LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled();
 
 	void FinishEditing();
 };

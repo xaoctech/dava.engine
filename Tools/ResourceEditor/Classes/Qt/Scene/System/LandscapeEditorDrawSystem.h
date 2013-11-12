@@ -44,6 +44,20 @@ class RulerToolProxy;
 class LandscapeEditorDrawSystem: public DAVA::SceneSystem
 {
 public:
+	
+	enum eErrorType
+	{
+		LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS	= 0,
+		LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_TILE_MASK_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_TEXTURE_ABSENT,
+		LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT
+	};
+	
 	LandscapeEditorDrawSystem(Scene* scene);
 	virtual ~LandscapeEditorDrawSystem();
 	
@@ -53,14 +67,14 @@ public:
 	VisibilityToolProxy* GetVisibilityToolProxy();
 	RulerToolProxy* GetRulerToolProxy();
 
-	bool EnableCustomDraw();
+	eErrorType EnableCustomDraw();
 	void DisableCustomDraw();
 
-	bool EnableTilemaskEditing();
+	eErrorType EnableTilemaskEditing();
 	void DisableTilemaskEditing();
 
 	bool IsNotPassableTerrainEnabled();
-	bool EnableNotPassableTerrain();
+	eErrorType EnableNotPassableTerrain();
 	void DisableNotPassableTerrain();
 	
 	void EnableCursor(int32 landscapeSize);
@@ -100,9 +114,11 @@ public:
 
 	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
 
-	bool VerifyLandscape();
+	eErrorType VerifyLandscape();
 
 	Landscape * GetBaseLandscape() const;
+	
+	static String GetDescriptionByError(eErrorType error);
 
 private:
 	Entity* landscapeNode;
@@ -123,12 +139,12 @@ private:
 	bool fogWasEnabled;
 
 	void UpdateBaseLandscapeHeightmap();
-	bool Init();
+	eErrorType Init();
 
-	bool InitLandscape(Entity* landscapeEntity, Landscape* landscape);
+	eErrorType InitLandscape(Entity* landscapeEntity, Landscape* landscape);
 	void DeinitLandscape();
 
-	bool IsNotPassableTerrainCanBeEnabled();
+	eErrorType IsNotPassableTerrainCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__) */

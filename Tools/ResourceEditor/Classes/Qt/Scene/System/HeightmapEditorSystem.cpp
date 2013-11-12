@@ -32,7 +32,6 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "LandscapeEditorDrawSystem.h"
 #include "../SceneEditor2.h"
 #include "../SceneSignals.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
@@ -87,26 +86,29 @@ bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
-bool HeightmapEditorSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool HeightmapEditorSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!IsCanBeEnabled())
+	
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
 
-	if (!drawSystem->EnableCustomDraw())
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableCustomDraw();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	selectionSystem->SetLocked(true);
@@ -123,7 +125,7 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
 
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool HeightmapEditorSystem::DisableLandscapeEdititing()
