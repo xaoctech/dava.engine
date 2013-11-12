@@ -396,10 +396,10 @@ protected:
 	void BuildTextureParamsCache(MaterialTechnique& technique);
 	void BuildActiveUniformsCache(MaterialTechnique& technique);
 
-//public:
-    //INTROSPECTION_EXTEND(NMaterial, DataNode,
-    //     MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)
-    //     );
+public:
+    INTROSPECTION(NMaterial,
+		COLLECTION(states, "Material states", I_SAVE | I_EDIT | I_VIEW)
+	);
 
 };
 

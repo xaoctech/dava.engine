@@ -140,16 +140,14 @@ namespace DAVA
 		virtual MetaInfo* CollectionType() const = 0;
 		virtual MetaInfo* ItemType() const = 0;
 		virtual int Size(void *object) const = 0;
-		virtual void Resize(void *object, int newSize) const = 0;
 		virtual Iterator Begin(void *object) const = 0;
 		virtual Iterator Next(Iterator i) const = 0;
 		virtual void Finish(Iterator i) const = 0;
 		virtual void ItemValueGet(Iterator i, void *itemDst) const = 0;
 		virtual void ItemValueSet(Iterator i, void *itemSrc) = 0;
+		virtual const char* ItemName(Iterator i) const = 0;
 		virtual void* ItemPointer(Iterator i) const = 0;
 		virtual void* ItemData(Iterator i) const = 0;
-		//virtual Iterator ItemAdd(void *object) = 0;
-		//virtual void ItemRem(Iterator i) = 0;
 	};
 
 	// Вспомогательный класс для определения содержит ли указанный шаблонный тип интроспекцию
