@@ -130,6 +130,7 @@ protected:
 	void InitInactiveParts(Sprite* spr);
 
 	void PostInitBackground(UIControl* backgroundControl);
+    void RemoveAndReleaseControl(UIControl* &control);
 };
     
     
