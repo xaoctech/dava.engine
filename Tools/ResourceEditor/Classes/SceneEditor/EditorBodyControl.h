@@ -72,10 +72,10 @@ class EditorBodyControl:
         EPSS_HIDDEN = 0,
         EPSS_ONSCREEN,
     };
-    
+protected:
+    virtual ~EditorBodyControl();
 public:
     EditorBodyControl(const Rect & rect);
-    virtual ~EditorBodyControl();
     
     virtual void WillAppear();
 	virtual void Update(float32 timeElapsed);

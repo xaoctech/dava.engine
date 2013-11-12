@@ -122,11 +122,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
+    , modificationWidget(NULL)
 {
 	new Console();
 	new ProjectManager();
 	new SettingsManager();
 	ui->setupUi(this);
+    
+    SetupTitle();
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -805,7 +808,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionPivotCommon->setEnabled(enable);
 	ui->actionManualModifMode->setEnabled(enable);
 
-	modificationWidget->setEnabled(enable);
+    if(modificationWidget)
+        modificationWidget->setEnabled(enable);
 
 	ui->actionTextureConverter->setEnabled(enable);
 	ui->actionMaterialEditor->setEnabled(enable);
@@ -2165,7 +2169,15 @@ bool QtMainWindow::OpenScene( const QString & path )
 {
     if(path.isEmpty())
         return false;
-    
+	
+	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
+	FilePath argumentPath(path.toStdString());
+	if(!FilePath::ContainPath(argumentPath, projectPath))
+	{
+		QMessageBox::warning(this, "Open scene error.", "Selected scene file doesn't belogn to project.");
+		return false;
+	}
+	
     SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
     if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
     {

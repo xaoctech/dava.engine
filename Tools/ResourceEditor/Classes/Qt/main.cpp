@@ -137,7 +137,8 @@ int main(int argc, char *argv[])
 		QtMainWindow::Instance()->EnableGlobalTimeout(true);
 		QtMainWindow::Instance()->show();
 		ProjectManager::Instance()->ProjectOpenLast();
-		QtMainWindow::Instance()->OnSceneNew();
+        if(ProjectManager::Instance()->IsOpened())
+            QtMainWindow::Instance()->OnSceneNew();
 
 		// start app
 		ret = a.exec();

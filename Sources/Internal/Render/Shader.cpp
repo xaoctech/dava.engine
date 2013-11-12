@@ -988,7 +988,7 @@ namespace DAVA
 		FastNameSet::iterator end = definesSet.end();
 		for (FastNameSet::iterator it = definesSet.begin(); it != end; ++it)
 		{
-			const FastName & fname = it.GetKey();
+			const FastName & fname = it->first;
 			result += Format("#define %s\n", fname.c_str());
 		}
 		shader->SetDefines(result);

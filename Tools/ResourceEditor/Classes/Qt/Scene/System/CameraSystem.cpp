@@ -488,7 +488,7 @@ void SceneCameraSystem::RecalcCameraAspect()
 
 		if(0 != viewportRect.dx && 0 != viewportRect.dy)
 		{
-			aspect = viewportRect.dy / viewportRect.dx;
+			aspect = viewportRect.dx / viewportRect.dy;
 		}
 
 		curSceneCamera->SetAspect(aspect);

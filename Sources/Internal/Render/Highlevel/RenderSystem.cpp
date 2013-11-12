@@ -99,7 +99,7 @@ RenderSystem::~RenderSystem()
     FastNameMap<RenderPass*>::iterator endPasses = renderPassesMap.end();
     for(FastNameMap<RenderPass*>::iterator it = renderPassesMap.begin(); it != endPasses; ++it)
     {
-        RenderPass *pass = it.GetValue();
+        RenderPass *pass = it->second;
         SafeDelete(pass);
     }
     renderPassesMap.clear();
@@ -107,12 +107,10 @@ RenderSystem::~RenderSystem()
     FastNameMap<RenderLayer*>::iterator endLayers = renderLayersMap.end();
     for(FastNameMap<RenderLayer*>::iterator it = renderLayersMap.begin(); it != endLayers; ++it)
     {
-        RenderLayer *layer = it.GetValue();
+        RenderLayer *layer = it->second;
         SafeDelete(layer);
     }
     renderLayersMap.clear();
-
-	SafeDelete(materialSystem);
 }
     
 
@@ -189,6 +187,7 @@ Camera * RenderSystem::GetCamera()
 {
 	return camera;
 }
+
     
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
