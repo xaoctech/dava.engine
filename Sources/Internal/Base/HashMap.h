@@ -93,6 +93,7 @@ public:
 	{
 		friend class HashMap<K, V>;
         
+		HashMapIterator();
 		HashMapIterator(const HashMapIterator &i);
 		HashMapIterator(const HashMap *map);
         
@@ -422,6 +423,14 @@ inline size_t HashMap<K, V>::InsertItem(typename HashMap<K, V>::HashMapItem* ite
 // 
 // HashMapIterator implementation
 // begin -->
+
+template <typename K, typename V>
+HashMap<K, V>::HashMapIterator::HashMapIterator()
+: szTable(0)
+, table(NULL)
+, current_index(0)
+, current_item(NULL)
+{ }
 
 template <typename K, typename V>
 HashMap<K, V>::HashMapIterator::HashMapIterator(const typename HashMap<K, V>::HashMapIterator &i)

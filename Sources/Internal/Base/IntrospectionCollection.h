@@ -209,7 +209,7 @@ namespace DAVA
 
 			if(NULL != object)
 			{
-				size = ((CollectionT *)object)->Size();
+				size = ((CollectionT *)object)->size();
 			}
 
 			return size;
@@ -223,8 +223,8 @@ namespace DAVA
 			{
 				CollectionT *collection = (CollectionT *)object;
 
-				typename CollectionT::Iterator begin = collection->Begin();
-				typename CollectionT::Iterator end = collection->End();
+				typename CollectionT::iterator begin = collection->begin();
+				typename CollectionT::iterator end = collection->end();
 
 				if(begin != end)
 				{
@@ -232,7 +232,7 @@ namespace DAVA
 					pos->curPos = begin;
 					pos->endPos = end;
 
-					i = (Iterator)pos;
+					i = (Iterator) pos;
 				}
 			}
 
@@ -272,7 +272,7 @@ namespace DAVA
 			if(NULL != pos)
 			{
 				V *dstT = (V*) itemDst;
-				*dstT = pos->curPos.GetValue();
+				*dstT = pos->curPos->second;
 			}
 		}
 
@@ -282,7 +282,7 @@ namespace DAVA
 			if(NULL != pos)
 			{
 				V *srcT = (V*) itemSrc;
-				pos->curPos = *srcT;
+				pos->curPos->second = *srcT;
 			}
 		}
 
@@ -324,8 +324,8 @@ namespace DAVA
 	protected:
 		struct CollectionPos
 		{
-			typename CollectionT::Iterator curPos;
-			typename CollectionT::Iterator endPos;
+			typename CollectionT::iterator curPos;
+			typename CollectionT::iterator endPos;
 		};
 	};
 
