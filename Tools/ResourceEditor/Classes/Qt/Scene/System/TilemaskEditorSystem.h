@@ -34,11 +34,11 @@
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
 #include "Commands2/MetaObjModifyCommand.h"
+#include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
-class LandscapeEditorDrawSystem;
 
 class TilemaskEditorSystem: public DAVA::SceneSystem
 {
@@ -54,7 +54,7 @@ public:
 	TilemaskEditorSystem(Scene* scene);
 	virtual ~TilemaskEditorSystem();
 	
-	bool EnableLandscapeEditing();
+	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
 	bool DisableLandscapeEdititing();
 	bool IsLandscapeEditingEnabled() const;
 	
@@ -138,7 +138,7 @@ protected:
 
 	void CreateUndoPoint();
 
-	bool IsCanBeEnabled();
+	LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled();
 
 	void InitSprites();
 
