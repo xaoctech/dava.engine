@@ -467,7 +467,7 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator==(typename const HashMap<K, V>::HashMapIterator &i) const
+bool HashMap<K, V>::HashMapIterator::operator==(const typename HashMap<K, V>::HashMapIterator &i) const
 {
 	return (szTable == i.szTable &&
 		table == i.table &&
@@ -476,7 +476,7 @@ bool HashMap<K, V>::HashMapIterator::operator==(typename const HashMap<K, V>::Ha
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator!=(typename const HashMap<K, V>::HashMapIterator &i) const
+bool HashMap<K, V>::HashMapIterator::operator!=(const typename HashMap<K, V>::HashMapIterator &i) const
 {
 	return !operator==(i);
 }
@@ -539,7 +539,7 @@ typename HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*()
 }
 
 template <typename K, typename V>
-typename const HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*() const
+const typename HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*() const
 {
 	return *current_item;
 }
@@ -551,7 +551,7 @@ typename HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->(
 }
 
 template <typename K, typename V>
-typename const HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->() const
+const typename HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->() const
 {
 	return current_item;
 }
