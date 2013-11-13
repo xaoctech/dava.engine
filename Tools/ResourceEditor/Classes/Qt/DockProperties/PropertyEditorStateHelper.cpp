@@ -29,7 +29,7 @@
 
 #include "PropertyEditorStateHelper.h"
 
-PropertyEditorStateHelper::PropertyEditorStateHelper(QTreeView* treeView, QtPropertyModel* model) :
+PropertyEditorStateHelper::PropertyEditorStateHelper(QTreeView* treeView, QtPropertyFilteringModel* model) :
 	QTreeViewStateHelper(treeView)
 {
 	this->model = model;
@@ -53,7 +53,7 @@ QString PropertyEditorStateHelper::GetPersistentDataForModelIndex(const QModelIn
 	// method is called recursively, we must already know the full path to the parent, just
 	// append the child name to it.
 	QString fullPath;
-	QStandardItem* item = model->itemFromIndex(modelIndex);
+	QStandardItem* item = ((QtPropertyModel *)model->sourceModel())->itemFromIndex(model->mapToSource(modelIndex));
 	if (!item)
 	{
 		return fullPath;

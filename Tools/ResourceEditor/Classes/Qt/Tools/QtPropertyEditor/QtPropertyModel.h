@@ -33,6 +33,8 @@
 
 #include <QPair>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+
 #include "Base/Introspection.h"
 
 #include "QtPropertyItem.h"
@@ -68,6 +70,21 @@ protected:
 
 	void EmitDataEdited(QtPropertyItem *item);
 	void UpdateStructureInternal(const QModelIndex &i);
+};
+
+class QtPropertyFilteringModel : public QSortFilterProxyModel
+{
+public:
+	QtPropertyFilteringModel(QtPropertyModel *_propModel, QObject *parent = NULL);
+	virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+	QStandardItem* itemFromIndex(const QModelIndex &index);
+
+protected:
+	QtPropertyModel *propModel;
+
+	bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
+	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
 #endif // __QT_PROPERTY_MODEL_H__
