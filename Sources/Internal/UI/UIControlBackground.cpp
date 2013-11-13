@@ -469,17 +469,8 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		break;
 		
 		case DRAW_FILL:
-		{	// DF-2560 - Use different function for rotation of filled rect
-			if(geometricData.angle != 0)
-			{
-				RenderHelper::Instance()->FillRotatedRect(drawRect,
-															geometricData.pivotPoint * geometricData.scale,
-															geometricData.angle);
-			}
-			else
-			{
-				RenderHelper::Instance()->FillRect(drawRect);
-			}
+		{
+			DrawFilled( geometricData );
 		}	
 		break;
 			
@@ -895,6 +886,28 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_32, tilesIndeces);
+}
+
+void UIControlBackground::DrawFilled( const UIGeometricData &gd )
+{
+	if( gd.angle != 0.0f ) 
+	{
+		Polygon2 poly;
+		poly.AddPoint( Vector2() );
+		poly.AddPoint( Vector2( gd.size.x, 0 ) );
+		poly.AddPoint( gd.size );
+		poly.AddPoint( Vector2( 0, gd.size.y ) );
+
+		Matrix3 transformMtx;
+		gd.BuildTransformMatrix( transformMtx );
+		poly.Transform( transformMtx );
+
+		RenderHelper::Instance()->FillPolygon( poly );
+	}
+	else
+	{
+		RenderHelper::Instance()->FillRect( gd.GetUnrotatedRect() );
+	}
 }
 
 void UIControlBackground::SetLeftRightStretchCap(float32 _leftStretchCap)
