@@ -297,6 +297,7 @@ bool SceneEditor2::IsLoaded() const
 void SceneEditor2::SetHUDVisible(bool visible)
 {
 	isHUDVisible = visible;
+	hoodSystem->LockAxis(!visible);
 }
 
 bool SceneEditor2::IsHUDVisible() const
@@ -378,24 +379,28 @@ void SceneEditor2::Draw()
 	Scene::Draw();
     renderStats = RenderManager::Instance()->GetStats();
 
-	gridSystem->Draw();
-	cameraSystem->Draw();
-
-	if(collisionSystem)
-		collisionSystem->Draw();
-
-	modifSystem->Draw();
-
-	if(structureSystem)
-		structureSystem->Draw();
-
-	tilemaskEditorSystem->Draw();
-	particlesSystem->Draw();
-	debugDrawSystem->Draw();
-
-	// should be last
 	if(isHUDVisible)
 	{
+		gridSystem->Draw();
+		cameraSystem->Draw();
+
+		if(collisionSystem)
+			collisionSystem->Draw();
+
+		modifSystem->Draw();
+
+		if(structureSystem)
+			structureSystem->Draw();
+	}
+
+	tilemaskEditorSystem->Draw();
+
+	if(isHUDVisible)
+	{
+		particlesSystem->Draw();
+		debugDrawSystem->Draw();
+
+		// should be last
 		selectionSystem->Draw();
 		hoodSystem->Draw();
 		textDrawSystem->Draw();

@@ -1529,38 +1529,44 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
-        if(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)) continue;
-        
-        String textureName = archive->GetString(Format("tex_%d", k));
-        
-        FilePath absPath;
-        if(!textureName.empty())
+
+        // load textures
+        if(!(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)))
         {
-            FilePath path(sceneFile->GetScenePath());
-            path += archive->GetString("hmap");
+            String textureName = archive->GetString(Format("tex_%d", k));
 
-            absPath = sceneFile->GetScenePath();
-            absPath += textureName;
+            FilePath absPath;
+            if(!textureName.empty())
+            {
+                absPath = sceneFile->GetScenePath();
+                absPath += textureName;
+            }
+
+            if(sceneFile->DebugLogEnabled())
+                Logger::FrameworkDebug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
+            
+            if (sceneFile->GetVersion() >= 4)
+            {
+                SetTexture((eTextureLevel)k, absPath);
+            }
+            else
+            {
+                if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
+                    SetTexture((eTextureLevel)(k + 2), absPath);
+                
+                if (k == 3)
+                    SetTexture(TEXTURE_COLOR, absPath);
+            }
         }
-
-        if(sceneFile->DebugLogEnabled())
-            Logger::FrameworkDebug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
-
+        
+        //load tiles
         if (sceneFile->GetVersion() >= 4)
         {
-            SetTexture((eTextureLevel)k, absPath);
             textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
-
 			tileColor[k] = archive->GetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
         }
         else
         {
-            if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
-                SetTexture((eTextureLevel)(k + 2), absPath);
-                
-            if (k == 3)
-                SetTexture(TEXTURE_COLOR, absPath);
-
             if ((k == 0) || (k == 1))
                 textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
         }

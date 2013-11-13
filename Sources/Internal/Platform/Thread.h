@@ -165,6 +165,7 @@ public:
 	ThreadId GetThreadId();
 
 private:
+    ~Thread() {};
 	Thread() {};
 	Thread(const Thread& t);
 	Thread(const Message& msg);

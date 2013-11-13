@@ -48,10 +48,11 @@ namespace DAVA
  */
 class Camera : public BaseObject
 {
+protected:
+	virtual ~Camera();
 public:
 	Camera();
     Camera(const Camera & c);
-	virtual ~Camera();
 	
     /**
         \brief Setup perspective camera with basic camera params.

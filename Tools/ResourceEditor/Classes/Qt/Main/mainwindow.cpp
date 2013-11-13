@@ -122,11 +122,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
+    , modificationWidget(NULL)
 {
 	new Console();
 	new ProjectManager();
 	new SettingsManager();
 	ui->setupUi(this);
+    
+    SetupTitle();
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -495,6 +498,18 @@ void QtMainWindow::SetupStatusBar()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), ui->statusBar, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->statusBar, SLOT(UpdateByTimer()));
 
+	QToolButton *gizmoStatusBtn = new QToolButton();
+	gizmoStatusBtn->setDefaultAction(ui->actionShowEditorGizmo);
+	gizmoStatusBtn->setAutoRaise(true);
+	gizmoStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, gizmoStatusBtn);
+
+	QToolButton *onSceneSelectStatusBtn = new QToolButton();
+	onSceneSelectStatusBtn->setDefaultAction(ui->actionOnSceneSelection);
+	onSceneSelectStatusBtn->setAutoRaise(true);
+	onSceneSelectStatusBtn->setMaximumSize(QSize(16, 16));
+	ui->statusBar->insertPermanentWidget(0, onSceneSelectStatusBtn);
+
 	QObject::connect(ui->sceneTabWidget->GetDavaWidget(), SIGNAL(Resized(int, int)), ui->statusBar, SLOT(OnSceneGeometryChaged(int, int)));
 }
 
@@ -546,6 +561,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
 
 	
+	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
+
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
 	QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
@@ -629,7 +647,7 @@ void QtMainWindow::SetupActions()
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
  	objectTypesLabel->setDefaultAction(ui->actionNoObject);
 	
-    ui->sceneTabWidget->AddTopToolWidget(objectTypesLabel);
+    ui->sceneTabWidget->AddToolWidget(objectTypesLabel);
 
 	ui->actionObjectTypesOff->setData(ResourceEditor::ESOT_NONE);
 	ui->actionNoObject->setData(ResourceEditor::ESOT_NO_COLISION);
@@ -648,6 +666,9 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SetupShortCuts()
 {
+	// select mode
+	QObject::connect(ui->sceneTabWidget, SIGNAL(Escape()), this, SLOT(OnSelectMode()));
+	
 	// look at
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_Z), this), SIGNAL(activated()), ui->sceneTree, SLOT(LookAtSelection()));
 	
@@ -711,6 +732,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 {
 	EnableSceneActions(true);
 
+	LoadViewState(scene);
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
@@ -721,7 +743,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
-	EnableGPUReloadActions(tools == 0);
+	UpdateConflictingActionsState(tools == 0);
 	// TODO: remove this code. it is for old material editor -->
     CreateMaterialEditorIfNeed();
     if(materialEditor)
@@ -785,7 +807,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionPivotCommon->setEnabled(enable);
 	ui->actionManualModifMode->setEnabled(enable);
 
-	modificationWidget->setEnabled(enable);
+    if(modificationWidget)
+        modificationWidget->setEnabled(enable);
 
 	ui->actionTextureConverter->setEnabled(enable);
 	ui->actionMaterialEditor->setEnabled(enable);
@@ -1000,6 +1023,11 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
+
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
     
 	WaitStart("Export", "Please wait...");
 
@@ -1044,6 +1072,24 @@ void QtMainWindow::OnRedo()
 	if(NULL != scene)
 	{
 		scene->Redo();
+	}
+}
+
+void QtMainWindow::OnEditorGizmoToggle(bool show)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->SetHUDVisible(show);
+	}
+}
+
+void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->selectionSystem->SetSelectionAllowed(allow);
 	}
 }
 
@@ -1409,6 +1455,15 @@ void QtMainWindow::OnOpenHelp()
 // Mainwindow load state functions
 // ###################################################################################################
 
+void QtMainWindow::LoadViewState(SceneEditor2 *scene)
+{
+	if(NULL != scene)
+	{
+		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
+		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
+	}
+}
+
 void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 {
 	if(NULL != scene)
@@ -1590,9 +1645,10 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-	if (!scene->landscapeEditorDrawSystem->VerifyLandscape())
+	LandscapeEditorDrawSystem::eErrorType varifLandscapeError = scene->landscapeEditorDrawSystem->VerifyLandscape();
+	if (varifLandscapeError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		ShowErrorDialog(ResourceEditor::INVALID_LANDSCAPE_MESSAGE);
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(varifLandscapeError));
 		return;
 	}
 
@@ -1701,6 +1757,10 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 
 void QtMainWindow::OnBeast()
 {
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
 	RunBeast();
 }
  
@@ -1708,6 +1768,11 @@ void QtMainWindow::OnBeastAndSave()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
+
+	if (!SaveTilemask(false))
+	{
+		return;
+	}
 
 	RunBeast();
 	SaveScene(scene);
@@ -1803,7 +1868,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	int32 tools = scene->GetEnabledTools();
 
 	SetLandscapeSettingsEnabled(tools == 0);
-	EnableGPUReloadActions(tools == 0);
+	UpdateConflictingActionsState(tools == 0);
 
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
@@ -2104,7 +2169,15 @@ bool QtMainWindow::OpenScene( const QString & path )
 {
     if(path.isEmpty())
         return false;
-    
+	
+	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
+	FilePath argumentPath(path.toStdString());
+	if(!FilePath::ContainPath(argumentPath, projectPath))
+	{
+		QMessageBox::warning(this, "Open scene error.", "Selected scene file doesn't belogn to project.");
+		return false;
+	}
+	
     SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
     if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
     {
@@ -2201,10 +2274,13 @@ void QtMainWindow::OnHangingObjectsHeight( double value)
 	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
 }
 
-void QtMainWindow::EnableGPUReloadActions(bool enable)
+void QtMainWindow::UpdateConflictingActionsState(bool enable)
 {
 	ui->menuTexturesForGPU->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
+	ui->menuExport->setEnabled(enable);
+	ui->menuBeast->setEnabled(enable);
+    ui->actionSaveToFolder->setEnabled(enable);
 }
 
 void QtMainWindow::DiableUIForFutureUsing()
@@ -2273,18 +2349,19 @@ bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
 	return false;
 }
 
-bool QtMainWindow::SaveTilemask()
+bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 {
-	const QMessageBox::StandardButtons longButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll;
-	const QMessageBox::StandardButtons shortButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
-
 	SceneTabWidget *sceneWidget = GetSceneWidget();
 	
 	int lastSceneTab = sceneWidget->GetCurrentTab();
 	int answer = QMessageBox::Cancel;
 	bool needQuestion = true;
 
-	for(int i = 0; i < sceneWidget->GetTabCount(); ++i)
+	// tabs range where tilemask should be saved
+	int32 firstTab = forAllTabs ? 0 : sceneWidget->GetCurrentTab();
+	int32 lastTab = forAllTabs ? sceneWidget->GetTabCount() : sceneWidget->GetCurrentTab() + 1;
+
+	for(int i = firstTab; i < lastTab; ++i)
 	{
 		SceneEditor2 *tabEditor = sceneWidget->GetTabScene(i);
 		if(NULL != tabEditor)
@@ -2304,7 +2381,7 @@ bool QtMainWindow::SaveTilemask()
 						message += " has unsaved tilemask changes.\nDo you want to save?";
 
 						// if more than one scene to precess
-						if((i + 1) < sceneWidget->GetCurrentTab())
+						if((lastTab - firstTab) > 1)
 						{
 							answer = QMessageBox::warning(this, "", message, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel | QMessageBox::YesToAll | QMessageBox::NoToAll, QMessageBox::Cancel);
 						}
@@ -2357,9 +2434,6 @@ bool QtMainWindow::SaveTilemask()
 			// clear all tilemask commands in commandStack because they will be
 			// invalid after tilemask reloading
 			tabEditor->ClearCommands(CMDID_TILEMASK_MODIFY);
-
-			// Update "*" on tabname
-			sceneWidget->SceneModifyStatusChanged(tabEditor, false);
 		}
 	}
 

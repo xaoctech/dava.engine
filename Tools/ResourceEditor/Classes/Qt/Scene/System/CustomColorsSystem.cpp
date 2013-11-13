@@ -32,7 +32,6 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "LandscapeEditorDrawSystem.h"
 #include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
@@ -76,26 +75,28 @@ bool CustomColorsSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
-bool CustomColorsSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool CustomColorsSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!IsCanBeEnabled())
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
 
-	if (!drawSystem->EnableCustomDraw())
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableCustomDraw();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	selectionSystem->SetLocked(true);
@@ -123,7 +124,7 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	}
 	
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool CustomColorsSystem::DisableLandscapeEdititing()
@@ -308,7 +309,7 @@ void CustomColorsSystem::AddRectToAccumulator(const Rect &rect)
 Rect CustomColorsSystem::GetUpdatedRect()
 {
 	Rect r = updatedRectAccumulator;
-	drawSystem->ClampToTexture(r);
+	drawSystem->ClampToTexture(Landscape::TEXTURE_TILE_FULL, r);
 
 	return r;
 }
