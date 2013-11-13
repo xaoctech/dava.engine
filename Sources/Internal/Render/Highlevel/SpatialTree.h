@@ -13,6 +13,8 @@ class RenderObject;
 class Frustum;
 class AbstractSpatialTree : public BaseObject
 {
+protected:
+	~AbstractSpatialTree(){}
 public:	
 	virtual void AddObject(RenderObject *object) = 0;
 	virtual void RemoveObject(RenderObject *object) = 0;	
@@ -75,7 +77,8 @@ class QuadTree : public AbstractSpatialTree
 	void RecalculateNodeZLimits(uint16 nodeId);
 	void MarkNodeDirty(uint16 nodeId);
 	void MarkObjectDirty(RenderObject *object);
-
+protected:
+	~QuadTree(){}
 public:
 	QuadTree(const AABBox3 &worldBox, int32 maxTreeDepth);
 	
