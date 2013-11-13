@@ -234,7 +234,7 @@ protected:
 	int GetInitialState() const;
 	void SetInitialState(int value);
 
-	virtual void SetActiveControlRect(const Rect& rect);
+	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
 
 private:
 	void ResizeScrollViewContent(UIControl *control);
