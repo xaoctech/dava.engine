@@ -86,23 +86,25 @@ void FMODSoundSystem::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
 {
     DVASSERT(dirPath.IsDirectoryPathname());
 
-    DAVA::FileList list(dirPath);
-    DAVA::int32 entriesCount = list.GetCount();
+    DAVA::FileList * list = new DAVA::FileList(dirPath);
+    DAVA::int32 entriesCount = list->GetCount();
     for(DAVA::int32 i = 0; i < entriesCount; i++)
     {
-        if(list.IsDirectory(i))
+        if(list->IsDirectory(i))
         {
-            if(!list.IsNavigationDirectory(i))
-                LoadAllFEVsRecursive(list.GetPathname(i));
+            if(!list->IsNavigationDirectory(i))
+                LoadAllFEVsRecursive(list->GetPathname(i));
         }
         else
         {
-            const DAVA::FilePath & filePath = list.GetPathname(i);
+            const DAVA::FilePath & filePath = list->GetPathname(i);
 
             if(filePath.GetExtension() == ".fev")
                 LoadFEV(filePath);
         }
     }
+
+    SafeRelease(list);
 }
 
 void FMODSoundSystem::LoadFEV(const FilePath & filePath)
@@ -158,7 +160,7 @@ void FMODSoundSystem::Update(float32 timeElapsed)
         Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
         Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
         for(; mapIt != endIt; ++mapIt)
-            mapIt->first->eventDispathcer.PerformEvent(mapIt->second);
+            mapIt->first->eventDispathcer->PerformEvent(mapIt->second);
         callbackOnUpdate.clear();
     }
 

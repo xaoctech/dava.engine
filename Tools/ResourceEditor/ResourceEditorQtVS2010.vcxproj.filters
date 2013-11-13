@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -208,9 +208,6 @@
     <Filter Include="Classes\Qt\Tools\AddSkyboxDialog">
       <UniqueIdentifier>{003b6607-47e6-4c21-815d-c9384bd67946}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\SpeedTree">
-      <UniqueIdentifier>{e22291cd-1e6a-41a0-909a-dc1b06a4a034}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\DockLandscapeEditorControls">
       <UniqueIdentifier>{69848df9-8843-43e4-80a6-8a929925294f}</UniqueIdentifier>
     </Filter>
@@ -237,6 +234,9 @@
     </Filter>
     <Filter Include="Classes\Qt\Tools\TileTexturePreviewWidget">
       <UniqueIdentifier>{db27caa7-9656-4101-a102-5e4083d818d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\SpeedTree">
+      <UniqueIdentifier>{e22291cd-1e6a-41a0-909a-dc1b06a4a034}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2098,7 +2098,7 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.cpp">
-      <Filter>Classes\SpeedTree</Filter>
+      <Filter>Classes\Qt\SpeedTree</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ConvertToShadowCommand.cpp">
       <Filter>Classes\Commands2</Filter>
@@ -2239,6 +2239,12 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\SoundBrowser\FMODSoundBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp">
+      <Filter>Classes\Qt\SpeedTree</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3783,7 +3789,7 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dava.speedtree\Sources\SpeedTreeImporter.h">
-      <Filter>Classes\SpeedTree</Filter>
+      <Filter>Classes\Qt\SpeedTree</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ConvertToShadowCommand.h">
       <Filter>Classes\Commands2</Filter>
@@ -3876,6 +3882,12 @@
       <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_soundbrowser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h">
+      <Filter>Classes\Qt\SpeedTree</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_treeimportdialog.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
@@ -4084,6 +4096,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\CubeMapTextureBrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\treeimportdialog.ui">
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\soundbrowser.ui">

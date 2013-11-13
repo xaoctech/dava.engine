@@ -42,6 +42,17 @@ namespace DAVA
 	class KeyedArchive;
 	struct MetaInfo;
 
+	// абстрактный базовый класс для интроспекции
+	class InspBase
+	{
+	protected:
+		virtual ~InspBase(){}
+	public:
+		InspBase(){}
+		// Возвращает интроспекцию класса
+		virtual const InspInfo* GetTypeInfo() const = 0;
+	};
+
 	struct InspDesc
 	{
 		InspDesc(const char *text);

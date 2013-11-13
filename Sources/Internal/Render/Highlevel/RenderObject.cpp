@@ -35,7 +35,6 @@
 namespace DAVA
 {
 
-REGISTER_CLASS(RenderObject)
 
 static const int32 DEFAULT_FLAGS = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
 
@@ -126,6 +125,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 
 	newObject->type = type;
 	newObject->flags = flags;
+	newObject->RemoveFlag(RenderObject::TREE_NODE_NEED_UPDATE);
 	newObject->debugFlags = debugFlags;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;

@@ -100,7 +100,7 @@ RenderSystem::~RenderSystem()
     }
     renderLayersMap.Clear();
 
-	SafeDelete(spatialTree);
+	SafeRelease(spatialTree);
 }
     
 
@@ -233,7 +233,7 @@ void RenderSystem::CreateSpatialTree(const AABBox3 &worldBox, int32 maxTreeDepth
 
 void RenderSystem::RemoveSpatialTree()
 {
-	SafeDelete(spatialTree);
+	SafeRelease(spatialTree);
 	uint32 size = renderObjectArray.size();
 	for (uint32 pos = 0; pos < size; ++pos)
 		renderObjectArray[pos]->SetTreeNodeIndex(INVALID_TREE_NODE_INDEX);

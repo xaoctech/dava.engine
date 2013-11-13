@@ -26,6 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "DAVAClassRegistrator.h"
 
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
@@ -151,6 +152,7 @@ void Core::CreateSingletons()
 	Thread::InitMainThread();
 #endif
     
+    RegisterDAVAClasses();
     
     CheckDataTypeSizes();
 }
@@ -254,45 +256,32 @@ Core::eScreenOrientation Core::GetScreenOrientation()
 
 void Core::CalculateScaleMultipliers()
 {
-	needTorecalculateMultipliers = false;
-	float32 width, height;
-	if (screenOrientation == SCREEN_ORIENTATION_PORTRAIT || screenOrientation == SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		width = screenWidth;
-		height = screenHeight;
-	}
-	else 
-	{
-		height = screenWidth;
-		width = screenHeight;
-	}
-	rotatedScreenWidth = width;
-	rotatedScreenHeight = height;
+	needTorecalculateMultipliers = false;		
 
 	virtualScreenWidth = requestedVirtualScreenWidth;
 	virtualScreenHeight = requestedVirtualScreenHeight;
 
 	float32 w, h;
-	w = (float32)virtualScreenWidth / (float32)width;
-	h = (float32)virtualScreenHeight / (float32)height;
+	w = (float32)virtualScreenWidth / (float32)screenWidth;
+	h = (float32)virtualScreenHeight / (float32)screenHeight;
 	drawOffset.x = drawOffset.y = 0;
 	float32 desD = 10000.0f;
 	if(w > h)
 	{
 		physicalToVirtual = w;
-		virtualToPhysical = (float32)width / (float32)virtualScreenWidth;
+		virtualToPhysical = (float32)screenWidth / (float32)virtualScreenWidth;
 		if (fixedProportions)
 		{
-			drawOffset.y = 0.5f * ((float32)height - (float32)Core::Instance()->GetVirtualScreenHeight() * virtualToPhysical);
+			drawOffset.y = 0.5f * ((float32)screenHeight - (float32)Core::Instance()->GetVirtualScreenHeight() * virtualToPhysical);
 		}
 		else
 		{
-			virtualScreenHeight = height * physicalToVirtual;
+			virtualScreenHeight = screenHeight * physicalToVirtual;
 		}
 		for (int i = 0; i < (int)allowedSizes.size(); i++) 
 		{
 			allowedSizes[i].toVirtual = (float32)virtualScreenWidth / (float32)allowedSizes[i].width;
-			allowedSizes[i].toPhysical = (float32)width / (float32)allowedSizes[i].width;
+			allowedSizes[i].toPhysical = (float32)screenWidth / (float32)allowedSizes[i].width;
 			if (fabs(allowedSizes[i].toPhysical - 1.0f) < desD) 
 			{
 				desD = fabsf(allowedSizes[i].toPhysical - 1.0f);
@@ -303,19 +292,19 @@ void Core::CalculateScaleMultipliers()
 	else
 	{
 		physicalToVirtual = h;
-		virtualToPhysical = (float32)height / (float32)virtualScreenHeight;
+		virtualToPhysical = (float32)screenHeight / (float32)virtualScreenHeight;
 		if (fixedProportions)
 		{
-			drawOffset.x = 0.5f * ((float32)width - (float32)Core::Instance()->GetVirtualScreenWidth() * virtualToPhysical);
+			drawOffset.x = 0.5f * ((float32)screenWidth - (float32)Core::Instance()->GetVirtualScreenWidth() * virtualToPhysical);
 		}
 		else
 		{
-			virtualScreenWidth = width * physicalToVirtual;
+			virtualScreenWidth = screenWidth * physicalToVirtual;
 		}
 		for (int i = 0; i < (int)allowedSizes.size(); i++) 
 		{
 			allowedSizes[i].toVirtual = (float32)virtualScreenHeight / (float32)allowedSizes[i].height;
-			allowedSizes[i].toPhysical = (float32)height / (float32)allowedSizes[i].height;
+			allowedSizes[i].toPhysical = (float32)screenHeight / (float32)allowedSizes[i].height;
 			if (fabs(allowedSizes[i].toPhysical - 1.0f) < desD) 
 			{
 				desD = fabsf(allowedSizes[i].toPhysical - 1.0f);
@@ -433,7 +422,7 @@ float32 Core::GetVirtualScreenXMin()
 	
 float32 Core::GetVirtualScreenXMax()
 {
-	return ((float32)(rotatedScreenWidth - drawOffset.x) * physicalToVirtual);
+	return ((float32)(screenWidth - drawOffset.x) * physicalToVirtual);
 }
 	
 float32 Core::GetVirtualScreenYMin()
@@ -443,7 +432,7 @@ float32 Core::GetVirtualScreenYMin()
 	
 float32 Core::GetVirtualScreenYMax()
 {
-	return ((float32)(rotatedScreenHeight - drawOffset.y) * physicalToVirtual);
+	return ((float32)(screenHeight - drawOffset.y) * physicalToVirtual);
 }
 	
 Core::eScreenMode Core::GetScreenMode()

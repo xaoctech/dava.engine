@@ -37,7 +37,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableCustomColors::ActionEnableCustomColors(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_CUSTOM_COLORS)
+:	CommandAction(CMDID_CUSTOM_COLORS_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -58,17 +58,22 @@ void ActionEnableCustomColors::Redo()
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
-	if (!success || !sceneEditor->customColorsSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->customColorsSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 
 	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
 }
 
 ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_CUSTOM_COLORS)
+:	CommandAction(CMDID_CUSTOM_COLORS_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -99,7 +104,7 @@ void ActionDisableCustomColors::Redo()
 ModifyCustomColorsCommand::ModifyCustomColorsCommand(Image* originalImage,
 													 CustomColorsProxy* customColorsProxy,
 													 const Rect& updatedRect)
-:	Command2(CMDID_MODIFY_CUSTOM_COLORS, "Custom Colors Modification")
+:	Command2(CMDID_CUSTOM_COLORS_MODIFY, "Custom Colors Modification")
 {
 	this->updatedRect = updatedRect;
 	this->customColorsProxy = SafeRetain(customColorsProxy);

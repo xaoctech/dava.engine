@@ -521,6 +521,7 @@
     <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
     <ClCompile Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.cpp" />
+    <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -636,8 +637,6 @@
     <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\UIFileTree.cpp" />
     <ClCompile Include="Classes\UIFileTreeCell.cpp" />
-    <ClCompile Include="Classes\UIScrollView.cpp" />
-    <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
     <ClCompile Include="_GeneratedQt\CubemapEditor\ClickableQLabel_moc.cpp" />
@@ -747,6 +746,7 @@
     <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SoundBrowser\FMODSoundBrowser_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
@@ -1222,6 +1222,7 @@
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
     <ClInclude Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.h" />
+    <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
@@ -1341,8 +1342,6 @@
     <ClInclude Include="Classes\StringConstants.h" />
     <ClInclude Include="Classes\UIFileTree.h" />
     <ClInclude Include="Classes\UIFileTreeCell.h" />
-    <ClInclude Include="Classes\UIScrollView.h" />
-    <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="_GeneratedQt\ui_ActionComponentEditor.h" />
     <ClInclude Include="_GeneratedQt\ui_BaseAddEntityDialog.h" />
@@ -1359,6 +1358,7 @@
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
     <ClInclude Include="_GeneratedQt\ui_soundbrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
+    <ClInclude Include="_GeneratedQt\ui_treeimportdialog.h" />
     <ClInclude Include="_GeneratedQt\ui_waitdialog.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1378,6 +1378,7 @@
     <None Include="DataQt\soundbrowser.ui" />
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
+    <None Include="DataQt\treeimportdialog.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

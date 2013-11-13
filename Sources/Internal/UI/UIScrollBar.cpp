@@ -34,7 +34,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(UIScrollBar);
 
 //use these names for children controls to define UIScrollBar in .yaml
 static const String UISCROLLBAR_SLIDER_NAME = "slider";
@@ -217,10 +216,11 @@ void UIScrollBar::Input(UIEvent *currentInput)
 		}
 
 		// Clamp.
-        newPos = Min(Max(0.0f, newPos), delegate->TotalAreaSize(this) - delegate->VisibleAreaSize(this));
-        
-        delegate->OnViewPositionChanged(this, newPos);
-    }
+		newPos = Min(Max(0.0f, newPos), delegate->TotalAreaSize(this) - delegate->VisibleAreaSize(this));
+		delegate->OnViewPositionChanged(this, newPos);
+
+		currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
+	}
 }
 
 void UIScrollBar::CalculateStartOffset(const Vector2& inputPoint)
@@ -298,6 +298,8 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (slider->relativePosition.y < 0) 
                 {
                     slider->size.y += slider->relativePosition.y;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					slider->size.y = GetValidSliderSize(slider->size.y);
                     slider->relativePosition.y = 0;
                 }
                 else if(slider->relativePosition.y + slider->size.y > size.y)
@@ -308,7 +310,6 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
 					slider->size.y = GetValidSliderSize(slider->size.y);
 					slider->relativePosition.y = size.y - slider->size.y;
                 }
-
             }
                 break;
             case ORIENTATION_HORIZONTAL:
@@ -330,6 +331,8 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (slider->relativePosition.x < 0) 
                 {
                     slider->size.x += slider->relativePosition.x;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					slider->size.x = GetValidSliderSize(slider->size.x);
                     slider->relativePosition.x = 0;
                 }
                 else if(slider->relativePosition.x + slider->size.x > size.x)

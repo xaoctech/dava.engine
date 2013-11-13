@@ -25,8 +25,6 @@ HeightmapEditorPanel::HeightmapEditorPanel(QWidget* parent)
 ,	radioAverage(NULL)
 ,	radioDropper(NULL)
 ,	radioRelative(NULL)
-,	checkboxHeightmap(NULL)
-,	checkboxTilemask(NULL)
 ,	editHeight(NULL)
 {
 	InitUI();
@@ -54,8 +52,6 @@ void HeightmapEditorPanel::SetWidgetsState(bool enabled)
 	radioAverage->setEnabled(enabled);
 	radioDropper->setEnabled(enabled);
 	radioRelative->setEnabled(enabled);
-	checkboxHeightmap->setEnabled(enabled);
-	checkboxTilemask->setEnabled(enabled);
 	editHeight->setEnabled(enabled);
 }
 
@@ -71,8 +67,6 @@ void HeightmapEditorPanel::BlockAllSignals(bool block)
 	radioAverage->blockSignals(block);
 	radioDropper->blockSignals(block);
 	radioRelative->blockSignals(block);
-	checkboxHeightmap->blockSignals(block);
-	checkboxTilemask->blockSignals(block);
 	editHeight->blockSignals(block);
 }
 
@@ -90,23 +84,12 @@ void HeightmapEditorPanel::InitUI()
 	radioAverage = new QRadioButton(this);
 	radioDropper = new QRadioButton(this);
 	radioRelative = new QRadioButton(this);
-	checkboxHeightmap = new QCheckBox(this);
-	checkboxTilemask = new QCheckBox(this);
 	editHeight = new QLineEdit(this);
 
 	QHBoxLayout* layoutBrushImage = new QHBoxLayout();
 	QLabel* labelBrushImageDesc = new QLabel(this);
 	layoutBrushImage->addWidget(labelBrushImageDesc);
 	layoutBrushImage->addWidget(comboBrushImage);
-
-	QVBoxLayout* layoutCopyPaste = new QVBoxLayout();
-	QHBoxLayout* layoutCopyPasteType = new QHBoxLayout();
-	QSpacerItem* spacerCopyPaste = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Fixed);
-	layoutCopyPasteType->addSpacerItem(spacerCopyPaste);
-	layoutCopyPasteType->addWidget(checkboxHeightmap);
-	layoutCopyPasteType->addWidget(checkboxTilemask);
-	layoutCopyPaste->addWidget(radioCopyPaste);
-	layoutCopyPaste->addLayout(layoutCopyPasteType);
 
 	QHBoxLayout* layoutBrushSize = new QHBoxLayout();
 	QLabel* labelBrushSize = new QLabel();
@@ -132,6 +115,7 @@ void HeightmapEditorPanel::InitUI()
 	layoutDrawTypes->addWidget(radioAverage, 1, 0);
 	layoutDrawTypes->addWidget(radioAbsDrop, 1, 1);
 	layoutDrawTypes->addWidget(radioDropper, 2, 0);
+	layoutDrawTypes->addWidget(radioCopyPaste, 2, 1);
 
 	QHBoxLayout* layoutHeight = new QHBoxLayout();
 	QLabel* labelHeightDesc = new QLabel(this);
@@ -146,7 +130,6 @@ void HeightmapEditorPanel::InitUI()
 	layout->addLayout(layoutBrushImage);
 	layout->addLayout(layoutStrength);
 	layout->addLayout(layoutAvgStrength);
-	layout->addLayout(layoutCopyPaste);
 	layout->addLayout(layoutDrawTypes);
 	layout->addLayout(layoutHeight);
 	layout->addSpacerItem(spacer);
@@ -165,8 +148,6 @@ void HeightmapEditorPanel::InitUI()
 	sliderWidgetAverageStrength->SetRangeBoundaries(AVG_STRENGTH_MIN_BOUNDARY, AVG_STRENGTH_MAX_BOUNDARY);
 
 	layoutBrushImage->setContentsMargins(0, 0, 0, 0);
-	layoutCopyPaste->setContentsMargins(0, 0, 0, 0);
-	layoutCopyPasteType->setContentsMargins(0, 0, 0, 0);
 	layoutDrawTypes->setContentsMargins(0, 0, 0, 0);
 	layoutHeight->setContentsMargins(0, 0, 0, 0);
 
@@ -183,8 +164,6 @@ void HeightmapEditorPanel::InitUI()
 	radioAverage->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_AVERAGE.c_str());
 	radioDropper->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_DROPPER.c_str());
 	radioRelative->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_RELATIVE.c_str());
-	checkboxHeightmap->setText(ResourceEditor::HEIGHTMAP_EDITOR_CHECKBOX_HEIGHTMAP.c_str());
-	checkboxTilemask->setText(ResourceEditor::HEIGHTMAP_EDITOR_CHECKBOX_TILEMASK.c_str());
 
 	InitBrushImages();
 }
@@ -206,8 +185,6 @@ void HeightmapEditorPanel::ConnectToSignals()
 	connect(radioDropper, SIGNAL(clicked()), this, SLOT(SetDropper()));
 	connect(radioCopyPaste, SIGNAL(clicked()), this, SLOT(SetHeightmapCopyPaste()));
 	connect(comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
-	connect(checkboxHeightmap, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteHeightmap(int)));
-	connect(checkboxTilemask, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteTilemask(int)));
 	connect(editHeight, SIGNAL(editingFinished()), this, SLOT(HeightUpdatedManually()));
 }
 
@@ -239,8 +216,6 @@ void HeightmapEditorPanel::RestoreState()
 	int32 averageStrength = AverageStrengthSystemToUI(sceneEditor->heightmapEditorSystem->GetAverageStrength());
 	int32 toolImage = sceneEditor->heightmapEditorSystem->GetToolImage();
 	HeightmapEditorSystem::eHeightmapDrawType drawingType = sceneEditor->heightmapEditorSystem->GetDrawingType();
-	bool copyPasteHeightmap = sceneEditor->heightmapEditorSystem->GetCopyPasteHeightmap();
-	bool copyPasteTilemask = sceneEditor->heightmapEditorSystem->GetCopyPasteTilemask();
 	float32 height = sceneEditor->heightmapEditorSystem->GetDropperHeight();
 
 	int32 brushRangeMin = DEF_BRUSH_MIN_SIZE;
@@ -276,8 +251,6 @@ void HeightmapEditorPanel::RestoreState()
 	sliderWidgetAverageStrength->SetRangeMax(avStrRangeMax);
 	sliderWidgetAverageStrength->SetValue(averageStrength);
 	comboBrushImage->setCurrentIndex(toolImage);
-	checkboxHeightmap->setChecked(copyPasteHeightmap);
-	checkboxTilemask->setChecked(copyPasteTilemask);
 	editHeight->setText(QString::number(height));
 	UpdateRadioState(drawingType);
 	BlockAllSignals(!enabled);
@@ -365,7 +338,7 @@ float32 HeightmapEditorPanel::GetBrushScaleCoef()
 	}
 
 	float32 heightmapSize = heightmapProxy->Size();
-	float32 textureSize = sceneEditor->landscapeEditorDrawSystem->GetTextureSize();
+	float32 textureSize = sceneEditor->landscapeEditorDrawSystem->GetTextureSize(Landscape::TEXTURE_TILE_FULL);
 
 	return textureSize / heightmapSize;
 }
@@ -466,16 +439,6 @@ void HeightmapEditorPanel::SetAverageStrength(int averageStrength)
 	GetActiveScene()->heightmapEditorSystem->SetAverageStrength(AverageStrengthUIToSystem(averageStrength));
 }
 
-void HeightmapEditorPanel::SetCopyPasteHeightmap(int state)
-{
-	GetActiveScene()->heightmapEditorSystem->SetCopyPasteHeightmap(state == Qt::Checked);
-}
-
-void HeightmapEditorPanel::SetCopyPasteTilemask(int state)
-{
-	GetActiveScene()->heightmapEditorSystem->SetCopyPasteTilemask(state == Qt::Checked);
-}
-
 void HeightmapEditorPanel::SetDrawingType(HeightmapEditorSystem::eHeightmapDrawType type)
 {
 	BlockAllSignals(true);
@@ -562,11 +525,6 @@ void HeightmapEditorPanel::ConnectToShortcuts()
 			this, SLOT(SetAbsDropDrawing()));
 	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			this, SLOT(SetDropper()));
-
-	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
-			this, SLOT(ShortcutSetCopyPasteHeightmap()));
-	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
-			this, SLOT(ShortcutSetCopyPasteTilemask()));
 }
 
 void HeightmapEditorPanel::DisconnectFromShortcuts()
@@ -617,11 +575,6 @@ void HeightmapEditorPanel::DisconnectFromShortcuts()
 			   this, SLOT(SetAbsDropDrawing()));
 	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			   this, SLOT(SetDropper()));
-
-	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_HEIGHTMAP), SIGNAL(activated()),
-			   this, SLOT(ShortcutSetCopyPasteHeightmap()));
-	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
-			   this, SLOT(ShortcutSetCopyPasteTilemask()));
 }
 
 void HeightmapEditorPanel::IncreaseBrushSize()
@@ -712,22 +665,4 @@ void HeightmapEditorPanel::NextTool()
 	{
 		comboBrushImage->setCurrentIndex(curIndex + 1);
 	}
-}
-
-void HeightmapEditorPanel::ShortcutSetCopyPasteHeightmap()
-{
-	SceneEditor2* sceneEditor = GetActiveScene();
-
-	bool copyPasteHeightmap = !sceneEditor->heightmapEditorSystem->GetCopyPasteHeightmap();
-	sceneEditor->heightmapEditorSystem->SetCopyPasteHeightmap(copyPasteHeightmap);
-	checkboxHeightmap->setChecked(copyPasteHeightmap);
-}
-
-void HeightmapEditorPanel::ShortcutSetCopyPasteTilemask()
-{
-	SceneEditor2* sceneEditor = GetActiveScene();
-
-	bool copyPasteTilemask = !sceneEditor->heightmapEditorSystem->GetCopyPasteTilemask();
-	sceneEditor->heightmapEditorSystem->SetCopyPasteTilemask(copyPasteTilemask);
-	checkboxTilemask->setChecked(copyPasteTilemask);
 }

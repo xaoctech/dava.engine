@@ -44,9 +44,10 @@ class Light;
     
 class ShadowVolume : public RenderBatch
 {
+protected:
+	virtual ~ShadowVolume();
 public:
 	ShadowVolume();
-	virtual ~ShadowVolume();
 
     virtual void Draw(Camera * camera);
 
@@ -63,6 +64,8 @@ public:
 
 private:
 	Shader * shader;
+
+    int32 uniformLightPosition0;
 
 	//shadow mesh generation
 	PolygonGroup * shadowPolygonGroup;

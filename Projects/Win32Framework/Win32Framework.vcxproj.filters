@@ -1335,6 +1335,9 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DAVAClassRegistrator.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2374,6 +2377,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\GameAPI.cpp">
       <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DAVAClassRegistrator.cpp">
+      <Filter>Internal</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

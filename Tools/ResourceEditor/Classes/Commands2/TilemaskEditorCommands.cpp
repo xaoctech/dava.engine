@@ -36,7 +36,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableTilemaskEditor::ActionEnableTilemaskEditor(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_TILEMASK)
+:	CommandAction(CMDID_TILEMASK_EDITOR_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -58,16 +58,22 @@ void ActionEnableTilemaskEditor::Redo()
 	
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	
-	if (!success || !sceneEditor->tilemaskEditorSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::TILEMASK_EDITOR_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->tilemaskEditorSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 	
 	SceneSignals::Instance()->EmitTilemaskEditorToggled(sceneEditor);
 }
 
 ActionDisableTilemaskEditor::ActionDisableTilemaskEditor(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_TILEMASK)
+:	CommandAction(CMDID_TILEMASK_EDITOR_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -96,7 +102,7 @@ void ActionDisableTilemaskEditor::Redo()
 
 
 ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, const Rect& updatedRect)
-:	Command2(CMDID_MODIFY_TILEMASK, "Tile Mask Modification")
+:	Command2(CMDID_TILEMASK_MODIFY, "Tile Mask Modification")
 {
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);

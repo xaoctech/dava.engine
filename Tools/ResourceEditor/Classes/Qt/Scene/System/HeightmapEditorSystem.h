@@ -33,11 +33,12 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
+#include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
-class LandscapeEditorDrawSystem;
+class HoodSystem;
 
 class HeightmapEditorSystem: public DAVA::SceneSystem
 {
@@ -57,7 +58,7 @@ public:
 	HeightmapEditorSystem(Scene* scene);
 	virtual ~HeightmapEditorSystem();
 	
-	bool EnableLandscapeEditing();
+	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
 	bool DisableLandscapeEdititing();
 	bool IsLandscapeEditingEnabled() const;
 	
@@ -74,11 +75,6 @@ public:
 	int32 GetToolImage();
 	void SetDrawingType(eHeightmapDrawType type);
 	eHeightmapDrawType GetDrawingType();
-
-	void SetCopyPasteHeightmap(bool active);
-	bool GetCopyPasteHeightmap();
-	void SetCopyPasteTilemask(bool active);
-	bool GetCopyPasteTilemask();
 
 	void SetDropperHeight(float32 height);
 	float32 GetDropperHeight();
@@ -97,7 +93,6 @@ protected:
 	uint32 cursorSize;
 	uint32 curToolSize;
 	Image* toolImage;
-	Image* tilemaskCopyPasteTool;
 	
 	eHeightmapDrawType drawingType;
 	float32 strength;
@@ -114,17 +109,14 @@ protected:
 	Vector2 prevCursorPosition;
 	
 	Rect heightmapUpdatedRect;
-	Rect tilemaskUpdatedRect;
 
 	bool editingIsEnabled;
 	
 	Heightmap* originalHeightmap;
 
-	bool copyPasteHeightmap;
-	bool copyPasteTilemask;
+	eHeightmapDrawType activeDrawingType;
 
-	Image* tilemaskImage;
-	Image* originalTilemaskImage;
+	Landscape::eTextureLevel textureLevel;
 
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
@@ -134,17 +126,13 @@ protected:
 	void AddRectToAccumulator(Rect& accumulator, const Rect& rect);
 	void ResetAccumulatorRect(Rect& accumulator);
 	Rect GetHeightmapUpdatedRect();
-	Rect GetTilemaskUpdatedRect();
 	
 	void StoreOriginalHeightmap();
-	void PrepareTilemaskCopyPaste();
 	void CreateHeightmapUndo();
-	void CreateCopyPasteUndo();
 
-	Image* CreateTilemaskImage();
-	void CreateTilemaskCopyPasteTool();
+	LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled();
 
-	bool IsCanBeEnabled();
+	void FinishEditing();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORSYSTEM__) */

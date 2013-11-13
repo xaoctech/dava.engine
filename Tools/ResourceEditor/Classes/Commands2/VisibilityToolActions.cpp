@@ -36,7 +36,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableVisibilityTool::ActionEnableVisibilityTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_VISIBILITY_TOOL)
+:	CommandAction(CMDID_VISIBILITY_TOOL_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -58,16 +58,21 @@ void ActionEnableVisibilityTool::Redo()
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	
-	if (!success || !sceneEditor->visibilityToolSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::VISIBILITY_TOOL_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
 	}
-
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->visibilityToolSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
+	}
 	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);
 }
 
 ActionDisableVisibilityTool::ActionDisableVisibilityTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_VISIBILITY_TOOL)
+:	CommandAction(CMDID_VISIBILITY_TOOL_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -99,7 +104,7 @@ ActionSetVisibilityPoint::ActionSetVisibilityPoint(Image* originalImage,
 												   Sprite* cursorSprite,
 												   VisibilityToolProxy* visibilityToolProxy,
 												   const Vector2& visibilityPoint)
-:	CommandAction(CMDID_SET_VISIBILITY_POINT, "Set Visibility Point")
+:	CommandAction(CMDID_VISIBILITY_TOOL_SET_POINT, "Set Visibility Point")
 {
 //	this->undoImage = SafeRetain(originalImage);
 	this->cursorSprite = SafeRetain(cursorSprite);
@@ -166,7 +171,7 @@ void ActionSetVisibilityPoint::Redo()
 ActionSetVisibilityArea::ActionSetVisibilityArea(Image* originalImage,
 												 VisibilityToolProxy* visibilityToolProxy,
 												 const Rect& updatedRect)
-:	CommandAction(CMDID_SET_VISIBILITY_AREA, "Set Visibility Area")
+:	CommandAction(CMDID_VISIBILITY_TOOL_SET_AREA, "Set Visibility Area")
 {
 	Image* currentImage = visibilityToolProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
 
