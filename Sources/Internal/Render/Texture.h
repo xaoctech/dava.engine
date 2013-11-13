@@ -298,6 +298,13 @@ public:							// properties for fast access
     int32 GetDataSize() const;
     
     void ReleaseTextureData();
+	struct ReleaseTextureDataContainer
+	{
+		uint32 textureType;
+		uint32 id;
+		uint32 fboID;
+		uint32 rboID;
+	};
 
     void GenerateID();
     

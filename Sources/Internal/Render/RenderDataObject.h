@@ -112,6 +112,12 @@ private:
     
     friend class RenderManager;
     friend class RenderManagerGL20;
+
+	struct DestructorContainer
+	{
+		uint32 vboBuffer;
+		uint32 indexBuffer;
+	};
 };
     
 };

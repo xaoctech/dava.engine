@@ -222,7 +222,14 @@ private:
     
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
-    void DeleteShaders();
+    
+	void DeleteShaders();
+	struct DeleteShaderContainer
+	{
+		GLuint program;
+		GLuint vertexShader;
+		GLuint fragmentShader;
+	};
 	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
     eUniform GetUniformByName(const FastName &name);

@@ -225,13 +225,19 @@ void Texture::ReleaseTextureData()
 	//release data that was loaded from file
 	ReleaseImages();
     
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
+	ReleaseTextureDataContainer * container = new ReleaseTextureDataContainer();
+	container->textureType = textureType;
+	container->id = id;
+	container->fboID = fboID;
+	container->rboID = rboID;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container));
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
 {
+	ReleaseTextureDataContainer * container = (ReleaseTextureDataContainer*) param;
+	DVASSERT(container);
+
 #if defined(__DAVAENGINE_OPENGL__)
 	if(RenderManager::Instance()->GetTexture() == this)
 	{//to avoid drawing deleted textures
@@ -240,30 +246,32 @@ void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void
 
 	//VI: reset texture for the current texture type in order to avoid
 	//issue when cubemap texture was deleted while being binded to the state
-	if(RenderManager::Instance()->lastBindedTexture[textureType] == id)
+	if(RenderManager::Instance()->lastBindedTexture[container->textureType] == container->id)
 	{
-		RenderManager::Instance()->HWglForceBindTexture(0, textureType);
+		RenderManager::Instance()->HWglForceBindTexture(0, container->textureType);
 	}
     
-	if(fboID != (uint32)-1)
+	if(container->fboID != (uint32)-1)
 	{
-		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
+		RENDER_VERIFY(glDeleteFramebuffers(1, &container->fboID));
 	}
 
-	if(rboID != (uint32)-1)
+	if(container->rboID != (uint32)-1)
 	{
-		RENDER_VERIFY(glDeleteRenderbuffers(1, &rboID));
+		RENDER_VERIFY(glDeleteRenderbuffers(1, &container->rboID));
 	}
 
-	if(id)
+	if(container->id)
 	{
-		RENDER_VERIFY(glDeleteTextures(1, &id));
+		RENDER_VERIFY(glDeleteTextures(1, &container->id));
 	}
 	
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	D3DSafeRelease(id);
 	D3DSafeRelease(saveTexture);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
+
+	SafeDelete(container);
 }
 
 

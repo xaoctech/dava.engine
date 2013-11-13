@@ -233,14 +233,13 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare()
 {
+	Retain();
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
 {
 #if 1
-	DVASSERT(Thread::IsMainThread());
-
 	if(!font || text == L"")
 	{
 		SafeRelease(sprite);
@@ -689,6 +688,8 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		
 	}
 #endif 
+
+	Release();
 }
 
 void TextBlock::DrawToBuffer(int16 *buf)
