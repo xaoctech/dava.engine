@@ -72,7 +72,7 @@ void LodSystem::Process()
 			lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 		}
 
-		UpdateLod(entity, lodOffset, lodMult);
+		UpdateLod(entity, lod, lodOffset, lodMult);
 	}
 
 	currentPartialUpdateIndex = currentPartialUpdateIndex < UPDATE_PART_PER_FRAME-1 ? currentPartialUpdateIndex+1 : 0;
@@ -155,11 +155,11 @@ void LodSystem::UpdatePartialUpdateIndices()
 	LastSlot = Max(LastSlot, size);
 }
 
-void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = GetLodComponent(entity);
+	//LodComponent * lodComponent = GetLodComponent(entity);
 	int32 oldLod = lodComponent->currentLod;
-	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
+	if(!RecheckLod(entity, lodComponent, psLodOffsetSq, psLodMultSq))
 	{
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
@@ -188,9 +188,9 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 	}
 }
 
-bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = GetLodComponent(entity);
+	//LodComponent * lodComponent = GetLodComponent(entity);
 	bool usePsSettings = (GetEmitter(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
