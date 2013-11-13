@@ -1601,7 +1601,7 @@ namespace DAVA
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
-			DrawDebugRect(unrotatedRect);
+			DrawDebugRect(drawData);
 		}
 		DrawPivotPoint(unrotatedRect);
 		
@@ -1624,7 +1624,7 @@ namespace DAVA
 			
 			if(debugDrawEnabled)
 			{ //TODO: Add debug draw for rotated controls
-				DrawDebugRect(unrotatedRect);
+				DrawDebugRect(drawData);
 			}
 		}
 		
@@ -1634,12 +1634,12 @@ namespace DAVA
 		{	
 			RenderManager::Instance()->ClipPush();
 			RenderManager::Instance()->ClipRect(Rect(0, 0, -1, -1));
-			DrawDebugRect(unrotatedRect, true);
+			DrawDebugRect(drawData, true);
 			RenderManager::Instance()->ClipPop();
 		}
 	}
 	
-	void UIControl::DrawDebugRect(const Rect &drawRect, bool useAlpha)
+	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
 	{
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
@@ -1654,7 +1654,26 @@ namespace DAVA
 		{
 			RenderManager::Instance()->SetColor(debugDrawColor);
 		}
-		RenderHelper::Instance()->DrawRect(drawRect);
+
+		if( gd.angle != 0.0f )
+		{
+			Polygon2 poly;
+			poly.AddPoint( Vector2() );
+			poly.AddPoint( Vector2( gd.size.x, 0 ) );
+			poly.AddPoint( gd.size );
+			poly.AddPoint( Vector2( 0, gd.size.y ) );
+			poly.AddPoint( Vector2() );
+
+			Matrix3 transformMtx;
+			gd.BuildTransformMatrix( transformMtx );
+			poly.Transform( transformMtx );
+
+			RenderHelper::Instance()->DrawPolygon(poly, false);
+		}
+		else
+		{
+			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect() );
+		}
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
@@ -1709,7 +1728,7 @@ namespace DAVA
             point.y = Core::Instance()->GetVirtualScreenHeight() / 2;
 		}
         
-		UIGeometricData gd = GetGeometricData();
+		const UIGeometricData &gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
 		if(expandWithFocus)
 		{
@@ -1718,7 +1737,7 @@ namespace DAVA
 			rect.x -= CONTROL_TOUCH_AREA;
 			rect.y -= CONTROL_TOUCH_AREA;
 		}
-		if(gd.angle != 0)
+		if( gd.angle != 0 )
 		{
 			Vector2 testPoint;
 			testPoint.x = (point.x - gd.position.x) * gd.cosA  + (gd.position.y - point.y) * -gd.sinA + gd.position.x;
