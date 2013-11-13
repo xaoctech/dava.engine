@@ -38,13 +38,13 @@ class PropertyEditorStateHelper : public DAVA::QTreeViewStateHelper<QString>
 {
 public:
 	virtual void SaveTreeViewState(bool needCleanupStorage);
-	PropertyEditorStateHelper(QTreeView* treeView, QtPropertyModel* model);
+	PropertyEditorStateHelper(QTreeView* treeView, QtPropertyFilteringModel* model);
 	
 protected:
 	virtual QString GetPersistentDataForModelIndex(const QModelIndex &modelIndex);
 	
 private:
-	QtPropertyModel* model;
+	QtPropertyFilteringModel* model;
 
 	// Auxiliary map to store Full Paths to the items were already calculated.
 	DAVA::Map<QStandardItem*, QString> fullPathsCache;

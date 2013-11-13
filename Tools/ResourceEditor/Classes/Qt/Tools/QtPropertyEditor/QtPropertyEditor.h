@@ -37,6 +37,7 @@
 class QtPropertyItem;
 class QtPropertyData;
 class QtPropertyModel;
+class QtPropertyFilteringModel;
 class QtPropertyItemDelegate;
 
 class QtPropertyEditor : public QTreeView
@@ -59,19 +60,21 @@ public:
 
 	void Expand(QtPropertyItem *);
 
-	void Update();
-
 	void SetUpdateTimeout(int ms);
 	int GetUpdateTimeout();
 
 	QtPropertyItem* AddHeader(const char *text);
+
+public slots:
+	void SetFilter(const QString &regex);
+	void Update();
 
 signals:
 	void PropertyChanged(const QString &name, QtPropertyData *data);
 	void PropertyEdited(const QString &name, QtPropertyData *data);
 
 protected:
-	QtPropertyModel *curModel;
+	QtPropertyFilteringModel *curFilteringModel;
 	QtPropertyItemDelegate *curItemDelegate;
 	
 	int updateTimeout;
@@ -85,6 +88,10 @@ protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
 	virtual void OnUpdateTimeout();
 	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+
+private:
+	QtPropertyModel *curModel;
+
 };
 
 #endif // __QT_PROPERTY_VIEW_H__

@@ -38,12 +38,15 @@
 #include "QtPropertyItemDelegate.h"
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
-	: QTreeView(parent)
-	, updateTimeout(0)
-	, doUpdateOnPaintEvent(false)
+: QTreeView(parent)
+, updateTimeout(0)
+, doUpdateOnPaintEvent(false)
 {
 	curModel = new QtPropertyModel();
-	setModel(curModel);
+	curFilteringModel = new QtPropertyFilteringModel(curModel);
+	curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+	setModel(curFilteringModel);
 
 	curItemDelegate = new QtPropertyItemDelegate();
 	setItemDelegate(curItemDelegate);
@@ -83,6 +86,11 @@ void QtPropertyEditor::RemovePropertyAll()
 	curModel->RemovePropertyAll();
 }
 
+void QtPropertyEditor::SetFilter(const QString &regex)
+{
+	curFilteringModel->setFilterRegExp(regex);
+}
+
 QtPropertyData *QtPropertyEditor::GetPropertyData(const QString &key, QtPropertyItem *parent) const
 {
 	QtPropertyData *ret = NULL;
@@ -108,7 +116,7 @@ bool QtPropertyEditor::GetEditTracking()
 
 void QtPropertyEditor::Expand(QtPropertyItem *item)
 {
-	expand(curModel->indexFromItem(item));
+	expand(curFilteringModel->mapFromSource(curModel->indexFromItem(item)));
 }
 
 void QtPropertyEditor::SetUpdateTimeout(int ms)
@@ -204,7 +212,7 @@ void QtPropertyEditor::paintEvent(QPaintEvent * event)
 
 void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 {
-	QStandardItem *item = curModel->itemFromIndex(index);
+	QStandardItem *item = curModel->itemFromIndex(curFilteringModel->mapToSource(index));
 	if(NULL != item && item->isEditable() && item->isEnabled())
 	{
 		edit(index, QAbstractItemView::DoubleClicked, NULL);

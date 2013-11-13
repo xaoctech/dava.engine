@@ -51,7 +51,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	: QtPropertyEditor(parent)
 	, advancedMode(false)
 	, curNode(NULL)
-	, treeStateHelper(this, this->curModel)
+	, treeStateHelper(this, this->curFilteringModel)
 {
 	if(connectToSceneSignals)
 	{
