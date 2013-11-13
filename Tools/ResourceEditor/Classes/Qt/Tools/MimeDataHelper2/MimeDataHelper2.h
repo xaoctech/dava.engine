@@ -33,6 +33,15 @@
 
 #include "DAVAEngine.h"
 #include <QMimeData>
+#include <QUrl>
+
+class MimeDataHelper2Base
+{
+public:
+    static bool ContainsFilepathWithExtension(const QMimeData * mimeData, const DAVA::String & extension);
+    static bool IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension);
+    
+};
 
 
 template <class T>
@@ -45,7 +54,9 @@ public:
 
     static bool IsDataSupportType(const QMimeData * mimeData);
 	static inline const QString GetSupportedTypeName();
+    
 };
+
 
 
 template <class T>
@@ -130,6 +141,10 @@ inline const QString MimeDataHelper2<T>::GetSupportedTypeName()
 {
     return "";
 }
+
+
+
+
 
 
 

@@ -599,6 +599,7 @@
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
+		E8CAA4D21833B12500234525 /* MimeDataHelper2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CAA4D11833B12500234525 /* MimeDataHelper2.cpp */; };
 		E8CFEB7A1830D6CE00FC2FC3 /* LibraryTexturesModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */; };
 		E8CFEB8A1830E77200FC2FC3 /* LibraryObjectsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */; };
 		E8CFEB9B183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB8C183104C400FC2FC3 /* LibraryFileSystemFilteringModel_moc.cpp */; };
@@ -1845,6 +1846,7 @@
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
+		E8CAA4D11833B12500234525 /* MimeDataHelper2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MimeDataHelper2.cpp; sourceTree = "<group>"; };
 		E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryTexturesModel.cpp; sourceTree = "<group>"; };
 		E8CFEB781830D6CE00FC2FC3 /* LibraryTexturesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTexturesModel.h; sourceTree = "<group>"; };
 		E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryObjectsModel.cpp; sourceTree = "<group>"; };
@@ -3979,6 +3981,7 @@
 		E863181C183172FA0022626A /* MimeDataHelper2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8CAA4D11833B12500234525 /* MimeDataHelper2.cpp */,
 				E863181E183172FA0022626A /* MimeDataHelper2.h */,
 			);
 			name = MimeDataHelper2;
@@ -4740,6 +4743,7 @@
 				5C574E7D15C9463C0015537A /* btUniformScalingShape.cpp in Build Sources */,
 				5C574E7E15C9463C0015537A /* btContactProcessing.cpp in Build Sources */,
 				5C574E7F15C9463C0015537A /* btGenericPoolAllocator.cpp in Build Sources */,
+				E8CAA4D21833B12500234525 /* MimeDataHelper2.cpp in Build Sources */,
 				5C574E8015C9463C0015537A /* btGImpactBvh.cpp in Build Sources */,
 				5C574E8115C9463C0015537A /* btGImpactCollisionAlgorithm.cpp in Build Sources */,
 				5C574E8215C9463C0015537A /* btGImpactQuantizedBvh.cpp in Build Sources */,
