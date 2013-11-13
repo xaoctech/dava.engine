@@ -49,6 +49,7 @@ public:
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
+    virtual void SetParent(Entity * entity, Entity * parent);
     virtual void ImmediateEvent(Entity * entity, uint32 event);
     
     virtual void Process();
@@ -57,7 +58,7 @@ public:
 	bool IsLocked();
 
 protected:
-	Scene * GetScene() const;
+	inline Scene * GetScene() const;
 
 private:
     uint32 requiredComponents;
@@ -65,6 +66,12 @@ private:
 
 	bool locked;
 };
+    
+// Inline
+inline Scene * SceneSystem::GetScene() const
+{
+    return scene;
+}
 
 };
 #endif //__DAVAENGINE_SCENE3D_SCENESYSTEM_H__
