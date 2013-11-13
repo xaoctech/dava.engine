@@ -40,11 +40,12 @@ namespace DAVA
 class UIButton;
 class UISlider : public UIControl
 {
+protected:
+	virtual ~UISlider();
 public:
 	UISlider();
 	
 	UISlider(const Rect & rect);
-	virtual ~UISlider();
 
 	virtual void AddControl(DAVA::UIControl *control);
 
@@ -129,6 +130,7 @@ protected:
 	void InitInactiveParts(Sprite* spr);
 
 	void PostInitBackground(UIControl* backgroundControl);
+    void RemoveAndReleaseControl(UIControl* &control);
 };
     
     

@@ -60,9 +60,10 @@ public:
         PACKING_DEFAULT,
     };
     
-    
-	PolygonGroup();
+protected:
 	virtual ~PolygonGroup();
+public:
+	PolygonGroup();
 	
 	//! Getters
     inline int32 GetFormat(); 

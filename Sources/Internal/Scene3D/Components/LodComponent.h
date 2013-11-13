@@ -91,7 +91,9 @@ public:
 		int32 layer;
 		bool isDummy;
 	};
-
+protected:
+    ~LodComponent(){};
+public:
 	LodComponent();
 	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);

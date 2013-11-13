@@ -40,6 +40,8 @@ namespace DAVA
 template<class T>
 class PropertyLine : public BaseObject
 {
+protected:
+    ~PropertyLine(){}
 public:
 
 	struct PropertyKey
@@ -97,6 +99,8 @@ type Get##name(){return property##name;};
 template<class T>
 class PropertyLineValue : public PropertyLine<T>
 {
+protected:
+    ~PropertyLineValue(){}
 public:
 
 	PropertyLineValue(T _value)
@@ -119,6 +123,8 @@ public:
 template<class T>
 class PropertyLineKeyframes : public PropertyLine<T>
 {
+protected:
+    ~PropertyLineKeyframes(){}
 public:
 	T resultValue;
 	
