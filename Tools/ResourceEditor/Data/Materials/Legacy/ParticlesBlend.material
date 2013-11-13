@@ -11,11 +11,11 @@ Material:
             RenderState:
                 alphaFunc: "CMP_ALWAYS"
                 alphaFuncCmpValue: 0.0000
-                blendDest: "BLEND_ONE_MINUS_SRC_ALPHA"
+                blendDest: "BLEND_ONE"
                 blendSrc: "BLEND_SRC_ALPHA"
                 cullMode: "FACE_BACK"
                 depthFunc: "CMP_LESS"
-                state: "STATE_BLEND | STATE_DEPTH_TEST | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+                state: "STATE_BLEND | STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
                 stencil:
                     failBack: "STENCILOP_KEEP"
                     failFront: "STENCILOP_KEEP"

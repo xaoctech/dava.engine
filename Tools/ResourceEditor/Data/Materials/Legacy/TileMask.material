@@ -2,6 +2,7 @@ Material:
     MaterialState:
         Name: "Default"
         Layers: ["OpaqueRenderLayer"]
+        MaterialDefines: ["DETAILMASK"]
         Uniforms:
             tileTexture0: 0
             tileTexture1: 1
@@ -10,7 +11,6 @@ Material:
             tileMask: 4
             colorTexture: 5
             specularMap: 6
-            materialSpecularShininess: 10.0
 
         RenderPass:
             Name: "Landscape"
