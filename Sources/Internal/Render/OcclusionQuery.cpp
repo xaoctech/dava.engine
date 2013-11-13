@@ -27,28 +27,31 @@
 =====================================================================================*/
 #include "Render/RenderManager.h"
 #include "Render/OcclusionQuery.h"
-#include "Math/RectPacker.h"
 
 namespace DAVA
 {
 #if defined(__DAVAENGINE_OPENGL__)
 OcclusionQuery::OcclusionQuery()
 {
+    RenderManager::Instance()->LockNonMain();
     queryActive = false;
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glGenQueries(1, &id));
 #else
     RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
+    RenderManager::Instance()->UnlockNonMain();
 }
 
 OcclusionQuery::~OcclusionQuery()
 {
+    RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glDeleteQueries(1, &id));
 #else
     RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
 #endif
+    RenderManager::Instance()->UnlockNonMain();
 }
 
 void OcclusionQuery::BeginQuery()
