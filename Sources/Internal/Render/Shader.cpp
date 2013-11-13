@@ -712,13 +712,11 @@ void Shader::DeleteShaders()
     DVASSERT(fragmentShader != 0);
     DVASSERT(program != 0);
     
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::DeleteShadersInternal));
-    JobInstanceWaiter waiter(job);
-	waiter.Wait();
-
-	static int32 DeleteShaders = 1;
-	Logger::FrameworkDebug("DeleteShaders = %d", DeleteShaders);
-	DeleteShaders++;
+	DeleteShaderContainer * container = new DeleteShaderContainer();
+	container->program = program;
+	container->vertexShader = vertexShader;
+	container->fragmentShader = fragmentShader;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::DeleteShadersInternal, container));
 
     vertexShader = 0;
     fragmentShader = 0;
@@ -727,11 +725,16 @@ void Shader::DeleteShaders()
 
 void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *callerData)
 {
-	RENDER_VERIFY(glDetachShader(program, vertexShader));
-	RENDER_VERIFY(glDetachShader(program, fragmentShader));
-	RENDER_VERIFY(glDeleteShader(vertexShader));
-	RENDER_VERIFY(glDeleteShader(fragmentShader));
-	RENDER_VERIFY(glDeleteProgram(program));
+	DeleteShaderContainer * container = (DeleteShaderContainer*) param;
+	DVASSERT(container);
+
+	RENDER_VERIFY(glDetachShader(container->program, container->vertexShader));
+	RENDER_VERIFY(glDetachShader(container->program, container->fragmentShader));
+	RENDER_VERIFY(glDeleteShader(container->vertexShader));
+	RENDER_VERIFY(glDeleteShader(container->fragmentShader));
+	RENDER_VERIFY(glDeleteProgram(container->program));
+
+	SafeDelete(container);
 }
 
 /* Link a program with all currently attached shaders */

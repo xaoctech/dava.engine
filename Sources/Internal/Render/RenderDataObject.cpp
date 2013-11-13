@@ -95,26 +95,30 @@ RenderDataObject::~RenderDataObject()
     //streamArray.clear();
     //streamMap.clear();
     
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::DeleteBuffersInternal));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
+	DestructorContainer * container = new DestructorContainer();
+	container->vboBuffer = vboBuffer;
+	container->indexBuffer = indexBuffer;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::DeleteBuffersInternal, container));
 }
 
 void RenderDataObject::DeleteBuffersInternal(BaseObject * caller, void * param, void *callerData)
 {
+	DestructorContainer * container = (DestructorContainer*)param;
+	DVASSERT(container);
 #if defined(__DAVAENGINE_OPENGL__)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-	if (vboBuffer)
-		RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
-	if (indexBuffer)
-		RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
+	if (container->vboBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &container->vboBuffer));
+	if (container->indexBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &container->indexBuffer));
 #else 
-	if (vboBuffer)
-		RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
-	if (indexBuffer)
-		RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
+	if (container->vboBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &container->vboBuffer));
+	if (container->indexBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &container->indexBuffer));
 #endif
 #endif
+	SafeDelete(container);
 }
 
 RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer)
