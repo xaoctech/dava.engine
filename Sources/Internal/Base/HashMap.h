@@ -93,6 +93,7 @@ public:
 	{
 		friend class HashMap<K, V>;
         
+		HashMapIterator();
 		HashMapIterator(const HashMapIterator &i);
 		HashMapIterator(const HashMap *map);
         
@@ -424,6 +425,14 @@ inline size_t HashMap<K, V>::InsertItem(typename HashMap<K, V>::HashMapItem* ite
 // begin -->
 
 template <typename K, typename V>
+HashMap<K, V>::HashMapIterator::HashMapIterator()
+: szTable(0)
+, table(NULL)
+, current_index(0)
+, current_item(NULL)
+{ }
+
+template <typename K, typename V>
 HashMap<K, V>::HashMapIterator::HashMapIterator(const typename HashMap<K, V>::HashMapIterator &i)
 	: szTable(i.szTable)
 	, table(i.table)
@@ -458,7 +467,7 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator==(typename const HashMap<K, V>::HashMapIterator &i) const
+bool HashMap<K, V>::HashMapIterator::operator==(const typename HashMap<K, V>::HashMapIterator &i) const
 {
 	return (szTable == i.szTable &&
 		table == i.table &&
@@ -467,7 +476,7 @@ bool HashMap<K, V>::HashMapIterator::operator==(typename const HashMap<K, V>::Ha
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::HashMapIterator::operator!=(typename const HashMap<K, V>::HashMapIterator &i) const
+bool HashMap<K, V>::HashMapIterator::operator!=(const typename HashMap<K, V>::HashMapIterator &i) const
 {
 	return !operator==(i);
 }
@@ -530,7 +539,7 @@ typename HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*()
 }
 
 template <typename K, typename V>
-typename const HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*() const
+const typename HashMap<K, V>::HashMapItem& HashMap<K, V>::HashMapIterator::operator*() const
 {
 	return *current_item;
 }
@@ -542,7 +551,7 @@ typename HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->(
 }
 
 template <typename K, typename V>
-typename const HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->() const
+const typename HashMap<K, V>::HashMapItem* HashMap<K, V>::HashMapIterator::operator->() const
 {
 	return current_item;
 }
