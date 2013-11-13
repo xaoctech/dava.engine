@@ -39,7 +39,11 @@ void JobQueue::Update()
 	while(!queue.empty())
 	{
 		Job * job = queue.front();
-		PerformJob(job);
+		mutex.Unlock();
+
+		job->Perform();
+
+		mutex.Lock();
 		queue.pop_front();
 		job->Release();
 	}
@@ -57,9 +61,5 @@ void JobQueue::AddJob(Job * job)
 	mutex.Unlock();
 }
 
-void JobQueue::PerformJob(Job * job)
-{
-	job->Perform();
-}
 
 }

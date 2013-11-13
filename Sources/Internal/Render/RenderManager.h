@@ -654,7 +654,7 @@ protected:
 
 	bool isInsideDraw;
 
-	RefPtr<Mutex> glMutex;
+	Mutex glMutex;
 	
 	Rect currentClip;
 	
