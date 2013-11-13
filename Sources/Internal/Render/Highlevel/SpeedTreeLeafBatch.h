@@ -39,9 +39,10 @@ class Camera;
 class Shader;
 class SpeedTreeLeafBatch : public RenderBatch
 {
+protected:
+    virtual ~SpeedTreeLeafBatch();
 public:
     SpeedTreeLeafBatch(DAVA::Texture * tex = 0);
-    virtual ~SpeedTreeLeafBatch();
 
     void SetTexture(Texture * texture);
 
@@ -54,6 +55,10 @@ public:
 private:
     Shader * shader;
     Texture * texture;
+
+    int32 uniformWorldTranslate;
+    int32 uniformTexture0;
+    int32 uniformWorldScale;
 
 public:
     INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);

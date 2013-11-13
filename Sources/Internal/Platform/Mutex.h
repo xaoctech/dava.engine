@@ -45,9 +45,10 @@ namespace DAVA
 */
 class Mutex : public BaseObject
 {
+protected:
+	virtual ~Mutex();
 public:
 	Mutex();
-	virtual ~Mutex();
 
 	/**
 		\brief lock the execution thread of this mutex object

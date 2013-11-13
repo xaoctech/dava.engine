@@ -89,9 +89,10 @@ class SkyboxSystem;
  */
 class Scene : public Entity
 {
+protected:
+	virtual ~Scene();
 public:	
 	Scene();
-	virtual ~Scene();
 	
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 

@@ -108,6 +108,44 @@ void RenderHelper::FillRect(const Rect & rect)
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 }
 
+void RenderHelper::FillRotatedRect(const Rect & rect, const Vector2& pivotPoint, float32 angle)
+{
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+	// Calculate rotation matrix for angle
+  	Matrix4 rotationMatrix = Matrix4::IDENTITY;
+    rotationMatrix.CreateRotation(Vector3(0.f, 0.f, -1.0f), angle);
+	// Get four points of rect
+	Vector3 p1(-pivotPoint.x, -pivotPoint.y, 0.f);
+	p1 = p1 * rotationMatrix;
+	
+	Vector3 p2(rect.dx - pivotPoint.x, -pivotPoint.y, 0.f);
+	p2 = p2 * rotationMatrix;
+	
+	Vector3 p3(-pivotPoint.x, rect.dy - pivotPoint.y, 0.f);
+	p3 = p3 * rotationMatrix;
+	
+	Vector3 p4(rect.dx - pivotPoint.x, rect.dy - pivotPoint.y, 0.f);
+	p4 = p4 * rotationMatrix;
+	
+	vertices[0] = p1.x + rect.x + pivotPoint.x;
+    vertices[1] = p1.y + rect.y + pivotPoint.y;
+    vertices[2] = p2.x + rect.x + pivotPoint.x;
+    vertices[3] = p2.y + rect.y + pivotPoint.y;
+    vertices[4] = p3.x + rect.x + pivotPoint.x;
+    vertices[5] = p3.y + rect.y + pivotPoint.y;
+    vertices[6] = p4.x + rect.x + pivotPoint.x;
+    vertices[7] = p4.y + rect.y + pivotPoint.y;
+
+    vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
+    
+    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+    RenderManager::Instance()->SetRenderData(renderDataObject);
+    RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+}
+
 void RenderHelper::DrawRect(const Rect & rect)
 {
     vertices[0] = rect.x;						
@@ -141,7 +179,28 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
 }
-    
+
+	void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end, float32 lineWidth)
+	{
+		vertices[0] = start.x;
+		vertices[1] = start.y;
+		vertices[2] = end.x;
+		vertices[3] = end.y;
+		
+		vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
+		
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		RenderManager::Instance()->SetRenderData(renderDataObject);
+#ifdef __DAVAENGINE_OPENGL__
+		glLineWidth(lineWidth);
+#endif
+		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
+#ifdef __DAVAENGINE_OPENGL__
+		glLineWidth(1.f);
+#endif
+	}
+
+	
     
 void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 lineWidth)
 {
@@ -799,7 +858,17 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		if(0 != lineWidth && from != to)
 		{
 			Vector3 d = to - from;
-			Vector3 c = to - d / Min(arrowLength, d.Length());
+			float32 ln = Min(arrowLength, d.Length());
+
+			Vector3 c;
+			if(ln < 1)
+			{
+				c = to - d * ln;
+			}
+			else
+			{
+				c = to - d / ln;
+			}
 
 			DAVA::float32 k = (to - c).Length() / 4;
 

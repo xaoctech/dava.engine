@@ -608,20 +608,92 @@ namespace DAVA
 	}
 
 	static bool mouseCursorShown = true;
+	static USHORT mouseButtonsDownMask = 0;
 
-	void OnMouseEvent(USHORT buttsFlags, WPARAM wParam, LPARAM lParam)
+	void HandleMouseButtonsPressed(HWND hWnd, USHORT buttsFlags)
 	{
+		if (buttsFlags & RI_MOUSE_BUTTON_1_DOWN)
 		{
-			//Logger::FrameworkDebug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-
-			Vector<DAVA::UIEvent> touches;
-			Vector<DAVA::UIEvent> emptyTouches;
-
-			int32 touchPhase = MoveTouchsToVector(buttsFlags, wParam, lParam, &touches);
-
-            if(touchPhase != -1 && HIWORD(wParam)) // HIWORD(wParam) - isPoint inside window
-			    UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
+			mouseButtonsDownMask |= RI_MOUSE_BUTTON_1_DOWN;
 		}
+		if (buttsFlags & RI_MOUSE_BUTTON_2_DOWN)
+		{
+			mouseButtonsDownMask |= RI_MOUSE_BUTTON_2_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_3_DOWN)
+		{
+			mouseButtonsDownMask |= RI_MOUSE_BUTTON_3_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_4_DOWN)
+		{
+			mouseButtonsDownMask |= RI_MOUSE_BUTTON_4_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_5_DOWN)
+		{
+			mouseButtonsDownMask |= RI_MOUSE_BUTTON_5_DOWN;
+		}
+	}
+
+	void HandleMouseButtonsReleased(HWND hWnd, USHORT buttsFlags)
+	{
+		if (mouseButtonsDownMask == 0)
+		{
+			return;
+		}
+
+		// Reset the mouse buttons mask, release capture if mask is empty (all buttons released).
+		if (buttsFlags & RI_MOUSE_BUTTON_1_UP)
+		{
+			mouseButtonsDownMask &= ~RI_MOUSE_BUTTON_1_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_2_UP)
+		{
+			mouseButtonsDownMask &= ~RI_MOUSE_BUTTON_2_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_3_UP)
+		{
+			mouseButtonsDownMask &= ~RI_MOUSE_BUTTON_3_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_4_UP)
+		{
+			mouseButtonsDownMask &= ~RI_MOUSE_BUTTON_4_DOWN;
+		}
+		if (buttsFlags & RI_MOUSE_BUTTON_5_UP)
+		{
+			mouseButtonsDownMask &= ~RI_MOUSE_BUTTON_5_DOWN;
+		}
+	}
+
+	void OnMouseEvent(HWND hWnd, USHORT buttsFlags, WPARAM wParam, LPARAM lParam, USHORT buttonData)
+    {
+        Vector<DAVA::UIEvent> touches;
+        Vector<DAVA::UIEvent> emptyTouches;
+        int32 touchPhase = -1;
+
+        if (HIWORD(wParam) || mouseButtonsDownMask > 0) // isPoint inside window or some clicks already captured
+        {
+            HandleMouseButtonsPressed(hWnd, buttsFlags);
+        }
+
+        if(buttsFlags & RI_MOUSE_WHEEL)
+        {
+            UIEvent newTouch;
+            newTouch.tid = 0;
+            newTouch.physPoint.x = 0;
+            newTouch.physPoint.y = ((SHORT)buttonData) / (float32)(WHEEL_DELTA);
+            newTouch.phase = touchPhase = UIEvent::PHASE_WHEEL;
+            touches.push_back(newTouch);
+        }
+        else
+		{
+            if(HIWORD(wParam) || mouseButtonsDownMask > 0) // HIWORD(wParam) - isPoint inside window
+			{
+			    touchPhase = MoveTouchsToVector(buttsFlags, wParam, lParam, &touches);
+			}
+		}
+
+        if(touchPhase != -1)
+            UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
 
 		if (RenderManager::Instance()->GetCursor() != 0 && mouseCursorShown)
 		{
@@ -633,6 +705,8 @@ namespace DAVA
 			ShowCursor(false);
 			mouseCursorShown = false;
 		}
+
+		HandleMouseButtonsReleased(hWnd, buttsFlags);
 	}
 
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -762,7 +836,7 @@ namespace DAVA
 
                 bool isInside = (x > clientRect.left && x < clientRect.right && y > clientRect.top && y < clientRect.bottom) || InputSystem::Instance()->IsCursorPining();
 
-                OnMouseEvent(raw->data.mouse.usButtonFlags, MAKEWPARAM(isMove, isInside), MAKELPARAM(x, y)); // only move and drag events
+                OnMouseEvent(hWnd, raw->data.mouse.usButtonFlags, MAKEWPARAM(isMove, isInside), MAKELPARAM(x, y), raw->data.mouse.usButtonData); // only move, drag and wheel events
             }
 
             break;

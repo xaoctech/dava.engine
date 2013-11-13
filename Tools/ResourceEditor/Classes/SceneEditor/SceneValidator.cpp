@@ -343,7 +343,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
             ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
             FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-            if(!IsTextureDescriptorPath(matTexName))
+            if(!matTexName.IsEmpty() && !IsTextureDescriptorPath(matTexName))
             {
                 material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
             }
@@ -394,6 +394,12 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			{
 				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 			}
+
+			Color color = landscape->GetTileColor(texLevel);
+			if (!ValidateColor(color))
+			{
+				landscape->SetTileColor(texLevel, color);
+			}
 		}
 	}
 	else
@@ -412,7 +418,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 		}
 	}
-
+    
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -749,12 +755,30 @@ void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<St
 		FilePath path = "/" + currentSaveName;
 		if(!path.IsEqualToExtension(".png"))
 		{
-			errorsLog.insert("Need to reassign custom colors texture.");
+			errorsLog.insert("Custom colors texture has to have .png extension.");
 		}
+        
+        String::size_type foundPos = currentSaveName.find("DataSource/3d/");
+        if(String::npos == foundPos)
+        {
+			errorsLog.insert("Custom colors texture has to begin from DataSource/3d/.");
+        }
 	}
 }
 
-
+bool SceneValidator::ValidateColor(Color& color)
+{
+	bool ok = true;
+	for(int32 i = 0; i < 4; ++i)
+	{
+		if (color.color[i] < 0.f || color.color[i] > 1.f)
+		{
+			color.color[i] = Clamp(color.color[i], 0.f, 1.f);
+			ok = false;
+		}
+	}
+	return ok;
+}
 
 
 

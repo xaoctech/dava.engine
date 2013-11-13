@@ -372,14 +372,13 @@ void LandscapeProxy::DecreaseTilemaskChanges()
 
 void LandscapeProxy::InitTilemaskImageCopy()
 {
-	if (tilemaskImageCopy == NULL)
-	{
-		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-		tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
-		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-	}
+	SafeRelease(tilemaskImageCopy);
+
+	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 }
 
 Image* LandscapeProxy::GetTilemaskImageCopy()
@@ -416,4 +415,14 @@ void LandscapeProxy::SwapTilemaskSprites()
 	Sprite* temp = tilemaskSprites[TILEMASK_SPRITE_SOURCE];
 	tilemaskSprites[TILEMASK_SPRITE_SOURCE] = tilemaskSprites[TILEMASK_SPRITE_DESTINATION];
 	tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = temp;
+}
+
+bool LandscapeProxy::IsFogEnabled()
+{
+	return baseLandscape->IsFogEnabled();
+}
+
+void LandscapeProxy::SetFogEnabled(bool enabled)
+{
+	baseLandscape->SetFog(enabled);
 }

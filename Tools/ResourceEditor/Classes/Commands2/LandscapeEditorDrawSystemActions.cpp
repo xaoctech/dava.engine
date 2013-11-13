@@ -33,7 +33,7 @@
 #include "../Qt/Main/QtUtils.h"
 
 ActionEnableNotPassable::ActionEnableNotPassable(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_ENABLE_RULER_TOOL)
+:	CommandAction(CMDID_NOT_PASSABLE_TERRAIN_ENABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }
@@ -53,18 +53,24 @@ void ActionEnableNotPassable::Redo()
 	
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
 	
-	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
-	
-	if (!success || !sceneEditor->landscapeEditorDrawSystem->EnableNotPassableTerrain())
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL &
+												~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::NOT_PASSABLE_TERRAIN_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 
 	SceneSignals::Instance()->EmitNotPassableTerrainToggled(sceneEditor);
 }
 
 ActionDisableNotPassable::ActionDisableNotPassable(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_DISABLE_RULER_TOOL)
+:	CommandAction(CMDID_NOT_PASSABLE_TERRAIN_DISABLE)
 ,	sceneEditor(forSceneEditor)
 {
 }

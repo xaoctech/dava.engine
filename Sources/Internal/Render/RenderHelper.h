@@ -62,8 +62,17 @@ public:
         \param pt1 starting point 
         \param pt2 ending point
 	 */
-    void DrawLine(const Vector2 & pt1, const Vector2 & pt2); 
+    void DrawLine(const Vector2 & pt1, const Vector2 & pt2);
+	
+	
     /**
+	 \brief Draws line from pt1 to pt2
+	 \param pt1 starting point
+	 \param pt2 ending point
+	 */
+	void DrawLine(const Vector2 &start, const Vector2 &end, float32 lineWidth);
+    
+	/**
         \brief Draws line in 3D from pt1 to pt2
         \param pt1 starting point 
         \param pt2 ending point
@@ -85,6 +94,13 @@ public:
         \param pt2 ending point
 	 */ 
     void FillRect(const Rect & rect);
+	
+    /**
+        \brief Fills given rect in 2D space and rotates it to specefied angle around pivotpoint
+        \param pivotPoint rotation point 
+        \param angle rotation angle in radians
+	 */ 	
+	void FillRotatedRect(const Rect & rect, const Vector2& pivotPoint, float32 angle);
     
 	// point helpers
     

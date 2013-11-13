@@ -38,15 +38,6 @@ namespace DAVA
 	{
 	public:
 		
-		class SkyboxTextureValidator
-		{
-		public:
-			
-			virtual bool IsValid(const FilePath& descriptorPath) = 0;
-		};
-		
-	public:
-		
 		SkyboxRenderObject();
 		virtual ~SkyboxRenderObject();
 		
@@ -69,15 +60,11 @@ namespace DAVA
 		void SetRotationZ(const float32& rotation);
 		float32 GetRotationZ();
 		
-		//set validator in resourceeditor during skybox creation in order to filter out non-skybox textures files
-		SkyboxRenderObject::SkyboxTextureValidator* GetTextureValidator();
-		void SetTextureValidator(SkyboxRenderObject::SkyboxTextureValidator* validator);
-		
 		//INTROSPECTION used intentionally instead of INTROSPECTION_EXTEND in order to hide underlying details of SkyboxRenderObject implementation
 		INTROSPECTION(SkyboxRenderObject,
 					  PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
 					  PROPERTY("verticalOffset", "Vertical Offset", GetOffsetZ, SetOffsetZ, I_SAVE | I_VIEW | I_EDIT)
-					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE | I_VIEW | I_EDIT)
+					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE)
 					  );
 
 		
@@ -93,8 +80,6 @@ namespace DAVA
 		float32 offsetZ;
 		float32 rotationZ;
 		float32 nonClippingDistance;
-		
-		SkyboxTextureValidator* textureValidator; //this field is set in editor environment only
 	};
 };
 

@@ -32,14 +32,17 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "LandscapeEditorDrawSystem.h"
 #include "../SceneEditor2.h"
 #include "../SceneSignals.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
+#include "../../../Commands2/TilemaskEditorCommands.h"
 #include "../../Main/QtUtils.h"
 #include "../../../SceneEditor/EditorSettings.h"
+#include "HoodSystem.h"
+
+#include <QApplication>
 
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -57,14 +60,11 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	copyPasteFrom(-1.f, -1.f)
 ,	copyPasteTo(-1.f, -1.f)
 ,	prevCursorPosition(-1.f, -1.f)
-,	tilemaskImage(NULL)
-,	tilemaskCopyPasteTool(NULL)
-,	originalTilemaskImage(NULL)
 ,   squareTexture(NULL)
 ,	toolImageIndex(0)
-,	copyPasteHeightmap(false)
-,	copyPasteTilemask(false)
 ,	curHeight(0.f)
+,	activeDrawingType(drawingType)
+,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -86,26 +86,29 @@ bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
-bool HeightmapEditorSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool HeightmapEditorSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!IsCanBeEnabled())
+	
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
 
-	if (!drawSystem->EnableCustomDraw())
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableCustomDraw();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	selectionSystem->SetLocked(true);
@@ -117,9 +120,12 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
-	
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
+	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
+
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool HeightmapEditorSystem::DisableLandscapeEdititing()
@@ -128,7 +134,9 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
-	
+
+	FinishEditing();
+
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
 	
@@ -148,6 +156,7 @@ void HeightmapEditorSystem::Update(DAVA::float32 timeElapsed)
 	
 	if (editingIsEnabled && isIntersectsLandscape)
 	{
+		UpdateToolImage();
 		UpdateBrushTool(timeElapsed);
 	}
 }
@@ -180,7 +189,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if (drawingType == HEIGHTMAP_COPY_PASTE)
 					{
-						if (IsKeyModificatorPressed(DVKEY_ALT))
+						int32 curKeyModifiers = QApplication::keyboardModifiers();
+						if (curKeyModifiers & Qt::AltModifier)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
@@ -188,16 +198,12 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						}
 						else
 						{
+							if (copyPasteFrom == Vector2(-1.f, -1.f))
+							{
+								return;
+							}
 							copyPasteTo = cursorPosition;
-							if (copyPasteTilemask)
-							{
-								PrepareTilemaskCopyPaste();
-							}
-
-							if (copyPasteHeightmap)
-							{
-								StoreOriginalHeightmap();
-							}
+							StoreOriginalHeightmap();
 						}
 					}
 					else
@@ -211,27 +217,26 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					UpdateToolImage();
 					editingIsEnabled = true;
 				}
+
+				activeDrawingType = drawingType;
 				break;
 				
 			case UIEvent::PHASE_DRAG:
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					if (drawingType == HEIGHTMAP_COPY_PASTE)
-					{
-						CreateCopyPasteUndo();
-					}
-					else if (drawingType != HEIGHTMAP_DROPPER)
-					{
-						CreateHeightmapUndo();
-					}
-
-					editingIsEnabled = false;
-				}
+				FinishEditing();
 				break;
 		}
+	}
+}
+
+void HeightmapEditorSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		CreateHeightmapUndo();
+		editingIsEnabled = false;
 	}
 }
 
@@ -255,6 +260,11 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 
@@ -323,7 +333,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	int32 scaleSize = toolImage->GetWidth();
 	Vector2 pos = cursorPosition - Vector2((float32)scaleSize, (float32)scaleSize) / 2.0f;
 	{
-		switch (drawingType)
+		switch (activeDrawingType)
 		{
 			case HEIGHTMAP_DRAW_ABSOLUTE:
 			{
@@ -374,57 +384,14 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					return;
 				}
 
-				if (copyPasteHeightmap)
-				{
-					Vector2 posTo = pos;
-					
-					Vector2 deltaPos = cursorPosition - copyPasteTo;
-					Vector2 posFrom = copyPasteFrom + deltaPos - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
-					
-					float32 koef = (averageStrength * timeElapsed) * 2.0f;
+				Vector2 posTo = pos;
+				
+				Vector2 deltaPos = cursorPosition - copyPasteTo;
+				Vector2 posFrom = copyPasteFrom + deltaPos - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
+				
+				float32 koef = (averageStrength * timeElapsed) * 2.0f;
 
-					editorHeightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
-				}
-
-				if (copyPasteTilemask && prevCursorPosition != cursorPosition)
-				{
-					int32 tilemaskSize = drawSystem->GetTextureSize();
-					int32 heightmapSize = drawSystem->GetHeightmapProxy()->Size();
-					float32 multiplier = (float32)tilemaskSize / (float32)heightmapSize;
-					int32 tilemaskCursorSize = (float32)((int32)(cursorSize * multiplier));
-
-					Vector2 posTo = cursorPosition * multiplier - Vector2((float32)tilemaskCursorSize,
-																		  (float32)tilemaskCursorSize) / 2.f;
-					posTo.x = (float32)((int32)posTo.x);
-					posTo.y = (float32)((int32)posTo.y);
-
-					Vector2 deltaPos = cursorPosition - copyPasteTo;
-					Vector2 posFrom = (copyPasteFrom + deltaPos) * multiplier - Vector2((float32)tilemaskCursorSize,
-																						(float32)tilemaskCursorSize) / 2.f;
-					posFrom.x = (float32)((int32)posFrom.x);
-					posFrom.y = (float32)((int32)posFrom.y);
-
-					LandscapeProxy* landscapeProxy = drawSystem->GetLandscapeProxy();
-					Texture* texture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-
-					EditorHeightmap::DrawCopypasteRGBA(tilemaskImage, tilemaskImage, tilemaskCopyPasteTool,
-													   posFrom, posTo, tilemaskCursorSize, tilemaskCursorSize);
-					if(texture)
-					{
-						texture->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(),
-										  tilemaskImage->GetData(), 0, Texture::CUBE_FACE_INVALID);
-						//TODO: is code useful?
-						texture->GenerateMipmaps();
-						texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-						//ENDOFTODO
-
-						landscapeProxy->UpdateFullTiledTexture();
-					}
-
-					prevCursorPosition = cursorPosition;
-					Rect r = Rect(posTo, Vector2(tilemaskCursorSize, tilemaskCursorSize));
-					AddRectToAccumulator(tilemaskUpdatedRect, r);
-				}
+				editorHeightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
 
 				break;
 			}
@@ -458,13 +425,6 @@ Rect HeightmapEditorSystem::GetHeightmapUpdatedRect()
 	return r;
 }
 
-Rect HeightmapEditorSystem::GetTilemaskUpdatedRect()
-{
-	Rect r = tilemaskUpdatedRect;
-	drawSystem->ClampToTexture(r);
-	return r;
-}
-
 void HeightmapEditorSystem::StoreOriginalHeightmap()
 {
 	EditorHeightmap* editorHeightmap = drawSystem->GetHeightmapProxy();
@@ -472,14 +432,6 @@ void HeightmapEditorSystem::StoreOriginalHeightmap()
 	DVASSERT(originalHeightmap == NULL);
 	originalHeightmap = editorHeightmap->Clone(NULL);
 	ResetAccumulatorRect(heightmapUpdatedRect);
-}
-
-void HeightmapEditorSystem::PrepareTilemaskCopyPaste()
-{
-	tilemaskImage = CreateTilemaskImage();
-	originalTilemaskImage = CreateTilemaskImage();
-	CreateTilemaskCopyPasteTool();
-	ResetAccumulatorRect(tilemaskUpdatedRect);
 }
 
 void HeightmapEditorSystem::CreateHeightmapUndo()
@@ -491,27 +443,6 @@ void HeightmapEditorSystem::CreateHeightmapUndo()
 										   GetHeightmapUpdatedRect()));
 
 	SafeRelease(originalHeightmap);
-}
-
-void HeightmapEditorSystem::CreateCopyPasteUndo()
-{
-	if (!copyPasteHeightmap && !copyPasteTilemask)
-	{
-		return;
-	}
-
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
-
-	Rect heightmapRect = GetHeightmapUpdatedRect();
-	Rect tilemaskRect = GetTilemaskUpdatedRect();
-
-	scene->Exec(new CopyPasteHeightmapCommand(copyPasteHeightmap, copyPasteTilemask,
-											  drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect,
-											  drawSystem->GetLandscapeProxy(), originalTilemaskImage, tilemaskRect));
-
-	SafeRelease(originalHeightmap);
-	SafeRelease(originalTilemaskImage);
 }
 
 void HeightmapEditorSystem::SetBrushSize(int32 brushSize)
@@ -556,35 +487,6 @@ void HeightmapEditorSystem::SetDrawingType(eHeightmapDrawType type)
 	drawingType = type;
 }
 
-void HeightmapEditorSystem::SetCopyPasteHeightmap(bool active)
-{
-	copyPasteHeightmap = active;
-}
-
-void HeightmapEditorSystem::SetCopyPasteTilemask(bool active)
-{
-	copyPasteTilemask = active;
-}
-
-Image* HeightmapEditorSystem::CreateTilemaskImage()
-{
-	Texture* texture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-
-	eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-	Image* img = texture->CreateImageFromMemory();
-	RenderManager::Instance()->SetBlendMode(src, dst);
-
-	return img;
-}
-
-void HeightmapEditorSystem::CreateTilemaskCopyPasteTool()
-{
-	SafeRelease(tilemaskCopyPasteTool);
-	tilemaskCopyPasteTool = CreateToolImage(128, toolImagePath);
-}
-
 int32 HeightmapEditorSystem::GetBrushSize()
 {
 	return cursorSize;
@@ -614,16 +516,6 @@ int32 HeightmapEditorSystem::GetToolImage()
 HeightmapEditorSystem::eHeightmapDrawType HeightmapEditorSystem::GetDrawingType()
 {
 	return drawingType;
-}
-
-bool HeightmapEditorSystem::GetCopyPasteHeightmap()
-{
-	return copyPasteHeightmap;
-}
-
-bool HeightmapEditorSystem::GetCopyPasteTilemask()
-{
-	return copyPasteTilemask;
 }
 
 void HeightmapEditorSystem::SetDropperHeight(float32 height)

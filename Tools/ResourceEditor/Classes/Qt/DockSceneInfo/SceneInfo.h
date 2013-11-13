@@ -65,17 +65,14 @@ public:
 	SceneInfo(QWidget *parent = 0);
 	~SceneInfo();
 
+public slots:
+		void UpdateInfoByTimer();
 
 protected slots:
-    
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-
-protected slots:
-    
-    void UpdateInfoByTimer();
     
 protected:
     

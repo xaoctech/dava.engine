@@ -65,4 +65,4 @@ friend class FMODSoundSystem;
 
 };
 
-#endif //__DAVAENGINE_SOUND_GROUP_H__
+#endif //__DAVAENGINE_FMOD_SOUND_GROUP_H__

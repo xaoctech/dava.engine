@@ -97,8 +97,8 @@ TextureDescriptor * TextureDescriptor::CreateDescriptor(Texture::TextureWrap wra
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 	
-	descriptor->settings.wrapModeS = wrap;
-	descriptor->settings.wrapModeT = wrap;
+    descriptor->settings.wrapModeS = wrap;
+    descriptor->settings.wrapModeT = wrap;
     
     descriptor->settings.generateMipMaps = generateMipmaps;
 	if(descriptor->settings.generateMipMaps)
@@ -491,8 +491,6 @@ FilePath TextureDescriptor::GetDescriptorPathname(const FilePath &texturePathnam
     {
         return texturePathname;
     }
-    
-    DVASSERT(GPUFamilyDescriptor::GetGPUForPathname(texturePathname) == GPU_UNKNOWN);
     
     return FilePath::CreateWithNewExtension(texturePathname, GetDescriptorExtension());
 }

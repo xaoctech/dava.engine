@@ -165,10 +165,11 @@ public:
 		RETURN_KEY_EMERGENCY_CALL
 	};
 
-    UITextField();
-	
-	UITextField(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+protected:
 	virtual ~UITextField();
+public:
+	UITextField();
+	UITextField(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 	
 	virtual void WillAppear();
 	virtual void DidAppear();
@@ -353,8 +354,8 @@ private:
 #elif defined(__DAVAENGINE_ANDROID__)
 	UITextFieldAndroid* textFieldAndroid;
 #else
-    Font * textFont;
     UIStaticText * staticText;
+    Font * textFont;
 #endif
     float32 cursorTime;
 };

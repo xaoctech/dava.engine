@@ -30,10 +30,6 @@
 #include "BeastSystem.h"
 
 
-#define DEFAULT_STATICLIGHT_ENABLE_STATE false
-#define DEFAULT_STATICLIGHT_CAST_SHADOWS_STATE false
-#define DEFAULT_STATICLIGHT_RECEIVE_SHADOWS_STATE false
-
 BeastSystem::BeastSystem(Scene* scene):SceneSystem(scene)
 {}
 
@@ -41,27 +37,56 @@ BeastSystem::~BeastSystem(){}
 
 void BeastSystem::AddEntity(Entity * entity)
 {
-	SetDefaultPropertyValues(entity);
+    if(NULL == GetSkybox(entity))
+    {
+        SetDefaultPropertyValues(entity);
+    }
 }
 
 void BeastSystem::SetDefaultPropertyValues(Entity * entity)
 {
 	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
 	
-	if(!propertyList->IsKeyExists("editor.staticlight.enable"))
+	SetBool(propertyList, "editor.staticlight.enable", true);
+	SetBool(propertyList, "editor.staticlight.castshadows", true);
+	SetBool(propertyList, "editor.staticlight.receiveshadows", true);
+
+	if(GetLight(entity))
 	{
-		propertyList->SetBool("editor.staticlight.enable", DEFAULT_STATICLIGHT_ENABLE_STATE);
-	}
-	
-	if(!propertyList->IsKeyExists("editor.staticlight.castshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.castshadows", DEFAULT_STATICLIGHT_CAST_SHADOWS_STATE);
-	}
-	
-	if(!propertyList->IsKeyExists("editor.staticlight.receiveshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.receiveshadows", DEFAULT_STATICLIGHT_RECEIVE_SHADOWS_STATE);
+		SetFloat(propertyList, "editor.intensity", 1.f);
+
+		SetFloat(propertyList, "editor.staticlight.shadowangle", 0.f);
+		SetFloat(propertyList, "editor.staticlight.shadowradius", 0.f);
+		SetInt32(propertyList, "editor.staticlight.shadowsamples", 1);
+		SetFloat(propertyList, "editor.staticlight.falloffcutoff", 1000.f);
+		SetFloat(propertyList, "editor.staticlight.falloffexponent", 1.f);
 	}
 }
+
+void BeastSystem::SetBool(KeyedArchive* propertyList, const String & key, bool value)
+{
+	if(!propertyList->IsKeyExists(key))
+	{
+		propertyList->SetBool(key, value);
+	}
+}
+
+void BeastSystem::SetFloat(KeyedArchive* propertyList, const String & key, float32 value)
+{
+	if(!propertyList->IsKeyExists(key))
+	{
+		propertyList->SetFloat(key, value);
+	}
+}
+
+void BeastSystem::SetInt32( KeyedArchive* propertyList, const String & key, int32 value )
+{
+	if(!propertyList->IsKeyExists(key))
+	{
+		propertyList->SetInt32(key, value);
+	}
+}
+
+
 
 

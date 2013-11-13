@@ -55,7 +55,6 @@ namespace DAVA
 {
     
     
-REGISTER_CLASS(Entity);
 
 // Property Names.
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
@@ -1048,7 +1047,7 @@ const Matrix4 & Entity::GetWorldTransform() const
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }
 
-void Entity::SetVisible(bool isVisible)
+void Entity::SetVisible(const bool & isVisible)
 {
 	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 	if(isVisible) 

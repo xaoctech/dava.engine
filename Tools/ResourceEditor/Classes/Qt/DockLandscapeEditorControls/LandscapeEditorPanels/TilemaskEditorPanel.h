@@ -3,12 +3,15 @@
 
 #include "LandscapeEditorBasePanel.h"
 #include "DAVAEngine.h"
+#include "Commands2/Command2.h"
 
 using namespace DAVA;
 
 class QComboBox;
+class QRadioButton;
 class SliderWidget;
 class TileTexturePreviewWidget;
+class QFrame;
 
 class TilemaskEditorPanel: public LandscapeEditorBasePanel
 {
@@ -30,6 +33,8 @@ private slots:
 	void SetStrength(int strength);
 	void SetDrawTexture(int textureIndex);
 	void OnTileColorChanged(int32 tileNumber, Color color);
+	void SetNormalDrawing();
+	void SetCopyPaste();
 
 	void IncreaseBrushSize();
 	void DecreaseBrushSize();
@@ -46,6 +51,8 @@ private slots:
 
 	void PrevTool();
 	void NextTool();
+
+	void OnCommandExecuted(SceneEditor2* scene, const Command2* command, bool redo);
 
 protected:
 	virtual bool GetEditorEnabled();
@@ -69,9 +76,15 @@ private:
 	SliderWidget* sliderWidgetStrength;
 	QComboBox* comboBrushImage;
 	TileTexturePreviewWidget* tileTexturePreviewWidget;
+	QRadioButton* radioDraw;
+	QRadioButton* radioCopyPaste;
+	QFrame* frameStrength;
+	QFrame* frameTileTexturesPreview;
 
 	void InitBrushImages();
 	void UpdateTileTextures();
+
+	void UpdateControls();
 
 	int32 BrushSizeUIToSystem(int32 uiValue);
 	int32 BrushSizeSystemToUI(int32 systemValue);
