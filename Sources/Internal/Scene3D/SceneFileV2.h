@@ -100,10 +100,10 @@ public:
         ERROR_FAILED_TO_CREATE_FILE = 2,
         ERROR_FILE_WRITE_ERROR = 3,
     };
-    
-    
-    SceneFileV2();
+protected:
     virtual ~SceneFileV2();
+public:
+    SceneFileV2();
     
     eError SaveScene(const FilePath & filename, Scene * _scene);
     eError LoadScene(const FilePath & filename, Scene * _scene);

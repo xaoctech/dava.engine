@@ -43,6 +43,8 @@ namespace DAVA
 class ParticleEmitter;
 class ParticleEffectComponent : public Component
 {
+protected:
+    ~ParticleEffectComponent(){};
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 

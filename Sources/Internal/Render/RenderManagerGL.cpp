@@ -365,37 +365,11 @@ void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates
     width = (int32)(rect.dx * currentDrawScale.x);
     height = (int32)(rect.dy * currentDrawScale.y);    
     
-    
-    switch(renderOrientation)
+    if (renderOrientation!=Core::SCREEN_ORIENTATION_TEXTURE)
     {
-        case Core::SCREEN_ORIENTATION_PORTRAIT:
-        { 
-            y = frameBufferHeight - y - height;
-        }
-        break;    
-        
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-		{
-			int32 tmpY = y;
-			y = x;
-			x = tmpY;
-			tmpY = height;
-			height = width;
-			width = tmpY;
-		}
-        break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-		{
-			int32 tmpY = height;
-			height = width;
-			width = tmpY;
-			tmpY = y;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - x - height;
-			x = frameBufferWidth/* * Core::GetVirtualToPhysicalFactor()*/ - tmpY - width;
-		}
-        break;
-            
-    }    
+        y = frameBufferHeight - y - height;
+    }
+    
     RENDER_VERIFY(glViewport(x, y, width, height));
     viewport.x = (float32)x;
     viewport.y = (float32)y;
@@ -424,39 +398,10 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
     orthoMatrix.glOrtho(0.0f, (float32)frameBufferWidth, (float32)frameBufferHeight, 0.0f, -1.0f, 1.0f);
 	
-    switch (orientation) 
-	{
-		case Core::SCREEN_ORIENTATION_PORTRAIT:
-		case Core::SCREEN_ORIENTATION_TEXTURE:
-			retScreenWidth = frameBufferWidth;
-			retScreenHeight = frameBufferHeight;
-			break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-            
-            //mark glTranslatef(0.0f, (float32)frameBufferHeight, 0.0f);
-			//mark glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            
-            glTranslate.glTranslate(0.0f, (float32)frameBufferHeight, 0.0f);
-            glRotate.glRotate(-90.0f, 0.0f, 0.0f, 1.0f);
-            
-            orthoMatrix = glRotate * glTranslate * orthoMatrix;
-            
-			retScreenWidth = frameBufferHeight;
-			retScreenHeight = frameBufferWidth;
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-			//mark glTranslatef((float32)frameBufferWidth, 0.0f, 0.0f);
-			//mark glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            
-            glTranslate.glTranslate((float32)frameBufferWidth, 0.0f, 0.0f);
-            glRotate.glRotate(90.0f, 0.0f, 0.0f, 1.0f);
-            
-            orthoMatrix = glRotate * glTranslate * orthoMatrix;
-
-			retScreenWidth = frameBufferHeight;
-			retScreenHeight = frameBufferWidth;
-			break;
-	}
+    
+    retScreenWidth = frameBufferWidth;
+    retScreenHeight = frameBufferHeight;
+	
     
     SetMatrix(MATRIX_PROJECTION, orthoMatrix);
 
@@ -802,35 +747,12 @@ void RenderManager::SetHWClip(const Rect &rect)
 	int32 y2= (int32)ceilf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
 	int32 width = x2 - x;
 	int32 height = y2 - y;
-	switch (renderOrientation) 
-	{
-	case Core::SCREEN_ORIENTATION_PORTRAIT:
-		{
-			//			x = frameBufferWidth - x;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
-		}
-		break;
-	case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-		{
-			int32 tmpY = y;
-			y = x;
-			x = tmpY;
-			tmpY = height;
-			height = width;
-			width = tmpY;
-		}
-		break;
-	case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-		{
-			int32 tmpY = height;
-			height = width;
-			width = tmpY;
-			tmpY = y;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - x - height;
-			x = frameBufferWidth/* * Core::GetVirtualToPhysicalFactor()*/ - tmpY - width;
-		}
-		break;
-	}
+    
+    if (renderOrientation!=Core::SCREEN_ORIENTATION_TEXTURE)
+    {
+        y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
+    }
+	
 	RENDER_VERIFY(glEnable(GL_SCISSOR_TEST));
 	RENDER_VERIFY(glScissor(x, y, width, height));
 }
@@ -1216,11 +1138,15 @@ void RenderManager::HWglBindFBO(const int32 fbo)
 #if defined(__DAVAENGINE_ANDROID__)
 void RenderManager::Lost()
 {
+    bufferBindingId[0] = 0;
+    bufferBindingId[1] = 0;
+
 	enabledAttribCount = 0;
 	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
 	{
 		lastBindedTexture[i] = 0;
 	}
+    lastBindedTextureType = Texture::TEXTURE_2D;
 
 	lastBindedFBO = 0;
 }

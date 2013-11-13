@@ -47,6 +47,8 @@ using namespace DAVA;
 
 class InputTest: public TestTemplate<InputTest>, public UITextFieldDelegate
 {
+protected:
+    ~InputTest(){}
 public:
 	InputTest();
 
