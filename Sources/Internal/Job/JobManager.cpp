@@ -68,7 +68,7 @@ ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & mes
 	{	
 		if(Thread::IsMainThread())
 		{
-			mainQueue->PerformJob(job);
+			job->Perform();
 		}
 		else
 		{
@@ -96,10 +96,9 @@ void JobManager::OnJobCreated(Job * job)
 
 void JobManager::OnJobCompleted(Job * job)
 {
-	jobsDoneMutex.Lock();
-
 	job->SetState(Job::STATUS_DONE);
 
+	jobsDoneMutex.Lock();
 	//check jobs done for ThreadId
 	uint32 & jobsCount = jobsPerCreatorThread[job->creatorThreadId];
 	DVASSERT(jobsCount> 0);
@@ -117,12 +116,10 @@ void JobManager::OnJobCompleted(Job * job)
 
 JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
 {
-	jobsDoneMutex.Lock();
-
 	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_WILL_WAIT;
 	const Thread::ThreadId threadId = waiter->GetThreadId();
-	DVASSERT(waitersPerCreatorThread.find(threadId) == waitersPerCreatorThread.end());
 
+	jobsDoneMutex.Lock();
 	//check if all desired jobs are already done
 	uint32 & jobsCount = jobsPerCreatorThread[threadId];
 	if(0 == jobsCount)
@@ -166,12 +163,9 @@ void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId
 
 JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForJobInstance(JobInstanceWaiter * waiter)
 {
-	jobsDoneMutex.Lock();
-
 	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_WILL_WAIT;
 
 	Job * job = waiter->GetJob();
-	DVASSERT(waitersPerJob.find(job) == waitersPerJob.end());
 	
 	if(Job::STATUS_DONE == job->GetState())
 	{
@@ -179,10 +173,10 @@ JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForJobInstance(J
 	}
 	else
 	{
+		jobsDoneMutex.Lock();
 		waitersPerJob[job] = waiter;
+		jobsDoneMutex.Unlock();
 	}
-
-	jobsDoneMutex.Unlock();
 
 	return result;
 }

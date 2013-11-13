@@ -42,7 +42,6 @@ class JobQueue
 public:
 	void Update();
 	void AddJob(Job * job);
-	void PerformJob(Job * job);
 
 protected:
 	Mutex mutex;
