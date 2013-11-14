@@ -207,7 +207,18 @@ namespace ResourceEditor
 	static const String SLIDER_WIDGET_CURRENT_VALUE					= "Current value";
 
 	static const String TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP	= "Click to change color";
-	
+
+	static const String LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS				= "No errors.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS			= "Error: All another landscape editors should be disabled";
+	static const String LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT	= "Error: landscape entity is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSETN	= "Error: tile mask texture is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSETN= "Error: full tiled texture is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_ABSENT	= "Error: tile texture 0 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_ABSENT	= "Error: tile texture 1 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_ABSENT	= "Error: tile texture 2 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_ABSENT	= "Error: tile texture 3 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT		= "Error: heightmap is absent.";
+
 	static const String ADD_SWITCH_NODE_DIALOG_NO_CHILDREN			= "Error: switch node must be created with state nodes.";
 }
 
