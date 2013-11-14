@@ -35,7 +35,7 @@
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
-#include "Tools/MimeDataHelper2/MimeDataHelper2.h"
+#include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Classes/Deprecated/ScenePreviewDialog.h"
 #include "Classes/Qt/Main/Request.h"
@@ -314,12 +314,12 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 
 void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 {
-    if(MimeDataHelper2Base::ContainsFilepathWithExtension(data, ".sc2"))
+    if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 	{
 		QList<QUrl> urls = data->urls();
 		for(int i = 0; i < urls.size(); ++i)
 		{
-            if(MimeDataHelper2Base::IsURLEqualToExtension(urls[i], ".sc2"))
+            if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
             {
                 QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
             }
@@ -331,12 +331,12 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 {
 	if(NULL != curScene)
 	{
-        if(MimeDataHelper2Base::ContainsFilepathWithExtension(data, ".sc2"))
+		if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 		{
             QList<QUrl> urls = data->urls();
             for(int i = 0; i < urls.size(); ++i)
             {
-                if(MimeDataHelper2Base::IsURLEqualToExtension(urls[i], ".sc2"))
+                if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
                 {
                     DAVA::Vector3 pos;
                     
@@ -449,9 +449,7 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    
-	const QMimeData *mimeData = event->mimeData();
-    if(MimeDataHelper2Base::ContainsFilepathWithExtension(mimeData, ".sc2"))
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
 		event->acceptProposedAction();
 	}
@@ -464,10 +462,9 @@ void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void SceneTabWidget::dropEvent(QDropEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-    if(MimeDataHelper2Base::ContainsFilepathWithExtension(mimeData, ".sc2"))
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
-		TabBarDataDropped(mimeData);
+		TabBarDataDropped(event->mimeData());
 	}
 }
 
@@ -577,8 +574,7 @@ MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 
 void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-    if(MimeDataHelper2Base::ContainsFilepathWithExtension(mimeData, ".sc2"))
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
 		event->acceptProposedAction();
 	}
@@ -591,10 +587,9 @@ void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 
 void MainTabBar::dropEvent(QDropEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-    if(MimeDataHelper2Base::ContainsFilepathWithExtension(mimeData, ".sc2"))
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
-		emit OnDrop(mimeData);
+		emit OnDrop(event->mimeData());
 	}
 }
 
