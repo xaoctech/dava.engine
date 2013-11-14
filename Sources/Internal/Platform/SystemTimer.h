@@ -91,7 +91,7 @@ public:
     
     
 #if defined(__DAVAENGINE_ANDROID__)
-	Mutex  *tickMutex;
+	Mutex  tickMutex;
 	uint64 GetTickCount();
 	void InitTickCount();
 #endif //#if defined(__DAVAENGINE_ANDROID__)
