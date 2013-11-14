@@ -34,13 +34,14 @@
 #include <QStyledItemDelegate>
 
 class QtPropertyData;
+class QtPropertyFilteringModel;
 
 class QtPropertyItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    QtPropertyItemDelegate(QWidget *parent = 0);
+	QtPropertyItemDelegate(QtPropertyFilteringModel *model, QWidget *parent = 0);
 	virtual ~QtPropertyItemDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -54,10 +55,10 @@ public slots:
 	void collapse(const QModelIndex & index);
 	void expand(const QModelIndex & index);
 	bool helpEvent(QHelpEvent * event, QAbstractItemView * view, const QStyleOptionViewItem & option, const QModelIndex & index);
-	bool editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index);
 
 protected:
 	QStyle *childWidgetsStyle;
+	QtPropertyFilteringModel *model;
 
 	void recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const;
 	void hideAllChildOptionalWidgets(QtPropertyData* data);

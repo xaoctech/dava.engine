@@ -53,7 +53,7 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 		curArchive->Retain();
 	}
 
-	SetFlags(FLAG_IS_DISABLED);
+	SetEnabled(false);
 
 	// add optional widget (button) to add new key
 	QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
@@ -102,10 +102,10 @@ bool QtPropertyDataDavaKeyedArcive::UpdateValueInternal()
 		// at first step of sync we mark (placing to vector) items to remove
 		for(int i = 0; i < ChildCount(); ++i)
 		{
-			QPair<QString, QtPropertyData *> pair = ChildGet(i);
-			if(NULL != pair.second)
+			QtPropertyData *child = ChildGet(i);
+			if(NULL != child)
 			{
-				dataToRemove.insert(pair.second);
+				dataToRemove.insert(child);
 			}
 		}
 
@@ -210,9 +210,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 		// search for child data with such button
 		for(int i = 0; i < ChildCount(); ++i)
 		{
-			QPair<QString, QtPropertyData *> child = ChildGet(i);
-			QtPropertyData *childData = child.second;
-
+			QtPropertyData *childData = ChildGet(i);
 			if(NULL != childData)
 			{
 				// search btn thought this child optional widgets
@@ -226,12 +224,10 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 							delete lastCommand;
 						}
 
-						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, child.first.toStdString());
+						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, childData->GetName().toStdString());
+						curArchive->DeleteKey(childData->GetName().toStdString());
 
-						curArchive->DeleteKey(child.first.toStdString());
-						//ChildsSync();
-
-						emit ValueChanged(QtPropertyData::VALUE_EDITED);
+						EmitDataChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
 				}
@@ -256,8 +252,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 		}
 
 		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
-
-		emit ValueChanged(QtPropertyData::VALUE_EDITED);
+		EmitDataChanged(QtPropertyData::VALUE_EDITED);
 	}
 }
 

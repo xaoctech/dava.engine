@@ -134,8 +134,6 @@ void TextureProperties::MipMapSizesInit(int baseWidth, int baseHeight)
 	if(enumSizes.GetCount() > 0)
 	{
 		LoadCurSizeToProp();
-
-		propSizes->SetFlags(QtPropertyData::FLAG_EMPTY);
 		SetPropertyItemValidValues(propSizes, &enumSizes);
 	}
 }
@@ -163,15 +161,15 @@ void TextureProperties::ReloadProperties()
 		curGPU >= 0 &&
 		curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
-		QtPropertyItem *header;
+		QModelIndex headerIndex;
 		DAVA::InspBase *object = NULL;
 
 		object = &curTextureDescriptor->settings;
 
 		// add common texture settings
-		header = AddHeader("Texture settings");
-		propMipMap = AddPropertyItem("generateMipMaps", object, header);
-		propMipMap->SetFlags(QtPropertyData::FLAG_IS_CHECKABLE | QtPropertyData::FLAG_IS_NOT_EDITABLE);
+		headerIndex = AppendHeader("Texture settings");
+		propMipMap = AddPropertyItem("generateMipMaps", object, headerIndex);
+		propMipMap->SetCheckable(true);
         
         //TODO: magic to display introspection info as bool, not int
         bool savedValue = propMipMap->GetValue().toBool();
@@ -179,20 +177,19 @@ void TextureProperties::ReloadProperties()
         propMipMap->SetValue(savedValue);
         //END of TODO
 
-
-		propWrapModeS = AddPropertyItem("wrapModeS", object, header);
-		propWrapModeT = AddPropertyItem("wrapModeT", object, header);
-		propMinFilter = AddPropertyItem("minFilter", object, header);
-		propMagFilter = AddPropertyItem("magFilter", object, header);
+		propWrapModeS = AddPropertyItem("wrapModeS", object, headerIndex);
+		propWrapModeT = AddPropertyItem("wrapModeT", object, headerIndex);
+		propMinFilter = AddPropertyItem("minFilter", object, headerIndex);
+		propMagFilter = AddPropertyItem("magFilter", object, headerIndex);
 
 		object = &curTextureDescriptor->compression[curGPU];
 
 		// add per-gpu settings
-		header = AddHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
-		propFormat = AddPropertyItem("format", object, header);
+		headerIndex = AppendHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
+		propFormat = AddPropertyItem("format", object, headerIndex);
 
 		propSizes = new QtPropertyDataMetaObject(&curSizeLevelObject, DAVA::MetaInfo::Instance<int>());
-		AppendProperty("Size", propSizes, header);
+		AppendProperty("Size", propSizes, headerIndex);
 
 		LoadCurSizeToProp();
 
@@ -217,7 +214,7 @@ void TextureProperties::ReloadProperties()
 
 		if(0 == enumSizes.GetCount())
 		{
-			propSizes->SetFlags(QtPropertyData::FLAG_IS_DISABLED);
+			propSizes->SetEnabled(false);
 		}
 
 		expandAll();
@@ -287,7 +284,7 @@ void TextureProperties::ReloadEnumWrap()
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
 }
 
-QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::InspBase *object, QtPropertyItem *parent)
+QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
 {
 	QtPropertyDataMetaObject* ret = NULL;
 	const DAVA::InspInfo* info = object->GetTypeInfo();

@@ -34,7 +34,6 @@
 #include <QWindowsStyle>
 
 #include "QtPropertyEditor.h"
-#include "QtPropertyModel.h"
 #include "QtPropertyItemDelegate.h"
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
@@ -48,20 +47,20 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 
 	setModel(curFilteringModel);
 
-	curItemDelegate = new QtPropertyItemDelegate();
+	curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
-	QObject::connect(curModel, SIGNAL(ItemEdited(const QString &, QtPropertyData *)), this, SLOT(OnItemEdited(const QString &, QtPropertyData *)));
+	QObject::connect(curModel, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnItemEdited(const QModelIndex &)));
 	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
 { }
 
-QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
+QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent)
 {
 	if(NULL != data)
 	{
@@ -71,14 +70,33 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const Q
 	return curModel->AppendProperty(name, data, parent);
 }
 
-QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::GetProperty(const QString &name, QtPropertyItem* parent) const
+QModelIndex QtPropertyEditor::AppendHeader(const QString &text)
 {
-	return curModel->GetProperty(name, parent);
+	QModelIndex propHeader = AppendProperty(text, new QtPropertyData(""));
+
+	/*
+	if(!propHeader.IsEmpty())
+	{
+		QFont boldFont = propHeader.nameItem->font();
+		boldFont.setBold(true);
+
+		propHeader.nameItem->setFont(boldFont);
+		propHeader.nameItem->setBackground(QBrush(QColor(Qt::lightGray)));
+		propHeader.dataItem->setBackground(QBrush(QColor(Qt::lightGray)));
+	}
+	*/
+
+	return propHeader;
 }
 
-void QtPropertyEditor::RemoveProperty(QtPropertyItem* item)
+QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 {
-	curModel->RemoveProperty(item);
+	return curModel->itemFromIndex(curFilteringModel->mapToSource(index));
+}
+
+void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
+{
+	curModel->RemoveProperty(curFilteringModel->mapToSource(index));
 }
 
 void QtPropertyEditor::RemovePropertyAll()
@@ -91,32 +109,14 @@ void QtPropertyEditor::SetFilter(const QString &regex)
 	curFilteringModel->setFilterRegExp(regex);
 }
 
-QtPropertyData *QtPropertyEditor::GetPropertyData(const QString &key, QtPropertyItem *parent) const
-{
-	QtPropertyData *ret = NULL;
-
-	QPair<QtPropertyItem*, QtPropertyItem*> pair = GetProperty(key, parent);
-	if(NULL != pair.second)
-	{
-		ret = pair.second->GetPropertyData();
-	}
-
-	return ret;
-}
-
 void QtPropertyEditor::SetEditTracking(bool enabled)
 {
 	curModel->SetEditTracking(enabled);
 }
 
-bool QtPropertyEditor::GetEditTracking()
+bool QtPropertyEditor::GetEditTracking() const
 {
 	return curModel->GetEditTracking();
-}
-
-void QtPropertyEditor::Expand(QtPropertyItem *item)
-{
-	expand(curFilteringModel->mapFromSource(curModel->indexFromItem(item)));
 }
 
 void QtPropertyEditor::SetUpdateTimeout(int ms)
@@ -152,22 +152,6 @@ void QtPropertyEditor::OnUpdateTimeout()
 	}
 
 	SetUpdateTimeout(updateTimeout);
-}
-
-QtPropertyItem* QtPropertyEditor::AddHeader(const char *text)
-{
-	QPair<QtPropertyItem*, QtPropertyItem*> propHeader;
-	
-	propHeader = AppendProperty(text, NULL);
-	
-	QFont boldFont = propHeader.first->font();
-	boldFont.setBold(true);
-	
-	propHeader.first->setFont(boldFont);
-	propHeader.first->setBackground(QBrush(QColor(Qt::lightGray)));
-	propHeader.second->setBackground(QBrush(QColor(Qt::lightGray)));
-	
-	return propHeader.first;
 }
 
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
@@ -212,14 +196,14 @@ void QtPropertyEditor::paintEvent(QPaintEvent * event)
 
 void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 {
-	QStandardItem *item = curModel->itemFromIndex(curFilteringModel->mapToSource(index));
-	if(NULL != item && item->isEditable() && item->isEnabled())
+	QtPropertyData *data = curFilteringModel->itemFromIndex(index);
+	if(NULL != data && (data->GetFlags() & Qt::ItemIsEnabled) && (data->GetFlags() & Qt::ItemIsEditable))
 	{
 		edit(index, QAbstractItemView::DoubleClicked, NULL);
 	}
 }
 
-void QtPropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
+void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
-	emit PropertyEdited(name, data);
+	emit PropertyEdited(index);
 }
