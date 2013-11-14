@@ -44,33 +44,46 @@ class PropertyEditor : public QtPropertyEditor
 	Q_OBJECT
 
 public:
+	enum eEditoMode
+	{
+		EM_NORMAL,
+		EM_ADVANCED,
+		EM_FAVORITE,
+		EM_FAVORITE_EDIT
+	};
+
 	PropertyEditor(QWidget *parent = 0, bool connectToSceneSignals = true);
 	~PropertyEditor();
 
 	virtual void SetEntities(const EntityGroup *selected);
-	void SetAdvancedMode(bool set);
+	void SetEditorMode(eEditoMode mode);
 
-protected:
-    QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::InspInfo * info);
-	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
-
-    void ResetProperties();
-    
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
 	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
-	
-	void actionShowAdvanced();
-	void EditActionComponent();
+
+	void ActionToggleAdvanced();
+	void ActionEditComponent();
+	void ActionBakeTransform();
 
 protected:
-	bool advancedMode;
+	eEditoMode editorMode;
 	QtPosSaver posSaver;
 
 	DAVA::Entity *curNode;
 	PropertyEditorStateHelper treeStateHelper;
+
+	QModelIndex AddInsp(const QModelIndex &parent, void *object, const DAVA::InspInfo *info);
+	QModelIndex AddInspMember(const QModelIndex &parent, void *object, const DAVA::InspMember *member);
+
+	void ResetProperties();
+
+	virtual void OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo *itemMeta);
+	virtual void OnItemEdited(const QModelIndex &index);
+
+	bool IsFavorite(const QModelIndex &index) const;
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

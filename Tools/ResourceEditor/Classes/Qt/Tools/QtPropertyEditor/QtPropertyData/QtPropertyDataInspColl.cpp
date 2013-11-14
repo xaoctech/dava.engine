@@ -57,7 +57,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 				{
 					QString s;
 					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", itemObject));
-					childData->SetFlags(FLAG_IS_DISABLED);
+					childData->SetEnabled(false);
 					ChildAdd(QString::number(index), childData);
 				}
 			}
@@ -72,7 +72,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 				{
 					QString s;
 					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", collection->ItemData(i)));
-					childData->SetFlags(FLAG_IS_DISABLED);
+					childData->SetEnabled(false);
 					ChildAdd(QString::number(index), childData);
 				}
 			}
@@ -82,7 +82,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 		}
 	}
 
-	SetFlags(FLAG_IS_DISABLED);
+	SetEnabled(false);
 }
 
 QtPropertyDataInspColl::~QtPropertyDataInspColl()

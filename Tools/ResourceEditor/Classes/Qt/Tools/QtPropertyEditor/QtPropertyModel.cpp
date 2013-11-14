@@ -29,77 +29,185 @@
 
 
 #include "QtPropertyModel.h"
-#include "QtPropertyItem.h"
+#include "QtPropertyData.h"
 
 QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
-	: QStandardItemModel(parent)
+	: QAbstractItemModel(parent)
 	, trackEdit(false)
-{
-	QStringList headerLabels;
-
-	headerLabels.append("Name");
-	headerLabels.append("Value");
-
-	setColumnCount(2);
-	setHorizontalHeaderLabels(headerLabels);
+{ 
+	setHeaderData(0, Qt::Horizontal, "Property name");
+	setHeaderData(1, Qt::Horizontal, "Value");
 }
 
 QtPropertyModel::~QtPropertyModel()
 { }
 
-QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyModel::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
+QModelIndex QtPropertyModel::index(int row, int column, const QModelIndex & parent /* = QModelIndex() */) const
 {
-	QList<QStandardItem *> items;
-	QStandardItem* root = (QStandardItem *) parent;
+	QModelIndex ret;
+	QtPropertyData *parentData = root;
 
-	QtPropertyItem *newPropertyName = new QtPropertyItem(name);
-	QtPropertyItem *newPropertyValue = new QtPropertyItem(data, newPropertyName);
-
-	newPropertyName->setEditable(false);
-
-	items.append(newPropertyName);
-	items.append(newPropertyValue);
-
-	if(NULL == root)
+	if(parent.isValid())
 	{
-		root = invisibleRootItem();
+		parentData = (QtPropertyData *) parent.internalPointer();
 	}
 
-	root->appendRow(items);
+	if(NULL != parentData && parentData->ChildCount() < row && column < 2)
+	{
+		ret = createIndex(row, column, parentData->ChildGet(row));
+	}
 
-	return QPair<QtPropertyItem*, QtPropertyItem*>(newPropertyName, newPropertyValue);
+	return ret;
 }
 
-QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyModel::GetProperty(const QString &name, QtPropertyItem* parent/* = NULL*/)
+QModelIndex QtPropertyModel::parent(const QModelIndex & index) const
 {
-	QPair<QtPropertyItem*, QtPropertyItem*> ret(NULL, NULL);
+	QModelIndex ret;
 
-    QStandardItem* root = (QStandardItem *) parent;
-	if(NULL == root)
+	QtPropertyData *data = itemFromIndex(index);
+	if(NULL != data)
 	{
-		root = invisibleRootItem();
+		ret = indexFromItem(data->Parent());
 	}
 
-    for(DAVA::int32 r = 0; r < root->rowCount(); ++r)
-    {
-        QtPropertyItem *keyItem = (QtPropertyItem *) root->child(r, 0);
-        if(keyItem->GetPropertyData()->GetValue().toString() == name)
-        {
-            QtPropertyItem *dataItem = (QtPropertyItem *) root->child(r, 1);
+	return ret;
+}
 
-			ret.first = keyItem;
-			ret.second = dataItem;
+int QtPropertyModel::rowCount(const QModelIndex & parent /* = QModelIndex() */) const
+{
+	int count = 0;
 
+	QtPropertyData *data = itemFromIndex(parent);
+	if(NULL != data)
+	{
+		count = data->ChildCount();
+	}
+
+	return count;
+}
+
+int QtPropertyModel::columnCount(const QModelIndex & parent /* = QModelIndex() */) const
+{
+	return 2;
+}
+
+QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::DisplayRole */) const
+{
+	QVariant ret;
+	QtPropertyData *data = itemFromIndex(index);
+	if(NULL != data)
+	{
+		// name
+		if(index.column() == 0)
+		{
+			ret = data->GetName();
+		}
+		// value
+		else
+		{
+			switch(role)
+			{
+			case Qt::DisplayRole:
+				ret = data->GetAlias();
+				if(!ret.isValid())
+				{
+					ret = data->GetValue();
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
+
+bool QtPropertyModel::setData(const QModelIndex & index, const QVariant & value, int role /* = Qt::EditRole */)
+{
+	bool ret = false;
+	QtPropertyData *data = itemFromIndex(index);
+
+	if(NULL != data)
+	{
+		switch(role)
+		{
+		case Qt::EditRole:
+			if(NULL != data)
+			{
+				data->SetValue(value, QtPropertyData::VALUE_EDITED);
+				ret = true;
+			}
 			break;
-        }
-    }
-    
-    return ret;
+		default:
+			break;
+		}
+	}
+
+	return ret;
 }
 
-void QtPropertyModel::RemoveProperty(QtPropertyItem* item)
+QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 {
-	removeRow(indexFromItem(item).row());
+	QtPropertyData *ret = NULL;
+
+	if(index.isValid() && index.model() == this && index.column() < 2)
+	{
+		ret = (QtPropertyData *) index.internalPointer();
+	}
+
+	return ret;
+}
+
+QModelIndex QtPropertyModel::indexFromItem(QtPropertyData *data) const
+{
+	QModelIndex ret;
+
+	if(NULL != data && data->GetModel() == this)
+	{
+		QtPropertyData *parentData = data->Parent();
+		if(NULL != parentData)
+		{
+			int row = parentData->ChildIndex(data);
+			if(row >= 0)
+			{
+				ret = createIndex(row, 1, data);
+			}
+		}
+	}
+
+	return ret;
+}
+
+QModelIndex QtPropertyModel::AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent /* = QModelIndex() */)
+{
+	if(NULL != data)
+	{
+		QtPropertyData *parentData = itemFromIndex(parent);
+		if(NULL == parentData)
+		{
+			parentData = root;
+		}
+
+		beginInsertRows(parent, parentData->ChildCount(), parentData->ChildCount());
+		parentData->ChildAdd(name, data);
+		endInsertRows();
+	}
+
+	return indexFromItem(data);
+}
+
+void QtPropertyModel::RemoveProperty(const QModelIndex &index)
+{
+	QtPropertyData *data = itemFromIndex(index);
+	if(NULL != data)
+	{
+		QtPropertyData *parentData = data->Parent();
+
+		beginRemoveRows(index.parent(), index.row(), index.row());
+		parentData->ChildRemove(data);
+		endRemoveRows();
+	}
 }
 
 void QtPropertyModel::RemovePropertyAll()
@@ -109,42 +217,40 @@ void QtPropertyModel::RemovePropertyAll()
 
 void QtPropertyModel::UpdateStructure(const QModelIndex &parent /* = QModelIndex */)
 {
-	//beginResetModel();
 	UpdateStructureInternal(parent);
-	//endResetModel();
 }
 
 void QtPropertyModel::UpdateStructureInternal(const QModelIndex &i)
 {
-	QModelIndex itemIndex = index(i.row(), 1, i.parent());
-	QtPropertyItem *item = (QtPropertyItem *) itemFromIndex(itemIndex);
-	if(NULL != item)
+	QtPropertyData *data = itemFromIndex(i);
+	if(NULL != data)
 	{
-		if(item->Update())
+		if(data->UpdateValue())
 		{
-			emit dataChanged(itemIndex, itemIndex);
+			emit dataChanged(i, i);
 		}
-	}
 
-	for(int row = 0; row < rowCount(i); ++row)
-	{
-		UpdateStructureInternal(index(row, 0, i));
+		for(int row = 0; row < rowCount(i); ++row)
+		{
+			UpdateStructureInternal(index(row, 0, i));
+		}
 	}
 }
 
-void QtPropertyModel::EmitDataEdited(QtPropertyItem *editedItem)
+void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 {
 	if(trackEdit)
 	{
-		QString name;
-
-		QtPropertyItem *parentName = editedItem->GetParentNameItem();
-		if(NULL != parentName)
+		QModelIndex index = indexFromItem(data);
+		if(index.isValid())
 		{
-			name = parentName->text();
-		}
+			emit PropertyChanged(index);
 
-		emit ItemEdited(name, editedItem->GetPropertyData());
+			if(reason == QtPropertyData::VALUE_EDITED)
+			{
+				emit PropertyEdited(index);
+			}
+		}
 	}
 }
 
@@ -201,6 +307,11 @@ bool QtPropertyFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex
 	}
 
 	return false;
+}
+
+QtPropertyData* QtPropertyFilteringModel::itemFromIndex(const QModelIndex &index) const
+{
+	return propModel->itemFromIndex(mapToSource(index));
 }
 
 bool QtPropertyFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const

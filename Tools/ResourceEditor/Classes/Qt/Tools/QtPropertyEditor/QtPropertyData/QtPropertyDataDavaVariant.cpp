@@ -75,18 +75,18 @@ void QtPropertyDataDavaVariant::InitFlags()
 	switch(curVariantValue.type)
 	{
 	case DAVA::VariantType::TYPE_BOOLEAN:
-		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
+		SetCheckable(true);
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
-		SetFlags(FLAG_IS_DISABLED);
+		SetEnabled(false);
 		break;
 
 	case DAVA::VariantType::TYPE_MATRIX2:
 	case DAVA::VariantType::TYPE_MATRIX3:
 	case DAVA::VariantType::TYPE_MATRIX4:
 	case DAVA::VariantType::TYPE_AABBOX3:
-		SetFlags(FLAG_IS_NOT_EDITABLE);
+		SetEditable(false);
 		break;
 
 	case DAVA::VariantType::TYPE_FLOAT:

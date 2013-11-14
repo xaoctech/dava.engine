@@ -49,7 +49,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
-	, advancedMode(false)
+	, editorMode(EM_FAVORITE_EDIT)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curFilteringModel)
 {
@@ -61,8 +61,8 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 		QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 		// MainWindow actions
-		QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
-		advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
+		QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(ActionToggleAdvanced()));
+		//advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
 	}
 	posSaver.Attach(this, "DocPropetyEditor");
 
@@ -94,11 +94,11 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
     ResetProperties();
 }
 
-void PropertyEditor::SetAdvancedMode(bool set)
+void PropertyEditor::SetEditorMode(eEditoMode mode)
 {
-	if(advancedMode != set)
+	if(editorMode != mode)
 	{
-		advancedMode = set;
+		editorMode = mode;
         ResetProperties();
 	}
 }
@@ -114,37 +114,19 @@ void PropertyEditor::ResetProperties()
 	if(NULL != curNode)
 	{
 		// ensure that custom properties exist
+		// this call will create them if they are not created yet
 		curNode->GetCustomProperties();
         
-        AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
+		// add self introspection info
+        AddInsp(QModelIndex(), curNode, curNode->GetTypeInfo());
         
+		// add components for this entity
 		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
         {
             Component *component = curNode->GetComponent(i);
             if(component)
             {
-                QtPropertyData *componentData = AppendIntrospectionInfo(component, component->GetTypeInfo());
-                
-				if(NULL != componentData)
-				{
-					// Add optional button to track "remove this component" command
-					//TODO: Disabled for future code
-					//<--
-// 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
-// 					removeButton->setFlat(true);
-// 					componentData->AddOW(QtPropertyOW(removeButton, true));
-					//-->
-					
-					if(component->GetType() == Component::ACTION_COMPONENT)
-					{
-						// Add optional button to edit action collection
-						QPushButton *editActions = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
-						editActions->setFlat(true);
-						
-						componentData->AddOW(QtPropertyOW(editActions, true));
-						QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(EditActionComponent()));
-					}
-				}
+				AddInsp(QModelIndex(), component, component->GetTypeInfo());
             }
         }
 	}
@@ -161,53 +143,125 @@ void PropertyEditor::ResetProperties()
 	}
 }
 
-QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::InspInfo *info)
+QModelIndex PropertyEditor::AddInsp(const QModelIndex &parent, void *object, const DAVA::InspInfo *info)
 {
-	QtPropertyData* propData = NULL;
+	QModelIndex ret;
 
 	if(NULL != info)
 	{
 		bool hasMembers = false;
-		const InspInfo *currentInfo = info;
+		const InspInfo *baseInfo = info;
 
-		// check if there are any memebers
-		while (NULL != currentInfo)
+		// check if there are any members in introspection
+		while (NULL != baseInfo)
 		{
-			if(currentInfo->MembersCount() > 0)
+			if(baseInfo->MembersCount() > 0)
 			{
 				hasMembers = true;
 				break;
 			}
-			currentInfo = currentInfo->BaseInfo();
+			baseInfo = baseInfo->BaseInfo();
 		}
 
+		// add them
         if(hasMembers)
         {
-			int flags = DAVA::I_VIEW;
+			QtPropertyData *propData = new QtPropertyData(info->Type()->GetTypeName());
+			propData->SetEnabled(false);
+			ret = AppendProperty(info->Name(), propData, parent);
+			
+			OnItemAdded(ret, info->Type());
 
-			// in basic mode show only field that can be viewed and edited
-			if(!advancedMode)
+			while(NULL != baseInfo)
 			{
-				flags |= DAVA::I_EDIT;
+				for(int i = 0; i < baseInfo->MembersCount(); ++i)
+				{
+					const DAVA::InspMember *member = baseInfo->Member(i);
+					AddInspMember(ret, object, member);
+				}
+				baseInfo = baseInfo->BaseInfo();
 			}
-
-			propData = new QtPropertyDataIntrospection(object, currentInfo, flags);
-			if(propData->ChildCount() > 0)
-			{
-				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
-            
-	            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-		        prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-			}
-			else
-			{
-				delete propData;
-				propData = NULL;
-			}
-        }
+		}
     }
 
-	return propData;
+	// if this root item was added - colorize it
+	// TODO:
+	/*
+	if(parent.IsEmpty() && !ret.IsEmpty())
+	{
+		QFont boldFont = ret.nameItem->font();
+		boldFont.setBold(true);
+		ret.nameItem->setFont(boldFont);
+
+		ret.nameItem->setBackground(QBrush(QColor(Qt::lightGray)));
+		ret.dataItem->setBackground(QBrush(QColor(Qt::lightGray)));
+	}
+	*/
+
+	return ret;
+}
+
+QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *object, const DAVA::InspMember *member)
+{
+	QModelIndex ret;
+
+	if(NULL != member)
+	{
+		void *momberObject = member->Data(object);
+		const DAVA::InspInfo *memberIntrospection = member->Type()->GetIntrospection(momberObject);
+
+		if(NULL != memberIntrospection)
+		{
+			ret = AddInsp(parent, momberObject, memberIntrospection);
+		}
+		else
+		{
+			int flags;
+
+			switch(editorMode)
+			{
+			case EM_NORMAL:
+				flags = DAVA::I_EDIT | DAVA::I_VIEW;
+				break;
+			case EM_ADVANCED:
+			case EM_FAVORITE_EDIT:
+			case EM_FAVORITE:
+				flags = DAVA::I_VIEW;
+				break;
+			default:
+				break;
+			}
+
+			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
+			if(editorMode == EM_FAVORITE_EDIT)
+			{
+				// don't allow edit values when we are choosing favorites
+				data->SetEnabled(false);
+
+				// TODO:
+				// ...
+				IsFavorite(ret);
+			}
+
+			ret = AppendProperty(member->Name(), data, parent);
+			OnItemAdded(ret, member->Type());
+		}
+	}
+
+	return ret;
+}
+
+bool PropertyEditor::IsFavorite(const QModelIndex &index) const
+{
+	bool ret = false;
+
+	QtPropertyData *data = GetProperty(index);
+	while(NULL != data)
+	{
+		// data = data->parent;
+	}
+
+	return ret;
 }
 
 void PropertyEditor::sceneActivated(SceneEditor2 *scene)
@@ -223,16 +277,6 @@ void PropertyEditor::sceneDeactivated(SceneEditor2 *scene)
 {
 	SetEntities(NULL);
 }
-
-void PropertyEditor::actionShowAdvanced()
-{
-	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
-	if(NULL != showAdvancedAction)
-	{
-		SetAdvancedMode(showAdvancedAction->isChecked());
-	}
-}
-
 
 void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
@@ -257,28 +301,91 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	}
 }
 
-void PropertyEditor::OnItemEdited(const QString &name, QtPropertyData *data)
+void PropertyEditor::OnItemEdited(const QModelIndex &index)
 {
-	QtPropertyEditor::OnItemEdited(name, data);
+	QtPropertyEditor::OnItemEdited(index);
 
-	Command2 *command = (Command2 *) data->CreateLastCommand();
-	if(NULL != command)
+	QtPropertyData *propData = GetProperty(index);
+
+	if(NULL != propData)
 	{
-		SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-		if(NULL != curScene)
+		Command2 *command = (Command2 *) propData->CreateLastCommand();
+		if(NULL != command)
 		{
-			curScene->Exec(command);
+			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+			if(NULL != curScene)
+			{
+				curScene->Exec(command);
+			}
 		}
 	}
 }
 
-void PropertyEditor::EditActionComponent()
+void PropertyEditor::OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo *itemMeta)
 {
-	if(curNode)
+	if(!index.isValid() && NULL != itemMeta)
+	{
+		QtPropertyData *propData = GetProperty(index);
+
+		if(NULL != propData)
+		{
+			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == itemMeta)
+			{
+				// Add optional button to edit action collection
+				QPushButton *editActions = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
+				editActions->setFlat(true);
+
+				propData->AddOW(QtPropertyOW(editActions, true));
+				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == itemMeta)
+			{
+				// Add optional button to bake transform render object
+				QPushButton *bakeButton = new QPushButton(QIcon(":/QtIcons/transform_bake.png"), "");
+				bakeButton->setToolTip("Bake Transform");
+				bakeButton->setIconSize(QSize(12, 12));
+
+				propData->AddOW(QtPropertyOW(bakeButton));
+				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
+			}
+		}
+	}
+}
+
+void PropertyEditor::ActionToggleAdvanced()
+{
+	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
+	if(NULL != showAdvancedAction)
+	{
+		// TODO:
+		// toggle
+
+		//SetEditorMode(EM_ADVANCED);
+		//SetAdvancedMode(showAdvancedAction->isChecked());
+	}
+}
+
+void PropertyEditor::ActionEditComponent()
+{
+	if(NULL != curNode)
 	{
 		ActionComponentEditor editor;
+
 		editor.SetComponent((DAVA::ActionComponent*)curNode->GetComponent(DAVA::Component::ACTION_COMPONENT));
-			
 		editor.exec();
 	}	
 }
+
+void PropertyEditor::ActionBakeTransform()
+{
+	if(NULL != curNode)
+	{
+		DAVA::RenderObject * ro = GetRenderObject(curNode);
+		if(NULL != ro)
+		{
+			ro->BakeTransform(curNode->GetLocalTransform());
+			curNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+		}
+	}
+}
+
