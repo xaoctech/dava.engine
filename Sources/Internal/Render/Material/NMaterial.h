@@ -54,24 +54,6 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-
-class NMaterialDescriptor : public BaseObject
-{
-protected:
-    virtual ~NMaterialDescriptor();
-public:
-    NMaterialDescriptor();
-
-    uint32 GetTextureSlotByName(const String & textureName);
-    uint32 GetUniformSlotByName(const String & uniformName);
-    
-    void SetNameForTextureSlot(uint32 slot, const String & name);
-    void SetNameForUniformSlot(uint32 slot, const String & name);
-    
-private:
-    Map<String, uint32> slotNameMap;
-    Map<String, uint32> uniformNameMap;
-};
 	
 class NMaterial;
 class MaterialChangeListener
