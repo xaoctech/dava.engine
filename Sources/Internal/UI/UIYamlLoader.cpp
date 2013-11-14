@@ -295,7 +295,8 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 		Logger::Error("Failed to open yaml file: %s", yamlPathname.GetAbsolutePathname().c_str());
 		return;
 	}
-
+    uint64 parceDelta = SystemTimer::Instance()->AbsoluteMS() - t1;
+    
 	currentPath = yamlPathname.GetDirectory();
 
 // 	String filename;
@@ -395,7 +396,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 	}
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+	Logger::FrameworkDebug("Load of %s time: %lld. Parce time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1, parceDelta);
 }
 	
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
