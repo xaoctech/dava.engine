@@ -357,6 +357,12 @@ namespace DAVA
 	{
 		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
 
+		if(touchEvent.phase == DAVA::UIEvent::PHASE_JOYSTICK)
+		{
+			InputSystem::Instance()->ProcessInputEvent(&touchEvent);
+			return;
+		}
+		
 		bool isFound = false;
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
 		{
