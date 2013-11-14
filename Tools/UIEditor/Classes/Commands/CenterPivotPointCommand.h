@@ -27,40 +27,25 @@
 =====================================================================================*/
 
 
-#ifndef RECTPROPERTYGRIDWIDGET_H
-#define RECTPROPERTYGRIDWIDGET_H
 
-#include <QWidget>
-#include "basepropertygridwidget.h"
+#ifndef __CENTERPIVOTPOINTCOMMAND__H__
+#define __CENTERPIVOTPOINTCOMMAND__H__
 
-namespace Ui {
-class RectPropertyGridWidget;
-}
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-class RectPropertyGridWidget : public BasePropertyGridWidget
+using namespace DAVA;
+
+class CenterPivotPointCommand: public ChangePropertyCommand<QPointF>
 {
-    Q_OBJECT
-    
 public:
-    explicit RectPropertyGridWidget(QWidget *parent = 0);
-    ~RectPropertyGridWidget();
-    
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
+	CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty);
 
 protected:
-    virtual void OnPropertiesChangedFromExternalSource();
-	virtual void HandleChangePropertySucceeded(const QString& propertyName);
-
-protected slots:
-	void OnCenterPivotPointButtonClicked();
-
-private:
-    Ui::RectPropertyGridWidget *ui;
-	void UpdateWidgetStates(bool updateHorizontalWidgets = true);
-	void UpdateHorizontalWidgetsState();
-	void UpdateVerticalWidgetsState();
-	bool IsTwoAlignsEnabled(bool first, bool center, bool second);
+	virtual QPointF PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue);
 };
 
-#endif // RECTPROPERTYGRIDWIDGET_H
+#endif /* defined(__CENTERPIVOTPOINTCOMMAND__H__) */

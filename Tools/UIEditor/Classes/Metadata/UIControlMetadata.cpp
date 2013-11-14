@@ -249,10 +249,8 @@ void UIControlMetadata::SetPivotX(float value)
     }
     
     GetActiveUIControl()->pivotPoint.x = value;
-	// DF-2009 - Re-set align properties if pivot point was changed
-	SetLeftAlign(GetLeftAlign());
-	SetHCenterAlign(GetHCenterAlign());
-	SetRightAlign(GetRightAlign());
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
 }
 
 float UIControlMetadata::GetPivotY() const
@@ -273,10 +271,39 @@ void UIControlMetadata::SetPivotY(float value)
     }
     
     GetActiveUIControl()->pivotPoint.y = value;
-	// DF-2009 - Re-set align properties if pivot point was changed
-	SetTopAlign(GetTopAlign());
-	SetVCenterAlign(GetVCenterAlign());
-	SetBottomAlign(GetBottomAlign());
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
+}
+
+QPointF UIControlMetadata::GetPivot() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return QPointF();
+    }
+
+    return QPointF(GetActiveUIControl()->pivotPoint.x, GetActiveUIControl()->pivotPoint.y);
+}
+
+void UIControlMetadata::SetPivot(const QPointF& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    GetActiveUIControl()->pivotPoint.x = value.x();
+    GetActiveUIControl()->pivotPoint.y = value.y();
+
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
+}
+
+void UIControlMetadata::RefreshAlign()
+{
+    SetTopAlign(GetTopAlign());
+    SetVCenterAlign(GetVCenterAlign());
+    SetBottomAlign(GetBottomAlign());
 }
 
 float UIControlMetadata::GetAngle() const
