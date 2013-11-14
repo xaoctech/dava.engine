@@ -143,7 +143,7 @@ DAVA::VariantType SettingsManager::GetValue(const DAVA::String& _name, const DAV
 		EXTENDED_GETTER(ResourceEditor::SETTINGS_LAST_OPENED_FILE,		ResolveLastOpenedFileKeyDefault)
 		SIMPLE_GETTER(ResourceEditor::SETTINGS_DRAW_GRID,				true)
 		SIMPLE_GETTER(ResourceEditor::SETTINGS_ENABLE_IMPOSTERS,		true)
-		SIMPLE_GETTER(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU,		GPU_UNKNOWN)
+		SIMPLE_GETTER(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU,		GPU_PNG)
 		SIMPLE_GETTER(ResourceEditor::SETTINGS_MATERIALS_AMBIENT,		Color::White())
 		SIMPLE_GETTER(ResourceEditor::SETTINGS_MATERIALS_DIFFUSE,		Color::White())
 		SIMPLE_GETTER(ResourceEditor::SETTINGS_MATERIALS_SPECULAR,		Color::White())

@@ -254,7 +254,7 @@ bool EditorSettings::GetEnableImposters()
 
 eGPUFamily EditorSettings::GetTextureViewGPU()
 {
-    return (eGPUFamily)settings->GetInt32(String("TextureViewGPU"), GPU_UNKNOWN);
+    return (eGPUFamily)settings->GetInt32(String("TextureViewGPU"), GPU_PNG);
 }
 void EditorSettings::SetTextureViewGPU(int32 gpu)
 {

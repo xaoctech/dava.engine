@@ -68,13 +68,13 @@ private:
 	};
 
 	size_t curOriginalWeight;
-	size_t curConvertedWeight[DAVA::GPU_FAMILY_COUNT];
+	size_t curConvertedWeight[DAVA::GPU_COMPRESSED_COUNT];
 
 	static const size_t maxOrigCount = 20;
 	static const size_t maxConvertedCount = 7; // per gpu
 
 	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheOriginal;
-	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheConverted[DAVA::GPU_FAMILY_COUNT];
+	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheConverted[DAVA::GPU_COMPRESSED_COUNT];
 };
 
 #endif // __TEXTURE_CACHE_H__

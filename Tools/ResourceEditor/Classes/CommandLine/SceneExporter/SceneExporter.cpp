@@ -47,7 +47,7 @@ using namespace DAVA;
 
 SceneExporter::SceneExporter()
 {
-    exportForGPU = GPU_UNKNOWN;
+    exportForGPU = GPU_PNG;
 	optimizeOnExport = true;
 }
 
@@ -249,9 +249,8 @@ bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String
         return false;
     }
     
-    descriptor->exportedAsGpuFamily = exportForGPU;
-    descriptor->exportedAsPixelFormat = descriptor->GetPixelFormatForCompression(exportForGPU);
-
+    descriptor->PrepareForExport(exportForGPU);
+    
     if((descriptor->exportedAsGpuFamily != GPU_UNKNOWN) && (descriptor->exportedAsPixelFormat == FORMAT_INVALID))
     {
         errorLog.insert(Format("Not selected export format for pathname %s", pathname.GetAbsolutePathname().c_str()));
@@ -279,12 +278,6 @@ bool SceneExporter::ExportTexture(const TextureDescriptor * descriptor, Set<Stri
 {
     CompressTextureIfNeed(descriptor, errorLog);
     
-    if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN)
-    {
-        FilePath sourceTexturePathname =  FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
-        return sceneUtils.CopyFile(sourceTexturePathname, errorLog);
-    }
-
     FilePath compressedTexureName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
     return sceneUtils.CopyFile(compressedTexureName, errorLog);
 }
@@ -407,7 +400,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
 
 void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog)
 {
-    if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN)
+    if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN || descriptor->exportedAsGpuFamily == GPU_PNG)
         return;
     
     

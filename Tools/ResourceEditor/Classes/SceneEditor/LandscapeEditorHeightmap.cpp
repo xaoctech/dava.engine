@@ -464,7 +464,7 @@ void LandscapeEditorHeightmap::HideAction()
 		tilemaskWasChanged = false;
 		workingLandscape->UpdateFullTiledTexture();
 		Image* image = tilemaskTexture->CreateImageFromMemory();
-		ImageLoader::Save(image, GPUFamilyDescriptor::CreatePathnameForGPU(tilemaskPathname, GPU_UNKNOWN, FORMAT_RGBA8888));
+		ImageLoader::Save(image, GPUFamilyDescriptor::CreatePathnameForGPU(tilemaskPathname, GPU_PNG, FORMAT_RGBA8888));
 		SafeRelease(image);
 	}
 
