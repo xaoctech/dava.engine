@@ -104,8 +104,8 @@ public:
 	float32 GetExternalValue(const String& name);
 	
 	void RebuildEffectModifiables();
-	void RegisterModifiable(const String& name, ModifiablePropertyLineI *propertyLine);
-	void UnRegisterModifiable(const String& name, ModifiablePropertyLineI *propertyLine);
+	void RegisterModifiable(ModifiablePropertyLineI *propertyLine);
+	void UnRegisterModifiable(ModifiablePropertyLineI *propertyLine);
 
 	/**
      \brief Returns the total active particles count for the whole effect.

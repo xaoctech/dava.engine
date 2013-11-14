@@ -58,6 +58,11 @@ public:
 };
 
 
+class PropertyValueHelper
+{
+public:
+	template <class T> static T MakeUnityValue();
+};
 
 template<class T>
 class PropertyLineValue : public PropertyLine<T>
@@ -154,6 +159,7 @@ public:
 	ModifiablePropertyLineI(const String& name) : externalValueName(name){}
 	virtual void SetModifier(float32 v) = 0;
 	const String& GetValueName(){return externalValueName;}
+	void SetValueName(const String& name){externalValueName = name;}
 protected:
 	String externalValueName;
 };
@@ -162,7 +168,13 @@ template <class T> class ModifiablePropertyLine : public ModifiablePropertyLineI
 {
 public:
 	ModifiablePropertyLine<T>(const String& name) : ModifiablePropertyLineI(name){}
-	virtual void SetModifier(float32 v){modifier = modificationLine->GetValue(v);}
+	virtual void SetModifier(float32 v)
+	{
+		if (modificationLine)
+			modifier = modificationLine->GetValue(v);
+		else
+			modifier = PropertyValueHelper::MakeUnityValue<T>();
+	}
 	void SetModificationLine(RefPtr<PropertyLine<T> > line){this->modificationLine = line;}
 	void SetValueLine(RefPtr<PropertyLine<T> > line){this->valueLine = line;}
 
@@ -170,15 +182,28 @@ public:
 	RefPtr<PropertyLine<T> > GetValueLine(){return valueLine;}
 	const T & GetValue(float32 t)
 	{
-		resultValue = modifier * (valueLine->GetValue(t));
+		if (!valueLine)
+		{
+			resultValue = T();
+		}
+		else
+		{
+			resultValue = modifier * (valueLine->GetValue(t));
+		}		
 		return resultValue;
 	}
 
 	virtual PropertyLine<T>* Clone() 
 	{
 		ModifiablePropertyLine<T> *clone = new ModifiablePropertyLine<T>(GetValueName());
-		clone->valueLine = valueLine->Clone();
-		clone->modificationLine = modificationLine->Clone();
+		if (valueLine)
+			clone->valueLine = valueLine->Clone();
+		else
+			clone->valueLine = NULL;
+		if (modificationLine)
+			clone->modificationLine = modificationLine->Clone();
+		else
+			modificationLine = NULL;
 		clone->modifier = modifier; //not use set modifier!
 		return clone;
 	};
@@ -349,7 +374,8 @@ template <class T> void PropertyLineYamlWriter::WritePropertyLineToYamlNode(Yaml
 		YamlNode* node = new YamlNode(YamlNode::TYPE_MAP);
 		node->Set("externalVariable", modifiebleLine->GetValueName());		
 		WritePropertyLineToYamlNodeInternal(node, "value_line", modifiebleLine->GetValueLine());
-		WritePropertyLineToYamlNodeInternal(node, "modification_line", modifiebleLine->GetModificationLine());				
+		WritePropertyLineToYamlNodeInternal(node, "modification_line", modifiebleLine->GetModificationLine());		
+		parentNode->AddNodeToMap(propertyName, node);
 	}
 	else
 	{
@@ -416,8 +442,9 @@ template <> inline void PropertyLineYamlWriter::WritePropertyLineToYamlNodeInter
 }
 
 class PropertyLineHelper
-{
+{	
 public:
+
 	/*hmmm*/
 	template <class T> static void AddIfModifiable(PropertyLine<T> * line, List<ModifiablePropertyLineI *> &dest)
 	{
@@ -439,11 +466,28 @@ public:
 	{
 		ModifiablePropertyLine<T> *modifiable = dynamic_cast<ModifiablePropertyLine<T> *> (dst.Get());
 		if (modifiable) 
-			modifiable->SetValueLine(src)
+			modifiable->SetValueLine(src);
 		else
 			dst=src;
 	}
 
+	template <class T> static RefPtr<PropertyLine<T> > MakeModifiable(RefPtr<PropertyLine<T> > &line)
+	{
+		RefPtr<PropertyLine<T> > values = GetValueLine(line);
+		RefPtr<PropertyLine<T> > modification = RefPtr<PropertyLine<T> >(new PropertyLineValue<T>(PropertyValueHelper::MakeUnityValue<T>()));
+		ModifiablePropertyLine<T>* res = new ModifiablePropertyLine<T>("DefaultVariable");
+		res->SetValueLine(values);
+		res->SetModificationLine(modification);
+		res->SetModifier(0);
+		line = RefPtr<PropertyLine<T> >(res);
+		return line;
+	}
+
+	template <class T> static RefPtr<PropertyLine<T> > RemoveModifiable(RefPtr<PropertyLine<T> > &line)
+	{
+		line = GetValueLine(line);
+		return line;
+	}
 };
 
 };
