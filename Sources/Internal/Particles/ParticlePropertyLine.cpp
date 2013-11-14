@@ -150,6 +150,28 @@ template <> RefPtr<PropertyLine<Vector3> > PropertyLineYamlReader::CreatePropert
         
     return RefPtr< PropertyLine<Vector3> >();
 }
+
+template <> float32 PropertyValueHelper::MakeUnityValue<float32>()
+{
+	return 1.0f;
+}
+
+template <> Vector2 PropertyValueHelper::MakeUnityValue<Vector2>()
+{
+	return Vector2(1.0f, 1.0f);
+}
+
+template <> Vector3 PropertyValueHelper::MakeUnityValue<Vector3>()
+{
+	return Vector3(1.0f, 1.0f, 1.0f);
+}
+
+template <> Color PropertyValueHelper::MakeUnityValue<Color>()
+{
+	return Color();
+}
+
+
     
     
 Color ColorFromYamlNode(const YamlNode * node)

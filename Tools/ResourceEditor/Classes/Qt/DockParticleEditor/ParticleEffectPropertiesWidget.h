@@ -38,12 +38,116 @@
 #include <QLabel>
 #include <QSlider>
 #include <QCheckBox>
+#include <QTreeWidget>
+
+#include "DockParticleEditor/TimeLineWidget.h"
+#include "DockParticleEditor/GradientPickerWidget.h"
+
+struct EffectTreeData
+{
+	DAVA::ParticleEmitter *emmiter;
+	DAVA::ParticleLayer* layer;
+	DAVA::ParticleForce* force;
+	int32 externalParamId;
+};
+
+Q_DECLARE_METATYPE(EffectTreeData);
+
+static const String EXTERNAL_NAMES[]=
+{
+	"Emission Vector",		//emmiter
+	"Emission Range",
+	"Radius",
+	"Size",
+	"Color Over Life",
+	"Life",					//layer
+	"Life Variation",
+	"Number",
+	"Number Variation",
+	"Size",
+	"Size Variation",
+	"Size Over Life",
+	"Velocity",
+	"Velocity Variation",
+	"Velocity Over Life",
+	"Spin",
+	"Spin Variation",
+	"Spin Over Life",
+	"Color Random",
+	"Alpha Over Life",
+	"Color Over Life",
+	"Angle",
+	"Angle Variation",
+	"Anim Speed Over Life",
+	"Force",					//force
+	"Force Variation",
+	"Force Over Life"
+};
+
+class EditModificationLineDialog: public QDialog
+{
+	Q_OBJECT
+public:
+	explicit EditModificationLineDialog(QWidget *parent) : QDialog(parent){setMinimumWidth(400);}
+	template <class T> void Init(ModifiablePropertyLine<T>* line, bool onAdd);
+	template <class T> void UpdateLine(ModifiablePropertyLine<T>* line); //note! - name would be updated explicitly as it may require re-register in effect
+	String GetVariableName();
+private:
+	void InitName(const String& name, bool onAdd);
+	void InitButtons();
+
+	QVBoxLayout *dialogLayout;
+	QLineEdit *variableName;
+	TimeLineWidget *timeLine;
+	GradientPickerWidget *gradientLine;
+};
 
 class ParticleEffectPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
 	Q_OBJECT
 	
 public:
+	enum EmitterExternals
+	{
+		EE_EMISSION_VECTOR=0,
+		EE_EMISSION_RANGE,
+		EE_RADUS,
+		EE_SIZE,
+		EE_COLOR_OVER_LIFE,
+		EE_TOTAL
+	};
+
+	enum LayerExternals
+	{
+		EL_LIFE = EE_TOTAL,
+		EL_LIFE_VARIATION,
+		EL_NUMBER,
+		EL_NUMBER_VARIATION,
+		EL_SIZE,
+		EL_SIZE_VARIATION,
+		EL_SIZE_OVERLIFE,
+		EL_VELOCITY,
+		EL_VELOCITY_VARIATON,
+		EL_VELOCITY_OVERLIFE,
+		EL_SPIN,
+		EL_SPIN_VARIATION,
+		EL_SPIN_OVERLIFE,
+		EL_COLOR,
+		EL_ALPHA_OVERLIFE,
+		EL_COLOR_OVERLIFE,
+		EL_ANGLE,
+		EL_ANGLE_VARIATION,
+		EL_ANIM_SPEED_OVERLIFE,
+		EL_TOTAL
+	};	
+	enum ForceExternals
+	{
+		EF_FORCE = EL_TOTAL,
+		EF_FORCE_VARIATION,
+		EF_FORCE_OVERLIFE,
+		EF_TOTAL
+	};
+
 	explicit ParticleEffectPropertiesWidget(QWidget* parent = 0);
 	~ParticleEffectPropertiesWidget();
 
@@ -55,10 +159,51 @@ public:
 
 public slots:
 	void OnValueChanged();
+	void ShowContextMenuForEffectTree(const QPoint &pos);
+	void OnContextMenuCommand(QAction *action);
+	void OnTreeItemDoubleClck(QTreeWidgetItem *treeItem, int column);
 	
 protected:
 	void InitWidget(QWidget* widget, bool connectWidget = true);
+	void BuildEffectTree();
 	void UpdatePlaybackSpeedLabel();
+
+	ModifiablePropertyLineI * GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId);
+	ModifiablePropertyLineI * GetLayerLine(ParticleLayer *layer, LayerExternals lineId);
+	ModifiablePropertyLineI * GetForceLine(ParticleForce *force, ForceExternals lineId);
+
+	void SetEmitterLineModifiable(ParticleEmitter *emitter, EmitterExternals lineId);
+	void SetLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId);
+	void SetForceLineModifiable(ParticleForce *force, ForceExternals lineId);
+
+	void RemoveEmitterLineModifiable(ParticleEmitter *emitter, EmitterExternals lineId);
+	void RemoveLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId);
+	void RemoveForceLineModifiable(ParticleForce *force, ForceExternals lineId);
+
+	void EditEmitterModifiable(ParticleEmitter *emitter, EmitterExternals lineId, bool onAdd = false);
+	void EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd = false);
+	void EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd = false);
+
+	template <class T> bool EditModificationLine(RefPtr<PropertyLine<T> > &line, bool onAdd)
+	{
+		ModifiablePropertyLine<T> *editLine = dynamic_cast<ModifiablePropertyLine<T>* >(line.Get());
+		EditModificationLineDialog dialog(this);
+		dialog.Init(editLine, onAdd);
+		if (dialog.exec())
+		{			
+			dialog.UpdateLine(editLine);
+			String resName = dialog.GetVariableName();
+			if(editLine->GetValueName()!=resName)
+			{
+				particleEffect->UnRegisterModifiable(editLine);
+				editLine->SetValueName(resName);
+				particleEffect->RegisterModifiable(editLine);
+			}
+
+			return true;
+		}
+		return false;
+	}
 
 private:
 	ParticleEffectComponent* particleEffect;
@@ -70,8 +215,15 @@ private:
 	
 	QCheckBox* checkboxStopOnLoad;
 	
+	QIcon iconEmitter, iconLayer, iconForce, iconExternal;
+
+	QTreeWidget *effectTree;
+	QTreeWidgetItem *currSelectedTreeItem;
+
 	bool blockSignals;
 };
+
+
 
 
 #endif /* defined(__PARTICLE_EFFECT_PROPERTIES_WIDGET__H__) */
