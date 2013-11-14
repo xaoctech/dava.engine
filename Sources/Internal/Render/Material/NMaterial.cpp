@@ -49,49 +49,7 @@ namespace DAVA
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
     static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
-	
-	NMaterialDescriptor::NMaterialDescriptor()
-	{
 		
-	}
-    
-	NMaterialDescriptor::~NMaterialDescriptor()
-	{
-		
-	}
-	
-	uint32 NMaterialDescriptor::GetTextureSlotByName(const String & textureName)
-	{
-		Map<String, uint32>::iterator it = slotNameMap.find(textureName);
-		if (it != slotNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	uint32 NMaterialDescriptor::GetUniformSlotByName(const String & uniformName)
-	{
-		Map<String, uint32>::iterator it = uniformNameMap.find(uniformName);
-		if (it != uniformNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	void NMaterialDescriptor::SetNameForTextureSlot(uint32 slot, const String & name)
-	{
-		slotNameMap[name] = slot;
-	}
-	
-	void NMaterialDescriptor::SetNameForUniformSlot(uint32 slot, const String & name)
-	{
-		uniformNameMap[name] = slot;
-	}
-	
 	MaterialTechnique::MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
 	{
 		shader = 0;
