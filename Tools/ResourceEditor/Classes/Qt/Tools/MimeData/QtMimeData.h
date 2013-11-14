@@ -46,11 +46,6 @@ protected:
 
 public:
 
-	int GetMetaInfoCount() const;
-	DAVA::MetaInfo * GetMetaInfo(int index) const;
-
-public:
-
 	//Utility methods
 	static bool ContainsFilepathWithExtension(const QMimeData * data, const DAVA::String & extension);
 	static bool IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension);
