@@ -363,7 +363,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
         // 1. Reset default format before loading of UI
         // 2. Restore default format after loading of UI from stored settings.
-        Texture::SetDefaultGPU(GPU_UNKNOWN);
+        Texture::SetDefaultGPU(GPU_PNG);
         
         Rect r = Rect(x, y, boxSize, boxSize);
         UIControl *sceneFlagBox = new UIControl(r);

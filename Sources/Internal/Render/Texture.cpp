@@ -150,7 +150,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
+eGPUFamily Texture::defaultGPU = GPU_PNG;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -189,7 +189,7 @@ Texture::Texture()
 ,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
-,   loadedAsFile(GPU_UNKNOWN)
+,   loadedAsFile(GPU_PNG)
 ,	textureType(Texture::TEXTURE_2D)
 ,	isPink(false)
 ,	state(STATE_INVALID)
@@ -495,7 +495,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	if(!IsLoadAvailable(gpu, texDescriptor))
 		return false;
 	
-	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
+	if(texDescriptor->IsCubeMap() && (GPU_PNG == gpu))
 	{
 		Vector<String> faceNames;
 		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
@@ -779,14 +779,8 @@ bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescripto
         return true;
     }
     
-    DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
-    
-    if(gpuFamily != GPU_UNKNOWN && descriptor->compression[gpuFamily].format == FORMAT_INVALID)
-    {
-        return false;
-    }
-    
-    return true;
+    DVASSERT(gpuFamily > GPU_UNKNOWN && gpuFamily < GPU_FAMILY_COUNT);
+    return (descriptor->compression[gpuFamily].format != FORMAT_INVALID);
 }
 
     
@@ -1364,7 +1358,7 @@ void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>
 		DAVA::FilePath faceFilePath = baseName;
 		faceFilePath.ReplaceFilename(fileNameWithoutExtension +
 									 faceNameSuffixes[i] +
-									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_UNKNOWN, FORMAT_INVALID));
+									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_PNG, FORMAT_INVALID));
 			
 		faceNames.push_back(faceFilePath.GetAbsolutePathname());
 	}

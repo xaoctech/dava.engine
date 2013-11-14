@@ -50,7 +50,7 @@ DAVA::Vector<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *d
 	DAVA::Vector<QImage> images;
 
 	if( NULL != descriptor &&
-		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT &&
+		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_COMPRESSED_COUNT &&
 		cacheConverted[gpu].contains(descriptor))
 	{
 		// update weight for this cached
@@ -95,7 +95,7 @@ void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::
 void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& images)
 {
 	if( NULL != descriptor && 
-		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
+		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_COMPRESSED_COUNT)
 	{
 		DAVA::Vector<QImage> tmpImages;
 		for(int i = 0; i < (int)images.size(); ++i)
@@ -126,7 +126,7 @@ void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA:
 void TextureCache::clearAll()
 {
 	cacheOriginal.clear();
-	for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
+	for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_COMPRESSED_COUNT; ++i)
 	{
 		cacheConverted[i].clear();
 	}
@@ -139,7 +139,7 @@ void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
 
 void TextureCache::clearConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
 {
-	if(gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
+	if(gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_COMPRESSED_COUNT)
 	{
 		cacheConverted[gpu].remove(descriptor);
 	}

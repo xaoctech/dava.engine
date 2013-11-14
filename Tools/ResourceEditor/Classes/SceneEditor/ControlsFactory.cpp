@@ -90,7 +90,7 @@ void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultGPU(GPU_UNKNOWN);
+    Texture::SetDefaultGPU(GPU_PNG);
     
     UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
     expandable->SetInputEnabled(false);
@@ -423,7 +423,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultGPU(GPU_UNKNOWN);
+    Texture::SetDefaultGPU(GPU_PNG);
 
     
     UIControl *c = l->FindByName("ScrollBar");
@@ -466,7 +466,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultGPU(GPU_UNKNOWN);
+    Texture::SetDefaultGPU(GPU_PNG);
     
     Rect fr = h->GetRect();
     

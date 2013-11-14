@@ -586,7 +586,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     image->Write(exportedPathname);
 
     eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
-    if(gpuFamily != GPU_UNKNOWN)
+    if(gpuFamily != GPU_UNKNOWN && gpuFamily != GPU_PNG)
     {
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false);
         
@@ -703,7 +703,7 @@ TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMap
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
 {
-    if(forGPU == GPU_UNKNOWN)   // not need compression
+    if(forGPU == GPU_UNKNOWN || forGPU == GPU_PNG)   // not need compression
         return false;
     
     const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
