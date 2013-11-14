@@ -39,17 +39,6 @@ QtMimeData::QtMimeData()
 
 }
 
-
-int QtMimeData::GetMetaInfoCount() const
-{
-	return 0;
-}
-
-DAVA::MetaInfo * QtMimeData::GetMetaInfo( int index ) const
-{
-	return NULL;
-}
-
 bool QtMimeData::ContainsFilepathWithExtension( const QMimeData * data, const DAVA::String & extension )
 {
 	if(!data || !data->hasUrls()) return false;
