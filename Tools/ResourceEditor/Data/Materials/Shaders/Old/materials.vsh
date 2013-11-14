@@ -46,6 +46,9 @@ uniform mat4 modelViewProjectionMatrix;
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
 uniform mat4 modelViewMatrix;
+#endif
+
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT)
 uniform mat3 normalMatrix;
 uniform vec3 lightPosition0;
 uniform float lightIntensity0; 
@@ -202,6 +205,7 @@ void main()
     #endif
     varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+	//varFogFactor = 1.0;
 #endif
 
 #if defined(VERTEX_COLOR)
