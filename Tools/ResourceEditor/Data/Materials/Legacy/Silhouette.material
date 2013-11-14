@@ -2,8 +2,6 @@ Material:
     MaterialState:
         Name: "Default"
         Layers: ["TransclucentRenderLayer"]
-        Uniforms:
-            flatColor: ["1", "1", "1", "1"]
 
         RenderPass:
             Name: "ForwardPass"
