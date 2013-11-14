@@ -59,26 +59,28 @@ RulerToolSystem::~RulerToolSystem()
 {
 }
 
-bool RulerToolSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType RulerToolSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool RulerToolSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!IsCanBeEnabled())
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
-
-	if (!drawSystem->EnableCustomDraw())
+	
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableCustomDraw();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	selectionSystem->SetLocked(true);
@@ -101,7 +103,7 @@ bool RulerToolSystem::EnableLandscapeEditing()
 	SendUpdatedLength();
 
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool RulerToolSystem::DisableLandscapeEdititing()
