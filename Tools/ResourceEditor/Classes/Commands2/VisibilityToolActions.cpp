@@ -58,11 +58,16 @@ void ActionEnableVisibilityTool::Redo()
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	
-	if (!success || !sceneEditor->visibilityToolSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::VISIBILITY_TOOL_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
 	}
-
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->visibilityToolSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
+	}
 	SceneSignals::Instance()->EmitVisibilityToolToggled(sceneEditor);
 }
 
