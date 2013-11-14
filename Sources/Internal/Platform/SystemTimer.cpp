@@ -33,11 +33,6 @@
 #include "DAVAConfig.h"
 #include "Debug/Replay.h"
 
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Mutex.h"
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 namespace DAVA 
 {
 
