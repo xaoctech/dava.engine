@@ -49,6 +49,7 @@ public:
 
 	void SetGlobalExtertnalValue(const String& name, float32 value);
 	float32 GetGlobalExternalValue(const String& name);
+	Map<String, float32> GetGlobalExternals();
 
 	uint32 index;
 	uint32 size;

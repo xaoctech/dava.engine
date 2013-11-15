@@ -39,6 +39,8 @@
 #include <QSlider>
 #include <QCheckBox>
 #include <QTreeWidget>
+#include <QTableWidget>
+#include <QStyledItemDelegate>
 
 #include "DockParticleEditor/TimeLineWidget.h"
 #include "DockParticleEditor/GradientPickerWidget.h"
@@ -102,6 +104,21 @@ private:
 	GradientPickerWidget *gradientLine;
 };
 
+class VariableEditDelegate : public QStyledItemDelegate
+{
+	Q_OBJECT
+
+public:
+
+	VariableEditDelegate(QObject *parent, QTableWidget *table) : QStyledItemDelegate(parent), editTable(table){}
+	
+	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+	void setEditorData(QWidget *editor, const QModelIndex &index) const;
+	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+protected:
+	QTableWidget *editTable;
+};
+
 class ParticleEffectPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
 	Q_OBJECT
@@ -163,10 +180,16 @@ public slots:
 	void OnContextMenuCommand(QAction *action);
 	void OnTreeItemDoubleClck(QTreeWidgetItem *treeItem, int column);
 	
+	void OnVariableValueChanged(int row, int col);
+	void OnGlobalVariableValueChanged(int row, int col);
+	void OnAddGlobalExternal();
+	
 protected:
 	void InitWidget(QWidget* widget, bool connectWidget = true);
 	void BuildEffectTree();
 	void UpdatePlaybackSpeedLabel();
+
+	void UpdateVaribleTables();
 
 	ModifiablePropertyLineI * GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId);
 	ModifiablePropertyLineI * GetLayerLine(ParticleLayer *layer, LayerExternals lineId);
@@ -198,6 +221,7 @@ protected:
 				particleEffect->UnRegisterModifiable(editLine);
 				editLine->SetValueName(resName);
 				particleEffect->RegisterModifiable(editLine);
+				UpdateVaribleTables();
 			}
 
 			return true;
@@ -219,10 +243,28 @@ private:
 
 	QTreeWidget *effectTree;
 	QTreeWidgetItem *currSelectedTreeItem;
+	
+	QTableWidget *effectVariables;
+	VariableEditDelegate *effectEditDelegate;
+	QTableWidget *globalVariables;
+	VariableEditDelegate *globalEditDelegate;
 
 	bool blockSignals;
+	bool blockTables;
 };
 
+
+class AddGlobalExternalDialog: public QDialog
+{
+	Q_OBJECT
+public:
+	explicit AddGlobalExternalDialog(QWidget *parent);
+	String GetVariableName();
+	float32 GetVariableValue();
+private:		
+	QLineEdit *variableName;
+	QDoubleSpinBox *variableValue;
+};
 
 
 
