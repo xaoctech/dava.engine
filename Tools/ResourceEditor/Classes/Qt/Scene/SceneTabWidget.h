@@ -87,12 +87,14 @@ public:
 signals:
     
     void CloseTabRequest(int index, Request *closeRequest);
+	void Escape();
     
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
 	void TabBarCurrentChanged(int index);
 	void TabBarCloseRequest(int index);
+	void TabBarCloseCurrentRequest();
 	void TabBarDataDropped(const QMimeData *data);
 	void DAVAWidgetDataDropped(const QMimeData *data);
 
@@ -122,6 +124,7 @@ protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dropEvent(QDropEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent * event);
 
 	ScenePreviewDialog *previewDialog;
 

@@ -63,8 +63,10 @@ public:
 	static const int MIN_HEIGHT = 8;
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	
-	Image();
+protected:
 	virtual ~Image();
+public:
+	Image();
 	
 	static Image * Create(uint32 width, uint32 height, PixelFormat format);
 	static Image * CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data);

@@ -36,6 +36,13 @@ int DAVA::Core::Run(int argc, char * argv[], AppHandle handle)
 		::UIScreen* mainScreen = [::UIScreen mainScreen];
 		unsigned int width = [mainScreen bounds].size.width;
 		unsigned int height = [mainScreen bounds].size.height;
+        eScreenOrientation orientation = Instance()->GetScreenOrientation();
+        //if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation]))
+        if ((orientation==SCREEN_ORIENTATION_LANDSCAPE_LEFT)||(orientation==SCREEN_ORIENTATION_LANDSCAPE_RIGHT)||(orientation==SCREEN_ORIENTATION_LANDSCAPE_AUTOROTATE))
+        {
+            width = [mainScreen bounds].size.height;
+            height = [mainScreen bounds].size.width;
+        }
 		unsigned int scale = 1;
 		
 		if (DAVA::Core::IsAutodetectContentScaleFactor())
@@ -87,6 +94,8 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
 	glController = [[EAGLViewController alloc] init];
 	DAVA::UIScreenManager::Instance()->RegisterController(CONTROLLER_GL, glController);
 	DAVA::UIScreenManager::Instance()->SetGLControllerId(CONTROLLER_GL);
+    
+    [application.keyWindow setRootViewController:glController];
 	
 	DAVA::Core::Instance()->SystemAppStarted();
     

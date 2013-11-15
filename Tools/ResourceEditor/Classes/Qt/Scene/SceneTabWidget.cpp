@@ -311,6 +311,15 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 	CloseTab(index);
 }
 
+void SceneTabWidget::TabBarCloseCurrentRequest()
+{
+	int tabIndex = GetCurrentTab();
+	if(tabIndex != -1)
+	{
+		CloseTab(tabIndex);
+	}
+}
+
 void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 {
 	if(data->hasUrls())
@@ -459,6 +468,16 @@ void SceneTabWidget::dropEvent(QDropEvent *event)
 	}
 }
 
+void SceneTabWidget::keyReleaseEvent(QKeyEvent * event)
+{
+	if(event->modifiers() == Qt::NoModifier)
+	{
+		if(event->key() == Qt::Key_Escape)
+		{
+			emit Escape();
+		}
+	}
+}
 
 void SceneTabWidget::UpdateTabName(int index)
 {

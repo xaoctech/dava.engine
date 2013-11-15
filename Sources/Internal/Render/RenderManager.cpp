@@ -55,7 +55,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     currentState(),
     hardwareState(),
     needGLScreenShot(false),
-    screenShotCallback(NULL)
+    screenShotCallback(NULL),
+    glMutex( new Mutex() )
 {
 //	Logger::FrameworkDebug("[RenderManager] created");
 
@@ -416,11 +417,11 @@ void RenderManager::ClipRect(const Rect &rect)
 	Rect r = currentClip;
 	if(r.dx < 0)
 	{
-		r.dx = (float32)retScreenWidth;
+		r.dx = (float32)retScreenWidth * Core::GetPhysicalToVirtualFactor();
 	}
 	if(r.dy < 0)
 	{
-		r.dy = (float32)retScreenHeight;
+		r.dy = (float32)retScreenHeight * Core::GetPhysicalToVirtualFactor();
 	}
 	
 	r = r.Intersection(rect);
@@ -528,11 +529,11 @@ void RenderManager::DrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 void RenderManager::Lock()
 {
-	glMutex.Lock();
+	glMutex->Lock();
 }
 void RenderManager::Unlock()
 {
-	glMutex.Unlock();
+	glMutex->Unlock();
 }
 	
 void RenderManager::LockNonMain()
@@ -714,36 +715,7 @@ void RenderManager::ClearStats()
     
 void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 {
-    switch(renderOrientation)
-    {
-        case Core::SCREEN_ORIENTATION_PORTRAIT:
-            break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-            {
-                float32 newX = (float32)frameBufferWidth - (rect.y + rect.dy);
-                float32 newY = (float32)frameBufferHeight - rect.x;
-                float32 newDX = rect.dy;
-                float32 newDY = rect.dx;
-                rect.x = newX;
-                rect.y = newY;
-                rect.dx = newDX;
-                rect.dy = newDY;
-            }
-            break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-            {
-                float32 newX = (float32)frameBufferWidth - (rect.y + rect.dy);
-                float32 newY = (float32)frameBufferHeight - rect.x;
-                float32 newDX = rect.dy;
-                float32 newDY = rect.dx;
-                rect.x = newX;
-                rect.y = newY;
-                rect.dx = newDX;
-                rect.dy = newDY;
-            }            
-            break;
-            
-    };
+
 }
 
 const Matrix4 & RenderManager::GetMatrix(eMatrixType type)
