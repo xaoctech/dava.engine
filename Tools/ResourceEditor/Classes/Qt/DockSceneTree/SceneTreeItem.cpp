@@ -60,6 +60,9 @@ QVariant SceneTreeItem::data(int role) const
 	case EIDR_Data:
 		v = ItemData();
 		break;
+    case Qt::BackgroundColorRole:
+        v = ItemBackgroundColor();
+        break;
 	default:
 		break;
 	}
@@ -82,6 +85,12 @@ QIcon SceneTreeItem::ItemIcon() const
 {
 	static QIcon icon = QIcon(":/QtIcons/node.png");
 	return icon;
+}
+
+
+QVariant SceneTreeItem::ItemBackgroundColor() const
+{
+	return QStandardItem::data(Qt::BackgroundColorRole);
 }
 
 // =========================================================================================
@@ -139,6 +148,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon cameraIcon(":/QtIcons/camera.png");
 	static QIcon lightIcon(":/QtIcons/light.png");
 	static QIcon shadowIcon(":/QtIcons/shadow.png");
+	static QIcon switchIcon(":/QtIcons/switch.png");
 
 	QIcon ret;
 
@@ -159,6 +169,10 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		else if(NULL != GetLodComponent(entity))
 		{
 			ret = lodobjIcon;
+		}
+		else if(NULL != GetSwitchComponent(entity))
+		{
+			ret = switchIcon;
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
@@ -192,6 +206,21 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 
 	return ret;
 }
+
+QVariant SceneTreeItemEntity::ItemBackgroundColor() const
+{
+    if(NULL != entity)
+	{
+        DAVA::ParticleEmitter *emitter = DAVA::GetEmitter(entity);
+        if(emitter && emitter->IsShortEffect())
+        {
+            return QColor(245, 215, 210);
+        }
+    }
+    
+    return SceneTreeItem::ItemBackgroundColor();
+}
+
 
 void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 {

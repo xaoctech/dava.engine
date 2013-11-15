@@ -106,18 +106,6 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		return;
 	}
 
-    Matrix4 rotationMatrix = Matrix4::IDENTITY;
-    switch(RenderManager::Instance()->GetRenderOrientation())
-    {
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-            //glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(90.0f));
-            break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-            //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
-            break;
-    }    
 
 	Matrix4 mv;
 	Matrix3 rotation;
@@ -129,7 +117,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	Vector<std::pair<Vector3, Vector3> > basises;
 	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
 	{
-		mv = camera->GetMatrix()*rotationMatrix;
+		mv = camera->GetMatrix();
 		basises.push_back(std::pair<Vector3, Vector3>(Vector3(mv._01, mv._11, mv._21), Vector3(mv._00, mv._10, mv._20)));
 	}
 	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
