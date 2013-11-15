@@ -76,6 +76,49 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 	}
 }
 
+void SceneHelper::EnumerateUpdatedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures)
+{
+	DAVA::Map<DAVA::String, DAVA::Texture *> allTextures;
+	SceneHelper::EnumerateTextures(forNode, allTextures);
+	
+	if(allTextures.size() > 0)
+	{
+		DAVA::Map<DAVA::String, DAVA::Texture *>::iterator begin = allTextures.begin();
+		DAVA::Map<DAVA::String, DAVA::Texture *>::iterator end = allTextures.end();
+		
+		for(; begin != end; begin++)
+		{
+			DAVA::TextureDescriptor *descriptor = begin->second->CreateDescriptor();
+			
+			if(NULL == descriptor)
+			{
+				continue;
+			}
+			for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
+			{
+				if(descriptor->compression[gpu].format > DAVA::FORMAT_INVALID &&
+					descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
+				{
+					FilePath convertedTexture = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor,(eGPUFamily)gpu);
+					FilePath texPath = descriptor->pathname;
+					texPath.ReplaceExtension(".png");
+					if(texPath.Exists() && convertedTexture.Exists())
+					{
+						File::eDateComparison comparison = File::CompareModificationDates(texPath, convertedTexture);
+						if(comparison == File::SECOND_OLDER)
+						{
+							textures[begin->first] =begin->second;
+							break;
+						}
+					}
+				}
+			}
+						
+			SafeRelease(descriptor);
+		}
+	}
+}
+
 void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode)
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
