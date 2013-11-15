@@ -44,12 +44,6 @@
 		02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
 		02E9E465173A453700C501BC /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
 		02E9E466173A453700C501BC /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
-		02F8B06517E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B06317E3399800D5A334 /* SpeedTreeLeafBatch.cpp */; };
-		02F8B06617E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B06317E3399800D5A334 /* SpeedTreeLeafBatch.cpp */; };
-		02F8B06717E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B06317E3399800D5A334 /* SpeedTreeLeafBatch.cpp */; };
-		02F8B06817E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F8B06417E3399800D5A334 /* SpeedTreeLeafBatch.h */; };
-		02F8B06917E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F8B06417E3399800D5A334 /* SpeedTreeLeafBatch.h */; };
-		02F8B06A17E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F8B06417E3399800D5A334 /* SpeedTreeLeafBatch.h */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -2100,8 +2094,6 @@
 		02E9E4221739616800C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
 		02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
 		02E9E436173964DA00C501BC /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
-		02F8B06317E3399800D5A334 /* SpeedTreeLeafBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeLeafBatch.cpp; sourceTree = "<group>"; };
-		02F8B06417E3399800D5A334 /* SpeedTreeLeafBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeLeafBatch.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -3513,8 +3505,6 @@
 			children = (
 				EA84E16A17FAC0B400304C3C /* SpatialTree.cpp */,
 				EA84E16B17FAC0B400304C3C /* SpatialTree.h */,
-				02F8B06317E3399800D5A334 /* SpeedTreeLeafBatch.cpp */,
-				02F8B06417E3399800D5A334 /* SpeedTreeLeafBatch.h */,
 				A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */,
 				A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */,
 				CCC7A3FA16F1D6170061EA5D /* Camera.cpp */,
@@ -4270,7 +4260,6 @@
 				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
 				A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
-				02F8B06A17E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6F17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */,
 			);
@@ -4627,7 +4616,6 @@
 				EA56554D17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				17DC600117DE11650075813E /* UIMovieView.h in Headers */,
 				1770DF5117DF67E500000391 /* MovieViewControlMacOS.h in Headers */,
-				02F8B06817E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6D17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E16F17FAC0B400304C3C /* SpatialTree.h in Headers */,
 			);
@@ -4973,7 +4961,6 @@
 				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
 				A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
-				02F8B06917E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6E17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E17017FAC0B400304C3C /* SpatialTree.h in Headers */,
 			);
@@ -5394,7 +5381,6 @@
 				A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554C17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */,
-				02F8B06717E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
 				A63BCD6C17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16E17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 			);
@@ -5716,7 +5702,6 @@
 				1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */,
 				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
 				1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */,
-				02F8B06517E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
 				A63BCD6A17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16C17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
@@ -6029,7 +6014,6 @@
 				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
 				1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */,
-				02F8B06617E3399800D5A334 /* SpeedTreeLeafBatch.cpp in Sources */,
 				A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16D17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 			);

@@ -28,76 +28,24 @@
 
 
 
-#include "DeviceInfo.h"
+#ifndef __CENTERPIVOTPOINTCOMMAND__H__
+#define __CENTERPIVOTPOINTCOMMAND__H__
 
-#if defined(__DAVAENGINE_IPHONE__)
-#include "TargetConditionals.h"
-#endif
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-namespace DAVA
+using namespace DAVA;
+
+class CenterPivotPointCommand: public ChangePropertyCommand<QPointF>
 {
+public:
+	CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty);
 
-DeviceInfo::ePlatform DeviceInfo::GetPlatform()
-{
-	ePlatform platform = PLATFORM_UNKNOWN;
+protected:
+	virtual QPointF PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue);
+};
 
-#if defined(__DAVAENGINE_MACOS__)
-	platform = PLATFORM_MACOS;
-
-#elif defined(__DAVAENGINE_IPHONE__)
-	platform = PLATFORM_IOS;
-	#if defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR == 1
-		platform = PLATFORM_IOS_SIMULATOR;
-	#endif
-
-#elif defined(__DAVAENGINE_ANDROID__)
-	platform = PLATFORM_ANDROID;
-
-#elif defined(__DAVAENGINE_WIN32__)
-	platform = PLATFORM_WIN32;
-#endif
-
-	return platform;
-}
-
-String DeviceInfo::GetPlatformString()
-{
-	String res = "";
-
-	switch (GetPlatform())
-	{
-		case PLATFORM_IOS:
-			res = "iOS";
-			break;
-
-		case PLATFORM_IOS_SIMULATOR:
-			res = "iOS Simulator";
-			break;
-
-		case PLATFORM_MACOS:
-			res = "MacOS";
-			break;
-
-		case PLATFORM_ANDROID:
-			res = "Android";
-			break;
-
-		case PLATFORM_WIN32:
-			res = "Win32";
-			break;
-
-		default:
-			res = "Unknown";
-			break;
-	}
-
-	return res;
-}
-
-#ifndef __DAVAENGINE_ANDROID__
-int DeviceInfo::GetZBufferSize()
-{
-	return 24;
-}
-#endif
-}
+#endif /* defined(__CENTERPIVOTPOINTCOMMAND__H__) */

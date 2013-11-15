@@ -107,6 +107,8 @@ namespace ResourceEditor
 
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush\nsize:";
 	static const String TILEMASK_EDITOR_BRUSH_IMAGE_CAPTION	= "Brush\nimage:";
+	static const String TILEMASK_EDITOR_DRAW_CAPTION		= "Normal draw";
+	static const String TILEMASK_EDITOR_COPY_PASTE_CAPTION	= "Copy/paste";
 	static const String TILEMASK_EDITOR_TILE_TEXTURE_CAPTION= "Tile texture:";
 	static const String TILEMASK_EDITOR_STRENGTH_CAPTION	= "Strength:";
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_MIN		= "tilemask-editor.brush-size.min";
@@ -194,8 +196,8 @@ namespace ResourceEditor
 	static const String SHORTCUT_SET_AVERAGE						= "heightmap-editor.set-average";
 	static const String SHORTCUT_SET_ABS_DROP						= "heightmap-editor.set-abs-drop";
 	static const String SHORTCUT_SET_DROPPER						= "heightmap-editor.set-dropper";
-	static const String SHORTCUT_COPY_PASTE_HEIGHTMAP				= "heightmap-editor.copy-paste.heightmap";
-	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "heightmap-editor.copy-paste.tilemask";
+	static const String SHORTCUT_NORMAL_DRAW_TILEMASK				= "tilemaskeditor-editor.set-normal-draw";
+	static const String SHORTCUT_COPY_PASTE_TILEMASK				= "tilemaskeditor-editor.set-copy-paste";
 
 	static const String NO_LANDSCAPE_ERROR_MESSAGE					= "Error. Check is there landscape at the scene.";
 	static const String INVALID_LANDSCAPE_MESSAGE					= "Error. Check if all necessary properties of the landscape are set.";
@@ -207,7 +209,18 @@ namespace ResourceEditor
 	static const String SLIDER_WIDGET_CURRENT_VALUE					= "Current value";
 
 	static const String TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP	= "Click to change color";
-	
+
+	static const String LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS				= "No errors.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS			= "Error: All another landscape editors should be disabled";
+	static const String LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT	= "Error: landscape entity is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSETN	= "Error: tile mask texture is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSETN= "Error: full tiled texture is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_ABSENT	= "Error: tile texture 0 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_ABSENT	= "Error: tile texture 1 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_ABSENT	= "Error: tile texture 2 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_ABSENT	= "Error: tile texture 3 is absent.";
+	static const String LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT		= "Error: heightmap is absent.";
+
 	static const String ADD_SWITCH_NODE_DIALOG_NO_CHILDREN			= "Error: switch node must be created with state nodes.";
 	static const String SCENE_TREE_WRONG_REF_TO_OWNER				= "Wrong reference(s) to owner: ";
 
