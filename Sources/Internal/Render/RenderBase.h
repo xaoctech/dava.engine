@@ -197,9 +197,6 @@ enum eGPUFamily
     GPU_MALI,
     GPU_ADRENO,
     
-    GPU_COMPRESSED_COUNT,
-    GPU_PNG = GPU_COMPRESSED_COUNT,
-    
     GPU_FAMILY_COUNT
 };
     

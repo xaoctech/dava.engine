@@ -161,7 +161,7 @@ void TextureProperties::ReloadProperties()
 
 	if(NULL != curTextureDescriptor &&
 		curGPU >= 0 &&
-		curGPU < DAVA::GPU_COMPRESSED_COUNT)
+		curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
 		QtPropertyItem *header;
 		DAVA::InspBase *object = NULL;
@@ -357,7 +357,7 @@ void TextureProperties::PropSizeChanged(QtPropertyData::ValueChangeReason reason
 void TextureProperties::LoadCurSizeToProp()
 {
 	if( NULL != curTextureDescriptor && NULL != propSizes && 
-		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_COMPRESSED_COUNT)
+		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
 		QSize curSize(curTextureDescriptor->compression[curGPU].compressToWidth, curTextureDescriptor->compression[curGPU].compressToHeight);
 		int level = availableSizes.key(curSize, -1); 
@@ -374,7 +374,7 @@ void TextureProperties::LoadCurSizeToProp()
 void TextureProperties::SaveCurSizeFromProp()
 {
 	if( NULL != curTextureDescriptor && NULL != propSizes && 
-		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_COMPRESSED_COUNT)
+		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
 		int level = propSizes->GetValue().toInt();
 

@@ -44,7 +44,7 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 8;
+    static const int8 CURRENT_VERSION = 7;
     
 public:
 	enum eOptionsState
@@ -67,8 +67,6 @@ public:
         int32 compressToHeight;
         mutable uint32 convertedFileCrc;
         
-        int8 mipmapLayersCount;
-        
 		Compression() { Clear(); } 
         void Clear();
 
@@ -78,7 +76,6 @@ public:
 			MEMBER(compressToWidth, "compressToWidth", I_SAVE)
 			MEMBER(compressToHeight, "compressToHeight", I_SAVE)
             MEMBER(convertedFileCrc, "Converted File CRC", I_SAVE)
-            MEMBER(mipmapLayersCount, "Mipmap Layers Count", I_SAVE)
 			)
     };
     
@@ -143,7 +140,7 @@ public:
     static FilePath GetDescriptorPathname(const FilePath &texturePathname);
     static String GetDescriptorExtension();
     
-    void PrepareForExport(eGPUFamily forGPU);
+    PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU);
     
 protected:
     
@@ -168,7 +165,6 @@ protected:
 
 	void LoadVersion5(int32 signature, File *file);
 	void LoadVersion6(int32 signature, File *file);
-	void LoadVersion7(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
 	uint32 ReadConvertedCRC(eGPUFamily forGPU) const;
@@ -185,9 +181,7 @@ public:
     int8 exportedAsPixelFormat;
 	
 	uint8 faceDescription;
-
-    int8 mipmapLayersCount;
-
+    
     bool isCompressedFile;
 };
     
