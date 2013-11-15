@@ -33,7 +33,7 @@
 
 namespace DAVA
 {
-static const String BLEND_MODE_NAMES[BLEND_MODE_COUNT] =
+const String BLEND_MODE_NAMES[BLEND_MODE_COUNT] =
 {
 	"BLEND_NONE",
 	"BLEND_ZERO",
@@ -50,7 +50,7 @@ static const String BLEND_MODE_NAMES[BLEND_MODE_COUNT] =
 };
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
+const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
 {
 	0,	// not a valid blend mode
 	GL_ZERO,
@@ -66,7 +66,7 @@ static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
 	GL_ONE_MINUS_SRC_COLOR,
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
+const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
 {
 	0,	// not a valid blend mode
 	D3DBLEND_ZERO,
@@ -83,7 +83,7 @@ static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
 };
 #endif
 
-static const String CMP_FUNC_NAMES[CMP_TEST_MODE_COUNT] =
+const String CMP_FUNC_NAMES[CMP_TEST_MODE_COUNT] =
 {
 	"CMP_NEVER",
 	"CMP_LESS",
@@ -96,7 +96,7 @@ static const String CMP_FUNC_NAMES[CMP_TEST_MODE_COUNT] =
 };
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
+const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
 {
 	GL_NEVER,
 	GL_LESS,
@@ -108,7 +108,7 @@ static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
 	GL_ALWAYS,
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
+const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
 {
 	D3DCMP_NEVER,
 	D3DCMP_LESS,
@@ -121,7 +121,7 @@ static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
 };
 #endif
 
-static const String FACE_NAMES[FACE_COUNT] =
+const String FACE_NAMES[FACE_COUNT] =
 {
 	"FACE_FRONT",
 	"FACE_BACK",
@@ -129,14 +129,14 @@ static const String FACE_NAMES[FACE_COUNT] =
 };
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint CULL_FACE_MAP[FACE_COUNT] =
+const GLint CULL_FACE_MAP[FACE_COUNT] =
 {
 	GL_FRONT,
 	GL_BACK,
 	GL_FRONT_AND_BACK,
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const int32 CULL_FACE_MAP[FACE_COUNT] =
+const int32 CULL_FACE_MAP[FACE_COUNT] =
 {
 	D3DCULL_CCW,
 	D3DCULL_CW,
@@ -144,7 +144,7 @@ static const int32 CULL_FACE_MAP[FACE_COUNT] =
 };
 #endif
 
-static const String STENCIL_OP_NAMES[STENCILOP_COUNT] =
+const String STENCIL_OP_NAMES[STENCILOP_COUNT] =
 {
 	"STENCILOP_KEEP",
 	"STENCILOP_ZERO",
@@ -157,7 +157,7 @@ static const String STENCIL_OP_NAMES[STENCILOP_COUNT] =
 };
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint STENCIL_OP_MAP[STENCILOP_COUNT] =
+const GLint STENCIL_OP_MAP[STENCILOP_COUNT] =
 {
 	GL_KEEP,
 	GL_ZERO,
@@ -169,7 +169,7 @@ static const GLint STENCIL_OP_MAP[STENCILOP_COUNT] =
 	GL_INVERT
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const int32 STENCIL_OP_MAP[STENCILOP_COUNT] =
+const int32 STENCIL_OP_MAP[STENCILOP_COUNT] =
 {
 	D3DSTENCILOP_KEEP,
 	D3DSTENCILOP_ZERO,
@@ -182,7 +182,7 @@ static const int32 STENCIL_OP_MAP[STENCILOP_COUNT] =
 };
 #endif
 
-static const String FILL_MODE_NAMES[FILLMODE_COUNT] =
+const String FILL_MODE_NAMES[FILLMODE_COUNT] =
 {
 	"FILLMODE_POINT",
 	"FILLMODE_WIREFRAME",
@@ -190,14 +190,14 @@ static const String FILL_MODE_NAMES[FILLMODE_COUNT] =
 };
 
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__))
-static const GLint FILLMODE_MAP[FILLMODE_COUNT] =
+const GLint FILLMODE_MAP[FILLMODE_COUNT] =
 {
 	GL_POINT,
 	GL_LINE,
 	GL_FILL
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const int32 FILLMODE_MAP[FILLMODE_COUNT] =
+const int32 FILLMODE_MAP[FILLMODE_COUNT] =
 {
 	D3DFILL_POINT,
 	D3DFILL_WIREFRAME,
