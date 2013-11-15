@@ -93,17 +93,18 @@ RulerToolProxy* LandscapeEditorDrawSystem::GetRulerToolProxy()
 	return rulerToolProxy;
 }
 
-bool LandscapeEditorDrawSystem::EnableCustomDraw()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableCustomDraw()
 {
 	if (customDrawRequestCount != 0)
 	{
 		++customDrawRequestCount;
-		return true;
+		return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!Init())
+	eErrorType initError = Init();
+	if (initError != LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return initError;
 	}
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
@@ -120,7 +121,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	
 	++customDrawRequestCount;
 
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 void LandscapeEditorDrawSystem::DisableCustomDraw()
@@ -151,12 +152,12 @@ bool LandscapeEditorDrawSystem::IsNotPassableTerrainEnabled()
 	return notPassableTerrainProxy->IsEnabled();
 }
 
-bool LandscapeEditorDrawSystem::IsNotPassableTerrainCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::IsNotPassableTerrainCanBeEnabled()
 {
 	return VerifyLandscape();
 }
 
-bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 {
 	if (!notPassableTerrainProxy)
 	{
@@ -165,17 +166,19 @@ bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	
 	if (notPassableTerrainProxy->IsEnabled())
 	{
-		return true;
+		return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
 
-	if (!IsNotPassableTerrainCanBeEnabled())
+	eErrorType canBeEnabledError = IsNotPassableTerrainCanBeEnabled();
+	if (canBeEnabledError != LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
 
-	if (!EnableCustomDraw())
+	eErrorType enableCustomDrawError = EnableCustomDraw();
+	if (enableCustomDrawError != LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	notPassableTerrainProxy->Enable();
@@ -186,7 +189,7 @@ bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	landscapeProxy->SetNotPassableTexture(notPassableTerrainProxy->GetTexture());
 	landscapeProxy->SetNotPassableTextureEnabled(true);
 
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 void LandscapeEditorDrawSystem::DisableNotPassableTerrain()
@@ -432,11 +435,12 @@ KeyedArchive* LandscapeEditorDrawSystem::GetLandscapeCustomProperties()
 	return landscapeNode->GetCustomProperties();
 }
 
-bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableTilemaskEditing()
 {
-	if (!Init())
+	eErrorType initError = Init();
+	if (initError != LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return initError;
 	}
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
@@ -446,7 +450,7 @@ bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
 
 	fogWasEnabled = landscapeProxy->IsFogEnabled();
 	landscapeProxy->SetFogEnabled(false);
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 void LandscapeEditorDrawSystem::DisableTilemaskEditing()
@@ -454,14 +458,14 @@ void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 	landscapeProxy->SetFogEnabled(fogWasEnabled);
 }
 
-bool LandscapeEditorDrawSystem::Init()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::Init()
 {
 	if (!heightmapProxy)
 	{
 		Heightmap* heightmap = baseLandscape->GetHeightmap();
 		if (heightmap == NULL || heightmap->Size() == 0)
 		{
-			return false;
+			return LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT;
 		}
 		heightmapProxy = new HeightmapProxy(baseLandscape->GetHeightmap()->Clone(NULL));
 	}
@@ -478,23 +482,23 @@ bool LandscapeEditorDrawSystem::Init()
 		rulerToolProxy = new RulerToolProxy((int32)GetTextureSize(Landscape::TEXTURE_TILE_FULL));
 	}
 
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
-bool LandscapeEditorDrawSystem::InitLandscape(Entity* landscapeEntity, Landscape* landscape)
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::InitLandscape(Entity* landscapeEntity, Landscape* landscape)
 {
 	DeinitLandscape();
 
 	if (!landscapeEntity || !landscape)
 	{
-		return false;
+		return LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT;
 	}
 
 	landscapeNode = landscapeEntity;
 	baseLandscape = SafeRetain(landscape);
 	landscapeProxy = new LandscapeProxy(baseLandscape);
 
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 void LandscapeEditorDrawSystem::DeinitLandscape()
@@ -617,17 +621,12 @@ Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMo
 	return baseLandscape->GetTiledShaderMode();
 }
 
-bool LandscapeEditorDrawSystem::VerifyLandscape()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape()
 {
 	//landscape initialization should be handled by AddEntity/RemoveEntity methods
 	if (!landscapeNode || !baseLandscape || !landscapeProxy)
 	{
-		return false;
-	}
-
-	if (landscapeProxy == NULL)
-	{
-		return false;
+		return LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT;
 	}
 
 	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
@@ -637,31 +636,93 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 	}
 
 	Texture* tileMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-	Texture* fullTiled = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
-	if (tileMask == NULL || tileMask->IsPinkPlaceholder() || fullTiled == NULL)
+	if (tileMask == NULL || tileMask->IsPinkPlaceholder())
 	{
-		return false;
+		return LANDSCAPE_EDITOR_SYSTEM_TILE_MASK_TEXTURE_ABSENT;
+	}
+	
+	Texture* fullTiled = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (fullTiled == NULL || fullTiled->IsPinkPlaceholder())
+	{
+		return LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSENT;
 	}
 
+	Texture* texTile0 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE0);
+	
 	if (baseLandscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK &&
-		baseLandscape->GetTexture(Landscape::TEXTURE_TILE0) == NULL)
+		(texTile0 == NULL || texTile0->IsPinkPlaceholder()))
 	{
-		return false;
+		return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT;
 	}
 	else if (baseLandscape->GetTiledShaderMode() != Landscape::TILED_MODE_TILE_DETAIL_MASK)
 	{
-		bool ok = (baseLandscape->GetTexture(Landscape::TEXTURE_TILE0) != NULL) &&
-				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE1) != NULL) &&
-				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE2) != NULL) &&
-				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE3) != NULL);
+		if (texTile0 == NULL || texTile0->IsPinkPlaceholder())
+		{
+			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT;
+		}
+		
+		Texture* texTile1 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE1);
+		if (texTile1 == NULL || texTile1->IsPinkPlaceholder())
+		{
+			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_TEXTURE_ABSENT;
+		}
 
-		return ok;
+		Texture* texTile2 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE2);
+		if (texTile2 == NULL || texTile2->IsPinkPlaceholder())
+		{
+			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_TEXTURE_ABSENT;
+		}
+
+		Texture* texTile3 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE3);
+		if (texTile3 == NULL || texTile3->IsPinkPlaceholder())
+		{
+			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_TEXTURE_ABSENT;
+		}
 	}
 
-	return true;
+	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 Landscape * LandscapeEditorDrawSystem::GetBaseLandscape() const
 {
 	return baseLandscape;
+}
+
+String LandscapeEditorDrawSystem::GetDescriptionByError(eErrorType error)
+{
+	String ret;
+	switch (error)
+	{
+		case LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_TILE_MASK_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSETN;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSETN;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_ABSENT;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_ABSENT;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_ABSENT;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_TEXTURE_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_ABSENT;
+			break;
+		case LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT:
+			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT;
+			break;
+			
+		default:
+			break;
+	}
+	return ret;
 }

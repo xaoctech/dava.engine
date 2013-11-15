@@ -90,8 +90,10 @@ public:
         UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
     };
 
-    Shader();
+protected:
     virtual ~Shader();
+public:
+    Shader();
     
     Shader * Clone();
     

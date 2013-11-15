@@ -16,6 +16,7 @@
     <ClCompile Include="Classes\AlignDistribute\ControlsPositionData.cpp" />
     <ClCompile Include="Classes\AlignDistribute\DistributeHandlers.cpp" />
     <ClCompile Include="Classes\Commands\BaseCommand.cpp" />
+    <ClCompile Include="Classes\Commands\CenterPivotPointCommand.cpp" />
     <ClCompile Include="Classes\Commands\ChangeAlignPropertyCommand.cpp" />
     <ClCompile Include="Classes\Commands\ControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\ImportCommands.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Classes\AlignDistribute\ControlsPositionData.h" />
     <ClInclude Include="Classes\AlignDistribute\DistributeHandlers.h" />
     <ClInclude Include="Classes\Commands\BaseCommand.h" />
+    <ClInclude Include="Classes\Commands\CenterPivotPointCommand.h" />
     <ClInclude Include="Classes\Commands\ChangeAlignPropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ChangePropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ControlCommands.h" />
