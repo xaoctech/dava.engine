@@ -28,61 +28,24 @@
 
 
 
-#ifndef __UIEditor__UIListMetadata__
-#define __UIEditor__UIListMetadata__
+#ifndef __CENTERPIVOTPOINTCOMMAND__H__
+#define __CENTERPIVOTPOINTCOMMAND__H__
 
-#include "UIControlMetadata.h"
-#include "UI/UIList.h"
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-namespace DAVA {
+using namespace DAVA;
 
-// Metadata class for DAVA UIList control.
-class UIListMetadata : public UIControlMetadata
+class CenterPivotPointCommand: public ChangePropertyCommand<QPointF>
 {
-    Q_OBJECT
-	
-	Q_PROPERTY(int AggregatorID READ GetAggregatorID WRITE SetAggregatorID);
-	Q_PROPERTY(int Orientation READ GetOrientation WRITE SetOrientation);
-
 public:
-    UIListMetadata(QObject* parent = 0);
+	CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty);
 
 protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
-
-    virtual QString GetUIControlClassName() { return "UIList"; };
-	
-    // Helper to access active UI List.
-    UIList* GetActiveUIList() const;
-	
-	// Properties getters/setters
-	int GetAggregatorID();
-    void SetAggregatorID(int value);
-	
-	int GetOrientation();
-	void SetOrientation(int value);
-
-	virtual void SetLeftAlign(int value);
-	virtual void SetHCenterAlign(int value);
-	virtual void SetRightAlign(int value);
-	virtual void SetTopAlign(int value);
-	virtual void SetVCenterAlign(int value);
-	virtual void SetBottomAlign(int value);
-	virtual void SetLeftAlignEnabled(const bool value);
-	virtual void SetHCenterAlignEnabled(const bool value);
-	virtual void SetRightAlignEnabled(const bool value);
-	virtual void SetTopAlignEnabled(const bool value);
-	virtual void SetVCenterAlignEnabled(const bool value);
-	virtual void SetBottomAlignEnabled(const bool value);
-	
-	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
-
-private:
-	void UpdateListCellSize();
+	virtual QPointF PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue);
 };
 
-};
-
-#endif /* defined(__UIEditor__UIListMetadata__) */
+#endif /* defined(__CENTERPIVOTPOINTCOMMAND__H__) */
