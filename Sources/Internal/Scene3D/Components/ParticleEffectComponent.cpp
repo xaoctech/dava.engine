@@ -284,6 +284,14 @@ float32 ParticleEffectComponent::GetExternalValue(const String& name)
 		return 0.0f;
 }
 
+Set<String> ParticleEffectComponent::EnumerateVariables()
+{
+	Set<String> res;
+	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalModifiables.begin(), e=externalModifiables.end(); it!=e; ++it)
+		res.insert((*it).first);
+	return res;
+}
+
 void ParticleEffectComponent::RegisterModifiable(ModifiablePropertyLineI *propertyLine)
 {
 	externalModifiables.insert(std::make_pair(propertyLine->GetValueName(), propertyLine));
@@ -324,8 +332,7 @@ void ParticleEffectComponent::RebuildEffectModifiables()
 		Map<String, float32>::iterator itName = externalValues.find((*it)->GetValueName());
 		if (itName!=externalValues.end())
 			(*it)->SetModifier((*itName).second);
-	}
-	
+	}	
 }
 
 	

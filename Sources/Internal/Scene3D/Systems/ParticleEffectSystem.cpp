@@ -87,4 +87,9 @@ float32 ParticleEffectSystem::GetGlobalExternalValue(const String& name)
 		return 0.0f;
 }
 
+Map<String, float32> ParticleEffectSystem::GetGlobalExternals()
+{
+	return globalExternalValues;
+}
+
 }

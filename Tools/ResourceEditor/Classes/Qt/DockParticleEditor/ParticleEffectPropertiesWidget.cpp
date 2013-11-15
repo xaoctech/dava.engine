@@ -36,6 +36,10 @@
 #include <QEvent>
 #include <QMenu>
 #include <QPushButton>
+#include <QSpinBox>
+
+
+#include "Scene3D/Systems/ParticleEffectSystem.h"
 
 static const int TreeItemTypeEmitter  = QTreeWidgetItem::UserType+1;
 static const int TreeItemTypeLayer    = QTreeWidgetItem::UserType+2;
@@ -77,10 +81,40 @@ ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent) 
 	iconForce = QIcon(":/QtIcons/force.png");
 	iconExternal = QIcon(":/QtIcons/external.png");
 
+	mainLayout->addWidget(new QLabel("Effect Variables"));
+	effectVariables = new QTableWidget(this);
+	effectVariables->setColumnCount(2);
+	effectVariables->setRowCount(0);
+	effectEditDelegate = new VariableEditDelegate(effectVariables, effectVariables);
+	effectVariables->setItemDelegate(effectEditDelegate);
+	mainLayout->addWidget(effectVariables);
+	connect(effectVariables, SIGNAL(cellChanged(int, int)), this, SLOT(OnVariableValueChanged(int, int)));
+
+	mainLayout->addWidget(new QLabel("Global variables"));
+	globalVariables = new QTableWidget(this);
+	globalVariables->setColumnCount(2);
+	globalVariables->setRowCount(0);	
+	globalEditDelegate = new VariableEditDelegate(globalVariables, globalVariables);
+	globalVariables->setItemDelegate(globalEditDelegate);
+	mainLayout->addWidget(globalVariables);
+	connect(globalVariables, SIGNAL(cellChanged(int, int)), this, SLOT(OnGlobalVariableValueChanged(int, int)));
+
+
+	QHBoxLayout *addGlobalBox = new QHBoxLayout();
+	addGlobalBox->addStretch();
+	QPushButton *addGlobal = new QPushButton(this);
+	addGlobal->setText("+");
+	addGlobal->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	addGlobalBox->addWidget(addGlobal);
+	mainLayout->addLayout(addGlobalBox);
+
+	connect(addGlobal, SIGNAL(clicked(bool)), this, SLOT(OnAddGlobalExternal()));
+
 	mainLayout->addStretch();
 
 	particleEffect = NULL;
 	blockSignals = false;
+	blockTables = false;
 }
 
 ParticleEffectPropertiesWidget::~ParticleEffectPropertiesWidget()
@@ -94,10 +128,78 @@ void ParticleEffectPropertiesWidget::InitWidget(QWidget *widget, bool connectWid
 		connect(widget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
 }
 
+void ParticleEffectPropertiesWidget::UpdateVaribleTables()
+{
+	blockTables = true;
+	Set<String> variablesSet = particleEffect->EnumerateVariables();
+	effectVariables->clearContents();
+	effectVariables->setRowCount(variablesSet.size());
+	int32 i=0;
+	for (Set<String>::iterator it = variablesSet.begin(), e = variablesSet.end(); it!=e; ++it)
+	{
+		
+		QTableWidgetItem *varName = new QTableWidgetItem(QString((*it).c_str()));
+		varName->setFlags(Qt::NoItemFlags);
+		effectVariables->setItem(i, 0, varName);		
+		QTableWidgetItem *varValue = new QTableWidgetItem(QString::number(particleEffect->GetExternalValue(*it)));		
+		effectVariables->setItem(i, 1, varValue);
+		i++;
+	}
+
+
+	Map<String, float32> globalVariablesSet = particleEffect->GetEntity()->GetScene()->particleEffectSystem->GetGlobalExternals();
+	globalVariables->clearContents();
+	globalVariables->setRowCount(globalVariablesSet.size());
+	i=0;
+	for (Map<String, float32>::iterator it = globalVariablesSet.begin(), e = globalVariablesSet.end(); it!=e; ++it)
+	{		
+		QTableWidgetItem *varName = new QTableWidgetItem(QString((*it).first.c_str()));
+		varName->setFlags(Qt::NoItemFlags);
+		globalVariables->setItem(i, 0, varName);		
+		QTableWidgetItem *varValue = new QTableWidgetItem(QString::number((*it).second));		
+		globalVariables->setItem(i, 1, varValue);
+		i++;
+	}
+
+	blockTables = false;
+}
+
+void ParticleEffectPropertiesWidget::OnVariableValueChanged(int row, int col)
+{
+	if (blockTables)
+		return;
+	String varNam = effectVariables->item(row, 0)->text().toStdString();	
+	float varValue = effectVariables->item(row, 1)->text().toFloat();
+	particleEffect->SetExtertnalValue(varNam, varValue);
+}
+
+void ParticleEffectPropertiesWidget::OnGlobalVariableValueChanged(int row, int col)
+{
+	if (blockTables)
+		return;
+	String varNam = globalVariables->item(row, 0)->text().toStdString();	
+	float varValue = globalVariables->item(row, 1)->text().toFloat();
+	particleEffect->GetEntity()->GetScene()->particleEffectSystem->SetGlobalExtertnalValue(varNam, varValue);
+	UpdateVaribleTables();
+}
+
+void ParticleEffectPropertiesWidget::OnAddGlobalExternal()
+{
+	AddGlobalExternalDialog dialog(this);	
+	if (dialog.exec())
+	{			
+		particleEffect->GetEntity()->GetScene()->particleEffectSystem->SetGlobalExtertnalValue(dialog.GetVariableName(), dialog.GetVariableValue());
+		UpdateVaribleTables();		
+	}	
+}
+
 void ParticleEffectPropertiesWidget::ShowContextMenuForEffectTree(const QPoint &pos)
 {
 	QMenu contextMenu;
-	currSelectedTreeItem = effectTree->itemAt(pos);	
+	QTreeWidgetItem *target = effectTree->itemAt(pos);	
+	if (!target) 
+		return;
+	currSelectedTreeItem = target;
 	EffectTreeData treeData = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();	
 	int i;
 	switch(currSelectedTreeItem->type())
@@ -166,26 +268,30 @@ void ParticleEffectPropertiesWidget::OnContextMenuCommand(QAction *action)
 		int externalId = data.externalParamId;
 		if (externalId<EE_TOTAL)
 		{			
-			particleEffect->UnRegisterModifiable(GetEmitterLine(data.emmiter, EmitterExternals(commandId)));
+			particleEffect->UnRegisterModifiable(GetEmitterLine(data.emmiter, EmitterExternals(externalId)));
 			RemoveEmitterLineModifiable(data.emmiter, EmitterExternals(externalId));			
+			UpdateVaribleTables();
 		}
 		else if (externalId<EL_TOTAL)
 		{			
-			particleEffect->UnRegisterModifiable(GetLayerLine(data.layer, LayerExternals(commandId)));
+			particleEffect->UnRegisterModifiable(GetLayerLine(data.layer, LayerExternals(externalId)));
 			RemoveLayerLineModifiable(data.layer, LayerExternals(externalId));
+			UpdateVaribleTables();
 		}
 		else
 		{		
-			particleEffect->UnRegisterModifiable(GetForceLine(data.force, ForceExternals(commandId)));
+			particleEffect->UnRegisterModifiable(GetForceLine(data.force, ForceExternals(externalId)));
 			RemoveForceLineModifiable(data.force, ForceExternals(externalId));			
+			UpdateVaribleTables();
 		}
 		delete currSelectedTreeItem;
 	}
 	else if (commandId<EE_TOTAL)
 	{
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
-		SetEmitterLineModifiable(data.emmiter, EmitterExternals(commandId));
+		SetEmitterLineModifiable(data.emmiter, EmitterExternals(commandId));		
 		particleEffect->RegisterModifiable(GetEmitterLine(data.emmiter, EmitterExternals(commandId)));
+		UpdateVaribleTables();
 		data.externalParamId = commandId;
 		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
 		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
@@ -196,8 +302,9 @@ void ParticleEffectPropertiesWidget::OnContextMenuCommand(QAction *action)
 	else if (commandId<EL_TOTAL)
 	{
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
-		SetLayerLineModifiable(data.layer, LayerExternals(commandId));
+		SetLayerLineModifiable(data.layer, LayerExternals(commandId));		
 		particleEffect->RegisterModifiable(GetLayerLine(data.layer, LayerExternals(commandId)));
+		UpdateVaribleTables();
 		data.externalParamId = commandId;
 		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
 		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
@@ -209,8 +316,9 @@ void ParticleEffectPropertiesWidget::OnContextMenuCommand(QAction *action)
 	else
 	{	
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
-		SetForceLineModifiable(data.force, ForceExternals(commandId));
+		SetForceLineModifiable(data.force, ForceExternals(commandId));		
 		particleEffect->UnRegisterModifiable(GetForceLine(data.force, ForceExternals(commandId)));
+		UpdateVaribleTables();
 		data.externalParamId = commandId;
 		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
 		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
@@ -252,7 +360,7 @@ void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEff
 	effectPlaybackSpeed->setValue(ConvertFromPlaybackSpeedToSliderValue(playbackSpeed));
 	UpdatePlaybackSpeedLabel();
 	BuildEffectTree();
-
+	UpdateVaribleTables();
 	
 	checkboxStopOnLoad->setChecked(particleEffect->IsStopOnLoad());
 	blockSignals = false;
@@ -665,6 +773,53 @@ void ParticleEffectPropertiesWidget::RestoreVisualState(KeyedArchive* /* visualS
 	// Nothing to restore for now.
 }
 
+AddGlobalExternalDialog::AddGlobalExternalDialog(QWidget *parent) : QDialog(parent)
+{
+	setMinimumWidth(200);
+	QVBoxLayout *dialogLayout = new QVBoxLayout();
+	setLayout(dialogLayout);
+	QHBoxLayout *nameLayot = new QHBoxLayout();	
+	nameLayot->addWidget(new QLabel("Name"));
+	variableName = new QLineEdit();
+	variableName->setText("Variable");
+	nameLayot->addWidget(variableName);
+	nameLayot->addStretch();
+	nameLayot->addWidget(new QLabel("Value"));
+	variableValue = new QDoubleSpinBox();	
+	variableValue->setMinimum(0.0f);
+	variableValue->setMaximum(1.0f);
+	variableValue->setDecimals(3);
+	variableValue->setSingleStep(0.001f);
+	variableValue->setValue(0);
+	nameLayot->addWidget(variableValue);
+	dialogLayout->addLayout(nameLayot);
+	dialogLayout->addStretch();
+	variableName->setFocus();
+	variableName->selectAll();
+	
+	QHBoxLayout* btnBox = new QHBoxLayout();
+	QPushButton* btnCancel = new QPushButton("Cancel", this);
+	QPushButton* btnOk = new QPushButton("Ok", this);
+	btnOk->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	btnCancel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	btnBox->addWidget(btnCancel);
+	btnBox->addStretch();
+	btnBox->addWidget(btnOk);
+	dialogLayout->addLayout(btnBox);	
+	connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(accept()));
+	connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+	btnOk->setDefault(true);
+}	
+
+String AddGlobalExternalDialog::GetVariableName()
+{
+	return variableName->text().toStdString();
+}
+float32 AddGlobalExternalDialog::GetVariableValue()
+{
+	return (float32) variableValue->value();
+}
+
 void EditModificationLineDialog::InitName(const String& name, bool onAdd)
 {
 	QHBoxLayout *nameLayot = new QHBoxLayout();
@@ -722,7 +877,7 @@ template <> void EditModificationLineDialog::Init<Vector2>(ModifiablePropertyLin
 	setLayout(dialogLayout);
 	InitName(line->GetValueName(), onAdd);
 	timeLine = new TimeLineWidget(this);	
-	timeLine->Init(0.0f, 1.0f, false);
+	timeLine->Init(0.0f, 1.0f, false, true);
 	Vector<QColor> vectorColors;
 	vectorColors.push_back(Qt::red); vectorColors.push_back(Qt::darkGreen);
 	Vector<QString> vectorLegends;
@@ -738,7 +893,7 @@ template <> void EditModificationLineDialog::Init<Vector3>(ModifiablePropertyLin
 	setLayout(dialogLayout);
 	InitName(line->GetValueName(), onAdd);
 	timeLine = new TimeLineWidget(this);	
-	timeLine->Init(0.0f, 1.0f, false);
+	timeLine->Init(0.0f, 1.0f, false, true);
 	Vector<QColor> vectorColors;
 	vectorColors.push_back(Qt::red); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::blue);
 	Vector<QString> vectorLegends;
@@ -792,4 +947,23 @@ template <> void EditModificationLineDialog::UpdateLine<Color> (ModifiableProper
 	if(!gradientLine->GetValues(lineWrap.GetPropsPtr()))
 		return;
 	line->SetModificationLine(lineWrap.GetPropLine());
+}
+
+
+QWidget* VariableEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	QDoubleSpinBox* spinBox = new QDoubleSpinBox(parent);
+	spinBox->setMinimum(0.0f);
+	spinBox->setMaximum(1.0f);
+	spinBox->setDecimals(3);
+	spinBox->setSingleStep(0.1f);
+	return spinBox;
+}
+void VariableEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+	static_cast<QDoubleSpinBox *>(editor)->setValue(editTable->item(index.row(), 1)->text().toDouble());
+}
+void VariableEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+	editTable->item(index.row(), 1)->setText(QString::number(static_cast<QDoubleSpinBox *>(editor)->value()));
 }

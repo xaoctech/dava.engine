@@ -103,6 +103,8 @@ public:
 	void SetExtertnalValue(const String& name, float32 value);
 	float32 GetExternalValue(const String& name);
 	
+	Set<String> EnumerateVariables();
+
 	void RebuildEffectModifiables();
 	void RegisterModifiable(ModifiablePropertyLineI *propertyLine);
 	void UnRegisterModifiable(ModifiablePropertyLineI *propertyLine);
