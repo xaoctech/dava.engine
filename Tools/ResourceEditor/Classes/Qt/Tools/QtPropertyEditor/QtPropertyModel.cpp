@@ -31,16 +31,22 @@
 #include "QtPropertyModel.h"
 #include "QtPropertyData.h"
 
-QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
+QtPropertyModel::QtPropertyModel(QWidget *optionalWidgetViewport, QObject* parent /* = 0 */)
 	: QAbstractItemModel(parent)
 	, trackEdit(false)
+	, OWviewport(optionalWidgetViewport)
 { 
+	root = new QtPropertyData();
+	root->model = this;
+
 	setHeaderData(0, Qt::Horizontal, "Property name");
 	setHeaderData(1, Qt::Horizontal, "Value");
 }
 
 QtPropertyModel::~QtPropertyModel()
-{ }
+{ 
+	delete root;
+}
 
 QModelIndex QtPropertyModel::index(int row, int column, const QModelIndex & parent /* = QModelIndex() */) const
 {
@@ -52,7 +58,7 @@ QModelIndex QtPropertyModel::index(int row, int column, const QModelIndex & pare
 		parentData = (QtPropertyData *) parent.internalPointer();
 	}
 
-	if(NULL != parentData && parentData->ChildCount() < row && column < 2)
+	if(NULL != parentData && row < parentData->ChildCount() && column < 2)
 	{
 		ret = createIndex(row, column, parentData->ChildGet(row));
 	}
@@ -100,18 +106,33 @@ QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::Disp
 		// name
 		if(index.column() == 0)
 		{
-			ret = data->GetName();
+			switch(role)
+			{
+			case Qt::EditRole:
+			case Qt::DisplayRole:
+				ret = data->GetName();
+				break;
+			default:
+				break;
+			}
 		}
 		// value
-		else
+		else if(index.column() == 1)
 		{
 			switch(role)
 			{
+			case Qt::EditRole:
 			case Qt::DisplayRole:
 				ret = data->GetAlias();
 				if(!ret.isValid())
 				{
 					ret = data->GetValue();
+				}
+				break;
+			case Qt::CheckStateRole:
+				if(data->GetFlags() & Qt::ItemIsUserCheckable)
+				{
+					ret = data->GetValue().toBool() ? Qt::Checked : Qt::Unchecked;
 				}
 				break;
 			default:
@@ -126,18 +147,18 @@ QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::Disp
 bool QtPropertyModel::setData(const QModelIndex & index, const QVariant & value, int role /* = Qt::EditRole */)
 {
 	bool ret = false;
-	QtPropertyData *data = itemFromIndex(index);
 
-	if(NULL != data)
+	QtPropertyData *data = itemFromIndex(index);
+	if(NULL != data && index.column() == 1)
 	{
 		switch(role)
 		{
 		case Qt::EditRole:
-			if(NULL != data)
-			{
-				data->SetValue(value, QtPropertyData::VALUE_EDITED);
-				ret = true;
-			}
+			data->SetValue(value, QtPropertyData::VALUE_EDITED);
+			ret = true;
+			break;
+		case Qt::CheckStateRole:
+			(value.toInt() == Qt::Unchecked) ? data->SetValue(false, QtPropertyData::VALUE_EDITED) : data->SetValue(true, QtPropertyData::VALUE_EDITED);
 			break;
 		default:
 			break;
@@ -147,13 +168,38 @@ bool QtPropertyModel::setData(const QModelIndex & index, const QVariant & value,
 	return ret;
 }
 
+Qt::ItemFlags QtPropertyModel::flags(const QModelIndex & index) const
+{
+	Qt::ItemFlags ret = 0;
+
+	if(index.column() == 1)
+	{
+		QtPropertyData *data = itemFromIndex(index);
+		if(NULL != data)
+		{
+			ret = Qt::ItemIsSelectable | data->GetFlags();
+		}
+	}
+	else
+	{
+		ret = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+	}
+
+	return ret;
+}
+
 QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 {
 	QtPropertyData *ret = NULL;
 
+	if(!index.isValid())
+	{
+		return root;
+	}
+
 	if(index.isValid() && index.model() == this && index.column() < 2)
 	{
-		ret = (QtPropertyData *) index.internalPointer();
+		ret = (QtPropertyData *)index.internalPointer();
 	}
 
 	return ret;
@@ -189,6 +235,8 @@ QModelIndex QtPropertyModel::AppendProperty(const QString &name, QtPropertyData*
 			parentData = root;
 		}
 
+		data->SetOWViewport(OWviewport);
+
 		beginInsertRows(parent, parentData->ChildCount(), parentData->ChildCount());
 		parentData->ChildAdd(name, data);
 		endInsertRows();
@@ -212,7 +260,10 @@ void QtPropertyModel::RemoveProperty(const QModelIndex &index)
 
 void QtPropertyModel::RemovePropertyAll()
 {
-	removeRows(0, rowCount());
+	QModelIndex index = indexFromItem(root);
+	beginRemoveRows(index, 0, rowCount(index));
+	root->ChildRemoveAll();
+	endRemoveRows();
 }
 
 void QtPropertyModel::UpdateStructure(const QModelIndex &parent /* = QModelIndex */)
@@ -244,6 +295,7 @@ void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 		QModelIndex index = indexFromItem(data);
 		if(index.isValid())
 		{
+			emit dataChanged(index, index);
 			emit PropertyChanged(index);
 
 			if(reason == QtPropertyData::VALUE_EDITED)

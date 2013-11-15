@@ -35,7 +35,7 @@
 #include "QtPropertyData.h"
 #include "QtPropertyWidgets/QtColorLineEdit.h"
 
-QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyFilteringModel *_model, QWidget *parent /* = 0 */)
+QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyModel *_model, QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
 	, model(_model)
 {

@@ -54,10 +54,15 @@ struct QtPropertyOW
 	bool overlay;
 };
 
+QStandardItem;
+
 // PropertyData class
 class QtPropertyData : public QObject
 {
 	Q_OBJECT
+
+	friend class QtPropertyModel;
+	friend class QtPropertyItemDelegate;
 
 public:
 	enum ValueChangeReason
@@ -68,7 +73,7 @@ public:
 	};
 
 	QtPropertyData();
-	QtPropertyData(const QVariant &value, Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+	QtPropertyData(const QVariant &value, Qt::ItemFlags flags = (Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable));
 	virtual ~QtPropertyData();
 
 	QVariant GetValue() const;
@@ -115,6 +120,7 @@ public:
 	void ChildRemove(QtPropertyData *data);
 	void ChildRemove(const QString &key);
 	void ChildRemove(int i);
+	void ChildRemoveAll();
 
 	// Optional widgets
 	int GetOWCount() const;
@@ -122,14 +128,12 @@ public:
 	void AddOW(const QtPropertyOW &ow);
 	void RemOW(int index);
 	void RemOW(QWidget *widget);
-	QWidget* GetOWViewport() const;
-	void SetOWViewport(QWidget *viewport);
 
 	// edit command
 	virtual void* CreateLastCommand() const;
 
 protected:
-	QString name;
+	QString curName;
 	mutable QVariant curValue;
 	QIcon curIcon;
 	Qt::ItemFlags curFlags;
@@ -159,6 +163,10 @@ protected:
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option) const;
 	virtual bool EditorDoneInternal(QWidget *editor);
 	virtual bool SetEditorDataInternal(QWidget *editor);
+
+	// viewport, where optional widgets (OW) should be drawn
+	QWidget* GetOWViewport() const;
+	void SetOWViewport(QWidget *viewport);
 };
 
 #endif // __QT_PROPERTY_DATA_H__

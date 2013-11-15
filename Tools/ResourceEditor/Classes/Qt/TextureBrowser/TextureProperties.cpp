@@ -193,13 +193,14 @@ void TextureProperties::ReloadProperties()
 
 		LoadCurSizeToProp();
 
-		QObject::connect(propMipMap, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropMipMapChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propWrapModeS, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propWrapModeT, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propMinFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propMagFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propFormat, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFormatChanged(QtPropertyData::ValueChangeReason)));
-		QObject::connect(propSizes, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropSizeChanged(QtPropertyData::ValueChangeReason)));
+		DVASSERT(false);
+		//QObject::connect(propMipMap, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropMipMapChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propWrapModeS, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propWrapModeT, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propMinFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propMagFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propFormat, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFormatChanged(QtPropertyData::ValueChangeReason)));
+		//QObject::connect(propSizes, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropSizeChanged(QtPropertyData::ValueChangeReason)));
 
 		ReloadEnumFormats();
 		ReloadEnumWrap();

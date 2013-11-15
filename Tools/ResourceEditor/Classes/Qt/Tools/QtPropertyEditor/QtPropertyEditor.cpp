@@ -40,14 +40,17 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 , updateTimeout(0)
 , doUpdateOnPaintEvent(false)
+, curFilteringModel(NULL)
 {
-	curModel = new QtPropertyModel();
-	curFilteringModel = new QtPropertyFilteringModel(curModel);
-	curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+	curModel = new QtPropertyModel(viewport());
+	//curFilteringModel = new QtPropertyFilteringModel(curModel);
+	//curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-	setModel(curFilteringModel);
+	//setModel(curFilteringModel);
+	setModel(curModel);
 
-	curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
+	curItemDelegate = new QtPropertyItemDelegate(curModel);
+	//curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
@@ -62,11 +65,6 @@ QtPropertyEditor::~QtPropertyEditor()
 
 QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent)
 {
-	if(NULL != data)
-	{
-		data->SetOWViewport(viewport());
-	}
-
 	return curModel->AppendProperty(name, data, parent);
 }
 
@@ -91,7 +89,8 @@ QModelIndex QtPropertyEditor::AppendHeader(const QString &text)
 
 QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 {
-	return curModel->itemFromIndex(curFilteringModel->mapToSource(index));
+	return curModel->itemFromIndex(index);
+	//return curModel->itemFromIndex(curFilteringModel->mapToSource(index));
 }
 
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
@@ -196,11 +195,7 @@ void QtPropertyEditor::paintEvent(QPaintEvent * event)
 
 void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 {
-	QtPropertyData *data = curFilteringModel->itemFromIndex(index);
-	if(NULL != data && (data->GetFlags() & Qt::ItemIsEnabled) && (data->GetFlags() & Qt::ItemIsEditable))
-	{
-		edit(index, QAbstractItemView::DoubleClicked, NULL);
-	}
+	edit(index, QAbstractItemView::DoubleClicked, NULL);
 }
 
 void QtPropertyEditor::OnItemEdited(const QModelIndex &index)

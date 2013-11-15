@@ -147,7 +147,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int 
 	}
 }
 
-QVariant QtPropertyDataIntrospection::GetValueInternal()
+QVariant QtPropertyDataIntrospection::GetValueInternal() const
 {
 	return QVariant(info->Name());
 }
