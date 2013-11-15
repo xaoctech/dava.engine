@@ -49,7 +49,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
-	, editorMode(EM_FAVORITE_EDIT)
+	, editorMode(EM_NORMAL)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curFilteringModel)
 {
@@ -87,9 +87,9 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
 
 	SafeRelease(curNode);
     if(NULL != selected && selected->Size() == 1)
-	{
-        curNode = SafeRetain(selected->GetEntity(0));
-	}
+ 	{
+         curNode = SafeRetain(selected->GetEntity(0));
+ 	}
 
     ResetProperties();
 }
@@ -122,13 +122,13 @@ void PropertyEditor::ResetProperties()
         
 		// add components for this entity
 		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
-        {
-            Component *component = curNode->GetComponent(i);
-            if(component)
-            {
+		{
+			Component *component = curNode->GetComponent(i);
+			if(component)
+			{
 				AddInsp(QModelIndex(), component, component->GetTypeInfo());
-            }
-        }
+			}
+		}
 	}
     
 	// Restore back the tree view state from the shared storage.
@@ -236,7 +236,9 @@ QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *objec
 			if(editorMode == EM_FAVORITE_EDIT)
 			{
 				// don't allow edit values when we are choosing favorites
-				data->SetEnabled(false);
+				// data->SetEditable(false);
+
+				data->SetCheckable(true);
 
 				// TODO:
 				// ...
@@ -256,7 +258,7 @@ bool PropertyEditor::IsFavorite(const QModelIndex &index) const
 	bool ret = false;
 
 	QtPropertyData *data = GetProperty(index);
-	while(NULL != data)
+	//while(NULL != data)
 	{
 		// data = data->parent;
 	}

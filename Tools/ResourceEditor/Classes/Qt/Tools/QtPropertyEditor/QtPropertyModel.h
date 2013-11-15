@@ -44,7 +44,7 @@ class QtPropertyModel : public QAbstractItemModel
 	friend class QtPropertyData;
 
 public:
-	QtPropertyModel(QObject* parent = 0);
+	QtPropertyModel(QWidget *optionalWidgetViewport, QObject* parent = 0);
 	~QtPropertyModel();
 
 	QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
@@ -53,8 +53,9 @@ public:
 	int columnCount(const QModelIndex & parent = QModelIndex()) const;
 	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 	bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+	Qt::ItemFlags flags(const QModelIndex & index) const;
 
-	QtPropertyData *itemFromIndex(const QModelIndex & index) const;
+	QtPropertyData* itemFromIndex(const QModelIndex & index) const;
 	QModelIndex indexFromItem(QtPropertyData *data) const;
 
 	QModelIndex AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent = QModelIndex());
@@ -73,6 +74,7 @@ signals:
 
 protected:
 	QtPropertyData *root;
+	QWidget *OWviewport;
 	bool trackEdit;
 
 	void DataChanged(QtPropertyData *data, int reason);

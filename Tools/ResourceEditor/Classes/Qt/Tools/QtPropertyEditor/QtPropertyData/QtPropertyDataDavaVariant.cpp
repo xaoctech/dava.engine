@@ -76,6 +76,7 @@ void QtPropertyDataDavaVariant::InitFlags()
 	{
 	case DAVA::VariantType::TYPE_BOOLEAN:
 		SetCheckable(true);
+		SetEditable(false);
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
@@ -160,12 +161,12 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 	}
 }
 
-QVariant QtPropertyDataDavaVariant::GetValueInternal()
+QVariant QtPropertyDataDavaVariant::GetValueInternal() const
 {
 	return FromDavaVariant(curVariantValue);
 }
 
-QVariant QtPropertyDataDavaVariant::GetValueAlias()
+QVariant QtPropertyDataDavaVariant::GetValueAlias() const
 {
 	QVariant ret;
 
@@ -464,7 +465,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds()
 	}
 }
 
-QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &variant)
+QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &variant) const
 {
 	QVariant v;
 
@@ -533,7 +534,7 @@ QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &var
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive)
+QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive) const
 {
 	QVariant v;
 
@@ -545,7 +546,7 @@ QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector) const
 {
 	QVariant v;
 
@@ -554,7 +555,7 @@ QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector) const
 {
 	QVariant v;
 
@@ -563,7 +564,7 @@ QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector) const
 {
 	QVariant v;
 
@@ -572,7 +573,7 @@ QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix) const
 {
 	QVariant v;
 
@@ -586,7 +587,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix) const
 {
 	QVariant v;
 
@@ -599,7 +600,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix) const
 {
 	QVariant v;
 
@@ -610,7 +611,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
+QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color) const
 {
 	QVariant v;
 	QColor c = ColorToQColor(color);
@@ -621,7 +622,7 @@ QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
+QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox) const
 {
 	QVariant v;
 
@@ -685,7 +686,7 @@ void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
 	// ...
 }
 
-QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
+QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option) const
 {
 	QWidget* ret = NULL;
 
@@ -842,7 +843,7 @@ void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
 	QtPropertyData::SetIcon(icon);
 }
 
-QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent)
+QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent) const
 {
 	QComboBox *allowedWidget = NULL;
 

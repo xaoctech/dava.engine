@@ -88,7 +88,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 QtPropertyDataInspColl::~QtPropertyDataInspColl()
 { }
 
-QVariant QtPropertyDataInspColl::GetValueInternal()
+QVariant QtPropertyDataInspColl::GetValueInternal() const
 {
 	return QString().sprintf("Collection, size %d", collection->Size(object));
 }

@@ -77,7 +77,7 @@ QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
 	}
 }
 
-QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
+QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal() const
 {
 	QVariant v;
 
@@ -177,7 +177,6 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	QPushButton *remButton = new QPushButton(QIcon(":/QtIcons/keyminus.png"), "");
 	remButton->setIconSize(QSize(12, 12));
 	childData->AddOW(QtPropertyOW(remButton));
-	childData->SetOWViewport(GetOWViewport());
 
 	QObject::connect(remButton, SIGNAL(pressed()), this, SLOT(RemKeyedArchiveField()));
 }

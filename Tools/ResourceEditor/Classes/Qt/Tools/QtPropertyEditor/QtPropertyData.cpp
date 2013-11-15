@@ -32,7 +32,7 @@
 #include "QtPropertyData.h"
 
 QtPropertyData::QtPropertyData()
-	: curFlags(0)
+	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
 	, parent(NULL)
 	, optionalWidgetViewport(NULL)
 	, updatingValue(false)
@@ -129,14 +129,14 @@ QVariant QtPropertyData::GetAlias() const
 	return GetValueAlias();
 }
 
-void QtPropertyData::SetName(const QString &_name)
+void QtPropertyData::SetName(const QString &name)
 {
-	name = _name;
+	curName = name;
 }
 
 QString QtPropertyData::GetName() const
 {
-	return name;
+	return curName;
 }
 
 void QtPropertyData::SetIcon(const QIcon &icon)
@@ -264,8 +264,11 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 	{
 		childrenData.append(data);
 		childrenNames.append(key);
+
+		data->curName = key;
 		data->parent = this;
 		data->model = model;
+		data->optionalWidgetViewport = optionalWidgetViewport;
 	}
 }
 
@@ -332,6 +335,18 @@ void QtPropertyData::ChildRemove(int index)
 		delete data;
 		data = NULL;
 	}
+}
+
+void QtPropertyData::ChildRemoveAll()
+{
+	for(int i = 0; i < childrenData.size(); ++i)
+	{
+		QtPropertyData *data = childrenData.at(i);
+		delete data;
+	}
+
+	childrenData.clear();
+	childrenNames.clear();
 }
 
 int QtPropertyData::GetOWCount() const
