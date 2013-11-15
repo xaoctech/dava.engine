@@ -27,40 +27,26 @@
 =====================================================================================*/
 
 
-#ifndef RECTPROPERTYGRIDWIDGET_H
-#define RECTPROPERTYGRIDWIDGET_H
 
-#include <QWidget>
-#include "basepropertygridwidget.h"
+#include "CenterPivotPointCommand.h"
 
-namespace Ui {
-class RectPropertyGridWidget;
+CenterPivotPointCommand::CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty) :
+	ChangePropertyCommand<QPointF>(baseMetadata, PropertyGridWidgetData(alignProperty,  false, true), QPointF())
+{
+	// Particular Pivot Point value is not needed here - it will be postprocessed for each control in the 
+	// ChangePropertyCommandData.
 }
 
-class RectPropertyGridWidget : public BasePropertyGridWidget
+QPointF CenterPivotPointCommand::PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue)
 {
-    Q_OBJECT
-    
-public:
-    explicit RectPropertyGridWidget(QWidget *parent = 0);
-    ~RectPropertyGridWidget();
-    
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
+	const HierarchyTreeControlNode* controlNode = dynamic_cast<const HierarchyTreeControlNode*>(
+		HierarchyTreeController::Instance()->GetTree().GetNode((*iter).GetTreeNodeID()));
+	if (!controlNode || !controlNode->GetUIObject())
+	{
+		return (*iter).GetTreeNodePropertyValue();
+	}
 
-protected:
-    virtual void OnPropertiesChangedFromExternalSource();
-	virtual void HandleChangePropertySucceeded(const QString& propertyName);
-
-protected slots:
-	void OnCenterPivotPointButtonClicked();
-
-private:
-    Ui::RectPropertyGridWidget *ui;
-	void UpdateWidgetStates(bool updateHorizontalWidgets = true);
-	void UpdateHorizontalWidgetsState();
-	void UpdateVerticalWidgetsState();
-	bool IsTwoAlignsEnabled(bool first, bool center, bool second);
-};
-
-#endif // RECTPROPERTYGRIDWIDGET_H
+	// Calculate the new Pivot Point value controlNode->GetUIObject() - place it in the center of the object.
+	Vector2 pivotPoint = controlNode->GetUIObject()->GetSize();
+	return QPointF(pivotPoint.x / 2.0f, pivotPoint.y / 2.0f);
+}
