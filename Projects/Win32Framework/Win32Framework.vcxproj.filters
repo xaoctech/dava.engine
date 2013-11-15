@@ -1308,9 +1308,6 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -2347,9 +2344,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp">
       <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpatialTree.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
