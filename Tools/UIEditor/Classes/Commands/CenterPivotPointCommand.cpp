@@ -26,73 +26,27 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "RulerToolActions.h"
-#include "../Qt/Scene/SceneEditor2.h"
-#include "../Qt/Scene/SceneSignals.h"
 
-#include "../Qt/Main/QtUtils.h"
 
-ActionEnableRulerTool::ActionEnableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_RULER_TOOL_ENABLE)
-,	sceneEditor(forSceneEditor)
+#include "CenterPivotPointCommand.h"
+
+CenterPivotPointCommand::CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty) :
+	ChangePropertyCommand<QPointF>(baseMetadata, PropertyGridWidgetData(alignProperty,  false, true), QPointF())
 {
+	// Particular Pivot Point value is not needed here - it will be postprocessed for each control in the 
+	// ChangePropertyCommandData.
 }
 
-void ActionEnableRulerTool::Redo()
+QPointF CenterPivotPointCommand::PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue)
 {
-	if (sceneEditor == NULL)
+	const HierarchyTreeControlNode* controlNode = dynamic_cast<const HierarchyTreeControlNode*>(
+		HierarchyTreeController::Instance()->GetTree().GetNode((*iter).GetTreeNodeID()));
+	if (!controlNode || !controlNode->GetUIObject())
 	{
-		return;
+		return (*iter).GetTreeNodePropertyValue();
 	}
-	
-	bool enabled = sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (enabled)
-	{
-		return;
-	}
-	
-	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	
-	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	
-	if (!success )
-	{
-		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
-	}
-	
-	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->rulerToolSystem->EnableLandscapeEditing();
-	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
-	{
-		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
-	}
-	
-	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
-}
 
-ActionDisableRulerTool::ActionDisableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_RULER_TOOL_DISABLE)
-,	sceneEditor(forSceneEditor)
-{
-}
-
-void ActionDisableRulerTool::Redo()
-{
-	if (sceneEditor == NULL)
-	{
-		return;
-	}
-	
-	bool disabled = !sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (disabled)
-	{
-		return;
-	}
-	
-	disabled = sceneEditor->rulerToolSystem->DisableLandscapeEdititing();
-	if (!disabled)
-	{
-		ShowErrorDialog(ResourceEditor::RULER_TOOL_DISABLE_ERROR);
-	}
-	
-	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
+	// Calculate the new Pivot Point value controlNode->GetUIObject() - place it in the center of the object.
+	Vector2 pivotPoint = controlNode->GetUIObject()->GetSize();
+	return QPointF(pivotPoint.x / 2.0f, pivotPoint.y / 2.0f);
 }

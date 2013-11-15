@@ -201,11 +201,10 @@ void DAEConvertWithSettingsAction::CopyGeometryRecursive( DAVA::Entity *srcEntit
 
 void DAEConvertWithSettingsAction::CopyGeometry(DAVA::Entity *srcEntity, DAVA::Entity *dstEntity)
 {
-	if(ConvertToShadowCommand::IsEntityWithShadowVolume(srcEntity))
+	if(ConvertToShadowCommand::IsEntityWithShadowVolume(dstEntity))
 	{
-		DAVA::RenderBatch *oldBatch = ConvertToShadowCommand::ConvertToShadowVolume(dstEntity);
+		DAVA::RenderBatch *oldBatch = ConvertToShadowCommand::ConvertToShadowVolume(srcEntity);
 		SafeRelease(oldBatch);
-		return;
 	}
 
 	RenderObject *srcRo = GetRenderObject(srcEntity);

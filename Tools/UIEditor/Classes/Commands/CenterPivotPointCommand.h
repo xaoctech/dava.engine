@@ -26,73 +26,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "RulerToolActions.h"
-#include "../Qt/Scene/SceneEditor2.h"
-#include "../Qt/Scene/SceneSignals.h"
 
-#include "../Qt/Main/QtUtils.h"
 
-ActionEnableRulerTool::ActionEnableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_RULER_TOOL_ENABLE)
-,	sceneEditor(forSceneEditor)
+#ifndef __CENTERPIVOTPOINTCOMMAND__H__
+#define __CENTERPIVOTPOINTCOMMAND__H__
+
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
+
+using namespace DAVA;
+
+class CenterPivotPointCommand: public ChangePropertyCommand<QPointF>
 {
-}
+public:
+	CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty);
 
-void ActionEnableRulerTool::Redo()
-{
-	if (sceneEditor == NULL)
-	{
-		return;
-	}
-	
-	bool enabled = sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (enabled)
-	{
-		return;
-	}
-	
-	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	
-	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	
-	if (!success )
-	{
-		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
-	}
-	
-	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->rulerToolSystem->EnableLandscapeEditing();
-	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
-	{
-		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
-	}
-	
-	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
-}
+protected:
+	virtual QPointF PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue);
+};
 
-ActionDisableRulerTool::ActionDisableRulerTool(SceneEditor2* forSceneEditor)
-:	CommandAction(CMDID_RULER_TOOL_DISABLE)
-,	sceneEditor(forSceneEditor)
-{
-}
-
-void ActionDisableRulerTool::Redo()
-{
-	if (sceneEditor == NULL)
-	{
-		return;
-	}
-	
-	bool disabled = !sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
-	if (disabled)
-	{
-		return;
-	}
-	
-	disabled = sceneEditor->rulerToolSystem->DisableLandscapeEdititing();
-	if (!disabled)
-	{
-		ShowErrorDialog(ResourceEditor::RULER_TOOL_DISABLE_ERROR);
-	}
-	
-	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);
-}
+#endif /* defined(__CENTERPIVOTPOINTCOMMAND__H__) */
