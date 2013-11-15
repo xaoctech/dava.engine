@@ -129,7 +129,7 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultGPU(GPU_PNG);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     Entity *n = (Entity *)node;
     UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");

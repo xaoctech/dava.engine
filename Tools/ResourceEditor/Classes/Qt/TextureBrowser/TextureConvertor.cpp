@@ -141,7 +141,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 
 				if(NULL != descriptor)
 				{
-					for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_COMPRESSED_COUNT; ++gpu)
+					for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
 					{
 						JobItem newJob;
 						newJob.id = jobIdCounter++;
@@ -378,7 +378,7 @@ DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 		DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) item->type;
 
 		if( NULL != descriptor &&
-			gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_COMPRESSED_COUNT && 
+			gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT && 
 			descriptor->compression[gpu].format > DAVA::FORMAT_INVALID && descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
 		{
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);

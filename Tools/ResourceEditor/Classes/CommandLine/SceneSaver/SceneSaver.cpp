@@ -194,7 +194,7 @@ void SceneSaver::ReleaseTextures()
 void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &errorLog)
 {
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
-    FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_PNG, FORMAT_RGBA8888);
+    FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_UNKNOWN, FORMAT_RGBA8888);
 
     sceneUtils.CopyFile(descriptorPathname, errorLog);
     sceneUtils.CopyFile(pngPathname, errorLog);

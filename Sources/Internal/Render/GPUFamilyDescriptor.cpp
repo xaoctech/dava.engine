@@ -107,10 +107,29 @@ void GPUFamilyDescriptor::SetupGPUFormats()
 	gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_EXPLICIT_ALPHA] = ".dds";
 	gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_INTERPOLATED_ALPHA] = ".dds";
 
-    //png
-    gpuData[GPU_PNG].availableFormats[FORMAT_RGBA8888] = ".png";
-    gpuData[GPU_PNG].availableFormats[FORMAT_A8] = ".png";
-    gpuData[GPU_PNG].availableFormats[FORMAT_A16] = ".png";
+    
+    //for test all formats
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA8888] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA5551] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA4444] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGB888] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGB565] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_A8] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_A16] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_PVR4] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_PVR2] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA16161616] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA32323232] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1NM] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1A] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT3] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT5] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT5NM] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGB] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_EXPLICIT_ALPHA] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_INTERPOLATED_ALPHA] = ".dds";
 }
 
 void GPUFamilyDescriptor::SetupGPUPostfixes()
@@ -120,7 +139,6 @@ void GPUFamilyDescriptor::SetupGPUPostfixes()
     gpuData[GPU_TEGRA].name = "tegra";
     gpuData[GPU_MALI].name = "mali";
     gpuData[GPU_ADRENO].name = "adreno";
-    gpuData[GPU_PNG].name = "png";
 }
 
     
@@ -135,7 +153,7 @@ eGPUFamily GPUFamilyDescriptor::GetGPUForPathname(const FilePath &pathname)
 {
     const String filename = pathname.GetFilename();
     
-    for(int32 i = 0; i < GPU_COMPRESSED_COUNT; ++i)
+    for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
     {
         eGPUFamily gpu = (eGPUFamily)i;
         
@@ -146,7 +164,6 @@ eGPUFamily GPUFamilyDescriptor::GetGPUForPathname(const FilePath &pathname)
         }
     }
 
-    if(pathname.IsEqualToExtension(".png")) return GPU_PNG;
     
     return GPU_UNKNOWN;
 }
@@ -211,7 +228,7 @@ String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const
 {
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
 
-    if(gpuFamily == GPU_UNKNOWN || pixelFormat == FORMAT_INVALID || gpuFamily == GPU_PNG)
+    if(gpuFamily == GPU_UNKNOWN || pixelFormat == FORMAT_INVALID)
         return ".png";
         
     

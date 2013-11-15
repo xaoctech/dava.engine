@@ -93,7 +93,7 @@ void TextureDescriptorUtils::CopyCompressionParams(const FilePath &descriptorPat
         return;
     }
     
-    for(int32 gpu = GPU_POWERVR_ANDROID; gpu < GPU_COMPRESSED_COUNT; ++gpu)
+    for(int32 gpu = GPU_POWERVR_ANDROID; gpu < GPU_FAMILY_COUNT; ++gpu)
     {
         if(descriptor->compression[gpu].format != FORMAT_INVALID)
             continue;
