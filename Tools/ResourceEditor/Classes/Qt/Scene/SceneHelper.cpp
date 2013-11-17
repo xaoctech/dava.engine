@@ -33,7 +33,7 @@
 
 using namespace DAVA;
 
-void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textures)
+void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textures, bool pngModificationCheck/* = false*/)
 {
 	if(!forNode) return;
 
@@ -57,82 +57,46 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 			{
 				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
 				{
-					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
+					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t), pngModificationCheck);
 				}
 			}
 
 			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
 			if(instanceMaterial)
 			{
-				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
+				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap(), pngModificationCheck);
 			}
 		}
 
 		Landscape *land = dynamic_cast<Landscape *>(ro);
 		if(land)
 		{
-			CollectLandscapeTextures(textures, land);
+			CollectLandscapeTextures(textures, land, pngModificationCheck);
 		}
 	}
 }
 
-void SceneHelper::EnumerateUpdatedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures)
-{
-	DAVA::Map<DAVA::String, DAVA::Texture *> allTextures;
-	SceneHelper::EnumerateTextures(forNode, allTextures);
-	
-	if(allTextures.size() > 0)
-	{
-		DAVA::Map<DAVA::String, DAVA::Texture *>::iterator begin = allTextures.begin();
-		DAVA::Map<DAVA::String, DAVA::Texture *>::iterator end = allTextures.end();
-		
-		for(; begin != end; begin++)
-		{
-			DAVA::TextureDescriptor *descriptor = begin->second->CreateDescriptor();
-			
-			if(NULL == descriptor)
-			{
-				continue;
-			}
-			for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
-			{
-				if(descriptor->compression[gpu].format > DAVA::FORMAT_INVALID &&
-					descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
-				{
-					FilePath convertedTexture = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor,(eGPUFamily)gpu);
-					FilePath texPath = descriptor->pathname;
-					texPath.ReplaceExtension(".png");
-					if(texPath.Exists() && convertedTexture.Exists())
-					{
-						File::eDateComparison comparison = File::CompareModificationDates(texPath, convertedTexture);
-						if(comparison == File::SECOND_OLDER)
-						{
-							textures[begin->first] =begin->second;
-							break;
-						}
-					}
-				}
-			}
-						
-			SafeRelease(descriptor);
-		}
-	}
-}
-
-void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode)
+void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode, bool pngModificationCheck)
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), forNode->GetTexture((Landscape::eTextureLevel)t));
+		CollectTexture(textures, 
+			forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), 
+			forNode->GetTexture((Landscape::eTextureLevel)t),
+			pngModificationCheck);
 	}
 }
 
 
 
-void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex, bool pngModificationCheck)
 {
 	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
 	{
+		if(pngModificationCheck && !IsPngModified(tex))
+		{
+			return;
+		}
 		textures[name] = tex;
 	}
 }
@@ -214,3 +178,42 @@ void SceneHelper::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &
 	}
 }
 
+bool SceneHelper::IsPngModified(const DAVA::Texture * texture)
+{
+	bool retValue = false;
+	if(NULL == texture)
+	{
+		return false;
+	}
+
+	DAVA::TextureDescriptor *descriptor = texture->CreateDescriptor();
+	
+	if(NULL == descriptor)
+	{
+		return false;
+	}
+	
+	for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
+	{
+		if(descriptor->compression[gpu].format > DAVA::FORMAT_INVALID &&
+			descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
+		{
+			FilePath convertedTexture = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor,(eGPUFamily)gpu);
+			FilePath texPath = descriptor->pathname;
+			texPath.ReplaceExtension(".png");
+			if(texPath.Exists() && convertedTexture.Exists())
+			{
+				File::eDateComparison comparison = File::CompareModificationDates(texPath, convertedTexture);
+				if(comparison == File::SECOND_OLDER)
+				{
+					retValue = true;
+					break;
+				}
+			}
+		}
+	}
+				
+	SafeRelease(descriptor);
+	
+	return retValue;
+}

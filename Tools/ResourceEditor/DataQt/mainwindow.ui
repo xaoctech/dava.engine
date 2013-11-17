@@ -224,7 +224,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -773,6 +773,7 @@
    </attribute>
    <addaction name="actionReloadSprites"/>
    <addaction name="actionSetShadowColor"/>
+   <addaction name="actionConvertModifiedTextures"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1667,6 +1668,15 @@
    </property>
    <property name="text">
     <string>On Scene Selection</string>
+   </property>
+  </action>
+  <action name="actionConvertModifiedTextures">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIconsTextureDialog/convert.png</normaloff>:/QtIconsTextureDialog/convert.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert Modified texture's PNGs.</string>
    </property>
   </action>
  </widget>

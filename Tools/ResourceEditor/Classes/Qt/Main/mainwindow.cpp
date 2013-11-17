@@ -111,6 +111,8 @@
 
 #include "Classes/Constants.h"
 
+#include "TextureBrowser/TextureConvertor.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -617,6 +619,8 @@ void QtMainWindow::SetupActions()
     
 	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+	
+	QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
     
 #if defined(__DAVAENGINE_BEAST__)
 	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
@@ -1691,6 +1695,12 @@ void QtMainWindow::OnSaveTiledTexture()
     }
     
     SafeRelease(descriptor);
+}
+
+void QtMainWindow::OnConvertModifiedTextures()
+{
+	TextureConvertor::Instance()->Reconvert( GetCurrentScene(), true, true);
+	TextureConvertor::Instance()->WaitConvertedAll(this);
 }
 
 void QtMainWindow::OnGlobalInvalidateTimeout()

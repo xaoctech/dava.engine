@@ -119,7 +119,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 	return ret;
 }
 
-int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
+int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert, bool onlyModifiedTextures /*= false*/)
 {
 	int ret = 0;
 
@@ -127,7 +127,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 	{
 		// get list of all scenes textures
 		DAVA::Map<DAVA::String, DAVA::Texture *> allTextures;
-		SceneHelper::EnumerateTextures(scene, allTextures);
+		SceneHelper::EnumerateTextures(scene, allTextures, onlyModifiedTextures);
 
 		// add jobs to convert every texture
 		if(allTextures.size() > 0)
@@ -143,16 +143,28 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 				{
 					for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
 					{
+						//check to avoid  "NULL descriptor or wrong GPU type" error
+						if(descriptor->compression[gpu].format <= DAVA::FORMAT_INVALID || 
+							descriptor->compression[gpu].format >= DAVA::FORMAT_COUNT)
+						{
+							continue;
+						}
+
 						JobItem newJob;
 						newJob.id = jobIdCounter++;
 						newJob.data = new DAVA::TextureDescriptor(*descriptor);
 						newJob.force = forceConvert;
 						newJob.type = gpu;
 
-						jobStackConverted.push(newJob);
+						if(jobStackConverted.push(newJob))
+						{
+							convertJobQueueSize++;
+						}
+
 						jobRunNextConvert();
 
 						ret = newJob.id;
+						
 					}
 				}
 
