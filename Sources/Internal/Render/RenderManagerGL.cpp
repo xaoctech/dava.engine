@@ -426,24 +426,6 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
 }
 
-
-
-void RenderManager::SetBlendMode(eBlendMode sfactor, eBlendMode dfactor)
-{
-	currentState.SetBlendMode(sfactor, dfactor);
-}
-	
-eBlendMode RenderManager::GetSrcBlend()
-{
-	return currentState.sourceFactor;
-}
-
-eBlendMode RenderManager::GetDestBlend()
-{
-	return currentState.destFactor;
-}
-
-
 /*
  void RenderManager::EnableBlending(bool isEnabled)
 {

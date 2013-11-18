@@ -484,7 +484,9 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 
 void ParticleLayer3D::UpdateBlendState()
 {
-	if(material &&
+	//TODO: add material switching
+	
+	/*if(material &&
 	   material->GetParent() != NULL)
 	{
 		MaterialTechnique* technique = material->GetTechnique(FastName("ForwardPass"));
@@ -493,7 +495,7 @@ void ParticleLayer3D::UpdateBlendState()
 			RenderState* rs = technique->GetRenderState();
 			rs->SetBlendMode(srcBlendFactor, dstBlendFactor);
 		}
-	}
+	}*/
 }
 
 

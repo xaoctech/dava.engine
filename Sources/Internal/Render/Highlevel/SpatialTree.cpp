@@ -528,10 +528,10 @@ void QuadTree::DebugDraw()
 {
 	if (!worldInitialized) return;
 	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-	RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST);
+	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
 	DebugDrawNode(0);
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 

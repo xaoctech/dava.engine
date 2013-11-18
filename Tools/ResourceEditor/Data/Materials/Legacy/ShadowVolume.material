@@ -13,6 +13,7 @@ Material:
                 blendSrc: "BLEND_ONE"
                 cullMode: "FACE_BACK"
                 depthFunc: "CMP_LEQUAL"
+                fillMode: "FILLMODE_SOLID"
                 state: "STATE_DEPTH_TEST | STATE_STENCIL_TEST"
                 stencil:
                     failBack: "STENCILOP_KEEP"

@@ -67,6 +67,15 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
+	
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 }
 
 TilemaskEditorSystem::~TilemaskEditorSystem()
@@ -307,9 +316,11 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
-	srcBlendMode = RenderManager::Instance()->GetSrcBlend();
-	dstBlendMode = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	//srcBlendMode = RenderManager::Instance()->GetSrcBlend();
+	//dstBlendMode = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	
+	RenderManager::Instance()->SetRenderState(noBlendDrawState);
 	
 	RenderManager::Instance()->SetShader(tileMaskEditorShader);
 	srcSprite->PrepareSpriteRenderData(0);
@@ -331,7 +342,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 	
-	RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
+	//RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
 	RenderManager::Instance()->RestoreRenderTarget();
 	RenderManager::Instance()->SetColor(Color::White());
 	
@@ -357,7 +368,9 @@ Image* TilemaskEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fil
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(Color::White());
 	
 	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
@@ -474,7 +487,9 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 	if(texture)
 	{
 		RenderManager::Instance()->LockNonMain();
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		RenderManager::Instance()->SetRenderState(noBlendDrawState);
+		RenderManager::Instance()->FlushState();
 		
 		Sprite *oldMask = Sprite::CreateFromTexture(texture, 0, 0,
 													(float32)texture->GetWidth(), (float32)texture->GetHeight());

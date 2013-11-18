@@ -34,6 +34,8 @@
 #include "DAVAEngine.h"
 #include "LandscapeEditor/EditorLandscape.h"
 
+#include "Render/UniqueStateSet.h"
+
 using namespace DAVA;
 
 class CustomLandscape;
@@ -143,6 +145,8 @@ protected:
 	eLandscapeMode mode;
 	
 	void UpdateDisplayedTexture();
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEPROXY__) */
