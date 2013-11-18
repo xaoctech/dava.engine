@@ -398,6 +398,11 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		SafeRelease(clonedLayer);
 	}
 
+	time = 0.0f;
+	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = desiredLodLevel;
+
 	return newObject;
 }
 
