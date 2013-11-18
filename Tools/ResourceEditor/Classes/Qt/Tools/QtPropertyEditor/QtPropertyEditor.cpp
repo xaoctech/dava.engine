@@ -43,14 +43,12 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 , curFilteringModel(NULL)
 {
 	curModel = new QtPropertyModel(viewport());
-	//curFilteringModel = new QtPropertyFilteringModel(curModel);
-	//curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+	curFilteringModel = new QtPropertyFilteringModel(curModel);
+	curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-	//setModel(curFilteringModel);
-	setModel(curModel);
+	setModel(curFilteringModel);
 
-	curItemDelegate = new QtPropertyItemDelegate(curModel);
-	//curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
+	curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
@@ -72,25 +70,20 @@ QModelIndex QtPropertyEditor::AppendHeader(const QString &text)
 {
 	QModelIndex propHeader = AppendProperty(text, new QtPropertyData(""));
 
-	/*
-	if(!propHeader.IsEmpty())
-	{
-		QFont boldFont = propHeader.nameItem->font();
-		boldFont.setBold(true);
-
-		propHeader.nameItem->setFont(boldFont);
-		propHeader.nameItem->setBackground(QBrush(QColor(Qt::lightGray)));
-		propHeader.dataItem->setBackground(QBrush(QColor(Qt::lightGray)));
-	}
-	*/
-
+	ApplyStyle(GetProperty(propHeader), HEADER_STYLE);
 	return propHeader;
 }
 
 QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 {
-	return curModel->itemFromIndex(index);
-	//return curModel->itemFromIndex(curFilteringModel->mapToSource(index));
+	if(index.model() == curModel)
+	{
+		return curModel->itemFromIndex(index);
+	}
+	else
+	{
+		return curFilteringModel->itemFromIndex(index);
+	}
 }
 
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
@@ -188,6 +181,33 @@ void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &o
 	}
 }
 
+void QtPropertyEditor::ApplyStyle(QtPropertyData *data, int style)
+{
+	if(NULL != data)
+	{
+		switch(style)
+		{
+		case DEFAULT_STYLE:
+			data->ResetStyle();
+			break;
+
+		case HEADER_STYLE:
+			{
+				QFont boldFont = data->GetFont();
+				boldFont.setBold(true);
+				data->SetFont(boldFont);
+
+				data->SetBackground(QBrush(QColor(Qt::lightGray)));
+				data->SetBackground(QBrush(QColor(Qt::lightGray)));
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
 void QtPropertyEditor::paintEvent(QPaintEvent * event)
 {
 	QTreeView::paintEvent(event);
@@ -200,5 +220,5 @@ void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 
 void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
-	emit PropertyEdited(index);
+	emit PropertyEdited(curFilteringModel->mapFromSource(index));
 }

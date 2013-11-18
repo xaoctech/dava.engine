@@ -43,6 +43,14 @@ class QtPropertyEditor : public QTreeView
 	Q_OBJECT
 
 public:
+	enum Style
+	{
+		DEFAULT_STYLE = 0,
+		HEADER_STYLE,
+
+		USER_STYLE
+	};
+
 	QtPropertyEditor(QWidget *parent = 0);
 	~QtPropertyEditor();
 
@@ -79,6 +87,7 @@ protected:
 
 	virtual void paintEvent(QPaintEvent * event);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+	virtual void ApplyStyle(QtPropertyData *data, int style);
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);

@@ -76,20 +76,35 @@ public:
 	QtPropertyData(const QVariant &value, Qt::ItemFlags flags = (Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable));
 	virtual ~QtPropertyData();
 
+	QVariant data(int role) const;
+	bool setData(const QVariant & value, int role);
+
+	QString GetName() const;
+	void SetName(const QString &name);
+
 	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 	bool UpdateValue();
 
 	QVariant GetAlias() const;
 
-	virtual QIcon GetIcon() const;
-	virtual void SetIcon(const QIcon &icon);
+	QIcon GetIcon() const;
+	void SetIcon(const QIcon &icon);
+
+	QFont GetFont() const;
+	void SetFont(const QFont &font);
+
+	QBrush GetBackground() const;
+	void SetBackground(const QBrush &brush);
+
+	QBrush GetForeground() const;
+	void SetForeground(const QBrush &brush);
 
 	Qt::ItemFlags GetFlags() const;
 	void SetFlags(Qt::ItemFlags flags);
 
-	QString GetName() const;
-	void SetName(const QString &name);
+	// reset background/foreground/font settings
+	void ResetStyle();
 
 	void SetCheckable(bool checkable);
 	bool IsCheckable() const;
@@ -133,12 +148,12 @@ public:
 	virtual void* CreateLastCommand() const;
 
 protected:
-	QString curName;
 	mutable QVariant curValue;
-	QIcon curIcon;
-	Qt::ItemFlags curFlags;
-	QColor bgColor;
 
+	QString curName;
+	Qt::ItemFlags curFlags;
+
+	QMap<int, QVariant> style;
 	bool updatingValue;
 
 	QtPropertyModel *model;
@@ -150,6 +165,7 @@ protected:
 	QVector<QtPropertyOW> optionalWidgets;
 	QWidget *optionalWidgetViewport;
 
+	void InitStyle();
 	void EmitDataChanged(ValueChangeReason reason);
 
 	virtual void UpdateUp();

@@ -35,7 +35,7 @@
 #include "QtPropertyData.h"
 #include "QtPropertyWidgets/QtColorLineEdit.h"
 
-QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyModel *_model, QWidget *parent /* = 0 */)
+QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyFilteringModel *_model, QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
 	, model(_model)
 {
@@ -181,7 +181,7 @@ void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QSt
 {
 	QtPropertyData* data = model->itemFromIndex(index);
 
-	if(NULL != data)
+	if(NULL != data && index.column() == 1)
 	{
 		QWidget *owViewport = data->GetOWViewport();
 

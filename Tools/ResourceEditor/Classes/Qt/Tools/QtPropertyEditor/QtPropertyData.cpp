@@ -48,7 +48,7 @@ QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 	, model(NULL)
 { }
 
-QtPropertyData::~QtPropertyData() 
+QtPropertyData::~QtPropertyData()
 {
 	for(int i = 0; i < childrenData.size(); ++i)
 	{
@@ -66,6 +66,67 @@ QtPropertyData::~QtPropertyData()
 			delete optionalWidgets.at(i).widget;
 		}
 	}
+}
+
+QVariant QtPropertyData::data(int role) const
+{
+	QVariant ret;
+
+	switch(role)
+	{
+	case Qt::EditRole:
+	case Qt::DisplayRole:
+		ret = GetAlias();
+		if(!ret.isValid())
+		{
+			ret = GetValue();
+		}
+		break;
+	case Qt::CheckStateRole:
+		if(GetFlags() & Qt::ItemIsUserCheckable)
+		{
+			ret = GetValue().toBool() ? Qt::Checked : Qt::Unchecked;
+		}
+		break;
+	case Qt::FontRole:
+	case Qt::DecorationRole:
+	case Qt::BackgroundRole:
+	case Qt::ForegroundRole:
+		ret = style.value(role);
+		break;
+	default:
+		break;
+	}
+
+	return ret;
+}
+
+bool QtPropertyData::setData(const QVariant & value, int role)
+{
+	bool ret = false;
+
+	switch(role)
+	{
+	case Qt::EditRole:
+		SetValue(value, QtPropertyData::VALUE_EDITED);
+		ret = true;
+		break;
+	case Qt::CheckStateRole:
+		(value.toInt() == Qt::Unchecked) ? SetValue(false, QtPropertyData::VALUE_EDITED) : SetValue(true, QtPropertyData::VALUE_EDITED);
+		ret = true;
+		break;
+	case Qt::FontRole:
+	case Qt::DecorationRole:
+	case Qt::BackgroundRole:
+	case Qt::ForegroundRole:
+		style.insert(role, value);
+		ret = true;
+		break;
+	default:
+		break;
+	}
+
+	return ret;
 }
 
 QVariant QtPropertyData::GetValue() const
@@ -141,12 +202,49 @@ QString QtPropertyData::GetName() const
 
 void QtPropertyData::SetIcon(const QIcon &icon)
 {
-	curIcon = icon;
+	setData(QVariant(icon), Qt::DecorationRole);
 }
 
 QIcon QtPropertyData::GetIcon() const
 {
-	return curIcon;
+	return qvariant_cast<QIcon>(data(Qt::DecorationRole));
+}
+
+QFont QtPropertyData::GetFont() const
+{
+	return qvariant_cast<QFont>(data(Qt::FontRole));
+}
+
+void QtPropertyData::SetFont(const QFont &font)
+{
+	setData(QVariant(font), Qt::FontRole);
+}
+
+QBrush QtPropertyData::GetBackground() const
+{
+	return qvariant_cast<QBrush>(data(Qt::BackgroundRole));
+}
+
+void QtPropertyData::SetBackground(const QBrush &brush)
+{
+	setData(QVariant(brush), Qt::BackgroundRole);
+}
+
+QBrush QtPropertyData::GetForeground() const
+{
+	return qvariant_cast<QBrush>(data(Qt::ForegroundRole));
+}
+
+void QtPropertyData::SetForeground(const QBrush &brush)
+{
+	setData(QVariant(brush), Qt::ForegroundRole);
+}
+
+void QtPropertyData::ResetStyle()
+{
+	style.remove(Qt::ForegroundRole);
+	style.remove(Qt::BackgroundRole);
+	style.remove(Qt::FontRole);
 }
 
 Qt::ItemFlags QtPropertyData::GetFlags() const
@@ -262,13 +360,23 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 {
 	if(NULL != data && !key.isEmpty())
 	{
+		if(NULL != model)
+		{
+			model->DataAboutToBeAdded(this, childrenData.size(), childrenData.size());
+		}
+
 		childrenData.append(data);
 		childrenNames.append(key);
 
 		data->curName = key;
 		data->parent = this;
 		data->model = model;
-		data->optionalWidgetViewport = optionalWidgetViewport;
+		data->SetOWViewport(optionalWidgetViewport);
+
+		if(NULL != model)
+		{
+			model->DataAdded();
+		}
 	}
 }
 
@@ -328,25 +436,48 @@ void QtPropertyData::ChildRemove(int index)
 {
 	if(index >= 0 && index < childrenData.size())
 	{
+		if(NULL != model)
+		{
+			model->DataAboutToBeRemoved(this, index, index);
+		}
+
 		QtPropertyData *data = childrenData.at(index);
 		childrenData.removeAt(index);
 		childrenNames.removeAt(index);
 
 		delete data;
 		data = NULL;
+
+		if(NULL != model)
+		{
+			model->DataRemoved();
+		}
 	}
 }
 
 void QtPropertyData::ChildRemoveAll()
 {
-	for(int i = 0; i < childrenData.size(); ++i)
+	if(childrenData.size() > 0)
 	{
-		QtPropertyData *data = childrenData.at(i);
-		delete data;
-	}
+		if(NULL != model)
+		{
+			model->DataAboutToBeRemoved(this, 0, childrenData.size() - 1);
+		}
 
-	childrenData.clear();
-	childrenNames.clear();
+		for(int i = 0; i < childrenData.size(); ++i)
+		{
+			QtPropertyData *data = childrenData.at(i);
+			delete data;
+		}
+
+		childrenData.clear();
+		childrenNames.clear();
+
+		if(NULL != model)
+		{
+			model->DataRemoved();
+		}
+	}
 }
 
 int QtPropertyData::GetOWCount() const
