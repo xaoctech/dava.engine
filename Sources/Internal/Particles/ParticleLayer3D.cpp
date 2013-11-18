@@ -412,12 +412,12 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	Particle* parent = emitter->GetParentParticle();		
 	if ((NULL != parent)&&inheritPosition)
 	{		
-		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
-		currDirection.Normalize();
+		currDirection = current->speed*current->velocityOverLife + parent->speed*parent->velocityOverLife;		
 	}else
 	{
-		currDirection = current->direction;
+		currDirection = current->speed;
 	}
+	currDirection.Normalize();
 
 	Vector3 vecShort = currDirection.CrossProduct(direction);
 	vecShort.Normalize();			

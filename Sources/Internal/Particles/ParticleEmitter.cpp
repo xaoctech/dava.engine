@@ -565,9 +565,8 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             particle->position += vel * radius->GetValue(time);
     }
         
-    particle->direction.x = vel.x;
-    particle->direction.y = vel.y;
-	particle->speed = velocity;
+    particle->speed.x = vel.x*velocity;
+    particle->speed.y = vel.y*velocity;	
     particle->angle = particleAngle;
 }
 
