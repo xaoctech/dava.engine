@@ -56,6 +56,16 @@ void Job::SetState(eState newState)
 	state = newState;
 }
 
+void Job::SetPerformedOn(ePerformedWhere _performedWhere)
+{
+	performedWhere = _performedWhere;
+}
+
+Job::ePerformedWhere Job::PerformedWhere()
+{
+	return performedWhere;
+}
+
 
 
 }

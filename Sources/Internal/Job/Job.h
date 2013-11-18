@@ -47,17 +47,26 @@ public:
 		STATUS_DONE
 	};
 
+	enum ePerformedWhere
+	{
+		PERFORMED_ON_CREATOR_THREAD,
+		PERFORMED_ON_MAIN_THREAD
+	};
+
 	Job(const Message & message, const Thread::ThreadId & creatorThreadId);
 	eState GetState();
+	ePerformedWhere PerformedWhere();
 
 protected:
 	void Perform();
 	void SetState(eState newState);
+	void SetPerformedOn(ePerformedWhere performedWhere);
 
 	Message message;
 	Thread::ThreadId creatorThreadId;
 
 	eState state;
+	ePerformedWhere performedWhere;
 
 	friend class JobQueue;
 	friend class JobManager;

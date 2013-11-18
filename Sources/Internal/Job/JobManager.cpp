@@ -61,17 +61,18 @@ ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & mes
 {
 	const Thread::ThreadId & creatorThreadId = Thread::GetCurrentThreadId();
 	ScopedPtr<Job> job(new Job(message, creatorThreadId));
-	
-	OnJobCreated(job);
 
 	if(THREAD_MAIN == threadType)
 	{	
 		if(Thread::IsMainThread())
 		{
+			job->SetPerformedOn(Job::PERFORMED_ON_CREATOR_THREAD);
 			job->Perform();
 		}
 		else
 		{
+			job->SetPerformedOn(Job::PERFORMED_ON_MAIN_THREAD);
+			OnJobCreated(job);
 			mainQueue->AddJob(job);
 		}
 	}
@@ -98,37 +99,50 @@ void JobManager::OnJobCompleted(Job * job)
 {
 	job->SetState(Job::STATUS_DONE);
 
-	jobsDoneMutex.Lock();
-	//check jobs done for ThreadId
-	uint32 & jobsCount = jobsPerCreatorThread[job->creatorThreadId];
-	DVASSERT(jobsCount> 0);
-	jobsCount--;
-	if(0 == jobsCount)
+	if(Job::PERFORMED_ON_MAIN_THREAD == job->PerformedWhere())
 	{
-		CheckAndCallWaiterForThreadId(job->creatorThreadId);
+		jobsDoneMutex.Lock();
+		//check jobs done for ThreadId
+		Map<Thread::ThreadId, uint32>::iterator iter = jobsPerCreatorThread.find(job->creatorThreadId);
+		if(iter != jobsPerCreatorThread.end())
+		{
+			uint32 & jobsCount = (*iter).second;
+			DVASSERT(jobsCount> 0);
+			jobsCount--;
+			if(0 == jobsCount)
+			{
+				jobsPerCreatorThread.erase(iter);
+				CheckAndCallWaiterForThreadId(job->creatorThreadId);
+			}
+
+			//check specific job done
+			CheckAndCallWaiterForJobInstance(job);
+		}
+
+		jobsDoneMutex.Unlock();
 	}
-
-	//check specific job done
-	CheckAndCallWaiterForJobInstance(job);
-
-	jobsDoneMutex.Unlock();
 }
 
 JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
 {
-	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_WILL_WAIT;
+	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_RETURN_IMMEDIATELY;
 	const Thread::ThreadId threadId = waiter->GetThreadId();
 
 	jobsDoneMutex.Lock();
 	//check if all desired jobs are already done
-	uint32 & jobsCount = jobsPerCreatorThread[threadId];
-	if(0 == jobsCount)
+	Map<Thread::ThreadId, uint32>::iterator iter = jobsPerCreatorThread.find(threadId);
+	if(iter != jobsPerCreatorThread.end())
 	{
-		result = JobManager::WAITER_RETURN_IMMEDIATELY;
-	}
-	else
-	{
-		waitersPerCreatorThread[threadId] = waiter;
+		uint32 & jobsCount = (*iter).second;
+		if(0 == jobsCount)
+		{
+			//default value: result = JobManager::WAITER_RETURN_IMMEDIATELY;
+		}
+		else
+		{
+			result = JobManager::WAITER_WILL_WAIT;
+			waitersPerCreatorThread[threadId] = waiter;
+		}
 	}
 
 	jobsDoneMutex.Unlock();
