@@ -80,6 +80,15 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
+	
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
@@ -319,7 +328,10 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->FlushState();
+	
 	RenderManager::Instance()->SetColor(Color::White());
 	
 	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
@@ -605,11 +617,13 @@ Image* HeightmapEditorSystem::CreateTilemaskImage()
 {
 	Texture* texture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
-	eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	//eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+	//eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+	RenderManager::Instance()->FlushState();
 	Image* img = texture->CreateImageFromMemory();
-	RenderManager::Instance()->SetBlendMode(src, dst);
+	//RenderManager::Instance()->SetBlendMode(src, dst);
 
 	return img;
 }

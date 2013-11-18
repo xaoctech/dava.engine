@@ -93,12 +93,15 @@ void EditorParticlesSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
 
 void EditorParticlesSystem::Draw()
 {
-	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
-	DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
+	//int oldState = DAVA::RenderManager::Instance()->GetState();
+	//DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
+	//DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
 
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
-	DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
+	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
+	
+	DAVA::RenderManager::Instance()->SetDefault3DState();
+	DAVA::RenderManager::Instance()->FlushState();
 	
 	// Draw debug information for non-selected entities
 	for(size_t i = 0; i < entities.size(); ++i)
@@ -162,8 +165,8 @@ void EditorParticlesSystem::Draw()
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
 	
-	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
-	DAVA::RenderManager::Instance()->SetState(oldState);
+	//DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
+	//DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)

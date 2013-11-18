@@ -79,7 +79,8 @@ void SpeedTreeLeafBatch::Draw(Camera * camera)
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
-    RenderManager::State()->SetTexture(texture);
+	//TODO: fix speed tree rendering
+    //RenderManager::State()->SetTexture(texture);
 
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->SetRenderData(dataSource->renderDataObject);

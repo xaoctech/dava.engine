@@ -66,18 +66,21 @@ void CustomLandscape::Draw(DAVA::Camera *camera)
 	
 	if (cursor)
 	{
-		RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
-		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		RenderManager::Instance()->SetDefault3DState();
+		RenderManager::Instance()->FlushState();
+		
+		//RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
+		//eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		//eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		//RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
 		cursor->Prepare();
 		
 		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
 		
-		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
-		RenderManager::Instance()->RemoveState(RenderState::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(src, dst);
+		//RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		//RenderManager::Instance()->RemoveState(RenderState::STATE_BLEND);
+		//RenderManager::Instance()->SetBlendMode(src, dst);
 	}
 	
 	landscapeRenderer->UnbindMaterial();

@@ -939,7 +939,7 @@ void ParticleLayer::PrepareRenderData(Camera * camera)
 void ParticleLayer::Draw(Camera * camera)
 {	
 
-	RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
+	//RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
 
 	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)

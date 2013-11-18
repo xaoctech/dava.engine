@@ -163,6 +163,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 	
 	renderContextId = 0;
+
+	InitDefaultRenderStates();
 }
 	
 RenderManager::~RenderManager()
@@ -176,6 +178,45 @@ RenderManager::~RenderManager()
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
 	SafeRelease(cursor);
 	Logger::FrameworkDebug("[RenderManager] released");
+}
+	
+void RenderManager::InitDefaultRenderStates()
+{
+	//VI: do not set up stencil state for default states. It's disabled in them. 
+	
+	RenderStateData defaultStateData = {0};
+	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	default2DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_LESS;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+
+	default3DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state = RenderStateData::STATE_COLORMASK_ALL;
+	defaultStateData.cullMode = FACE_COUNT;
+	defaultStateData.depthFunc = CMP_TEST_MODE_COUNT;
+	defaultStateData.sourceFactor = BLEND_MODE_COUNT;
+	defaultStateData.destFactor = BLEND_MODE_COUNT;
+	defaultStateData.fillMode = FILLMODE_COUNT;
+	defaultStateData.stencilRef = 0;
+	defaultStateData.stencilMask = 0;
+	defaultStateData.stencilFunc[0] = defaultStateData.stencilFunc[1] = CMP_TEST_MODE_COUNT;
+	defaultStateData.stencilPass[0] = defaultStateData.stencilPass[1] = STENCILOP_COUNT;
+	defaultStateData.stencilFail[0] = defaultStateData.stencilFail[1] = STENCILOP_COUNT;
+	defaultStateData.stencilZFail[0] = defaultStateData.stencilZFail[1] = STENCILOP_COUNT;
+	defaultHardwareState = AddRenderStateData(&defaultStateData);
+	hardwareState.stateHandle = defaultHardwareState;
 }
 
 void RenderManager::SetDebug(bool isDebugEnabled)
@@ -792,6 +833,16 @@ void RenderManager::ProcessStats()
     }
 }
     
+void RenderManager::SetDefault2DState()
+{
+	currentState.stateHandle = GetDefault2DStateHandle();
+}
+	
+void RenderManager::SetDefault3DState()
+{
+	currentState.stateHandle = GetDefault3DStateHandle();
+}
+
     /*void RenderManager::EnableAlphaTest(bool isEnabled)
 {
     alphaTestEnabled = isEnabled;
@@ -802,47 +853,7 @@ void RenderManager::EnableCulling(bool isEnabled)
 {
     cullingEnabled = isEnabled;
 }*/
-
-void RenderManager::AppendState(uint32 state)
-{
-    currentState.state |= state;
-}
     
-void RenderManager::RemoveState(uint32 state)
-{
-    currentState.state &= ~state;
-}
-
-void RenderManager::SetState(uint32 state)
-{
-    currentState.state = state;
-}
-    
-uint32 RenderManager::GetState()
-{
-    return currentState.state;
-}
-    
-    
-void RenderManager::SetCullMode(eFace _cullFace)
-{
-    currentState.SetCullMode(_cullFace);
-}
-    
-void RenderManager::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
-{
-    currentState.SetAlphaFunc(func, cmpValue);
-}
-
-RenderState * RenderManager::State()
-{
-	return &RenderManager::Instance()->currentState;
-}
-
-void RenderManager::SetDepthFunc(eCmpFunc func)
-{
-	currentState.SetDepthFunc(func);
-}
 
 RenderOptions * RenderManager::GetOptions()
 {
