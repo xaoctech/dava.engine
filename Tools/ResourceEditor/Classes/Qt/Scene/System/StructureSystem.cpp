@@ -303,7 +303,7 @@ void StructureSystem::ReloadInternal(DAVA::Set<DAVA::Entity *> &entitiesToReload
 		if(entitiesToReload.size() > 0)
 		{
 			// try to load new model
-			DAVA::Entity *loadedEntity = Load(newModelPath, true);
+			DAVA::Entity *loadedEntity = LoadInternal(newModelPath, true, true);
 
 			if(NULL != loadedEntity)
 			{
