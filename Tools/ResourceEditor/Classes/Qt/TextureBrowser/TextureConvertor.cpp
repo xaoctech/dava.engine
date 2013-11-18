@@ -143,9 +143,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert, bool only
 				{
 					for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
 					{
-						//check to avoid  "NULL descriptor or wrong GPU type" error
-						if(descriptor->compression[gpu].format <= DAVA::FORMAT_INVALID || 
-							descriptor->compression[gpu].format >= DAVA::FORMAT_COUNT)
+						if( ! GPUFamilyDescriptor::IsFormatSupported((eGPUFamily)gpu, (PixelFormat)descriptor->compression[gpu].format))
 						{
 							continue;
 						}

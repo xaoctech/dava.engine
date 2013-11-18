@@ -195,20 +195,15 @@ bool SceneHelper::IsPngModified(const DAVA::Texture * texture)
 	
 	for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
 	{
-		if(descriptor->compression[gpu].format > DAVA::FORMAT_INVALID &&
-			descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
+		if(GPUFamilyDescriptor::IsFormatSupported((eGPUFamily)gpu, (PixelFormat)descriptor->compression[gpu].format))
 		{
 			FilePath convertedTexture = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor,(eGPUFamily)gpu);
 			FilePath texPath = descriptor->pathname;
 			texPath.ReplaceExtension(".png");
-			if(texPath.Exists() && convertedTexture.Exists())
+			if(texPath.Exists() && convertedTexture.Exists() && !descriptor->IsCompressedTextureActual((eGPUFamily)gpu))
 			{
-				File::eDateComparison comparison = File::CompareModificationDates(texPath, convertedTexture);
-				if(comparison == File::SECOND_OLDER)
-				{
-					retValue = true;
-					break;
-				}
+				retValue = true;
+				break;
 			}
 		}
 	}
