@@ -193,14 +193,16 @@ public:
     static String GetModificationDate(const FilePath & filePathname);
 	
 	static eDateComparison CompareModificationDates(const FilePath & firstPathname, const FilePath & secondPathname);
-	
-	static tm* gmTime(struct stat&);
-    
+
 private:
 	FILE	*	file;
 	uint32		size;
 protected:
+	
+	static tm* gmTime(struct stat&);
+	
 	FilePath	filename;
+	
 };
 };
 

@@ -33,7 +33,7 @@
 
 using namespace DAVA;
 
-void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textures, bool pngModificationCheck/* = false*/)
+void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textures, bool enumerateOnlyModifiedPNGs/* = false*/)
 {
 	if(!forNode) return;
 
@@ -57,43 +57,43 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 			{
 				for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
 				{
-					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t), pngModificationCheck);
+					CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t), enumerateOnlyModifiedPNGs);
 				}
 			}
 
 			InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
 			if(instanceMaterial)
 			{
-				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap(), pngModificationCheck);
+				CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap(), enumerateOnlyModifiedPNGs);
 			}
 		}
 
 		Landscape *land = dynamic_cast<Landscape *>(ro);
 		if(land)
 		{
-			CollectLandscapeTextures(textures, land, pngModificationCheck);
+			CollectLandscapeTextures(textures, land, enumerateOnlyModifiedPNGs);
 		}
 	}
 }
 
-void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode, bool pngModificationCheck)
+void SceneHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode, bool enumerateOnlyModifiedPNGs)
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
 		CollectTexture(textures, 
 			forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), 
 			forNode->GetTexture((Landscape::eTextureLevel)t),
-			pngModificationCheck);
+			enumerateOnlyModifiedPNGs);
 	}
 }
 
 
 
-void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex, bool pngModificationCheck)
+void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex, bool enumerateOnlyModifiedPNGs)
 {
 	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
 	{
-		if(pngModificationCheck && !IsPngModified(tex))
+		if(enumerateOnlyModifiedPNGs && !IsPngModified(tex))
 		{
 			return;
 		}

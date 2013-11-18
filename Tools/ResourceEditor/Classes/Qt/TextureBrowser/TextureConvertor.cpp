@@ -164,7 +164,6 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert, bool only
 						jobRunNextConvert();
 
 						ret = newJob.id;
-						
 					}
 				}
 
