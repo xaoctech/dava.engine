@@ -74,7 +74,9 @@
     <file>QtIcons/modify_rotate.png</file>
     <file>QtIcons/modify_placeonland.png</file>
     <file>QtIcons/modify_snaptoland.png</file>
-    <file>QtIcons/modify_scale.png</file>
+    <file>QtIcons/modify_scale.png</file>    
+    <file>QtIcons/expand_all.png</file>
+    <file>QtIcons/collapse_all.png</file>
     <file>QtImages/tree-closed.png</file>
     <file>QtImages/tree-open.png</file>
     <file>QtIconsTextureDialog/filter.png</file>

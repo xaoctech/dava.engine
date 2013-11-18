@@ -277,7 +277,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     if (GetError() == ERROR_NO_ERROR)
     {
         // TODO: Check do we need to releae root node here
-        _scene->AddRootNode(rootNode, rootNodePathName.GetAbsolutePathname());
+        _scene->AddRootNode(rootNode, rootNodePathName);
     }
     else
     {
