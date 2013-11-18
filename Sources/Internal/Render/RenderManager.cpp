@@ -810,6 +810,8 @@ void RenderManager::Stats::Clear()
     drawElementsCalls = 0;
     shaderBindCount = 0;
     occludedRenderBatchCount = 0;
+	renderStateSwitches = 0;
+	renderStateFullSwitches = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
 }

@@ -104,6 +104,9 @@ public:
         uint32 shaderBindCount;
         uint32 occludedRenderBatchCount;
         uint32 primitiveCount[PRIMITIVETYPE_COUNT];
+		
+		uint32 renderStateSwitches;
+		uint32 renderStateFullSwitches;
     };
     
     static void Create(Core::eRenderer renderer);

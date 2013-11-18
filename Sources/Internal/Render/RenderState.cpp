@@ -130,8 +130,12 @@ void RenderState::Flush(RenderState * hardwareState) const
 {
     RenderManager::Instance()->LockNonMain();
 	
+	RenderManager::Instance()->GetStats().renderStateSwitches++;
+	
 	if(hardwareState->stateHandle != stateHandle)
 	{
+		RenderManager::Instance()->GetStats().renderStateFullSwitches++;
+		
 		const RenderStateData* currentData = RenderManager::Instance()->GetRenderStateData(stateHandle);
 		const RenderStateData* hardwareData = RenderManager::Instance()->GetRenderStateData(hardwareState->stateHandle);
 		
