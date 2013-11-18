@@ -42,6 +42,7 @@
 // framework
 #include "Scene3D/Scene.h"
 
+class QtMimeData;
 class SceneTreeModel : public QStandardItemModel
 {
 	Q_OBJECT
@@ -92,7 +93,7 @@ public:
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
 	bool DropAccepted() const;
-	int GetDropType(const QMimeData *data) const;
+	int GetDropType(const QtMimeData *data) const;
 
 	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
 

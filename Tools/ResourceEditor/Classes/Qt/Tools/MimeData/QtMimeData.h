@@ -28,27 +28,33 @@
 
 
 
-#include "MimeDataHelper2.h"
+#ifndef __QTMIMEDATA_H__
+#define __QTMIMEDATA_H__
 
-bool MimeDataHelper2Base::ContainsFilepathWithExtension(const QMimeData * mimeData, const DAVA::String & extension)
+#include "DAVAEngine.h"
+#include <QMimeData>
+
+class QtMimeData: public QMimeData
 {
-    if(!mimeData && !mimeData->hasUrls()) return false;
-    
-    QList<QUrl> urls = mimeData->urls();
-    for(int i = 0; i < urls.size(); ++i)
-    {
-        if(IsURLEqualToExtension(urls.at(i), extension))
-        {
-            return true;
-        }
-    }
-    
-    return false;
-}
+	Q_OBJECT
 
-bool MimeDataHelper2Base::IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension)
-{
-    DAVA::FilePath path = url.toLocalFile().toStdString();
-    return (path.IsEqualToExtension(extension));
-}
+	template<class T> friend class MimeDataHelper2;
 
+protected:
+
+	QtMimeData();
+
+public:
+
+	//Utility methods
+	static bool ContainsFilepathWithExtension(const QMimeData * data, const DAVA::String & extension);
+	static bool IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension);
+};
+
+
+
+
+
+
+
+#endif  //#ifndef __QTMIMEDATA_H__
