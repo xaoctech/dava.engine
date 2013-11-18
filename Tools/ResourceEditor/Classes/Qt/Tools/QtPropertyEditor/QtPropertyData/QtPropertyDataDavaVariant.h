@@ -54,9 +54,6 @@ public:
 	void AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue = QVariant());
 	void ClearAllowedValues();
 
-	virtual void SetIcon(const QIcon &icon);
-	virtual QIcon GetIcon();
-
 	QVariant FromDavaVariant(const DAVA::VariantType &variant) const;
 
 protected:
@@ -87,13 +84,12 @@ private:
 	mutable bool allowedValuesLocked;
 	QToolButton *allowedButton;
 
-	bool iconCacheIsValid;
-	QIcon iconCache;
-
 	void InitFlags();
 	void ChildsCreate();
 	void ChildsSetFromMe();
 	void MeSetFromChilds();
+
+	void SetColorIcon();
 
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive) const;
 	QVariant FromVector4(const DAVA::Vector4 &vector) const;

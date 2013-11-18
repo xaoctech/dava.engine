@@ -38,9 +38,7 @@ QtPropertyModel::QtPropertyModel(QWidget *optionalWidgetViewport, QObject* paren
 { 
 	root = new QtPropertyData();
 	root->model = this;
-
-	setHeaderData(0, Qt::Horizontal, "Property name");
-	setHeaderData(1, Qt::Horizontal, "Value");
+	root->SetOWViewport(OWviewport);
 }
 
 QtPropertyModel::~QtPropertyModel()
@@ -103,41 +101,47 @@ QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::Disp
 	QtPropertyData *data = itemFromIndex(index);
 	if(NULL != data)
 	{
-		// name
 		if(index.column() == 0)
 		{
 			switch(role)
 			{
-			case Qt::EditRole:
 			case Qt::DisplayRole:
 				ret = data->GetName();
+				break;
+			case Qt::FontRole:
+			case Qt::BackgroundRole:
+			case Qt::ForegroundRole:
+				ret = data->data(role);
 				break;
 			default:
 				break;
 			}
 		}
-		// value
-		else if(index.column() == 1)
+		else
 		{
-			switch(role)
-			{
-			case Qt::EditRole:
-			case Qt::DisplayRole:
-				ret = data->GetAlias();
-				if(!ret.isValid())
-				{
-					ret = data->GetValue();
-				}
-				break;
-			case Qt::CheckStateRole:
-				if(data->GetFlags() & Qt::ItemIsUserCheckable)
-				{
-					ret = data->GetValue().toBool() ? Qt::Checked : Qt::Unchecked;
-				}
-				break;
-			default:
-				break;
-			}
+			ret = data->data(role);
+		}
+	}
+
+	return ret;
+}
+
+QVariant QtPropertyModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	QVariant ret;
+
+	if(orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		switch(section)
+		{
+		case 0:
+			ret = "Property";
+			break;
+		case 1:
+			ret = "Value";
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -151,18 +155,7 @@ bool QtPropertyModel::setData(const QModelIndex & index, const QVariant & value,
 	QtPropertyData *data = itemFromIndex(index);
 	if(NULL != data && index.column() == 1)
 	{
-		switch(role)
-		{
-		case Qt::EditRole:
-			data->SetValue(value, QtPropertyData::VALUE_EDITED);
-			ret = true;
-			break;
-		case Qt::CheckStateRole:
-			(value.toInt() == Qt::Unchecked) ? data->SetValue(false, QtPropertyData::VALUE_EDITED) : data->SetValue(true, QtPropertyData::VALUE_EDITED);
-			break;
-		default:
-			break;
-		}
+		ret = data->setData(value, role);
 	}
 
 	return ret;
@@ -235,11 +228,7 @@ QModelIndex QtPropertyModel::AppendProperty(const QString &name, QtPropertyData*
 			parentData = root;
 		}
 
-		data->SetOWViewport(OWviewport);
-
-		beginInsertRows(parent, parentData->ChildCount(), parentData->ChildCount());
 		parentData->ChildAdd(name, data);
-		endInsertRows();
 	}
 
 	return indexFromItem(data);
@@ -251,19 +240,16 @@ void QtPropertyModel::RemoveProperty(const QModelIndex &index)
 	if(NULL != data)
 	{
 		QtPropertyData *parentData = data->Parent();
-
-		beginRemoveRows(index.parent(), index.row(), index.row());
-		parentData->ChildRemove(data);
-		endRemoveRows();
+		if(NULL != parentData)
+		{
+			parentData->ChildRemove(data);
+		}
 	}
 }
 
 void QtPropertyModel::RemovePropertyAll()
 {
-	QModelIndex index = indexFromItem(root);
-	beginRemoveRows(index, 0, rowCount(index));
 	root->ChildRemoveAll();
-	endRemoveRows();
 }
 
 void QtPropertyModel::UpdateStructure(const QModelIndex &parent /* = QModelIndex */)
@@ -295,7 +281,11 @@ void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 		QModelIndex index = indexFromItem(data);
 		if(index.isValid())
 		{
-			emit dataChanged(index, index);
+			if(reason != QtPropertyData::VALUE_EDITED)
+			{
+				emit dataChanged(index, index);
+			}
+
 			emit PropertyChanged(index);
 
 			if(reason == QtPropertyData::VALUE_EDITED)
@@ -304,6 +294,46 @@ void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 			}
 		}
 	}
+}
+
+void QtPropertyModel::DataAboutToBeAdded(QtPropertyData *parent, int first, int last)
+{
+	if(NULL != parent)
+	{
+		QModelIndex index = indexFromItem(parent);
+		if(index.isValid())
+		{
+			// same index, but column will be 0
+			index = createIndex(index.row(), 0, index.internalPointer());
+		}
+
+		beginInsertRows(index, first, last);
+	}
+}
+
+void QtPropertyModel::DataAdded()
+{
+	endInsertRows();
+}
+
+void QtPropertyModel::DataAboutToBeRemoved(QtPropertyData *parent, int first, int last)
+{
+	if(NULL != parent)
+	{
+		QModelIndex index = indexFromItem(parent);
+		if(index.isValid())
+		{
+			// same index, but column will be 0
+			index = createIndex(index.row(), 0, index.internalPointer());
+		}
+
+		beginRemoveRows(index, first, last);
+	}
+}
+
+void QtPropertyModel::DataRemoved()
+{
+	endRemoveRows();
 }
 
 void QtPropertyModel::SetEditTracking(bool enabled)

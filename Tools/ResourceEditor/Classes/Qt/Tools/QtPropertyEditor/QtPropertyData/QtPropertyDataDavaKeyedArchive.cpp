@@ -226,6 +226,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, childData->GetName().toStdString());
 						curArchive->DeleteKey(childData->GetName().toStdString());
 
+						ChildRemove(i);
 						EmitDataChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
@@ -243,7 +244,6 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 	{
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
-		//ChildsSync();
 
 		if(NULL != lastCommand)
 		{
@@ -251,6 +251,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 		}
 
 		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
+		ChildCreate(key.c_str(), curArchive->GetVariant(key));
 		EmitDataChanged(QtPropertyData::VALUE_EDITED);
 	}
 }

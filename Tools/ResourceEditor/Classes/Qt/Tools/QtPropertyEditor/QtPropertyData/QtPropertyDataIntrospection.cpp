@@ -100,7 +100,7 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
                 QtPropertyDataInspMember *childData = new QtPropertyDataInspMember(_object, member);
                 if(!(member->Flags() & DAVA::I_EDIT))
                 {
-                    childData->SetEditable(false);
+					childData->SetEnabled(false);
                 }
 				else
 				{

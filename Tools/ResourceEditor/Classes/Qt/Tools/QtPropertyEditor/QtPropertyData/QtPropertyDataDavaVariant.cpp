@@ -50,7 +50,6 @@
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
-	, iconCacheIsValid(false)
 	, allowedValuesLocked(false)
 	, allowedButton(NULL)
 {
@@ -99,9 +98,13 @@ void QtPropertyDataDavaVariant::InitFlags()
 	case DAVA::VariantType::TYPE_VECTOR2:
 	case DAVA::VariantType::TYPE_VECTOR3:
 	case DAVA::VariantType::TYPE_VECTOR4:
-	case DAVA::VariantType::TYPE_COLOR:
 	case DAVA::VariantType::TYPE_FASTNAME:
+		break;
+
 	case DAVA::VariantType::TYPE_FILEPATH:
+		SetIcon(QIcon(":/QtIcons/file.png"));
+		break;
+
 	default:
 		break;
 	}
@@ -127,6 +130,17 @@ void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 	else
 	{
 		ChildsSetFromMe();
+	}
+
+	// more specific actions
+	switch(curVariantValue.type)
+	{
+		case DAVA::VariantType::TYPE_COLOR:
+			SetColorIcon();
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -677,7 +691,34 @@ void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
-	curVariantValue.SetColor(QColorToColor(value.value<QColor>()));
+	QColor c = value.value<QColor>();
+	curVariantValue.SetColor(QColorToColor(c));
+}
+
+void QtPropertyDataDavaVariant::SetColorIcon()
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+	{
+		QPixmap pix(16, 16);
+		QPainter p(&pix);
+		QColor c = ColorToQColor(curVariantValue.AsColor());
+
+		if(c.alpha() < 255)
+		{
+			p.setBrush(QColor(250, 250, 250));
+			p.drawRect(QRect(0, 0, 15, 15));
+			p.setPen(QColor(200, 200, 200));
+			p.setBrush(QColor(150, 150, 150));
+			p.drawRect(QRect(0, 0, 7, 7));
+			p.drawRect(QRect(8, 8, 15, 15));
+		}
+
+		p.setPen(QColor(0, 0, 0));
+		p.setBrush(QBrush(c));
+		p.drawRect(QRect(0, 0, 15, 15));
+
+		SetIcon(QIcon(pix));
+	}
 }
 
 void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
@@ -720,6 +761,7 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 	if(allowedValues.size())
 	{
 		SetAllowedValueEditorData(editor);
+		ret = true;
 	}
 	else
 	{
@@ -751,12 +793,10 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
 			SetValue(colorLineEdit->GetColor(), QtPropertyData::VALUE_EDITED);
+			SetColorIcon();
 			ret = true;
 		}
 	}
-
-	// reset icon cache. icon will be recreated on next icon request
-	iconCacheIsValid = false;
 
 	// allow modify valueItems list
 	allowedValuesLocked = false;
@@ -770,7 +810,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 	if(c.isValid())
 	{
 		SetValue(c, QtPropertyData::VALUE_EDITED);
-		iconCacheIsValid = false;
+		SetColorIcon();
 	}
 }
 
@@ -795,52 +835,6 @@ void QtPropertyDataDavaVariant::AllowedSelected(int index)
 	{
 		QCoreApplication::postEvent(allowedWidget, new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier));
 	}
-}
-
-QIcon QtPropertyDataDavaVariant::GetIcon()
-{
-	if(!iconCacheIsValid)
-	{
-		iconCacheIsValid = true;
-
-		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
-		{
-			QPixmap pix(16,16);
-			QPainter p(&pix);
-			QColor c = ColorToQColor(curVariantValue.AsColor());
-
-			if(c.alpha() < 255)
-			{
-				p.setBrush(QColor(250, 250, 250));
-				p.drawRect(QRect(0, 0, 15, 15));
-				p.setPen(QColor(200, 200, 200));
-				p.setBrush(QColor(150, 150, 150));
-				p.drawRect(QRect(0, 0, 7, 7));
-				p.drawRect(QRect(8, 8, 15, 15));
-			}
-
-			p.setPen(QColor(0, 0, 0));
-			p.setBrush(QBrush(c));
-			p.drawRect(QRect(0,0,15,15));
-
-			iconCache = QIcon(pix);
-		}
-		else if(curVariantValue.type == DAVA::VariantType::TYPE_FILEPATH)
-		{
-			iconCache = QIcon(":/QtIcons/file.png");
-		}
-		else
-		{
-			iconCache = QtPropertyData::GetIcon();
-		}
-	}
-
-	return iconCache;
-}
-
-void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
-{
-	QtPropertyData::SetIcon(icon);
 }
 
 QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent) const

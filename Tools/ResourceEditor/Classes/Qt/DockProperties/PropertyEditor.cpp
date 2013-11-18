@@ -83,6 +83,14 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetEntities(const EntityGroup *selected)
 {
+	/*
+	DAVA::KeyedArchive *ka = new DAVA::KeyedArchive();
+	ResetProperties();
+	AppendProperty("test", new QtPropertyDataDavaKeyedArcive(ka));
+
+	return;
+	*/
+
     //TODO: support multiselected editing
 
 	SafeRelease(curNode);
@@ -146,6 +154,7 @@ void PropertyEditor::ResetProperties()
 QModelIndex PropertyEditor::AddInsp(const QModelIndex &parent, void *object, const DAVA::InspInfo *info)
 {
 	QModelIndex ret;
+	QtPropertyData *propData = NULL;
 
 	if(NULL != info)
 	{
@@ -166,7 +175,7 @@ QModelIndex PropertyEditor::AddInsp(const QModelIndex &parent, void *object, con
 		// add them
         if(hasMembers)
         {
-			QtPropertyData *propData = new QtPropertyData(info->Type()->GetTypeName());
+			propData = new QtPropertyData();
 			propData->SetEnabled(false);
 			ret = AppendProperty(info->Name(), propData, parent);
 			
@@ -185,18 +194,10 @@ QModelIndex PropertyEditor::AddInsp(const QModelIndex &parent, void *object, con
     }
 
 	// if this root item was added - colorize it
-	// TODO:
-	/*
-	if(parent.IsEmpty() && !ret.IsEmpty())
+	if(!parent.isValid() && NULL != propData)
 	{
-		QFont boldFont = ret.nameItem->font();
-		boldFont.setBold(true);
-		ret.nameItem->setFont(boldFont);
-
-		ret.nameItem->setBackground(QBrush(QColor(Qt::lightGray)));
-		ret.dataItem->setBackground(QBrush(QColor(Qt::lightGray)));
+		ApplyStyle(propData, QtPropertyEditor::HEADER_STYLE);
 	}
-	*/
 
 	return ret;
 }
@@ -210,7 +211,8 @@ QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *objec
 		void *momberObject = member->Data(object);
 		const DAVA::InspInfo *memberIntrospection = member->Type()->GetIntrospection(momberObject);
 
-		if(NULL != memberIntrospection)
+		if(NULL != memberIntrospection && 
+			member->Type() != DAVA::MetaInfo::Instance<DAVA::KeyedArchive*>())
 		{
 			ret = AddInsp(parent, momberObject, memberIntrospection);
 		}
