@@ -47,12 +47,14 @@ void BeastSystem::SetDefaultPropertyValues(Entity * entity)
 {
 	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
 	
-	SetBool(propertyList, "editor.staticlight.enable", true);
+	SetBool(propertyList, "editor.staticlight.used", true);
 	SetBool(propertyList, "editor.staticlight.castshadows", true);
 	SetBool(propertyList, "editor.staticlight.receiveshadows", true);
 
 	if(GetLight(entity))
 	{
+		SetBool(propertyList, "editor.staticlight.enable", true);
+
 		SetFloat(propertyList, "editor.intensity", 1.f);
 
 		SetFloat(propertyList, "editor.staticlight.shadowangle", 0.f);
