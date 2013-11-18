@@ -39,8 +39,6 @@
 	#include "zip/zip.h"
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
-struct stat;
-
 namespace DAVA 
 {
 /**
@@ -71,14 +69,6 @@ public:
 		SEEK_FROM_START		= 1, //! Seek from start of file
 		SEEK_FROM_END		= 2, //! Seek from end of file
 		SEEK_FROM_CURRENT	= 3, //! Seek from current file position relatively
-	};
-	
-	enum eDateComparison
-	{
-		INVALID_COMPERISON = -1,
-		EQUIVALENT,
-		FIRST_OLDER,
-		SECOND_OLDER
 	};
 protected:
 	virtual ~ File();
@@ -191,18 +181,12 @@ public:
 	virtual bool IsEof();
 	
     static String GetModificationDate(const FilePath & filePathname);
-	
-	static eDateComparison CompareModificationDates(const FilePath & firstPathname, const FilePath & secondPathname);
-
+    
 private:
 	FILE	*	file;
 	uint32		size;
 protected:
-	
-	static tm* gmTime(struct stat&);
-	
 	FilePath	filename;
-	
 };
 };
 

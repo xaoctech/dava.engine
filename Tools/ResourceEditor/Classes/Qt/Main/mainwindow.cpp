@@ -854,6 +854,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuScene->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
+	ui->actionConvertModifiedTextures->setEnabled(enable);
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()
@@ -1699,7 +1700,12 @@ void QtMainWindow::OnSaveTiledTexture()
 
 void QtMainWindow::OnConvertModifiedTextures()
 {
-	TextureConvertor::Instance()->Reconvert( GetCurrentScene(), true, true);
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene)
+	{
+		return;
+	}
+	TextureConvertor::Instance()->Reconvert( scene, true, true);
 	TextureConvertor::Instance()->WaitConvertedAll(this);
 }
 
