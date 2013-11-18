@@ -32,42 +32,30 @@
 #define __MIMEDATA_HELPER2_H__
 
 #include "DAVAEngine.h"
-#include <QMimeData>
-#include <QUrl>
-
-class MimeDataHelper2Base
-{
-public:
-    static bool ContainsFilepathWithExtension(const QMimeData * mimeData, const DAVA::String & extension);
-    static bool IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension);
-    
-};
-
+#include "QtMimeData.h"
 
 template <class T>
 class MimeDataHelper2
 {
 public:
     
-    static QMimeData * EncodeMimeData(const QVector<T *> & data);
-    static QVector<T *> * DecodeMimeData(const QMimeData * data);
+    static QtMimeData * EncodeMimeData(const QVector<T *> & data);
+    static QVector<T *> * DecodeMimeData(const QtMimeData * data);
 
-    static bool IsDataSupportType(const QMimeData * mimeData);
+    static bool IsDataSupportType(const QtMimeData * mimeData);
 	static inline const QString GetSupportedTypeName();
     
 };
 
-
-
 template <class T>
-QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
+QtMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
 {
 	if(data.size() > 0)
 	{
 		QByteArray encodedData;
 		QDataStream stream(&encodedData, QIODevice::WriteOnly);
         
-        QMimeData *mimeData = new QMimeData();
+        QtMimeData *mimeData = new QtMimeData();
 		for (int i = 0; i < data.size(); ++i)
 		{
 			stream.writeRawData((char *) &data[i], sizeof(T *));
@@ -83,7 +71,7 @@ QMimeData * MimeDataHelper2<T>::EncodeMimeData(const QVector<T *> & data)
 
 
 template <class T>
-QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QMimeData * data)
+QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QtMimeData * data)
 {
     QString format = MimeDataHelper2<T>::GetSupportedTypeName();
 	if(data->hasFormat(format))
@@ -106,7 +94,7 @@ QVector<T *> * MimeDataHelper2<T>::DecodeMimeData(const QMimeData * data)
 }
 
 template<class T>
-bool MimeDataHelper2<T>::IsDataSupportType(const QMimeData * mimeData)
+bool MimeDataHelper2<T>::IsDataSupportType(const QtMimeData * mimeData)
 {
     return ((mimeData != NULL) && mimeData->hasFormat(MimeDataHelper2<T>::GetSupportedTypeName()));
 }

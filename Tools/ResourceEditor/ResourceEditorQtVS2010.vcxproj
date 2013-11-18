@@ -553,8 +553,8 @@
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\MimeDataHelper2\MimeDataHelper2.cpp" />
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\MimeData\QtMimeData.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
@@ -788,6 +788,7 @@
     <ClCompile Include="_GeneratedQt\Tools\LabeledSlider\LabeledSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\LandscapeDialog\LandscapeDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\MimeDataHelper\MimeDataHelper_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\MimeData\QtMimeData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtLabelWithActions\QtLabelWithActions_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPosSaver\QtPosSaver_moc.cpp" />
@@ -1276,8 +1277,9 @@
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\MimeDataHelper2\MimeDataHelper2.h" />
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
+    <ClInclude Include="Classes\Qt\Tools\MimeData\MimeDataHelper2.h" />
+    <ClInclude Include="Classes\Qt\Tools\MimeData\QtMimeData.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\QtFileDialog\QtFileDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h" />

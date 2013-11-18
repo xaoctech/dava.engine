@@ -32,7 +32,7 @@
 #include "MaterialsItem.h"
 
 #include "Scene/EntityGroup.h"
-#include "Tools/MimeDataHelper2/MimeDataHelper2.h"
+#include "Tools/MimeData/MimeDataHelper2.h"
 
 #include <QMimeData>
 #include <QStandardItem>
