@@ -69,7 +69,7 @@ public:
 	void AddButton( QWidget* widget, eButtonAlign orientation = BUTTON_ALIGN_LEFT);
 
 protected slots:
-	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+	virtual void OnItemEdited(const QModelIndex &);
     virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
     
 
