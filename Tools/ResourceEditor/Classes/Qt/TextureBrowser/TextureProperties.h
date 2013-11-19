@@ -76,7 +76,7 @@ protected:
 	QtPropertyDataMetaObject *propMagFilter;
 	QtPropertyDataMetaObject *propFormat;
 	QtPropertyDataMetaObject *propSizes;
-	
+
 	bool skipPropSizeChanged;
 
 	QSize origImageSize;
@@ -106,12 +106,8 @@ protected:
 	void LoadCurSizeToProp();
 	void SaveCurSizeFromProp();
 
-protected slots:
-	void PropMipMapChanged(QtPropertyData::ValueChangeReason reason);
-	void PropFormatChanged(QtPropertyData::ValueChangeReason reason);
-	void PropFilterChanged(QtPropertyData::ValueChangeReason reason);
-	void PropWrapChanged(QtPropertyData::ValueChangeReason reason);
-	void PropSizeChanged(QtPropertyData::ValueChangeReason reason);
+protected:
+	virtual void OnItemEdited(const QModelIndex &);
 };
 
 #endif // __TEXTURE_PROPERTIES_H__

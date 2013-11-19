@@ -38,7 +38,9 @@ TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
 	, skipPropSizeChanged(false)
-{ }
+{
+	SetEditTracking(true);
+}
 
 TextureProperties::~TextureProperties()
 {
@@ -135,6 +137,7 @@ void TextureProperties::MipMapSizesInit(int baseWidth, int baseHeight)
 	{
 		LoadCurSizeToProp();
 		SetPropertyItemValidValues(propSizes, &enumSizes);
+		propSizes->SetEnabled(true);
 	}
 }
 
@@ -149,14 +152,6 @@ void TextureProperties::ReloadProperties()
 {
 	RemovePropertyAll();
 
-	propMipMap = NULL;
-	propWrapModeS = NULL;
-	propWrapModeT = NULL;
-	propMinFilter = NULL;
-	propMagFilter = NULL;
-	propFormat = NULL;
-	propSizes = NULL;
-
 	if(NULL != curTextureDescriptor &&
 		curGPU >= 0 &&
 		curGPU < DAVA::GPU_FAMILY_COUNT)
@@ -170,12 +165,13 @@ void TextureProperties::ReloadProperties()
 		headerIndex = AppendHeader("Texture settings");
 		propMipMap = AddPropertyItem("generateMipMaps", object, headerIndex);
 		propMipMap->SetCheckable(true);
-        
-        //TODO: magic to display introspection info as bool, not int
-        bool savedValue = propMipMap->GetValue().toBool();
-        propMipMap->SetValue(!savedValue);
-        propMipMap->SetValue(savedValue);
-        //END of TODO
+		propMipMap->SetEditable(false);
+		
+		//TODO: magic to display introspection info as bool, not int
+		bool savedValue = propMipMap->GetValue().toBool();
+		propMipMap->SetValue(!savedValue);
+		propMipMap->SetValue(savedValue);
+		//END of TODO
 
 		propWrapModeS = AddPropertyItem("wrapModeS", object, headerIndex);
 		propWrapModeT = AddPropertyItem("wrapModeT", object, headerIndex);
@@ -190,17 +186,7 @@ void TextureProperties::ReloadProperties()
 
 		propSizes = new QtPropertyDataMetaObject(&curSizeLevelObject, DAVA::MetaInfo::Instance<int>());
 		AppendProperty("Size", propSizes, headerIndex);
-
 		LoadCurSizeToProp();
-
-		DVASSERT(false);
-		//QObject::connect(propMipMap, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropMipMapChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propWrapModeS, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propWrapModeT, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropWrapChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propMinFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propMagFilter, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFilterChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propFormat, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropFormatChanged(QtPropertyData::ValueChangeReason)));
-		//QObject::connect(propSizes, SIGNAL(ValueChanged(QtPropertyData::ValueChangeReason)), this, SLOT(PropSizeChanged(QtPropertyData::ValueChangeReason)));
 
 		ReloadEnumFormats();
 		ReloadEnumWrap();
@@ -319,36 +305,38 @@ void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* ite
 	}
 }
 
-void TextureProperties::PropMipMapChanged(QtPropertyData::ValueChangeReason reason)
+void TextureProperties::OnItemEdited(const QModelIndex &index)
 {
-	ReloadEnumFilters();
-	SetPropertyItemValidValues(propMinFilter, &enumFiltersMin);
+	QtPropertyEditor::OnItemEdited(index);
 
-	emit PropertyChanged(PROP_MIPMAP);
-}
-
-void TextureProperties::PropFormatChanged(QtPropertyData::ValueChangeReason reason)
-{
-	emit PropertyChanged(PROP_FORMAT);
-}
-
-void TextureProperties::PropFilterChanged(QtPropertyData::ValueChangeReason reason)
-{
-	emit PropertyChanged(PROP_FILTER);
-}
-
-void TextureProperties::PropWrapChanged(QtPropertyData::ValueChangeReason reason)
-{
-	emit PropertyChanged(PROP_WRAP);
-}
-
-void TextureProperties::PropSizeChanged(QtPropertyData::ValueChangeReason reason)
-{
-	SaveCurSizeFromProp();
-
-	if(!skipPropSizeChanged)
+	QtPropertyData *data = GetProperty(index);
+	if(data == propMipMap)
 	{
-		emit PropertyChanged(PROP_SIZE);
+		ReloadEnumFilters();
+		SetPropertyItemValidValues(propMinFilter, &enumFiltersMin);
+
+		emit PropertyChanged(PROP_MIPMAP);
+	}
+	else if(data == propFormat)
+	{
+		emit PropertyChanged(PROP_FORMAT);
+	}
+	else if(data == propMinFilter || data == propMagFilter)
+	{
+		emit PropertyChanged(PROP_FILTER);
+	}
+	else if(data == propWrapModeS || data == propWrapModeT)
+	{
+		emit PropertyChanged(PROP_WRAP);
+	}
+	else if(data == propSizes)
+	{
+		SaveCurSizeFromProp();
+
+		if(!skipPropSizeChanged)
+		{
+			emit PropertyChanged(PROP_SIZE);
+		}
 	}
 }
 

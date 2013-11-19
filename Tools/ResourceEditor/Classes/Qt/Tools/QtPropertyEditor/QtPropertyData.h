@@ -165,7 +165,6 @@ protected:
 	QVector<QtPropertyOW> optionalWidgets;
 	QWidget *optionalWidgetViewport;
 
-	void InitStyle();
 	void EmitDataChanged(ValueChangeReason reason);
 
 	virtual void UpdateUp();
