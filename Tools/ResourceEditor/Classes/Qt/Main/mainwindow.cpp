@@ -111,7 +111,7 @@
 
 #include "Classes/Constants.h"
 
-#include "TextureBrowser/TextureConvertor.h"
+#include "TextureCompression/TextureConverter.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -1707,8 +1707,40 @@ void QtMainWindow::OnConvertModifiedTextures()
 	{
 		return;
 	}
-	TextureConvertor::Instance()->Reconvert( scene, true, true);
-	TextureConvertor::Instance()->WaitConvertedAll(this);
+	
+	WaitStart("Conversion of modified textures.","Checking for modified textures.");
+	Map<Texture *, Vector<eGPUFamily> > textures;
+	int filesToUpdate = SceneHelper::EnumerateModifiedTextures(scene, textures);
+	
+	if(filesToUpdate == 0)
+	{
+		WaitStop();
+		return;
+	}
+	
+	int convretedNumber = 0;
+	waitDialog->SetRange(convretedNumber, filesToUpdate);
+	WaitSetValue(convretedNumber);
+	for(Map<Texture *, Vector<eGPUFamily> >::iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		DAVA::TextureDescriptor *descriptor = it->first->CreateDescriptor();
+		
+		if(NULL == descriptor)
+		{
+			continue;
+		}
+		
+		Vector<eGPUFamily> updatedGPUs = it->second;
+		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+		foreach(eGPUFamily gpu, updatedGPUs)
+		{
+			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
+			WaitSetValue(++convretedNumber);
+		}
+		
+		SafeRelease(descriptor);
+	}
+	WaitStop();
 }
 
 void QtMainWindow::OnGlobalInvalidateTimeout()
