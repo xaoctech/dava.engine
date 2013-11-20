@@ -39,7 +39,7 @@ namespace DAVA
 {
 	
 ActionUpdateSystem::ActionUpdateSystem(Scene * scene)
-:	BaseProcessSystem(Component::ACTION_COMPONENT, scene)
+:	SceneSystem(scene)
 {
 }
 		

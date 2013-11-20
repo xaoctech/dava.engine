@@ -37,7 +37,7 @@ namespace DAVA
 {
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
-:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+:	SceneSystem(scene)
 {
 
 }
@@ -46,19 +46,35 @@ void ParticleEffectSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
-	size = components.size();
-	for(index = 0; index < size; ++index)
+	uint32 size = entities.size();
+	for(uint32 index = 0; index < size; ++index)
 	{
-		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(components[index]);
-		component->EffectUpdate(timeElapsed);
+		uint32 components = entities[index]->GetComponentCount(Component::PARTICLE_EFFECT_COMPONENT);
+		for(uint32 c = 0; c < size; ++c)
+		{
+			ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(entities[index]->GetComponent(Component::PARTICLE_EFFECT_COMPONENT, c));
+			component->EffectUpdate(timeElapsed);
+		}
 	}
 }
 
 void ParticleEffectSystem::RemoveEntity(Entity * entity)
 {
-	BaseProcessSystem::RemoveEntity(entity);
-	--size;
-	--index;
+	entities.push_back(entity);
+}
+
+void ParticleEffectSystem::AddEntity( Entity * entity )
+{
+	uint32 size = entities.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		if(entities[i] == entity)
+		{
+			entities[i] = entities[size-1];
+			entities.pop_back();
+			return;
+		}
+	}
 }
 
 }

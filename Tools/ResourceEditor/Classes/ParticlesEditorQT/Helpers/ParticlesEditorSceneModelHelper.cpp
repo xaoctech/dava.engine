@@ -170,7 +170,7 @@ Entity* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
 {
 	Entity * newParentNodeParticleEffect = new Entity();
 	newParentNodeParticleEffect->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
-	newParentNodeParticleEffect->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
+	newParentNodeParticleEffect->AddComponent(new ParticleEffectComponent());
 
 	return newParentNodeParticleEffect;
 }

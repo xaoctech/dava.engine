@@ -429,7 +429,7 @@ void SceneCameraSystem::CreateDebugCameras()
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-		topCameraEntity->AddComponent(DAVA::ScopedPtr<DAVA::CameraComponent> (new DAVA::CameraComponent(topCamera)));
+		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
 		scene->InsertBeforeNode(topCameraEntity, scene->GetChild(0));
 
 		// set current default camera

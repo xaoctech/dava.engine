@@ -431,9 +431,8 @@ void CommandAddParticleEmitter::Redo()
 	Entity* emitterEntity = new Entity();
 	emitterEntity->SetName("Particle Emitter");
 	emitterEntity->AddComponent(renderComponent);
-	renderComponent->Release();
 
-	emitterEntity->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));
+	emitterEntity->AddComponent(new LodComponent());
 	effectEntity->AddNode(emitterEntity);
 }
 
