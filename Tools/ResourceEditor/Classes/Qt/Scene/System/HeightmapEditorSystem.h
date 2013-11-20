@@ -34,6 +34,8 @@
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
 
+#include "Render/UniqueStateSet.h"
+
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
@@ -153,6 +155,8 @@ protected:
 	bool IsCanBeEnabled();
 
 	void FinishEditing();
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORSYSTEM__) */

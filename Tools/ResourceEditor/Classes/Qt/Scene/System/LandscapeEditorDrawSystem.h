@@ -34,6 +34,8 @@
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
 
+#include "Render/UniqueStateSet.h"
+
 class LandscapeProxy;
 class HeightmapProxy;
 class NotPassableTerrainProxy;
@@ -129,6 +131,8 @@ private:
 	void DeinitLandscape();
 
 	bool IsNotPassableTerrainCanBeEnabled();
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__) */

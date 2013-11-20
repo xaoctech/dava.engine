@@ -44,6 +44,10 @@
 #include "Render/RenderOptions.h"
 #include <stack>
 
+#include "Render/UniqueStateSet.h"
+#include "Render/RenderStateData.h"
+#include "Render/RenderStateDataUniqueHandler.h"
+
 namespace DAVA
 {
 
@@ -100,6 +104,9 @@ public:
         uint32 shaderBindCount;
         uint32 occludedRenderBatchCount;
         uint32 primitiveCount[PRIMITIVETYPE_COUNT];
+		
+		uint32 renderStateSwitches;
+		uint32 renderStateFullSwitches;
     };
     
     static void Create(Core::eRenderer renderer);
@@ -257,15 +264,6 @@ public:
 	void FlushState();
 
 	void FlushState(RenderState * stateBlock);
-
-	/** 
-	 \brief 
-	 \param[in] sfactor
-	 \param[in] dfactor
-	 */
-	void SetBlendMode(eBlendMode sfactor, eBlendMode dfactor);
-	eBlendMode GetSrcBlend();
-	eBlendMode GetDestBlend();
 	
 	/** 
 	 \brief 
@@ -307,20 +305,6 @@ public:
     void EnableAlphaTest(bool isEnabled);
     void EnableCulling(bool isEnabled);
     */
-    
-    
-    void PushState(uint32 );
-    void AppendState(uint32 state);
-    void RemoveState(uint32 state);
-    void SetState(uint32 state);
-    uint32 GetState();
-    void PopState();
-
-	static RenderState * State();
-    
-    void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
-    void SetCullMode(eFace cullFace);
-	void SetDepthFunc(eCmpFunc func);
     
     
     void SetRenderData(RenderDataObject * object);
@@ -536,7 +520,39 @@ public:
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
+	
+	inline UniqueHandle AddRenderStateData(const RenderStateData* data)
+	{
+		return uniqueRenderStates.MakeUnique(data);
+	}
 
+	inline const RenderStateData* GetRenderStateData(UniqueHandle handle)
+	{
+		return uniqueRenderStates.GetUnique(handle);
+	}
+	
+	inline void ReleaseRenderStateData(UniqueHandle handle)
+	{
+		uniqueRenderStates.ReleaseUnique(handle);
+	}
+	
+	inline UniqueHandle GetDefault2DStateHandle() const
+	{
+		return default2DRenderStateHandle;
+	}
+
+	inline UniqueHandle GetDefault3DStateHandle() const
+	{
+		return default3DRenderStateHandle;
+	}
+
+	void SetDefault2DState();
+	void SetDefault3DState();
+	
+	inline void SetRenderState(UniqueHandle requestedState)
+	{
+		currentState.stateHandle = requestedState;
+	}
 	
 protected:
     //
@@ -610,6 +626,12 @@ protected:
 //	Texture *currentTexture[MAX_TEXTURE_LEVELS];                        // Texture that was set
 //  Shader * shader;
 	
+	UniqueStateSet<RenderStateData, RenderStateDataUniqueHandler> uniqueRenderStates;
+	UniqueHandle default2DRenderStateHandle;
+	UniqueHandle default3DRenderStateHandle;
+	UniqueHandle defaultHardwareState;
+	
+	void InitDefaultRenderStates();
     
     RenderState currentState;
     RenderState hardwareState;

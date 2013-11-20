@@ -580,9 +580,10 @@ void Scene::Draw()
 	{
 		//imposterManager->ProcessQueue();
 	}
-    
-    RenderManager::Instance()->SetCullMode(FACE_BACK);
-    RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
+ 
+	RenderManager::Instance()->SetDefault3DState();
+    //RenderManager::Instance()->SetCullMode(FACE_BACK);
+    //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
     //glDepthMask(GL_TRUE);
@@ -612,7 +613,7 @@ void Scene::Draw()
 		imposterManager->Draw();
 	}
 
-	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
+	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);

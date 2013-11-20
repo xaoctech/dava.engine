@@ -568,8 +568,7 @@ void EditorScene::Draw()
 #define GRIDSTEP 10.0f
 void EditorScene::DrawGrid()
 {
-    uint32 oldState = RenderManager::Instance()->GetState();	
-	RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST); 
+	RenderManager::Instance()->SetDefault3DState();
 	RenderManager::Instance()->SetColor(0.7f, 0.7f, 0.7f, 1.0f);
 	RenderManager::Instance()->FlushState();
 	for (float32 x = -GRIDMAX; x <= GRIDMAX; x+=GRIDSTEP)
@@ -589,8 +588,6 @@ void EditorScene::DrawGrid()
 	RenderHelper::Instance()->DrawLine(Vector3(-GRIDMAX, 0, 0), Vector3(GRIDMAX, 0, 0));
 	RenderHelper::Instance()->DrawLine(Vector3(0, -GRIDMAX, 0), Vector3(0, GRIDMAX, 0));
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	RenderManager::Instance()->SetState(oldState);
 }
 
 void EditorScene::SetDrawGrid(bool newDrawGrid)

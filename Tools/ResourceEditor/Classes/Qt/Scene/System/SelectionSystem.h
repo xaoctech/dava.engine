@@ -40,6 +40,8 @@
 #include "Scene3D/Entity.h"
 #include "UI/UIEvent.h"
 
+#include "Render/UniqueStateSet.h"
+
 class SceneCollisionSystem;
 class HoodSystem;
 
@@ -108,6 +110,9 @@ private:
 	DAVA::Entity *lastSelection;
 
 	ST_PivotPoint curPivotPoint;
+	
+	DAVA::UniqueHandle selectionNormalDrawState;
+	DAVA::UniqueHandle selectionDepthDrawState;
 };
 
 #endif //__SCENE_SELECTION_SYSTEM_H__

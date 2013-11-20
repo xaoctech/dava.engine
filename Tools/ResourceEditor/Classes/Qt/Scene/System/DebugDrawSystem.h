@@ -37,6 +37,8 @@
 #include "Scene/System/CollisionSystem.h"
 #include "Scene/System/SelectionSystem.h"
 
+#include "Render/UniqueStateSet.h"
+
 class Command2;
 class DebugDrawSystem : public DAVA::SceneSystem
 {
@@ -81,6 +83,8 @@ private:
     DAVA::Color objectTypeColor;
 
 	bool hangingObjectsModeEnabled;
+	
+	DAVA::UniqueHandle debugDrawState;
 };
 
 

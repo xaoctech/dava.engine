@@ -35,6 +35,8 @@
 #include "EditorScene.h"
 #include "Commands2/MetaObjModifyCommand.h"
 
+#include "Render/UniqueStateSet.h"
+
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
@@ -129,6 +131,8 @@ protected:
 
 	MetaObjModifyCommand* CreateTileColorCommand(Landscape::eTextureLevel level,
 												 const Color& color);
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */
