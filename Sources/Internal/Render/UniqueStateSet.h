@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Core/Core.h"
 
-#define InvalidUniqueHandle (static_cast<uint32>(-1))
+#define InvalidUniqueHandle (static_cast<DAVA::uint32>(-1))
 
 namespace DAVA
 {
