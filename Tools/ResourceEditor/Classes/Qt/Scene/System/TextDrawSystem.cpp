@@ -73,8 +73,10 @@ void TextDrawSystem::Draw()
 		if(NULL != font)
 		{
 			DAVA::RenderManager::Instance()->SetRenderOrientation(DAVA::Core::SCREEN_ORIENTATION_PORTRAIT);
-			DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::DEFAULT_2D_STATE_BLEND);
+			//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::DEFAULT_2D_STATE_BLEND);
 
+			DAVA::RenderManager::Instance()->SetDefault2DState();
+			
 			DAVA::List<TextToDraw>::iterator i  = listToDraw.begin();
 			DAVA::List<TextToDraw>::iterator end  = listToDraw.end();
 

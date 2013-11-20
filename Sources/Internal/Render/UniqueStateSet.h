@@ -33,6 +33,8 @@
 #include "Base/BaseTypes.h"
 #include "Core/Core.h"
 
+#define InvalidUniqueHandle (static_cast<DAVA::uint32>(-1))
+
 namespace DAVA
 {
 	typedef uint32 UniqueHandle;
@@ -42,8 +44,6 @@ namespace DAVA
 	class UniqueStateSet
 	{
 	public:
-		
-		static const UniqueHandle InvalidHandleValue = static_cast<UniqueHandle>(-1);
 		
 		UniqueStateSet();
 		~UniqueStateSet();
@@ -77,7 +77,7 @@ namespace DAVA
 		{
 			if(refCounters[i])
 			{
-				handler.Release(values[i]);
+				handler.Release(&values[i]);
 				refCounters[i] = 0;
 			}
 		}
@@ -88,8 +88,8 @@ namespace DAVA
 	{
 		DVASSERT(!IsUnique(objRef));
 		
-		size_t freeSlot = UniqueStateSet::InvalidHandleValue;
-		UniqueHandle handle = UniqueStateSet::InvalidHandleValue;
+		size_t freeSlot = InvalidUniqueHandle;
+		UniqueHandle handle = InvalidUniqueHandle;
 		
 		size_t count = values.size();
 		for(size_t i = 0; i < count; ++i)
@@ -106,10 +106,10 @@ namespace DAVA
 			}
 		}
 		
-		if(UniqueStateSet::InvalidHandleValue == handle)
+		if(InvalidUniqueHandle == handle)
 		{
 			if(freeSlotCount > 0 &&
-			   freeSlot != UniqueStateSet::InvalidHandleValue)
+			   freeSlot != InvalidUniqueHandle)
 			{
 				freeSlotCount--;
 				handle = freeSlot;
@@ -143,7 +143,7 @@ namespace DAVA
 	template<typename T, typename V>
 	void UniqueStateSet<T, V>::ReleaseUnique(UniqueHandle handle)
 	{
-		handler.Release(values[handle]);
+		handler.Release(&values[handle]);
 		refCounters[handle] -= 1;
 		
 		if(0 == refCounters[handle])
