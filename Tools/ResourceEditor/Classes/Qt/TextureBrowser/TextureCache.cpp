@@ -83,7 +83,7 @@ void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::
 			while(iter.hasNext())
 			{
 				iter.next();
-				if(iter.value().weight < weightToRemove)
+				if(iter.value().weight < (size_t)weightToRemove)
 				{
 					cacheOriginal.remove(iter.key());
 				}
@@ -114,7 +114,7 @@ void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA:
 			while(iter.hasNext())
 			{
 				iter.next();
-				if(iter.value().weight < weightToRemove)
+				if(iter.value().weight < (size_t)weightToRemove)
 				{
 					cacheConverted[gpu].remove(iter.key());
 				}

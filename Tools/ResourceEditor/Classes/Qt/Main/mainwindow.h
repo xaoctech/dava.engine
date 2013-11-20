@@ -174,7 +174,6 @@ public slots:
 	void OnNotPassableTerrain();
 	
 	void OnAddActionComponent();
-	void OnRemoveActionComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);

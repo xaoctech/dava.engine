@@ -320,7 +320,6 @@ void LandscapeDialog::ActionButtonClicked()
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
-		SafeRelease(component);
 
 		AABBox3 bboxForLandscape;
 		bboxForLandscape.AddPoint(Vector3(-landscapeSize.x/2.f, -landscapeSize.y/2.f, 0.f));
