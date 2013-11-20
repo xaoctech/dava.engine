@@ -62,7 +62,7 @@ public:
 	
 	int GetOriginal(const DAVA::TextureDescriptor *descriptor);
 	int GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConver = false);
-	int Reconvert(DAVA::Scene *scene, bool forceConvert, bool onlyModifiedTextures = false);
+	int Reconvert(DAVA::Scene *scene, bool forceConvert);
 	
 	void WaitConvertedAll(QWidget *parent = NULL);
 	void CancelConvert();

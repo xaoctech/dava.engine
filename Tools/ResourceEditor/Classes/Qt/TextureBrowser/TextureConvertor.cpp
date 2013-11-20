@@ -119,7 +119,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 	return ret;
 }
 
-int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert, bool onlyModifiedTextures /*= false*/)
+int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 {
 	int ret = 0;
 
@@ -127,7 +127,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert, bool only
 	{
 		// get list of all scenes textures
 		DAVA::Map<DAVA::String, DAVA::Texture *> allTextures;
-		SceneHelper::EnumerateTextures(scene, allTextures, onlyModifiedTextures);
+		SceneHelper::EnumerateTextures(scene, allTextures);
 
 		// add jobs to convert every texture
 		if(allTextures.size() > 0)
