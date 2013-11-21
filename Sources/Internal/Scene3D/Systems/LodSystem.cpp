@@ -38,6 +38,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Platform/SystemTimer.h"
 #include "Core/PerformanceSettings.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -51,6 +52,8 @@ LodSystem::LodSystem(Scene * scene)
 
 void LodSystem::Process()
 {
+    TIME_PROFILE("LodSystem::Process");
+    
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	float32 currFps = 1.0f/timeElapsed;
 
