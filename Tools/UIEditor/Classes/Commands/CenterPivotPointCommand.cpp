@@ -26,44 +26,27 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef ___SPEEDTREE_LEAF_BATCH_H__
-#define ___SPEEDTREE_LEAF_BATCH_H__
 
-#include "Render/Highlevel/RenderBatch.h"
 
-namespace DAVA
+#include "CenterPivotPointCommand.h"
+
+CenterPivotPointCommand::CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty) :
+	ChangePropertyCommand<QPointF>(baseMetadata, PropertyGridWidgetData(alignProperty,  false, true), QPointF())
 {
-
-class Texture;
-class Camera;
-class Shader;
-class SpeedTreeLeafBatch : public RenderBatch
-{
-public:
-    SpeedTreeLeafBatch(DAVA::Texture * tex = 0);
-    virtual ~SpeedTreeLeafBatch();
-
-    void SetTexture(Texture * texture);
-
-    virtual void Draw(DAVA::Camera * camera);
-
-    virtual RenderBatch * Clone(RenderBatch * dstNode = 0);
-    virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
-    virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
-
-private:
-    Shader * shader;
-    Texture * texture;
-
-    int32 uniformWorldTranslate;
-    int32 uniformTexture0;
-    int32 uniformWorldScale;
-
-public:
-    INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);
-
-};
-
+	// Particular Pivot Point value is not needed here - it will be postprocessed for each control in the 
+	// ChangePropertyCommandData.
 }
 
-#endif //___SPEEDTREE_BATCH_H__
+QPointF CenterPivotPointCommand::PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue)
+{
+	const HierarchyTreeControlNode* controlNode = dynamic_cast<const HierarchyTreeControlNode*>(
+		HierarchyTreeController::Instance()->GetTree().GetNode((*iter).GetTreeNodeID()));
+	if (!controlNode || !controlNode->GetUIObject())
+	{
+		return (*iter).GetTreeNodePropertyValue();
+	}
+
+	// Calculate the new Pivot Point value controlNode->GetUIObject() - place it in the center of the object.
+	Vector2 pivotPoint = controlNode->GetUIObject()->GetSize();
+	return QPointF(pivotPoint.x / 2.0f, pivotPoint.y / 2.0f);
+}

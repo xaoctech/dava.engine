@@ -303,10 +303,18 @@ void StructureSystem::ReloadInternal(DAVA::Set<DAVA::Entity *> &entitiesToReload
 		if(entitiesToReload.size() > 0)
 		{
 			// try to load new model
-			DAVA::Entity *loadedEntity = Load(newModelPath, true);
+			DAVA::Entity *loadedEntity = LoadInternal(newModelPath, true, true);
 
 			if(NULL != loadedEntity)
 			{
+                //TODO: fix for DF-2732.
+                Landscape * land = FindLandscape(sceneEditor);
+                if(land)
+                {
+                    loadedEntity->SetFog_Kostil(land->GetFogDensity(), land->GetFogColor());
+                }
+                //end of TODO
+                
 				DAVA::Set<DAVA::Entity *>::iterator it = entitiesToReload.begin();
 				DAVA::Set<DAVA::Entity *>::iterator end = entitiesToReload.end();
 
@@ -526,8 +534,8 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 
 			if(optimize)
 			{
-				SceneFileV2 sceneFile;
-				sceneFile.OptimizeScene(parentForOptimize);
+				ScopedPtr<SceneFileV2> sceneFile( new SceneFileV2() );
+				sceneFile->OptimizeScene(parentForOptimize);
 			}
 
 			if(parentForOptimize->GetChildrenCount())
