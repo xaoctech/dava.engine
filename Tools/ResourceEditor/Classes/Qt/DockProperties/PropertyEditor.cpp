@@ -51,7 +51,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	: QtPropertyEditor(parent)
 	, editorMode(EM_NORMAL)
 	, curNode(NULL)
-	, treeStateHelper(this, this->curFilteringModel)
+	, treeStateHelper(this, curModel)
 {
 	if(connectToSceneSignals)
 	{
@@ -71,6 +71,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 
 	SetUpdateTimeout(5000);
 	SetEditTracking(true);
+	SetEditorMode(EM_FAVORITE_EDIT);
 }
 
 PropertyEditor::~PropertyEditor()
@@ -83,13 +84,11 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetEntities(const EntityGroup *selected)
 {
-	/*
 	DAVA::KeyedArchive *ka = new DAVA::KeyedArchive();
 	ResetProperties();
 	AppendProperty("test", new QtPropertyDataDavaKeyedArcive(ka));
 
 	return;
-	*/
 
     //TODO: support multiselected editing
 
@@ -117,7 +116,7 @@ void PropertyEditor::ResetProperties()
 	// Do not clear the current states map - we are using one storage to share opened
 	// Property Editor nodes between the different Scene Nodes.
 	treeStateHelper.SaveTreeViewState(false);
-    
+
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
@@ -235,34 +234,9 @@ QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *objec
 			}
 
 			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
-			if(editorMode == EM_FAVORITE_EDIT)
-			{
-				// don't allow edit values when we are choosing favorites
-				// data->SetEditable(false);
-
-				data->SetCheckable(true);
-
-				// TODO:
-				// ...
-				IsFavorite(ret);
-			}
-
 			ret = AppendProperty(member->Name(), data, parent);
 			OnItemAdded(ret, member->Type());
 		}
-	}
-
-	return ret;
-}
-
-bool PropertyEditor::IsFavorite(const QModelIndex &index) const
-{
-	bool ret = false;
-
-	QtPropertyData *data = GetProperty(index);
-	//while(NULL != data)
-	{
-		// data = data->parent;
 	}
 
 	return ret;
@@ -356,6 +330,60 @@ void PropertyEditor::OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo 
 	}
 }
 
+void PropertyEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+	bool skipEvent = false;
+	QModelIndex index = indexAt(event->pos());
+
+	if(index.parent().isValid() && index.column() == 0)
+	{
+		QRect rect = visualRect(index);
+		rect.setX(0);
+		rect.setWidth(16);
+
+		if(rect.contains(event->pos()))
+		{
+			QtPropertyData *data = GetProperty(index);
+			SetFavorite(data, !IsFavorite(data));
+
+			skipEvent = true;
+		}
+	}
+
+	if(!skipEvent)
+	{
+		QtPropertyEditor::mouseReleaseEvent(event);
+	}
+}
+
+void PropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+{
+	static QIcon favIcon = QIcon(":/QtIcons/star.png");
+	static QIcon nfavIcon = QIcon(":/QtIcons/star_empty.png");
+
+	QStyleOptionViewItemV4 opt = option;
+	if(index.parent().isValid() && editorMode == EM_FAVORITE_EDIT)
+	{
+		QtPropertyData *data = GetProperty(index);
+		if(NULL != data)
+		{
+			if(!IsParentFavorite(data))
+			{
+				if(IsFavorite(data))
+				{
+					favIcon.paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
+				}
+				else
+				{
+					nfavIcon.paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
+				}
+			}
+		}
+	}
+
+	QtPropertyEditor::drawRow(painter, opt, index);
+}
+
 void PropertyEditor::ActionToggleAdvanced()
 {
 	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
@@ -393,3 +421,33 @@ void PropertyEditor::ActionBakeTransform()
 	}
 }
 
+bool PropertyEditor::IsFavorite(QtPropertyData *data) const
+{
+	return data->GetUserData().toBool();
+}
+
+bool PropertyEditor::IsParentFavorite(QtPropertyData *data) const
+{
+	bool ret = false;
+
+	QtPropertyData *parent = data->Parent();
+	while(NULL != parent)
+	{
+		if(IsFavorite(parent))
+		{
+			ret = true;
+			break;
+		}
+		else
+		{
+			parent = parent->Parent();
+		}
+	}
+
+	return ret;
+}
+
+void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
+{
+	data->SetUserData(favorite);
+}

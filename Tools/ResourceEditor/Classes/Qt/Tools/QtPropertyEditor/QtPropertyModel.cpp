@@ -98,6 +98,7 @@ int QtPropertyModel::columnCount(const QModelIndex & parent /* = QModelIndex() *
 QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::DisplayRole */) const
 {
 	QVariant ret;
+
 	QtPropertyData *data = itemFromIndex(index);
 	if(NULL != data)
 	{
@@ -117,9 +118,20 @@ QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::Disp
 				break;
 			}
 		}
-		else
+		else if(index.column() == 1)
 		{
 			ret = data->data(role);
+		}
+		else
+		{
+			switch(role)
+			{
+			case Qt::DisplayRole:
+				ret = data->GetUserData();
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -139,6 +151,9 @@ QVariant QtPropertyModel::headerData(int section, Qt::Orientation orientation, i
 			break;
 		case 1:
 			ret = "Value";
+			break;
+		case 3:
+			ret = "#";
 			break;
 		default:
 			break;
@@ -262,10 +277,11 @@ void QtPropertyModel::UpdateStructureInternal(const QModelIndex &i)
 	QtPropertyData *data = itemFromIndex(i);
 	if(NULL != data)
 	{
-		if(data->UpdateValue())
-		{
-			emit dataChanged(i, i);
-		}
+		data->UpdateValue();
+		//if(data->UpdateValue())
+		//{
+		//	emit dataChanged(i, i);
+		//}
 
 		for(int row = 0; row < rowCount(i); ++row)
 		{
@@ -283,7 +299,7 @@ void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 		{
 			if(reason != QtPropertyData::VALUE_EDITED)
 			{
-				emit dataChanged(index, index);
+				emit dataChanged(index.sibling(index.row(), 0), index);
 			}
 
 			emit PropertyChanged(index);
@@ -304,7 +320,7 @@ void QtPropertyModel::DataAboutToBeAdded(QtPropertyData *parent, int first, int 
 		if(index.isValid())
 		{
 			// same index, but column will be 0
-			index = createIndex(index.row(), 0, index.internalPointer());
+			index = index.sibling(index.row(), 0);
 		}
 
 		beginInsertRows(index, first, last);
@@ -324,7 +340,7 @@ void QtPropertyModel::DataAboutToBeRemoved(QtPropertyData *parent, int first, in
 		if(index.isValid())
 		{
 			// same index, but column will be 0
-			index = createIndex(index.row(), 0, index.internalPointer());
+			index = index.sibling(index.row(), 0);
 		}
 
 		beginRemoveRows(index, first, last);

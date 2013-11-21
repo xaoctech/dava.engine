@@ -55,15 +55,18 @@ QtPropertyData::~QtPropertyData()
 		QtPropertyData *data = childrenData.at(i);
 		if(NULL != data)
 		{
-			delete data;
+			data->parent = NULL;
+			data->deleteLater();
 		}
 	}
+
+	childrenData.clear();
 
 	for (int i = 0; i < optionalWidgets.size(); i++)
 	{
 		if(NULL != optionalWidgets.at(i).widget)
 		{
-			delete optionalWidgets.at(i).widget;
+			optionalWidgets.at(i).widget->deleteLater();
 		}
 	}
 }
@@ -192,12 +195,37 @@ QVariant QtPropertyData::GetAlias() const
 
 void QtPropertyData::SetName(const QString &name)
 {
+	if(NULL != parent)
+	{
+		int i = parent->ChildIndex(this);
+		if(i >= 0)
+		{
+			// update name in parent list
+			parent->childrenNames[i] = name;
+		}
+	}
+
 	curName = name;
 }
 
 QString QtPropertyData::GetName() const
 {
 	return curName;
+}
+
+QString QtPropertyData::GetPath() const
+{
+	QString path = curName;
+
+	// search top level parent
+	const QtPropertyData *parent = this;
+	while(NULL != parent->Parent())
+	{
+		parent = parent->Parent();
+		path = parent->curName + "/" + path;
+	}
+
+	return path;
 }
 
 void QtPropertyData::SetIcon(const QIcon &icon)
@@ -269,16 +297,12 @@ bool QtPropertyData::IsCheckable() const
 
 void QtPropertyData::SetChecked(bool checked)
 {
-	// TODO:
-	// ...
+	setData(QVariant(checked), Qt::CheckStateRole);
 }
 
 bool QtPropertyData::IsChecked() const
 {
-	// TODO:
-	// ...
-
-	return false;
+	return data(Qt::CheckStateRole).toBool();
 }
 
 void QtPropertyData::SetEditable(bool editable)
@@ -294,6 +318,21 @@ bool QtPropertyData::IsEditable() const
 void QtPropertyData::SetEnabled(bool enabled)
 {
 	(enabled) ? (curFlags |= Qt::ItemIsEnabled) : (curFlags &= ~Qt::ItemIsEnabled);
+}
+
+void QtPropertyData::SetUserData(const QVariant &data)
+{
+	userData = data;
+
+	if(NULL != model)
+	{
+		model->DataChanged(this, VALUE_SET);
+	}
+}
+
+QVariant QtPropertyData::GetUserData() const
+{
+	return userData;
 }
 
 bool QtPropertyData::IsEnabled() const
@@ -442,11 +481,12 @@ void QtPropertyData::ChildRemove(int index)
 		}
 
 		QtPropertyData *data = childrenData.at(index);
+
 		childrenData.removeAt(index);
 		childrenNames.removeAt(index);
 
-		delete data;
-		data = NULL;
+		data->parent = NULL;
+		data->deleteLater();
 
 		if(NULL != model)
 		{
@@ -467,7 +507,8 @@ void QtPropertyData::ChildRemoveAll()
 		for(int i = 0; i < childrenData.size(); ++i)
 		{
 			QtPropertyData *data = childrenData.at(i);
-			delete data;
+			data->parent = NULL;
+			data->deleteLater();
 		}
 
 		childrenData.clear();
