@@ -2,7 +2,7 @@ Material:
     MaterialState:
         Name: "Default"
         Layers: ["OpaqueRenderLayer"]
-        MaterialDefines: ["ALPHABLEND"]
+        MaterialDefines: ["ALPHABLEND", "FLATCOLOR"]
 
         RenderPass:
             Name: "ForwardPass"
