@@ -137,7 +137,9 @@ namespace DAVA
 	template<typename T, typename V>
 	bool UniqueStateSet<T, V>::IsUnique(const T* objRef)
 	{
-		return (objRef >= (&values[0])) && (objRef < ((&values[0]) + values.size()));
+		return ((values.size() == 0) ||
+					((objRef >= (&values[0])) &&
+					(objRef < ((&values[0]) + values.size()))));
 	}
 	
 	template<typename T, typename V>
