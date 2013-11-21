@@ -210,6 +210,11 @@ QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 		ret = (QtPropertyData *)index.internalPointer();
 	}
 
+	if(NULL != ret && ret->model != this)
+	{
+		ret = NULL;
+	}
+
 	return ret;
 }
 

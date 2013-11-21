@@ -226,7 +226,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, childData->GetName().toStdString());
 						curArchive->DeleteKey(childData->GetName().toStdString());
 
-						ChildRemove(i);
+						ChildRemove(childData);
 						EmitDataChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
