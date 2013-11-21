@@ -35,7 +35,7 @@
 #include "QtPropertyData.h"
 #include "QtPropertyWidgets/QtColorLineEdit.h"
 
-QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyFilteringModel *_model, QWidget *parent /* = 0 */)
+QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyModel *_model, QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
 	, model(_model)
 {
@@ -52,12 +52,18 @@ void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 	QStyleOptionViewItemV4 opt = option;
 	initStyleOption(&opt, index);
 
+	// name
+	if(index.column() == 0)
+	{
+
+	}
+
+	// data
 	if(index.column() == 1)
 	{
 		opt.textElideMode = Qt::ElideLeft;
+		recalcOptionalWidgets(index, &opt);
 	}
-
-	recalcOptionalWidgets(index, &opt);
 
 	QStyledItemDelegate::paint(painter, opt, index);
 }

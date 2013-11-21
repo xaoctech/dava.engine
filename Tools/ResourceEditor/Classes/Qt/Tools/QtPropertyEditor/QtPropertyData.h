@@ -82,6 +82,8 @@ public:
 	QString GetName() const;
 	void SetName(const QString &name);
 
+	QString GetPath() const;
+
 	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 	bool UpdateValue();
@@ -102,6 +104,9 @@ public:
 
 	Qt::ItemFlags GetFlags() const;
 	void SetFlags(Qt::ItemFlags flags);
+
+	QVariant GetUserData() const;
+	void SetUserData(const QVariant &data);
 
 	// reset background/foreground/font settings
 	void ResetStyle();
@@ -149,6 +154,7 @@ public:
 
 protected:
 	mutable QVariant curValue;
+	QVariant userData;
 
 	QString curName;
 	Qt::ItemFlags curFlags;

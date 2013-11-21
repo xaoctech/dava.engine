@@ -60,7 +60,7 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
     , activeScene(NULL)
 	, landscape(NULL)
-    , treeStateHelper(this, this->curFilteringModel)
+    , treeStateHelper(this, curModel)
 {
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));

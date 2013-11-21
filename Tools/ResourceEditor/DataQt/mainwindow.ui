@@ -214,7 +214,7 @@
         <enum>QAbstractItemView::SingleSelection</enum>
        </property>
        <property name="indentation">
-        <number>16</number>
+        <number>20</number>
        </property>
       </widget>
      </item>

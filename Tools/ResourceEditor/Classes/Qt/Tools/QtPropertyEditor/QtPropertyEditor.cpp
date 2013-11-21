@@ -40,21 +40,18 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 , updateTimeout(0)
 , doUpdateOnPaintEvent(false)
-, curFilteringModel(NULL)
 {
 	curModel = new QtPropertyModel(viewport());
-	curFilteringModel = new QtPropertyFilteringModel(curModel);
-	curFilteringModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+	setModel(curModel);
 
-	setModel(curFilteringModel);
-
-	curItemDelegate = new QtPropertyItemDelegate(curFilteringModel);
+	curItemDelegate = new QtPropertyItemDelegate(curModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
 	QObject::connect(curModel, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnItemEdited(const QModelIndex &)));
+	QObject::connect(curModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SLOT(OnRowsRemoved(const QModelIndex &, int, int)));
 	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
 }
 
@@ -76,19 +73,12 @@ QModelIndex QtPropertyEditor::AppendHeader(const QString &text)
 
 QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 {
-	if(index.model() == curModel)
-	{
-		return curModel->itemFromIndex(index);
-	}
-	else
-	{
-		return curFilteringModel->itemFromIndex(index);
-	}
+	return curModel->itemFromIndex(index);
 }
 
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
-	curModel->RemoveProperty(curFilteringModel->mapToSource(index));
+	curModel->RemoveProperty(index);
 }
 
 void QtPropertyEditor::RemovePropertyAll()
@@ -98,7 +88,7 @@ void QtPropertyEditor::RemovePropertyAll()
 
 void QtPropertyEditor::SetFilter(const QString &regex)
 {
-	curFilteringModel->setFilterRegExp(regex);
+	//curFilteringModel->setFilterRegExp(regex);
 }
 
 void QtPropertyEditor::SetEditTracking(bool enabled)
@@ -113,6 +103,8 @@ bool QtPropertyEditor::GetEditTracking() const
 
 void QtPropertyEditor::SetUpdateTimeout(int ms)
 {
+	return;
+
 	updateTimeout = ms;
 
 	if(0 != updateTimeout)
@@ -220,5 +212,18 @@ void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 
 void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
-	emit PropertyEdited(curFilteringModel->mapFromSource(index));
+	emit PropertyEdited(index);
+}
+
+void QtPropertyEditor::OnRowsRemoved(const QModelIndex &parent, int first, int last)
+{
+// 	QModelIndexList si = selectedIndexes();
+// 	for(int row = first; row <= last; row++)
+// 	{
+// 		QModelIndex index = curModel->index(row, 0, parent);
+// 		if(si.contains(index))
+// 		{
+// 			printf("111");
+// 		}
+// 	}
 }

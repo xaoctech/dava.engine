@@ -78,7 +78,6 @@ signals:
 
 protected:
 	QtPropertyModel *curModel;
-	QtPropertyFilteringModel *curFilteringModel;
 	QtPropertyItemDelegate *curItemDelegate;
 	
 	int updateTimeout;
@@ -92,6 +91,7 @@ protected:
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
 	virtual void OnItemEdited(const QModelIndex &);
+	virtual void OnRowsRemoved(const QModelIndex &parent, int first, int last);
 	virtual void OnUpdateTimeout();
 };
 

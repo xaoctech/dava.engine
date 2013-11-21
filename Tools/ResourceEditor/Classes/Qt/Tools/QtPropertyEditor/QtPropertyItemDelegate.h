@@ -34,6 +34,7 @@
 #include <QStyledItemDelegate>
 
 class QtPropertyData;
+class QtPropertyModel;
 class QtPropertyFilteringModel;
 
 class QtPropertyItemDelegate : public QStyledItemDelegate
@@ -41,7 +42,7 @@ class QtPropertyItemDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-	QtPropertyItemDelegate(QtPropertyFilteringModel *model, QWidget *parent = 0);
+	QtPropertyItemDelegate(QtPropertyModel *model, QWidget *parent = 0);
 	virtual ~QtPropertyItemDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -58,7 +59,7 @@ public slots:
 
 protected:
 	QStyle *childWidgetsStyle;
-	QtPropertyFilteringModel *model;
+	QtPropertyModel *model;
 
 	void recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const;
 	void hideAllChildOptionalWidgets(QtPropertyData* data);

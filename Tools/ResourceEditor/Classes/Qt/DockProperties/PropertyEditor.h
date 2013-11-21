@@ -82,8 +82,12 @@ protected:
 
 	virtual void OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo *itemMeta);
 	virtual void OnItemEdited(const QModelIndex &index);
+	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+	virtual void mouseReleaseEvent(QMouseEvent *event);
 
-	bool IsFavorite(const QModelIndex &index) const;
+	bool IsFavorite(QtPropertyData *data) const;
+	bool IsParentFavorite(QtPropertyData *data) const;
+	void SetFavorite(QtPropertyData *data, bool favorite);
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__
