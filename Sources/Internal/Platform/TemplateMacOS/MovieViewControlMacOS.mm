@@ -29,22 +29,24 @@
 
 #include "MovieViewControlMacOS.h"
 
-#import <QTKit/QTKit.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AVKit/AVKit.h>
+#import <CoreMedia/CoreMedia.h>
 
 namespace DAVA
 {
 MovieViewControl::MovieViewControl()
 {
-	movieView = [[QTMovieView alloc] init];
+	movieView = [[AVPlayerView alloc] init];
 	NSView* openGLView = (NSView*)Core::Instance()->GetOpenGLView();
-	[openGLView addSubview:(QTMovieView*)movieView];
+	[openGLView addSubview:(AVPlayerView*)movieView];
 }
 	
 MovieViewControl::~MovieViewControl()
 {
-	QTMovieView* player = (QTMovieView*)movieView;
-	[player removeFromSuperview];
-	[player release];
+	AVPlayerView* playerView = (AVPlayerView*)movieView;
+	[playerView removeFromSuperview];
+	[playerView release];
 	
 	movieView = nil;
 }
@@ -56,17 +58,21 @@ void MovieViewControl::Initialize(const Rect& rect)
 
 void MovieViewControl::OpenMovie(const FilePath& moviePath, const OpenMovieParams& params)
 {
-	NSURL* movieURL = [NSURL fileURLWithPath:[NSString stringWithCString:moviePath.GetAbsolutePathname().c_str() encoding:NSASCIIStringEncoding]];
-	QTMovie* movie = [QTMovie movieWithURL:movieURL error:nil];
-	
-	QTMovieView* player = (QTMovieView*)movieView;
-	[player setPreservesAspectRatio: params.scalingMode == scalingModeAspectFit];
-	[player setMovie:movie];
+   	NSURL* movieURL = [NSURL fileURLWithPath:[NSString stringWithCString:moviePath.GetAbsolutePathname().c_str() encoding:NSASCIIStringEncoding]];
+    AVURLAsset *asset = [AVAsset assetWithURL:movieURL];
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
+
+    AVPlayer* player = [[[AVPlayer alloc] init] autorelease];
+    [player replaceCurrentItemWithPlayerItem:playerItem];
+
+    AVPlayerView* playerView = (AVPlayerView*)movieView;
+    [playerView setControlsStyle:AVPlayerViewControlsStyleNone];
+    [playerView setPlayer:player];
 }
 	
 void MovieViewControl::SetRect(const Rect& rect)
 {
-	NSRect movieViewRect = [(QTMovieView*)movieView frame];
+	NSRect movieViewRect = [(AVPlayerView*)movieView frame];
 	
 	movieViewRect.size.width = rect.dx * Core::GetVirtualToPhysicalFactor();
 	movieViewRect.size.height = rect.dy * Core::GetVirtualToPhysicalFactor();
@@ -77,28 +83,37 @@ void MovieViewControl::SetRect(const Rect& rect)
 	movieViewRect.origin.x += Core::Instance()->GetPhysicalDrawOffset().x;
 	movieViewRect.origin.y += Core::Instance()->GetPhysicalDrawOffset().y;
 	
-	[(QTMovieView*)movieView setFrame: movieViewRect];
+	[(AVPlayerView*)movieView setFrame: movieViewRect];
 }
 
 void MovieViewControl::SetVisible(bool isVisible)
 {
-	[(QTMovieView*)movieView setHidden:!isVisible];
+	[(AVPlayerView*)movieView setHidden:!isVisible];
 }
 
 void MovieViewControl::Play()
 {
-	[(QTMovieView*)movieView play:nil];
+    if (movieView)
+    {
+        [[(AVPlayerView*)movieView player] play];
+    }
 }
 
 void MovieViewControl::Stop()
 {
-	Pause();
-	[(QTMovieView*)movieView gotoBeginning:nil];
+    if (movieView)
+    {
+        Pause();
+        [[(AVPlayerView*)movieView player] seekToTime:CMTimeMakeWithSeconds(0, 1)];
+    }
 }
 	
 void MovieViewControl::Pause()
 {
-	[(QTMovieView*)movieView pause:nil];
+    if (movieView)
+    {
+        [[(AVPlayerView*)movieView player] pause];
+    }
 }
 	
 void MovieViewControl::Resume()
@@ -108,13 +123,18 @@ void MovieViewControl::Resume()
 	
 bool MovieViewControl::IsPlaying()
 {
-	QTMovie* curMovie = [(QTMovieView*)movieView movie];
-	if (!curMovie)
-	{
-		return false;
-	}
-	
-	return [curMovie rate] != 0;
+    if (!movieView)
+    {
+        return false;
+    }
+
+    AVPlayer* player = [(AVPlayerView*)movieView player];
+    if (!player)
+    {
+        return false;
+    }
+    
+    return ([player rate] != 0.0f);
 }
 
 }
