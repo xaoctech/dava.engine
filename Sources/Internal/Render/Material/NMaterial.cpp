@@ -333,7 +333,7 @@ namespace DAVA
 		TextureBucket* bucket = textures.at(textureFastName);
 		if(NULL != bucket)
 		{
-			DVASSERT(bucket->index < texturesArray.size());
+			DVASSERT(bucket->index < (int32)texturesArray.size());
 			
 			if(bucket->texture != texture)
 			{

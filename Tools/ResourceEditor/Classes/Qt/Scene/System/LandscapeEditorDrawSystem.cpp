@@ -123,8 +123,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	landscapeRenderer->Release();
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 	
 	++customDrawRequestCount;
 
@@ -142,8 +141,7 @@ void LandscapeEditorDrawSystem::DisableCustomDraw()
 	
 	if (customDrawRequestCount == 0)
 	{
-		landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-		landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(baseLandscape)));
+		landscapeNode->AddComponent(new RenderComponent(baseLandscape));
 		
 		UpdateBaseLandscapeHeightmap();
 	}
@@ -449,8 +447,7 @@ bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 
 	fogWasEnabled = landscapeProxy->IsFogEnabled();
 	landscapeProxy->SetFogEnabled(false);

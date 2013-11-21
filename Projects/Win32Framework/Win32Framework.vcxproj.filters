@@ -1068,9 +1068,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -2132,9 +2129,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2337,7 +2331,7 @@
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp">
       <Filter>Internal\Render\Material</Filter>
