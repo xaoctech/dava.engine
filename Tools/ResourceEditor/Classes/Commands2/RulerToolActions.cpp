@@ -55,9 +55,15 @@ void ActionEnableRulerTool::Redo()
 	
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	
-	if (!success || !sceneEditor->rulerToolSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::RULER_TOOL_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->rulerToolSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 	
 	SceneSignals::Instance()->EmitRulerToolToggled(sceneEditor);

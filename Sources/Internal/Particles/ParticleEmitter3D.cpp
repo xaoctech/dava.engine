@@ -134,9 +134,14 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 	{
 		Matrix4 newTransform = *worldTransformPtr;
 		newTransform._30 = newTransform._31 = newTransform._32 = 0;		
-		particle->direction = particle->direction*newTransform;
-		particle->direction.Normalize();		
-	}
+		float32 speedLength = particle->speed.Length();
+		
+		particle->speed = particle->speed*newTransform;
+		float32 speedLengthAfter = particle->speed.Length();
+		if (speedLengthAfter)
+			particle->speed*=speedLength/speedLengthAfter;
+		
+	}	
 }
 
 void ParticleEmitter3D::CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition,
@@ -213,7 +218,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 
 	particle->position = tempPosition + TransformPerserveLength(directionVector, rotationMatrix);	
 
-	particle->speed = velocity;
+	
 
 	// Calculate Z value.
 	const float32 TANGENT_EPSILON = (float32)(1E-4);
@@ -234,9 +239,14 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 			directionVector.z = -zValue / 2 + (float32)Random::Instance()->RandFloat() * zValue;
 		}
 	}
+	
+	particle->speed = directionVector;
+	float32 dvl = directionVector.Length();
+	if (dvl>EPSILON)
+	{
+		directionVector*=velocity/dvl;
+	}	
 
-	particle->direction = directionVector;
-	particle->direction.Normalize();
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
@@ -293,15 +303,8 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 	
     Vector3 qvq1_v = qv_v.CrossProduct(q1_v) + qv_w*q1_v + q1_w*qv_v;
 	
-	Vector3 speed = qvq1_v * velocity;
-	particle->speed = speed.Length();
-    particle->direction = speed/particle->speed;
-	if (particle->direction.x <= EPSILON && particle->direction.x >= -EPSILON)
-		particle->direction.x = 0.f;
-	if (particle->direction.y <= EPSILON && particle->direction.y >= -EPSILON)
-		particle->direction.y = 0.f;
-	if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
-		particle->direction.z = 0.f;
+	particle->speed = qvq1_v * velocity;
+	
 	
 	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
 	// calculation is incorrect. TODO: return to this code later on.
@@ -397,6 +400,11 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		clonedEmitter->AddLayer(clonedLayer);
 		SafeRelease(clonedLayer);
 	}
+
+	time = 0.0f;
+	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = desiredLodLevel;
 
 	return newObject;
 }

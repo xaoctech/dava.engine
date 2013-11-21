@@ -43,6 +43,8 @@ namespace DAVA
 class ParticleEmitter;
 class ParticleEffectComponent : public Component
 {
+protected:
+    ~ParticleEffectComponent(){};
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 
@@ -68,6 +70,12 @@ public:
 		\param[in] isPaused true if you want to pause the generation, false if you want to resume it
 	 */
 	void Pause(bool isPaused = true);
+
+
+	bool IsPaused();
+
+
+	void Step(float32 delta);
 
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.
@@ -102,14 +110,7 @@ public:
      \brief Returns the total active particles count for the whole effect.
      */
 	int32 GetActiveParticlesCount();
-
-	/**
-     \brief Set/reset the "stop Particle Effect on load" flag.
-	 // TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
-	 // should be loaded in "stopped" state.
-     */
-	DAVA_DEPRECATED(void SetStopOnLoad(bool value));
-	DAVA_DEPRECATED(bool IsStopOnLoad() const);
+	
 
 protected:
 	// Update the duration for all the child nodes.
@@ -138,20 +139,14 @@ private:
 	float32 effectDuration;
 
 	// Count of emitters currently stopped.
-	int32 emittersCurrentlyStopped;
-
-	// Whether the effect should be stopped immediately after load.
-	// TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
-	// should be loaded in "stopped" state.
-	bool stopOnLoad;
+	int32 emittersCurrentlyStopped;		
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_VIEW | I_SAVE)
-        MEMBER(stopWhenEmpty, "stopWhenEmpty",  I_VIEW | I_SAVE)
+		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_VIEW | I_EDIT | I_SAVE)
+        MEMBER(stopWhenEmpty, "stopWhenEmpty",  I_VIEW | I_EDIT | I_SAVE)
 //        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE)
-        MEMBER(effectDuration, "effectDuration",  I_VIEW | I_SAVE)
-		MEMBER(stopOnLoad, "stopOnLoad",  I_VIEW | I_SAVE)
+        MEMBER(effectDuration, "effectDuration",  I_VIEW | I_SAVE)		
 
     );
 };

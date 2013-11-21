@@ -94,6 +94,7 @@ public slots:
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
 	void TabBarCurrentChanged(int index);
 	void TabBarCloseRequest(int index);
+	void TabBarCloseCurrentRequest();
 	void TabBarDataDropped(const QMimeData *data);
 	void DAVAWidgetDataDropped(const QMimeData *data);
 

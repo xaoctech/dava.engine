@@ -165,10 +165,11 @@ public:
 		RETURN_KEY_EMERGENCY_CALL
 	};
 
-    UITextField();
-	
-	UITextField(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+protected:
 	virtual ~UITextField();
+public:
+	UITextField();
+	UITextField(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 	
 	virtual void WillAppear();
 	virtual void DidAppear();

@@ -70,11 +70,10 @@ public:
 		EFR_INTERSECT = 0x2,
 	};
 
-
-
-
-	Frustum();
+protected:
 	~Frustum();
+public:
+	Frustum();
 
  
     //! \brief Set view frustum from matrix information
