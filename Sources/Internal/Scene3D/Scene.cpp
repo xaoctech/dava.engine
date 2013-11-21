@@ -230,6 +230,10 @@ void Scene::AddComponent(Entity * entity, Component * component)
 			{
 				systems[k]->AddEntity(entity);
 			}
+			else
+			{
+				systems[k]->AddComponent(entity, component);
+			}
 		}
     }
 }
@@ -252,6 +256,10 @@ void Scene::RemoveComponent(Entity * entity, Component * component)
 			if (entity->GetComponentCount(component->GetType()) == 1) 
 			{
 				systems[k]->RemoveEntity(entity);
+			}
+			else
+			{
+				systems[k]->RemoveComponent(entity, component);
 			}
 		}
     }

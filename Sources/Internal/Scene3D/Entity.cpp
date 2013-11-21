@@ -252,6 +252,13 @@ namespace DAVA
     
 	void Entity::RemoveComponent(uint32 componentType, uint32 index)
 	{
+		if (scene)
+		{
+			Component *c = GetComponent(componentType, index);
+			if(c)
+				scene->RemoveComponent(this, c);
+		}
+
 		Component* component = NULL;
 		int componentCount = 0;
 		if(USE_VECTOR(componentType))
