@@ -11,7 +11,7 @@ Material:
             RenderState:
                 alphaFunc: "CMP_ALWAYS"
                 alphaFuncCmpValue: 0.0000
-                blendDest: "BLEND_ONE"
+                blendDest: "BLEND_ONE_MINUS_SRC_ALPHA"
                 blendSrc: "BLEND_SRC_ALPHA"
                 cullMode: "FACE_BACK"
                 depthFunc: "CMP_LESS"

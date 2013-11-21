@@ -5,7 +5,7 @@ Material:
 
         RenderPass:
             Name: "ForwardPass"
-            Shader: "~res:/Materials/Shaders/Old/materials"
+            Shader: "~res:/Shaders/Siluette/siluette"
             RenderState:
                 alphaFunc: "CMP_ALWAYS"
                 alphaFuncCmpValue: 0.0000
@@ -14,13 +14,13 @@ Material:
                 cullMode: "FACE_BACK"
                 depthFunc: "CMP_LESS"
                 fillMode: "FILLMODE_SOLID"
-                state: "STATE_DEPTH_WRITE | STATE_STENCIL_TEST | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+                state: "STATE_DEPTH_WRITE | STATE_STENCIL_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
                 stencil:
                     failBack: "STENCILOP_KEEP"
                     failFront: "STENCILOP_KEEP"
-                    funcBack: "CMP_ALWAYS"
+                    funcBack: "CMP_NOTEQUAL"
                     funcFront: "CMP_NOTEQUAL"
-                    mask: -1
+                    mask: 240
                     passBack: "STENCILOP_KEEP"
                     passFront: "STENCILOP_KEEP"
                     ref: 64
