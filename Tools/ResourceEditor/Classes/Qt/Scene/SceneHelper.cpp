@@ -54,7 +54,7 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 			NMaterial *material = renderBatch->GetMaterial();
 			if(NULL != material)
 			{
-				for(int32 t = 0; t < material->GetTextureCount(); ++t)
+				for(int32 t = 0; t < (int32)material->GetTextureCount(); ++t)
 				{
 					DAVA::Texture *texture = material->GetTexture(t);
 					if(NULL != texture)

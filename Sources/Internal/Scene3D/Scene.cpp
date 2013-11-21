@@ -187,18 +187,6 @@ Scene::~Scene()
 
 void Scene::RegisterNode(Entity * node)
 {
-    Light * light = dynamic_cast<Light*>(node);
-    if (light)
-    {
-        lights.insert(light);
-    }
-
-	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
-	if(imposter)
-	{
-		RegisterImposter(imposter);
-	}
-    
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
@@ -221,48 +209,51 @@ void Scene::UnregisterNode(Entity * node)
         if (needRemove)
             systems[k]->RemoveEntity(node);
     }
-
-    Light * light = dynamic_cast<Light*>(node);
-    if (light)
-        lights.erase(light);
-
-	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
-	if(imposter)
-	{
-		UnregisterImposter(imposter);
-	}
 }
     
 void Scene::AddComponent(Entity * entity, Component * component)
 {
-    uint32 oldComponentFlags = entity->componentFlags;
-    entity->componentFlags |= (1 << component->GetType());
-    uint32 systemsCount = systems.size();
+	DVASSERT(entity && component);
+
+    uint32 componentFlags = entity->componentFlags;
+	uint32 componentType = 1 << component->GetType();
+
+	uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
         uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
-        bool needAdd = ((requiredComponents & entity->componentFlags) == requiredComponents);
-        
-        if ((!wasBefore) && (needAdd))
-            systems[k]->AddEntity(entity);
+		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
+		bool componentForSystem = ((requiredComponents & componentType) == componentType);
+		if(entityForSystem && componentForSystem) 
+		{
+			if (entity->GetComponentCount(component->GetType()) == 1)
+			{
+				systems[k]->AddEntity(entity);
+			}
+		}
     }
 }
     
 void Scene::RemoveComponent(Entity * entity, Component * component)
 {
-    uint32 oldComponentFlags = entity->componentFlags;
-    entity->componentFlags &= ~(1 << component->GetType());
-    
+	DVASSERT(entity && component);
+
+	uint32 componentFlags = entity->componentFlags;
+	uint32 componentType = 1 << component->GetType();
+
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
-        bool shouldBeNow = ((requiredComponents & entity->componentFlags) == requiredComponents);
-        
-        if ((wasBefore) && (!shouldBeNow))
-            systems[k]->RemoveEntity(entity);
+		uint32 requiredComponents = systems[k]->GetRequiredComponents();
+		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
+		bool componentForSystem = ((requiredComponents & componentType) == componentType);
+		if(entityForSystem && componentForSystem) 
+		{
+			if (entity->GetComponentCount(component->GetType()) == 1) 
+			{
+				systems[k]->RemoveEntity(entity);
+			}
+		}
     }
 }
     

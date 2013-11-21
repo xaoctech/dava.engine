@@ -251,7 +251,7 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, S
 
 	if (GetLodComponent(ownerNode) == NULL)
 	{
-		ownerNode->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));		
+		ownerNode->AddComponent(new LodComponent());
 	}
 
 	ValidateParticleEmitter(emitter, errorsLog);
@@ -260,8 +260,6 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, S
 
 bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog)
 {
-	
-
 	if (!emitter)
 	{
 		return true;
@@ -269,7 +267,7 @@ bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<Strin
 
 	//validate layers
 	bool validationResult = true;
-	for (int32 i = 0; i<emitter->GetLayers().size(); ++i)
+	for (int32 i = 0; i < (int32)emitter->GetLayers().size(); ++i)
 	{
 		if (emitter->GetLayers()[i]->IsFrameBlendEnabled()&&(emitter->GetLayers()[i]->GetSprite()->GetFrameCount()==1))
 		{
@@ -337,7 +335,7 @@ void SceneValidator::ValidateMaterial(NMaterial *material, Set<String> &errorsLo
 {
 	if(NULL != material)
 	{
-		for(int32 iTex = 0; iTex < material->GetTextureCount(); ++iTex)
+		for(uint32 iTex = 0; iTex < material->GetTextureCount(); ++iTex)
 		{
 			Texture *texture = material->GetTexture(iTex);
 			if(texture)

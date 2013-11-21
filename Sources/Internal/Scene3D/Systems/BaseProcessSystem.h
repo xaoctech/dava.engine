@@ -41,7 +41,7 @@ class Component;
 class BaseProcessSystem : public SceneSystem
 {
 public:
-	BaseProcessSystem(uint32 componentId, Scene * scene);	
+	DAVA_DEPRECATED(BaseProcessSystem(uint32 componentId, Scene * scene));	 // VK: not need for nmaterials. Do not delete file until merge with development
 
 	virtual void AddEntity(Entity * entity);
 	virtual void RemoveEntity(Entity * entity);
