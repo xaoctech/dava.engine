@@ -38,9 +38,47 @@
 #include "ParticleEmitter3D.h"
 #include "Render/Highlevel/RenderFastNames.h"
 
+#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 16)
+
 namespace DAVA
 {
 
+	
+static const uint32 BLEND_KEYS[] =
+{
+	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
+	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA)
+};
+	
+static const FastName BLEND_MATERIAL_NAMES[] =
+{
+	FastName("Global.Textured.VertexColor.Particles0"),
+	FastName("Global.Textured.VertexColor.Particles1")
+};
+
+static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
+{
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1")
+};
+	
+
+const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameBlendEnabled)
+{
+	uint32 blendKey = MAKE_BLEND_KEY(src, dst);
+	for(uint32 i = 0; i < COUNT_OF(BLEND_KEYS); ++i)
+	{
+		if(BLEND_KEYS[i] == blendKey)
+		{
+			return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[i] : BLEND_MATERIAL_NAMES[i];
+		}
+	}
+	
+	//VI: fallback to default material
+	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
+}
+
+	
 Vector<uint16> ParticleLayer3D::indices;
 
 ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
@@ -50,8 +88,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	this->emitter = parent;
 	
 	material = MaterialSystem::CreateNamed();
-	material->SetChangeListener(this);
-	material->SwitchParent(FastName("Global.Textured.VertexColor.ParticlesBlend"));
+	material->SwitchParent(FindParticleMaterial(BLEND_SRC_ALPHA, BLEND_ONE, false));
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
@@ -60,7 +97,6 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
 ParticleLayer3D::~ParticleLayer3D()
 {
-	material->SetChangeListener(NULL);
 	SafeRelease(renderData);
 	
 	SafeRelease(material);
@@ -463,16 +499,11 @@ void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 void ParticleLayer3D::SetFrameBlend(bool enable)
 {
 	ParticleLayer::SetFrameBlend(enable);
-	if (enableFrameBlend)
+	
+	UpdateBlendState();// this will choose appropriate material
+	
+	if (!enableFrameBlend)
 	{
-		material->SwitchParent(FastName("Global.Textured.VertexColor.ParticlesFrameBlend"));
-		UpdateBlendState();
-	}
-	else
-	{
-		material->SwitchParent(FastName("Global.Textured.VertexColor.ParticlesBlend"));
-		UpdateBlendState();
-		
 		SafeRelease(renderData); //to remove unnecessary vertex streams
 		renderData = new RenderDataObject();
 		textures2.resize(0);
@@ -484,7 +515,11 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 
 void ParticleLayer3D::UpdateBlendState()
 {
-	//TODO: add material switching
+	if(material)
+	{
+		const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
+		material->SwitchParent(parentName);
+	}
 	
 	/*if(material &&
 	   material->GetParent() != NULL)
@@ -537,15 +572,5 @@ void ParticleLayer3D::CreateInnerEmitter()
 	SafeRelease(this->innerEmitter);
 	this->innerEmitter = new ParticleEmitter3D();
 }
-	
-void ParticleLayer3D::ParentChanged(NMaterial* material)
-{
-	UpdateBlendState();
-}
-	
-void ParticleLayer3D::SystemChanged(NMaterial* material)
-{
-	//do nothing here
-}
-
+		
 };
