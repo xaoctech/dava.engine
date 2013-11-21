@@ -266,6 +266,7 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 // Application core 
 #include "Core/Core.h"

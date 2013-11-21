@@ -1,12 +1,7 @@
-#define NUM_TEX_COORDS 1
-#define ATTRIBUTE_POSITION
-#define ATTRIBUTE_NORMAL
-#define ATTRIBUTE_TEX0
-#define TEX_COORD0_MODIFICATION_CODE
-#define TEX_COORD1_MODIFICATION_CODE
 //#define VERTEX_FOG
 //#define VERTEX_LIT
-#define LIGHT_NUM 2
+#define LIGHT_NUM 1
+#define DISTANCE_ATTENUATION
 
 
 #ifdef GL_ES
@@ -18,56 +13,55 @@ precision highp float;
 #define mediump
 #endif
 
-attribute vec4 inPosition;
+attribute highp vec4 inPosition;
 
 #if defined(ATTRIBUTE_NORMAL) 
-attribute vec3 inNormal;
+attribute mediump vec3 inNormal;
 #endif
 
 #ifdef ATTRIBUTE_TEX0
-attribute vec2 inTexCoord0;
+attribute mediump vec2 inTexCoord0;
 #endif 
 
 #ifdef ATTRIBUTE_TEX1
-attribute vec2 inTexCoord1;
+attribute mediump vec2 inTexCoord1;
 #endif
 
 #ifdef ATTRIBUTE_TEX2
-attribute vec2 inTexCoord2;
+attribute mediump vec2 inTexCoord2;
 #endif
 
 #ifdef ATTRIBUTE_TEX3
-attribute vec2 inTexCoord2;
+attribute mediump vec2 inTexCoord2;
 #endif
 
 #ifdef ATTRIBUTE_COLOR
-attribute vec4 inColor;
+attribute lowp vec4 inColor;
 #endif
 
 #ifdef ATTRIBUTE_TANGENT
-attribute vec3 inTangent;
+attribute mediump vec3 inTangent;
 #endif
 
 // UNIFORMS
-uniform mat4 modelViewProjectionMatrix;
+uniform mediump mat4 modelViewProjectionMatrix;
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
-uniform mat4 modelViewMatrix;
-uniform mat3 normalMatrix;
+uniform mediump mat4 modelViewMatrix;
+uniform mediump mat3 normalMatrix;
 #endif 
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
-uniform vec3 lightPosition[LIGHT_NUM];
-uniform float lightIntensity[LIGHT_NUM]; 
+uniform mediump vec3 lightPosition[LIGHT_NUM];
+uniform mediump float lightIntensity[LIGHT_NUM];
 #endif
 
-
 #ifdef VERTEX_LIT
-uniform float materialSpecularShininess;
+uniform mediump float materialSpecularShininess;
 #endif
 
 #if defined(VERTEX_FOG)
-uniform float fogDensity;
+uniform mediump float fogDensity;
 #endif
 
 #if defined(MATERIAL_LIGHTMAP)
@@ -75,28 +69,24 @@ uniform mediump vec2 uvOffset;
 uniform mediump vec2 uvScale;
 #endif
 
-
-// OUTPUT ATTRIBUTES
-varying vec2 varTexCoord[NUM_TEX_COORDS];
-
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
 #endif
 
 #if defined(PIXEL_LIT)
-varying vec3 varLightVec;
-varying vec3 varHalfVec;
-varying vec3 varEyeVec;
-varying float varPerPixelAttenuation;
+varying mediump vec3 varLightVec;
+varying mediump vec3 varHalfVec;
+varying mediump vec3 varEyeVec;
+varying mediump float varPerPixelAttenuation;
 #endif
 
 #if defined(VERTEX_FOG)
-varying float varFogFactor;
+varying mediump float varFogFactor;
 #endif
 
 #if defined(MATERIAL_LIGHTMAP_DEBUG)
-uniform float lightmapSize;
+uniform mediump float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
 
@@ -104,15 +94,19 @@ varying lowp float varLightmapSize;
 varying lowp vec4 varVertexColor;
 #endif
 
-//#define LAMBERT_DIFFUSE(lightPosition, 
+ADDITIONAL_UNIFORMS
+ADDITIONAL_VARYINGS
+
+
+//#define APPLY_LIGHT_SOURCE(index,
 
 
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
 #if defined(VERTEX_LIT)
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
-    vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
+    mediump vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+    mediump vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     
     
     vec3 lightDir = lightPosition[0] - eyeCoordsPosition;
@@ -152,7 +146,7 @@ void main()
 
     vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
     
-    vec3 lightDir = lightPosition0 - eyeCoordsPosition;
+    vec3 lightDir = lightPosition[0] - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
     lightDir = normalize(lightDir);
     
@@ -201,19 +195,21 @@ void main()
 	varVertexColor = inColor;
 #endif
 
-#if defined(ATTRIBUTE_TEX0)
-	TEX_COORD0_MODIFICATION_CODE
-	varTexCoord[0] = inTexCoord0;
-#endif
-
-#if defined(ATTRIBUTE_TEX1)
-	TEX_COORD1_MODIFICATION_CODE
-	#if defined(MATERIAL_LIGHTMAP)
-		varTexCoord[1] = uvScale * inTexCoord1 + uvOffset;
-	#else
-		varTexCoord[1] = inTexCoord1;
-	#endif
-#endif
+    
+    GRAPH_CUSTOM_VERTEX_CODE
+//#if defined(ATTRIBUTE_TEX0)
+//	TEX_COORD0_MODIFICATION_CODE
+//	varTexCoord[0] = inTexCoord0 + 0.25 * globalTime;
+//#endif
+//
+//#if defined(ATTRIBUTE_TEX1)
+//	TEX_COORD1_MODIFICATION_CODE
+//	#if defined(MATERIAL_LIGHTMAP)
+//		varTexCoord[1] = uvScale * inTexCoord1 + uvOffset;
+//	#else
+//		varTexCoord[1] = inTexCoord1;
+//	#endif
+//#endif
 
 #if defined(MATERIAL_LIGHTMAP_DEBUG)
 	varLightmapSize = lightmapSize;
