@@ -56,6 +56,7 @@ QtPropertyData::~QtPropertyData()
 		if(NULL != data)
 		{
 			data->parent = NULL;
+			data->model = NULL;
 			data->deleteLater();
 		}
 	}
@@ -486,6 +487,7 @@ void QtPropertyData::ChildRemove(int index)
 		childrenNames.removeAt(index);
 
 		data->parent = NULL;
+		data->model = NULL;
 		data->deleteLater();
 
 		if(NULL != model)
@@ -508,6 +510,7 @@ void QtPropertyData::ChildRemoveAll()
 		{
 			QtPropertyData *data = childrenData.at(i);
 			data->parent = NULL;
+			data->model = NULL;
 			data->deleteLater();
 		}
 
