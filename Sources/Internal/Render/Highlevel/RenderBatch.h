@@ -130,6 +130,7 @@ public:
 	
 	virtual void AttachToRenderSystem(RenderSystem* rs);
 
+    pointer_size layerSortingKey;
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
@@ -153,9 +154,12 @@ protected:
 	AABBox3 aabbox;
     OcclusionQuery * occlusionQuery;
     int32 queryRequested;
+    uint32 queryRequestFrame;
+    uint32 lastFraemDrawn;
 
 	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     
+
 public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
