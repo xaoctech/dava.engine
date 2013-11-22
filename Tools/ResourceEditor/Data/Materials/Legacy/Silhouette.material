@@ -5,7 +5,7 @@ Material:
 
         RenderPass:
             Name: "ForwardPass"
-            Shader: "~res:/Shaders/Siluette/siluette"
+            Shader: "~res:/Materials/Shaders/Siluette/siluette"
             RenderState:
                 alphaFunc: "CMP_ALWAYS"
                 alphaFuncCmpValue: 0.0000
