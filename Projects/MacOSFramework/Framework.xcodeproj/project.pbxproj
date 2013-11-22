@@ -871,7 +871,6 @@
 		C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */; };
 		C7FBCFB516CD1FE5006F1B3F /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */; };
 		C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */; };
-		C7FBCFB716CD1FE5006F1B3F /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAB16CD1FE5006F1B3F /* AutotestingSystemYaml.cpp */; };
 		C7FBCFB816CD1FE5006F1B3F /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFAC16CD1FE5006F1B3F /* AutotestingSystemYaml.h */; };
 		C7FBCFB916CD1FE5006F1B3F /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAD16CD1FE5006F1B3F /* Rect_wrap.cxx */; };
 		C7FBCFBA16CD1FE5006F1B3F /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAE16CD1FE5006F1B3F /* RectSwig.cpp */; };
@@ -2255,7 +2254,6 @@
 		C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
 		C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
 		C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
-		C7FBCFAB16CD1FE5006F1B3F /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
 		C7FBCFAC16CD1FE5006F1B3F /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
 		C7FBCFAD16CD1FE5006F1B3F /* Rect_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect_wrap.cxx; sourceTree = "<group>"; };
 		C7FBCFAE16CD1FE5006F1B3F /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
@@ -5764,7 +5762,6 @@
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
 				C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */,
 				C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */,
-				C7FBCFB716CD1FE5006F1B3F /* AutotestingSystemYaml.cpp in Sources */,
 				C7FBCFB916CD1FE5006F1B3F /* Rect_wrap.cxx in Sources */,
 				C7FBCFBA16CD1FE5006F1B3F /* RectSwig.cpp in Sources */,
 				C7FBCFBB16CD1FE5006F1B3F /* UIControl_wrap.cxx in Sources */,
