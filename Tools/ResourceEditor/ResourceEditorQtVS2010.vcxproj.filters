@@ -1389,9 +1389,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItem.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClCompile>
@@ -3534,9 +3531,6 @@
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItem.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.h">

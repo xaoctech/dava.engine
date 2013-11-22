@@ -44,7 +44,7 @@ protected:
 	void *object;
 	const DAVA::InspColl *collection;
 
-	virtual QVariant GetValueInternal();
+	virtual QVariant GetValueInternal() const;
 };
 
 #endif // __QT_PROPERTY_DATA_INTRO_COLLECTION_H__

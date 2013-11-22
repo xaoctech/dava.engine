@@ -33,11 +33,9 @@
 
 #include <QTreeView>
 #include <QTimer>
+#include "QtPropertyModel.h"
+#include "QtPropertyData.h"
 
-class QtPropertyItem;
-class QtPropertyData;
-class QtPropertyModel;
-class QtPropertyFilteringModel;
 class QtPropertyItemDelegate;
 
 class QtPropertyEditor : public QTreeView
@@ -45,36 +43,41 @@ class QtPropertyEditor : public QTreeView
 	Q_OBJECT
 
 public:
+	enum Style
+	{
+		DEFAULT_STYLE = 0,
+		HEADER_STYLE,
+
+		USER_STYLE
+	};
+
 	QtPropertyEditor(QWidget *parent = 0);
 	~QtPropertyEditor();
 
-	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
-	QPair<QtPropertyItem*, QtPropertyItem*> GetProperty(const QString &name, QtPropertyItem* parent = NULL) const;
-	QtPropertyData * GetPropertyData(const QString &key, QtPropertyItem *parent = NULL) const;
+	QModelIndex AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent = QModelIndex());
+	QModelIndex AppendHeader(const QString &text);
 
-	bool GetEditTracking();
+	QtPropertyData * GetProperty(const QModelIndex &index) const;
+
+	bool GetEditTracking() const;
 	void SetEditTracking(bool enabled);
 
-	void RemoveProperty(QtPropertyItem* item);
+	void RemoveProperty(const QModelIndex &index);
 	void RemovePropertyAll();
-
-	void Expand(QtPropertyItem *);
 
 	void SetUpdateTimeout(int ms);
 	int GetUpdateTimeout();
-
-	QtPropertyItem* AddHeader(const char *text);
 
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
 
 signals:
-	void PropertyChanged(const QString &name, QtPropertyData *data);
-	void PropertyEdited(const QString &name, QtPropertyData *data);
+	// void PropertyChanged(const QModelIndex &index); // SZ: not implemented because is never used. will be implemented on request
+	void PropertyEdited(const QModelIndex &index);
 
 protected:
-	QtPropertyFilteringModel *curFilteringModel;
+	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;
 	
 	int updateTimeout;
@@ -83,15 +86,13 @@ protected:
 
 	virtual void paintEvent(QPaintEvent * event);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+	virtual void ApplyStyle(QtPropertyData *data, int style);
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
+	virtual void OnItemEdited(const QModelIndex &);
+	virtual void OnRowsRemoved(const QModelIndex &parent, int first, int last);
 	virtual void OnUpdateTimeout();
-	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
-
-private:
-	QtPropertyModel *curModel;
-
 };
 
 #endif // __QT_PROPERTY_VIEW_H__
