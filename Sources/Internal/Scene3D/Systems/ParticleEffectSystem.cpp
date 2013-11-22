@@ -37,9 +37,10 @@ namespace DAVA
 {
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
-:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+	:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+	,	index(0)
+	,	size(0)
 {
-
 }
 
 void ParticleEffectSystem::Process()
@@ -54,11 +55,17 @@ void ParticleEffectSystem::Process()
 	}
 }
 
-void ParticleEffectSystem::RemoveEntity(Entity * entity)
+void ParticleEffectSystem::RemoveComponent( Entity * entity, Component * component )
 {
-	BaseProcessSystem::RemoveEntity(entity);
-	--size;
+	BaseProcessSystem::RemoveComponent(entity, component);
+
+	//Effects can be deleted at EffectUpdate()
 	--index;
+	--size;
 }
+
+
+
+
 
 }

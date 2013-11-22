@@ -41,6 +41,30 @@ ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
 {
     shadowRect = ShadowRect::Create();
 	blendMode = MODE_BLEND_ALPHA;
+	
+	RenderStateData stateData = {0};
+	
+	stateData.state =	RenderStateData::STATE_BLEND |
+						RenderStateData::STATE_STENCIL_TEST |
+						RenderStateData::STATE_COLORMASK_ALL;
+	stateData.sourceFactor = BLEND_DST_COLOR;
+	stateData.destFactor = BLEND_ZERO;
+	stateData.depthFunc = CMP_LEQUAL;
+	stateData.cullMode = FACE_BACK;
+	stateData.fillMode = FILLMODE_SOLID;
+	stateData.stencilFail[0] = stateData.stencilFail[1] = STENCILOP_KEEP;
+	stateData.stencilPass[0] = stateData.stencilPass[1] = STENCILOP_KEEP;
+	stateData.stencilZFail[0] = stateData.stencilZFail[1] = STENCILOP_KEEP;
+	stateData.stencilFunc[0] = stateData.stencilFunc[1] = CMP_NOTEQUAL;
+	stateData.stencilMask = 15;
+	stateData.stencilRef = 0;
+	
+	blendMultiplyState = RenderManager::Instance()->AddRenderStateData(&stateData);
+	
+	stateData.sourceFactor = BLEND_SRC_ALPHA;
+	stateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+
+	blendAlphaState = RenderManager::Instance()->AddRenderStateData(&stateData);
 }
 
 ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
@@ -66,24 +90,26 @@ void ShadowVolumeRenderPass::Draw(Camera * camera, RenderPassBatchArray * render
             shadowVolumesLayer->Draw(name, camera, renderLayerBatchArray);
 			
 			//3rd pass - draw full screen shadow rect
-			eBlendMode sFactor = RenderManager::Instance()->GetSrcBlend();
-			eBlendMode dFactor = RenderManager::Instance()->GetDestBlend();
+			//eBlendMode sFactor = RenderManager::Instance()->GetSrcBlend();
+			//eBlendMode dFactor = RenderManager::Instance()->GetDestBlend();
 			
-			RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
-			RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_TEST);
-			RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
+			//RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
+			//RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_TEST);
+			//RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
 			
-			RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
-			RenderManager::Instance()->AppendState(RenderState::STATE_STENCIL_TEST);
+			//RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
+			//RenderManager::Instance()->AppendState(RenderState::STATE_STENCIL_TEST);
 			
-			RenderManager::State()->SetStencilRef(0);
-			RenderManager::State()->SetStencilMask(0x0000000F);
-			RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
-			RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-			RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-			RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
+			//RenderManager::State()->SetStencilRef(0);
+			//RenderManager::State()->SetStencilMask(0x0000000F);
+			//RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
+			//RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
+			//RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
+			//RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 			
-			switch(blendMode)
+			RenderManager::Instance()->SetRenderState((MODE_BLEND_ALPHA == blendMode) ? blendAlphaState : blendMultiplyState);
+			
+			/*switch(blendMode)
 			{
 				case MODE_BLEND_ALPHA:
 					RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
@@ -93,11 +119,11 @@ void ShadowVolumeRenderPass::Draw(Camera * camera, RenderPassBatchArray * render
 					break;
 				default:
 					break;
-			}
+			}*/
 			
 			shadowRect->Draw();
 			
-			RenderManager::Instance()->SetBlendMode(sFactor, dFactor);
+			//RenderManager::Instance()->SetBlendMode(sFactor, dFactor);
 
         }
 	}

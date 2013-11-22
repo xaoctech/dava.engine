@@ -73,7 +73,7 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
+	entityToAdd->AddComponent(new SwitchComponent());
 	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	SetEntity(entityToAdd);

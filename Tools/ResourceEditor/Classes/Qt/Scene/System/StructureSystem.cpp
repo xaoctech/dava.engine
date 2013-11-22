@@ -246,7 +246,7 @@ void StructureSystem::ReloadEntities(const EntityGroup& entityGroup, bool saveLi
 	{
 		DAVA::Set<DAVA::FilePath> refsToReload;
 
-		for(int i = 0; i < entityGroup.Size(); ++i)
+		for(int i = 0; i < (int)entityGroup.Size(); ++i)
 		{
 			DAVA::Entity *entity = entityGroup.GetEntity(i);
 			if(NULL != entity)
@@ -283,7 +283,7 @@ void StructureSystem::ReloadEntitiesAs(const EntityGroup& entityGroup, const DAV
 	{
 		DAVA::Set<DAVA::Entity *> entitiesToReload;
 
-		for (int i = 0; i < entityGroup.Size(); i++)
+		for (int i = 0; i < (int)entityGroup.Size(); i++)
 		{
 			entitiesToReload.insert(entityGroup.GetEntity(i));
 		}

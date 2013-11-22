@@ -381,7 +381,6 @@
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
     <addaction name="actionAddActionComponent"/>
-    <addaction name="actionRemoveActionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1580,12 +1579,7 @@
     <string>Add Action Component</string>
    </property>
   </action>
-  <action name="actionRemoveActionComponent">
-   <property name="text">
-    <string>Remove Action Component</string>
-   </property>
-  </action>
-  <action name="actionNoObject">
+17:38 19.11.2013  <action name="actionNoObject">
    <property name="checkable">
     <bool>true</bool>
    </property>

@@ -42,6 +42,7 @@
 // framework
 #include "Scene3D/Scene.h"
 
+class QtMimeData;
 class SceneTreeModel : public QStandardItemModel
 {
 	Q_OBJECT
@@ -63,10 +64,6 @@ public:
 		CF_Disabled		= 0x0001,
 		CF_Invisible	= 0x0002,
 	};
-
-	static const char* mimeFormatEntity;
-	static const char* mimeFormatLayer;
-	static const char* mimeFormatForce;
 
 	SceneTreeModel(QObject* parent = 0);
 	~SceneTreeModel();
@@ -96,7 +93,7 @@ public:
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
 	bool DropAccepted() const;
-	int GetDropType(const QMimeData *data) const;
+	int GetDropType(const QtMimeData *data) const;
 
 	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
 
@@ -112,9 +109,6 @@ protected:
 	void AddIndexesCache(SceneTreeItem *item);
 
 	bool AreSameType(const QModelIndexList & indexes) const;
-
-	QMimeData* EncodeMimeData(const QVector<void*> &data, const QString &format) const;
-	QVector<void*>* DecodeMimeData(const QMimeData* data, const QString &format) const;
 
 protected slots:
 	void ItemChanged(QStandardItem * item);

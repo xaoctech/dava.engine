@@ -492,6 +492,9 @@
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49016F1D7680061EA5D /* EditorLandscape.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E80EAD4618350B3D00328E55 /* QtMimeData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80EAD4418350B3D00328E55 /* QtMimeData.cpp */; };
+		E80EAD4A18350C8C00328E55 /* MimeDataHelper2_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80EAD4818350C8C00328E55 /* MimeDataHelper2_moc.cpp */; };
+		E80EAD4B18350C8C00328E55 /* QtMimeData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80EAD4918350C8C00328E55 /* QtMimeData_moc.cpp */; };
 		E825797A17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */; };
 		E825797B17D886B400070B9C /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797017D886B400070B9C /* QtPropertyDataDavaVariant.cpp */; };
 		E825797C17D886B400070B9C /* QtPropertyDataInspColl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E825797217D886B400070B9C /* QtPropertyDataInspColl.cpp */; };
@@ -991,7 +994,6 @@
 		4FAD0CCE1785EC6E00B05A35 /* ui_mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_mainwindow.h; path = _GeneratedQt/ui_mainwindow.h; sourceTree = "<group>"; };
 		4FAD0CCF1785EC6E00B05A35 /* ui_materialbrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_materialbrowser.h; path = _GeneratedQt/ui_materialbrowser.h; sourceTree = "<group>"; };
 		4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_MaterialViewOptions.h; path = _GeneratedQt/ui_MaterialViewOptions.h; sourceTree = "<group>"; };
-		4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ModificationWidget.h; path = _GeneratedQt/ui_ModificationWidget.h; sourceTree = "<group>"; };
 		4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ParticleProperty.h; path = _GeneratedQt/ui_ParticleProperty.h; sourceTree = "<group>"; };
 		4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_texturebrowser.h; path = _GeneratedQt/ui_texturebrowser.h; sourceTree = "<group>"; };
 		4FB96A211705C90500EB205E /* SceneTabWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTabWidget.cpp; sourceTree = "<group>"; };
@@ -1641,6 +1643,11 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E80EAD4318350B3D00328E55 /* MimeDataHelper2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MimeDataHelper2.h; sourceTree = "<group>"; };
+		E80EAD4418350B3D00328E55 /* QtMimeData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtMimeData.cpp; sourceTree = "<group>"; };
+		E80EAD4518350B3D00328E55 /* QtMimeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtMimeData.h; sourceTree = "<group>"; };
+		E80EAD4818350C8C00328E55 /* MimeDataHelper2_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MimeDataHelper2_moc.cpp; sourceTree = "<group>"; };
+		E80EAD4918350C8C00328E55 /* QtMimeData_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtMimeData_moc.cpp; sourceTree = "<group>"; };
 		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
 		E825796E17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtPropertyDataDavaKeyedArchive.cpp; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.cpp; sourceTree = SOURCE_ROOT; };
 		E825796F17D886B400070B9C /* QtPropertyDataDavaKeyedArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataDavaKeyedArchive.h; path = Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h; sourceTree = SOURCE_ROOT; };
@@ -2496,6 +2503,7 @@
 				E8BD39D417B4BB4D00C63420 /* LabeledSlider */,
 				62A7CA6B17B8D072000AEBF5 /* SettingsDialog */,
 				624C2ADF17A26D470031DC68 /* BaseEntityAddDialog */,
+				E80EAD4718350C8C00328E55 /* MimeData */,
 				E8F799BE1797D6F400E7C3C8 /* MimeDataHelper */,
 				4FAD0CB01785EC6E00B05A35 /* AddSwitchEntityDialog */,
 				4FAD0CB21785EC6E00B05A35 /* EventFilterDoubleSpinBox */,
@@ -3453,6 +3461,7 @@
 				62A7CA6017B8D037000AEBF5 /* SettingsDialog */,
 				4F64847717AFB5AB00034454 /* QtWaitDialog */,
 				624C2AD717A26BC00031DC68 /* BaseAddEntityDialog */,
+				E80EAD4218350B3D00328E55 /* MimeData */,
 				6295E406178B07EB0007F9EC /* MimeDataHelper */,
 				4FAD0B061785EB8E00B05A35 /* EventFilterDoubleSpinBox */,
 				4FAD0B091785EB8E00B05A35 /* QResourceEditorProgressDialog */,
@@ -3666,6 +3675,26 @@
 				173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		E80EAD4218350B3D00328E55 /* MimeData */ = {
+			isa = PBXGroup;
+			children = (
+				E80EAD4318350B3D00328E55 /* MimeDataHelper2.h */,
+				E80EAD4418350B3D00328E55 /* QtMimeData.cpp */,
+				E80EAD4518350B3D00328E55 /* QtMimeData.h */,
+			);
+			name = MimeData;
+			path = Classes/Qt/Tools/MimeData;
+			sourceTree = "<group>";
+		};
+		E80EAD4718350C8C00328E55 /* MimeData */ = {
+			isa = PBXGroup;
+			children = (
+				E80EAD4818350C8C00328E55 /* MimeDataHelper2_moc.cpp */,
+				E80EAD4918350C8C00328E55 /* QtMimeData_moc.cpp */,
+			);
+			path = MimeData;
 			sourceTree = "<group>";
 		};
 		E82D313B182ACF9600696233 /* DockLibrary2 */ = {
@@ -4048,7 +4077,6 @@
 				4FAD0CCE1785EC6E00B05A35 /* ui_mainwindow.h */,
 				4FAD0CCF1785EC6E00B05A35 /* ui_materialbrowser.h */,
 				4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */,
-				4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */,
 				4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */,
 				4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */,
 			);
@@ -4766,6 +4794,7 @@
 				5C574EA015C9463C0015537A /* btTypedConstraint.cpp in Build Sources */,
 				5C574EA115C9463C0015537A /* btUniversalConstraint.cpp in Build Sources */,
 				E8EF3BD5180832A300494E24 /* ToolButtonWithWidget.cpp in Build Sources */,
+				E80EAD4A18350C8C00328E55 /* MimeDataHelper2_moc.cpp in Build Sources */,
 				5C574EA215C9463C0015537A /* btDiscreteDynamicsWorld.cpp in Build Sources */,
 				5C574EA315C9463C0015537A /* btRigidBody.cpp in Build Sources */,
 				5C574EA415C9463C0015537A /* btSimpleDynamicsWorld.cpp in Build Sources */,
@@ -5025,6 +5054,7 @@
 				4FAD0D251785EC6E00B05A35 /* ModifSystem_moc.cpp in Build Sources */,
 				4FAD0D261785EC6E00B05A35 /* SelectionSystem_moc.cpp in Build Sources */,
 				4FAD0D271785EC6E00B05A35 /* StructureSystem_moc.cpp in Build Sources */,
+				E80EAD4618350B3D00328E55 /* QtMimeData.cpp in Build Sources */,
 				4FAD0D281785EC6E00B05A35 /* SpritePackerHelper_moc.cpp in Build Sources */,
 				4FAD0D291785EC6E00B05A35 /* TextureBrowser_moc.cpp in Build Sources */,
 				4FAD0D2A1785EC6E00B05A35 /* TextureCache_moc.cpp in Build Sources */,
@@ -5073,6 +5103,7 @@
 				A69AA39F1796EDE80008B683 /* CubeMapTextureBrowser.cpp in Build Sources */,
 				A69AA3A01796EDE80008B683 /* CubemapUtils.cpp in Build Sources */,
 				A69AA3A71796F0310008B683 /* MaterialHelper.cpp in Build Sources */,
+				E80EAD4B18350C8C00328E55 /* QtMimeData_moc.cpp in Build Sources */,
 				A69AA3AF1796F1A60008B683 /* ClickableQLabel_moc.cpp in Build Sources */,
 				A69AA3B01796F1A60008B683 /* CubeListItemDelegate_moc.cpp in Build Sources */,
 				A69AA3B11796F1A60008B683 /* CubemapEditorDialog_moc.cpp in Build Sources */,

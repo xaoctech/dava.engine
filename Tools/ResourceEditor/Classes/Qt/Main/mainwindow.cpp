@@ -644,7 +644,6 @@ void QtMainWindow::SetupActions()
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
-	QObject::connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), this, SLOT(OnRemoveActionComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -1348,7 +1347,7 @@ void QtMainWindow::OnLandscapeDialog()
 void QtMainWindow::OnLightDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(ScopedPtr<LightComponent> (new LightComponent(ScopedPtr<Light>(new Light))));
+	sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
 	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)
@@ -1370,7 +1369,7 @@ void QtMainWindow::OnCameraDialog()
 	camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 	camera->SetAspect(1.0f);
 
-	sceneNode->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(camera)));
+	sceneNode->AddComponent(new CameraComponent(camera));
 	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)
@@ -1385,7 +1384,7 @@ void QtMainWindow::OnCameraDialog()
 void QtMainWindow::OnUserNodeDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
+	sceneNode->AddComponent(new UserComponent());
 	sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)
@@ -1399,7 +1398,7 @@ void QtMainWindow::OnUserNodeDialog()
 void QtMainWindow::OnParticleEffectDialog()
 {
 	Entity* sceneNode = new Entity();
-	sceneNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
+	sceneNode->AddComponent(new ParticleEffectComponent());
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)
@@ -2061,26 +2060,7 @@ void QtMainWindow::OnAddActionComponent()
 
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), ScopedPtr<ActionComponent> (new ActionComponent())));
-		}
-
-		scene->EndBatch();
-	}
-}
-
-void QtMainWindow::OnRemoveActionComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if(!scene) return;
-
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Remove Action Component");
-
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), Component::ACTION_COMPONENT));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ActionComponent()));
 		}
 
 		scene->EndBatch();

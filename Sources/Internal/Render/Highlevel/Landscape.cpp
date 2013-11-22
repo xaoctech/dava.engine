@@ -1310,11 +1310,15 @@ void Landscape::Draw(Camera * camera)
 
 	if(cursor)
 	{
-		RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
+		//TODO: setup appropriate cursor state and set it
+		//TODO: RenderManager::Instance()->SetRenderState(cursorStateHandle);
+		
+		/*RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);		
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);*/
+		
 		cursor->Prepare();
 		ClearQueue();
 
@@ -1348,9 +1352,9 @@ void Landscape::Draw(Camera * camera)
         
 		FlushQueue();
 		DrawFans();
-		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
-		RenderManager::Instance()->RemoveState(RenderState::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(src, dst);
+		//RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		//RenderManager::Instance()->RemoveState(RenderState::STATE_BLEND);
+		//RenderManager::Instance()->SetBlendMode(src, dst);
 	}
     
     UnbindMaterial();
@@ -1672,7 +1676,7 @@ Texture * Landscape::CreateFullTiledTexture()
     
     Matrix4 oldProjection = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
-    RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE);
+    //RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE);
     
     prevLodLayer = -1;
 

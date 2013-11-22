@@ -43,7 +43,7 @@ const int SKYBOX_VERTEX_COUNT = (5 * 6);
 namespace DAVA
 {
 	SkyboxSystem::SkyboxSystem(Scene * scene)
-	:	BaseProcessSystem(Component::RENDER_COMPONENT, scene)
+	:	SceneSystem(scene)
 	{
 		skyboxEntity = NULL;
 	}
@@ -97,9 +97,7 @@ namespace DAVA
 			result = new Entity();
 			result->SetName("Skybox");
 
-			result->RemoveComponent(Component::RENDER_COMPONENT);
 			result->AddComponent(renderComponent);
-			renderComponent->Release();
 
 			GetScene()->AddNode(result);
 			

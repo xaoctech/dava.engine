@@ -44,7 +44,9 @@ public:
 	ParticleEffectSystem(Scene * scene);
 	virtual void Process();
 
-	virtual void RemoveEntity(Entity * entity);
+	virtual void RemoveComponent(Entity * entity, Component * component);
+
+protected:
 
 	uint32 index;
 	uint32 size;

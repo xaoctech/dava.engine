@@ -40,6 +40,8 @@
 
 namespace DAVA
 {
+	
+const FastName SoundSystem::SOUND_GROUP_FX = FastName("FX");
 
 SoundSystem::SoundSystem(int32 maxChannels)
 {

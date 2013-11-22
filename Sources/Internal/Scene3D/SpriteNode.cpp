@@ -270,13 +270,14 @@ void SpriteNode::Draw()
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 
-	eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
+	//eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
+	//eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-	RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
-	RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
+	RenderManager::Instance()->SetDefault2DState();
+	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	//RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
+	//RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
 //    RenderManager::Instance()->EnableBlending(true);
 //    RenderManager::Instance()->EnableTexturing(true);//TODO: Move all this code to the RenderState node
 //    RenderManager::Instance()->EnableDepthTest(false);
@@ -294,13 +295,13 @@ void SpriteNode::Draw()
 
     
 //    glDisableClientState(GL_COLOR_ARRAY);
-    RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
+    //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 //    RenderManager::Instance()->EnableTexturing(true);
 //    RenderManager::Instance()->EnableBlending(false);
 //    RenderManager::Instance()->EnableDepthTest(true);
 //    RenderManager::Instance()->EnableDepthWrite(true);
     
-	RenderManager::Instance()->SetBlendMode(sblend, dblend);
+	//RenderManager::Instance()->SetBlendMode(sblend, dblend);
 
 //    if (debugFlags & DEBUG_DRAW_ALL)
 //    {

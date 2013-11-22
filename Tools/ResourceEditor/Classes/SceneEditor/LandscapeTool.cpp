@@ -56,7 +56,9 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const FilePath & _image
     RenderManager::Instance()->SetColor(Color::Black());
     RenderHelper::Instance()->FillRect(Rect(0, 0, sideSize, sideSize));
     
-    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->FlushState();
+    //RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
     RenderManager::Instance()->SetColor(Color::White());
     
     srcSprite->SetScaleSize(sideSize, sideSize);

@@ -445,6 +445,8 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateData.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateDataUniqueHandler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h" />
@@ -455,6 +457,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Texture.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\UberShader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\UniqueStateSet.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\VertexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\2D\Font.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\2D\FontManager.h" />

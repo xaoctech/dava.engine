@@ -37,6 +37,7 @@
 #include "Render/Shader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
+#include "Render/RenderManager.h"
 
 namespace DAVA
 {
@@ -256,6 +257,20 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 						 currentData.isLod,
 						 nodes);
 		}
+		
+		RenderManager::Instance()->LockNonMain();
+		
+		for(size_t i = 0; i < rootCount; ++i)
+		{
+			MaterialData& currentData = roots[i];
+			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
+			DVASSERT(rootMaterial);
+			
+			rootMaterial->Rebuild();
+			rootMaterial->Rebind();
+		}
+		
+		RenderManager::Instance()->UnlockNonMain();
 	}
 	else
 	{

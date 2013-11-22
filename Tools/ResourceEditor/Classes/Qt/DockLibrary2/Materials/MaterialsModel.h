@@ -44,8 +44,6 @@ class MaterialsModel: public QStandardItemModel
 {
     Q_OBJECT
     
-    static const char * mimeFormatMaterial;
-
 public:
     MaterialsModel(QObject *parent = 0);
     virtual ~MaterialsModel();
@@ -75,9 +73,6 @@ protected:
     
     int AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
     
-    QMimeData * EncodeMimeData(const QVector<void *> & data, const QString & format) const;
-	QVector<void *> * DecodeMimeData(const QMimeData * data, const QString & format) const;
-
     void RetrieveMaterialRecursive(DAVA::Entity *entity);
     void BuildMaterialsFromRootRecursive(DAVA::NMaterial *root);
     
