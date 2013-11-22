@@ -84,14 +84,7 @@ public:
 private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 flags;
-    
-    struct RenderBatchSortItem
-    {
-        pointer_size sortingKey;
-        RenderBatch * renderBatch;
-    };
-    Vector<RenderBatchSortItem> sortArray;
-    static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
+    static bool MaterialCompareFunction(const RenderBatch * a, const RenderBatch * b);
 public:
     INTROSPECTION(RenderLayerBatchArray,
         COLLECTION(renderBatchArray, "Render Batch Array", I_EDIT)
