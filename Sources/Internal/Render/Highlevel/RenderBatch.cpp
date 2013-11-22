@@ -39,6 +39,7 @@
 #include "Debug/DVAssert.h"
 #include "Render/Material/MaterialSystem.h"
 #include "Render/OcclusionQuery.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -62,6 +63,7 @@ RenderBatch::RenderBatch()
 	aabbox = AABBox3(Vector3(), Vector3());
     occlusionQuery = new OcclusionQuery();
     queryRequested = -1;
+    lastFraemDrawn = -10;
 }
     
 RenderBatch::~RenderBatch()
@@ -107,22 +109,26 @@ void RenderBatch::SetMaterial(NMaterial * _material)
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
+//  TIME_PROFILE("RenderBatch::Draw");
 //	if(!renderObject)return;
     DVASSERT(renderObject != 0);
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
     DVASSERT(worldTransformPtr != 0);
-
+    
+#if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
+    uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
+    
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
         if ((queryRequested >= 0) && occlusionQuery->IsResultAvailable())
         {
             uint32 result = 0;
             occlusionQuery->GetQuery(&result);
-            if (result == 0)
+            if (result == 0 && ((globalFrameIndex - queryRequestFrame) < 3) && (lastFraemDrawn == globalFrameIndex - 1))
             {
                 //RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
                 occlusionQuery->ResetResult();
-                queryRequested = -3;
+                queryRequested = -2;
             }
             else queryRequested = -1;
         }
@@ -134,6 +140,8 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
         return;
     }
+    
+#endif
     
 //    if (!worldTransformPtr)
 //    {
@@ -150,17 +158,22 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 
+#if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
         if (queryRequested == -1)
         {
+            queryRequestFrame = globalFrameIndex;
             occlusionQuery->BeginQuery();
             queryRequested = 0;
         }
         else queryRequested++;
     }
-    
+#endif
     material->Draw(dataSource);
+    
+#if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
+    lastFraemDrawn = globalFrameIndex;
     
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
@@ -169,6 +182,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
             occlusionQuery->EndQuery();
         }
     }
+#endif
 }
     
     
