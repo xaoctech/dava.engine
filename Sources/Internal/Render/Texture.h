@@ -244,7 +244,9 @@ public:
 	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
     TextureDescriptor * CreateDescriptor() const;
-
+	
+	TextureDescriptor * GetDescriptor();
+	
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
 	void SetInvalidater(TextureInvalidater* invalidater);
