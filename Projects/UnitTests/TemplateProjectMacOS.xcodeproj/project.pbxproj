@@ -14,7 +14,6 @@
 		02E9E45F173A43A900C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E45D173A43A900C501BC /* libfmodex.dylib */; };
 		02F8B01417CF994300D5A334 /* ThreadSyncTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B01217CF994300D5A334 /* ThreadSyncTest.cpp */; };
 		1767A195183D1B4A000DE581 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1767A194183D1B4A000DE581 /* AVFoundation.framework */; };
-		1767A199183D1E7F000DE581 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1767A198183D1E7F000DE581 /* AVKit.framework */; };
 		1767A19B183D227A000DE581 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1767A19A183D227A000DE581 /* CoreMedia.framework */; };
 		1770DF5917DF6CC200000391 /* UIMovieTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF5717DF6CC200000391 /* UIMovieTest.cpp */; };
 		495B67091797DCA30017D8DD /* TransparentWebViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495B67071797DCA30017D8DD /* TransparentWebViewTest.cpp */; };
@@ -208,7 +207,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1767A19B183D227A000DE581 /* CoreMedia.framework in Frameworks */,
-				1767A199183D1E7F000DE581 /* AVKit.framework in Frameworks */,
 				1767A195183D1B4A000DE581 /* AVFoundation.framework in Frameworks */,
 				02E9E45E173A43A900C501BC /* libfmodevent.dylib in Frameworks */,
 				02E9E45F173A43A900C501BC /* libfmodex.dylib in Frameworks */,
