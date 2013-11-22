@@ -47,7 +47,10 @@ public:
 	virtual void AddComponent(Entity * entity, Component * component);
 	virtual void RemoveComponent(Entity * entity, Component * component);
 
-
+    uint32 GetEnititesCount() const;
+    uint32 GetComponentsCount() const;
+    
+    
     Vector<Component *> components;
     Vector<Entity *>entities;
 };
@@ -63,6 +66,10 @@ public:
     
 	virtual void AddComponent(Entity * entity, Component * component);
 	virtual void RemoveComponent(Entity * entity, Component * component);
+    
+    uint32 GetEnititesCount() const;
+    uint32 GetComponentsCount(uint32 componentType) const;
+
     
     Map<uint32, Vector<Component *> > components;
     Vector<Entity *>entities;
@@ -81,16 +88,14 @@ public:
 	virtual void UnloadResources();
 
 	void RegisterEntityTest(PerfFuncData * data);
-	void AddComponentTest(PerfFuncData * data);
+    
+	void AddComponentTest1(PerfFuncData * data);
 	void AddComponentTest2(PerfFuncData * data);
+	void AddComponentTest3(PerfFuncData * data);
 
     void MultiComponentTest1(PerfFuncData * data);
     void MultiComponentTest2(PerfFuncData * data);
-    
-protected:
-
-    Scene * CreateSingleComponentScene() const;
-    Scene * CreateMultiComponentScene() const;
+    void MultiComponentTest3(PerfFuncData * data);
 };
 
 

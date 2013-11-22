@@ -147,7 +147,7 @@ namespace DAVA
 	void NMaterialState::AddMaterialProperty(const String & keyName, const YamlNode * uniformNode)
 	{
 		FastName uniformName(keyName);
-		Logger::Debug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
+		Logger::FrameworkDebug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
 		
 		Shader::eUniformType type = Shader::UT_FLOAT;
 		union
@@ -547,7 +547,7 @@ namespace DAVA
 			
 			if (renderStepNode->AsString() == "RenderPass")
 			{
-				Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
+				Logger::FrameworkDebug("- RenderPass found: %s", renderStepNode->AsString().c_str());
 				const YamlNode * shaderNode = renderStepNode->Get("Shader");
 				const YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
 				
