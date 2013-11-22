@@ -34,6 +34,10 @@
 #include <QStyledItemDelegate>
 #include <QHash>
 #include <QIcon>
+#include "QtPropertyModel.h"
+
+// model class
+class QtPropertyModel;
 
 // Optional widget
 struct QtPropertyOW
@@ -50,23 +54,17 @@ struct QtPropertyOW
 	bool overlay;
 };
 
+QStandardItem;
+
 // PropertyData class
 class QtPropertyData : public QObject
 {
 	Q_OBJECT
 
-	friend class QtPropertyItem;
+	friend class QtPropertyModel;
+	friend class QtPropertyItemDelegate;
 
 public:
-	enum
-	{
-		FLAG_EMPTY				= 0x0,
-
-		FLAG_IS_DISABLED		= 0x1,
-		FLAG_IS_CHECKABLE		= 0x2,
-		FLAG_IS_NOT_EDITABLE	= 0x4,
-	};
-
 	enum ValueChangeReason
 	{
 		VALUE_SOURCE_CHANGED,
@@ -75,80 +73,121 @@ public:
 	};
 
 	QtPropertyData();
-	QtPropertyData(const QVariant &value);
-	virtual ~QtPropertyData() ;
+	QtPropertyData(const QVariant &value, Qt::ItemFlags flags = (Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable));
+	virtual ~QtPropertyData();
 
-	QVariant GetValue();
+	QVariant data(int role) const;
+	bool setData(const QVariant & value, int role);
+
+	QString GetName() const;
+	void SetName(const QString &name);
+
+	QString GetPath() const;
+
+	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 	bool UpdateValue();
 
-	QVariant GetAlias();
+	QVariant GetAlias() const;
 
-	virtual QIcon GetIcon();
-	virtual void SetIcon(const QIcon &icon);
+	QIcon GetIcon() const;
+	void SetIcon(const QIcon &icon);
 
-	int GetFlags();
-	void SetFlags(int flags);
+	QFont GetFont() const;
+	void SetFont(const QFont &font);
 
-	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option);
+	QBrush GetBackground() const;
+	void SetBackground(const QBrush &brush);
+
+	QBrush GetForeground() const;
+	void SetForeground(const QBrush &brush);
+
+	Qt::ItemFlags GetFlags() const;
+	void SetFlags(Qt::ItemFlags flags);
+
+	QVariant GetUserData() const;
+	void SetUserData(const QVariant &data);
+
+	// reset background/foreground/font settings
+	void ResetStyle();
+
+	void SetCheckable(bool checkable);
+	bool IsCheckable() const;
+	void SetChecked(bool checked);
+	bool IsChecked() const;
+
+	void SetEditable(bool editable);
+	bool IsEditable() const;
+
+	void SetEnabled(bool enabled);
+	bool IsEnabled() const;
+
+	QtPropertyModel* GetModel() const;
+
+	// editor
+	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) const;
 	bool EditorDone(QWidget *editor);
 	bool SetEditorData(QWidget *editor);
 
+	// childs
+	QtPropertyData *Parent() const;
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
-	int ChildCount();
-	QtPropertyData* ChildGet(const QString &key);
-	QPair<QString, QtPropertyData*> ChildGet(int i);
-	void ChildRemove(const QString &key);
+	int ChildCount() const;
+	QtPropertyData* ChildGet(int i) const;
+	QtPropertyData* ChildGet(const QString &key) const;
+	int ChildIndex(QtPropertyData *data) const;
 	void ChildRemove(QtPropertyData *data);
+	void ChildRemove(const QString &key);
 	void ChildRemove(int i);
+	void ChildRemoveAll();
 
-	virtual void* CreateLastCommand() const;
-
-signals:
-	void ValueChanged(QtPropertyData::ValueChangeReason reason);
-	void FlagsChanged();
-	void ChildAdded(const QString &key, QtPropertyData *data);
-	void ChildRemoving(const QString &key, QtPropertyData *data);
-
-protected:
-	QVariant curValue;
-	QIcon curIcon;
-	int curFlags;
-	bool updatingValue;
-	
-	QtPropertyData *parent;
-
-	QList<QString> childrenNames;
-	QList<QtPropertyData*> childrenData;
-
-	virtual void UpdateUp();
-	virtual void UpdateDown();
-
-	// Functions should be re-implemented by sub-class
-	virtual QVariant GetValueInternal();
-	virtual QVariant GetValueAlias();
-	virtual void SetValueInternal(const QVariant &value);
-	virtual bool UpdateValueInternal();
-	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
-	virtual bool EditorDoneInternal(QWidget *editor);
-	virtual bool SetEditorDataInternal(QWidget *editor);
-
-public:
-	// Option widgets
-	int GetOWCount();
+	// Optional widgets
+	int GetOWCount() const;
 	const QtPropertyOW* GetOW(int index = 0);
 	void AddOW(const QtPropertyOW &ow);
 	void RemOW(int index);
 	void RemOW(QWidget *widget);
 
-	QWidget* GetOWViewport();
-	void SetOWViewport(QWidget *viewport);
+	// edit command
+	virtual void* CreateLastCommand() const;
 
-private:
-	// Optional widgets data struct and memebers
+protected:
+	mutable QVariant curValue;
+	QVariant userData;
+
+	QString curName;
+	Qt::ItemFlags curFlags;
+
+	QMap<int, QVariant> style;
+	bool updatingValue;
+
+	QtPropertyModel *model;
+	QtPropertyData *parent;
+
+	QList<QString> childrenNames;
+	QList<QtPropertyData*> childrenData;
+
 	QVector<QtPropertyOW> optionalWidgets;
 	QWidget *optionalWidgetViewport;
+
+	void EmitDataChanged(ValueChangeReason reason);
+
+	virtual void UpdateUp();
+	virtual void UpdateDown();
+
+	// Functions should be re-implemented by sub-class
+	virtual QVariant GetValueInternal() const;
+	virtual QVariant GetValueAlias() const;
+	virtual void SetValueInternal(const QVariant &value);
+	virtual bool UpdateValueInternal();
+	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option) const;
+	virtual bool EditorDoneInternal(QWidget *editor);
+	virtual bool SetEditorDataInternal(QWidget *editor);
+
+	// viewport, where optional widgets (OW) should be drawn
+	QWidget* GetOWViewport() const;
+	void SetOWViewport(QWidget *viewport);
 };
 
 #endif // __QT_PROPERTY_DATA_H__

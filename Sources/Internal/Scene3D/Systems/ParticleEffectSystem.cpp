@@ -37,44 +37,35 @@ namespace DAVA
 {
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
-:	SceneSystem(scene)
+	:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+	,	index(0)
+	,	size(0)
 {
-
 }
 
 void ParticleEffectSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
-	//uint32 size = entities.size();
-	//for(uint32 index = 0; index < size; ++index)
-	//{
-	//	uint32 components = entities[index]->GetComponentCount(Component::PARTICLE_EFFECT_COMPONENT);
-	//	for(uint32 c = 0; c < size; ++c)
-	//	{
-	//		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(entities[index]->GetComponent(Component::PARTICLE_EFFECT_COMPONENT, c));
-	//		component->EffectUpdate(timeElapsed);
-	//	}
-	//}
-}
-
-void ParticleEffectSystem::RemoveEntity(Entity * entity)
-{
-	entities.push_back(entity);
-}
-
-void ParticleEffectSystem::AddEntity( Entity * entity )
-{
-	uint32 size = entities.size();
-	for(uint32 i = 0; i < size; ++i)
+	size = components.size();
+	for(index = 0; index < size; ++index)
 	{
-		if(entities[i] == entity)
-		{
-			entities[i] = entities[size-1];
-			entities.pop_back();
-			return;
-		}
+		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(components[index]);
+		component->EffectUpdate(timeElapsed);
 	}
 }
+
+void ParticleEffectSystem::RemoveComponent( Entity * entity, Component * component )
+{
+	BaseProcessSystem::RemoveComponent(entity, component);
+
+	//Effects can be deleted at EffectUpdate()
+	--index;
+	--size;
+}
+
+
+
+
 
 }

@@ -72,7 +72,7 @@ void GeneralSettingsEditor::InitializeProperties()
 	argumentsSpeed2.push_back(VariantType(2));
 	DAVA::List<DAVA::VariantType> argumentsSpeed3;
 	argumentsSpeed3.push_back(VariantType(3));
-		
+	/*
 	INITIALIZE_PROPERTY(propertyScreenWidth, ResourceEditor::SETTINGS_SCREEN_WIDTH, SETTINGS_LOCALIZATION_SCREEN_WIDTH)
 	INITIALIZE_PROPERTY(propertyScreenHeight,ResourceEditor::SETTINGS_SCREEN_HEIGHT, SETTINGS_LOCALIZATION_SCREEN_HEIGHT)
 	INITIALIZE_PROPERTY(propertyLanguage, ResourceEditor::SETTINGS_LANGUAGE, SETTINGS_LOCALIZATION_LANGUAGE)
@@ -87,9 +87,9 @@ void GeneralSettingsEditor::InitializeProperties()
 	INITIALIZE_PROPERTY(propertyImposters, ResourceEditor::SETTINGS_ENABLE_IMPOSTERS, SETTINGS_LOCALIZATION_IMPOSTERS)
 	INITIALIZE_PROPERTY(propertyDesignerName, ResourceEditor::SETTINGS_DESIGNER_NAME, SETTINGS_LOCALIZATION_DESIGNER_NAME)
 	INITIALIZE_PROPERTY(propertyPreviewAtLibrary, ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, SETTINGS_LOCALIZATION_PREVIEW_AT_LIBRARY)
-	
 	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("en")), "en");
 	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("ru")), "ru");
+	*/
 }
 
 void GeneralSettingsEditor::RestoreInitialSettings()
