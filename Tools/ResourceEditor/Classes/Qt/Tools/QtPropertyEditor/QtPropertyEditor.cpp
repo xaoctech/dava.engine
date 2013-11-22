@@ -103,8 +103,6 @@ bool QtPropertyEditor::GetEditTracking() const
 
 void QtPropertyEditor::SetUpdateTimeout(int ms)
 {
-	return;
-
 	updateTimeout = ms;
 
 	if(0 != updateTimeout)

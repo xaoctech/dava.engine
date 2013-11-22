@@ -84,11 +84,13 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetEntities(const EntityGroup *selected)
 {
+/*
 	DAVA::KeyedArchive *ka = new DAVA::KeyedArchive();
 	ResetProperties();
 	AppendProperty("test", new QtPropertyDataDavaKeyedArcive(ka));
 
 	return;
+*/
 
     //TODO: support multiselected editing
 
@@ -235,6 +237,7 @@ QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *objec
 
 			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
 			ret = AppendProperty(member->Name(), data, parent);
+
 			OnItemAdded(ret, member->Type());
 		}
 	}
@@ -301,7 +304,7 @@ void PropertyEditor::OnItemEdited(const QModelIndex &index)
 
 void PropertyEditor::OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo *itemMeta)
 {
-	if(!index.isValid() && NULL != itemMeta)
+	if(index.isValid() && NULL != itemMeta)
 	{
 		QtPropertyData *propData = GetProperty(index);
 
@@ -309,7 +312,7 @@ void PropertyEditor::OnItemAdded(const QModelIndex &index, const DAVA::MetaInfo 
 		{
 			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == itemMeta)
 			{
-				// Add optional button to edit action collection
+				// Add optional button to edit action component
 				QPushButton *editActions = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
 				editActions->setFlat(true);
 
@@ -344,9 +347,11 @@ void PropertyEditor::mouseReleaseEvent(QMouseEvent *event)
 		if(rect.contains(event->pos()))
 		{
 			QtPropertyData *data = GetProperty(index);
-			SetFavorite(data, !IsFavorite(data));
-
-			skipEvent = true;
+			if(NULL != data && !IsParentFavorite(data))
+			{
+				SetFavorite(data, !IsFavorite(data));
+				skipEvent = true;
+			}
 		}
 	}
 
@@ -423,7 +428,7 @@ void PropertyEditor::ActionBakeTransform()
 
 bool PropertyEditor::IsFavorite(QtPropertyData *data) const
 {
-	return data->GetUserData().toBool();
+	return (data->GetUserData().toBool() || scheme.contains(data->GetPath()));
 }
 
 bool PropertyEditor::IsParentFavorite(QtPropertyData *data) const
@@ -450,4 +455,12 @@ bool PropertyEditor::IsParentFavorite(QtPropertyData *data) const
 void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 {
 	data->SetUserData(favorite);
+	if(favorite)
+	{
+		scheme.insert(data->GetPath());
+	}
+	else
+	{
+		scheme.remove(data->GetPath());
+	}
 }

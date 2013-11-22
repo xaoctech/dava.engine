@@ -49,16 +49,15 @@ QtPropertyModel::~QtPropertyModel()
 QModelIndex QtPropertyModel::index(int row, int column, const QModelIndex & parent /* = QModelIndex() */) const
 {
 	QModelIndex ret;
-	QtPropertyData *parentData = root;
 
-	if(parent.isValid())
+	QtPropertyData *parentData = itemFromIndexInternal(parent);
+	if((NULL != parentData) &&
+		(row >= 0) &&
+		(column >= 0) &&
+		(row < parentData->ChildCount()) &&
+		(column < 2))
 	{
-		parentData = (QtPropertyData *) parent.internalPointer();
-	}
-
-	if(NULL != parentData && row < parentData->ChildCount() && column < 2)
-	{
-		ret = createIndex(row, column, parentData->ChildGet(row));
+		ret = createIndex(row, column, parentData);
 	}
 
 	return ret;
@@ -68,10 +67,10 @@ QModelIndex QtPropertyModel::parent(const QModelIndex & index) const
 {
 	QModelIndex ret;
 
-	QtPropertyData *data = itemFromIndex(index);
-	if(NULL != data)
+	if(index.isValid())
 	{
-		ret = indexFromItem(data->Parent());
+		QtPropertyData *parent = static_cast<QtPropertyData *>(index.internalPointer());
+		ret = indexFromItem(parent);
 	}
 
 	return ret;
@@ -81,7 +80,7 @@ int QtPropertyModel::rowCount(const QModelIndex & parent /* = QModelIndex() */) 
 {
 	int count = 0;
 
-	QtPropertyData *data = itemFromIndex(parent);
+	QtPropertyData *data = itemFromIndexInternal(parent);
 	if(NULL != data)
 	{
 		count = data->ChildCount();
@@ -200,19 +199,29 @@ QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 {
 	QtPropertyData *ret = NULL;
 
+	if(index.isValid() && index.model() == this)
+	{
+		QtPropertyData *parent = static_cast<QtPropertyData *>(index.internalPointer());
+		if(NULL != parent)
+		{
+			ret = parent->ChildGet(index.row());
+		}
+	}
+
+	return ret;
+}
+
+QtPropertyData* QtPropertyModel::itemFromIndexInternal(const QModelIndex & index) const
+{
+	QtPropertyData *ret = NULL;
+
 	if(!index.isValid())
 	{
-		return root;
+		ret = root;
 	}
-
-	if(index.isValid() && index.model() == this && index.column() < 2)
+	else
 	{
-		ret = (QtPropertyData *)index.internalPointer();
-	}
-
-	if(NULL != ret && ret->model != this)
-	{
-		ret = NULL;
+		ret = itemFromIndex(index);
 	}
 
 	return ret;
@@ -222,15 +231,15 @@ QModelIndex QtPropertyModel::indexFromItem(QtPropertyData *data) const
 {
 	QModelIndex ret;
 
-	if(NULL != data && data->GetModel() == this)
+	if(NULL != data)
 	{
-		QtPropertyData *parentData = data->Parent();
-		if(NULL != parentData)
+		QtPropertyData *parent = data->Parent();
+		if(NULL != parent)
 		{
-			int row = parentData->ChildIndex(data);
+			int row = parent->ChildIndex(data);
 			if(row >= 0)
 			{
-				ret = createIndex(row, 1, data);
+				ret = createIndex(row, 1, parent);
 			}
 		}
 	}
@@ -242,7 +251,7 @@ QModelIndex QtPropertyModel::AppendProperty(const QString &name, QtPropertyData*
 {
 	if(NULL != data)
 	{
-		QtPropertyData *parentData = itemFromIndex(parent);
+		QtPropertyData *parentData = itemFromIndexInternal(parent);
 		if(NULL == parentData)
 		{
 			parentData = root;
@@ -279,14 +288,10 @@ void QtPropertyModel::UpdateStructure(const QModelIndex &parent /* = QModelIndex
 
 void QtPropertyModel::UpdateStructureInternal(const QModelIndex &i)
 {
-	QtPropertyData *data = itemFromIndex(i);
+	QtPropertyData *data = itemFromIndexInternal(i);
 	if(NULL != data)
 	{
 		data->UpdateValue();
-		//if(data->UpdateValue())
-		//{
-		//	emit dataChanged(i, i);
-		//}
 
 		for(int row = 0; row < rowCount(i); ++row)
 		{
