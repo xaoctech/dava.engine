@@ -47,6 +47,7 @@
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Utils/Utils.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -374,6 +375,7 @@ void RenderSystem::DebugDrawHierarchy()
 
 void RenderSystem::Render()
 {
+    TIME_PROFILE("RenderSystem::Render");
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
