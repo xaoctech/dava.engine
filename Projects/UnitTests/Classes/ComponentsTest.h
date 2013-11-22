@@ -36,6 +36,40 @@ using namespace DAVA;
 
 #include "TestTemplate.h"
 
+class SingleComponentSystem: public SceneSystem
+{
+public:
+    SingleComponentSystem(Scene * scene);
+
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    
+	virtual void AddComponent(Entity * entity, Component * component);
+	virtual void RemoveComponent(Entity * entity, Component * component);
+
+
+    Vector<Component *> components;
+    Vector<Entity *>entities;
+};
+
+
+class MultiComponentSystem: public SceneSystem
+{
+public:
+    MultiComponentSystem(Scene * scene);
+    
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    
+	virtual void AddComponent(Entity * entity, Component * component);
+	virtual void RemoveComponent(Entity * entity, Component * component);
+    
+    Map<uint32, Vector<Component *> > components;
+    Vector<Entity *>entities;
+};
+
+
+
 class ComponentsTest : public TestTemplate<ComponentsTest>
 {
 protected:
@@ -50,7 +84,13 @@ public:
 	void AddComponentTest(PerfFuncData * data);
 	void AddComponentTest2(PerfFuncData * data);
 
+    void MultiComponentTest1(PerfFuncData * data);
+    void MultiComponentTest2(PerfFuncData * data);
+    
+protected:
 
+    Scene * CreateSingleComponentScene() const;
+    Scene * CreateMultiComponentScene() const;
 };
 
 

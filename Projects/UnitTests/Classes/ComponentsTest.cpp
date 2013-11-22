@@ -30,6 +30,137 @@
 
 #include "ComponentsTest.h"
 
+template <class Type>
+void RemoveFromVector(DAVA::Vector<Type *> elements, const Type * element)
+{
+    DAVA::uint32 size = elements.size();
+    for(DAVA::uint32 index = 0; index < size; ++index)
+    {
+        if(element == elements[index])
+        {
+            elements[index] = elements[size - 1];
+            elements.pop_back();
+            return;
+        }
+    }
+    
+    DVASSERT(0);
+}
+
+
+SingleComponentSystem::SingleComponentSystem(Scene * scene)
+    :   SceneSystem(scene)
+{
+}
+
+void SingleComponentSystem::AddEntity(Entity * entity)
+{
+    entities.push_back(entity);
+    
+    for(int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    {
+        uint32 flags = 1 << id;
+        if((flags & GetRequiredComponents()) == flags)
+        {
+            uint32 componentsCount = entity->GetComponentCount(id);
+            for(uint32 c = 0; c < componentsCount; ++c)
+            {
+                AddComponent(entity, entity->GetComponent(id, c));
+            }
+        }
+    }
+    
+}
+
+void SingleComponentSystem::RemoveEntity(Entity * entity)
+{
+    for(int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    {
+        uint32 flags = 1 << id;
+        if((flags & GetRequiredComponents()) == flags)
+        {
+            uint32 componentsCount = entity->GetComponentCount(id);
+            for(uint32 c = 0; c < componentsCount; ++c)
+            {
+                RemoveComponent(entity, entity->GetComponent(id, c));
+            }
+        }
+    }
+
+    
+    
+    RemoveFromVector(entities, entity);
+}
+
+void SingleComponentSystem::AddComponent(Entity * entity, Component * component)
+{
+    components.push_back(component);
+}
+
+void SingleComponentSystem::RemoveComponent(Entity * entity, Component * component)
+{
+    RemoveFromVector(components, component);
+}
+
+
+//=====
+MultiComponentSystem::MultiComponentSystem(Scene * scene)
+:   SceneSystem(scene)
+{
+}
+
+void MultiComponentSystem::AddEntity(Entity * entity)
+{
+    entities.push_back(entity);
+    
+    for(int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    {
+        uint32 flags = 1 << id;
+        if((flags & GetRequiredComponents()) == flags)
+        {
+            uint32 componentsCount = entity->GetComponentCount(id);
+            for(uint32 c = 0; c < componentsCount; ++c)
+            {
+                AddComponent(entity, entity->GetComponent(id, c));
+            }
+        }
+    }
+    
+}
+
+void MultiComponentSystem::RemoveEntity(Entity * entity)
+{
+    for(int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    {
+        uint32 flags = 1 << id;
+        if((flags & GetRequiredComponents()) == flags)
+        {
+            uint32 componentsCount = entity->GetComponentCount(id);
+            for(uint32 c = 0; c < componentsCount; ++c)
+            {
+                RemoveComponent(entity, entity->GetComponent(id, c));
+            }
+        }
+    }
+    
+    RemoveFromVector(entities, entity);
+}
+
+void MultiComponentSystem::AddComponent(Entity * entity, Component * component)
+{
+    components[component->GetType()].push_back(component);
+}
+
+void MultiComponentSystem::RemoveComponent(Entity * entity, Component * component)
+{
+    RemoveFromVector(components[component->GetType()], component);
+}
+
+
+
+
+
+
 
 ComponentsTest::ComponentsTest()
 : TestTemplate<ComponentsTest>("ComponentsTest")
@@ -37,6 +168,8 @@ ComponentsTest::ComponentsTest()
     RegisterFunction(this, &ComponentsTest::RegisterEntityTest, "RegisterEntityTest", NULL);
     RegisterFunction(this, &ComponentsTest::AddComponentTest, "AddComponentTest", NULL);
 	RegisterFunction(this, &ComponentsTest::AddComponentTest2, "AddComponentTest2", NULL);
+    RegisterFunction(this, &ComponentsTest::MultiComponentTest1, "MultiComponentTest1", NULL);
+	RegisterFunction(this, &ComponentsTest::MultiComponentTest2, "MultiComponentTest2", NULL);
 }
 
 void ComponentsTest::LoadResources()
@@ -52,7 +185,7 @@ void ComponentsTest::UnloadResources()
 
 void ComponentsTest::RegisterEntityTest( PerfFuncData * data )
 {
-	Scene *scene = new Scene();
+	Scene *scene = CreateSingleComponentScene();
 
 	Entity *e1 = new Entity();
 	e1->AddComponent(new LightComponent());
@@ -67,7 +200,7 @@ void ComponentsTest::RegisterEntityTest( PerfFuncData * data )
 
 void ComponentsTest::AddComponentTest( PerfFuncData * data )
 {
-	Scene *scene = new Scene();
+	Scene *scene = CreateSingleComponentScene();
 
 	Entity *e1 = new Entity();
 
@@ -88,7 +221,7 @@ void ComponentsTest::AddComponentTest( PerfFuncData * data )
 
 void ComponentsTest::AddComponentTest2( PerfFuncData * data )
 {
-	Scene *scene = new Scene();
+	Scene *scene = CreateSingleComponentScene();
 
 	Entity *e1 = new Entity();
 
@@ -112,3 +245,78 @@ void ComponentsTest::AddComponentTest2( PerfFuncData * data )
 }
 
 
+
+void ComponentsTest::MultiComponentTest1( PerfFuncData * data )
+{
+	Scene *scene = CreateMultiComponentScene();
+    
+	Entity *e1 = new Entity();
+    
+	scene->AddNode(e1);
+    
+	Component *a = new ActionComponent();
+	Component *l = new LightComponent();
+    
+	e1->AddComponent(a);
+	e1->AddComponent(l);
+    
+	e1->RemoveComponent(a);
+	e1->RemoveComponent(l);
+    
+	a = l = NULL;
+    
+	scene->RemoveNode(e1);
+    
+	e1->Release();
+	scene->Release();
+}
+
+void ComponentsTest::MultiComponentTest2( PerfFuncData * data )
+{
+	Scene *scene = CreateMultiComponentScene();
+    
+	Entity *e1 = new Entity();
+    
+	scene->AddNode(e1);
+    
+	Component *a = new ActionComponent();
+	Component *l = new LightComponent();
+    
+	e1->AddComponent(a);
+	e1->AddComponent(l);
+    
+	e1->RemoveComponent(a);
+	e1->RemoveComponent(l);
+    
+	a = l = NULL;
+    
+	scene->RemoveNode(e1);
+    
+	e1->Release();
+	scene->Release();
+}
+
+
+Scene * ComponentsTest::CreateSingleComponentScene() const
+{
+	Scene *scene = new Scene();
+    
+    SingleComponentSystem * testSystemLight = new SingleComponentSystem(scene);
+    SingleComponentSystem * testSystemAction = new SingleComponentSystem(scene);
+    
+    scene->AddSystem(testSystemLight, 1 << Component::LIGHT_COMPONENT);
+    scene->AddSystem(testSystemAction, 1 << Component::ACTION_COMPONENT);
+
+    return scene;
+}
+
+Scene * ComponentsTest::CreateMultiComponentScene() const
+{
+	Scene *scene = new Scene();
+    
+    MultiComponentSystem * testSystem = new MultiComponentSystem(scene);
+    
+    scene->AddSystem(testSystem, (1 << Component::LIGHT_COMPONENT) | (1 << Component::ACTION_COMPONENT));
+    
+    return scene;
+}
