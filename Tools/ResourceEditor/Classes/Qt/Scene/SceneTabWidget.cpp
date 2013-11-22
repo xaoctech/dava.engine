@@ -35,6 +35,7 @@
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
+#include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Classes/Deprecated/ScenePreviewDialog.h"
 #include "Classes/Qt/Main/Request.h"
@@ -313,12 +314,15 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 
 void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 {
-	if(data->hasUrls())
+    if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 	{
 		QList<QUrl> urls = data->urls();
 		for(int i = 0; i < urls.size(); ++i)
 		{
-            QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
+            if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
+            {
+                QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
+            }
 		}
 	}
 }
@@ -327,26 +331,33 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 {
 	if(NULL != curScene)
 	{
-		if(data->hasUrls())
+		if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 		{
-			DAVA::Vector3 pos;
-
-			if(!curScene->collisionSystem->LandRayTestFromCamera(pos))
-			{
-				DAVA::Landscape *landscape = curScene->collisionSystem->GetLandscape();
-				if( NULL != landscape && 
-					NULL != landscape->GetHeightmap() &&
-					landscape->GetHeightmap()->Size() > 0)
-				{
-					curScene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(), pos);
-				}
-			}
-
-			QString sc2path = data->urls().at(0).toLocalFile();
-			
-			QtMainWindow::Instance()->WaitStart("Adding object to scene", sc2path);
-			curScene->structureSystem->Add(sc2path.toStdString(), pos);
-			QtMainWindow::Instance()->WaitStop();
+            QList<QUrl> urls = data->urls();
+            for(int i = 0; i < urls.size(); ++i)
+            {
+                if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
+                {
+                    DAVA::Vector3 pos;
+                    
+                    if(!curScene->collisionSystem->LandRayTestFromCamera(pos))
+                    {
+                        DAVA::Landscape *landscape = curScene->collisionSystem->GetLandscape();
+                        if( NULL != landscape &&
+                           NULL != landscape->GetHeightmap() &&
+                           landscape->GetHeightmap()->Size() > 0)
+                        {
+                            curScene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(), pos);
+                        }
+                    }
+                    
+                    QString sc2path = urls[i].toLocalFile();
+                    
+                    QtMainWindow::Instance()->WaitStart("Adding object to scene", sc2path);
+                    curScene->structureSystem->Add(sc2path.toStdString(), pos);
+                    QtMainWindow::Instance()->WaitStop();
+                }
+            }
 		}
 	}
 	else
@@ -438,8 +449,7 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-	if(mimeData->hasUrls()) 
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
 		event->acceptProposedAction();
 	}
@@ -452,10 +462,9 @@ void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void SceneTabWidget::dropEvent(QDropEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-	if(mimeData->hasUrls())
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
-		TabBarDataDropped(mimeData);
+		TabBarDataDropped(event->mimeData());
 	}
 }
 
@@ -565,8 +574,7 @@ MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 
 void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-	if(mimeData->hasUrls()) 
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
 		event->acceptProposedAction();
 	}
@@ -579,10 +587,9 @@ void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 
 void MainTabBar::dropEvent(QDropEvent *event)
 {
-	const QMimeData *mimeData = event->mimeData();
-	if(mimeData->hasUrls())
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
 	{
-		emit OnDrop(mimeData);
+		emit OnDrop(event->mimeData());
 	}
 }
 

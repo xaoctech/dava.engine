@@ -71,6 +71,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	landDebugDrawer->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 	landCollWorld = new btCollisionWorld(landCollDisp, landBroadphase, landCollConf);
 	landCollWorld->setDebugDrawer(landDebugDrawer);
+	
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
@@ -323,9 +324,12 @@ void SceneCollisionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCollisionSystem::Draw()
 {
-	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
+	//int oldState = DAVA::RenderManager::Instance()->GetState();
+	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
 
+	DAVA::RenderManager::Instance()->SetDefault3DState();
+	DAVA::RenderManager::Instance()->FlushState();
+	
 	if(drawMode & ST_COLL_DRAW_LAND)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.5f, 0, 1.0f));
@@ -381,7 +385,7 @@ void SceneCollisionSystem::Draw()
 		}
 	}
 
-	DAVA::RenderManager::Instance()->SetState(oldState);
+	//DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)

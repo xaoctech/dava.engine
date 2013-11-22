@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Render/Highlevel/RenderPass.h"
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -64,6 +65,9 @@ public:
 private:
     ShadowRect * shadowRect;
 	eBlend blendMode;
+	
+	UniqueHandle blendAlphaState;
+	UniqueHandle blendMultiplyState;
 };
     
 } // ns

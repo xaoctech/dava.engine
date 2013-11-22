@@ -35,6 +35,8 @@
 #include "Commands2/CommandAction.h"
 #include "DAVAEngine.h"
 
+#include "Render/UniqueStateSet.h"
+
 using namespace DAVA;
 
 class LandscapeProxy;
@@ -82,6 +84,8 @@ protected:
 
 	Sprite* ApplyImageToTexture(Image* image, Texture* texture);
 	void ApplyImageToSprite(Image* image, Sprite* dstSprite);
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORCOMMANDS__) */

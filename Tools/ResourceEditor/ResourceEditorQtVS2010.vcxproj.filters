@@ -253,6 +253,9 @@
     <Filter Include="Classes\Qt\DockLibrary2\Textures">
       <UniqueIdentifier>{4b81a16e-8901-44d4-a357-5adb2c999146}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\MimeData">
+      <UniqueIdentifier>{ac319e8a-9cc9-4d01-a50e-200cc05db3f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2319,6 +2322,12 @@
     <ClCompile Include="_GeneratedQt\DockLibrary2\Textures\LibraryTexturesModel_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\MimeData\QtMimeData.cpp">
+      <Filter>Classes\Qt\Tools\MimeData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\MimeData\QtMimeData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3985,6 +3994,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLibrary2\Textures\LibraryTexturesModel.h">
       <Filter>Classes\Qt\DockLibrary2\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\MimeData\MimeDataHelper2.h">
+      <Filter>Classes\Qt\Tools\MimeData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\MimeData\QtMimeData.h">
+      <Filter>Classes\Qt\Tools\MimeData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

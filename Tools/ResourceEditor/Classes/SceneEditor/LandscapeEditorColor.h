@@ -35,6 +35,7 @@
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeEditorPropertyControl.h"
+#include "Render/UniqueStateSet.h"
 
 using namespace DAVA;
 
@@ -104,6 +105,8 @@ protected:
     bool editingIsEnabled;
 
 	Image* originalImage;
+	
+	UniqueHandle colorRenderState;
 };
 
 

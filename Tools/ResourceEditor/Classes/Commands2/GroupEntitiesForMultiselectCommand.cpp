@@ -59,7 +59,7 @@ GroupEntitiesForMultiselectCommand::~GroupEntitiesForMultiselectCommand()
 		it != originalLodComponents.end(); ++it)
 	{
 		DAVA::Component* lodComponent = it->second;
-		SafeRelease(lodComponent);
+		SafeDelete(lodComponent);
 	}
 	originalLodComponents.clear();
 }
@@ -95,7 +95,6 @@ void GroupEntitiesForMultiselectCommand::Undo()
 	for(Map<Entity*,DAVA::Component*>::iterator it = originalLodComponents.begin();
 		it != originalLodComponents.end(); ++it)
 	{
-		it->first->RemoveComponent(it->second->GetType());
 		it->first->AddComponent(it->second);
 	}
 	originalLodComponents.clear();

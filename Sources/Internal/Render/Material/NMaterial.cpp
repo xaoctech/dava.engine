@@ -49,49 +49,7 @@ namespace DAVA
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
     static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
-	
-	NMaterialDescriptor::NMaterialDescriptor()
-	{
 		
-	}
-    
-	NMaterialDescriptor::~NMaterialDescriptor()
-	{
-		
-	}
-	
-	uint32 NMaterialDescriptor::GetTextureSlotByName(const String & textureName)
-	{
-		Map<String, uint32>::iterator it = slotNameMap.find(textureName);
-		if (it != slotNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	uint32 NMaterialDescriptor::GetUniformSlotByName(const String & uniformName)
-	{
-		Map<String, uint32>::iterator it = uniformNameMap.find(uniformName);
-		if (it != uniformNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	void NMaterialDescriptor::SetNameForTextureSlot(uint32 slot, const String & name)
-	{
-		slotNameMap[name] = slot;
-	}
-	
-	void NMaterialDescriptor::SetNameForUniformSlot(uint32 slot, const String & name)
-	{
-		uniformNameMap[name] = slot;
-	}
-	
 	MaterialTechnique::MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
 	{
 		shader = 0;
@@ -177,6 +135,13 @@ namespace DAVA
 		
 		textures.clear();
 		texturesArray.clear();
+		
+		for(HashMap<FastName, NMaterialProperty*>::iterator i = materialProperties.begin();
+			i != materialProperties.end();
+			++i)
+		{
+			delete i->second;
+		}		
 	}
 	
 	void NMaterialState::AddMaterialProperty(const String & keyName, const YamlNode * uniformNode)
@@ -254,9 +219,10 @@ namespace DAVA
 		NMaterialProperty * materialProperty = new NMaterialProperty();
 		materialProperty->size = 1;
 		materialProperty->type = type;
-		materialProperty->data = new char[Shader::GetUniformTypeSize(type)];
+		materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+		materialProperty->data = new char[materialProperty->dataSize];
 		
-		memcpy(materialProperty->data, &data, Shader::GetUniformTypeSize(type));
+		memcpy(materialProperty->data, &data, materialProperty->dataSize);
 		
 		materialProperties.insert(uniformName, materialProperty);
 	}
@@ -272,7 +238,8 @@ namespace DAVA
 				SafeDeleteArray(tmpPtr); //cannot delete void* pointer
 				materialProperty->size = size;
 				materialProperty->type = type;
-				materialProperty->data = new char[materialProperty->GetDataSize()];
+                materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+				materialProperty->data = new char[materialProperty->dataSize];
 			}
 		}
 		else
@@ -280,11 +247,12 @@ namespace DAVA
 			materialProperty = new NMaterialProperty;
 			materialProperty->size = size;
 			materialProperty->type = type;
-			materialProperty->data = new char[materialProperty->GetDataSize()];
+            materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+			materialProperty->data = new char[materialProperty->dataSize];
 			materialProperties.insert(propertyFastName, materialProperty);
 		}
 		
-		memcpy(materialProperty->data, data, materialProperty->GetDataSize());
+		memcpy(materialProperty->data, data, materialProperty->dataSize);
 	}
 	
 	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
@@ -338,13 +306,15 @@ namespace DAVA
 				technique = curState->techniqueForRenderPass.at(techniqueName);
 				if(technique)
 				{
-					RenderState* newRenderState = new RenderState();
-					technique->GetRenderState()->CopyTo(newRenderState);
-					MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
-																				 technique->GetUniqueDefineSet(),
-																				 newRenderState);
-					AddMaterialTechnique(techniqueName, materialTechnique);
-					technique = materialTechnique;
+					//RenderState* newRenderState = new RenderState();
+					//technique->GetRenderState()->CopyTo(newRenderState);
+					//MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
+					//															 technique->GetUniqueDefineSet(),
+					//															 technique->GetRenderState());
+					//AddMaterialTechnique(techniqueName, materialTechnique);
+					//technique = materialTechnique;
+					
+					AddMaterialTechnique(techniqueName, technique);
 					
 					break;
 				}
@@ -363,7 +333,7 @@ namespace DAVA
 		TextureBucket* bucket = textures.at(textureFastName);
 		if(NULL != bucket)
 		{
-			DVASSERT(bucket->index < texturesArray.size());
+			DVASSERT(bucket->index < (int32)texturesArray.size());
 			
 			if(bucket->texture != texture)
 			{
@@ -714,6 +684,16 @@ namespace DAVA
     
 	NMaterial::~NMaterial()
 	{
+		if(IsConfigMaterial())
+		{
+			for(HashMap<FastName, MaterialTechnique*>::iterator i = techniqueForRenderPass.begin();
+				i != techniqueForRenderPass.end();
+				++i)
+			{
+				delete i->second;
+			}
+		}
+		
 		SetParent(NULL);
 		
 		if(materialSystem)
@@ -813,8 +793,50 @@ namespace DAVA
 		return result;
 	}
 	
+	void NMaterial::BindMaterialTextures(RenderState* renderState)
+	{
+		Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
+		for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
+		{
+			TextureParamCacheEntry& textureEntry = *i;
+			
+			if(NULL == textureEntry.tx)
+			{
+				textureEntry.tx = GetTexture(textureEntry.textureName);
+			}
+	
+			renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+		}
+	}
+	
+	void NMaterial::BindMaterialProperties(Shader * shader)
+	{
+		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
+		Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
+		for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
+		{
+			UniformCacheEntry& uniformEntry = *i;
+			
+			if(NULL == uniformEntry.prop)
+			{
+				uniformEntry.prop = GetMaterialProperty(uniformEntry.uniform->name);
+			}
+			
+			if(uniformEntry.prop)
+			{
+				//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
+				shader->SetUniformValueByIndex(uniformEntry.index,
+											   uniformEntry.uniform->type,
+											   uniformEntry.uniform->size,
+											   uniformEntry.prop->data,
+											   uniformEntry.prop->dataSize);
+			}
+		}
+	}
+
+	
 	void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* camera)
-	{		
+	{
 		if (techniqueName != activeTechniqueName)
 		{
 			activeTechnique = GetTechnique(techniqueName);
@@ -827,14 +849,11 @@ namespace DAVA
 				DVASSERT(activeTechnique);
 				return;
 			}
-		}
-		
-		if(!ready)
-		{
-			Rebuild(false);
 			
 			BuildTextureParamsCache(*activeTechnique);
 			BuildActiveUniformsCache(*activeTechnique);
+			
+			ready = true;
 		}
 		
 		SetupPerFrameProperties(camera);
@@ -843,40 +862,41 @@ namespace DAVA
 				
 		Shader * shader = activeTechnique->GetShader();
 		
-		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = activeTechnique->GetTextureParamsCache();
-		size_t textureCount = cache.size();
-		for(size_t i = 0; i < textureCount; ++i)
+		BindMaterialTextures(renderState);
+		/*Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
+		for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
 		{
-			MaterialTechnique::TextureParamCacheEntry& textureEntry = cache[i];
+			TextureParamCacheEntry& textureEntry = *i;
 			Texture* texture = GetTexture(textureEntry.textureName);
 			renderState->SetTexture(texture, textureEntry.slot);
-		}
+		}*/
 		
 		renderState->SetShader(shader);
 		
 		RenderManager::Instance()->FlushState(renderState);
 		
+		BindMaterialProperties(shader);
 		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
-		Vector<MaterialTechnique::UniformCacheEntry>& uniformsCache = activeTechnique->GetActiveUniformsCache();
-		size_t uniformCount = uniformsCache.size();
-		for(size_t i = 0; i < uniformCount; ++i)
+		/*Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
+		for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
 		{
-			MaterialTechnique::UniformCacheEntry& uniformEntry = uniformsCache[i];
+			UniformCacheEntry& uniformEntry = *i;
 			
-			NMaterial * currentMaterial = this;
-			
-			while(currentMaterial != 0)
+			if(NULL == uniformEntry.prop)
 			{
-				NMaterialProperty * property = currentMaterial->materialProperties.at(uniformEntry.uniform->name);
-				if (property)
-				{
-					shader->SetUniformValueByIndex(uniformEntry.index, uniformEntry.uniform->type, uniformEntry.uniform->size, property->data, property->GetDataSize());
-					break;
-				}
-				currentMaterial = currentMaterial->parent;
+				uniformEntry.prop = GetMaterialProperty(uniformEntry.uniform->name);
 			}
-
-		}
+			
+			if(uniformEntry.prop)
+			{
+				//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
+				shader->SetUniformValueByIndex(uniformEntry.index,
+											   uniformEntry.uniform->type,
+											   uniformEntry.uniform->size,
+											   uniformEntry.prop->data,
+											   uniformEntry.prop->dataSize);
+			}
+		}*/
 		
 		DVASSERT(ready);
 	}
@@ -1031,13 +1051,19 @@ namespace DAVA
 			combinedDefines.Combine(nativeDefines);
 		}
 		
-		HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
-		while(iter != techniqueForRenderPass.end())
+		if(IsConfigMaterial())
 		{
-			MaterialTechnique* technique = iter->second;
-			technique->RecompileShader(combinedDefines);
+			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
+			while(iter != techniqueForRenderPass.end())
+			{
+				MaterialTechnique* technique = iter->second;
+				technique->RecompileShader(combinedDefines);
 			
-			++iter;
+				//BuildTextureParamsCache(*technique);
+				//BuildActiveUniformsCache(*technique);
+			
+				++iter;
+			}
 		}
 				
 		if(recursive)
@@ -1253,15 +1279,14 @@ namespace DAVA
 		{
 			NMaterialProperty* property = it->second;
 			
-			uint32 propDataSize = property->GetDataSize();
-			uint8* propertyStorage = new uint8[propDataSize + sizeof(uint32) + sizeof(uint32)];
+			uint8* propertyStorage = new uint8[property->dataSize + sizeof(uint32) + sizeof(uint32)];
 			
 			uint32 uniformType = property->type; //make sure uniform type is always uint32
 			memcpy(propertyStorage, &uniformType, sizeof(uint32));
 			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, propDataSize);
+			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, property->dataSize);
 			
-			materialProps->SetByteArray(it->first.c_str(), propertyStorage, propDataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, property->dataSize + sizeof(uint32) + sizeof(uint32));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1566,10 +1591,9 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::BuildTextureParamsCache(MaterialTechnique& technique)
+	void NMaterial::BuildTextureParamsCache(const MaterialTechnique& technique)
 	{
-		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = technique.GetTextureParamsCache();
-		cache.clear();
+		textureParamsCache.clear();
 		Shader * shader = technique.GetShader();
 		
 		uint32 uniformCount = shader->GetUniformCount();
@@ -1586,21 +1610,21 @@ namespace DAVA
 					
 					if(slotProp)
 					{
-						MaterialTechnique::TextureParamCacheEntry entry;
+						TextureParamCacheEntry entry;
 						entry.textureName = uniform->name;
 						entry.slot = *(int32*)slotProp->data;
+						entry.tx = NULL;
 						
-						cache.push_back(entry);
+						textureParamsCache.push_back(entry);
 					}
 				}
 			}
 		}
 	}
 	
-	void NMaterial::BuildActiveUniformsCache(MaterialTechnique& technique)
+	void NMaterial::BuildActiveUniformsCache(const MaterialTechnique& technique)
 	{
-		Vector<MaterialTechnique::UniformCacheEntry>& cache = technique.GetActiveUniformsCache();
-		cache.clear();
+		activeUniformsCache.clear();
 		
 		Shader * shader = technique.GetShader();
 		
@@ -1608,15 +1632,74 @@ namespace DAVA
 		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+						
 			if (Shader::UNIFORM_NONE == uniform->id  ||
 				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 			{
-				MaterialTechnique::UniformCacheEntry entry;
-				entry.uniform = uniform;
-				entry.index = uniformIndex;
+				NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+				NMaterialProperty* localProp = materialProperties.at(uniform->name);
 				
-				cache.push_back(entry);
+				//VI: we need to track only properties not set by parent to shader
+				if(localProp ||
+				   (NULL == localProp && NULL == prop))
+				{
+					UniformCacheEntry entry;
+					entry.uniform = uniform;
+					entry.index = uniformIndex;
+					entry.prop = NULL;
+					
+					activeUniformsCache.push_back(entry);
+				}
 			}
 		}
 	}
+		
+	void NMaterial::Rebind(bool recursive)
+	{
+		if(IsConfigMaterial())
+		{
+			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
+			while(iter != techniqueForRenderPass.end())
+			{
+				MaterialTechnique* technique = iter->second;
+
+				Shader * shader = technique->GetShader();
+				shader->Bind();
+				
+				uint32 uniformCount = shader->GetUniformCount();
+				for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+				{
+					Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+					
+					if (Shader::UNIFORM_NONE == uniform->id  ||
+						Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+					{
+						NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+						
+						if(prop)
+						{
+							shader->SetUniformValueByIndex(uniformIndex,
+														   uniform->type,
+														   uniform->size,
+														   prop->data,
+														   prop->dataSize);
+						}
+					}
+				}
+				
+				shader->Unbind();
+				
+				++iter;
+			}
+			
+			if(recursive)
+			{
+				size_t childrenCount = NMaterialState::children.size();
+				for(size_t i = 0; i < childrenCount; ++i)
+				{
+					NMaterialState::children[i]->Rebind(recursive);
+				}
+			}
+		}
+	}	
 };

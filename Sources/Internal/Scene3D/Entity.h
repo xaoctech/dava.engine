@@ -81,6 +81,7 @@ public:
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType, uint32 index = 0);
+
     Component * GetComponent(uint32 componentType, uint32 index = 0) const;
     Component * GetOrCreateComponent(uint32 componentType, uint32 index = 0);
     uint32 GetComponentCount();

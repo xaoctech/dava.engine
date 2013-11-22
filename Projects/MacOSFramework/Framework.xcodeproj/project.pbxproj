@@ -821,6 +821,15 @@
 		A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
 		A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
 		A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
+		A69B7A481834CD640093AF7F /* RenderStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A461834CD640093AF7F /* RenderStateData.h */; };
+		A69B7A491834CD640093AF7F /* RenderStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A461834CD640093AF7F /* RenderStateData.h */; };
+		A69B7A4A1834CD640093AF7F /* RenderStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A461834CD640093AF7F /* RenderStateData.h */; };
+		A69B7A4B1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
+		A69B7A4C1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
+		A69B7A4D1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
+		A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
+		A69B7A501834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
+		A69B7A511834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
 		A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
@@ -2216,6 +2225,9 @@
 		A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerializationContext.cpp; sourceTree = "<group>"; };
 		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
+		A69B7A461834CD640093AF7F /* RenderStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateData.h; sourceTree = "<group>"; };
+		A69B7A471834CD640093AF7F /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
+		A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6B0517F17E886D8000EED68 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FE001761D96C00B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
@@ -3453,6 +3465,8 @@
 		E8989C1516BD24E400732C04 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				A69B7A461834CD640093AF7F /* RenderStateData.h */,
+				A69B7A471834CD640093AF7F /* UniqueStateSet.h */,
 				50A5186E17B256250022E8FA /* ShaderCache.cpp */,
 				50A5186F17B256250022E8FA /* ShaderCache.h */,
 				4FFE5CAC1779DBC700728624 /* MipmapReplacer.cpp */,
@@ -3520,6 +3534,7 @@
 				E8989CAA16BD24E500732C04 /* UberShader.h */,
 				E8989C6C16BD24E400732C04 /* IndexBuffer.h */,
 				E8989CAB16BD24E500732C04 /* VertexBuffer.h */,
+				A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */,
 			);
 			path = Render;
 			sourceTree = "<group>";
@@ -4351,6 +4366,9 @@
 				02F8B06A17E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6F17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */,
+				A69B7A4A1834CD640093AF7F /* RenderStateData.h in Headers */,
+				A69B7A4D1834CD640093AF7F /* UniqueStateSet.h in Headers */,
+				A69B7A511834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4716,6 +4734,9 @@
 				02F8B06817E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6D17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E16F17FAC0B400304C3C /* SpatialTree.h in Headers */,
+				A69B7A481834CD640093AF7F /* RenderStateData.h in Headers */,
+				A69B7A4B1834CD640093AF7F /* UniqueStateSet.h in Headers */,
+				A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5067,6 +5088,9 @@
 				02F8B06917E3399800D5A334 /* SpeedTreeLeafBatch.h in Headers */,
 				A63BCD6E17EB26E300EA4811 /* Process.h in Headers */,
 				EA84E17017FAC0B400304C3C /* SpatialTree.h in Headers */,
+				A69B7A491834CD640093AF7F /* RenderStateData.h in Headers */,
+				A69B7A4C1834CD640093AF7F /* UniqueStateSet.h in Headers */,
+				A69B7A501834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

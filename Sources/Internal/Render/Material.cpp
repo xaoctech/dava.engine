@@ -286,8 +286,6 @@ Material::Material()
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
     
-	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
-
 //    if (scene)
 //    {
 //        DataNode * materialsNode = scene->GetMaterials();
@@ -941,6 +939,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 {
     ///float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
+	/*
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
         if (NULL == instanceMaterialState->lightmapTexture)
@@ -1113,7 +1112,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 			}
 		}
     }
-
+	 */
 }
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
@@ -1150,8 +1149,8 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 	eBlendMode oldDst;
 	if(isAlphablend)
 	{
-		oldSrc = RenderManager::Instance()->GetSrcBlend();
-		oldDst = RenderManager::Instance()->GetDestBlend();
+		//oldSrc = RenderManager::Instance()->GetSrcBlend();
+		//oldDst = RenderManager::Instance()->GetDestBlend();
 	}
 
 	PrepareRenderState(instanceMaterialState);
@@ -1173,6 +1172,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 	//{
 	//	RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
 	//}
+	 
 }
 
 

@@ -42,7 +42,7 @@ class RenderDataObject;
 class NMaterial;
 class Camera;
 class MaterialSystem;
-class ParticleLayer3D : public ParticleLayer, public MaterialChangeListener
+class ParticleLayer3D : public ParticleLayer
 {
 public:
 	ParticleLayer3D(ParticleEmitter* parent);
@@ -71,10 +71,7 @@ public:
 	virtual void CreateInnerEmitter();
 	
 protected:
-	
-	virtual void ParentChanged(NMaterial* material);
-	virtual void SystemChanged(NMaterial* material);
-	
+		
 	void CalcNonLong(Particle* current,
 							Vector3& topLeft,
 							Vector3& topRight,

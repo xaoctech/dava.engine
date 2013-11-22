@@ -53,6 +53,14 @@ LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 ,	visibilityToolProxy(NULL)
 ,	rulerToolProxy(NULL)
 {
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 }
 
 LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
@@ -115,8 +123,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	landscapeRenderer->Release();
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 	
 	++customDrawRequestCount;
 
@@ -134,8 +141,7 @@ void LandscapeEditorDrawSystem::DisableCustomDraw()
 	
 	if (customDrawRequestCount == 0)
 	{
-		landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-		landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(baseLandscape)));
+		landscapeNode->AddComponent(new RenderComponent(baseLandscape));
 		
 		UpdateBaseLandscapeHeightmap();
 	}
@@ -441,8 +447,7 @@ bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 
 	fogWasEnabled = landscapeProxy->IsFogEnabled();
 	landscapeProxy->SetFogEnabled(false);
@@ -574,11 +579,13 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 
 		texturePathname.ReplaceExtension(".png");
 
-		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		RenderManager::Instance()->SetRenderState(noBlendDrawState);
+		RenderManager::Instance()->FlushState();
 		Image *image = texture->CreateImageFromMemory();
-		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+		//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 
 		if(image)
 		{

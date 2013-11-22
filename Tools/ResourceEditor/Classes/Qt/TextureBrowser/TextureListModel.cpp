@@ -195,7 +195,7 @@ void TextureListModel::setHighlight(const EntityGroup *nodes)
 
 	if(NULL != nodes)
 	{
-		for(int i = 0; i < nodes->Size(); ++i)
+		for(int i = 0; i < (int)nodes->Size(); ++i)
 		{
 			DAVA::Entity *node = nodes->GetEntity(i);
 			DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
