@@ -88,38 +88,39 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 	new ComponentsTest();
-// 	new UIMovieTest();
-// 	new InputTest();
-//     new FormatsTest();
-// 	new DeviceInfoTest();
-// 	new TransparentWebViewTest();
-//     new FilePathTest();
-//     new FileListTest();
-//     new FileSystemTest();
-//     new LocalizationTest();
-// 
-// 	new SampleTest();
-// 	new EntityTest(); 
-// 	new MemoryAllocatorsTest();
-// 	new HashMapTest();
-// //	new SoundTest();
-// 	new SplitTest();
-// 	new AlignTest();
-// 	new EMailTest();
-// 	new DPITest();
-// 	new MaterialCompilerTest();
-// 	new CloneTest();
-// 	new PVRTest();
-// 	new DXTTest();
-// 	new EntityTest();	
-// 	new MemoryAllocatorsTest();
-// 	new HashMapTest();
-// 	new KeyedArchiveYamlTest();
-// 	new DLCTest();
-// 	new UIListTest();
-// 	new UIScrollViewTest();
-// 
-//     new ThreadSyncTest();
+    
+ 	new UIMovieTest();
+ 	new InputTest();
+     new FormatsTest();
+ 	new DeviceInfoTest();
+ 	new TransparentWebViewTest();
+     new FilePathTest();
+     new FileListTest();
+     new FileSystemTest();
+     new LocalizationTest();
+ 
+ 	new SampleTest();
+ 	new EntityTest(); 
+ 	new MemoryAllocatorsTest();
+ 	new HashMapTest();
+ //	new SoundTest();
+ 	new SplitTest();
+ 	new AlignTest();
+ 	new EMailTest();
+ 	new DPITest();
+ 	new MaterialCompilerTest();
+ 	new CloneTest();
+ 	new PVRTest();
+ 	new DXTTest();
+ 	new EntityTest();	
+ 	new MemoryAllocatorsTest();
+ 	new HashMapTest();
+ 	new KeyedArchiveYamlTest();
+ 	new DLCTest();
+ 	new UIListTest();
+ 	new UIScrollViewTest();
+ 
+     new ThreadSyncTest();
     
     errors.reserve(TestCount());
 
