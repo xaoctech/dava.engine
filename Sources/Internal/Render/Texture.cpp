@@ -730,6 +730,11 @@ TextureDescriptor * Texture::CreateDescriptor() const
 
     return NULL;
 }
+	
+TextureDescriptor * Texture::GetDescriptor()
+{
+	return texDescriptor;
+}
     
 void Texture::Reload()
 {

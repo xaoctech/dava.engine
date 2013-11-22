@@ -1723,7 +1723,7 @@ void QtMainWindow::OnConvertModifiedTextures()
 	WaitSetValue(convretedNumber);
 	for(Map<Texture *, Vector<eGPUFamily> >::iterator it = textures.begin(); it != textures.end(); ++it)
 	{
-		DAVA::TextureDescriptor *descriptor = it->first->CreateDescriptor();
+		DAVA::TextureDescriptor *descriptor = it->first->GetDescriptor();
 		
 		if(NULL == descriptor)
 		{
@@ -1737,8 +1737,6 @@ void QtMainWindow::OnConvertModifiedTextures()
 			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
 			WaitSetValue(++convretedNumber);
 		}
-		
-		SafeRelease(descriptor);
 	}
 	WaitStop();
 }

@@ -90,7 +90,7 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DA
 			continue;
 		}
 		
-		DAVA::TextureDescriptor *descriptor = texture->CreateDescriptor();
+		DAVA::TextureDescriptor *descriptor = texture->GetDescriptor();
 		if(NULL == descriptor)
 		{
 			continue;
@@ -102,9 +102,7 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DA
 			eGPUFamily gpu = (eGPUFamily)i;
 			if(GPUFamilyDescriptor::IsFormatSupported(gpu, (PixelFormat)descriptor->compression[gpu].format))
 			{
-				FilePath convertedTexture = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
-				FilePath texPath = descriptor->pathname;
-				texPath.ReplaceExtension(".png");
+				FilePath texPath = descriptor->GetSourceTexturePathname();
 				if(texPath.Exists() && !descriptor->IsCompressedTextureActual(gpu))
 				{
 					markedGPUs.push_back(gpu);
@@ -116,8 +114,6 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DA
 		{
 			textures[texture] = markedGPUs;
 		}
-		
-		SafeRelease(descriptor);
 	}
 	return retValue;
 }
