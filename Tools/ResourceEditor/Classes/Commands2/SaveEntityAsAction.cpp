@@ -56,10 +56,7 @@ void SaveEntityAsAction::Redo()
 			DAVA::Entity *clone = entity->Clone();
 
             DAVA::KeyedArchive *props = clone->GetCustomProperties();
-            if(props && props->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
-            {
-                props->DeleteKey(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-            }
+            props->DeleteKey(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
             
 			scene->AddNode(clone);
 		}
