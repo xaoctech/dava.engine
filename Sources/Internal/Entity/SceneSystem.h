@@ -37,6 +37,7 @@ namespace DAVA
 
 class Entity;
 class Scene;    
+class Component;
 
 class SceneSystem
 {
@@ -49,6 +50,10 @@ public:
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
+
+	virtual void AddComponent(Entity * entity, Component * component);
+	virtual void RemoveComponent(Entity * entity, Component * component);
+
     virtual void ImmediateEvent(Entity * entity, uint32 event);
     
     virtual void Process();

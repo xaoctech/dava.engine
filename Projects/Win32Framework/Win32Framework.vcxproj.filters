@@ -1353,6 +1353,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateData.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2407,6 +2410,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\OcclusionQuery.cpp">
       <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

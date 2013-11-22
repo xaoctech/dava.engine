@@ -123,6 +123,7 @@ SystemsSettingsEditor::~SystemsSettingsEditor()
 
 void SystemsSettingsEditor::InitializeProperties()
 {
+	/*
 	QtPropertyItem *header = NULL;
 	
 	ADD_HEADER("Collision system settings:");
@@ -151,6 +152,7 @@ void SystemsSettingsEditor::InitializeProperties()
 	ADD_HEADER("Grid system settings:");
 	INIT_PROPERTY(gridMax, sceneEditor->gridSystem->GetGridMax(), "Grid Max", HandleGridMax(QtPropertyData::ValueChangeReason));
 	INIT_PROPERTY(gridStep, sceneEditor->gridSystem->GetGridStep(), "Grid Step", HandleGridStep(QtPropertyData::ValueChangeReason));
+*/
 }
 
 void SystemsSettingsEditor::RestoreInitialSettings()

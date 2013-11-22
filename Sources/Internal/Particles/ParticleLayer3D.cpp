@@ -222,7 +222,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	}
 
 	Particle * current = head;
-	if(current &&
+	/*if(current &&
 	   NULL == currentTexture)
 	{
 		Texture* tex = sprite->GetTexture(current->frame);
@@ -232,6 +232,11 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			currentTexture = tex;
 			renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, currentTexture);
 		}
+	}*/
+	
+	if(current)
+	{
+		renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
 	}
 
 	int32 verticesCount = 0;
