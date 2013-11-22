@@ -108,7 +108,8 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 		{
 			emittersToBeDeleted.push_back(emitters[i]);
 		}		
-		else if ((flags&RenderObject::CLIPPING_VISIBILITY_CRITERIA) == RenderObject::CLIPPING_VISIBILITY_CRITERIA) 
+		else if (((flags&RenderObject::CLIPPING_VISIBILITY_CRITERIA) == RenderObject::CLIPPING_VISIBILITY_CRITERIA) ||
+			(emitters[i]->IsStopped())) //emitter became stopped after update - we need to clear it's render data and mark it for update system to rebuild tree if needed
 		{
 			emitters[i]->PrepareRenderData(camera);			
 			emitters[i]->GetRenderSystem()->MarkForUpdate(emitters[i]);
