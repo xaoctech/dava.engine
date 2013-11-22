@@ -58,6 +58,9 @@ public:
 	virtual void SetEntities(const EntityGroup *selected);
 	void SetEditorMode(eEditoMode mode);
 
+	bool IsFavorite(QtPropertyData *data) const;
+	void SetFavorite(QtPropertyData *data, bool favorite);
+
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
@@ -71,6 +74,7 @@ public slots:
 protected:
 	eEditoMode editorMode;
 	QtPosSaver posSaver;
+	QSet<QString> scheme;
 
 	DAVA::Entity *curNode;
 	PropertyEditorStateHelper treeStateHelper;
@@ -85,9 +89,7 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 
-	bool IsFavorite(QtPropertyData *data) const;
 	bool IsParentFavorite(QtPropertyData *data) const;
-	void SetFavorite(QtPropertyData *data, bool favorite);
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

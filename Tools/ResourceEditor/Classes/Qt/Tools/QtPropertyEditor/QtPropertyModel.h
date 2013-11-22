@@ -78,6 +78,8 @@ protected:
 	QWidget *OWviewport;
 	bool trackEdit;
 
+	QtPropertyData *itemFromIndexInternal(const QModelIndex & index) const;
+
 	void DataChanged(QtPropertyData *data, int reason);
 	void DataAboutToBeAdded(QtPropertyData *parent, int first, int last);
 	void DataAdded();
