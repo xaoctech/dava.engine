@@ -38,8 +38,6 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
-	CreateCustomButtonsForRenderObject();
-
 	while(NULL != _info && NULL != object)
 	{
 		for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
@@ -54,7 +52,7 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 		_info = _info->BaseInfo();
 	}
 
-	SetFlags(FLAG_IS_DISABLED);
+	SetEnabled(false);
 }
 
 QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
@@ -86,7 +84,7 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
         {
 			QString s;
             retData = new QtPropertyData(s.sprintf("[%p] Pointer", memberObject));
-            retData->SetFlags(retData->GetFlags() | FLAG_IS_DISABLED);
+            retData->SetEnabled(false);
         }
 		// other value
         else
@@ -102,7 +100,7 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
                 QtPropertyDataInspMember *childData = new QtPropertyDataInspMember(_object, member);
                 if(!(member->Flags() & DAVA::I_EDIT))
                 {
-                    childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
+					childData->SetEnabled(false);
                 }
 				else
 				{
@@ -149,29 +147,8 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int 
 	}
 }
 
-QVariant QtPropertyDataIntrospection::GetValueInternal()
+QVariant QtPropertyDataIntrospection::GetValueInternal() const
 {
 	return QVariant(info->Name());
-}
-
-void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
-{
-	if(NULL != info && (info->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
-	{
-		QPushButton *bakeButton = new QPushButton(QIcon(":/QtIcons/transform_bake.png"), "");
-		bakeButton->setToolTip("Bake Transform");
-		bakeButton->setIconSize(QSize(12, 12));
-		AddOW(QtPropertyOW(bakeButton));
-		QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(BakeTransform()));
-	}
-}
-
-void QtPropertyDataIntrospection::BakeTransform()
-{
-	QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
-	DAVA::Entity * entity = (static_cast<DAVA::RenderComponent*>(renderComponentProperty->object))->GetEntity();
-	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
-	ro->BakeTransform(entity->GetLocalTransform());
-	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 }
 

@@ -53,7 +53,7 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 		curArchive->Retain();
 	}
 
-	SetFlags(FLAG_IS_DISABLED);
+	SetEnabled(false);
 
 	// add optional widget (button) to add new key
 	QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
@@ -77,7 +77,7 @@ QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
 	}
 }
 
-QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal()
+QVariant QtPropertyDataDavaKeyedArcive::GetValueInternal() const
 {
 	QVariant v;
 
@@ -102,10 +102,10 @@ bool QtPropertyDataDavaKeyedArcive::UpdateValueInternal()
 		// at first step of sync we mark (placing to vector) items to remove
 		for(int i = 0; i < ChildCount(); ++i)
 		{
-			QPair<QString, QtPropertyData *> pair = ChildGet(i);
-			if(NULL != pair.second)
+			QtPropertyData *child = ChildGet(i);
+			if(NULL != child)
 			{
-				dataToRemove.insert(pair.second);
+				dataToRemove.insert(child);
 			}
 		}
 
@@ -177,7 +177,6 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	QPushButton *remButton = new QPushButton(QIcon(":/QtIcons/keyminus.png"), "");
 	remButton->setIconSize(QSize(12, 12));
 	childData->AddOW(QtPropertyOW(remButton));
-	childData->SetOWViewport(GetOWViewport());
 
 	QObject::connect(remButton, SIGNAL(pressed()), this, SLOT(RemKeyedArchiveField()));
 }
@@ -210,9 +209,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 		// search for child data with such button
 		for(int i = 0; i < ChildCount(); ++i)
 		{
-			QPair<QString, QtPropertyData *> child = ChildGet(i);
-			QtPropertyData *childData = child.second;
-
+			QtPropertyData *childData = ChildGet(i);
 			if(NULL != childData)
 			{
 				// search btn thought this child optional widgets
@@ -226,12 +223,11 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 							delete lastCommand;
 						}
 
-						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, child.first.toStdString());
+						lastCommand = new KeyeadArchiveRemValueCommand(curArchive, childData->GetName().toStdString());
+						curArchive->DeleteKey(childData->GetName().toStdString());
 
-						curArchive->DeleteKey(child.first.toStdString());
-						//ChildsSync();
-
-						emit ValueChanged(QtPropertyData::VALUE_EDITED);
+						ChildRemove(childData);
+						EmitDataChanged(QtPropertyData::VALUE_EDITED);
 						break;
 					}
 				}
@@ -248,7 +244,6 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 	{
 		curArchive->SetVariant(key, value);
 		lastAddedType = value.type;
-		//ChildsSync();
 
 		if(NULL != lastCommand)
 		{
@@ -256,8 +251,8 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 		}
 
 		lastCommand = new KeyedArchiveAddValueCommand(curArchive, key, value);
-
-		emit ValueChanged(QtPropertyData::VALUE_EDITED);
+		ChildCreate(key.c_str(), curArchive->GetVariant(key));
+		EmitDataChanged(QtPropertyData::VALUE_EDITED);
 	}
 }
 
