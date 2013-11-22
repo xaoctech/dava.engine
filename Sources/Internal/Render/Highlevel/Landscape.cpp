@@ -1803,6 +1803,28 @@ void Landscape::SetFog(const bool& fogState)
 		{
 		//VI: TODO: Fog should be set in adifferent way
 			
+			NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
+			DVASSERT(global);
+			
+			if(isFogEnabled)
+			{
+				global->AddMaterialDefine(FastName("VERTEX_FOG"));
+				
+				global->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+				global->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+			}
+			else
+			{
+				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
+			}
+			
+			RenderManager::Instance()->LockNonMain();
+			
+			global->Rebuild();
+			global->Rebind();
+			
+			RenderManager::Instance()->UnlockNonMain();
+			
 			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
 			DVASSERT(global);
 			
