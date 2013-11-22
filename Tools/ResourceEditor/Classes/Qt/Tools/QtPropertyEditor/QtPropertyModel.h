@@ -37,6 +37,7 @@
 
 #include "Base/Introspection.h"
 
+class QtPropertyData;
 class QtPropertyModel : public QAbstractItemModel
 {
 	Q_OBJECT

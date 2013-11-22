@@ -35,6 +35,7 @@
 		CC24802616DF6CE000183D40 /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24802416DF6CE000183D40 /* InputTest.cpp */; };
 		CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */; };
 		CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */; };
+		E801A588183FAB8E00D5B770 /* ComponentsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E801A586183FAB8E00D5B770 /* ComponentsTest.cpp */; };
 		E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80842B81639147A002A6A77 /* TextureUtils.cpp */; };
 		E81B47DA16F896070025AF23 /* FilePathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81B47D816F896070025AF23 /* FilePathTest.cpp */; };
 		E81F2AF516BFA4E600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AF316BFA4E600C4545E /* MaterialCompilerTest.cpp */; };
@@ -129,6 +130,8 @@
 		CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		CEC6DA15162D959B009E5F1D /* KeyedArchiveYamlTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyedArchiveYamlTest.h; sourceTree = "<group>"; };
 		CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
+		E801A586183FAB8E00D5B770 /* ComponentsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentsTest.cpp; sourceTree = "<group>"; };
+		E801A587183FAB8E00D5B770 /* ComponentsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentsTest.h; sourceTree = "<group>"; };
 		E80842B81639147A002A6A77 /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtils.cpp; sourceTree = "<group>"; };
 		E80842B91639147A002A6A77 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureUtils.h; sourceTree = "<group>"; };
 		E80D2FB0164D518100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
@@ -282,6 +285,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E801A586183FAB8E00D5B770 /* ComponentsTest.cpp */,
+				E801A587183FAB8E00D5B770 /* ComponentsTest.h */,
 				7497447317B3D61800282DAA /* AlignTest.cpp */,
 				7497447417B3D61800282DAA /* AlignTest.h */,
 				7433863C179D18CE0014FBD3 /* UIListTest.cpp */,
@@ -396,6 +401,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TemplateProjectiPhone" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -478,6 +485,7 @@
 				FEC95C7115B409E500588BBF /* MemoryAllocatorsTest.cpp in Sources */,
 				02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */,
 				E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */,
+				E801A588183FAB8E00D5B770 /* ComponentsTest.cpp in Sources */,
 				E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */,
 				CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */,
 				CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */,
