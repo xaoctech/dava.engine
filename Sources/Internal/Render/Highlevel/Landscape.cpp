@@ -756,7 +756,7 @@ void Landscape::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod
     }else
     {
         //int32 newdepth = (int)(logf((float)depth) / logf(2.0f) + 0.5f);
-        int32 newdepth2 = CountLeadingZeros(depth);
+        int32 newdepth2 = FastLog2(depth);
         //Logger::FrameworkDebug("dp: %d %d %d", depth, newdepth, newdepth2);
         //DVASSERT(newdepth == newdepth2); // Check of math, we should use optimized version with depth2
         
