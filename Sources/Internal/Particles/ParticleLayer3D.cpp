@@ -93,6 +93,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
 	renderBatch->SetMaterial(material);
+	currentTexture = NULL;
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -221,20 +222,114 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	}
 
 	Particle * current = head;
-	if(current)
+	if(current &&
+	   NULL == currentTexture)
 	{
-		renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
+		Texture* tex = sprite->GetTexture(current->frame);
+		
+		if(tex != currentTexture)
+		{
+			currentTexture = tex;
+			renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, currentTexture);
+		}
 	}
 
 	int32 verticesCount = 0;
 	int32 texturesCount = 0;
 	int32 texturesCount2 = 0;
 	int32 timesCount = 0;
-	int32 colorsCount = 0;	
+	int32 colorsCount = 0;
+	
+	Vector3 particlePos[4];
+	
 	while(current != 0)
-	{		
+	{
 		for (int32 i=0; i<planesCount; ++i)
-		{		
+		{
+			_up = basises[i].first;
+			_left = basises[i].second;
+			//Vector3 topRight;
+			//Vector3 topLeft;
+			//Vector3 botRight;
+			//Vector3 botLeft;
+			
+			if (IsLong())
+			{
+				CalcLong(current,
+						 particlePos[0],
+						 particlePos[1],
+						 particlePos[2],
+						 particlePos[3]);
+			}
+			else
+			{
+				CalcNonLong(current,
+							particlePos[0],
+							particlePos[1],
+							particlePos[2],
+							particlePos[3]);
+			}
+			
+			memcpy(&verts[verticesCount], &particlePos[0], sizeof(Vector3) * 4);
+			verticesCount += 12; //4 * 3
+			
+			bbox.AddPoint(particlePos[0]);
+			bbox.AddPoint(particlePos[1]);
+			bbox.AddPoint(particlePos[2]);
+			bbox.AddPoint(particlePos[3]);
+			
+			float32 *pT = sprite->GetTextureVerts(current->frame);
+			
+			memcpy(&textures[texturesCount], pT, sizeof(float32) * 8);
+			texturesCount += 8;
+			
+			//frame blending
+			if (enableFrameBlend)
+			{
+				int32 nextFrame = current->frame+1;
+				if (nextFrame >= sprite->GetFrameCount())
+				{
+					if (loopSpriteAnimation)
+						nextFrame = 0;
+					else
+						nextFrame = sprite->GetFrameCount()-1;
+					
+				}
+				pT = sprite->GetTextureVerts(nextFrame);
+				
+				memcpy(&textures2[texturesCount2], pT, sizeof(float32) * 8);
+				texturesCount2 += 8;
+				
+				times[timesCount] = current->animTime;
+				timesCount++;
+				times[timesCount] = current->animTime;
+				timesCount++;
+				times[timesCount] = current->animTime;
+				timesCount++;
+				times[timesCount] = current->animTime;
+				timesCount++;
+			}
+			
+			
+			// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
+			// to take colorOverlife property into account.
+			uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
+			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
+			for(int32 i = 0; i < POINTS_PER_PARTICLE; ++i)
+			{
+				colors[i + colorsCount] = color;
+			}
+			colorsCount += POINTS_PER_PARTICLE;
+			
+			totalCount++;
+		}
+		current = TYPE_PARTICLES == type ? current->next : 0;
+	}
+
+	/*while(current != 0)
+	{
+		for (int32 i=0; i<planesCount; ++i)
+		{
 			_up = basises[i].first;
 			_left = basises[i].second;
 			Vector3 topRight;
@@ -364,7 +459,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 			totalCount++;
 		}
 		current = TYPE_PARTICLES == type ? current->next : 0;
-	}	
+	}	*/
 	int indexCount = indices.size()/INDICES_PER_PARTICLE;
 	if (totalCount>indexCount)
 	{

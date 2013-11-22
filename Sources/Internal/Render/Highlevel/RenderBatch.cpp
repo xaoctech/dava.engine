@@ -111,6 +111,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
     DVASSERT(worldTransformPtr != 0);
 
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
         if ((queryRequested >= 0) && occlusionQuery->IsResultAvailable())
@@ -133,7 +134,8 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
         return;
     }
-    
+#endif
+	
 //    if (!worldTransformPtr)
 //    {
 //        return;
@@ -149,6 +151,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
         if (queryRequested == -1)
@@ -158,9 +161,11 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         }
         else queryRequested++;
     }
+#endif
     
     material->Draw(dataSource);
-    
+
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)    
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
         if (queryRequested == 0)
@@ -168,6 +173,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
             occlusionQuery->EndQuery();
         }
     }
+#endif
 }
     
     

@@ -55,7 +55,7 @@ RenderEffect * ColorOnlyEffect::Create(Core::eRenderer renderer)
 void ColorOnlyEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
     //RenderManager::Instance()->SetRenderState(renderState);
-    //RenderManager::Instance()->SetShader(0);
+    RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
@@ -64,7 +64,7 @@ void ColorOnlyEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count
 void ColorOnlyEffectGL::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
     //RenderManager::Instance()->SetRenderState(renderState);
-    //RenderManager::Instance()->SetShader(0);
+    RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
@@ -85,7 +85,7 @@ ColorOnlyEffectGL20::~ColorOnlyEffectGL20()
 void ColorOnlyEffectGL20::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
 	//RenderManager::Instance()->SetRenderState(renderState);
-    //RenderManager::Instance()->SetShader(shader);
+    RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
@@ -94,7 +94,7 @@ void ColorOnlyEffectGL20::DrawArrays(ePrimitiveType mode, int32 first, int32 cou
 void ColorOnlyEffectGL20::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
 	//RenderManager::Instance()->SetRenderState(renderState);
-    //RenderManager::Instance()->SetShader(shader);
+    RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);

@@ -46,16 +46,16 @@ void ParticleEffectSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
-	uint32 size = entities.size();
-	for(uint32 index = 0; index < size; ++index)
-	{
-		uint32 components = entities[index]->GetComponentCount(Component::PARTICLE_EFFECT_COMPONENT);
-		for(uint32 c = 0; c < size; ++c)
-		{
-			ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(entities[index]->GetComponent(Component::PARTICLE_EFFECT_COMPONENT, c));
-			component->EffectUpdate(timeElapsed);
-		}
-	}
+	//uint32 size = entities.size();
+	//for(uint32 index = 0; index < size; ++index)
+	//{
+	//	uint32 components = entities[index]->GetComponentCount(Component::PARTICLE_EFFECT_COMPONENT);
+	//	for(uint32 c = 0; c < size; ++c)
+	//	{
+	//		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(entities[index]->GetComponent(Component::PARTICLE_EFFECT_COMPONENT, c));
+	//		component->EffectUpdate(timeElapsed);
+	//	}
+	//}
 }
 
 void ParticleEffectSystem::RemoveEntity(Entity * entity)
