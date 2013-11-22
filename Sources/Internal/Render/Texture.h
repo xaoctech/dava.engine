@@ -243,7 +243,7 @@ public:
 	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
 	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
-    TextureDescriptor * CreateDescriptor() const;
+    DAVA_DEPRECATED(TextureDescriptor * CreateDescriptor() const);
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);

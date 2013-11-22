@@ -60,7 +60,10 @@ Component * LightComponent::Clone(Entity * toEntity)
 {
     LightComponent * component = new LightComponent();
 	component->SetEntity(toEntity);
-    component->light = (Light*)light->Clone();
+    
+    if(light)
+        component->light = (Light*)light->Clone();
+    
     return component;
 }
 

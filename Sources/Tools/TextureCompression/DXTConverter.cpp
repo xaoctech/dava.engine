@@ -121,7 +121,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 		}
         
         if(LibDxtHelper::WriteDdsFile(outputName,
-                                      inputImages[0]->width, inputImages[0]->height, faceData, inputImages.size(),
+                                      inputImages[0]->width, inputImages[0]->height, faceData, (uint32)inputImages.size(),
                                       (PixelFormat) descriptor.compression[gpuFamily].format,
                                       (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
         {

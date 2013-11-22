@@ -54,7 +54,6 @@ struct QtPropertyOW
 	bool overlay;
 };
 
-QStandardItem;
 
 // PropertyData class
 class QtPropertyData : public QObject
