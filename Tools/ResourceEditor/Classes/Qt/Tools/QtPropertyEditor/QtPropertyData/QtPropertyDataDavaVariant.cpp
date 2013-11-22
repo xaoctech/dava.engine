@@ -50,7 +50,6 @@
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
-	, iconCacheIsValid(false)
 	, allowedValuesLocked(false)
 	, allowedButton(NULL)
 {
@@ -75,18 +74,19 @@ void QtPropertyDataDavaVariant::InitFlags()
 	switch(curVariantValue.type)
 	{
 	case DAVA::VariantType::TYPE_BOOLEAN:
-		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
+		SetCheckable(true);
+		SetEditable(false);
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
-		SetFlags(FLAG_IS_DISABLED);
+		SetEnabled(false);
 		break;
 
 	case DAVA::VariantType::TYPE_MATRIX2:
 	case DAVA::VariantType::TYPE_MATRIX3:
 	case DAVA::VariantType::TYPE_MATRIX4:
 	case DAVA::VariantType::TYPE_AABBOX3:
-		SetFlags(FLAG_IS_NOT_EDITABLE);
+		SetEditable(false);
 		break;
 
 	case DAVA::VariantType::TYPE_FLOAT:
@@ -98,9 +98,13 @@ void QtPropertyDataDavaVariant::InitFlags()
 	case DAVA::VariantType::TYPE_VECTOR2:
 	case DAVA::VariantType::TYPE_VECTOR3:
 	case DAVA::VariantType::TYPE_VECTOR4:
-	case DAVA::VariantType::TYPE_COLOR:
 	case DAVA::VariantType::TYPE_FASTNAME:
+		break;
+
 	case DAVA::VariantType::TYPE_FILEPATH:
+		SetIcon(QIcon(":/QtIcons/file.png"));
+		break;
+
 	default:
 		break;
 	}
@@ -126,6 +130,17 @@ void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 	else
 	{
 		ChildsSetFromMe();
+	}
+
+	// more specific actions
+	switch(curVariantValue.type)
+	{
+		case DAVA::VariantType::TYPE_COLOR:
+			SetColorIcon();
+			break;
+
+		default:
+			break;
 	}
 }
 
@@ -160,12 +175,12 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 	}
 }
 
-QVariant QtPropertyDataDavaVariant::GetValueInternal()
+QVariant QtPropertyDataDavaVariant::GetValueInternal() const
 {
 	return FromDavaVariant(curVariantValue);
 }
 
-QVariant QtPropertyDataDavaVariant::GetValueAlias()
+QVariant QtPropertyDataDavaVariant::GetValueAlias() const
 {
 	QVariant ret;
 
@@ -464,7 +479,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds()
 	}
 }
 
-QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &variant)
+QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &variant) const
 {
 	QVariant v;
 
@@ -533,7 +548,7 @@ QVariant QtPropertyDataDavaVariant::FromDavaVariant(const DAVA::VariantType &var
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive)
+QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive) const
 {
 	QVariant v;
 
@@ -545,7 +560,7 @@ QVariant QtPropertyDataDavaVariant::FromKeyedArchive(DAVA::KeyedArchive *archive
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector) const
 {
 	QVariant v;
 
@@ -554,7 +569,7 @@ QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector) const
 {
 	QVariant v;
 
@@ -563,7 +578,7 @@ QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
+QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector) const
 {
 	QVariant v;
 
@@ -572,7 +587,7 @@ QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix) const
 {
 	QVariant v;
 
@@ -586,7 +601,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix) const
 {
 	QVariant v;
 
@@ -599,7 +614,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
+QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix) const
 {
 	QVariant v;
 
@@ -610,7 +625,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
+QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color) const
 {
 	QVariant v;
 	QColor c = ColorToQColor(color);
@@ -621,7 +636,7 @@ QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 	return v;
 }
 
-QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
+QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox) const
 {
 	QVariant v;
 
@@ -676,7 +691,34 @@ void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
-	curVariantValue.SetColor(QColorToColor(value.value<QColor>()));
+	QColor c = value.value<QColor>();
+	curVariantValue.SetColor(QColorToColor(c));
+}
+
+void QtPropertyDataDavaVariant::SetColorIcon()
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+	{
+		QPixmap pix(16, 16);
+		QPainter p(&pix);
+		QColor c = ColorToQColor(curVariantValue.AsColor());
+
+		if(c.alpha() < 255)
+		{
+			p.setBrush(QColor(250, 250, 250));
+			p.drawRect(QRect(0, 0, 15, 15));
+			p.setPen(QColor(200, 200, 200));
+			p.setBrush(QColor(150, 150, 150));
+			p.drawRect(QRect(0, 0, 7, 7));
+			p.drawRect(QRect(8, 8, 15, 15));
+		}
+
+		p.setPen(QColor(0, 0, 0));
+		p.setBrush(QBrush(c));
+		p.drawRect(QRect(0, 0, 15, 15));
+
+		SetIcon(QIcon(pix));
+	}
 }
 
 void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
@@ -685,7 +727,7 @@ void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
 	// ...
 }
 
-QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
+QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option) const
 {
 	QWidget* ret = NULL;
 
@@ -719,6 +761,7 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 	if(allowedValues.size())
 	{
 		SetAllowedValueEditorData(editor);
+		ret = true;
 	}
 	else
 	{
@@ -750,12 +793,10 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
 			SetValue(colorLineEdit->GetColor(), QtPropertyData::VALUE_EDITED);
+			SetColorIcon();
 			ret = true;
 		}
 	}
-
-	// reset icon cache. icon will be recreated on next icon request
-	iconCacheIsValid = false;
 
 	// allow modify valueItems list
 	allowedValuesLocked = false;
@@ -769,7 +810,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 	if(c.isValid())
 	{
 		SetValue(c, QtPropertyData::VALUE_EDITED);
-		iconCacheIsValid = false;
+		SetColorIcon();
 	}
 }
 
@@ -796,53 +837,7 @@ void QtPropertyDataDavaVariant::AllowedSelected(int index)
 	}
 }
 
-QIcon QtPropertyDataDavaVariant::GetIcon()
-{
-	if(!iconCacheIsValid)
-	{
-		iconCacheIsValid = true;
-
-		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
-		{
-			QPixmap pix(16,16);
-			QPainter p(&pix);
-			QColor c = ColorToQColor(curVariantValue.AsColor());
-
-			if(c.alpha() < 255)
-			{
-				p.setBrush(QColor(250, 250, 250));
-				p.drawRect(QRect(0, 0, 15, 15));
-				p.setPen(QColor(200, 200, 200));
-				p.setBrush(QColor(150, 150, 150));
-				p.drawRect(QRect(0, 0, 7, 7));
-				p.drawRect(QRect(8, 8, 15, 15));
-			}
-
-			p.setPen(QColor(0, 0, 0));
-			p.setBrush(QBrush(c));
-			p.drawRect(QRect(0,0,15,15));
-
-			iconCache = QIcon(pix);
-		}
-		else if(curVariantValue.type == DAVA::VariantType::TYPE_FILEPATH)
-		{
-			iconCache = QIcon(":/QtIcons/file.png");
-		}
-		else
-		{
-			iconCache = QtPropertyData::GetIcon();
-		}
-	}
-
-	return iconCache;
-}
-
-void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
-{
-	QtPropertyData::SetIcon(icon);
-}
-
-QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent)
+QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent) const
 {
 	QComboBox *allowedWidget = NULL;
 
