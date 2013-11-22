@@ -60,7 +60,7 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
     , activeScene(NULL)
 	, landscape(NULL)
-    , treeStateHelper(this, this->curModel)
+    , treeStateHelper(this, curModel)
 {
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
@@ -474,41 +474,40 @@ void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath 
 QtPropertyData * SceneInfo::CreateInfoHeader(const QString &key)
 {
     QtPropertyData* headerData = new QtPropertyData("");
-    headerData->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
-
-    QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(key, headerData);
-    prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-    prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-    
-    return headerData;
+    headerData->SetEditable(false);
+	headerData->SetBackground(QBrush(QColor(Qt::lightGray)));
+    AppendProperty(key, headerData);
+	return headerData;
 }
 
 QtPropertyData * SceneInfo::GetInfoHeader(const QString &key)
 {
-    QtPropertyData * header = GetPropertyData(key);
-    DVASSERT(header);
-    
-    return header;
+	QtPropertyData *header = NULL;
+    QtPropertyData *root = GetProperty(QModelIndex());
+	if(NULL != root)
+	{
+		header = root->ChildGet(key);
+	}
+	return header;
 }
 
 void SceneInfo::AddChild(const QString & key, QtPropertyData *parent)
 {
     QtPropertyData *propData = new QtPropertyData(0);
-    propData->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
+	propData->SetEditable(false);
     parent->ChildAdd(key, propData);
 }
 
 void SceneInfo::SetChild(const QString & key, const QVariant &value, QtPropertyData *parent)
 {
-    for (int32 c = 0; c < parent->ChildCount(); ++c)
-    {
-        QPair<QString, QtPropertyData*> pair = parent->ChildGet(c);
-        if(pair.first == key)
-        {
-            pair.second->SetValue(value);
-            return;
-        }
-    }
+	if(NULL != parent)
+	{
+		QtPropertyData *propData = parent->ChildGet(key);
+		if(NULL != propData)
+		{
+			propData->SetValue(value);
+		}
+	}
 }
 
 void SceneInfo::SaveTreeState()

@@ -60,37 +60,37 @@ namespace DAVA
 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || (defined(__DAVAENGINE_IPHONE__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
-{ \
-	if(!Thread::IsMainThread() && RenderManager::Instance()->GetNonMainLockCount() == 0)\
-	{\
-		DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");\
-	}\
-	if(Thread::IsMainThread())\
-	{\
-		RenderManager::Instance()->VerifyRenderContext();\
-	}\
-	command;\
-	GLenum err = glGetError();\
-	if (err != GL_NO_ERROR)\
-    {  \
-        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        OGLDebugBreak(); \
-    }\
-}
+	{ \
+		if(!Thread::IsMainThread() && RenderManager::Instance()->GetNonMainLockCount() == 0)\
+		{\
+			DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");\
+		}\
+		if(Thread::IsMainThread())\
+		{\
+			RenderManager::Instance()->VerifyRenderContext();\
+		}\
+		if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ALL_RENDER_FUNCTIONS_ENABLED)) command;\
+		GLenum err = glGetError();\
+		if (err != GL_NO_ERROR)\
+		{  \
+			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+			OGLDebugBreak(); \
+		}\
+	}
 #elif (defined(__DAVAENGINE_ANDROID__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
-{ \
-    command;\
-    GLenum err = glGetError();\
-    if (err != GL_NO_ERROR)\
-    {  \
-        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        DVASSERT(false);\
-		OGLDebugBreak(); \
-    }\
-}
+	{ \
+		if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ALL_RENDER_FUNCTIONS_ENABLED)) command;\
+		GLenum err = glGetError();\
+		if (err != GL_NO_ERROR)\
+		{  \
+			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+			DVASSERT(false);\
+			OGLDebugBreak(); \
+		}\
+	}
 #else
-#define RENDER_VERIFY(command) command;  
+#define RENDER_VERIFY(command) if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ALL_RENDER_FUNCTIONS_ENABLED)) command;
 #endif //#if defined(__DAVAENGINE_WIN32__)
     
 

@@ -108,6 +108,7 @@ protected:
 	Vector3 currentParticlePosition;
 	
 	NMaterial* material;
+	Texture* currentTexture;
 
 public:
     //INTROSPECTION_EXTEND(ParticleLayer3D, ParticleLayer,
