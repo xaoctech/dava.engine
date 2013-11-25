@@ -710,13 +710,13 @@ namespace DAVA
 		}
 	}
     
-	bool NMaterial::LoadFromFile(const String & pathname)
+	bool NMaterial::LoadFromFile(const FilePath & pathname)
 	{
 		bool result = false;
 		YamlParser * parser = YamlParser::Create(pathname);
 		if (!parser)
 		{
-			Logger::Error("Can't load requested material: %s", pathname.c_str());
+			Logger::Error("Can't load requested material: %s", pathname.GetAbsolutePathname().c_str());
 			return result;
 		}
 		
@@ -767,7 +767,7 @@ namespace DAVA
 							{
 								Logger::Error("[NMaterial::LoadFromFile] Failed to load a material state %s in file %s!",
 											  materialStateName.c_str(),
-											  pathname.c_str());
+											  pathname.GetAbsolutePathname().c_str());
 								
 								DVASSERT(false);
 							}
@@ -782,7 +782,7 @@ namespace DAVA
 					{
 						Logger::Error("[NMaterial::LoadFromFile] Duplicate material state %s found in file %s!",
 									  materialStateName.c_str(),
-									  pathname.c_str());
+									  pathname.GetAbsolutePathname().c_str());
 						
 						DVASSERT(false);
 					}
@@ -790,7 +790,7 @@ namespace DAVA
 				}
 				else
 				{
-					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.c_str());
+					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.GetAbsolutePathname().c_str());
 					DVASSERT(false);
 				}
 			}
