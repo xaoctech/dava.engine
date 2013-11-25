@@ -180,6 +180,8 @@ protected:
 	//TODO: fill it from configuration
 	uint32 requiredVertexFormat;
 	
+	bool texturesDirty;
+	
 protected:
 	
 	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
