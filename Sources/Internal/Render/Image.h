@@ -63,6 +63,15 @@ public:
 	static const int MIN_HEIGHT = 8;
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	
+    enum ResampleAlgo
+    {
+        RESAMPLE_NEAREST = 0,
+        RESAMPLE_BILINEAR,
+        RESAMPLE_BICUBIC,
+        
+        RESAMPLE_COUNT
+    };
+    
 protected:
 	virtual ~Image();
 public:
@@ -92,7 +101,10 @@ public:
     
 	// changes size of image to required size (without any filtration)
 	void ResizeImage(uint32 newWidth, uint32 newHeight);
-
+    
+    // changes size of image to required size (with filtration)
+    void MakeHalfSizeWithFilter(ResampleAlgo algo, uint32 * newWidthPtr = 0, uint32 * newHeightPrt = 0);
+    
 	static Image* CopyImageRegion(const Image* imageToCopy,
 								  uint32 newWidth, uint32 newHeight,
 								  uint32 xOffset = 0, uint32 yOffset = 0);
@@ -130,6 +142,11 @@ public:
 	
 	uint32 cubeFaceID;
 	uint32 mipmapLevel;
+    
+private:
+    void MakeNearestHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
+    void MakeBilinearHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
+    void MakeBicubicHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
 };
 	
 // Implementation of inline functions

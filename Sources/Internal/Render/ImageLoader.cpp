@@ -109,6 +109,20 @@ Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
         {
             Vector<Image *>imageSet;
             imageSet.push_back(pngImage);
+
+            uint32 imageWidth = pngImage->GetWidth();
+            uint32 imageHeight = pngImage->GetHeight();
+            
+            //create images for mipmaps
+            while(imageHeight > 1 || imageWidth > 1)
+            {
+                Image * halfSizeImg = Image::CreateFromData(imageWidth, imageHeight, pngImage->GetPixelFormat(), pngImage->GetData());
+                halfSizeImg->MakeHalfSizeWithFilter(Image::RESAMPLE_BICUBIC, &imageWidth, &imageHeight);
+                imageSet.push_back(halfSizeImg);
+                
+                pngImage = halfSizeImg;
+            }
+            
             return imageSet;
         }
         

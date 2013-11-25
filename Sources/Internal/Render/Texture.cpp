@@ -602,6 +602,7 @@ void Texture::FlushDataToRenderer()
 
 	if(needGenerateMipMaps)
 	{
+        DVASSERT(false); //We must create mipmaps manually
 		RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
 	}
 
