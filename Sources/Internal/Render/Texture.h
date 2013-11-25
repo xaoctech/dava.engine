@@ -37,6 +37,8 @@
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
+#define USE_FILEPATH_IN_MAP
+
 namespace DAVA
 {
 /**
@@ -293,7 +295,11 @@ public:							// properties for fast access
 
 	void SetDebugInfo(const String & _debugInfo);
 
+#ifdef USE_FILEPATH_IN_MAP
+	static const Map<FilePath, Texture*> & GetTextureMap();
+#else //#ifdef USE_FILEPATH_IN_MAP
 	static const Map<String, Texture*> & GetTextureMap();
+#endif //#ifdef USE_FILEPATH_IN_MAP
     
     int32 GetDataSize() const;
     
@@ -309,7 +315,13 @@ public:							// properties for fast access
     
 private:
     
+#ifdef USE_FILEPATH_IN_MAP
+	static Map<FilePath, Texture*> textureMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
 	static Map<String, Texture*> textureMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
+
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex);
     
