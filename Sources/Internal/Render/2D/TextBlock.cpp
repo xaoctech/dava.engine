@@ -243,6 +243,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 	if(!font || text == L"")
 	{
 		SafeRelease(sprite);
+        Release();
 		return;
 	}
 	if(needRedraw)
