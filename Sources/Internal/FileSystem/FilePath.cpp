@@ -278,23 +278,20 @@ String FilePath::ResolveResourcesPath() const
         
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
-        
-        List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
-        for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
+
+        if(resourceFolders.size() == 1) // optimization to avoid call path.Exists()
         {
-            FilePath t = *it;
-            path = *it + relativePathname;
-            
-            if(isDirectory)
+            path = *resourceFolders.begin() + relativePathname;
+        }
+        else
+        {
+            List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
+            for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
             {
-                if(FileSystem::Instance()->IsDirectory(path))
-                {
-                    break;
-                }
-            }
-            else
-            {
-                if(FileSystem::Instance()->IsFile(path))
+                FilePath t = *it;
+                path = *it + relativePathname;
+                
+                if(path.Exists())
                 {
                     break;
                 }

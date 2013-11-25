@@ -243,7 +243,7 @@ public:
 	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
 	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
-    DAVA_DEPRECATED(TextureDescriptor * CreateDescriptor() const);
+    TextureDescriptor * CreateDescriptor() const;
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
@@ -320,6 +320,7 @@ private:
 
 	Vector<Image *> images;
 	bool LoadImages(eGPUFamily gpu);
+    
 	void SetParamsFromImages();
 	void FlushDataToRenderer();
 	void ReleaseImages();
@@ -355,8 +356,7 @@ private:
     
     static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
-	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
-
+	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
 
 	TextureState state;
 	TextureDescriptor *texDescriptor;
