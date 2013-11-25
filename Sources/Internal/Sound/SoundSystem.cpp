@@ -28,7 +28,6 @@
 
 #include "Base/FastName.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/VolumeAnimatedObject.h"
 #include "FMODSoundSystem.h"
 #include "Scene3D/Entity.h"
 
@@ -40,21 +39,7 @@ SoundSystemInstance * SoundSystem::instance = 0;
 
 void SoundSystemInstance::Update(float32 timeElapsed)
 {
-    int32 size = animatedObjects.size();
-    for(int32 i = 0; i < size; i++)
-        animatedObjects[i]->Update();
-}
 
-void SoundSystemInstance::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
-{
-    animatedObjects.push_back(object);
-}
-
-void SoundSystemInstance::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
-{
-    Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
-    if(it != animatedObjects.end())
-        animatedObjects.erase(it);
 }
 
 SoundSystemInstance * SoundSystem::Instance()

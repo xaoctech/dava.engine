@@ -1233,9 +1233,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
@@ -1337,6 +1334,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\DAVAClassRegistrator.h">
       <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h">
+      <Filter>Internal\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2276,9 +2276,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
@@ -2380,6 +2377,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\DAVAClassRegistrator.cpp">
       <Filter>Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEvent.cpp">
+      <Filter>Internal\Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

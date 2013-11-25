@@ -31,6 +31,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/BaseMath.h"
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
 #include "Sound/Sound.h"

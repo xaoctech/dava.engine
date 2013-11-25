@@ -43,6 +43,7 @@ namespace DAVA
 {
 
 class Component;
+class SoundEvent;
 class SoundSystemInstance
 {
 public:
@@ -50,10 +51,13 @@ public:
     
     virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
     virtual Component * CreateSoundComponent() = 0;
+    virtual SoundEvent * CreateSoundEvent(const String & eventName) = 0;
 
     virtual void Update(float32 timeElapsed);
     virtual void Suspend() = 0;
     virtual void Resume() = 0;
+
+    virtual void SetCurrentLocale(const String & langID) = 0;
 
     virtual void SetListenerPosition(const Vector3 & position) = 0;
     virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left) = 0;
@@ -68,14 +72,6 @@ public:
 
     virtual void SetMaxDistance(float32 distance) = 0;
     virtual float32 GetMaxDistance() = 0;
-
-protected:
-    void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-    void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-
-    Vector<VolumeAnimatedObject*> animatedObjects;
-
-friend class VolumeAnimatedObject;
 };
 
 class SoundSystem
@@ -94,6 +90,8 @@ public:
     static SoundSystemInstance * Instance();
     static void SetSoundSystemType(SoundSystemType _type) {type = _type;};
     static const FilePath & GetSoundsDirectory();
+
+    //SoundsDirectory can be changed before GameCore creation only
     static void SetSoundsDirectory(const FilePath & soundsDir);
 
 private:
