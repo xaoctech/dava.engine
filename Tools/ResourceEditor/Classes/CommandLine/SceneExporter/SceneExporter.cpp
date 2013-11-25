@@ -221,22 +221,22 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
-	Set<FilePath> descriptorsForExport;
+    DAVA::Map<DAVA::String, DAVA::Texture *> textures;
+    SceneHelper::EnumerateTextures(scene, textures);
 
-	DVASSERT(0 && "Need reimplement for new materials");
-
-	/*
-    SceneHelper::EnumerateDescriptors(scene, descriptorsForExport);
-
-    Set<FilePath>::const_iterator endIt = descriptorsForExport.end();
-    Set<FilePath>::iterator it = descriptorsForExport.begin();
-    for(; it != endIt; ++it)
+    auto endIt = textures.end();
+    for(auto it = textures.begin(); it != endIt; ++it)
     {
-        ExportTextureDescriptor(*it, errorLog);
+        DAVA::FilePath pathname = it->first;
+        if((pathname.GetType() == DAVA::FilePath::PATH_IN_MEMORY) || pathname.IsEmpty())
+        {
+            continue;
+        }
+        
+        ExportTextureDescriptor(it->first, errorLog);
     }
-	*/
-    
-    descriptorsForExport.clear();
+
+    textures.clear();
 }
 
 

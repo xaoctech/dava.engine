@@ -1315,8 +1315,12 @@ namespace DAVA
 	{
 		for (uint32 i = 0; i < Component::COMPONENT_COUNT; ++i)
 		{
-			if (components[i])
-				components[i]->OptimizeBeforeExport();
+            uint32 componentsCount = GetComponentCount(i);
+            for(uint32 index = 0; index < componentsCount; ++index)
+            {
+                Component *c = GetComponent(i, index);
+                c->OptimizeBeforeExport();
+            }
 		}
 		
 		uint32 size = (uint32)children.size();
