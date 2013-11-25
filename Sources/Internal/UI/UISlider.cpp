@@ -146,7 +146,7 @@ void UISlider::InitMaxBackground()
 		bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMax);
 		
-		PostInitBackground(bgMin);
+		PostInitBackground(bgMax);
 	}
 }
 
