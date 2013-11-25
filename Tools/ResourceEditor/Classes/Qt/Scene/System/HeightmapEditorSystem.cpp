@@ -38,8 +38,12 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
+#include "../../../Commands2/TilemaskEditorCommands.h"
 #include "../../Main/QtUtils.h"
 #include "../../../SceneEditor/EditorSettings.h"
+#include "HoodSystem.h"
+
+#include <QApplication>
 
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -59,12 +63,15 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	prevCursorPosition(-1.f, -1.f)
 ,	tilemaskImage(NULL)
 ,	tilemaskCopyPasteTool(NULL)
-,	originalTilemaskImage(NULL)
 ,   squareTexture(NULL)
 ,	toolImageIndex(0)
 ,	copyPasteHeightmap(false)
 ,	copyPasteTilemask(false)
 ,	curHeight(0.f)
+,	activeDrawingType(drawingType)
+,	activeCopyPasteHeightmap(copyPasteHeightmap)
+,	activeCopyPasteTilemask(copyPasteTilemask)
+,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -73,10 +80,20 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
+	
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
+	SafeRelease(tilemaskImage);
 	SafeRelease(cursorTexture);
 	SafeRelease(squareTexture);
 }
@@ -117,7 +134,10 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
-	
+
+	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
+	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
+
 	enabled = true;
 	return enabled;
 }
@@ -128,7 +148,9 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
-	
+
+	FinishEditing();
+
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
 	
@@ -148,6 +170,7 @@ void HeightmapEditorSystem::Update(DAVA::float32 timeElapsed)
 	
 	if (editingIsEnabled && isIntersectsLandscape)
 	{
+		UpdateToolImage();
 		UpdateBrushTool(timeElapsed);
 	}
 }
@@ -180,7 +203,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					if (drawingType == HEIGHTMAP_COPY_PASTE)
 					{
-						if (IsKeyModificatorPressed(DVKEY_ALT))
+						int32 curKeyModifiers = QApplication::keyboardModifiers();
+						if (curKeyModifiers & Qt::AltModifier)
 						{
 							copyPasteFrom = cursorPosition;
 							copyPasteTo = Vector2(-1.f, -1.f);
@@ -199,6 +223,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 								StoreOriginalHeightmap();
 							}
 						}
+						activeCopyPasteHeightmap = copyPasteHeightmap;
+						activeCopyPasteTilemask = copyPasteTilemask;
 					}
 					else
 					{
@@ -211,27 +237,34 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					UpdateToolImage();
 					editingIsEnabled = true;
 				}
+
+				activeDrawingType = drawingType;
 				break;
 				
 			case UIEvent::PHASE_DRAG:
 				break;
 				
 			case UIEvent::PHASE_ENDED:
-				if (editingIsEnabled)
-				{
-					if (drawingType == HEIGHTMAP_COPY_PASTE)
-					{
-						CreateCopyPasteUndo();
-					}
-					else if (drawingType != HEIGHTMAP_DROPPER)
-					{
-						CreateHeightmapUndo();
-					}
-
-					editingIsEnabled = false;
-				}
+				FinishEditing();
 				break;
 		}
+	}
+}
+
+void HeightmapEditorSystem::FinishEditing()
+{
+	if (editingIsEnabled)
+	{
+		if (activeDrawingType == HEIGHTMAP_COPY_PASTE)
+		{
+			CreateCopyPasteUndo();
+		}
+		else if (activeDrawingType != HEIGHTMAP_DROPPER)
+		{
+			CreateHeightmapUndo();
+		}
+
+		editingIsEnabled = false;
 	}
 }
 
@@ -255,6 +288,11 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
+	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 
@@ -290,7 +328,10 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->FlushState();
+	
 	RenderManager::Instance()->SetColor(Color::White());
 	
 	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
@@ -323,7 +364,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	int32 scaleSize = toolImage->GetWidth();
 	Vector2 pos = cursorPosition - Vector2((float32)scaleSize, (float32)scaleSize) / 2.0f;
 	{
-		switch (drawingType)
+		switch (activeDrawingType)
 		{
 			case HEIGHTMAP_DRAW_ABSOLUTE:
 			{
@@ -374,7 +415,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					return;
 				}
 
-				if (copyPasteHeightmap)
+				if (activeCopyPasteHeightmap)
 				{
 					Vector2 posTo = pos;
 					
@@ -386,9 +427,9 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					editorHeightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
 				}
 
-				if (copyPasteTilemask && prevCursorPosition != cursorPosition)
+				if (activeCopyPasteTilemask && prevCursorPosition != cursorPosition)
 				{
-					int32 tilemaskSize = drawSystem->GetTextureSize();
+					int32 tilemaskSize = drawSystem->GetTextureSize(textureLevel);
 					int32 heightmapSize = drawSystem->GetHeightmapProxy()->Size();
 					float32 multiplier = (float32)tilemaskSize / (float32)heightmapSize;
 					int32 tilemaskCursorSize = (float32)((int32)(cursorSize * multiplier));
@@ -461,7 +502,7 @@ Rect HeightmapEditorSystem::GetHeightmapUpdatedRect()
 Rect HeightmapEditorSystem::GetTilemaskUpdatedRect()
 {
 	Rect r = tilemaskUpdatedRect;
-	drawSystem->ClampToTexture(r);
+	drawSystem->ClampToTexture(textureLevel, r);
 	return r;
 }
 
@@ -477,7 +518,6 @@ void HeightmapEditorSystem::StoreOriginalHeightmap()
 void HeightmapEditorSystem::PrepareTilemaskCopyPaste()
 {
 	tilemaskImage = CreateTilemaskImage();
-	originalTilemaskImage = CreateTilemaskImage();
 	CreateTilemaskCopyPasteTool();
 	ResetAccumulatorRect(tilemaskUpdatedRect);
 }
@@ -495,23 +535,30 @@ void HeightmapEditorSystem::CreateHeightmapUndo()
 
 void HeightmapEditorSystem::CreateCopyPasteUndo()
 {
-	if (!copyPasteHeightmap && !copyPasteTilemask)
+	if (!activeCopyPasteHeightmap && !activeCopyPasteTilemask)
 	{
 		return;
 	}
 
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
+	SceneEditor2* scene = (SceneEditor2*)GetScene();
 
-	Rect heightmapRect = GetHeightmapUpdatedRect();
-	Rect tilemaskRect = GetTilemaskUpdatedRect();
+	scene->BeginBatch("Height Map Copy/Paste");
+	if (activeCopyPasteHeightmap)
+	{
+		Rect heightmapRect = GetHeightmapUpdatedRect();
+		ModifyHeightmapCommand* cmd = new ModifyHeightmapCommand(drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect);
+		scene->Exec(cmd);
+		SafeRelease(originalHeightmap);
+	}
 
-	scene->Exec(new CopyPasteHeightmapCommand(copyPasteHeightmap, copyPasteTilemask,
-											  drawSystem->GetHeightmapProxy(), originalHeightmap, heightmapRect,
-											  drawSystem->GetLandscapeProxy(), originalTilemaskImage, tilemaskRect));
-
-	SafeRelease(originalHeightmap);
-	SafeRelease(originalTilemaskImage);
+	if (activeCopyPasteTilemask)
+	{
+		Rect tilemaskRect = GetTilemaskUpdatedRect();
+		ModifyTilemaskCommand* cmd = new ModifyTilemaskCommand(drawSystem->GetLandscapeProxy(), tilemaskRect);
+		scene->Exec(cmd);
+		SafeRelease(tilemaskImage);
+	}
+	scene->EndBatch();
 }
 
 void HeightmapEditorSystem::SetBrushSize(int32 brushSize)
@@ -570,11 +617,13 @@ Image* HeightmapEditorSystem::CreateTilemaskImage()
 {
 	Texture* texture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
-	eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	//eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+	//eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+	RenderManager::Instance()->FlushState();
 	Image* img = texture->CreateImageFromMemory();
-	RenderManager::Instance()->SetBlendMode(src, dst);
+	//RenderManager::Instance()->SetBlendMode(src, dst);
 
 	return img;
 }

@@ -34,6 +34,8 @@
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
 
+#include "Render/UniqueStateSet.h"
+
 class LandscapeProxy;
 class HeightmapProxy;
 class NotPassableTerrainProxy;
@@ -72,30 +74,31 @@ public:
 	
 	void Update(DAVA::float32 timeElapsed);
 
-	float32 GetTextureSize();
+	float32 GetTextureSize(Landscape::eTextureLevel level);
 	Vector3 GetLandscapeSize();
 	float32 GetLandscapeMaxHeight();
 	float32 GetHeightAtPoint(const Vector2& point);
-	float32 GetHeightAtTexturePoint(const Vector2& point);
+	float32 GetHeightAtTexturePoint(Landscape::eTextureLevel level, const Vector2& point);
 	KeyedArchive* GetLandscapeCustomProperties();
 
-	Vector2 HeightmapPointToTexturePoint(const Vector2& point);
-	Vector2 TexturePointToHeightmapPoint(const Vector2& point);
-	Vector2 TexturePointToLandscapePoint(const Vector2& point);
-	Vector2 LandscapePointToTexturePoint(const Vector2& point);
+	Vector2 HeightmapPointToTexturePoint(Landscape::eTextureLevel level, const Vector2& point);
+	Vector2 TexturePointToHeightmapPoint(Landscape::eTextureLevel level, const Vector2& point);
+	Vector2 TexturePointToLandscapePoint(Landscape::eTextureLevel level, const Vector2& point);
+	Vector2 LandscapePointToTexturePoint(Landscape::eTextureLevel level, const Vector2& point);
 	Vector2 TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect);
 
-	void ClampToTexture(Rect& rect);
+	void ClampToTexture(Landscape::eTextureLevel level, Rect& rect);
 	void ClampToHeightmap(Rect& rect);
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
-	Rect GetTextureRect();
+	Rect GetTextureRect(Landscape::eTextureLevel level);
 	Rect GetHeightmapRect();
 	Rect GetLandscapeRect();
 
 	void SaveTileMaskTexture();
+	void ResetTileMaskTexture();
 
 	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
 
@@ -118,7 +121,9 @@ private:
 	Texture* cursorTexture;
 	uint32 cursorSize;
 	Vector2 cursorPosition;
-	
+
+	bool fogWasEnabled;
+
 	void UpdateBaseLandscapeHeightmap();
 	bool Init();
 
@@ -126,6 +131,8 @@ private:
 	void DeinitLandscape();
 
 	bool IsNotPassableTerrainCanBeEnabled();
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__) */

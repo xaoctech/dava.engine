@@ -142,7 +142,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     scene->Update(0.1f);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
-    SceneValidator::Instance()->ValidateScene(scene, errorLog);
+    SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 
     texturesForSave.clear();
     SceneHelper::EnumerateTextures(scene, texturesForSave);

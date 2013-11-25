@@ -49,22 +49,18 @@
 #include "Utils/Random.h"
 
 #define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
-
-
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
-const int COMPONENT_COUNT_V6 = 16;
+const int COMPONENT_COUNT_V6 = 18;
 const int COMPONENTS_IN_MAP_COUNT = 4;
 const int COMPONENTS_IN_VECTOR_COUNT = 3;
-const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 7;
+const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 10;
 
 namespace DAVA
 {
     
 	uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (1 << Component::LOD_COMPONENT);
-    
-	REGISTER_CLASS(Entity);
-	
+
 	// Property Names.
 	const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 	const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
@@ -89,7 +85,7 @@ namespace DAVA
 		//debugFlags = DEBUG_DRAW_NONE;
 		flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
 		
-		AddComponent(ScopedPtr<TransformComponent> (new TransformComponent()));
+		AddComponent(new TransformComponent());
 		
 		//    Stats::Instance()->RegisterEvent("Scene.Update.Entity.Update", "Entity update time");
 		//    Stats::Instance()->RegisterEvent("Scene.Draw.Entity.Draw", "Entity draw time");
@@ -112,6 +108,9 @@ namespace DAVA
 		
 		SetScene(0);
 		//  Logger::Debug("~Entity: %p", this);
+
+
+
 	}
     
 	void Entity::AddComponent(Component * component)
@@ -121,8 +120,8 @@ namespace DAVA
 		uint32 componentType = component->GetType();
 		if(USE_VECTOR(componentType))
 		{
-			SafeRelease(components[componentType]);
-			components[componentType] = SafeRetain(component);
+			DVASSERT(NULL == components[componentType]);
+			components[componentType] = component;
 		}
 		else
 		{
@@ -138,28 +137,27 @@ namespace DAVA
 			}
 			
 			it->second->reserve(it->second->size() + 1); //reserve memory to avoid capacity growth
-			it->second->push_back(SafeRetain(component));
+			it->second->push_back(component);
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL == componentsVector)
 			{
-				DVASSERT(componentsMap.Size() < COMPONENTS_IN_MAP_COUNT);
+				DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);
 				
 				componentsVector = new Vector<Component*>();
-				componentsMap.Insert(componentType, componentsVector);
+				componentsMap.insert(componentType, componentsVector);
 			}
 			
 			componentsVector->reserve(componentsVector->size() + 1); //reserve memory to avoid capacity growth
-			componentsVector->push_back(SafeRetain(component));
+			componentsVector->push_back(component);
 #endif
 		}
 		
+		componentFlags |= 1 << component->GetType();
+
 		if (scene)
 			scene->AddComponent(this, component);
-		
-		// SHOULD BE DONE AFTER scene->AddComponent
-		componentFlags |= 1 << component->GetType();
 	}
     
 	void Entity::RemoveAllComponents()
@@ -172,52 +170,32 @@ namespace DAVA
 				components[i] = NULL;
 			}
 		}
-		
-#if defined(COMPONENT_STORAGE_STDMAP)
-		
+
 		for(ComponentsMap::iterator it = componentsMap.begin();
-			it != componentsMap.end(); ++it)
-		{
-			int componentCount = it->second->size();
-			for(Vector<Component*>::iterator compIt = it->second->begin();
-				compIt != it->second->end(); ++compIt)
-			{
-				componentCount--;
-				CleanupComponent(*compIt, componentCount);
-			}
-			
-			SafeDelete(it->second);
-			it->second = NULL;
-		}
-		
-		componentsMap.clear();
-		
-#else
-		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
+			it != componentsMap.end();
 			++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			int componentCount = componentsVector->size();
-			
+
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
 				componentCount--;
 				CleanupComponent(*compIt, componentCount);
 			}
-			
+
 			SafeDelete(componentsVector);
 		}
-		
-		componentsMap.Clear();
-		
-#endif
+
+		componentsMap.clear();
 	}
 	
 	void Entity::RemoveComponent(Component * component)
 	{
+		if (scene)
+			scene->RemoveComponent(this, component);
+
 		int componentCount = 0;
 		uint32 componentType = component->GetType();
 		
@@ -247,7 +225,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector)
 			{
 				for(Vector<Component*>::iterator i = componentsVector->begin();
@@ -265,6 +243,7 @@ namespace DAVA
 			}
 			
 #endif
+
 		}
 		
 		CleanupComponent(component, componentCount);
@@ -272,6 +251,13 @@ namespace DAVA
     
 	void Entity::RemoveComponent(uint32 componentType, uint32 index)
 	{
+		if (scene)
+		{
+			Component *c = GetComponent(componentType, index);
+			if(c)
+				scene->RemoveComponent(this, c);
+		}
+
 		Component* component = NULL;
 		int componentCount = 0;
 		if(USE_VECTOR(componentType))
@@ -295,7 +281,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector &&
 			   componentsVector->size() > index)
 			{
@@ -318,15 +304,12 @@ namespace DAVA
 	{
 		component->SetEntity(0);
 		
-		if (scene)
-			scene->RemoveComponent(this, component);
-		
 		if(componentCount <= 0)
 		{
 			componentFlags &= ~(1 << component->GetType());
 		}
 		
-		SafeRelease(component);
+		SafeDelete(component);
 	}
     
 	Component * Entity::GetComponent(uint32 componentType, uint32 index) const
@@ -349,7 +332,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector &&
 			   componentsVector->size() > index)
 			{
@@ -395,20 +378,19 @@ namespace DAVA
 		
 #else
 		
-		if(componentsMap.Size() > 0)
+		if(componentsMap.size() > 0)
 		{
-			ComponentsMap::Iterator end = componentsMap.End();
-			for(ComponentsMap::Iterator it = componentsMap.Begin();
+			ComponentsMap::iterator end = componentsMap.end();
+			for(ComponentsMap::iterator it = componentsMap.begin();
 				it != end;
 				++it)
 			{
-				Vector<Component*>* componentsVector = it.GetValue();
+				Vector<Component*>* componentsVector = it->second;
 				count += componentsVector->size();
 			}
 		}
-		
+
 #endif
-		
 		return count;
 	}
 	
@@ -435,7 +417,7 @@ namespace DAVA
 			
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+			Vector<Component*>* componentsVector = componentsMap[componentType];
 			if(NULL != componentsVector)
 			{
 				componentCount = componentsVector->size();
@@ -453,7 +435,7 @@ namespace DAVA
 		{
 			return;
 		}
-		// Сheck
+		// РЎheck
 		if (scene)
 		{
 			scene->UnregisterNode(this);
@@ -899,11 +881,10 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
-			++it)
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end(); ++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -938,7 +919,7 @@ namespace DAVA
 		
 		if(!debugComponent)
 		{
-			AddComponent(ScopedPtr<DebugRenderComponent> (new DebugRenderComponent()));
+			AddComponent(new DebugRenderComponent());
 			debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 			debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
 		}
@@ -1111,11 +1092,11 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end();
 			++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -1208,6 +1189,8 @@ namespace DAVA
 						if(NULL != comp)
 						{
 							comp->Deserialize(compArch, serializationContext);
+							if(compType == Component::TRANSFORM_COMPONENT)
+								RemoveComponent(compType);
 							AddComponent(comp);
 						}
 					}
@@ -1223,7 +1206,6 @@ namespace DAVA
 		{
 			component = new CustomPropertiesComponent();
 			AddComponent(component);
-			component->Release();
 		}
 		
 		return component;
@@ -1244,6 +1226,12 @@ namespace DAVA
 					if(NULL != comp)
 					{
 						comp->Deserialize(compArch, serializationContext);
+						
+						if(comp->GetType() == Component::TRANSFORM_COMPONENT)
+						{
+							RemoveComponent(comp->GetType());
+						}
+						
 						AddComponent(comp);
 					}
 					
@@ -1260,13 +1248,11 @@ namespace DAVA
     
 	void Entity::SetSolid(bool isSolid)
 	{
-		//    isSolidNode = isSolid;
 		GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 	}
     
 	bool Entity::GetSolid()
 	{
-		//    return isSolidNode;
 		return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	}
 	
@@ -1304,11 +1290,10 @@ namespace DAVA
 		
 #else
 		
-		for(ComponentsMap::Iterator it = componentsMap.Begin();
-			it != componentsMap.End();
-			++it)
+		for(ComponentsMap::iterator it = componentsMap.begin();
+			it != componentsMap.end(); ++it)
 		{
-			Vector<Component*>* componentsVector = it.GetValue();
+			Vector<Component*>* componentsVector = it->second;
 			for(Vector<Component*>::iterator compIt = componentsVector->begin();
 				compIt != componentsVector->end(); ++compIt)
 			{
@@ -1329,8 +1314,12 @@ namespace DAVA
 	{
 		for (uint32 i = 0; i < Component::COMPONENT_COUNT; ++i)
 		{
-			if (components[i])
-				components[i]->OptimizeBeforeExport();
+            uint32 componentsCount = GetComponentCount(i);
+            for(uint32 index = 0; index < componentsCount; ++index)
+            {
+                Component *c = GetComponent(i, index);
+                c->OptimizeBeforeExport();
+            }
 		}
 		
 		uint32 size = (uint32)children.size();
@@ -1452,7 +1441,7 @@ namespace DAVA
 		return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 	}
 	
-	void Entity::SetVisible(bool isVisible)
+	void Entity::SetVisible(const bool &isVisible)
 	{
 		RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 		if(isVisible)

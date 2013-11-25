@@ -82,9 +82,10 @@ public:
 
 class RenderBatch : public BaseObject
 {
+protected:
+    virtual ~RenderBatch();
 public:
     RenderBatch();
-    virtual ~RenderBatch();
     
     FastName GetOwnerLayerName();
     void SetOwnerLayerName(const FastName & fastname);

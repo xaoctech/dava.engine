@@ -33,6 +33,9 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
+#include "Commands2/MetaObjModifyCommand.h"
+
+#include "Render/UniqueStateSet.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
@@ -103,7 +106,9 @@ protected:
 	Shader* tileMaskEditorShader;
 
 	bool needCreateUndo;
-	
+
+	Landscape::eTextureLevel textureLevel;
+
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
 	void UpdateBrushTool();
@@ -121,6 +126,13 @@ protected:
 	bool IsCanBeEnabled();
 
 	void InitSprites();
+
+	void FinishEditing();
+
+	MetaObjModifyCommand* CreateTileColorCommand(Landscape::eTextureLevel level,
+												 const Color& color);
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */

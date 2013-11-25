@@ -89,4 +89,14 @@ bool SceneSystem::IsLocked()
 	return locked;
 }
 
+void SceneSystem::AddComponent( Entity * entity, Component * component )
+{
+
+}
+
+void SceneSystem::RemoveComponent( Entity * entity, Component * component )
+{
+
+}
+
 };

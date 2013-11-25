@@ -179,6 +179,7 @@
 #include "UI/TheoraPlayer.h"
 #include "UI/UIAggregatorControl.h"
 
+#include "UI/UIScrollViewContainer.h"
 
 // Game object manager / 2D Scene
 #include "Scene2D/GameObject.h"
@@ -218,6 +219,7 @@
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
+#include "Render/Material/MaterialSystem.h"
 
 // 3D scene management
 #include "Scene3D/Scene.h"
@@ -232,6 +234,9 @@
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Render/Highlevel/SpeedTreeLeafBatch.h"
+#include "Render/Highlevel/LandscapeChunk.h"
+#include "Render/Highlevel/SkyboxRenderObject.h"
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
@@ -242,6 +247,10 @@
 #include "Scene3D/UserNode.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/BillboardNode.h"
+#include "Scene3D/BoneNode.h"
+#include "Scene3D/ProxyNode.h"
+#include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
 //Components
@@ -257,6 +266,7 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 // Application core 
 #include "Core/Core.h"

@@ -336,8 +336,9 @@ namespace DAVA
 				targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
 			}
 			
-			targetState->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-			targetState->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
+			//VI: do not set fog property here!
+			//targetState->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
+			//targetState->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
 			
 			if(oldMaterial->isFlatColorEnabled)
 			{

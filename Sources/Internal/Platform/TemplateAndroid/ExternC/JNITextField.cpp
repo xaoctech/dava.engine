@@ -30,26 +30,19 @@
 
 #include "AndroidLayer.h"
 #include "UI/UITextFieldAndroid.h"
-
-char text[256] = {0};
+#include "Base/BaseTypes.h"
 
 extern "C"
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
+	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis, uint32_t id)
 	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
+		DAVA::UITextFieldAndroid::TextFieldShouldReturn(id);
 	}
 
-
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
+	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, uint32_t id, int replacementLocation, int replacementLength, jstring replacementString)
 	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
-
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
-	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
+		DAVA::WideString string;
+		CreateWStringFromJni(env, replacementString, string);
+		return DAVA::UITextFieldAndroid::TextFieldKeyPressed(id, replacementLocation, replacementLength, string);
 	}
 };

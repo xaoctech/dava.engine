@@ -72,6 +72,9 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
+#include "Scene3D/Scene.h"
+
+
 namespace DAVA
 {
     
@@ -185,8 +188,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     // save data objects
     if(isDebugLogEnabled)
     {
-        Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
+        Logger::FrameworkDebug("+ save data objects");
+        Logger::FrameworkDebug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths
@@ -198,7 +201,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //            if (material->names[k].length() > 0)
 //            {
 //                replace(material->names[k], rootNodePath, String(""));
-//                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
+//                Logger::FrameworkDebug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
 //            }
 //        }   
 //    }
@@ -219,7 +222,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     // save hierarchy
     if(isDebugLogEnabled)
-        Logger::Debug("+ save hierarchy");
+        Logger::FrameworkDebug("+ save hierarchy");
 	
 	SaveMaterialSystem(file, &serializationContext);
 
@@ -774,9 +777,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         oldMeshInstanceNode->Entity::Clone(newMeshInstanceNode);
 
 		Component *clonedComponent = oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode);
-        newMeshInstanceNode->RemoveComponent(clonedComponent->GetType());
+		newMeshInstanceNode->RemoveComponent(Component::TRANSFORM_COMPONENT);
         newMeshInstanceNode->AddComponent(clonedComponent);
-		clonedComponent->Release();
         
         //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
@@ -852,7 +854,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         RenderComponent * renderComponent = new RenderComponent;
         renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
-		renderComponent->Release();
         
 		if(parent)
 		{
@@ -875,7 +876,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		lod->Entity::Clone(newNode);
 		Entity * parent = lod->GetParent();
 
-		newNode->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));
+		newNode->AddComponent(new LodComponent());
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
 
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
@@ -923,7 +924,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		RenderComponent * renderComponent = new RenderComponent();
 		newNode->AddComponent(renderComponent);
 		renderComponent->SetRenderObject(emitter);
-		renderComponent->Release();
 		
 		DVASSERT(parent);
 		if(parent)
@@ -950,7 +950,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 			parent->RemoveNode(particleEffectNode);
 		}
 
-		newNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
+		newNode->AddComponent(new ParticleEffectComponent());
 		newNode->Release();
 		return true;
 	}
@@ -964,7 +964,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		SwitchComponent * swConponent = new SwitchComponent();
 		newNode->AddComponent(swConponent);
 		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
-		swConponent->Release();
 
 		Entity * parent = sw->GetParent();
 		DVASSERT(parent);
@@ -984,7 +983,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		Entity * newNode = new Entity();
 		un->Clone(newNode);
 
-		newNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
+		newNode->AddComponent(new UserComponent());
 
 		Entity * parent = un->GetParent();
 		DVASSERT(parent);
@@ -1007,7 +1006,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
 		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
 
-		newNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(spriteObject)));
+		newNode->AddComponent(new RenderComponent(spriteObject));
 
 		Entity * parent = spr->GetParent();
 		DVASSERT(parent);
@@ -1055,8 +1054,9 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     
 	//ConvertShadows(rootNode);
     //RemoveEmptySceneNodes(rootNode);
-    RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
+	RemoveEmptyHierarchy(rootNode);
+	
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {

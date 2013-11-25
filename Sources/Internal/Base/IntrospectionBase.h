@@ -42,6 +42,17 @@ namespace DAVA
 	class KeyedArchive;
 	struct MetaInfo;
 
+	// абстрактный базовый класс для интроспекции
+	class InspBase
+	{
+	protected:
+		virtual ~InspBase(){}
+	public:
+		InspBase(){}
+		// Возвращает интроспекцию класса
+		virtual const InspInfo* GetTypeInfo() const = 0;
+	};
+
 	struct InspDesc
 	{
 		InspDesc(const char *text);
@@ -57,7 +68,7 @@ namespace DAVA
 		friend class InspInfo;
 
 	public:
-		InspMember(const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0);
+		InspMember(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags = 0);
 
 		// Имя члена интроспекции, соответствует имени члена класса
 		const char* Name() const;
@@ -111,7 +122,7 @@ namespace DAVA
 	protected:
 		const char* name;
 		InspDesc desc;
-		const int offset;
+		const long int offset;
 		const MetaInfo* type;
 		const int flags;
 	};
@@ -129,16 +140,14 @@ namespace DAVA
 		virtual MetaInfo* CollectionType() const = 0;
 		virtual MetaInfo* ItemType() const = 0;
 		virtual int Size(void *object) const = 0;
-		virtual void Resize(void *object, int newSize) const = 0;
 		virtual Iterator Begin(void *object) const = 0;
 		virtual Iterator Next(Iterator i) const = 0;
 		virtual void Finish(Iterator i) const = 0;
 		virtual void ItemValueGet(Iterator i, void *itemDst) const = 0;
 		virtual void ItemValueSet(Iterator i, void *itemSrc) = 0;
+		virtual const char* ItemName(Iterator i) const = 0;
 		virtual void* ItemPointer(Iterator i) const = 0;
 		virtual void* ItemData(Iterator i) const = 0;
-		//virtual Iterator ItemAdd(void *object) = 0;
-		//virtual void ItemRem(Iterator i) = 0;
 	};
 
 	// Вспомогательный класс для определения содержит ли указанный шаблонный тип интроспекцию

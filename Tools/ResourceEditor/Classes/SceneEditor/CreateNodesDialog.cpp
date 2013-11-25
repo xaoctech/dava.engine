@@ -141,7 +141,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(ResourceEditor::CREATE_NODE_LANDSCAPE));
             sceneNode = new Entity();
-            sceneNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(ScopedPtr<Landscape>(new Landscape()))));
+            sceneNode->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
             sceneNode->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
             break;
 
@@ -151,7 +151,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
             
             //sceneNode = //EditorLightNode::CreateSceneAndEditorLight();
             sceneNode = new Entity();
-            sceneNode->AddComponent(ScopedPtr<LightComponent> (new LightComponent(ScopedPtr<Light>(new Light))));
+            sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
             sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
             break;
         }
@@ -173,7 +173,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
             
             Camera * camera = new Camera();
             camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-            sceneNode->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(camera)));
+            sceneNode->AddComponent(new CameraComponent(camera));
             sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
             SafeRelease(camera);
         }break;
@@ -197,7 +197,6 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->AddComponent(renderComponent);
             
             newEmitter->Release();
-			renderComponent->Release();
 
 			break;
 		}
@@ -207,7 +206,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(LocalizedString(ResourceEditor::CREATE_NODE_USER));
 			sceneNode = new Entity();
 			sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
-			sceneNode->AddComponent(ScopedPtr<UserComponent> (new UserComponent()));
+			sceneNode->AddComponent(new UserComponent());
 			break;
         }
 
@@ -216,7 +215,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(LocalizedString(ResourceEditor::CREATE_NODE_SWITCH));
             sceneNode = new Entity();
 			sceneNode->SetName(ResourceEditor::SWITCH_NODE_NAME);
-            sceneNode->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
+            sceneNode->AddComponent(new SwitchComponent());
             
 			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
 			customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
@@ -229,7 +228,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(ResourceEditor::CREATE_NODE_PARTICLE_EFFECT);
 
 			sceneNode = new Entity();
-			sceneNode->AddComponent(ScopedPtr<ParticleEffectComponent> (new ParticleEffectComponent()));
+			sceneNode->AddComponent(new ParticleEffectComponent());
 			sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 
 			break;

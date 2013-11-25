@@ -275,8 +275,11 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCameraSystem::Draw()
 {
-	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	//int oldState = DAVA::RenderManager::Instance()->GetState();
+	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	
+	DAVA::RenderManager::Instance()->SetDefault3DState();
+	DAVA::RenderManager::Instance()->FlushState();
 
 	SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 	if(NULL != sceneEditor)
@@ -310,7 +313,7 @@ void SceneCameraSystem::Draw()
 		}
 	}
 
-	DAVA::RenderManager::Instance()->SetState(oldState);
+	//DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void SceneCameraSystem::ProcessCommand(const Command2 *command, bool redo)
@@ -340,7 +343,7 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 	{
 		DAVA::float32 moveSpeed = curSpeed * timeElapsed;        
 
-		if(!IsKeyModificatorPressed(DVKEY_ALT)) // TODO: check for key modifiers
+		if(Qt::NoModifier == QApplication::keyboardModifiers())
 		{
 			DAVA::KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
 
@@ -429,7 +432,7 @@ void SceneCameraSystem::CreateDebugCameras()
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-		topCameraEntity->AddComponent(DAVA::ScopedPtr<DAVA::CameraComponent> (new DAVA::CameraComponent(topCamera)));
+		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
 		scene->InsertBeforeNode(topCameraEntity, scene->GetChild(0));
 
 		// set current default camera
@@ -488,7 +491,7 @@ void SceneCameraSystem::RecalcCameraAspect()
 
 		if(0 != viewportRect.dx && 0 != viewportRect.dy)
 		{
-			aspect = viewportRect.dy / viewportRect.dx;
+			aspect = viewportRect.dx / viewportRect.dy;
 		}
 
 		curSceneCamera->SetAspect(aspect);

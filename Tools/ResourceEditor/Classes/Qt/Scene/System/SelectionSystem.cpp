@@ -45,10 +45,25 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
-	, selectionLocked(false)
+	, selectionAllowed(true)
 	, selectionHasChanges(false)
 {
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData selectionStateData;
+	memcpy(&selectionStateData, default3dState, sizeof(selectionStateData));
+	
+	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
+								DAVA::RenderStateData::STATE_COLORMASK_ALL;
+	selectionStateData.sourceFactor = DAVA::BLEND_SRC_ALPHA;
+	selectionStateData.destFactor = DAVA::BLEND_ONE_MINUS_SRC_ALPHA;
+	
+	selectionNormalDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
 
+	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
+								DAVA::RenderStateData::STATE_COLORMASK_ALL |
+								DAVA::RenderStateData::STATE_DEPTH_TEST;
+	
+	selectionDepthDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
 }
 
 SceneSelectionSystem::~SceneSelectionSystem()
@@ -82,7 +97,7 @@ void SceneSelectionSystem::ForceEmitSignals()
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
-	if (IsLocked())
+	if (IsLocked() || !selectionAllowed)
 	{
 		return;
 	}
@@ -166,19 +181,22 @@ void SceneSelectionSystem::Draw()
 
 	if(curSelections.Size() > 0)
 	{
-		int oldState = DAVA::RenderManager::Instance()->GetState();
-		DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
-		DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
+		//int oldState = DAVA::RenderManager::Instance()->GetState();
+		//DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
+		//DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
 
-		int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL;
+		//int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL;
 
-		if(!(drawMode & ST_SELDRAW_NO_DEEP_TEST))
-		{
-			newState |= DAVA::RenderState::STATE_DEPTH_TEST;
-		}
+		//if(!(drawMode & ST_SELDRAW_NO_DEEP_TEST))
+		//{
+		//	newState |= DAVA::RenderState::STATE_DEPTH_TEST;
+		//}
 
-		DAVA::RenderManager::Instance()->SetState(newState);
-		DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
+		//DAVA::RenderManager::Instance()->SetState(newState);
+		//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
+		
+		DAVA::RenderManager::Instance()->SetRenderState((!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState);
+		DAVA::RenderManager::Instance()->FlushState();
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
@@ -205,8 +223,8 @@ void SceneSelectionSystem::Draw()
 			}
 		}
 
-		DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
-		DAVA::RenderManager::Instance()->SetState(oldState);
+		//DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
+		//DAVA::RenderManager::Instance()->SetState(oldState);
 	}
 }
 
@@ -233,7 +251,7 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		Clear();
 
@@ -249,7 +267,7 @@ void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		if(NULL != entity)
 		{
@@ -272,7 +290,7 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		if(curSelections.HasEntity(entity))
 		{
@@ -288,7 +306,7 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::Clear()
 {
-	if(!selectionLocked)
+	if(!IsLocked())
 	{
 		while(curSelections.Size() > 0)
 		{
@@ -333,9 +351,27 @@ ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 	return curPivotPoint;
 }
 
-void SceneSelectionSystem::LockSelection(bool lock)
+void SceneSelectionSystem::SetSelectionAllowed(bool allowed)
 {
-	selectionLocked = lock;
+	selectionAllowed = allowed;
+}
+
+bool SceneSelectionSystem::IsSelectionAllowed() const
+{
+	return selectionAllowed;
+}
+
+void SceneSelectionSystem::SetLocked(bool lock)
+{
+	SceneSystem::SetLocked(lock);
+
+	hoodSystem->LockAxis(lock);
+	hoodSystem->SetVisible(!lock);
+
+	if(!lock)
+	{
+		UpdateHoodPos();
+	}
 }
 
 void SceneSelectionSystem::UpdateHoodPos() const
@@ -366,12 +402,12 @@ void SceneSelectionSystem::UpdateHoodPos() const
 
 		hoodSystem->LockModif(lockHoodModif);
 		hoodSystem->SetPosition(p);
-		hoodSystem->Show(true);
+		hoodSystem->SetVisible(true);
 	}
 	else
 	{
 		hoodSystem->LockModif(false);
-		hoodSystem->Show(false);
+		hoodSystem->SetVisible(false);
 	}
     
     SceneEditor2 *sc = (SceneEditor2 *)GetScene();

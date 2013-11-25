@@ -49,7 +49,7 @@ namespace DAVA
 
 		DAVA::MetaInfo* CollectionType() const
 		{
-			return DAVA::MetaInfo::Instance<CollectionT >();
+			return DAVA::MetaInfo::Instance<CollectionT>();
 		}
 
 		DAVA::MetaInfo* ItemType() const
@@ -67,14 +67,6 @@ namespace DAVA
 			}
 
 			return size;
-		}
-
-		void Resize(void *object, int newSize) const
-		{
-			if(NULL != object)
-			{
-				((CollectionT *) object)->resize(newSize);
-			}
 		}
 
 		Iterator Begin(void *object) const
@@ -161,6 +153,11 @@ namespace DAVA
 			return p;
 		}
 
+		const char* ItemName(Iterator i) const
+		{
+			return NULL;
+		}
+
 		void* ItemData(Iterator i) const
 		{
 			if(ItemType()->IsPointer())
@@ -186,11 +183,163 @@ namespace DAVA
 		};
 	};
 
+	template<template <typename, typename> class C, typename K, typename V>
+	class InspKeyedCollImpl : public InspColl
+	{
+	public:
+		typedef C<K, V> CollectionT;
+
+		InspKeyedCollImpl(const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: InspColl(_name, _desc, _offset, _type, _flags)
+		{ }
+
+		DAVA::MetaInfo* CollectionType() const
+		{
+			return DAVA::MetaInfo::Instance<CollectionT>();
+		}
+
+		DAVA::MetaInfo* ItemType() const
+		{
+			return DAVA::MetaInfo::Instance<V>();
+		}
+
+		int Size(void *object) const
+		{
+			int size = 0;
+
+			if(NULL != object)
+			{
+				size = ((CollectionT *)object)->size();
+			}
+
+			return size;
+		}
+
+		Iterator Begin(void *object) const
+		{
+			Iterator i = NULL;
+
+			if(NULL != object)
+			{
+				CollectionT *collection = (CollectionT *)object;
+
+				typename CollectionT::iterator begin = collection->begin();
+				typename CollectionT::iterator end = collection->end();
+
+				if(begin != end)
+				{
+					CollectionPos *pos = new CollectionPos();
+					pos->curPos = begin;
+					pos->endPos = end;
+
+					i = (Iterator) pos;
+				}
+			}
+
+			return i;
+		}
+
+		Iterator Next(Iterator i) const
+		{
+			CollectionPos* pos = (CollectionPos *)i;
+
+			if(NULL != pos)
+			{
+				pos->curPos++;
+
+				if(pos->curPos == pos->endPos)
+				{
+					delete pos;
+					i = NULL;
+				}
+			}
+
+			return i;
+		}
+
+		void Finish(Iterator i) const
+		{
+			CollectionPos* pos = (CollectionPos *)i;
+			if(NULL != pos)
+			{
+				delete pos;
+			}
+		}
+
+		void ItemValueGet(Iterator i, void *itemDst) const
+		{
+			CollectionPos* pos = (CollectionPos *)i;
+			if(NULL != pos)
+			{
+				V *dstT = (V*) itemDst;
+				*dstT = pos->curPos->second;
+			}
+		}
+
+		void ItemValueSet(Iterator i, void *itemSrc)
+		{
+			CollectionPos* pos = (CollectionPos *)i;
+			if(NULL != pos)
+			{
+				V *srcT = (V*) itemSrc;
+				pos->curPos->second = *srcT;
+			}
+		}
+
+		void* ItemPointer(Iterator i) const
+		{
+			void *p = NULL;
+			CollectionPos* pos = (CollectionPos *)i;
+
+			if(NULL != pos)
+			{
+				p = &(*(pos->curPos));
+			}
+
+			return p;
+		}
+
+		const char* ItemName(Iterator i) const
+		{
+			return NULL;
+		}
+
+		void* ItemData(Iterator i) const
+		{
+			if(ItemType()->IsPointer())
+			{
+				return *((void **)ItemPointer(i));
+			}
+			else
+			{
+				return ItemPointer(i);
+			}
+		}
+
+		const InspColl* Collection() const
+		{
+			return this;
+		}
+
+	protected:
+		struct CollectionPos
+		{
+			typename CollectionT::iterator curPos;
+			typename CollectionT::iterator endPos;
+		};
+	};
+
 	// Функция создает IntrospectionCollection, типы выводятся автоматически
 	template<template <typename> class Container, class T>
 	static InspColl* CreateInspColl(Container<T> *t, const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
 		return new InspCollImpl<Container, T>(_name, _desc, _offset, _type, _flags);
+	}
+
+	template<template <typename, typename> class Container, class K, class V>
+	static InspColl* CreateInspColl(Container<K, V> *t, const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags)
+	{
+		return new InspKeyedCollImpl<Container, K, V>(_name, _desc, _offset, _type, _flags);
 	}
 };
 

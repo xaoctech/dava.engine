@@ -96,6 +96,9 @@ class Scene;
     
 class SceneFileV2 : public BaseObject
 {
+protected:
+    virtual ~SceneFileV2();
+
 public: 
     enum eError{
         ERROR_NO_ERROR = 0,
@@ -103,15 +106,14 @@ public:
         ERROR_FAILED_TO_CREATE_FILE = 2,
         ERROR_FILE_WRITE_ERROR = 3,
     };
-	
+
 	enum eFileType
 	{
 		SceneFile = 0,
 		ModelFile = 1
 	};
-    
+
     SceneFileV2();
-    virtual ~SceneFileV2();
     
     eError SaveScene(const FilePath & filename, Scene * _scene, SceneFileV2::eFileType fileType = SceneFileV2::SceneFile);
     eError LoadScene(const FilePath & filename, Scene * _scene);

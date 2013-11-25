@@ -176,7 +176,7 @@ void MaterialTreeModel::SearchMaterialsInScene()
 		allMaterials.clear();
 		scene->GetDataNodes(allMaterials);		
 		//VI: remove skybox materials so they not to appear in the lists
-		DAVA::MaterialHelper::FilterMaterialsByType(allMaterials, DAVA::Material::MATERIAL_SKYBOX);
+		//DAVA::MaterialHelper::FilterMaterialsByType(allMaterials, DAVA::Material::MATERIAL_SKYBOX);
 
 		ApplyFilterAndSort();
 	}

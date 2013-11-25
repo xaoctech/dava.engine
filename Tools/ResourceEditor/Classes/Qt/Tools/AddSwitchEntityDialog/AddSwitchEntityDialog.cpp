@@ -27,19 +27,19 @@
 =====================================================================================*/
 
 
-
+#include <QLabel>
 #include "AddSwitchEntityDialog.h"
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include "Main/mainwindow.h"
 #include "SceneEditor/EditorSettings.h"
-#include <QLabel>
 #include "Classes/Commands2/EntityAddCommand.h"
+#include "Qt/Main/QtUtils.h"
+
 #include "ui_BaseAddEntityDialog.h"
 
-
 AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
-		:BaseAddEntityDialog(parent)
+		:BaseAddEntityDialog(parent, QDialogButtonBox::Ok | QDialogButtonBox::Cancel)
 {
 	setAcceptDrops(true);
 	setAttribute( Qt::WA_DeleteOnClose, true );
@@ -67,9 +67,13 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
 
+	propEditor->setVisible(false);
+	propEditor->setMinimumHeight(0);
+	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
+
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
+	entityToAdd->AddComponent(new SwitchComponent());
 	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	SetEntity(entityToAdd);
@@ -119,6 +123,13 @@ void AddSwitchEntityDialog::accept()
 	
 	Vector<Entity*> vector;
 	GetPathEntities(vector, scene);
+	
+	if(vector.empty())
+	{
+		ShowErrorDialog(ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_CHILDREN);
+		return;
+	}
+	
 	CleanupPathWidgets();
 	
 	Q_FOREACH(Entity* item, vector)
@@ -130,16 +141,17 @@ void AddSwitchEntityDialog::accept()
 			e->Release();
 		}
 	}
-	if(vector.size() > 0)
+
+	scene->Exec(new EntityAddCommand(switchEntity, scene));
+	scene->selectionSystem->SetSelection(switchEntity);
+
+	DAVA::SwitchComponent *swComponent = GetSwitchComponent(switchEntity);
+	if(NULL != swComponent)
 	{
-		EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
-		scene->Exec(command);
+		// this will case switch component to send event about it state
+		swComponent->SetSwitchIndex(swComponent->GetSwitchIndex());
+	}
 		
-		Entity* affectedEntity = command->GetEntity();
-		scene->selectionSystem->SetSelection(affectedEntity);
-        GlobalEventSystem::Instance()->Event(affectedEntity,EventSystem::SWITCH_CHANGED);
-    }
-	
 	BaseAddEntityDialog::accept();
 }
 

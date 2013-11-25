@@ -67,7 +67,7 @@ void EnableSleepTimer()
 	app.idleTimerDisabled = NO;
 }
 	
-	uint64 eglGetCurrentContext()
+	uint64 EglGetCurrentContext()
 	{
 		return (uint64)[EAGLContext currentContext];
 	}

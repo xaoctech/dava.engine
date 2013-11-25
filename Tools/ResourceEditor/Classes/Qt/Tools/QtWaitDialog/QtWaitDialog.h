@@ -58,6 +58,7 @@ public:
 	void SetRangeMin(int min);
 	void SetRangeMax(int max);
 	void SetValue(int value);
+	void EnableCancel(bool enable);
 
 	bool WasCanceled() const;
 

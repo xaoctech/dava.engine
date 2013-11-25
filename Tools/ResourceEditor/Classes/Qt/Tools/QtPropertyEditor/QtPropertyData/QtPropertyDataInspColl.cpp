@@ -30,7 +30,7 @@
 
 #include "QtPropertyDataInspColl.h"
 #include "QtPropertyDataIntrospection.h"
-#include "QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataMetaObject.h"
 
 QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
 	: object(_object)
@@ -57,7 +57,7 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 				{
 					QString s;
 					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", itemObject));
-					childData->SetFlags(FLAG_IS_DISABLED);
+					childData->SetEnabled(false);
 					ChildAdd(QString::number(index), childData);
 				}
 			}
@@ -65,14 +65,14 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 			{
 				if(!valueType->IsPointer())
 				{
-					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(collection->ItemPointer(i), valueType));
+					QtPropertyDataMetaObject *childData = new QtPropertyDataMetaObject(collection->ItemPointer(i), valueType);
 					ChildAdd(QString::number(index), childData);
 				}
 				else
 				{
 					QString s;
 					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", collection->ItemData(i)));
-					childData->SetFlags(FLAG_IS_DISABLED);
+					childData->SetEnabled(false);
 					ChildAdd(QString::number(index), childData);
 				}
 			}
@@ -82,13 +82,13 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 		}
 	}
 
-	SetFlags(FLAG_IS_DISABLED);
+	SetEnabled(false);
 }
 
 QtPropertyDataInspColl::~QtPropertyDataInspColl()
 { }
 
-QVariant QtPropertyDataInspColl::GetValueInternal()
+QVariant QtPropertyDataInspColl::GetValueInternal() const
 {
 	return QString().sprintf("Collection, size %d", collection->Size(object));
 }

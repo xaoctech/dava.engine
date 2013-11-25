@@ -126,6 +126,14 @@ void QtWaitDialog::WaitCanceled()
 	QApplication::processEvents();
 }
 
+void QtWaitDialog::EnableCancel(bool enable)
+{
+	if(!wasCanceled)
+	{
+		ui->waitButton->setEnabled(enable);
+	}
+}
+
 void QtWaitDialog::Setup(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
 	setWindowTitle(title);

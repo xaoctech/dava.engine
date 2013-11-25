@@ -49,49 +49,7 @@ namespace DAVA
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
     static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
-	
-	NMaterialDescriptor::NMaterialDescriptor()
-	{
 		
-	}
-    
-	NMaterialDescriptor::~NMaterialDescriptor()
-	{
-		
-	}
-	
-	uint32 NMaterialDescriptor::GetTextureSlotByName(const String & textureName)
-	{
-		Map<String, uint32>::iterator it = slotNameMap.find(textureName);
-		if (it != slotNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	uint32 NMaterialDescriptor::GetUniformSlotByName(const String & uniformName)
-	{
-		Map<String, uint32>::iterator it = uniformNameMap.find(uniformName);
-		if (it != uniformNameMap.end())
-		{
-			return it->second;
-		}
-		// if we haven't found slot let's use first slot
-		return 0;
-	}
-    
-	void NMaterialDescriptor::SetNameForTextureSlot(uint32 slot, const String & name)
-	{
-		slotNameMap[name] = slot;
-	}
-	
-	void NMaterialDescriptor::SetNameForUniformSlot(uint32 slot, const String & name)
-	{
-		uniformNameMap[name] = slot;
-	}
-	
 	MaterialTechnique::MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
 	{
 		shader = 0;
@@ -109,7 +67,7 @@ namespace DAVA
 	{
 		FastNameSet combinedDefines = materialDefines;
 		
-		if(uniqueDefines.Size() > 0)
+		if(uniqueDefines.size() > 0)
 		{
 			combinedDefines.Combine(uniqueDefines);
 		}
@@ -154,7 +112,8 @@ namespace DAVA
 	techniqueForRenderPass(8),
 	nativeDefines(16),
 	materialProperties(32),
-	textures(8)
+	textures(8),
+	texturesDirty(false)
 	{
 		parent = NULL;
 		requiredVertexFormat = EVF_FORCE_DWORD;
@@ -167,22 +126,29 @@ namespace DAVA
 			children[i]->SetParent(NULL);
 		}
 		
-		for(HashMap<FastName, TextureBucket*>::Iterator i = textures.Begin();
-			i != textures.End();
+		for(HashMap<FastName, TextureBucket*>::iterator i = textures.begin();
+			i != textures.end();
 			++i)
 		{
-			SafeRelease(i.GetValue()->texture);
-			delete i.GetValue();
+			SafeRelease(i->second->texture);
+			delete i->second;
 		}
 		
-		textures.Clear();
+		textures.clear();
 		texturesArray.clear();
+		
+		for(HashMap<FastName, NMaterialProperty*>::iterator i = materialProperties.begin();
+			i != materialProperties.end();
+			++i)
+		{
+			delete i->second;
+		}		
 	}
 	
 	void NMaterialState::AddMaterialProperty(const String & keyName, const YamlNode * uniformNode)
 	{
 		FastName uniformName(keyName);
-		Logger::Debug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
+		Logger::FrameworkDebug("Uniform Add:%s %s", keyName.c_str(), uniformNode->AsString().c_str());
 		
 		Shader::eUniformType type = Shader::UT_FLOAT;
 		union
@@ -254,16 +220,17 @@ namespace DAVA
 		NMaterialProperty * materialProperty = new NMaterialProperty();
 		materialProperty->size = 1;
 		materialProperty->type = type;
-		materialProperty->data = new char[Shader::GetUniformTypeSize(type)];
+		materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+		materialProperty->data = new char[materialProperty->dataSize];
 		
-		memcpy(materialProperty->data, &data, Shader::GetUniformTypeSize(type));
+		memcpy(materialProperty->data, &data, materialProperty->dataSize);
 		
-		materialProperties.Insert(uniformName, materialProperty);
+		materialProperties.insert(uniformName, materialProperty);
 	}
     
 	void NMaterialState::SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data)
 	{
-		NMaterialProperty * materialProperty = materialProperties.GetValue(propertyFastName);
+		NMaterialProperty * materialProperty = materialProperties.at(propertyFastName);
 		if (materialProperty)
 		{
 			if (materialProperty->type != type || materialProperty->size != size)
@@ -272,7 +239,8 @@ namespace DAVA
 				SafeDeleteArray(tmpPtr); //cannot delete void* pointer
 				materialProperty->size = size;
 				materialProperty->type = type;
-				materialProperty->data = new char[materialProperty->GetDataSize()];
+                materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+				materialProperty->data = new char[materialProperty->dataSize];
 			}
 		}
 		else
@@ -280,11 +248,12 @@ namespace DAVA
 			materialProperty = new NMaterialProperty;
 			materialProperty->size = size;
 			materialProperty->type = type;
-			materialProperty->data = new char[materialProperty->GetDataSize()];
-			materialProperties.Insert(propertyFastName, materialProperty);
+            materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+			materialProperty->data = new char[materialProperty->dataSize];
+			materialProperties.insert(propertyFastName, materialProperty);
 		}
 		
-		memcpy(materialProperty->data, data, materialProperty->GetDataSize());
+		memcpy(materialProperty->data, data, materialProperty->dataSize);
 	}
 	
 	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
@@ -293,7 +262,7 @@ namespace DAVA
 		NMaterialProperty * property = NULL;
 		while(currentMaterial != 0)
 		{
-			property = currentMaterial->materialProperties.GetValue(keyName);
+			property = currentMaterial->materialProperties.at(keyName);
 			if (property)
 			{
 				break;
@@ -322,12 +291,12 @@ namespace DAVA
 
 	void NMaterialState::AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique)
 	{
-		techniqueForRenderPass.Insert(techniqueName, materialTechnique);
+		techniqueForRenderPass.insert(techniqueName, materialTechnique);
 	}
     
 	MaterialTechnique * NMaterialState::GetTechnique(const FastName & techniqueName)
 	{
-		MaterialTechnique * technique = techniqueForRenderPass.GetValue(techniqueName);
+		MaterialTechnique * technique = techniqueForRenderPass.at(techniqueName);
 		
 		if(NULL == technique)
 		{
@@ -335,16 +304,18 @@ namespace DAVA
 			NMaterialState* curState = parent;
 			while(curState)
 			{
-				technique = curState->techniqueForRenderPass.GetValue(techniqueName);
+				technique = curState->techniqueForRenderPass.at(techniqueName);
 				if(technique)
 				{
-					RenderState* newRenderState = new RenderState();
-					technique->GetRenderState()->CopyTo(newRenderState);
-					MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
-																				 technique->GetUniqueDefineSet(),
-																				 newRenderState);
-					AddMaterialTechnique(techniqueName, materialTechnique);
-					technique = materialTechnique;
+					//RenderState* newRenderState = new RenderState();
+					//technique->GetRenderState()->CopyTo(newRenderState);
+					//MaterialTechnique* materialTechnique = new MaterialTechnique(technique->GetShaderName(),
+					//															 technique->GetUniqueDefineSet(),
+					//															 technique->GetRenderState());
+					//AddMaterialTechnique(techniqueName, materialTechnique);
+					//technique = materialTechnique;
+					
+					AddMaterialTechnique(techniqueName, technique);
 					
 					break;
 				}
@@ -360,16 +331,18 @@ namespace DAVA
     
 	void NMaterialState::SetTexture(const FastName & textureFastName, Texture * texture)
 	{
-		TextureBucket* bucket = textures.GetValue(textureFastName);
+		TextureBucket* bucket = textures.at(textureFastName);
 		if(NULL != bucket)
 		{
-			DVASSERT(bucket->index < texturesArray.size());
+			DVASSERT(bucket->index < (int32)texturesArray.size());
 			
 			if(bucket->texture != texture)
 			{
 				SafeRelease(bucket->texture);
 				bucket->texture = SafeRetain(texture);
 				texturesArray[bucket->index] = texture;
+				
+				texturesDirty = true;
 			}
 		}
 		else
@@ -378,21 +351,23 @@ namespace DAVA
 			bucket->texture = SafeRetain(texture);
 			bucket->index = texturesArray.size();
 			
-			textures.Insert(textureFastName, bucket);
+			textures.insert(textureFastName, bucket);
 			texturesArray.push_back(texture);
 			textureNamesArray.push_back(textureFastName);
+			
+			texturesDirty = true;
 		}
 	}
     
 	Texture * NMaterialState::GetTexture(const FastName & textureFastName) const
 	{
-		TextureBucket* bucket = textures.GetValue(textureFastName);
+		TextureBucket* bucket = textures.at(textureFastName);
 		if (!bucket)
 		{
 			NMaterial * currentMaterial = parent;
 			while(currentMaterial != 0)
 			{
-				bucket = currentMaterial->textures.GetValue(textureFastName);
+				bucket = currentMaterial->textures.at(textureFastName);
 				if (bucket)
 				{
 					break;
@@ -429,6 +404,8 @@ namespace DAVA
 	{
 		parent = SafeRetain(material);
 		parentName = (NULL == parent) ? FastName("") : parent->GetMaterialName();
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
 	void NMaterialState::AddChildToState(NMaterial* material)
@@ -453,16 +430,16 @@ namespace DAVA
 	
 	void NMaterialState::RemoveMaterialDefineFromState(const FastName& defineName)
 	{
-		nativeDefines.Remove(defineName);
+		nativeDefines.erase(defineName);
 	}
 	
 	void NMaterialState::ShallowCopyTo(NMaterialState* targetState, bool copyNames)
 	{
 		DVASSERT(this != targetState);
 		
-		targetState->nativeDefines.Clear();
-		targetState->layers.Clear();
-		targetState->textures.Clear();
+		targetState->nativeDefines.clear();
+		targetState->layers.clear();
+		targetState->textures.clear();
 		targetState->texturesArray.clear();
 		targetState->textureNamesArray.clear();
 
@@ -475,28 +452,28 @@ namespace DAVA
 		
 		targetState->nativeDefines.Combine(nativeDefines);
 		
-		targetState->techniqueForRenderPass.Clear();
-		for(HashMap<FastName, MaterialTechnique *>::Iterator it = techniqueForRenderPass.Begin();
-			it != techniqueForRenderPass.End();
+		targetState->techniqueForRenderPass.clear();
+		for(HashMap<FastName, MaterialTechnique *>::iterator it = techniqueForRenderPass.begin();
+			it != techniqueForRenderPass.end();
 			++it)
 		{
-			targetState->techniqueForRenderPass.Insert(it.GetKey(), it.GetValue());
+			targetState->techniqueForRenderPass.insert(it->first, it->second);
 		}
 		
-		targetState->materialProperties.Clear();
-		for(HashMap<FastName, NMaterialProperty *>::Iterator it = materialProperties.Begin();
-			it != materialProperties.End();
+		targetState->materialProperties.clear();
+		for(HashMap<FastName, NMaterialProperty *>::iterator it = materialProperties.begin();
+			it != materialProperties.end();
 			++it)
 		{
-			targetState->materialProperties.Insert(it.GetKey(), it.GetValue());
+			targetState->materialProperties.insert(it->first, it->second);
 		}
 
 		
-		for(HashMap<FastName, TextureBucket *>::Iterator it = textures.Begin();
-			it != textures.End();
+		for(HashMap<FastName, TextureBucket *>::iterator it = textures.begin();
+			it != textures.end();
 			++it)
 		{
-			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
+			targetState->SetTexture(it->first, it->second->texture);
 		}
 		
 		targetState->requiredVertexFormat = requiredVertexFormat;
@@ -504,17 +481,17 @@ namespace DAVA
 	
 	void NMaterialState::CopyTechniquesTo(NMaterialState* targetState)
 	{
-		HashMap<FastName, MaterialTechnique *>::Iterator techIter = techniqueForRenderPass.Begin();
-		while(techIter != techniqueForRenderPass.End())
+		HashMap<FastName, MaterialTechnique *>::iterator techIter = techniqueForRenderPass.begin();
+		while(techIter != techniqueForRenderPass.end())
 		{
-			MaterialTechnique* technique = techIter.GetValue();
+			MaterialTechnique* technique = techIter->second;
 			
 			RenderState* newRenderState = new RenderState();
 			technique->GetRenderState()->CopyTo(newRenderState);
 			MaterialTechnique* childMaterialTechnique = new MaterialTechnique(technique->GetShaderName(),
 																			  technique->GetUniqueDefineSet(),
 																			  newRenderState);
-			targetState->AddMaterialTechnique(techIter.GetKey(), childMaterialTechnique);
+			targetState->AddMaterialTechnique(techIter->first, childMaterialTechnique);
 			
 			++techIter;
 		}
@@ -528,6 +505,7 @@ namespace DAVA
 		if (parentNameNode)
 		{
 			parentName = FastName(parentNameNode->AsString());
+			DVASSERT(parentName.IsValid());
 		}
 
 		
@@ -577,7 +555,7 @@ namespace DAVA
 			
 			if (renderStepNode->AsString() == "RenderPass")
 			{
-				Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
+				Logger::FrameworkDebug("- RenderPass found: %s", renderStepNode->AsString().c_str());
 				const YamlNode * shaderNode = renderStepNode->Get("Shader");
 				const YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
 				
@@ -647,9 +625,9 @@ namespace DAVA
 	{
 		DVASSERT(this != targetState);
 		
-		targetState->nativeDefines.Clear();
-		targetState->layers.Clear();
-		targetState->textures.Clear();
+		targetState->nativeDefines.clear();
+		targetState->layers.clear();
+		targetState->textures.clear();
 		targetState->texturesArray.clear();
 		targetState->textureNamesArray.clear();
 
@@ -657,11 +635,11 @@ namespace DAVA
 		targetState->layers.Combine(layers);
 		targetState->nativeDefines.Combine(nativeDefines);
 		
-		for(HashMap<FastName, TextureBucket *>::Iterator it = textures.Begin();
-			it != textures.End();
+		for(HashMap<FastName, TextureBucket *>::iterator it = textures.begin();
+			it != textures.end();
 			++it)
 		{
-			targetState->SetTexture(it.GetKey(), it.GetValue()->texture);
+			targetState->SetTexture(it->first, it->second->texture);
 		}
 		
 		for(Vector<NMaterial*>::iterator it = children.begin();
@@ -673,10 +651,10 @@ namespace DAVA
 		
 		CopyTechniquesTo(targetState);
 		
-		HashMap<FastName, NMaterialProperty*>::Iterator propIter = materialProperties.Begin();
-		while(propIter != materialProperties.End())
+		HashMap<FastName, NMaterialProperty*>::iterator propIter = materialProperties.begin();
+		while(propIter != materialProperties.end())
 		{
-			targetState->materialProperties.Insert(propIter.GetKey(), propIter.GetValue()->Clone());
+			targetState->materialProperties.insert(propIter->first, propIter->second->Clone());
 			
 			++propIter;
 		}
@@ -714,6 +692,16 @@ namespace DAVA
     
 	NMaterial::~NMaterial()
 	{
+		if(IsConfigMaterial())
+		{
+			for(HashMap<FastName, MaterialTechnique*>::iterator i = techniqueForRenderPass.begin();
+				i != techniqueForRenderPass.end();
+				++i)
+			{
+				delete i->second;
+			}
+		}
+		
 		SetParent(NULL);
 		
 		if(materialSystem)
@@ -722,13 +710,13 @@ namespace DAVA
 		}
 	}
     
-	bool NMaterial::LoadFromFile(const String & pathname)
+	bool NMaterial::LoadFromFile(const FilePath & pathname)
 	{
 		bool result = false;
 		YamlParser * parser = YamlParser::Create(pathname);
 		if (!parser)
 		{
-			Logger::Error("Can't load requested material: %s", pathname.c_str());
+			Logger::Error("Can't load requested material: %s", pathname.GetAbsolutePathname().c_str());
 			return result;
 		}
 		
@@ -766,20 +754,20 @@ namespace DAVA
 				{
 					FastName materialStateName(materialStateNameNode->AsString());
 					
-					if(!states.IsKey(materialStateName))
+					if(!states.count(materialStateName))
 					{
 						if(materialStateCount > 1)
 						{
 							NMaterialState* materialState = new NMaterialState();
 							if(materialState->LoadFromYamlNode(materialStateNode))
 							{
-								states.Insert(materialStateName, materialState);
+								states.insert(materialStateName, materialState);
 							}
 							else
 							{
 								Logger::Error("[NMaterial::LoadFromFile] Failed to load a material state %s in file %s!",
 											  materialStateName.c_str(),
-											  pathname.c_str());
+											  pathname.GetAbsolutePathname().c_str());
 								
 								DVASSERT(false);
 							}
@@ -794,7 +782,7 @@ namespace DAVA
 					{
 						Logger::Error("[NMaterial::LoadFromFile] Duplicate material state %s found in file %s!",
 									  materialStateName.c_str(),
-									  pathname.c_str());
+									  pathname.GetAbsolutePathname().c_str());
 						
 						DVASSERT(false);
 					}
@@ -802,7 +790,7 @@ namespace DAVA
 				}
 				else
 				{
-					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.c_str());
+					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.GetAbsolutePathname().c_str());
 					DVASSERT(false);
 				}
 			}
@@ -813,8 +801,50 @@ namespace DAVA
 		return result;
 	}
 	
+	void NMaterial::BindMaterialTextures(RenderState* renderState)
+	{
+		Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
+		for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
+		{
+			TextureParamCacheEntry& textureEntry = *i;
+			
+			if(NULL == textureEntry.tx)
+			{
+				textureEntry.tx = GetTexture(textureEntry.textureName);
+			}
+	
+			renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+		}
+	}
+	
+	void NMaterial::BindMaterialProperties(Shader * shader)
+	{
+		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
+		Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
+		for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
+		{
+			UniformCacheEntry& uniformEntry = *i;
+			
+			if(NULL == uniformEntry.prop)
+			{
+				uniformEntry.prop = GetMaterialProperty(uniformEntry.uniform->name);
+			}
+			
+			if(uniformEntry.prop)
+			{
+				//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
+				shader->SetUniformValueByIndex(uniformEntry.index,
+											   uniformEntry.uniform->type,
+											   uniformEntry.uniform->size,
+											   uniformEntry.prop->data,
+											   uniformEntry.prop->dataSize);
+			}
+		}
+	}
+
+	
 	void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* camera)
-	{		
+	{
 		if (techniqueName != activeTechniqueName)
 		{
 			activeTechnique = GetTechnique(techniqueName);
@@ -827,14 +857,11 @@ namespace DAVA
 				DVASSERT(activeTechnique);
 				return;
 			}
-		}
-		
-		if(!ready)
-		{
-			Rebuild(false);
 			
 			BuildTextureParamsCache(*activeTechnique);
 			BuildActiveUniformsCache(*activeTechnique);
+			
+			ready = true;
 		}
 		
 		SetupPerFrameProperties(camera);
@@ -843,40 +870,41 @@ namespace DAVA
 				
 		Shader * shader = activeTechnique->GetShader();
 		
-		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = activeTechnique->GetTextureParamsCache();
-		size_t textureCount = cache.size();
-		for(size_t i = 0; i < textureCount; ++i)
+		BindMaterialTextures(renderState);
+		/*Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
+		for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
 		{
-			MaterialTechnique::TextureParamCacheEntry& textureEntry = cache[i];
+			TextureParamCacheEntry& textureEntry = *i;
 			Texture* texture = GetTexture(textureEntry.textureName);
 			renderState->SetTexture(texture, textureEntry.slot);
-		}
+		}*/
 		
 		renderState->SetShader(shader);
 		
 		RenderManager::Instance()->FlushState(renderState);
 		
+		BindMaterialProperties(shader);
 		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
-		Vector<MaterialTechnique::UniformCacheEntry>& uniformsCache = activeTechnique->GetActiveUniformsCache();
-		size_t uniformCount = uniformsCache.size();
-		for(size_t i = 0; i < uniformCount; ++i)
+		/*Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
+		for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
 		{
-			MaterialTechnique::UniformCacheEntry& uniformEntry = uniformsCache[i];
+			UniformCacheEntry& uniformEntry = *i;
 			
-			NMaterial * currentMaterial = this;
-			
-			while(currentMaterial != 0)
+			if(NULL == uniformEntry.prop)
 			{
-				NMaterialProperty * property = currentMaterial->materialProperties.GetValue(uniformEntry.uniform->name);
-				if (property)
-				{
-					shader->SetUniformValueByIndex(uniformEntry.index, uniformEntry.uniform->type, uniformEntry.uniform->size, property->data, property->GetDataSize());
-					break;
-				}
-				currentMaterial = currentMaterial->parent;
+				uniformEntry.prop = GetMaterialProperty(uniformEntry.uniform->name);
 			}
-
-		}
+			
+			if(uniformEntry.prop)
+			{
+				//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
+				shader->SetUniformValueByIndex(uniformEntry.index,
+											   uniformEntry.uniform->type,
+											   uniformEntry.uniform->size,
+											   uniformEntry.prop->data,
+											   uniformEntry.prop->dataSize);
+			}
+		}*/
 		
 		DVASSERT(ready);
 	}
@@ -972,13 +1000,26 @@ namespace DAVA
 		}
 	}
 	
+    int32 NMaterial::GetChildrenCount() const
+    {
+        return (int32)NMaterialState::children.size();
+    }
+    
+    NMaterial * NMaterial::GetChild(int32 index) const
+    {
+        DVASSERT((0 <= index) && (index < (int32)NMaterialState::children.size()));
+        
+        return NMaterialState::children[index];
+    }
+
+    
 	void NMaterial::ResetParent()
 	{
 		activeTechnique = NULL;
 		activeTechniqueName.Reset();
 		
 		//TODO: clear parent states such as textures, defines, etc
-		effectiveLayers.Clear();
+		effectiveLayers.clear();
 		effectiveLayers.Combine(layers);
 		UnPropagateParentDefines();
 		
@@ -988,15 +1029,15 @@ namespace DAVA
 	void NMaterial::PropagateParentDefines()
 	{
 		ready = false;
-		inheritedDefines.Clear();
+		inheritedDefines.clear();
 		if(parent)
 		{
-			if(parent->inheritedDefines.Size() > 0)
+			if(parent->inheritedDefines.size() > 0)
 			{
 				inheritedDefines.Combine(parent->inheritedDefines);
 			}
 			
-			if(parent->nativeDefines.Size() > 0)
+			if(parent->nativeDefines.size() > 0)
 			{
 				inheritedDefines.Combine(parent->nativeDefines);
 			}
@@ -1006,25 +1047,31 @@ namespace DAVA
 	void NMaterial::UnPropagateParentDefines()
 	{
 		ready = false;
-		inheritedDefines.Clear();
+		inheritedDefines.clear();
 	}
 	
 	void NMaterial::Rebuild(bool recursive)
 	{
 		FastNameSet combinedDefines = inheritedDefines;
 		
-		if(nativeDefines.Size() > 0)
+		if(nativeDefines.size() > 0)
 		{
 			combinedDefines.Combine(nativeDefines);
 		}
 		
-		HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
-		while(iter != techniqueForRenderPass.End())
+		if(IsConfigMaterial())
 		{
-			MaterialTechnique* technique = iter.GetValue();
-			technique->RecompileShader(combinedDefines);
+			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
+			while(iter != techniqueForRenderPass.end())
+			{
+				MaterialTechnique* technique = iter->second;
+				technique->RecompileShader(combinedDefines);
 			
-			++iter;
+				//BuildTextureParamsCache(*technique);
+				//BuildActiveUniformsCache(*technique);
+			
+				++iter;
+			}
 		}
 				
 		if(recursive)
@@ -1036,7 +1083,7 @@ namespace DAVA
 			}
 		}
 		
-		ready = !IsConfigMaterial() && (techniqueForRenderPass.Size() > 0);
+		ready = !IsConfigMaterial() && (techniqueForRenderPass.size() > 0);
 	}
 	
 	void NMaterial::AddMaterialDefine(const FastName& defineName)
@@ -1067,7 +1114,7 @@ namespace DAVA
 		
 		if(!IsConfigMaterial())
 		{
-			techniqueForRenderPass.Clear(); //VI: will copy parent techniques
+			techniqueForRenderPass.clear(); //VI: will copy parent techniques
 			
 			activeTechnique = NULL;
 			activeTechniqueName.Reset();
@@ -1077,9 +1124,9 @@ namespace DAVA
 		
 		materialDynamicLit = (parent) ? parent->IsDynamicLit() : false;
 		materialDynamicLit = materialDynamicLit ||
-							inheritedDefines.IsKey(DEFINE_VERTEX_LIT) ||
-							inheritedDefines.IsKey(DEFINE_PIXEL_LIT) ||
-							effectiveLayers.IsKey(LAYER_SHADOW_VOLUME);
+							inheritedDefines.count(DEFINE_VERTEX_LIT) ||
+							inheritedDefines.count(DEFINE_PIXEL_LIT) ||
+							effectiveLayers.count(LAYER_SHADOW_VOLUME);
 		//END TODO}
 		
 		NotifyChildrenOnChange();
@@ -1101,7 +1148,7 @@ namespace DAVA
 	
 	void NMaterial::PropagateParentLayers()
 	{
-		effectiveLayers.Clear();
+		effectiveLayers.clear();
 		effectiveLayers.Combine(layers);
 		
 		if(parent)
@@ -1176,12 +1223,12 @@ namespace DAVA
 		}
 		else
 		{
-			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
-			while(stateIter != states.End())
+			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
+			while(stateIter != states.end())
 			{
 				KeyedArchive* stateArchive = new KeyedArchive();
-				Serialize(*stateIter.GetValue(), stateArchive, serializationContext);
-				archive->SetArchive(stateIter.GetKey().c_str(), stateArchive);
+				Serialize(*stateIter->second, stateArchive, serializationContext);
+				archive->SetArchive(stateIter->first.c_str(), stateArchive);
 				SafeRelease(stateArchive);
 				
 				++stateIter;
@@ -1193,8 +1240,9 @@ namespace DAVA
 	{
 		//TODO: add code allowing to transition from switchable to non-switchable materials and vice versa
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
+		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 1)
+		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
 		{
 			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
 				it != archiveData.end();
@@ -1204,7 +1252,7 @@ namespace DAVA
 				{
 					NMaterialState* matState = new NMaterialState();
 					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
-					states.Insert(FastName(it->first), matState);
+					states.insert(FastName(it->first), matState);
 				}
 			}
 		}
@@ -1213,15 +1261,17 @@ namespace DAVA
 			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
 			Deserialize(*this, stateArchive, serializationContext);
 		}
-		
-		SetMaterialName(archive->GetString("materialName"));
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
 							  KeyedArchive * archive,
 							  SerializationContext * serializationContext)
 	{
+		//Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
+		
+		DVASSERT(materialState.parentName.IsValid());
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
+		archive->SetString("materialName", materialState.materialName.c_str());
 		
 		KeyedArchive* materialLayers = new KeyedArchive();
 		SerializeFastNameSet(materialState.layers, materialLayers);
@@ -1234,21 +1284,20 @@ namespace DAVA
 		SafeRelease(materialNativeDefines);
 		
 		KeyedArchive* materialProps = new KeyedArchive();
-		for(HashMap<FastName, NMaterialProperty*>::Iterator it = materialState.materialProperties.Begin();
-			it != materialState.materialProperties.End();
+		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialState.materialProperties.begin();
+			it != materialState.materialProperties.end();
 			++it)
 		{
-			NMaterialProperty* property = it.GetValue();
+			NMaterialProperty* property = it->second;
 			
-			uint32 propDataSize = property->GetDataSize();
-			uint8* propertyStorage = new uint8[propDataSize + sizeof(uint32) + sizeof(uint32)];
+			uint8* propertyStorage = new uint8[property->dataSize + sizeof(uint32) + sizeof(uint32)];
 			
 			uint32 uniformType = property->type; //make sure uniform type is always uint32
 			memcpy(propertyStorage, &uniformType, sizeof(uint32));
 			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, propDataSize);
+			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, property->dataSize);
 			
-			materialProps->SetByteArray(it.GetKey().c_str(), propertyStorage, propDataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, property->dataSize + sizeof(uint32) + sizeof(uint32));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1256,26 +1305,26 @@ namespace DAVA
 		SafeRelease(materialProps);
 		
 		KeyedArchive* materialTextures = new KeyedArchive();
-		for(HashMap<FastName, TextureBucket*>::Iterator it = materialState.textures.Begin();
-			it != materialState.textures.End();
+		for(HashMap<FastName, TextureBucket*>::iterator it = materialState.textures.begin();
+			it != materialState.textures.end();
 			++it)
 		{
-			materialTextures->SetString(it.GetKey().c_str(), it.GetValue()->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
 		}
 		archive->SetArchive("textures", materialTextures);
 		SafeRelease(materialTextures);
 		
 		int techniqueIndex = 0;
 		KeyedArchive* materialTechniques = new KeyedArchive();
-		for(HashMap<FastName, MaterialTechnique *>::Iterator it = materialState.techniqueForRenderPass.Begin();
-			it != materialState.techniqueForRenderPass.End();
+		for(HashMap<FastName, MaterialTechnique *>::iterator it = materialState.techniqueForRenderPass.begin();
+			it != materialState.techniqueForRenderPass.end();
 			++it)
 		{
-			MaterialTechnique* technique = it.GetValue();
+			MaterialTechnique* technique = it->second;
 			KeyedArchive* techniqueArchive = new KeyedArchive();
 			
-			techniqueArchive->SetString("renderPass", it.GetKey().c_str());
-			techniqueArchive->SetString("shaderName", it.GetValue()->GetShaderName().c_str());
+			techniqueArchive->SetString("renderPass", it->first.c_str());
+			techniqueArchive->SetString("shaderName", it->second->GetShaderName().c_str());
 			
 			KeyedArchive* techniqueDefines = new KeyedArchive();
 			const FastNameSet& techniqueDefinesSet = technique->GetUniqueDefineSet();
@@ -1302,7 +1351,10 @@ namespace DAVA
 								SerializationContext * serializationContext)
 	{
 		materialState.parentName = FastName(archive->GetString("parentName"));
+		DVASSERT(materialState.parentName.IsValid());
 		materialState.materialName = FastName(archive->GetString("materialName"));
+		
+		//Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
 		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
@@ -1385,11 +1437,11 @@ namespace DAVA
 	
 	void NMaterial::SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive)
 	{
-		for(FastNameSet::Iterator it = srcSet.Begin();
-			it != srcSet.End();
+		for(FastNameSet::iterator it = srcSet.begin();
+			it != srcSet.end();
 			++it)
 		{
-			targetArchive->SetBool(it.GetKey().c_str(), true);
+			targetArchive->SetBool(it->first.c_str(), true);
 		}
 	}
 	
@@ -1402,14 +1454,14 @@ namespace DAVA
 			return true;
 		}
 		
-		NMaterialState* state = states.GetValue(stateName);
+		NMaterialState* state = states.at(stateName);
 		
 		if(state != NULL)
 		{
 			SetParent(NULL);
 			
-			inheritedDefines.Clear();
-			effectiveLayers.Clear();
+			inheritedDefines.clear();
+			effectiveLayers.clear();
 			
 			//{TODO: these should be removed and changed to a generic system
 			//setting properties via special setters
@@ -1423,7 +1475,7 @@ namespace DAVA
 
 			if(currentStateName.IsValid() && !forceSwitch)
 			{
-				NMaterialState* prevState = states.GetValue(currentStateName);
+				NMaterialState* prevState = states.at(currentStateName);
 				DVASSERT(prevState);
 				
 				//VI: do not copy material name and parent name back
@@ -1450,7 +1502,7 @@ namespace DAVA
 	
 	bool NMaterial::IsSwitchable() const
 	{
-		return (states.Size() > 0);
+		return (states.size() > 0);
 	}
 	
 	NMaterial* NMaterial::Clone()
@@ -1459,12 +1511,12 @@ namespace DAVA
 		
 		if(this->IsSwitchable())
 		{
-			HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
+			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
 						
-			while(stateIter != states.End())
+			while(stateIter != states.end())
 			{
-				clonedMaterial->states.Insert(stateIter.GetKey(),
-											  stateIter.GetValue()->CloneState());
+				clonedMaterial->states.insert(stateIter->first,
+											  stateIter->second->CloneState());
 				
 				++stateIter;
 			}
@@ -1513,7 +1565,7 @@ namespace DAVA
 	
 	uint32 NMaterial::GetStateCount() const
 	{
-		return states.Size();
+		return states.size();
 	}
 	
 	NMaterialState* NMaterial::GetState(uint32 index)
@@ -1521,15 +1573,15 @@ namespace DAVA
 		NMaterialState* matState = NULL;
 		
 		uint32 curIndex = 0;
-		HashMap<FastName, NMaterialState*>::Iterator stateIter = states.Begin();
-		while(stateIter != states.End() &&
+		HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
+		while(stateIter != states.end() &&
 			  curIndex < index)
 		{
 			++curIndex;
 			++stateIter;
 		}
 		
-		matState = stateIter.GetValue();
+		matState = stateIter->second;
 
 		return matState;
 	}
@@ -1551,12 +1603,13 @@ namespace DAVA
 		{
 			parentName = newParent;
 		}
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
-	void NMaterial::BuildTextureParamsCache(MaterialTechnique& technique)
+	void NMaterial::BuildTextureParamsCache(const MaterialTechnique& technique)
 	{
-		Vector<MaterialTechnique::TextureParamCacheEntry>& cache = technique.GetTextureParamsCache();
-		cache.clear();
+		textureParamsCache.clear();
 		Shader * shader = technique.GetShader();
 		
 		uint32 uniformCount = shader->GetUniformCount();
@@ -1573,21 +1626,21 @@ namespace DAVA
 					
 					if(slotProp)
 					{
-						MaterialTechnique::TextureParamCacheEntry entry;
+						TextureParamCacheEntry entry;
 						entry.textureName = uniform->name;
 						entry.slot = *(int32*)slotProp->data;
+						entry.tx = NULL;
 						
-						cache.push_back(entry);
+						textureParamsCache.push_back(entry);
 					}
 				}
 			}
 		}
 	}
 	
-	void NMaterial::BuildActiveUniformsCache(MaterialTechnique& technique)
+	void NMaterial::BuildActiveUniformsCache(const MaterialTechnique& technique)
 	{
-		Vector<MaterialTechnique::UniformCacheEntry>& cache = technique.GetActiveUniformsCache();
-		cache.clear();
+		activeUniformsCache.clear();
 		
 		Shader * shader = technique.GetShader();
 		
@@ -1595,15 +1648,74 @@ namespace DAVA
 		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+						
 			if (Shader::UNIFORM_NONE == uniform->id  ||
 				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 			{
-				MaterialTechnique::UniformCacheEntry entry;
-				entry.uniform = uniform;
-				entry.index = uniformIndex;
+				NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+				NMaterialProperty* localProp = materialProperties.at(uniform->name);
 				
-				cache.push_back(entry);
+				//VI: we need to track only properties not set by parent to shader
+				if(localProp ||
+				   (NULL == localProp && NULL == prop))
+				{
+					UniformCacheEntry entry;
+					entry.uniform = uniform;
+					entry.index = uniformIndex;
+					entry.prop = NULL;
+					
+					activeUniformsCache.push_back(entry);
+				}
 			}
 		}
 	}
+		
+	void NMaterial::Rebind(bool recursive)
+	{
+		if(IsConfigMaterial())
+		{
+			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
+			while(iter != techniqueForRenderPass.end())
+			{
+				MaterialTechnique* technique = iter->second;
+
+				Shader * shader = technique->GetShader();
+				shader->Bind();
+				
+				uint32 uniformCount = shader->GetUniformCount();
+				for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+				{
+					Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+					
+					if (Shader::UNIFORM_NONE == uniform->id  ||
+						Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+					{
+						NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+						
+						if(prop)
+						{
+							shader->SetUniformValueByIndex(uniformIndex,
+														   uniform->type,
+														   uniform->size,
+														   prop->data,
+														   prop->dataSize);
+						}
+					}
+				}
+				
+				shader->Unbind();
+				
+				++iter;
+			}
+			
+			if(recursive)
+			{
+				size_t childrenCount = NMaterialState::children.size();
+				for(size_t i = 0; i < childrenCount; ++i)
+				{
+					NMaterialState::children[i]->Rebind(recursive);
+				}
+			}
+		}
+	}	
 };

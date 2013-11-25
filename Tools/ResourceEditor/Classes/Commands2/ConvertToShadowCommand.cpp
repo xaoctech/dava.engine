@@ -84,7 +84,9 @@ bool ConvertToShadowCommand::IsEntityWithShadowVolume(const DAVA::Entity *entity
 bool ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(const DAVA::Entity *entity)
 {
     RenderObject * ro = GetRenderObject(entity);
-    return ((!ro || (ro->GetRenderBatchCount() != 1) || (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch))) == false);
+    return (    (!ro || (ro->GetRenderBatchCount() != 1) ||
+                 (typeid(*(ro->GetRenderBatch(0))) != typeid(DAVA::RenderBatch)) ||
+                 (ro->GetType() == RenderObject::TYPE_SKYBOX)) == false);
 }
 
 

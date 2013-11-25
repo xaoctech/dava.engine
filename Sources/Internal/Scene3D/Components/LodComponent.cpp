@@ -71,6 +71,7 @@ float32 LodComponent::LodDistance::GetFarDistance() const
 	return sqrtf(farDistanceSq);
 }
 
+
 Component * LodComponent::Clone(Entity * toEntity)
 {
 	LodComponent * newLod = new LodComponent();
@@ -319,7 +320,7 @@ void LodComponent::SetLayerVisibility(int32 layerNum, bool visible)
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 
-	if(lodLayers.size() > layerNum)
+	if((int32)lodLayers.size() > layerNum)
 	{
 		int32 size = lodLayers[layerNum].nodes.size();
 		for (int32 i = 0; i < size; i++) 

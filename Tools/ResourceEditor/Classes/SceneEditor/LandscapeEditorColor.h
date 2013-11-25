@@ -35,6 +35,7 @@
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeEditorPropertyControl.h"
+#include "Render/UniqueStateSet.h"
 
 using namespace DAVA;
 
@@ -45,11 +46,11 @@ class LandscapeEditorColor
     ,   public LandscapeEditorPropertyControlDelegate
 
 {
-    
+protected:
+    virtual ~LandscapeEditorColor();
 public:
     
     LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect); 
-    virtual ~LandscapeEditorColor();
     
 	virtual void Draw(const UIGeometricData &geometricData);
 
@@ -104,6 +105,8 @@ protected:
     bool editingIsEnabled;
 
 	Image* originalImage;
+	
+	UniqueHandle colorRenderState;
 };
 
 

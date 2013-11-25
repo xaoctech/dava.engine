@@ -47,8 +47,6 @@ public:
 	
 	virtual void Draw(Camera* camera);
 	
-	void SetBoundingBox(const AABBox3& box, const AABBox3& worldBox);
-	
 protected:
 	LandscapeRenderer* landscapeRenderer;
 };

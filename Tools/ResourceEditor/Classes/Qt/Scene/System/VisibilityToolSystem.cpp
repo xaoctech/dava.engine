@@ -50,6 +50,7 @@ VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	originalImage(NULL)
 ,	state(VT_STATE_NORMAL)
+,	textureLevel(Landscape::TEXTURE_TILE_FULL)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -232,6 +233,11 @@ void VisibilityToolSystem::UpdateCursorPosition(int32 landscapeSize)
 
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
+	else
+	{
+		// hide cursor
+		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
+	}
 }
 
 void VisibilityToolSystem::ResetAccumulatorRect()
@@ -248,7 +254,7 @@ void VisibilityToolSystem::AddRectToAccumulator(const Rect &rect)
 Rect VisibilityToolSystem::GetUpdatedRect()
 {
 	Rect r = updatedRectAccumulator;
-	drawSystem->ClampToTexture(r);
+	drawSystem->ClampToTexture(textureLevel, r);
 
 	return r;
 }
@@ -390,7 +396,7 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 		Vector2 visibilityPoint = drawSystem->GetVisibilityToolProxy()->GetVisibilityPoint();
 
 		Vector3 point(visibilityPoint);
-		point.z = drawSystem->GetHeightAtPoint(drawSystem->TexturePointToHeightmapPoint(visibilityPoint));
+		point.z = drawSystem->GetHeightAtPoint(drawSystem->TexturePointToHeightmapPoint(textureLevel, visibilityPoint));
 		point.z += visibilityPointHeight;
 
 		Vector<Vector3> resP;
@@ -426,7 +432,7 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
 
 	// get source point in propper coords system
-	Vector3 sourcePoint(drawSystem->TexturePointToLandscapePoint(SpectatorCoords2D));
+	Vector3 sourcePoint(drawSystem->TexturePointToLandscapePoint(textureLevel, SpectatorCoords2D));
 
 	sourcePoint.z = spectatorCoords.z;
 
@@ -445,7 +451,7 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 			for(uint32 y = 0; y < sideLength; ++y)
 			{
 				float yOfPoint = startOfCounting.y + density * y;
-				float32 zOfPoint = drawSystem->GetHeightAtTexturePoint(Vector2(xOfPoint, yOfPoint));
+				float32 zOfPoint = drawSystem->GetHeightAtTexturePoint(textureLevel, Vector2(xOfPoint, yOfPoint));
 				zOfPoint += heightValues[layerIndex];
 				Vector3 pointToInsert(xOfPoint, yOfPoint, zOfPoint);
 				yLine.push_back(pointToInsert);
@@ -457,13 +463,13 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 
 	colorizedPoints->clear();
 
-	float32 textureSize = drawSystem->GetTextureSize();
+	float32 textureSize = drawSystem->GetTextureSize(textureLevel);
 	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
 	for(uint32 x = 0; x < sideLength; ++x)
 	{
 		for(uint32 y = 0; y < sideLength; ++y)
 		{
-			Vector3 target(drawSystem->TexturePointToLandscapePoint(Vector2(points[0][x][y].x, points[0][x][y].y)));
+			Vector3 target(drawSystem->TexturePointToLandscapePoint(textureLevel, Vector2(points[0][x][y].x, points[0][x][y].y)));
 
 			bool prevWasIntersection = true;
 			for(int32 layerIndex = hight - 1; layerIndex >= 0; --layerIndex)

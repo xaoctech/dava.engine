@@ -40,7 +40,7 @@ namespace DAVA
     
 class DataNode;
 class Entity;
-class Component : public Serializable, public BaseObject
+class Component : public Serializable, public InspBase
 {
 public:
     enum eType
@@ -67,10 +67,11 @@ public:
         COMPONENT_COUNT
     };
 
+public:
 	static Component * CreateByType(uint32 componentType);
 
 	Component();
-    virtual ~Component();
+	virtual ~Component();
 
     virtual uint32 GetType() = 0;
     virtual Component* Clone(Entity * toEntity) = 0;
