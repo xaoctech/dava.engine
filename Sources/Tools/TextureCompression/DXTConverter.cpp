@@ -43,7 +43,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
 {
     FilePath fileToConvert = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
     
-    Vector<Image*> inputImages = ImageLoader::CreateFromFile(fileToConvert);
+    Vector<Image*> inputImages = ImageLoader::CreateFromFileByExtension(fileToConvert);
     if(inputImages.size() == 1)
     {
         Image* image = inputImages[0];
@@ -81,7 +81,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 	Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname().c_str(), faceNames);
 	for(size_t i = 0; i < faceNames.size(); ++i)
 	{
-		Vector<Image*> tempImages = ImageLoader::CreateFromFile(faceNames[i]);
+		Vector<Image*> tempImages = ImageLoader::CreateFromFileByExtension(faceNames[i]);
 		if(tempImages.size() == 1)
 		{
 			inputImages.push_back(tempImages[0]);
