@@ -63,9 +63,10 @@ public:
 
 class RenderDataObject : public RenderResource //BaseObject
 {
+protected:
+    virtual ~RenderDataObject();
 public:
     RenderDataObject();
-    virtual ~RenderDataObject();
     
     RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer);
     uint32 GetResultFormat() const;
