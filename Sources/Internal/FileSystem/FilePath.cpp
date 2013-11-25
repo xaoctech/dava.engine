@@ -354,7 +354,8 @@ bool FilePath::operator!=(const FilePath &path) const
     
 bool FilePath::operator < (const FilePath& right) const
 {
-    return GetAbsolutePathname() < right.GetAbsolutePathname();
+//     return GetAbsolutePathname() < right.GetAbsolutePathname();
+	return absolutePathname < right.absolutePathname;
 }
 
     
