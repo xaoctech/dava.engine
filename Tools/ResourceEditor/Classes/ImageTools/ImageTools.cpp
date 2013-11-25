@@ -56,7 +56,7 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
     {
         size += LibPngWrapper::GetDataSize(imagePathname);
     }
-    else if(ImageLoader::IsDXTFile(imageFile))
+    else if(ImageLoader::IsDDSFile(imageFile))
     {
         size += LibDxtHelper::GetDataSize(imagePathname);
     }

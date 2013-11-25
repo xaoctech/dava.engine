@@ -462,7 +462,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 			outputPath = TextureConverter::ConvertTexture(*descriptor, gpu, true);
         }
 		
-		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFileByContent(outputPath);
 		
 		if(davaImages.size() > 0)
 		{

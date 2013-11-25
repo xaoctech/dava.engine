@@ -519,7 +519,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			Vector<Image *> imageFace = ImageLoader::CreateFromFile(faceNames[i]);
+			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].c_str());
@@ -539,7 +539,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	else
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
-		images = ImageLoader::CreateFromFile(imagePathname);
+		images = ImageLoader::CreateFromFileByExtension(imagePathname);
 	}
 
 	if(0 == images.size())
@@ -715,7 +715,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
+	eGPUFamily gpuForLoading = GetGPUForLoading(defaultGPU, descriptor);
 	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
 	{
@@ -770,7 +770,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 	SafeRelease(texDescriptor);
 	texDescriptor = SafeRetain(descriptor);
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, descriptor);
 	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
@@ -1345,7 +1345,7 @@ eGPUFamily Texture::GetDefaultGPU()
 }
 
     
-eGPUFamily Texture::GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
+eGPUFamily Texture::GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
         return (eGPUFamily)descriptor->exportedAsGpuFamily;
