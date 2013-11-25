@@ -49,11 +49,7 @@ public:
     const DAVA::FilePath & GetScenePathname() const;
     
 protected:
-
-	void PrepareEditorSettings();
-
     DAVA::FilePath scenePathname;
-    
 };
 
 #endif //#if defined (__DAVAENGINE_BEAST__)

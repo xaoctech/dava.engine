@@ -449,6 +449,7 @@ void TextureBrowser::setupStatusBar()
 void TextureBrowser::setupTexturesList()
 {
 	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
+	QObject::connect(ui->clearFilterButton, SIGNAL(released()), this, SLOT(clearFilter()));
 
 	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
 	ui->listViewTextures->setModel(textureListModel);
@@ -990,4 +991,9 @@ void TextureBrowser::textureViewChanged(int index)
 {
 	DAVA::eGPUFamily newView = (DAVA::eGPUFamily) ui->viewTabBar->tabData(index).toInt();
 	setTextureView(newView);
+}
+
+void TextureBrowser::clearFilter()
+{
+    ui->textureFilterEdit->setText("");
 }

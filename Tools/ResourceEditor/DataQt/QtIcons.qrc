@@ -1,5 +1,22 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/star.png</file>
+    <file>QtIcons/star_empty.png</file>
+    <file>QtIcons/star_gray.png</file>
+    <file>QtIcons/gizmo.png</file>
+    <file>QtIcons/object_select.png</file>
+    <file>QtIcons/switch.png</file>
+    <file>QtIcons/curcor_move.png</file>
+    <file>QtIcons/curcor_rotate.png</file>
+    <file>QtIcons/curcor_scale.png</file>
+    <file>QtIcons/land_settings.png</file>
+    <file>QtIcons/land_visibility.png</file>
+    <file>QtIcons/land_custcolor.png</file>
+    <file>QtIcons/land_ruler.png</file>
+    <file>QtIcons/land_unpassable.png</file>
+    <file>QtIcons/land_height.png</file>
+    <file>QtIcons/land_tile.png</file>
+    <file>QtIcons/cloud.png</file>
     <file>QtIcons/customcolors.png</file>
     <file>QtIcons/visibilitytool.png</file>
     <file>QtIcons/eye.png</file>
@@ -90,11 +107,12 @@
     <file>QtIcons/clone.png</file>
     <file>QtIcons/remove_layer.png</file>
     <file>QtIcons/remove_force.png</file>
+    <file>QtIcons/reset.png</file>
     <file>QtIcons/btn_rotate_ccw.png</file>
     <file>QtIcons/btn_rotate_cw.png</file>
     <file>QtIcons/skybox.png</file>
-    <file>QtIcons/landscapesettings.png</file>
     <file>QtIcons/hangingobjects.png</file>
+    <file>QtIcons/map.png</file>
     <file>QtImages/sky_example0.png</file>
     <file>QtImages/sky_example1.png</file>
     <file>QtImages/sky_example2.png</file>
@@ -103,5 +121,13 @@
     <file>QtImages/sky_example5.png</file>
     <file>QtImages/sky_example6.png</file>
     <file>QtImages/sky_example7.png</file>
+    <file>QtLibraryIcons/sc2Icon.png</file>
+    <file>QtLibraryIcons/daeIcon.png</file>
+    <file>QtLibraryIcons/texIcon.png</file>
+    <file>QtLibraryIcons/pngIcon.png</file>
+    <file>QtLibraryIcons/pvrIcon.png</file>
+    <file>QtLibraryIcons/ddsIcon.png</file>
+    <file>QtLibraryIcons/orientation.png</file>
+    <file>QtLibraryIcons/lodmaterial.png</file>
   </qresource>
 </RCC>

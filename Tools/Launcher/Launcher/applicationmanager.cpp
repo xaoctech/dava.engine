@@ -91,6 +91,8 @@ void ApplicationManager::CheckUpdates(QQueue<UpdateTask> & tasks)
         version.id = remoteConfig->GetLauncherVersion();
         version.url = remoteConfig->GetLauncherURL();
         tasks.push_back(UpdateTask("", "", version, true));
+
+        return;
     }
 
     //check applications update
@@ -162,7 +164,7 @@ void ApplicationManager::DownloadFinished()
             QString webPageUrl = remoteConfig->GetWebpageURL();
             if(!webPageUrl.isEmpty())
                 localConfig->SetWebpageURL(webPageUrl);
-            localConfig->CopyStringsFromConfig(*remoteConfig);
+            localConfig->CopyStringsAndFavsFromConfig(*remoteConfig);
             localConfig->SaveToYamlFile(localConfigFilePath);
         }
     }

@@ -53,6 +53,14 @@ LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 ,	visibilityToolProxy(NULL)
 ,	rulerToolProxy(NULL)
 {
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 }
 
 LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
@@ -115,8 +123,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	landscapeRenderer->Release();
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 	
 	++customDrawRequestCount;
 
@@ -134,8 +141,7 @@ void LandscapeEditorDrawSystem::DisableCustomDraw()
 	
 	if (customDrawRequestCount == 0)
 	{
-		landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-		landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(baseLandscape)));
+		landscapeNode->AddComponent(new RenderComponent(baseLandscape));
 		
 		UpdateBaseLandscapeHeightmap();
 	}
@@ -252,7 +258,11 @@ void LandscapeEditorDrawSystem::Update(DAVA::float32 timeElapsed)
 		
 		if (landscapeProxy)
 		{
-			landscapeProxy->GetRenderer()->RebuildVertexes(changedRect);
+			LandscapeRenderer* renderer = landscapeProxy->GetRenderer();
+			if (renderer)
+			{
+				renderer->RebuildVertexes(changedRect);
+			}
 		}
 		
 		if (notPassableTerrainProxy && notPassableTerrainProxy->IsEnabled())
@@ -307,9 +317,15 @@ void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
 	SafeRelease(h);
 }
 
-float32 LandscapeEditorDrawSystem::GetTextureSize()
+float32 LandscapeEditorDrawSystem::GetTextureSize(Landscape::eTextureLevel level)
 {
-	return (float32)baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+	float32 size = 0.f;
+	Texture* texture = baseLandscape->GetTexture(level);
+	if (texture)
+	{
+		size = (float32)texture->GetWidth();
+	}
+	return size;
 }
 
 Vector3 LandscapeEditorDrawSystem::GetLandscapeSize()
@@ -327,9 +343,9 @@ float32 LandscapeEditorDrawSystem::GetLandscapeMaxHeight()
 	return landSize.z;
 }
 
-Rect LandscapeEditorDrawSystem::GetTextureRect()
+Rect LandscapeEditorDrawSystem::GetTextureRect(Landscape::eTextureLevel level)
 {
-	float32 textureSize = GetTextureSize();
+	float32 textureSize = GetTextureSize(level);
 	return Rect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
 }
 
@@ -368,34 +384,34 @@ float32 LandscapeEditorDrawSystem::GetHeightAtPoint(const Vector2& point)
 	return height;
 }
 
-float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(const Vector2& point)
+float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(Landscape::eTextureLevel level, const Vector2& point)
 {
-	if (GetTextureRect().PointInside(point))
+	if (GetTextureRect(level).PointInside(point))
 	{
-		return GetHeightAtPoint(TexturePointToHeightmapPoint(point));
+		return GetHeightAtPoint(TexturePointToHeightmapPoint(level, point));
 	}
 
 	return 0.f;
 }
 
-Vector2 LandscapeEditorDrawSystem::HeightmapPointToTexturePoint(const Vector2& point)
+Vector2 LandscapeEditorDrawSystem::HeightmapPointToTexturePoint(Landscape::eTextureLevel level, const Vector2& point)
 {
-	return TranslatePoint(point, GetHeightmapRect(), GetTextureRect());
+	return TranslatePoint(point, GetHeightmapRect(), GetTextureRect(level));
 }
 
-Vector2 LandscapeEditorDrawSystem::TexturePointToHeightmapPoint(const Vector2& point)
+Vector2 LandscapeEditorDrawSystem::TexturePointToHeightmapPoint(Landscape::eTextureLevel level, const Vector2& point)
 {
-	return TranslatePoint(point, GetTextureRect(), GetHeightmapRect());
+	return TranslatePoint(point, GetTextureRect(level), GetHeightmapRect());
 }
 
-Vector2 LandscapeEditorDrawSystem::TexturePointToLandscapePoint(const Vector2& point)
+Vector2 LandscapeEditorDrawSystem::TexturePointToLandscapePoint(Landscape::eTextureLevel level, const Vector2& point)
 {
-	return TranslatePoint(point, GetTextureRect(), GetLandscapeRect());
+	return TranslatePoint(point, GetTextureRect(level), GetLandscapeRect());
 }
 
-Vector2 LandscapeEditorDrawSystem::LandscapePointToTexturePoint(const Vector2& point)
+Vector2 LandscapeEditorDrawSystem::LandscapePointToTexturePoint(Landscape::eTextureLevel level, const Vector2& point)
 {
-	return TranslatePoint(point, GetLandscapeRect(), GetTextureRect());
+	return TranslatePoint(point, GetLandscapeRect(), GetTextureRect(level));
 }
 
 Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect)
@@ -431,14 +447,16 @@ bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(ScopedPtr<RenderComponent> (new RenderComponent(landscapeProxy->GetRenderObject())));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 
+	fogWasEnabled = landscapeProxy->IsFogEnabled();
+	landscapeProxy->SetFogEnabled(false);
 	return true;
 }
 
 void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 {
+	landscapeProxy->SetFogEnabled(fogWasEnabled);
 }
 
 bool LandscapeEditorDrawSystem::Init()
@@ -454,15 +472,15 @@ bool LandscapeEditorDrawSystem::Init()
 	}
 	if (!customColorsProxy)
 	{
-		customColorsProxy = new CustomColorsProxy((int32)GetTextureSize());
+		customColorsProxy = new CustomColorsProxy((int32)GetTextureSize(Landscape::TEXTURE_TILE_FULL));
 	}
 	if (!visibilityToolProxy)
 	{
-		visibilityToolProxy = new VisibilityToolProxy((int32)GetTextureSize());
+		visibilityToolProxy = new VisibilityToolProxy((int32)GetTextureSize(Landscape::TEXTURE_TILE_FULL));
 	}
 	if (!rulerToolProxy)
 	{
-		rulerToolProxy = new RulerToolProxy((int32)GetTextureSize());
+		rulerToolProxy = new RulerToolProxy((int32)GetTextureSize(Landscape::TEXTURE_TILE_FULL));
 	}
 
 	return true;
@@ -491,9 +509,9 @@ void LandscapeEditorDrawSystem::DeinitLandscape()
 	SafeRelease(baseLandscape);
 }
 
-void LandscapeEditorDrawSystem::ClampToTexture(Rect& rect)
+void LandscapeEditorDrawSystem::ClampToTexture(Landscape::eTextureLevel level, Rect& rect)
 {
-	GetTextureRect().ClampToRect(rect);
+	GetTextureRect(level).ClampToRect(rect);
 }
 
 void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
@@ -527,6 +545,12 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		}
 
 		DeinitLandscape();
+
+		Entity* entity = FindLandscapeEntity(sceneEditor);
+		if (entity != NULL)
+		{
+			InitLandscape(entity, GetLandscape(entity));
+		}
 	}
 }
 
@@ -555,11 +579,13 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 
 		texturePathname.ReplaceExtension(".png");
 
-		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+		//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+		//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		RenderManager::Instance()->SetRenderState(noBlendDrawState);
+		RenderManager::Instance()->FlushState();
 		Image *image = texture->CreateImageFromMemory();
-		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+		//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 
 		if(image)
 		{
@@ -582,6 +608,17 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 	}
 }
 
+void LandscapeEditorDrawSystem::ResetTileMaskTexture()
+{
+	if (!baseLandscape)
+	{
+		return;
+	}
+
+	FilePath filePath = baseLandscape->GetTextureName(Landscape::TEXTURE_TILE_MASK);
+	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
+}
+
 Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
 {
 	return baseLandscape->GetTiledShaderMode();
@@ -600,7 +637,8 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 		return false;
 	}
 
-	if (landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL) == NULL)
+	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+	if (t == NULL || t->IsPinkPlaceholder())
 	{
 		landscapeProxy->UpdateFullTiledTexture(true);
 	}
@@ -624,10 +662,7 @@ bool LandscapeEditorDrawSystem::VerifyLandscape()
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE2) != NULL) &&
 				  (baseLandscape->GetTexture(Landscape::TEXTURE_TILE3) != NULL);
 
-		if (!ok)
-		{
-			return false;
-		}
+		return ok;
 	}
 
 	return true;

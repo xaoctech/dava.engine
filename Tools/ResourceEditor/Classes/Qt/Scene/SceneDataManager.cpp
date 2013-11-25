@@ -552,7 +552,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)
@@ -566,7 +565,7 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
 	//VI: remove skybox materials so they not to appear in the lists
-	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+	//MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)

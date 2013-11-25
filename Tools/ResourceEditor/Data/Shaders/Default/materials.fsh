@@ -24,6 +24,8 @@ varying mediump vec3 varTexCoord0;
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
 uniform sampler2D texture1;
+varying highp vec2 varTexCoord1;
+#elif defined(FRAME_BLEND)
 varying mediump vec2 varTexCoord1;
 #endif
 
@@ -64,6 +66,10 @@ varying lowp float varLightmapSize;
 varying lowp vec4 varVertexColor;
 #endif
 
+#if defined(FRAME_BLEND)
+varying lowp float varTime;
+#endif
+
 #if defined(FLATCOLOR)
 uniform lowp vec4 flatColor;
 #endif
@@ -73,10 +79,15 @@ void main()
     // FETCH PHASE
 #if defined(MATERIAL_TEXTURE)
 	
-#if defined(GLOSS) || defined(ALPHATEST) || defined(ALPHABLEND)
+#if defined(GLOSS) || defined(OPAQUE) || defined(ALPHABLEND)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
+#endif
+
+#if defined(FRAME_BLEND)
+	  lowp vec4 blendFrameColor = texture2D(texture0, varTexCoord1);
+	  textureColor0 = mix(textureColor0, blendFrameColor, varTime);
 #endif
 	
 #elif defined(MATERIAL_SKYBOX)
@@ -84,7 +95,7 @@ void main()
 #endif
 	
 #if defined(MATERIAL_TEXTURE)
-#if defined(ALPHATEST)
+#if defined(OPAQUE)
     float alpha = textureColor0.a;
     #if defined(VERTEX_COLOR)
         alpha *= varVertexColor.a;

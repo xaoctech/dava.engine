@@ -59,9 +59,10 @@ public:
         IS_DYNAMIC = 1 << 0,
         CAST_SHADOW = 1 << 1,
     };
-    
-    Light();
+protected:
     virtual ~Light();
+public:
+    Light();
     
     virtual BaseObject * Clone(BaseObject * dstNode = NULL);
 
@@ -88,8 +89,8 @@ public:
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 
-	bool IsDynamic();
-	void SetDynamic(bool isDynamic);
+	const bool IsDynamic();
+	void SetDynamic(const bool & isDynamic);
     void AddFlag(uint32 flag);
     void RemoveFlag(uint32 flag);
     uint32 GetFlags();
@@ -100,7 +101,6 @@ protected:
     Vector3 position;
     Vector3 direction;
     
-//    eType type; //TODO: waiting for enums at introspection
     uint32 type;
     
     Color ambientColor;
@@ -115,8 +115,10 @@ public:
     INTROSPECTION_EXTEND(Light, BaseObject,
         MEMBER(position, "Position", I_SAVE | I_VIEW)
         MEMBER(direction, "Direction", I_SAVE | I_VIEW)
-                         
-        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
+                     
+        MEMBER(type, InspDesc("Type", GlobalEnumMap<Light::eType>::Instance()), I_SAVE | I_VIEW | I_EDIT)
+
+		PROPERTY("isDynamic", "isDynamic", IsDynamic, SetDynamic, I_VIEW | I_EDIT)
                          
         MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)

@@ -267,7 +267,6 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->loopSpriteAnimation = loopSpriteAnimation;
 	dstLayer->particleOrientation = particleOrientation;
 
-	dstLayer->scaleVelocityBase = scaleVelocityFactor;
 	dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->isDisabled = isDisabled;
@@ -279,7 +278,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 bool ParticleLayer::IsLodActive(int32 lod)
 {
-	if ((lod>=0)&&(lod<activeLODS.size()))
+	if ((lod>=0)&&(lod<(int32)activeLODS.size()))
 		return activeLODS[lod];
 	
 	return false;
@@ -287,7 +286,7 @@ bool ParticleLayer::IsLodActive(int32 lod)
 
 void ParticleLayer::SetLodActive(int32 lod, bool active)
 {
-	if ((lod>=0)&&(lod<activeLODS.size()))
+	if ((lod>=0)&&(lod<(int32)activeLODS.size()))
 		activeLODS[lod] = active;
 }
 
@@ -417,6 +416,8 @@ void ParticleLayer::DeleteAllParticles()
 	Particle * current = head;
 	while(current)
 	{
+		if (current->GetInnerEmitter())
+			current->GetInnerEmitter()->DoRestart(true);
 		Particle * next = current->next;
 		delete(current);
 		count--;
@@ -938,7 +939,7 @@ void ParticleLayer::PrepareRenderData(Camera * camera)
 void ParticleLayer::Draw(Camera * camera)
 {	
 
-	RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
+	//RenderManager::Instance()->SetBlendMode(srcBlendFactor, dstBlendFactor);
 
 	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)

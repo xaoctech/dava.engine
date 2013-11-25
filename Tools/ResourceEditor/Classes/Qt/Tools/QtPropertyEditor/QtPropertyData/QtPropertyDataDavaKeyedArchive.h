@@ -55,7 +55,7 @@ protected:
 	mutable Command2 *lastCommand;
 	int lastAddedType;
 
-	virtual QVariant GetValueInternal();
+	virtual QVariant GetValueInternal() const;
 	virtual bool UpdateValueInternal();
 
 private:

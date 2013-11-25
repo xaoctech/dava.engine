@@ -48,9 +48,17 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 		texturesToBlend[i] = NULL;
 		texturesEnabled[i] = false;
 	}
+	
+	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	DAVA::RenderStateData noBlendStateData;
+	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	
+	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
+	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
+	
+	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
 
 	customLandscape = new CustomLandscape();
-	customLandscape->SetBoundingBox(landscape->GetBoundingBox(), landscape->GetWorldBoundingBox());
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 	customLandscape->SetAABBox(baseLandscape->GetBoundingBox());
 }
@@ -191,9 +199,12 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	fullTiledSprite->Draw();
 	SafeRelease(fullTiledSprite);
 	
-	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->FlushState();
+	
+	//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	
 	Texture* notPassableTexture = texturesToBlend[TEXTURE_TYPE_NOT_PASSABLE];
 	Sprite* notPassableSprite = NULL;
@@ -247,7 +258,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	
 	SafeRelease(dstSprite);
 	
-	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 	
 	RenderManager::Instance()->UnlockNonMain();
 
@@ -327,10 +338,10 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 {
 	if (force || mode == MODE_CUSTOM_LANDSCAPE)
 	{
-		uint32 state = RenderManager::Instance()->GetState();
+		//uint32 state = RenderManager::Instance()->GetState();
 		baseLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, NULL);
 		baseLandscape->UpdateFullTiledTexture();
-		RenderManager::Instance()->SetState(state);
+		//RenderManager::Instance()->SetState(state);
 
 		UpdateDisplayedTexture();
 	}
@@ -373,14 +384,15 @@ void LandscapeProxy::DecreaseTilemaskChanges()
 
 void LandscapeProxy::InitTilemaskImageCopy()
 {
-	if (tilemaskImageCopy == NULL)
-	{
-		eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-		tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
-		RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-	}
+	SafeRelease(tilemaskImageCopy);
+
+	//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+	RenderManager::Instance()->FlushState();
+	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 }
 
 Image* LandscapeProxy::GetTilemaskImageCopy()
@@ -417,4 +429,14 @@ void LandscapeProxy::SwapTilemaskSprites()
 	Sprite* temp = tilemaskSprites[TILEMASK_SPRITE_SOURCE];
 	tilemaskSprites[TILEMASK_SPRITE_SOURCE] = tilemaskSprites[TILEMASK_SPRITE_DESTINATION];
 	tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = temp;
+}
+
+bool LandscapeProxy::IsFogEnabled()
+{
+	return baseLandscape->IsFogEnabled();
+}
+
+void LandscapeProxy::SetFogEnabled(bool enabled)
+{
+	baseLandscape->SetFog(enabled);
 }

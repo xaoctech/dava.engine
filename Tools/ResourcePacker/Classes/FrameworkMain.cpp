@@ -156,7 +156,7 @@ void ProcessRecourcePacker()
 
 void FrameworkDidLaunched()
 {
-    Logger::Instance()->SetLogLevel(Logger::LEVEL_WARNING);
+    Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 
 	if (Core::Instance()->IsConsoleMode())
 	{

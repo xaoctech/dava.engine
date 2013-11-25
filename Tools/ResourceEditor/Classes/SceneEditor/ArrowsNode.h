@@ -34,6 +34,8 @@
 #include "DAVAEngine.h"
 #include "BulletObject.h"
 
+#include "Render/UniqueStateSet.h"
+
 using namespace DAVA;
 
 class ArrowsNode;
@@ -67,6 +69,8 @@ protected:
 
 	void PrepareColors(Color* colors);
 	void DrawPrism(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4, const Vector3& p5);
+	
+	UniqueHandle arrowsStateHandle;
 };
 
 class ArrowsNode: public Entity

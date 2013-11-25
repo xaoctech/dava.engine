@@ -50,6 +50,18 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 
 	DVASSERT(NULL != collSystem);
 	DVASSERT(NULL != selSystem);
+	
+	DAVA::RenderStateData debugStateData = {0};
+	debugStateData.state =	DAVA::RenderStateData::STATE_BLEND |
+							DAVA::RenderStateData::STATE_COLORMASK_ALL |
+							DAVA::RenderStateData::STATE_DEPTH_TEST;
+	debugStateData.cullMode = FACE_BACK;
+	debugStateData.depthFunc = CMP_LESS;
+	debugStateData.sourceFactor = BLEND_SRC_ALPHA;
+	debugStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	debugStateData.fillMode = FILLMODE_SOLID;
+
+	debugDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&debugStateData);
 }
 
 
@@ -82,17 +94,11 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
 
 void DebugDrawSystem::Draw()
 {
-	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
-	DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
-	DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 
+	DAVA::RenderManager::Instance()->SetRenderState(debugDrawState);
+	DAVA::RenderManager::Instance()->FlushState();
+	
 	Draw(GetScene());
-
-	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
-	DAVA::RenderManager::Instance()->ResetColor();
-	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void DebugDrawSystem::Draw(DAVA::Entity *entity)
@@ -112,7 +118,7 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
+void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 {
 	KeyedArchive * customProperties = entity->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
@@ -121,7 +127,7 @@ inline void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 {
 	if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 	{
@@ -150,20 +156,48 @@ inline void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 	}
 }
 
-inline void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 {
-	if(NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+	DAVA::LightComponent *comp = (DAVA::LightComponent *) entity->GetComponent(DAVA::Component::LIGHT_COMPONENT);
+	if(NULL != comp)
 	{
-		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+		DAVA::Light *light = comp->GetLightObject();
+		if(NULL != light)
+		{
+			AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
 
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
-		DAVA::RenderHelper::Instance()->FillBox(worldBox);
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+			if(light->GetType() == Light::TYPE_DIRECTIONAL)
+			{
+				DAVA::Vector3 center = worldBox.GetCenter();
+				DAVA::Vector3 direction = light->GetDirection();
+
+				direction.Normalize();
+				direction = direction * worldBox.GetSize().x;
+
+				center -= (direction / 2);
+
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawArrow(center + direction, center, direction.Length() / 2);
+			}
+			else if(light->GetType() == Light::TYPE_POINT)
+			{
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
+				DAVA::RenderHelper::Instance()->FillDodecahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2);
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawDodecahedron(worldBox.GetCenter(), worldBox.GetSize().x / 2);
+			}
+			else
+			{
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 0.3f));
+				DAVA::RenderHelper::Instance()->FillBox(worldBox);
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 0, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+			}
+		}
 	}
 }
 
-inline void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
+void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
 {
 	if(NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT))
 	{

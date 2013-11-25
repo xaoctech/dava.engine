@@ -34,6 +34,8 @@
 #include "DAVAEngine.h"
 #include "LandscapeEditor/EditorLandscape.h"
 
+#include "Render/UniqueStateSet.h"
+
 using namespace DAVA;
 
 class CustomLandscape;
@@ -56,9 +58,10 @@ public:
 
 		MODES_COUNT
 	};
-
-	LandscapeProxy(Landscape* landscape);
+protected:
 	virtual ~LandscapeProxy();
+public:
+	LandscapeProxy(Landscape* landscape);
 
 	void SetMode(LandscapeProxy::eLandscapeMode mode);
 	void SetDisplayingTexture(Texture* texture);
@@ -113,6 +116,9 @@ public:
 	Sprite* GetTilemaskSprite(int32 number);
 	void SwapTilemaskSprites();
 
+	bool IsFogEnabled();
+	void SetFogEnabled(bool enabled);
+
 protected:
 	enum eTextureType
 	{
@@ -139,6 +145,8 @@ protected:
 	eLandscapeMode mode;
 	
 	void UpdateDisplayedTexture();
+	
+	UniqueHandle noBlendDrawState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEPROXY__) */

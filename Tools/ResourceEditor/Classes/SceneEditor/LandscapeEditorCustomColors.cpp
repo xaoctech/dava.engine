@@ -472,7 +472,7 @@ void LandscapeEditorCustomColors::LoadTextureAction(const FilePath &pathToFile)
 	if(pathToFile.IsEmpty())
 		return;
 
-	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
+	Vector<Image*> images = ImageLoader::CreateFromFileByContent(pathToFile);
 	if(images.empty())
 		return;
 

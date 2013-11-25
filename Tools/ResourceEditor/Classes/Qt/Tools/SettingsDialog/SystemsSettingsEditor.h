@@ -55,13 +55,10 @@ public:
 	
 protected slots:
 	
-	void HandleGridMax();
-	
-	void HandleGridStep();
-	
-	void HandleCollisionDrawMode();
-
-	void HandleSelectionDrawMode();
+	void HandleGridMax(QtPropertyData::ValueChangeReason reason);
+	void HandleGridStep(QtPropertyData::ValueChangeReason reason);
+	void HandleCollisionDrawMode(QtPropertyData::ValueChangeReason reason);
+	void HandleSelectionDrawMode(QtPropertyData::ValueChangeReason reason);
 	
 protected slots:
 

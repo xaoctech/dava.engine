@@ -46,11 +46,11 @@ TextureSquarenessChecker::~TextureSquarenessChecker()
 
 void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *scene)
 {
-	//TODO: NEWMATERIAL
-	DVASSERT(false && "TODO: re-implement for new materials if needed.");
-	
-    /*if(scene)
+    if(scene) 
     {
+		DVASSERT(0 && "Need reimplement for new materials");
+
+		/*
         Vector<Material *> allMaterials;
         SceneHelper::EnumerateMaterials(scene, allMaterials);
 
@@ -80,20 +80,21 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
 
             QtMainWindow::Instance()->GetCurrentScene()->Save();
         }
+		*/
     }
 
     squaredTextures.clear();
-    parsedPG.clear();*/
+    parsedPG.clear();
 }
 
 void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *sceneNode)
 {
-	//TODO: NEWMATERIAL
-	DVASSERT(false && "TODO: re-implement for new materials if needed.");
-
-    /*if(!sceneNode)
+    if(!sceneNode)
         return;
 
+	DVASSERT(0 && "Need reimplement for new materials");
+
+	/*
     int32 count = sceneNode->GetChildrenCount();
     for(int32 i = 0; i < count; ++i)
     {
@@ -137,7 +138,8 @@ void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *scene
             }
 
         }
-    }*/
+    }
+	*/
 }
 
 bool TextureSquarenessChecker::CheckTexureSquareness(Texture *texure)

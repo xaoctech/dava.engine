@@ -37,6 +37,7 @@
 #include "Render/Shader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
+#include "Render/RenderManager.h"
 
 namespace DAVA
 {
@@ -55,7 +56,7 @@ MaterialSystem::~MaterialSystem()
     
 NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
-	NMaterial* material = materials.GetValue(name);
+	NMaterial* material = materials.at(name);
 		
 	//DVASSERT(material);
 	if(NULL == material)
@@ -67,14 +68,14 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 	return material;
 }
 	
-void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList)
+void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const
 {
 	if(NULL == parent)
 	{
-		HashMap<FastName, NMaterial*>::Iterator mapIter = materials.Begin();
-		while(mapIter != materials.End())
+		HashMap<FastName, NMaterial*>::iterator mapIter = materials.begin();
+		while(mapIter != materials.end())
 		{
-			NMaterial* material = mapIter.GetValue();
+			NMaterial* material = mapIter->second;
 			if(NULL == material->parent)
 			{
 				materialList.push_back(material);
@@ -256,6 +257,20 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 						 currentData.isLod,
 						 nodes);
 		}
+		
+		RenderManager::Instance()->LockNonMain();
+		
+		for(size_t i = 0; i < rootCount; ++i)
+		{
+			MaterialData& currentData = roots[i];
+			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
+			DVASSERT(rootMaterial);
+			
+			rootMaterial->Rebuild();
+			rootMaterial->Rebind();
+		}
+		
+		RenderManager::Instance()->UnlockNonMain();
 	}
 	else
 	{
@@ -277,7 +292,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 {
 	NMaterial* material = new NMaterial();
 	material->configMaterial = true;
-	bool result = material->LoadFromFile(filePath.GetAbsolutePathname());
+	bool result = material->LoadFromFile(filePath);
 	
 	DVASSERT(result);
 	if(result)
@@ -319,7 +334,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 		
 		material->SetMaterialSystem(this);
 		
-		NMaterial* collisionMaterial = materials.GetValue(material->GetMaterialName());
+		NMaterial* collisionMaterial = materials.at(material->GetMaterialName());
 		DVASSERT(material != collisionMaterial); //should not add same material several times
 		if(collisionMaterial != NULL &&
 		   collisionMaterial != material)
@@ -331,7 +346,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			while(true)
 			{
 				String uniqueName = Format("%s.%d", baseName.c_str(), i);
-				if(!materials.IsKey(FastName(uniqueName.c_str())))
+				if(!materials.count(FastName(uniqueName.c_str())))
 				{
 					material->SetMaterialName(uniqueName);
 					break;
@@ -343,7 +358,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			}
 		}
 		
-		materials.Insert(material->GetMaterialName(), material);
+		materials.insert(material->GetMaterialName(), material);
 		
 		if(material->IsSwitchable())
 		{
@@ -354,7 +369,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
-	materials.Remove(material->GetMaterialName());
+	materials.erase(material->GetMaterialName());
 	SafeRelease(material);
 }
 	
@@ -374,7 +389,7 @@ void MaterialSystem::Clear()
 	
 	
 	
-	DVASSERT(materials.Size() == 0);
+	DVASSERT(materials.size() == 0);
 }
 	
 	void MaterialSystem::SetDefaultMaterialQuality(const FastName& qualityLevelName)

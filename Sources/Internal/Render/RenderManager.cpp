@@ -55,13 +55,14 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     currentState(),
     hardwareState(),
     needGLScreenShot(false),
-    screenShotCallback(NULL)
+    screenShotCallback(NULL),
+    glMutex( new Mutex() )
 {
     // Create shader cache singleton
     ShaderCache * cache = new ShaderCache();
     cache = 0;
     
-//	Logger::Debug("[RenderManager] created");
+//	Logger::FrameworkDebug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
@@ -162,6 +163,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 	
 	renderContextId = 0;
+
+	InitDefaultRenderStates();
 }
 	
 RenderManager::~RenderManager()
@@ -175,6 +178,45 @@ RenderManager::~RenderManager()
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
 	SafeRelease(cursor);
 	Logger::FrameworkDebug("[RenderManager] released");
+}
+	
+void RenderManager::InitDefaultRenderStates()
+{
+	//VI: do not set up stencil state for default states. It's disabled in them. 
+	
+	RenderStateData defaultStateData = {0};
+	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	default2DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_LESS;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+
+	default3DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state = RenderStateData::STATE_COLORMASK_ALL;
+	defaultStateData.cullMode = FACE_COUNT;
+	defaultStateData.depthFunc = CMP_TEST_MODE_COUNT;
+	defaultStateData.sourceFactor = BLEND_MODE_COUNT;
+	defaultStateData.destFactor = BLEND_MODE_COUNT;
+	defaultStateData.fillMode = FILLMODE_COUNT;
+	defaultStateData.stencilRef = 0;
+	defaultStateData.stencilMask = 0;
+	defaultStateData.stencilFunc[0] = defaultStateData.stencilFunc[1] = CMP_TEST_MODE_COUNT;
+	defaultStateData.stencilPass[0] = defaultStateData.stencilPass[1] = STENCILOP_COUNT;
+	defaultStateData.stencilFail[0] = defaultStateData.stencilFail[1] = STENCILOP_COUNT;
+	defaultStateData.stencilZFail[0] = defaultStateData.stencilZFail[1] = STENCILOP_COUNT;
+	defaultHardwareState = AddRenderStateData(&defaultStateData);
+	hardwareState.stateHandle = defaultHardwareState;
 }
 
 void RenderManager::SetDebug(bool isDebugEnabled)
@@ -421,11 +463,11 @@ void RenderManager::ClipRect(const Rect &rect)
 	Rect r = currentClip;
 	if(r.dx < 0)
 	{
-		r.dx = (float32)retScreenWidth;
+		r.dx = (float32)retScreenWidth * Core::GetPhysicalToVirtualFactor();
 	}
 	if(r.dy < 0)
 	{
-		r.dy = (float32)retScreenHeight;
+		r.dy = (float32)retScreenHeight * Core::GetPhysicalToVirtualFactor();
 	}
 	
 	r = r.Intersection(rect);
@@ -533,11 +575,11 @@ void RenderManager::DrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 void RenderManager::Lock()
 {
-	glMutex.Lock();
+	glMutex->Lock();
 }
 void RenderManager::Unlock()
 {
-	glMutex.Unlock();
+	glMutex->Unlock();
 }
 	
 void RenderManager::LockNonMain()
@@ -719,36 +761,7 @@ void RenderManager::ClearStats()
     
 void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 {
-    switch(renderOrientation)
-    {
-        case Core::SCREEN_ORIENTATION_PORTRAIT:
-            break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-            {
-                float32 newX = (float32)frameBufferWidth - (rect.y + rect.dy);
-                float32 newY = (float32)frameBufferHeight - rect.x;
-                float32 newDX = rect.dy;
-                float32 newDY = rect.dx;
-                rect.x = newX;
-                rect.y = newY;
-                rect.dx = newDX;
-                rect.dy = newDY;
-            }
-            break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-            {
-                float32 newX = (float32)frameBufferWidth - (rect.y + rect.dy);
-                float32 newY = (float32)frameBufferHeight - rect.x;
-                float32 newDX = rect.dy;
-                float32 newDY = rect.dx;
-                rect.x = newX;
-                rect.y = newY;
-                rect.dx = newDX;
-                rect.dy = newDY;
-            }            
-            break;
-            
-    };
+
 }
 
 const Matrix4 & RenderManager::GetMatrix(eMatrixType type)
@@ -796,6 +809,8 @@ void RenderManager::Stats::Clear()
     drawElementsCalls = 0;
     shaderBindCount = 0;
     occludedRenderBatchCount = 0;
+	renderStateSwitches = 0;
+	renderStateFullSwitches = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
 }
@@ -819,6 +834,16 @@ void RenderManager::ProcessStats()
     }
 }
     
+void RenderManager::SetDefault2DState()
+{
+	currentState.stateHandle = GetDefault2DStateHandle();
+}
+	
+void RenderManager::SetDefault3DState()
+{
+	currentState.stateHandle = GetDefault3DStateHandle();
+}
+
     /*void RenderManager::EnableAlphaTest(bool isEnabled)
 {
     alphaTestEnabled = isEnabled;
@@ -829,47 +854,7 @@ void RenderManager::EnableCulling(bool isEnabled)
 {
     cullingEnabled = isEnabled;
 }*/
-
-void RenderManager::AppendState(uint32 state)
-{
-    currentState.state |= state;
-}
     
-void RenderManager::RemoveState(uint32 state)
-{
-    currentState.state &= ~state;
-}
-
-void RenderManager::SetState(uint32 state)
-{
-    currentState.state = state;
-}
-    
-uint32 RenderManager::GetState()
-{
-    return currentState.state;
-}
-    
-    
-void RenderManager::SetCullMode(eFace _cullFace)
-{
-    currentState.SetCullMode(_cullFace);
-}
-    
-void RenderManager::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
-{
-    currentState.SetAlphaFunc(func, cmpValue);
-}
-
-RenderState * RenderManager::State()
-{
-	return &RenderManager::Instance()->currentState;
-}
-
-void RenderManager::SetDepthFunc(eCmpFunc func)
-{
-	currentState.SetDepthFunc(func);
-}
 
 RenderOptions * RenderManager::GetOptions()
 {

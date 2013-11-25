@@ -279,7 +279,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
 
                 ScopedPtr<Entity> node(new Entity());
                 node->SetName("preview-camera");
-                node->AddComponent(ScopedPtr<CameraComponent> (new CameraComponent(cam)));
+                node->AddComponent(new CameraComponent(cam));
                 editorScene->AddNode(node);
                 editorScene->AddCamera(cam);
                 editorScene->SetCurrentCamera(cam);
@@ -297,7 +297,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
     }
     
 	Set<String> errorsLogToHideDialog;
-	SceneValidator::Instance()->ValidateScene(editorScene, errorsLogToHideDialog);
+	SceneValidator::Instance()->ValidateScene(editorScene, pathToFile, errorsLogToHideDialog);
     
     return retError;
 }

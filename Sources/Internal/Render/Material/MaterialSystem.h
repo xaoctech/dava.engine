@@ -65,7 +65,7 @@ public:
 	void RemoveMaterial(NMaterial* material);
 	void Clear();
 	
-	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList);
+	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const;
 	
 	inline NMaterial* GetDefaultMaterial() const {return defaultMaterial;}
 	

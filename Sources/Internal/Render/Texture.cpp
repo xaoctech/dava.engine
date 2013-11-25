@@ -173,9 +173,8 @@ Texture * Texture::Get(const FilePath & pathName)
 	return 0;
 }
 
-void Texture::AddToMap( Texture *tex, const FilePath & pathname)
+void Texture::AddToMap(Texture *tex)
 {
-    tex->relativePathname = pathname;
     if(!tex->relativePathname.IsEmpty())
     {
         textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
@@ -270,10 +269,15 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
-        AddToMap(tx, Format("Text texture %d", textureFboCounter));
+    {
+        tx->relativePathname = Format("Text texture %d", textureFboCounter);
+    }
 	else
-        AddToMap(tx, Format("Text texture %d info:%s", textureFboCounter, addInfo));
-
+    {
+        tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+    }
+    AddToMap(tx);
+    
 	textureFboCounter++;
 	return tx;
 }
@@ -370,7 +374,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	if(!image) return NULL;
 
 	Texture * texture = new Texture();
-	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, true);
+	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
 	texture->images.push_back(image);
 	
     texture->SetParamsFromImages();
@@ -491,7 +495,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	if(!IsLoadAvailable(gpu, texDescriptor))
 		return false;
 	
-	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == texDescriptor->exportedAsGpuFamily))
+	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
 		Vector<String> faceNames;
 		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
@@ -500,7 +504,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			Vector<Image *> imageFace = ImageLoader::CreateFromFile(faceNames[i]);
+			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].c_str());
@@ -520,7 +524,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	else
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
-		images = ImageLoader::CreateFromFile(imagePathname);
+		images = ImageLoader::CreateFromFileByExtension(imagePathname);
 	}
 
 	if(0 == images.size())
@@ -594,8 +598,8 @@ void Texture::FlushDataToRenderer()
 		RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
 	}
 
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -675,7 +679,10 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHin
 	Texture * texture = PureCreate(pathName);
 	if(!texture)
 	{
-		texture = CreatePink(pathName, typeHint);
+		texture = CreatePink(typeHint);
+        texture->relativePathname = pathName;
+        
+        AddToMap(texture);
 	}
 
 	return texture;
@@ -686,21 +693,20 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
 
-    //TODO::temporary workaround to optimize old scenes loading
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
 	if (texture) return texture;
-    //ENDOF TODO
     
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
+	eGPUFamily gpuForLoading = GetGPUForLoading(defaultGPU, descriptor);
 	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
 	{
 		texture->loadedAsFile = gpuForLoading;
-		AddToMap(texture, descriptorPathname);
+        texture->relativePathname = descriptorPathname;
+		AddToMap(texture);
 	}
 
 	descriptor->Release();
@@ -749,7 +755,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 	SafeRelease(texDescriptor);
 	texDescriptor = SafeRetain(descriptor);
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, descriptor);
 	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
@@ -825,7 +831,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 
     tx->isRenderTarget = true;
-	AddToMap(tx, Format("FBO texture %d", textureFboCounter));
+    tx->relativePathname = Format("FBO texture %d", textureFboCounter);
+	AddToMap(tx);
 	
 	textureFboCounter++;
 	
@@ -1059,12 +1066,10 @@ int32 Texture::GetDataSize() const
     return allocSize;
 }
 
-Texture * Texture::CreatePink(const FilePath &path, TextureType requestedType)
+Texture * Texture::CreatePink(TextureType requestedType)
 {
     Texture *tex = new Texture();
     tex->MakePink(requestedType);
-	
-    AddToMap(tex, path);
     
 	return tex;
 }
@@ -1317,7 +1322,7 @@ eGPUFamily Texture::GetDefaultGPU()
 }
 
     
-eGPUFamily Texture::GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
+eGPUFamily Texture::GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
         return (eGPUFamily)descriptor->exportedAsGpuFamily;

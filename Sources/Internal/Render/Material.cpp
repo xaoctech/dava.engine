@@ -47,7 +47,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -214,7 +213,7 @@ void InstanceMaterialState::InitFromState(const InstanceMaterialState * state)
 
 
 
-REGISTER_CLASS(Material);
+
     
 UberShader * Material::uberShader = 0;
     
@@ -287,8 +286,6 @@ Material::Material()
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
     
-	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
-
 //    if (scene)
 //    {
 //        DataNode * materialsNode = scene->GetMaterials();
@@ -942,11 +939,13 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 {
     ///float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
+	/*
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
-        if (!instanceMaterialState->lightmapTexture)
+        if (NULL == instanceMaterialState->lightmapTexture)
         {
             SetSetupLightmap(true);
+			renderStateBlock.SetTexture(NULL, 1);
         }
 		else
         {
@@ -1113,7 +1112,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 			}
 		}
     }
-
+	 */
 }
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
@@ -1150,8 +1149,8 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 	eBlendMode oldDst;
 	if(isAlphablend)
 	{
-		oldSrc = RenderManager::Instance()->GetSrcBlend();
-		oldDst = RenderManager::Instance()->GetDestBlend();
+		//oldSrc = RenderManager::Instance()->GetSrcBlend();
+		//oldDst = RenderManager::Instance()->GetDestBlend();
 	}
 
 	PrepareRenderState(instanceMaterialState);
@@ -1173,6 +1172,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 	//{
 	//	RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
 	//}
+	 
 }
 
 

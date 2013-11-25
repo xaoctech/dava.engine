@@ -170,6 +170,39 @@
       </widget>
      </item>
      <item>
+      <widget class="QFrame" name="frame_6">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="propertiesFilterEdit">
+          <property name="placeholderText">
+           <string>Type here to search</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="propertiesFilterClear">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="QtIcons.qrc">
+            <normaloff>:/QtIconsTextureDialog/editclear.png</normaloff>:/QtIconsTextureDialog/editclear.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <widget class="PropertyEditor" name="propertyEditor">
        <property name="mouseTracking">
         <bool>false</bool>
@@ -181,7 +214,7 @@
         <enum>QAbstractItemView::SingleSelection</enum>
        </property>
        <property name="indentation">
-        <number>16</number>
+        <number>20</number>
        </property>
       </widget>
      </item>
@@ -224,7 +257,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -270,9 +303,9 @@
      <property name="title">
       <string>Add Entity</string>
      </property>
+     <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
-     <addaction name="actionImposter"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
@@ -291,13 +324,6 @@
     <addaction name="actionTextureConverter"/>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
-    <addaction name="separator"/>
-    <addaction name="actionHeightMapEditor"/>
-    <addaction name="actionTileMapEditor"/>
-    <addaction name="actionShowNotPassableLandscape"/>
-    <addaction name="actionRulerTool"/>
-    <addaction name="actionCustomColorsEditor"/>
-    <addaction name="actionVisibilityCheckTool"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
@@ -326,6 +352,9 @@
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
+    <addaction name="actionShowEditorGizmo"/>
+    <addaction name="actionOnSceneSelection"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -342,7 +371,6 @@
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="actionConvertToShadow"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
@@ -353,7 +381,6 @@
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
     <addaction name="actionAddActionComponent"/>
-    <addaction name="actionRemoveActionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -374,7 +401,7 @@
     </widget>
     <widget class="QMenu" name="menuLandscape_2">
      <property name="title">
-      <string>Landscape tools</string>
+      <string>Landscape save</string>
      </property>
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
@@ -390,6 +417,8 @@
      <property name="title">
       <string>Collision Type</string>
      </property>
+     <addaction name="actionObjectTypesOff"/>
+     <addaction name="separator"/>
      <addaction name="actionNoObject"/>
      <addaction name="actionTree"/>
      <addaction name="actionBush"/>
@@ -406,6 +435,12 @@
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
     <addaction name="actionLandscape"/>
+    <addaction name="actionHeightMapEditor"/>
+    <addaction name="actionTileMapEditor"/>
+    <addaction name="actionShowNotPassableLandscape"/>
+    <addaction name="actionRulerTool"/>
+    <addaction name="actionCustomColorsEditor"/>
+    <addaction name="actionVisibilityCheckTool"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
@@ -730,6 +765,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSkyboxEditor"/>
+   <addaction name="actionLandscape"/>
+   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
@@ -765,11 +803,17 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionEnableCameraLight"/>
    <addaction name="actionReloadSprites"/>
    <addaction name="actionSetShadowColor"/>
-   <addaction name="actionLandscape"/>
-   <addaction name="actionSkyboxEditor"/>
+  </widget>
+  <widget class="QDockWidget" name="dockLibrary2">
+   <property name="windowTitle">
+    <string>Library2</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="LibraryTabWidget" name="libraryTabWidget"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -843,13 +887,17 @@
   <action name="actionLandscape">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/landscapesettings.png</normaloff>:/QtIcons/landscapesettings.png</iconset>
+     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
    </property>
    <property name="text">
     <string>Landscape...</string>
    </property>
   </action>
   <action name="actionLight">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light.png</normaloff>:/QtIcons/light.png</iconset>
+   </property>
    <property name="text">
     <string>Light</string>
    </property>
@@ -860,6 +908,10 @@
    </property>
   </action>
   <action name="actionCamera">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
+   </property>
    <property name="text">
     <string>Camera</string>
    </property>
@@ -870,6 +922,10 @@
    </property>
   </action>
   <action name="actionUserNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/user_object.png</normaloff>:/QtIcons/user_object.png</iconset>
+   </property>
    <property name="text">
     <string>User Node</string>
    </property>
@@ -892,7 +948,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/heightmapeditor.png</normaloff>:/QtIcons/heightmapeditor.png</iconset>
+     <normaloff>:/QtIcons/land_height.png</normaloff>:/QtIcons/land_height.png</iconset>
    </property>
    <property name="text">
     <string>Height Map Editor</string>
@@ -907,7 +963,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/tilemapeditor.png</normaloff>:/QtIcons/tilemapeditor.png</iconset>
+     <normaloff>:/QtIcons/land_tile.png</normaloff>:/QtIcons/land_tile.png</iconset>
    </property>
    <property name="text">
     <string>Tile Mask Editor</string>
@@ -966,6 +1022,10 @@
    </property>
   </action>
   <action name="actionSwitchNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/switch.png</normaloff>:/QtIcons/switch.png</iconset>
+   </property>
    <property name="text">
     <string>Switch</string>
    </property>
@@ -976,7 +1036,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/notpassableterrain.png</normaloff>:/QtIcons/notpassableterrain.png</iconset>
+     <normaloff>:/QtIcons/land_unpassable.png</normaloff>:/QtIcons/land_unpassable.png</iconset>
    </property>
    <property name="text">
     <string>Not Passable Landscape</string>
@@ -994,7 +1054,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/rulertool.png</normaloff>:/QtIcons/rulertool.png</iconset>
+     <normaloff>:/QtIcons/land_ruler.png</normaloff>:/QtIcons/land_ruler.png</iconset>
    </property>
    <property name="text">
     <string>Ruler Tool</string>
@@ -1028,6 +1088,10 @@
    </property>
   </action>
   <action name="actionParticleEffectNode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/effect.png</normaloff>:/QtIcons/effect.png</iconset>
+   </property>
    <property name="text">
     <string>Particle Effect Node</string>
    </property>
@@ -1144,6 +1208,9 @@
    <property name="shortcut">
     <string>Ctrl+Z</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1161,6 +1228,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -1320,6 +1390,9 @@
    <property name="toolTip">
     <string>Save Scene As...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionPivotCenter">
    <property name="checkable">
@@ -1389,7 +1462,7 @@
   <action name="actionSkyboxEditor">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/skybox.png</normaloff>:/QtIcons/skybox.png</iconset>
+     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
    </property>
    <property name="text">
     <string>Skybox...</string>
@@ -1450,7 +1523,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/customcolors.png</normaloff>:/QtIcons/customcolors.png</iconset>
+     <normaloff>:/QtIcons/land_custcolor.png</normaloff>:/QtIcons/land_custcolor.png</iconset>
    </property>
    <property name="text">
     <string>Custom Colors Editor</string>
@@ -1465,7 +1538,7 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/visibilitytool.png</normaloff>:/QtIcons/visibilitytool.png</iconset>
+     <normaloff>:/QtIcons/land_visibility.png</normaloff>:/QtIcons/land_visibility.png</iconset>
    </property>
    <property name="text">
     <string>Visibility Check Tool</string>
@@ -1506,12 +1579,7 @@
     <string>Add Action Component</string>
    </property>
   </action>
-  <action name="actionRemoveActionComponent">
-   <property name="text">
-    <string>Remove Action Component</string>
-   </property>
-  </action>
-  <action name="actionNoObject">
+17:38 19.11.2013  <action name="actionNoObject">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1587,6 +1655,56 @@
     <string>Hanging Objects</string>
    </property>
   </action>
+  <action name="actionAddEmptyEntity">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/node.png</normaloff>:/QtIcons/node.png</iconset>
+   </property>
+   <property name="text">
+    <string>Empty Entity</string>
+   </property>
+  </action>
+  <action name="actionObjectTypesOff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Off</string>
+   </property>
+  </action>
+  <action name="actionShowEditorGizmo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/gizmo.png</normaloff>:/QtIcons/gizmo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Editor Gizmo</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
+  <action name="actionOnSceneSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/object_select.png</normaloff>:/QtIcons/object_select.png</iconset>
+   </property>
+   <property name="text">
+    <string>On Scene Selection</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1657,6 +1775,12 @@
    <class>LandscapeEditorControlsPlaceholder</class>
    <extends>QWidget</extends>
    <header>DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LibraryTabWidget</class>
+   <extends>QWidget</extends>
+   <header>DockLibrary2/LibraryTabWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -64,7 +64,6 @@ ArrowsNode::ArrowsNode():
 	renderObject->AddRenderBatch(renderBatch);
 	renderComponent->SetRenderObject(renderObject);
 	AddComponent(renderComponent);
-	renderComponent->Release();
 
 	SafeRelease(renderBatch);
 	SafeRelease(renderObject);
@@ -225,6 +224,14 @@ ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
 :	node(node)
 {
 	SetOwnerLayerName(LAYER_ARROWS);
+	
+	const RenderStateData* default3dState = RenderManager::Instance()->GetRenderStateData(RenderManager::Instance()->GetDefault3DStateHandle());
+	RenderStateData arrowsStateData;
+	memcpy(&arrowsStateData, default3dState, sizeof(arrowsStateData));
+	
+	arrowsStateData.state = RenderStateData::STATE_COLORMASK_ALL |
+							RenderStateData::STATE_DEPTH_WRITE;
+	arrowsStateHandle = RenderManager::Instance()->AddRenderStateData(&arrowsStateData);
 }
 
 void ArrowsRenderBatch::DrawPrism(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4, const Vector3& p5)
@@ -288,9 +295,12 @@ void ArrowsRenderBatch::Draw(Camera* camera)
 	Matrix4 oldMatrix = manager->GetMatrix(RenderManager::MATRIX_MODELVIEW);
 	manager->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
-	uint32 oldState = manager->GetState();
-	manager->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
+	//uint32 oldState = manager->GetState();
+	//manager->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
 
+	manager->SetRenderState(arrowsStateHandle);
+	manager->FlushState();
+	
 	Color colors[COLORS_COUNT];
 	PrepareColors(colors);
 
@@ -357,7 +367,7 @@ void ArrowsRenderBatch::Draw(Camera* camera)
 	helper->DrawLine(p1, p3);
 
 	manager->ResetColor();
-	manager->SetState(oldState);
+	//manager->SetState(oldState);
 	manager->SetMatrix(RenderManager::MATRIX_MODELVIEW, oldMatrix);
 }
 

@@ -70,6 +70,16 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     editingIsEnabled = false;
 
 	originalImage = NULL;
+	
+	RenderStateData colorStateData = {0};
+	colorStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
+	colorStateData.cullMode = FACE_BACK;
+	colorStateData.depthFunc = CMP_ALWAYS;
+	colorStateData.sourceFactor = BLEND_ONE;
+	colorStateData.destFactor = BLEND_ZERO;
+	colorStateData.fillMode = FILLMODE_SOLID;
+
+	colorRenderState = RenderManager::Instance()->AddRenderStateData(&colorStateData);
 }
 
 LandscapeEditorColor::~LandscapeEditorColor()
@@ -134,7 +144,9 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     if(tex)
     {
         RenderManager::Instance()->LockNonMain();
-        RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+        //RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+		RenderManager::Instance()->SetRenderState(colorRenderState);
+		RenderManager::Instance()->FlushState();
         
         Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         
@@ -184,9 +196,11 @@ void LandscapeEditorColor::UpdateTileMask()
     
 	RenderManager::Instance()->SetRenderTarget(maskSprite);
     
-	srcBlendMode = RenderManager::Instance()->GetSrcBlend();
-	dstBlendMode = RenderManager::Instance()->GetDestBlend();
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	//srcBlendMode = RenderManager::Instance()->GetSrcBlend();
+	//dstBlendMode = RenderManager::Instance()->GetDestBlend();
+	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+	
+	RenderManager::Instance()->SetRenderState(colorRenderState);
     
 	RenderManager::Instance()->SetShader(tileMaskEditorShader);
 	oldMaskSprite->PrepareSpriteRenderData(0);
@@ -196,19 +210,19 @@ void LandscapeEditorColor::UpdateTileMask()
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     
-	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture0"));
+	int32 tex0 = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("texture0"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex0, 0);
-	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName(FastName("texture1"));
+	int32 tex1 = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("texture1"));
 	tileMaskEditorShader->SetUniformValueByIndex(tex1, 1);
-	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("colorType"));
+	int32 colorTypeUniform = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("colorType"));
 	tileMaskEditorShader->SetUniformValueByIndex(colorTypeUniform, colorType);
-	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName(FastName("intensity"));
+	int32 intensityUniform = tileMaskEditorShader->FindUniformIndexByName(DAVA::FastName("intensity"));
     
 	tileMaskEditorShader->SetUniformValueByIndex(intensityUniform, currentTool->strength);
     
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     
-	RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
+	//RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
 	RenderManager::Instance()->RestoreRenderTarget();
     
 	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, maskSprite->GetTexture());

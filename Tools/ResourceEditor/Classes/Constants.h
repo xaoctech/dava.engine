@@ -105,7 +105,8 @@ enum eEditActions
 // list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall"]
 enum eSceneObjectType
 {
-	ESOT_NONE = 0,
+	ESOT_NONE = -1,
+	ESOT_NO_COLISION,
 	ESOT_TREE,
 	ESOT_BUSH,
 	ESOT_FRAGILE_PROJ,
@@ -118,7 +119,7 @@ enum eSceneObjectType
 };
 
 // coefficient for converting brush size from UI value to system value for landscape editors
-const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 10.f;
+const DAVA::float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
 
 // default coefficient for converting brush size from UI value to system value for heightmap editors
 // heightmap size in heightmap editor is almost 4 times smaller than landscape texture size

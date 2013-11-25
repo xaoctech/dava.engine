@@ -68,9 +68,10 @@ class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
 	static const int32 LIGHTMAP_SIZE_DEFAULT = 128; 
+protected:
+    virtual ~InstanceMaterialState();
 public:
     InstanceMaterialState();
-    virtual ~InstanceMaterialState();
 
 	virtual void Save(KeyedArchive * archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext *serializationContext);
@@ -197,8 +198,10 @@ public:
     
     static const char8 * GetTypeName(eType type);
 
-    Material();
+protected:
     virtual ~Material();
+public:
+    Material();
     
     Material * Clone(Material *newMaterial = NULL);
 	void CopySettings(Material *fromMaterial);

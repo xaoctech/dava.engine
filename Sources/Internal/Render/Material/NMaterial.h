@@ -54,23 +54,6 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-
-class NMaterialDescriptor : public BaseObject
-{
-public:
-    NMaterialDescriptor();
-    virtual ~NMaterialDescriptor();
-
-    uint32 GetTextureSlotByName(const String & textureName);
-    uint32 GetUniformSlotByName(const String & uniformName);
-    
-    void SetNameForTextureSlot(uint32 slot, const String & name);
-    void SetNameForUniformSlot(uint32 slot, const String & name);
-    
-private:
-    Map<String, uint32> slotNameMap;
-    Map<String, uint32> uniformNameMap;
-};
 	
 class NMaterial;
 class MaterialChangeListener
@@ -85,21 +68,17 @@ class NMaterialProperty
 public:
     Shader::eUniformType type;
     uint32 size;
+    uint32 dataSize;
     void * data;
 	
 public:
 	
 	~NMaterialProperty()
 	{
-		if(GetDataSize())
+		if(dataSize)
 		{
 			SafeDeleteArray(data);
 		}
-	}
-	
-	inline uint32 GetDataSize()
-	{
-		return Shader::GetUniformTypeSize(type) * size;
 	}
 	
 	NMaterialProperty* Clone()
@@ -107,10 +86,10 @@ public:
 		NMaterialProperty* prop = new NMaterialProperty();
 		prop->type = type;
 		prop->size = size;
+		prop->dataSize = dataSize;
 		
-		uint32 propDataSize = GetDataSize();
-		prop->data = new uint8[propDataSize];
-		memcpy(prop->data, data, propDataSize);
+		prop->data = new uint8[dataSize];
+		memcpy(prop->data, data, dataSize);
 		
 		return prop;
 	}
@@ -118,19 +97,6 @@ public:
 	    
 class MaterialTechnique
 {
-public:
-	
-	struct TextureParamCacheEntry
-	{
-		FastName textureName;
-		int32 slot;
-	};
-	
-	struct UniformCacheEntry
-	{
-		Shader::Uniform* uniform;
-		int32 index;
-	};
 		
 public:
 	
@@ -143,19 +109,13 @@ public:
     inline Shader * GetShader() const { return shader; }
     inline RenderState * GetRenderState() const { return renderState; }
     const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
-	
-	inline Vector<TextureParamCacheEntry>& GetTextureParamsCache() {return textureParamsCache;}
-	inline Vector<UniformCacheEntry>& GetActiveUniformsCache() {return activeUniformsCache;}
-    
+	    
 protected:
     FastName shaderName;
     Shader * shader;
     RenderState * renderState;
     FastNameSet uniqueDefines;
-	
-	Vector<TextureParamCacheEntry> textureParamsCache;
-	Vector<UniformCacheEntry> activeUniformsCache;
-};
+	};
 
 class NMaterial;
 class NMaterialState
@@ -220,6 +180,8 @@ protected:
 	//TODO: fill it from configuration
 	uint32 requiredVertexFormat;
 	
+	bool texturesDirty;
+	
 protected:
 	
 	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
@@ -237,6 +199,12 @@ protected:
 	void MapTextureNameToSlot(const FastName& textureName);
 	
 	void CopyTechniquesTo(NMaterialState* targetState);
+
+public:
+	INTROSPECTION(NMaterialState,
+		COLLECTION(materialProperties, "Material properties", I_SAVE | I_EDIT | I_VIEW)
+		COLLECTION(textures, "Material textures", I_SAVE | I_EDIT | I_VIEW)
+		);
 };
 
 
@@ -246,6 +214,9 @@ class MaterialSystem;
 class NMaterial : public BaseObject, public NMaterialState
 {
 	friend class MaterialSystem;
+
+protected:
+	virtual ~NMaterial();
 
 public:
     static const FastName TEXTURE_ALBEDO;
@@ -271,11 +242,13 @@ public:
 	static const FastName PARAM_UV_SCALE;
     
 	NMaterial();
-    virtual ~NMaterial();
 	
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
+    
+    int32 GetChildrenCount() const;
+    NMaterial *GetChild(int32 index) const;
 	
 	//VI: you need to manually rebuild material after defines have been changed
 	//this is done in order to be able change defines serially without autorebuild
@@ -298,10 +271,11 @@ public:
 	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);    
 	
 	void Rebuild(bool recursive = true);
+	void Rebind(bool recursive = true);
 	inline bool IsReady() {return ready;}
 	inline bool IsConfigMaterial() {return configMaterial;}
 	
-	bool LoadFromFile(const String & pathname);
+	bool LoadFromFile(const FilePath & pathname);
 	
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -331,7 +305,7 @@ public:
 		}
 	}
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
-	inline bool HasDefine(const FastName& defineName) const {return inheritedDefines.IsKey(defineName);}
+	inline bool HasDefine(const FastName& defineName) const {return (inheritedDefines.count(defineName) > 0);}
 		
 	void SwitchParent(const FastName& newParent);
 	
@@ -339,6 +313,21 @@ public:
 	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}
 	
 protected:
+	
+	struct TextureParamCacheEntry
+	{
+		FastName textureName;
+		int32 slot;
+		Texture* tx;
+	};
+	
+	struct UniformCacheEntry
+	{
+		Shader::Uniform* uniform;
+		int32 index;
+		NMaterialProperty* prop;
+	};
+
     
  	FastNameSet inheritedDefines;
  	FastNameSet effectiveLayers;
@@ -358,6 +347,10 @@ protected:
 	
 	FastName  currentStateName;
  	HashMap<FastName, NMaterialState*> states;
+	
+	//TODO: therse should be stored per technique
+	Vector<TextureParamCacheEntry> textureParamsCache;
+	Vector<UniformCacheEntry> activeUniformsCache;
 	
 	static uint64 uniqueIdSequence;
 	
@@ -387,13 +380,15 @@ protected:
 		
 	void GenerateName();
 	
-	void BuildTextureParamsCache(MaterialTechnique& technique);
-	void BuildActiveUniformsCache(MaterialTechnique& technique);
+	void BuildTextureParamsCache(const MaterialTechnique& technique);
+	void BuildActiveUniformsCache(const MaterialTechnique& technique);
+	void BindMaterialTextures(RenderState* renderState);
+	void BindMaterialProperties(Shader * shader);
 
-//public:
-    //INTROSPECTION_EXTEND(NMaterial, DataNode,
-    //     MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)
-    //     );
+public:
+    INTROSPECTION_EXTEND(NMaterial, NMaterialState,
+		COLLECTION(states, "Material states", I_SAVE | I_VIEW)
+	);
 
 };
 

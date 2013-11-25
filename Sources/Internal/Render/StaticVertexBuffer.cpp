@@ -74,7 +74,7 @@ StaticVertexBuffer::~StaticVertexBuffer()
 	
 	Unlock();
 	D3DSafeRelease(vertexBuffer);
-	Logger::Debug("[StaticVertexBuffer] released\n");
+	Logger::FrameworkDebug("[StaticVertexBuffer] released\n");
 }
 
 void * StaticVertexBuffer::Lock(const int32 lockVertexCount, int32 & startVertex)

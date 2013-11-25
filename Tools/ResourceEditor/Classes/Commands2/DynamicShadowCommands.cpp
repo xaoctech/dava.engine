@@ -34,7 +34,7 @@
 using namespace DAVA;
 
 ChangeDynamicShadowColorCommand::ChangeDynamicShadowColorCommand(SceneEditor2 *_scene, const DAVA::Color & color)
-	: Command2(CMDID_CHANGE_DYNAMIC_SHADOW_COLOR, "Change Dynamic Shadow Color")
+	: Command2(CMDID_DYNAMIC_SHADOW_CHANGE_COLOR, "Change Dynamic Shadow Color")
 	, scene(_scene)
 	, newColor(color)
 {
@@ -60,7 +60,7 @@ Entity* ChangeDynamicShadowColorCommand::GetEntity() const
 
 
 ChangeDynamicShadowModeCommand::ChangeDynamicShadowModeCommand(SceneEditor2 *_scene, DAVA::ShadowVolumeRenderPass::eBlend mode)
-	: Command2(CMDID_CHANGE_DYNAMIC_SHADOW_MODE, "Change Dynamic Shadow Mode")
+	: Command2(CMDID_DYNAMIC_SHADOW_CHANGE_MODE, "Change Dynamic Shadow Mode")
 	, scene(_scene)
 	, newMode(mode)
 {

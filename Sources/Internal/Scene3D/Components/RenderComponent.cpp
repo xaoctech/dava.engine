@@ -70,6 +70,7 @@ Component * RenderComponent::Clone(Entity * toEntity)
 	
 void RenderComponent::OptimizeBeforeExport()
 {
+/*
     uint32 count = renderObject->GetRenderBatchCount();
     for(uint32 i = 0; i < count; ++i)
     {
@@ -77,13 +78,15 @@ void RenderComponent::OptimizeBeforeExport()
 		if(NULL != renderBatch)
 		{
 			PolygonGroup* polygonGroup = renderBatch->GetPolygonGroup();
-			if (polygonGroup)
+			NMaterial* material = renderBatch->GetMaterial();
+			if(NULL != polygonGroup && NULL != material)
 			{
-				uint32 newFormat = renderBatch->GetMaterial()->GetRequiredVertexFormat();
-				polygonGroup->OptimizeVertices(newFormat);
+				//uint32 newFormat = MaterialOptimizer::GetOptimizedVertexFormat((Material::eType)renderBatch->GetMaterial()->type);
+				// polygonGroup->OptimizeVertices(newFormat); //TODO::VK crash on Tanks/USSR/T-28_crash.sc2
 			}
 		}
 	}
+*/
 }
 
 void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
