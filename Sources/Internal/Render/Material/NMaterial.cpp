@@ -1267,7 +1267,7 @@ namespace DAVA
 							  KeyedArchive * archive,
 							  SerializationContext * serializationContext)
 	{
-		Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
+		//Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DVASSERT(materialState.parentName.IsValid());
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
@@ -1354,7 +1354,7 @@ namespace DAVA
 		DVASSERT(materialState.parentName.IsValid());
 		materialState.materialName = FastName(archive->GetString("materialName"));
 		
-		Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
+		//Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
 		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
