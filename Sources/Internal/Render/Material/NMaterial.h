@@ -275,7 +275,7 @@ public:
 	inline bool IsReady() {return ready;}
 	inline bool IsConfigMaterial() {return configMaterial;}
 	
-	bool LoadFromFile(const String & pathname);
+	bool LoadFromFile(const FilePath & pathname);
 	
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
