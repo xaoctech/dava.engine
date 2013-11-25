@@ -425,7 +425,15 @@ void Texture::GenerateMipmaps()
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
-    RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
+    Image * image0 = ReadDataToImage();
+    images.push_back(image0);
+    image0->CreateMipMapsImages(images);
+
+    for(uint32 i = 1; i < (uint32)images.size(); ++i)
+        TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
+
+    ReleaseImages();
+
     RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 

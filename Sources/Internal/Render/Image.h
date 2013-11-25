@@ -62,15 +62,6 @@ public:
 	static const int MAX_HEIGHT = 4096;
 	static const int MIN_HEIGHT = 8;
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	
-    enum ResampleAlgo
-    {
-        RESAMPLE_NEAREST = 0,
-        RESAMPLE_BILINEAR,
-        RESAMPLE_BICUBIC,
-        
-        RESAMPLE_COUNT
-    };
     
 protected:
 	virtual ~Image();
@@ -81,7 +72,6 @@ public:
 	static Image * CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data);
     
     static Image * CreatePinkPlaceholder();
-    
     
     // \todo Change function name to Image::Create for consistency
 	static Vector2 GetImageSize(const FilePath & pathName);
@@ -95,15 +85,17 @@ public:
 #ifdef __DAVAENGINE_IPHONE__
     void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
 #endif
-    
+
+    void CreateMipMapsImages(Vector<Image *> & imageSet);
+
     // changes size of image canvas to required size, if new size is bigger, sets 0 to all new pixels
     void ResizeCanvas(uint32 newWidth, uint32 newHeight);
     
 	// changes size of image to required size (without any filtration)
 	void ResizeImage(uint32 newWidth, uint32 newHeight);
     
-    // changes size of image to required size (with filtration)
-    void MakeHalfSizeWithFilter(ResampleAlgo algo, uint32 * newWidthPtr = 0, uint32 * newHeightPrt = 0);
+    // changes size of image to halfsize (with bilinear filtration)
+    void MakeHalfSize(uint32 * newWidthPtr = 0, uint32 * newHeightPrt = 0);
     
 	static Image* CopyImageRegion(const Image* imageToCopy,
 								  uint32 newWidth, uint32 newHeight,
@@ -142,11 +134,6 @@ public:
 	
 	uint32 cubeFaceID;
 	uint32 mipmapLevel;
-    
-private:
-    void MakeNearestHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
-    void MakeBilinearHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
-    void MakeBicubicHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight);
 };
 	
 // Implementation of inline functions
