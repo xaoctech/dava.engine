@@ -492,7 +492,7 @@ void LandscapeDialog::PathWidgetValueChanged(String fileName)
 		{
 			if(filePath.IsEqualToExtension(".png"))
 			{
-				Vector<Image *> imageVector = ImageLoader::CreateFromFile(filePath);
+				Vector<Image *> imageVector = ImageLoader::CreateFromFileByExtension(filePath);
 				DVASSERT(imageVector.size());
 			
 				PixelFormat format = imageVector[0]->GetPixelFormat();
