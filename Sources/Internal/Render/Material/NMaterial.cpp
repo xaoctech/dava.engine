@@ -112,7 +112,8 @@ namespace DAVA
 	techniqueForRenderPass(8),
 	nativeDefines(16),
 	materialProperties(32),
-	textures(8)
+	textures(8),
+	texturesDirty(false)
 	{
 		parent = NULL;
 		requiredVertexFormat = EVF_FORCE_DWORD;
@@ -340,6 +341,8 @@ namespace DAVA
 				SafeRelease(bucket->texture);
 				bucket->texture = SafeRetain(texture);
 				texturesArray[bucket->index] = texture;
+				
+				texturesDirty = true;
 			}
 		}
 		else
@@ -351,6 +354,8 @@ namespace DAVA
 			textures.insert(textureFastName, bucket);
 			texturesArray.push_back(texture);
 			textureNamesArray.push_back(textureFastName);
+			
+			texturesDirty = true;
 		}
 	}
     
