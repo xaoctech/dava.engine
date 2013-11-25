@@ -135,8 +135,124 @@ Image * Image::CreatePinkPlaceholder()
 
     return image;
 }
-
-
+    
+void Image::MakeHalfSizeWithFilter(ResampleAlgo algo, uint32 * newWidthPtr /* = 0 */, uint32 * newHeightPtr /* = 0 */)
+{
+	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    if(formatSize)
+	{
+        uint32 newWidth = width;
+        uint32 newHeight = height;
+        if(newWidth > 1) newWidth = newWidth >> 1;
+        if(newHeight > 1) newHeight = newHeight >> 1;
+        uint8 * newData = new uint8[newWidth * newHeight * formatSize];
+		memset(newData, 0, newWidth * newHeight * formatSize);
+        
+        switch (algo) {
+            case RESAMPLE_NEAREST:
+                MakeNearestHalfSize(newData, newWidth, newHeight);
+                break;
+            case RESAMPLE_BILINEAR:
+                MakeBilinearHalfSize(newData, newWidth, newHeight);
+                break;
+            case RESAMPLE_BICUBIC:
+                MakeBicubicHalfSize(newData, newWidth, newHeight);
+                break;
+            default:
+                break;
+        }
+        
+        if(newWidthPtr)
+            (*newWidthPtr) = newWidth;
+        if(newHeightPtr)
+            (*newHeightPtr) = newHeight;
+        
+        width = newWidth;
+        height = newHeight;
+        SafeDeleteArray(data);
+        data = newData;
+    }
+}
+    
+void Image::MakeNearestHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight)
+{
+    int32 i, j;
+    int32 x, y;
+    
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    
+    for(i = 0; i < newHeight; i++)
+    {
+        y = i << 1;
+        for(j = 0; j < newWidth; j++)
+        {
+            x = j << 1;
+            memcpy(newData + (i * newWidth + j) * formatSize, data + (y * width + x) * formatSize, formatSize);
+        }
+    }
+}
+    
+#define GET_DATA_INDEX(x, y) (Clamp<int32>(y, 0, height-1) * width + Clamp<int32>(x, 0, width-1))*formatSize
+    
+void Image::MakeBilinearHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight)
+{
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    
+    int32 a, b, c, d, x, y;
+    for(int32 i = 0; i < newHeight; i++)
+    {
+        y = i << 1;
+        for(int32 j = 0; j < newWidth; j++)
+        {
+            x = j << 1;
+            
+            a = GET_DATA_INDEX(x, y);
+            b = GET_DATA_INDEX(x+1, y);
+            c = GET_DATA_INDEX(x+1, y+1);
+            d = GET_DATA_INDEX(x+1, y+1);
+            
+            for(uint32 k = 0; k < formatSize; k++)
+            {
+                uint32 colorCh = data[a + k] + data[b + k] + data[c + k] + data[d + k];
+                newData[(i * newWidth + j) * formatSize + k] = (uint8)(colorCh / 4);
+            }
+        }
+    }
+}
+    
+void Image::MakeBicubicHalfSize(uint8 * newData, uint32 newWidth, uint32 newHeight)
+{
+    float32 a[4][4] = {
+        .004f,  .01f,  .01f, .004f,
+         .01f, .226f, .226f,  .01f,
+         .01f, .226f, .226f,  .01f,
+        .004f,  .01f,  .01f, .004f,
+    };
+    
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    
+    int32 x, y;
+    for(int32 i = 0; i < newHeight; i++)
+    {
+        y = i << 1;
+        for(int32 j = 0; j < newWidth; j++)
+        {
+            x = j << 1;
+            for(int32 k = 0; k < formatSize; k++)
+            {
+                float32 colorCh = 0.f;
+                for(int32 dx = -1; dx < 3; dx++)
+                    for(int32 dy = -1; dy < 3; dy++)
+                        colorCh += data[GET_DATA_INDEX(x + dx, y + dy) + k] * a[dx+1][dy+1];
+                
+                newData[(i * newWidth + j) * formatSize + k] = (uint8)floorf(colorCh + .5f);
+            }
+        }
+    }
+}
+    
+#undef GET_DATA_INDEX
+    
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {
 	uint8 * newData = NULL;
