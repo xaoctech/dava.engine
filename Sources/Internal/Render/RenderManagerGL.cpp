@@ -273,11 +273,7 @@ void RenderManager::MakeGLScreenShot()
     
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
-#if defined(__DAVAENGINE_IPHONE__)    
-    image = Image::Create(height, width, formatDescriptor.formatID);
-#else
     image = Image::Create(width, height, formatDescriptor.formatID);
-#endif
     uint8 *imageData = image->GetData();
     
     int32 formatSize = Texture::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
@@ -301,19 +297,7 @@ void RenderManager::MakeGLScreenShot()
     // iOS frame buffer starts from bottom left corner, but we need from top left, so we rotate picture here
     uint32 newIndex = 0;
     uint32 oldIndex = 0;
-#if defined(__DAVAENGINE_IPHONE__)
-    for(int32 w = 0; w < width; ++w)
-    {
-        for(int32 h = 0; h < height; ++h)
-        {
-            for(int32 b = 0; b < formatSize; ++b)
-            {
-                oldIndex = formatSize*width*h + formatSize*w + b;
-                imageData[newIndex++] = tempData[oldIndex];
-            }
-        }
-    }
-#else
+
     //MacOS
     //TODO: test on Windows and android
 
@@ -329,7 +313,6 @@ void RenderManager::MakeGLScreenShot()
         }
     }
     
-#endif
     SafeDeleteArray(tempData);
     
     if(screenShotCallback)

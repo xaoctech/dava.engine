@@ -94,6 +94,13 @@ public:
 		EMITTER_SHOCKWAVE
 	};
 
+	enum eState
+	{
+		STATE_PLAYING,    
+		STATE_STOPPING, //emitter is stopping - no new particle generation, still need to update and recalculate
+		STATE_STOPPED   //emitter is completely stopped - no processing at all
+	};
+
 	ParticleEmitter();
 	virtual ~ParticleEmitter();
 	
@@ -180,6 +187,8 @@ public:
 		\returns is emitter paused 
 	 */
 	bool IsPaused();
+
+	eState GetState(){return state;}
 	
 	/**
 		\brief Function adds layer to emitter.
@@ -419,6 +428,9 @@ protected:
 	float32 time;
 	int32	emitPointsCount;
 	bool	isPaused;
+	
+	eState  state;
+	
 	/**
 	 \brief Enable/disable autorestart.
 	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 

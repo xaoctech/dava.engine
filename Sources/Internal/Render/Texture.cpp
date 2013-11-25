@@ -601,6 +601,13 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 	for(uint32 i = 0; i < (uint32)images.size(); ++i)
 	{
 		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
+	
+		if(texDescriptor->IsCubeMap() &&
+		   (images[i]->mipmapLevel != (uint32)-1) &&
+		   (images[i]->mipmapLevel != 0))
+		{
+			needGenerateMipMaps = false;
+		}
 	}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -733,16 +740,6 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 }
     
 
-TextureDescriptor * Texture::CreateDescriptor() const
-{
-    if(!isRenderTarget)
-    {
-        return TextureDescriptor::CreateFromFile(relativePathname);
-    }
-
-    return NULL;
-}
-    
 void Texture::Reload()
 {
     ReloadAs(loadedAsFile);
@@ -750,45 +747,26 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
-	TextureDescriptor *descriptor = CreateDescriptor();
-	if(descriptor)
-	{
-		ReloadAs(gpuFamily, descriptor);
-		descriptor->Release();
-	}
-	else if(!isPink)
-	{
-		Logger::Error("[Texture::ReloadAs] Can't create descriptor for gpu = %d", gpuFamily);
-
-		ReleaseTextureData();
-		MakePink((TextureType)textureType);
-	}
-}
-
-void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
-{
     ReleaseTextureData();
 	
-	DVASSERT(NULL != descriptor);
-
-	SafeRelease(texDescriptor);
-	texDescriptor = SafeRetain(descriptor);
+	DVASSERT(NULL != texDescriptor);
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, texDescriptor);
 	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
-
+        
 		SetParamsFromImages();
 		FlushDataToRenderer();
 	}
 	else
     {
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", relativePathname.GetAbsolutePathname().c_str());
-        MakePink(descriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
+        MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
 }
+
     
 bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {

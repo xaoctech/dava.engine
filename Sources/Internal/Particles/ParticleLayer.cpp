@@ -563,7 +563,7 @@ void ParticleLayer::RestartLayerIfNeed()
 	float32 layerRestartTime = (endTime + currentLoopVariation) + (deltaTime + currentDeltaVariation);
 	// Restart layer effect if auto restart option is on and layer time exceeds its endtime
 	// Endtime can be increased by DeltaTime
-	if(isLooped && (layerTime > layerRestartTime) && !emitter->IsPaused())
+	if(isLooped && (layerTime > layerRestartTime) && (emitter->GetState()==ParticleEmitter::STATE_PLAYING))
 	{
 		RestartLoop(false);
 	}
@@ -620,7 +620,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 			}
 			
 			if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
-				!emitter->IsPaused() && !useLoopStop)
+				(emitter->GetState()==ParticleEmitter::STATE_PLAYING) && !useLoopStop)
 			{
 				float32 newParticles = 0.0f;
 				if (generateNewParticles)
@@ -656,7 +656,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 		{
 			bool needUpdate = true;
 			if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
-				!emitter->IsPaused() && !useLoopStop)
+				(emitter->GetState()==ParticleEmitter::STATE_PLAYING) && !useLoopStop)
 			{
 				if(!head)
 				{
@@ -677,7 +677,7 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 					DVASSERT(0 == count);
 					head = 0;
 					if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
-						!emitter->IsPaused() && !useLoopStop)
+						(emitter->GetState()==ParticleEmitter::STATE_PLAYING) && !useLoopStop)
 					{
 						if (generateNewParticles)
 							GenerateSingleParticle();
@@ -1672,9 +1672,18 @@ void ParticleLayer::RemoveInnerEmitter()
 
 void ParticleLayer::PauseInnerEmitter(bool _isPaused)
 {
-	if (innerEmitter)
+	/*if (innerEmitter)
 	{
 		innerEmitter->Pause(_isPaused);
+	}*/
+
+	//guess pause inner emitter means pausing all particles emitters instead
+	Particle * current = head;
+	while(current)
+	{
+		if (current->GetInnerEmitter())
+			current->GetInnerEmitter()->Pause(_isPaused);		
+		current = current->next;
 	}
 }
 
