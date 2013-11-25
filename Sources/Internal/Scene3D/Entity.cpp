@@ -1233,6 +1233,12 @@ namespace DAVA
 					if(NULL != comp)
 					{
 						comp->Deserialize(compArch, serializationContext);
+						
+						if(comp->GetType() == Component::TRANSFORM_COMPONENT)
+						{
+							RemoveComponent(comp->GetType());
+						}
+						
 						AddComponent(comp);
 					}
 					
