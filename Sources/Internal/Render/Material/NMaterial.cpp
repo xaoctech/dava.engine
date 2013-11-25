@@ -404,6 +404,8 @@ namespace DAVA
 	{
 		parent = SafeRetain(material);
 		parentName = (NULL == parent) ? FastName("") : parent->GetMaterialName();
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
 	void NMaterialState::AddChildToState(NMaterial* material)
@@ -503,6 +505,7 @@ namespace DAVA
 		if (parentNameNode)
 		{
 			parentName = FastName(parentNameNode->AsString());
+			DVASSERT(parentName.IsValid());
 		}
 
 		
@@ -1237,8 +1240,9 @@ namespace DAVA
 	{
 		//TODO: add code allowing to transition from switchable to non-switchable materials and vice versa
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
+		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 1)
+		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
 		{
 			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
 				it != archiveData.end();
@@ -1257,15 +1261,17 @@ namespace DAVA
 			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
 			Deserialize(*this, stateArchive, serializationContext);
 		}
-		
-		SetMaterialName(archive->GetString("materialName"));
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
 							  KeyedArchive * archive,
 							  SerializationContext * serializationContext)
 	{
+		Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
+		
+		DVASSERT(materialState.parentName.IsValid());
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
+		archive->SetString("materialName", materialState.materialName.c_str());
 		
 		KeyedArchive* materialLayers = new KeyedArchive();
 		SerializeFastNameSet(materialState.layers, materialLayers);
@@ -1345,7 +1351,10 @@ namespace DAVA
 								SerializationContext * serializationContext)
 	{
 		materialState.parentName = FastName(archive->GetString("parentName"));
+		DVASSERT(materialState.parentName.IsValid());
 		materialState.materialName = FastName(archive->GetString("materialName"));
+		
+		Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
 		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
@@ -1594,6 +1603,8 @@ namespace DAVA
 		{
 			parentName = newParent;
 		}
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
 	void NMaterial::BuildTextureParamsCache(const MaterialTechnique& technique)
