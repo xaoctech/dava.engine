@@ -77,6 +77,8 @@
 
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "Input/GamepadManager.h"
+#include "Input/GamepadDevice.h"
 
 // Localization
 #include "FileSystem/LocalizationSystem.h"
