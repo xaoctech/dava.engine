@@ -34,8 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/EventDispatcher.h"
-#include "Scene3D/Components/FMODSoundComponent.h"
-#include "Sound/VolumeAnimatedObject.h"
+#include "Sound/SoundEvent.h"
 
 namespace FMOD
 {
@@ -45,37 +44,24 @@ namespace FMOD
 namespace DAVA
 {
 
-class FMODSoundEvent : public VolumeAnimatedObject
+class FMODSoundEvent : public SoundEvent
 {
 public:
-
-    enum CallbackType
-    {
-        EVENT_END,     /* Called when an event is stopped for any reason. */
-
-        EVENT_COUNT
-    };
-
-    FMODSoundEvent(const String & eventName);
 	~FMODSoundEvent();
 
-	virtual void SetVolume(float32 volume);
-	virtual float32	GetVolume();
-
-    void Trigger();
-    bool IsActive();
-	void Pause(bool isPaused);
-	bool IsPaused();
-	void Stop();
+    virtual bool Trigger();
+    virtual bool IsActive();
+	virtual void Stop();
 
     void KeyOffParameter(const String & paramName);
 
     void PerformCallback(CallbackType callbackType);
 
 private:
-	FMOD::Event * fmodEvent;
+    FMODSoundEvent(const String & eventName);
 
-    IMPLEMENT_EVENT_DISPATCHER(eventDispathcer);
+	FMOD::Event * fmodEvent;
+    String eventName;
 
 friend class FMODSoundSystem;
 };

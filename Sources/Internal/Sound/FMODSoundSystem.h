@@ -34,6 +34,7 @@
 #include "Base/FastNameMap.h"
 #include "Sound/Sound.h"
 #include "Sound/SoundSystem.h"
+#include "Sound/SoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
 
 #define SOUND_DISTANCE_UPDATE_TIME_SEC 1.0f
@@ -50,7 +51,6 @@ namespace DAVA
 class FMODSound;
 class FMODSoundGroup;
 class FMODSoundComponent;
-class VolumeAnimatedObject;
 class FMODSoundSystem : public SoundSystemInstance
 {
 public:
@@ -59,10 +59,13 @@ public:
 
     virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128);
     virtual Component * CreateSoundComponent();
+    virtual SoundEvent * CreateSoundEvent(const String & eventName);
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();
 	virtual void Resume();
+
+    virtual void SetCurrentLocale(const String & langID);
 
 	virtual void SetListenerPosition(const Vector3 & position);
 	virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left);
@@ -88,11 +91,11 @@ public:
     
     void GetAllEventsNames(Vector<String> & names);
 
-    void AddActiveFMODEvent(FMOD::Event * event);
-    void RemoveActiveFMODEvent(FMOD::Event * event);
-
     void SetMaxDistance(float32 distance);
     float32 GetMaxDistance();
+
+    void AddActiveFMODEvent(FMOD::Event * event);
+    void RemoveActiveFMODEvent(FMOD::Event * event);
 
     uint32 GetMemoryUsageBytes();
     
@@ -104,6 +107,7 @@ protected:
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
 
     void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
+    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
 
     float32 globalComponentsVolume;
 
@@ -126,7 +130,6 @@ friend class FMODSoundGroup;
 friend class FMODSound;
 friend class FMODSoundEvent;
 friend class FMODSoundComponent;
-friend class VolumeAnimatedObject;
 };
 
 };

@@ -197,7 +197,6 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundSystem.h"
 #include "Sound/FMODSoundGroup.h"
-#include "Sound/VolumeAnimatedObject.h"
 
 // Particle System
 #include "Particles/ParticleEmitter.h"

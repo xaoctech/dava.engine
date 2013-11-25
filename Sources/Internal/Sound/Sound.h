@@ -32,12 +32,11 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/EventDispatcher.h"
-#include "Sound/VolumeAnimatedObject.h"
 
 namespace DAVA
 {
 
-class Sound : public VolumeAnimatedObject
+class Sound : public BaseObject
 {
 public:
     enum eType

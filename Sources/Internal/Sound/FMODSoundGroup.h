@@ -33,7 +33,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
@@ -45,7 +44,7 @@ namespace DAVA
 {
 
 class FMODSound;
-class FMODSoundGroup : public VolumeAnimatedObject
+class FMODSoundGroup : public BaseObject
 {
 public:
 	FMODSoundGroup(FMOD::System * fmodSystem);

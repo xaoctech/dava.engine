@@ -28,48 +28,29 @@
 
 
 
-#include "Sound/VolumeAnimatedObject.h"
-#include "Animation/Animation.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/SoundSystem.h"
+#ifndef __DAVAENGINE_SOUND_EVENT_H__
+#define __DAVAENGINE_SOUND_EVENT_H__
 
-namespace DAVA
+#include "Base/BaseTypes.h"
+
+namespace DAVA 
 {
 
-VolumeAnimatedObject::VolumeAnimatedObject() :
-	animatedVolume(-1)
+class SoundEvent : public EventDispatcher
 {
+public:
+    enum CallbackType
+    {
+        EVENT_END,     /* Called when an event is stopped for any reason. */
 
-}
-
-Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
-{
-	animatedVolume = GetVolume();
-
-	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
-	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	Retain();
-	a->Start(track);
-
-	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
-
-	return a;
-}
-
-void VolumeAnimatedObject::Update()
-{
-	if(animatedVolume != -1.f)
-		SetVolume(animatedVolume);
-}
-
-void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
-{
-	SetVolume(animatedVolume);
-	animatedVolume = -1.f;
-	Release();
-
-	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
-}
+        EVENT_COUNT
+    };
+    
+    virtual bool Trigger() = 0;
+    virtual bool IsActive() = 0;
+    virtual void Stop() = 0;
+};
 
 };
+
+#endif

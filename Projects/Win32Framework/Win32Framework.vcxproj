@@ -532,8 +532,8 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
@@ -898,8 +898,8 @@
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundGroup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp" />

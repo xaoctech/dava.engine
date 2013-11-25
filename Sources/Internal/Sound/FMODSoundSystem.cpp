@@ -82,6 +82,11 @@ Component * FMODSoundSystem::CreateSoundComponent()
     return new FMODSoundComponent();
 }
 
+SoundEvent * FMODSoundSystem::CreateSoundEvent(const String & eventName)
+{
+    return new FMODSoundEvent(eventName);
+}
+
 void FMODSoundSystem::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
 {
     DVASSERT(dirPath.IsDirectoryPathname());
@@ -160,7 +165,7 @@ void FMODSoundSystem::Update(float32 timeElapsed)
         Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
         Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
         for(; mapIt != endIt; ++mapIt)
-            mapIt->first->eventDispathcer->PerformEvent(mapIt->second);
+            mapIt->first->PerformEvent(mapIt->second);
         callbackOnUpdate.clear();
     }
 
@@ -173,8 +178,8 @@ void FMODSoundSystem::Update(float32 timeElapsed)
         while(it != activeEvents.end())
         {
             void * userData = 0;
-            FMOD_VERIFY((*it)->getUserData(&userData));
-            if(!userData) // don't check events from FMODSoundEvent
+            FMOD_RESULT result = (*it)->getUserData(&userData);
+            if(result == FMOD_OK && !userData)
             {
                 FMOD_VECTOR pos;
                 FMOD_VERIFY((*it)->get3DAttributes(&pos, 0));
@@ -216,6 +221,11 @@ void FMODSoundSystem::Resume()
 #ifdef __DAVAENGINE_IPHONE__
     FMOD_IPhone_RestoreAudioSession();
 #endif
+}
+
+void FMODSoundSystem::SetCurrentLocale(const String & langID)
+{
+    FMOD_VERIFY(fmodEventSystem->setLanguage(langID.c_str()));
 }
 
 void FMODSoundSystem::SetListenerPosition(const Vector3 & position)
@@ -418,6 +428,23 @@ void FMODSoundSystem::RemoveActiveFMODEvent(FMOD::Event * event)
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)
 {
     callbackOnUpdate[event] = type;
+}
+
+void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)
+{
+    if(callbackOnUpdate.size())
+    {
+        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
+        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
+        for(; mapIt != endIt; ++mapIt)
+        {
+            if(mapIt->first == event)
+            {
+                callbackOnUpdate.erase(mapIt);
+                break;
+            }
+        }
+    }
 }
 
 };

@@ -39,56 +39,64 @@ namespace DAVA
     
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
-FMODSoundEvent::FMODSoundEvent(const String & eventName)
+FMODSoundEvent::FMODSoundEvent(const String & _eventName) : 
+    fmodEvent(0)
 {
-    FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
-    if(fmodEvent)
+    if(_eventName.size())
     {
-        FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
-        FMOD_VERIFY(fmodEvent->setUserData(this));
-        FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
+        if(_eventName[0] == '/')
+            eventName = _eventName.substr(1);
+        else
+            eventName = _eventName;
     }
 }
 
 FMODSoundEvent::~FMODSoundEvent()
 {
-    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
-    FMOD_VERIFY(fmodEvent->stop());
-    FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
+    if(fmodEvent)
+    {
+        FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
+        FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+        FMOD_VERIFY(fmodEvent->stop());
+        fmodEvent = 0;
+    }
+    FMODSoundSystem::GetFMODSoundSystem()->CancelCallbackOnUpdate(this, SoundEvent::EVENT_END);
 }
 
-void FMODSoundEvent::Trigger()
+bool FMODSoundEvent::Trigger()
 {
-	FMOD_VERIFY(fmodEvent->start());
+    FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
+
+    if(!fmodEvent)
+    {
+        FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+        if(fmodEvent)
+        {
+            FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
+            FMOD_VERIFY(fmodEvent->setUserData(this));
+            FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
+            Logger::Debug("[FMODSoundEvent::Trigger()] %x %s", fmodEvent, eventName.c_str());
+        }
+        else
+        {
+            Logger::Debug("EventID: %s", eventName.c_str());
+        }
+    }
+    if(fmodEvent)
+    {
+        FMOD_VERIFY(fmodEvent->start());
+        return true;
+    }
+
+    return false;
 }
 
 void FMODSoundEvent::Stop()
 {
-	FMOD_VERIFY(fmodEvent->stop());
-}
-
-void FMODSoundEvent::SetVolume(float32 volume)
-{
-	FMOD_VERIFY(fmodEvent->setVolume(volume));
-}
-
-float32	FMODSoundEvent::GetVolume()
-{
-	float32 volume = 0;
-	FMOD_VERIFY(fmodEvent->getVolume(&volume));
-	return volume;
-}
-
-void FMODSoundEvent::Pause(bool isPaused)
-{
-	FMOD_VERIFY(fmodEvent->setPaused(isPaused));
-}
-
-bool FMODSoundEvent::IsPaused()
-{
-	bool isPaused = false;
-	FMOD_VERIFY(fmodEvent->getPaused(&isPaused));
-	return isPaused;
+    if(fmodEvent)
+    {
+        FMOD_VERIFY(fmodEvent->stop());
+    }
 }
 
 bool FMODSoundEvent::IsActive()
@@ -113,13 +121,19 @@ void FMODSoundEvent::KeyOffParameter(const String & paramName)
 void FMODSoundEvent::PerformCallback(CallbackType callbackType)
 {
     FMODSoundSystem::GetFMODSoundSystem()->PerformCallbackOnUpdate(this, callbackType);
+    FMODSoundSystem::GetFMODSoundSystem()->RemoveActiveFMODEvent(fmodEvent);
+    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+    fmodEvent = 0;
 }
 
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
-    if(type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
-        ((FMODSoundEvent *)userdata)->PerformCallback(FMODSoundEvent::EVENT_END);
-
+    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN || type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
+    {
+        FMODSoundEvent * sEvent = (FMODSoundEvent *)userdata;
+        if(sEvent)
+            sEvent->PerformCallback(FMODSoundEvent::EVENT_END);
+    }
     return FMOD_OK;
 }
     

@@ -25,38 +25,3 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-
-#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-
-#include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
-
-namespace DAVA
-{
-
-class Animation;
-class VolumeAnimatedObject : public AnimatedObject
-{
-protected:
-    ~VolumeAnimatedObject(){}
-public:
-	VolumeAnimatedObject();
-
-	virtual void SetVolume(float32 volume) = 0;
-	virtual float32 GetVolume() = 0;
-
-	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
-	void Update();
-
-private:
-	float32 animatedVolume;
-
-	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
-};
-
-};
-
-#endif
