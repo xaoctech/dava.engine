@@ -154,7 +154,13 @@ eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
+#ifdef USE_FILEPATH_IN_MAP
+Map<FilePath, Texture*> Texture::textureMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
 Map<String, Texture*> Texture::textureMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
+
 Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
@@ -162,7 +168,12 @@ static int32 textureFboCounter = 0;
 Texture * Texture::Get(const FilePath & pathName)
 {
 	Texture * texture = NULL;
+#ifdef USE_FILEPATH_IN_MAP
+	Map<FilePath, Texture *>::iterator it;
+#else //#ifdef USE_FILEPATH_IN_MAP
 	Map<String, Texture *>::iterator it;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
 	it = textureMap.find(pathName.GetAbsolutePathname());
 	if (it != textureMap.end())
 	{
@@ -177,7 +188,11 @@ void Texture::AddToMap(Texture *tex)
 {
     if(!tex->relativePathname.IsEmpty())
     {
-        textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+#ifdef USE_FILEPATH_IN_MAP
+		textureMap[tex->relativePathname] = tex;
+#else //#ifdef USE_FILEPATH_IN_MAP
+		textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+#endif //#ifdef USE_FILEPATH_IN_MAP
     }
 }
 
@@ -893,7 +908,11 @@ void Texture::DumpTextures()
 	int32 cnt = 0;
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
+#ifdef USE_FILEPATH_IN_MAP
+	for(Map<FilePath, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+#else //#ifdef USE_FILEPATH_IN_MAP
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+#endif #ifdef USE_FILEPATH_IN_MAP
 	{
 		Texture *t = it->second;
 		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
@@ -1053,7 +1072,11 @@ Image * Texture::CreateImageFromMemory()
     return image;
 }
 	
+#ifdef USE_FILEPATH_IN_MAP
+const Map<FilePath, Texture*> & Texture::GetTextureMap()
+#else //#ifdef USE_FILEPATH_IN_MAP
 const Map<String, Texture*> & Texture::GetTextureMap()
+#endif //#ifdef USE_FILEPATH_IN_MAP
 {
     return textureMap;
 }
