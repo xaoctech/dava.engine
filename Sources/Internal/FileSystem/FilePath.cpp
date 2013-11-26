@@ -190,23 +190,12 @@ FilePath::FilePath(const String &pathname)
     
 FilePath::FilePath(const char * directory, const String &filename)
 {
-	FilePath directoryPath(directory);
-	DVASSERT(!directoryPath.IsEmpty());
-    
-	directoryPath.MakeDirectoryPathname();
-
-    pathType = directoryPath.pathType;
-	absolutePathname = AddPath(directoryPath, filename);
+	Initialize(String(directory) + "/" + filename);
 }
 
 FilePath::FilePath(const String &directory, const String &filename)
 {
-	FilePath directoryPath(directory);
-	DVASSERT(!directoryPath.IsEmpty());
-	directoryPath.MakeDirectoryPathname();
-
-    pathType = directoryPath.pathType;
-	absolutePathname = AddPath(directoryPath, filename);
+	Initialize(directory + "/" + filename);
 }
 
 FilePath::FilePath(const FilePath &directory, const String &filename)
