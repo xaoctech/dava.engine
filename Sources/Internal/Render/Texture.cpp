@@ -730,6 +730,9 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
     ReleaseTextureData();
 	
+    texDescriptor->Release();
+    texDescriptor = TextureDescriptor::CreateFromFile(relativePathname);
+    
 	DVASSERT(NULL != texDescriptor);
     
 	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, texDescriptor);
