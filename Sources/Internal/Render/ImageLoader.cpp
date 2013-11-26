@@ -109,8 +109,6 @@ Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
         {
             Vector<Image *>imageSet;
             imageSet.push_back(pngImage);
-            pngImage->CreateMipMapsImages(imageSet);
-            
             return imageSet;
         }
         

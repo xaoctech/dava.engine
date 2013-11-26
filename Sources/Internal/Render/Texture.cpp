@@ -426,8 +426,7 @@ void Texture::GenerateMipmaps()
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
     Image * image0 = ReadDataToImage();
-    images.push_back(image0);
-    image0->CreateMipMapsImages(images);
+    images = image0->CreateMipMapsImages();
 
     for(uint32 i = 1; i < (uint32)images.size(); ++i)
         TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
@@ -526,13 +525,25 @@ bool Texture::LoadImages(eGPUFamily gpu)
 			imageFace[0]->cubeFaceID = CUBE_FACE_MAPPING[i];
 			imageFace[0]->mipmapLevel = 0;
 
-			images.push_back(imageFace[0]);
+            if(texDescriptor->GetGenerateMipMaps())
+            {
+                Vector<Image *> mipmapsImages = imageFace[0]->CreateMipMapsImages();
+                images.insert(images.end(), mipmapsImages.begin(), mipmapsImages.end());
+            }
+            else
+            {
+			    images.push_back(imageFace[0]);
+            }
 		}
 	}
 	else
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 		images = ImageLoader::CreateFromFile(imagePathname);
+        if(images.size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
+        {
+            images = images[0]->CreateMipMapsImages();
+        }
 	}
 
 	if(0 == images.size())
@@ -576,9 +587,6 @@ void Texture::FlushDataToRenderer()
 	DVASSERT(images.size() != 0);
 	DVASSERT(texDescriptor);
 
-	bool needGenerateMipMaps = texDescriptor->GetGenerateMipMaps() && ((1 == images.size()) || texDescriptor->IsCubeMap());
-
-
 	RenderManager::Instance()->LockNonMain();
     
 #if defined(__DAVAENGINE_OPENGL__)
@@ -590,13 +598,6 @@ void Texture::FlushDataToRenderer()
 	for(uint32 i = 0; i < (uint32)images.size(); ++i)
 	{
 		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
-	
-		if(texDescriptor->IsCubeMap() &&
-		   (images[i]->mipmapLevel != (uint32)-1) &&
-		   (images[i]->mipmapLevel != 0))
-		{
-			needGenerateMipMaps = false;
-		}
 	}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -608,48 +609,12 @@ void Texture::FlushDataToRenderer()
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeS)));
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeT)));
 
-	if(needGenerateMipMaps)
-	{
-        DVASSERT(false); //We must create mipmaps manually
-		RENDER_VERIFY(glGenerateMipmap(SELECT_GL_TEXTURE_TYPE(textureType)));
-	}
-
     RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
     RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
 
-	if(needGenerateMipMaps)
-	{
-		// allocate only 2 levels, and reuse buffers for generation of every mipmap level
-		uint8 *mipMapData = new uint8[(width / 2) * (height / 2) * GetPixelFormatSizeInBytes(format)];
-		uint8 *mipMapData2 = new uint8[(width / 4) * (height / 4) * GetPixelFormatSizeInBytes(format)];
-
-		const uint8 * prevMipData = _data;
-		uint8 * currentMipData = mipMapData;
-
-		int32 mipMapWidth = width / 2;
-		int32 mipMapHeight = height / 2;
-
-		for (uint32 i = 1; i < id->GetLevelCount(); ++i)
-		{
-			ImageConvert::DownscaleTwiceBillinear(format, format,
-				prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSizeInBytes(format),
-				currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSizeInBytes(format));
-
-			TexImage(i, mipMapWidth, mipMapHeight, currentMipData, Texture::CUBE_FACE_INVALID);
-
-			mipMapWidth  >>= 1;
-			mipMapHeight >>= 1;
-
-			prevMipData = currentMipData;
-			currentMipData = (i & 1) ? (mipMapData2) : (mipMapData);
-		}
-
-		SafeDeleteArray(mipMapData2);
-		SafeDeleteArray(mipMapData);
-	}
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
 	RenderManager::Instance()->UnlockNonMain();
