@@ -89,7 +89,9 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 		if (!emitters[i]->IsPaused()) // do not update paused emmiters
 		{
 			float32 effectTime = emitters[i]->IsShortEffect()?timeElapsed*speedMult:timeElapsed;
-			if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
+			//now only invisible lod is subject for deferred update, as invisible switch should be stopped (start with action) as well as manually invisible.
+			//and clipping is anyway required
+			if (flags & RenderObject::VISIBLE_LOD) 
 			{
 				emitters[i]->Update(effectTime);
 
