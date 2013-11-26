@@ -325,9 +325,9 @@ namespace DAVA
 	}
 	
 	// return first control with given name
-	UIControl * UIControl::FindByName(const String & name, bool recursive)
+	UIControl * UIControl::FindByName(const String & name, bool recursive) const
 	{
-		List<UIControl*>::iterator it = childs.begin();
+		List<UIControl*>::const_iterator it = childs.begin();
 		for(; it != childs.end(); ++it)
 		{
 			UIControl * c = (*it);

@@ -677,7 +677,7 @@ public:
 	 \param[in] recursive use true if you want fro recursive search.
 	 \returns first control with given name.
 	 */
-	UIControl * FindByName(const String & name, bool recursive = true);
+	UIControl * FindByName(const String & name, bool recursive = true) const;
 	
 	/**
 	 \brief Returns control state bit mask.
