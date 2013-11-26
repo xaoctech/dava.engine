@@ -41,7 +41,7 @@ namespace DAVA
 {
 
 class ParticleEmitter;
-class ModifiablePropertyLineI;
+class ModifiablePropertyLineBase;
 class ParticleEffectComponent : public Component
 {
 public:
@@ -106,8 +106,8 @@ public:
 	Set<String> EnumerateVariables();
 
 	void RebuildEffectModifiables();
-	void RegisterModifiable(ModifiablePropertyLineI *propertyLine);
-	void UnRegisterModifiable(ModifiablePropertyLineI *propertyLine);
+	void RegisterModifiable(ModifiablePropertyLineBase *propertyLine);
+	void UnRegisterModifiable(ModifiablePropertyLineBase *propertyLine);
 
 	/**
      \brief Returns the total active particles count for the whole effect.
@@ -157,7 +157,7 @@ private:
 	bool stopOnLoad;
 
 	 bool requireRebuildEffectModifiables;
-	MultiMap<String, ModifiablePropertyLineI *> externalModifiables;	
+	MultiMap<String, ModifiablePropertyLineBase *> externalModifiables;	
 	Map<String, float32> externalValues;
 
 public:

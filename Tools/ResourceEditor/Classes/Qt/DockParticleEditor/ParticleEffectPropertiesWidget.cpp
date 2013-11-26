@@ -367,78 +367,78 @@ void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEff
 }
 
 
-ModifiablePropertyLineI* ParticleEffectPropertiesWidget::GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId)
+ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId)
 {
 	switch(lineId)
 	{
 	case EE_EMISSION_VECTOR:
-		return dynamic_cast<ModifiablePropertyLineI*>(emitter->emissionVector.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->emissionVector.Get());
 	case EE_EMISSION_RANGE:
-		return dynamic_cast<ModifiablePropertyLineI*>(emitter->emissionRange.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->emissionRange.Get());
 	case EE_RADUS:
-		return dynamic_cast<ModifiablePropertyLineI*>(emitter->radius.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->radius.Get());
 	case EE_SIZE:
-		return dynamic_cast<ModifiablePropertyLineI*>(emitter->size.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->size.Get());
 	case EE_COLOR_OVER_LIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(emitter->colorOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->colorOverLife.Get());
 	}
 	return NULL;
 }
-ModifiablePropertyLineI* ParticleEffectPropertiesWidget::GetLayerLine(ParticleLayer *layer, LayerExternals lineId)
+ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetLayerLine(ParticleLayer *layer, LayerExternals lineId)
 {
 	switch (lineId)
 	{
 	case EL_LIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->life.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->life.Get());
 	case EL_LIFE_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->lifeVariation.Get());	
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->lifeVariation.Get());	
 	case EL_NUMBER:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->number.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->number.Get());
 	case EL_NUMBER_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->numberVariation.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->numberVariation.Get());
 	case EL_SIZE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->size.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->size.Get());
 	case EL_SIZE_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->sizeVariation.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->sizeVariation.Get());
 	case EL_SIZE_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->sizeOverLifeXY.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->sizeOverLifeXY.Get());
 	case EL_VELOCITY:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->velocity.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->velocity.Get());
 	case EL_VELOCITY_VARIATON:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->velocityVariation.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->velocityVariation.Get());
 	case EL_VELOCITY_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->velocityOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->velocityOverLife.Get());
 	case EL_SPIN:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->spin.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->spin.Get());
 	case EL_SPIN_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->spinVariation.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->spinVariation.Get());
 	case EL_SPIN_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->spinOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->spinOverLife.Get());
 	case EL_COLOR:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->colorRandom.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->colorRandom.Get());
 	case EL_ALPHA_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->alphaOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->alphaOverLife.Get());
 	case EL_COLOR_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->colorOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->colorOverLife.Get());
 	case EL_ANGLE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->angle.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->angle.Get());
 	case EL_ANGLE_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->angleVariation.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->angleVariation.Get());
 	case EL_ANIM_SPEED_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(layer->animSpeedOverLife.Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(layer->animSpeedOverLife.Get());
 	}
 	return NULL;
 }
-ModifiablePropertyLineI* ParticleEffectPropertiesWidget::GetForceLine(ParticleForce *force, ForceExternals lineId)
+ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetForceLine(ParticleForce *force, ForceExternals lineId)
 {
 	switch(lineId)
 	{
 	case EF_FORCE:
-		return dynamic_cast<ModifiablePropertyLineI*>(force->GetForce().Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(force->GetForce().Get());
 	case EF_FORCE_VARIATION:
-		return dynamic_cast<ModifiablePropertyLineI*>(force->GetForceVariation().Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(force->GetForceVariation().Get());
 	case EF_FORCE_OVERLIFE:
-		return dynamic_cast<ModifiablePropertyLineI*>(force->GetForceOverlife().Get());
+		return dynamic_cast<ModifiablePropertyLineBase*>(force->GetForceOverlife().Get());
 	}
 	return NULL;
 }

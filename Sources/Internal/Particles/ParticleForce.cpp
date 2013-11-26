@@ -77,7 +77,7 @@ void ParticleForce::SetForceOverLife(const RefPtr<PropertyLine<float32> > &force
 	this->forceOverLife = forceOverLife;
 }
 
-void ParticleForce::GetModifableLines(List<ModifiablePropertyLineI *> &modifiables)
+void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
 {
 	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
 	PropertyLineHelper::AddIfModifiable(forceVariation.Get(), modifiables);

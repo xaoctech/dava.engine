@@ -712,7 +712,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     parser->Release();
 }
 
-void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineI *> &modifiables)
+void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
 {
 	PropertyLineHelper::AddIfModifiable(emissionVector.Get(), modifiables);
 	PropertyLineHelper::AddIfModifiable(emissionRange.Get(), modifiables);
