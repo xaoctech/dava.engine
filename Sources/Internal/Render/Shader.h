@@ -45,6 +45,7 @@ typedef char             GLchar;
 #endif //not defined GLchar
 #endif //#ifdef __DAVAENGINE_ANDROID__
 
+#define GET_UNIFORM(__uniformIndex__) ((Uniform*)(uniformData + uniformOffsets[__uniformIndex__]))
 
 namespace DAVA
 {
@@ -137,16 +138,17 @@ public:
     
     void Bind();
     static void Unbind();
-    int32 GetAttributeIndex(eVertexFormat vertexFormat);
-    int32 GetAttributeCount();
+    inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
+    inline int32 GetAttributeCount();
     
-    int32 GetUniformCount();
-    Uniform * GetUniform(int32 index);
-    eUniformType GetUniformType(int32 index);
+    inline int32 GetUniformCount();
+    inline Uniform * GetUniform(int32 index);
+    inline eUniformType GetUniformType(int32 index);
+    inline const char * GetUniformName(int32 index);
+    inline int32 GetUniformArraySize(int32 index);
+
     static int32 GetUniformTypeSize(eUniformType type);
     static const char * GetUniformTypeSLName(eUniformType type);
-    const char * GetUniformName(int32 index);
-    int32 GetUniformArraySize(int32 index);
 
     int32 GetUniformLocationByIndex(int32 index);
     //int32 FindUniformLocationByName(const FastName & name);
@@ -242,6 +244,49 @@ private:
     uint32 fragmentShaderSize;*/
 #endif
 };
+
+//
+inline int32 Shader::GetAttributeCount()
+{
+    return activeAttributes;
+}
+
+inline int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
+{
+    return vertexFormatAttribIndeces[FastLog2(vertexFormat)];
+}
+    
+inline int32 Shader::GetUniformCount()
+{
+    return activeUniforms;
+}
+
+inline Shader::eUniformType Shader::GetUniformType(int32 index)
+{
+    return GET_UNIFORM(index)->type;
+}
+
+inline Shader::Uniform * Shader::GetUniform(int32 index)
+{
+    return GET_UNIFORM(index);
+}
+
+inline const char * Shader::GetUniformName(int32 index)
+{
+    return GET_UNIFORM(index)->name.c_str();
+}
+
+inline int32 Shader::GetUniformLocationByIndex(int32 index)
+{
+    return GET_UNIFORM(index)->location;
+}
+
+inline int32 Shader::GetUniformArraySize(int32 index)
+{
+    return GET_UNIFORM(index)->size;
+}
+    
 };
+
 
 #endif // __DAVAENGINE_SHADER_H__

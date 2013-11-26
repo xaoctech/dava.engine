@@ -64,6 +64,11 @@ void SceneSystem::RemoveEntity(Entity * entity)
     
 }
     
+void SceneSystem::SetParent(DAVA::Entity *entity, DAVA::Entity *parent)
+{
+    
+}
+    
 void SceneSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     
@@ -72,11 +77,6 @@ void SceneSystem::ImmediateEvent(Entity * entity, uint32 event)
 void SceneSystem::Process()
 {
     
-}
-
-Scene * SceneSystem::GetScene() const
-{
-	return scene;
 }
 
 void SceneSystem::SetLocked(bool locked)

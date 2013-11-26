@@ -32,6 +32,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -45,6 +46,7 @@ ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
 
 void ParticleEffectSystem::Process()
 {
+    TIME_PROFILE("ParticleEffectSystem::Process");
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
 	size = components.size();

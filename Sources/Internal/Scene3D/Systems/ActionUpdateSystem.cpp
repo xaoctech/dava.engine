@@ -34,6 +34,7 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -45,6 +46,8 @@ ActionUpdateSystem::ActionUpdateSystem(Scene * scene)
 		
 void ActionUpdateSystem::Process()
 {
+    TIME_PROFILE("ActionUpdateSystem::Process");
+
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	
 	uint32 size = activeActions.size();

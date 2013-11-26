@@ -32,6 +32,7 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Entity.h"
 #include "Platform/SystemTimer.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -109,6 +110,8 @@ void UpdateSystem::Process()
 
 void UpdateSystem::UpdatePreTransform()
 {
+    TIME_PROFILE("UpdateSystem::UpdatePreTransform");
+    
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	uint32 size = updatesBeforeTransform.size();
 	for(uint32 i = 0; i < size; ++i)
@@ -119,6 +122,8 @@ void UpdateSystem::UpdatePreTransform()
 
 void UpdateSystem::UpdatePostTransform()
 {
+    TIME_PROFILE("UpdateSystem::UpdatePostTransform");
+
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	uint32 size = updatesAfterTransform.size();
 	for(uint32 i = 0; i < size; ++i)

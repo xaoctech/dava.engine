@@ -168,7 +168,7 @@ inline Matrix4::Matrix4()
 // 	_10 = 0; _11 = 0; _12 = 0; _13 = 0;
 // 	_20 = 0; _21 = 0; _22 = 0; _23 = 0;
 // 	_30 = 0; _31 = 0; _32 = 0; _33 = 0;
-    Zero();
+    Identity();
 }
 
 inline Matrix4::Matrix4(	float32 _D00, float32 _D01, float32 _D02, float32 _D03,

@@ -36,6 +36,10 @@
 namespace DAVA
 {
     
+void GlobalEventSystem::GroupEvent(Scene * scene, Vector<Entity *> & entities, uint32 event)
+{
+    scene->GetEventSystem()->GroupNotifyAllSystems(entities, event);
+}
 
 void GlobalEventSystem::Event(Entity * entity, uint32 event)
 {

@@ -27,7 +27,6 @@
 =====================================================================================*/
 #include "Render/RenderManager.h"
 #include "Render/OcclusionQuery.h"
-#include "Math/RectPacker.h"
 
 namespace DAVA
 {
@@ -35,15 +34,13 @@ namespace DAVA
 OcclusionQuery::OcclusionQuery()
 {
 	RenderManager::Instance()->LockNonMain();
-	
     queryActive = false;
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glGenQueries(1, &id));
 #else
     RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
-	
-	RenderManager::Instance()->UnlockNonMain();
+    RenderManager::Instance()->UnlockNonMain();
 }
 
 OcclusionQuery::~OcclusionQuery()
@@ -57,7 +54,6 @@ OcclusionQuery::~OcclusionQuery()
 #endif
 	
 	RenderManager::Instance()->UnlockNonMain();
-
 }
 
 void OcclusionQuery::BeginQuery()

@@ -56,6 +56,7 @@ public:
 	void UnregisterSystemForEvent(SceneSystem * system, uint32 event);
 	void NotifySystem(SceneSystem * system, Entity * entity, uint32 event);
     void NotifyAllSystems(Entity * entity, uint32 event);
+    void GroupNotifyAllSystems(Vector<Entity *> & entity, uint32 event);
 
 private:
 	Vector<SceneSystem*> registeredSystems[EVENTS_COUNT];

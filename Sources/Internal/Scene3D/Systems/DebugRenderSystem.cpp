@@ -40,6 +40,7 @@
 
 #include "Render/Highlevel/Camera.h"
 #include "Render/RenderHelper.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -57,6 +58,7 @@ DebugRenderSystem::~DebugRenderSystem()
 
 void DebugRenderSystem::Process()
 {
+    TIME_PROFILE("DebugRenderSystem::Process");
     uint32 size = entities.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
