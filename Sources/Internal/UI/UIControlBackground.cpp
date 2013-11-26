@@ -469,17 +469,8 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		break;
 		
 		case DRAW_FILL:
-		{	// DF-2560 - Use different function for rotation of filled rect
-			if(geometricData.angle != 0)
-			{
-				RenderHelper::Instance()->FillRotatedRect(drawRect,
-															geometricData.pivotPoint * geometricData.scale,
-															geometricData.angle);
-			}
-			else
-			{
-				RenderHelper::Instance()->FillRect(drawRect);
-			}
+		{//TODO: add rotation
+			RenderHelper::Instance()->FillRect(drawRect);
 		}	
 		break;
 			
