@@ -28,38 +28,24 @@
 
 
 
-#ifndef __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
-#define __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#ifndef __CENTERPIVOTPOINTCOMMAND__H__
+#define __CENTERPIVOTPOINTCOMMAND__H__
 
-#include "Base/BaseTypes.h"
-#include "Scene3D/Systems/BaseProcessSystem.h"
-#include "Scene3D/Components/ActionComponent.h"
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
+using namespace DAVA;
 
-namespace DAVA
+class CenterPivotPointCommand: public ChangePropertyCommand<QPointF>
 {
-	class ActionComponent;
-	class ActionUpdateSystem : public BaseProcessSystem
-	{
-	public:
-		ActionUpdateSystem(Scene * scene);
-		virtual void Process();
-		
-		virtual void AddEntity(Entity * entity);
-		virtual void RemoveEntity(Entity * entity);
+public:
+	CenterPivotPointCommand(BaseMetadata* baseMetadata, const QMetaProperty& alignProperty);
 
-		void Watch(ActionComponent* component);
-		void UnWatch(ActionComponent* component);
+protected:
+	virtual QPointF PreprocessPropertyValue(const COMMANDDATAVECTITER& iter, const QPointF& curValue);
+};
 
-		void SetBlockEvent(ActionComponent::Action::eEvent eventType, bool block);
-		bool IsBlockEvent(ActionComponent::Action::eEvent eventType);
-		void UnblockAllEvents();
-		
-	protected:
-		bool eventBlocked[ActionComponent::Action::EVENTS_COUNT];
-		Vector<ActionComponent*> activeActions;
-	};
-	
-}
-
-#endif //__DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#endif /* defined(__CENTERPIVOTPOINTCOMMAND__H__) */

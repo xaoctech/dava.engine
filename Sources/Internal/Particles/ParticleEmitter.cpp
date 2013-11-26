@@ -54,11 +54,14 @@ ParticleEmitter::ParticleEmitter()
 	parentParticle = NULL;
 	deferredTimeElapsed = 0.0f;
 
+	time = 0.0f;
+	repeatCount = 0;
 	currentLodLevel = 0;
 	desiredLodLevel = 0;
 	shortEffect = false;
 	lodLevelLocked = false;
-	particleCount = 0;
+	particleCount = 0;		
+	state = STATE_STOPPED;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -83,6 +86,9 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	particleCount = 0;
 	time = 0.0f;
 	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = 0;
+	desiredLodLevel = 0;
 	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
@@ -320,30 +326,18 @@ Matrix3 ParticleEmitter::GetRotationMatrix()
 	return rotationMatrix;
 }
 
-void ParticleEmitter::Play()
+void ParticleEmitter::Pause(bool _isPaused)
 {
-    Pause(false);
-    DoRestart(false);
-}
-    
-void ParticleEmitter::Stop(bool isDeleteAllParticles)
-{
-    DoRestart(isDeleteAllParticles);
-    Pause(true);
-}
-    
-bool ParticleEmitter::IsStopped()
-{
-    // Currently the same as isPaused.
-    return isPaused;
+	isPaused = _isPaused;
+
+	// Also update Inner Emitters.
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(_isPaused);
+	}
 }
 
-void ParticleEmitter::Restart(bool isDeleteAllParticles)
-{
-	DoRestart(isDeleteAllParticles);
-	Pause(false);
-}
-	
 void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 {
 	Vector<ParticleLayer*>::iterator it;
@@ -358,6 +352,60 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	currentLodLevel = desiredLodLevel;
 }
 
+void ParticleEmitter::Play()
+{
+	isPaused = false;
+	state = STATE_PLAYING;
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(false);
+	}
+    /*Pause(false);
+    DoRestart(false);*/
+}
+    
+void ParticleEmitter::Stop(bool isDeleteAllParticles)
+{
+	state = STATE_STOPPING;
+	time = 0.0f;
+	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = desiredLodLevel;
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->Restart(isDeleteAllParticles);
+	}	
+
+}
+
+void ParticleEmitter::Restart(bool isDeleteAllParticles)
+{
+	state = STATE_PLAYING;
+	isPaused = false;
+	time = 0.0f;
+	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = desiredLodLevel;
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->Restart(isDeleteAllParticles);
+	}	
+}
+    
+bool ParticleEmitter::IsPaused()
+{
+	return isPaused;
+}
+
+bool ParticleEmitter::IsStopped()
+{    
+    return (state == STATE_STOPPED);
+}
+	
+
 bool ParticleEmitter::DeferredUpdate(float32 timeElapsed)
 {
 	deferredTimeElapsed += timeElapsed;
@@ -371,31 +419,30 @@ bool ParticleEmitter::DeferredUpdate(float32 timeElapsed)
 }
 	
 void ParticleEmitter::Update(float32 timeElapsed)
-{
+{	
 	timeElapsed *= playbackSpeed;
 
-	if (false == isPaused)
+	
+	time += timeElapsed;
+	float32 t = time / lifeTime;
+
+	if (colorOverLife)
 	{
-		time += timeElapsed;
-		float32 t = time / lifeTime;
-
-		if (colorOverLife)
-		{
-			currentColor = colorOverLife->GetValue(t);
-		}
-
-		if(isAutorestart && (time > lifeTime))
-		{
-			time -= lifeTime;
-
-			// Restart() resets repeatCount, so store it locally and then revert.
-			int16 curRepeatCount = repeatCount;
-			Restart(true);
-			repeatCount = curRepeatCount;
-
-			repeatCount ++;
-		}
+		currentColor = colorOverLife->GetValue(t);
 	}
+
+	if(isAutorestart && (time > lifeTime))
+	{
+		time -= lifeTime;
+
+		// Restart() resets repeatCount, so store it locally and then revert.
+		int16 curRepeatCount = repeatCount;
+		Restart(true);
+		repeatCount = curRepeatCount;
+
+		repeatCount ++;
+	}
+
 
 	particleCount = 0;
 	Vector<ParticleLayer*>::iterator it;
@@ -408,6 +455,10 @@ void ParticleEmitter::Update(float32 timeElapsed)
 
 	if (shortEffect)
 		lodLevelLocked = true;
+	if ((state == STATE_STOPPING) && (particleCount == 0))
+	{
+		state = STATE_STOPPED;
+	}
 }
 
 void ParticleEmitter::PrepareRenderData(Camera * camera){
@@ -514,9 +565,8 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             particle->position += vel * radius->GetValue(time);
     }
         
-    particle->direction.x = vel.x;
-    particle->direction.y = vel.y;
-	particle->speed = velocity;
+    particle->speed.x = vel.x*velocity;
+    particle->speed.y = vel.y*velocity;	
     particle->angle = particleAngle;
 }
 
@@ -754,23 +804,7 @@ void ParticleEmitter::SetLifeTime(float32 time)
 float32 ParticleEmitter::GetTime()
 {
     return time;
-}
-    
-void ParticleEmitter::Pause(bool _isPaused)
-{
-	isPaused = _isPaused;
-
-	// Also update Inner Emitters.
-	int32 layersCount = layers.size();
-	for (int32 i = 0; i < layersCount; i ++)
-	{
-		layers[i]->PauseInnerEmitter(_isPaused);
-	}
-}
-bool ParticleEmitter::IsPaused()
-{
-	return isPaused;
-}
+}    
 
 bool ParticleEmitter::GetAutoRestart()
 {
