@@ -38,6 +38,8 @@
 #include <QLabel>
 #include <QSlider>
 #include <QCheckBox>
+#include <QPushButton>
+#include <QSpinBox>
 
 class ParticleEffectPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
@@ -55,6 +57,12 @@ public:
 
 public slots:
 	void OnValueChanged();
+	void OnPlay();
+	void OnStop();
+	void OnStopAndDelete();
+	void OnPause();
+	void OnRestart();
+	void OnStepForward();
 	
 protected:
 	void InitWidget(QWidget* widget, bool connectWidget = true);
@@ -66,9 +74,15 @@ private:
 	QVBoxLayout* mainLayout;
 
 	QLabel* effectPlaybackSpeedLabel;
-	QSlider* effectPlaybackSpeed;
-	
-	QCheckBox* checkboxStopOnLoad;
+	QSlider* effectPlaybackSpeed;	
+
+	QPushButton *playBtn;
+	QPushButton *stopBtn;
+	QPushButton *stopAndDeleteBtn;
+	QPushButton *pauseBtn;
+	QPushButton *restartBtn;
+	QPushButton *stepForwardBtn;
+	QSpinBox* stepForwardFPSSpin;	
 	
 	bool blockSignals;
 };
