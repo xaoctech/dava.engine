@@ -271,7 +271,7 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 void ParticleEffectComponent::SetExtertnalValue(const String& name, float32 value)
 {
 	externalValues[name] = value;
-	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalModifiables.lower_bound(name), e=externalModifiables.upper_bound(name); it!=e; ++it)
+	for (MultiMap<String, ModifiablePropertyLineBase *>::iterator it = externalModifiables.lower_bound(name), e=externalModifiables.upper_bound(name); it!=e; ++it)
 		(*it).second->SetModifier(value);
 }
 
@@ -287,21 +287,21 @@ float32 ParticleEffectComponent::GetExternalValue(const String& name)
 Set<String> ParticleEffectComponent::EnumerateVariables()
 {
 	Set<String> res;
-	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalModifiables.begin(), e=externalModifiables.end(); it!=e; ++it)
+	for (MultiMap<String, ModifiablePropertyLineBase *>::iterator it = externalModifiables.begin(), e=externalModifiables.end(); it!=e; ++it)
 		res.insert((*it).first);
 	return res;
 }
 
-void ParticleEffectComponent::RegisterModifiable(ModifiablePropertyLineI *propertyLine)
+void ParticleEffectComponent::RegisterModifiable(ModifiablePropertyLineBase *propertyLine)
 {
 	externalModifiables.insert(std::make_pair(propertyLine->GetValueName(), propertyLine));
 	Map<String, float32>::iterator it = externalValues.find(propertyLine->GetValueName());
 	if (it!=externalValues.end())
 		propertyLine->SetModifier((*it).second);
 }
-void ParticleEffectComponent::UnRegisterModifiable(ModifiablePropertyLineI *propertyLine)
+void ParticleEffectComponent::UnRegisterModifiable(ModifiablePropertyLineBase *propertyLine)
 {
-	for (MultiMap<String, ModifiablePropertyLineI *>::iterator it = externalModifiables.lower_bound(propertyLine->GetValueName()), e=externalModifiables.upper_bound(propertyLine->GetValueName()); it!=e; ++it)
+	for (MultiMap<String, ModifiablePropertyLineBase *>::iterator it = externalModifiables.lower_bound(propertyLine->GetValueName()), e=externalModifiables.upper_bound(propertyLine->GetValueName()); it!=e; ++it)
 	{
 		if ((*it).second == propertyLine) 
 		{
@@ -314,7 +314,7 @@ void ParticleEffectComponent::UnRegisterModifiable(ModifiablePropertyLineI *prop
 void ParticleEffectComponent::RebuildEffectModifiables()
 {
 	externalModifiables.clear();
-	List<ModifiablePropertyLineI *> modifiables;
+	List<ModifiablePropertyLineBase *> modifiables;
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -326,7 +326,7 @@ void ParticleEffectComponent::RebuildEffectModifiables()
 		}
 	}
 
-	for (List<ModifiablePropertyLineI *>::iterator it = modifiables.begin(), e=modifiables.end(); it!=e; ++it)
+	for (List<ModifiablePropertyLineBase *>::iterator it = modifiables.begin(), e=modifiables.end(); it!=e; ++it)
 	{
 		externalModifiables.insert(std::make_pair((*it)->GetValueName(), (*it)));
 		Map<String, float32>::iterator itName = externalValues.find((*it)->GetValueName());

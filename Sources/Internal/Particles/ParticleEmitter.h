@@ -391,7 +391,7 @@ public:
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
 
-	void GetModifableLines(List<ModifiablePropertyLineI *> &modifiables);
+	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
 
 	Matrix3 GetRotationMatrix();	
 

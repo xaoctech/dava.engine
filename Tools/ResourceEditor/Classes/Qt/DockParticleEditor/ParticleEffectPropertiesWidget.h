@@ -191,9 +191,9 @@ protected:
 
 	void UpdateVaribleTables();
 
-	ModifiablePropertyLineI * GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId);
-	ModifiablePropertyLineI * GetLayerLine(ParticleLayer *layer, LayerExternals lineId);
-	ModifiablePropertyLineI * GetForceLine(ParticleForce *force, ForceExternals lineId);
+	ModifiablePropertyLineBase * GetEmitterLine(ParticleEmitter *emitter, EmitterExternals lineId);
+	ModifiablePropertyLineBase * GetLayerLine(ParticleLayer *layer, LayerExternals lineId);
+	ModifiablePropertyLineBase * GetForceLine(ParticleForce *force, ForceExternals lineId);
 
 	void SetEmitterLineModifiable(ParticleEmitter *emitter, EmitterExternals lineId);
 	void SetLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId);

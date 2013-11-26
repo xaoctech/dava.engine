@@ -152,11 +152,11 @@ public:
 	}	
 };
 
-class ModifiablePropertyLineI
+class ModifiablePropertyLineBase
 {	
 
 public:
-	ModifiablePropertyLineI(const String& name) : externalValueName(name){}
+	ModifiablePropertyLineBase(const String& name) : externalValueName(name){}
 	virtual void SetModifier(float32 v) = 0;
 	const String& GetValueName(){return externalValueName;}
 	void SetValueName(const String& name){externalValueName = name;}
@@ -164,49 +164,19 @@ protected:
 	String externalValueName;
 };
 
-template <class T> class ModifiablePropertyLine : public ModifiablePropertyLineI, public PropertyLine<T>
+template <class T> class ModifiablePropertyLine : public ModifiablePropertyLineBase, public PropertyLine<T>
 {
 public:
-	ModifiablePropertyLine<T>(const String& name) : ModifiablePropertyLineI(name){}
-	virtual void SetModifier(float32 v)
-	{
-		if (modificationLine)
-			modifier = modificationLine->GetValue(v);
-		else
-			modifier = PropertyValueHelper::MakeUnityValue<T>();
-	}
+	ModifiablePropertyLine<T>(const String& name) : ModifiablePropertyLineBase(name){}
+	virtual void SetModifier(float32 v);
 	void SetModificationLine(RefPtr<PropertyLine<T> > line){this->modificationLine = line;}
 	void SetValueLine(RefPtr<PropertyLine<T> > line){this->valueLine = line;}
 
 	RefPtr<PropertyLine<T> > GetModificationLine(){return modificationLine;}
 	RefPtr<PropertyLine<T> > GetValueLine(){return valueLine;}
-	const T & GetValue(float32 t)
-	{
-		if (!valueLine)
-		{
-			resultValue = T();
-		}
-		else
-		{
-			resultValue = modifier * (valueLine->GetValue(t));
-		}		
-		return resultValue;
-	}
-
-	virtual PropertyLine<T>* Clone() 
-	{
-		ModifiablePropertyLine<T> *clone = new ModifiablePropertyLine<T>(GetValueName());
-		if (valueLine)
-			clone->valueLine = valueLine->Clone();
-		else
-			clone->valueLine = NULL;
-		if (modificationLine)
-			clone->modificationLine = modificationLine->Clone();
-		else
-			modificationLine = NULL;
-		clone->modifier = modifier; //not use set modifier!
-		return clone;
-	};
+	const T & GetValue(float32 t);	
+	virtual PropertyLine<T>* Clone();
+	
 protected:
 	T resultValue; //well - this how ProertyLine itself work - err
 	T modifier;
@@ -214,6 +184,47 @@ protected:
 	RefPtr<PropertyLine<T> > valueLine;
 };
 
+template <class T> void ModifiablePropertyLine<T>::SetModifier(float32 v)
+{
+	if (modificationLine)
+		modifier = modificationLine->GetValue(v);
+	else
+		modifier = PropertyValueHelper::MakeUnityValue<T>();
+}
+
+template <class T> const T & ModifiablePropertyLine<T>::GetValue(float32 t)
+{
+	if (!valueLine)
+	{
+		resultValue = T();
+	}
+	else
+	{
+		resultValue = modifier * (valueLine->GetValue(t));
+	}		
+	return resultValue;
+}
+
+template <class T>  PropertyLine<T>* ModifiablePropertyLine<T>::Clone() 
+{
+	ModifiablePropertyLine<T> *clone = new ModifiablePropertyLine<T>(GetValueName());
+	if (valueLine)
+	{
+		clone->valueLine = valueLine->Clone();
+		clone->valueLine->Release();
+	}
+	else
+		clone->valueLine = NULL;
+	if (modificationLine)
+	{
+		clone->modificationLine = modificationLine->Clone();
+		clone->modificationLine->Release();
+	}
+	else
+		modificationLine = NULL;
+	clone->modifier = modifier; //not use set modifier!
+	return clone;
+};
 
 
 template <class T> class PropValue
@@ -446,10 +457,10 @@ class PropertyLineHelper
 public:
 
 	/*hmmm*/
-	template <class T> static void AddIfModifiable(PropertyLine<T> * line, List<ModifiablePropertyLineI *> &dest)
+	template <class T> static void AddIfModifiable(PropertyLine<T> * line, List<ModifiablePropertyLineBase *> &dest)
 	{
 		
-		ModifiablePropertyLineI *modifiable = dynamic_cast<ModifiablePropertyLineI *> (line);
+		ModifiablePropertyLineBase *modifiable = dynamic_cast<ModifiablePropertyLineBase *> (line);
 		if (modifiable) dest.push_back(modifiable);
 	}
 

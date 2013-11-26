@@ -292,7 +292,7 @@ public:
 	bool IsLodActive(int32 lod);
 	void SetLodActive(int32 lod, bool active);	
 
-	void GetModifableLines(List<ModifiablePropertyLineI *> &modifiables);
+	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
 
 protected:
 	void GenerateNewParticle(int32 emitIndex);
@@ -362,7 +362,7 @@ protected:
 
 	Vector<bool> activeLODS;	
 
-	List<std::pair<String, ModifiablePropertyLineI *>> modifiables;
+	List<std::pair<String, ModifiablePropertyLineBase *>> modifiables;
 
 public:
 	String			layerName;

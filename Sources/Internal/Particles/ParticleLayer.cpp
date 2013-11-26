@@ -1355,7 +1355,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 }
 
 
-void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineI *> &modifiables)
+void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
 {
 	PropertyLineHelper::AddIfModifiable(life.Get(), modifiables);
 	PropertyLineHelper::AddIfModifiable(lifeVariation.Get(), modifiables);
