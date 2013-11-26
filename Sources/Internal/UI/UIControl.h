@@ -127,6 +127,20 @@ public:
 		transformMatr = pivotMatr * scaleMatr * rotateMatr * translateMatr;
 	}
 
+	void GetPolygon( Polygon2 &polygon ) const
+	{
+		polygon.Clear();
+		polygon.points.reserve( 4 );
+		polygon.AddPoint( Vector2() );
+		polygon.AddPoint( Vector2( size.x, 0 ) );
+		polygon.AddPoint( size );
+		polygon.AddPoint( Vector2( 0, size.y ) );
+
+		Matrix3 transformMtx;
+		BuildTransformMatrix( transformMtx );
+		polygon.Transform( transformMtx );
+	}
+
 	const Rect &GetUnrotatedRect() const
 	{
 		return unrotatedRect;
