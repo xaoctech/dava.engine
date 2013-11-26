@@ -1658,17 +1658,9 @@ namespace DAVA
 		if( gd.angle != 0.0f )
 		{
 			Polygon2 poly;
-			poly.AddPoint( Vector2() );
-			poly.AddPoint( Vector2( gd.size.x, 0 ) );
-			poly.AddPoint( gd.size );
-			poly.AddPoint( Vector2( 0, gd.size.y ) );
-			poly.AddPoint( Vector2() );
+			gd.GetPolygon( poly );
 
-			Matrix3 transformMtx;
-			gd.BuildTransformMatrix( transformMtx );
-			poly.Transform( transformMtx );
-
-			RenderHelper::Instance()->DrawPolygon(poly, false);
+			RenderHelper::Instance()->DrawPolygon( poly, true );
 		}
 		else
 		{

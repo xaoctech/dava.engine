@@ -893,14 +893,7 @@ void UIControlBackground::DrawFilled( const UIGeometricData &gd )
 	if( gd.angle != 0.0f ) 
 	{
 		Polygon2 poly;
-		poly.AddPoint( Vector2() );
-		poly.AddPoint( Vector2( gd.size.x, 0 ) );
-		poly.AddPoint( gd.size );
-		poly.AddPoint( Vector2( 0, gd.size.y ) );
-
-		Matrix3 transformMtx;
-		gd.BuildTransformMatrix( transformMtx );
-		poly.Transform( transformMtx );
+		gd.GetPolygon( poly );
 
 		RenderHelper::Instance()->FillPolygon( poly );
 	}
