@@ -730,7 +730,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
     ReleaseTextureData();
     
-    if(texDescriptor->pathname.Exists())
+    if(relativePathname.Exists())
     {
         texDescriptor->Release();
         texDescriptor = TextureDescriptor::CreateFromFile(relativePathname);
