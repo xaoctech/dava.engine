@@ -59,6 +59,8 @@ public:
 
 	virtual void SetLocked(bool locked);
 	virtual bool IsLocked();
+	
+	virtual void SetParent(DAVA::Entity *entity, DAVA::Entity *parent);
 
 protected:
 	inline Scene * GetScene() const;
