@@ -260,6 +260,7 @@ public:
 protected:
 	void DrawStretched(const Rect &drawRect);
 	void DrawTiled(const Rect &drawRect);
+	void DrawFilled(const UIGeometricData &geometricData);
 
 	Sprite *spr;
 	int32 align;
