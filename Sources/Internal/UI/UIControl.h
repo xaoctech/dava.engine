@@ -110,6 +110,37 @@ public:
 		unrotatedRect.dy = size.y * scale.y;
 	}
 
+	void BuildTransformMatrix( Matrix3 &transformMatr ) const
+	{
+		Matrix3 pivotMatr;
+		pivotMatr.BuildTranslation( -pivotPoint );
+
+		Matrix3 translateMatr;
+		translateMatr.BuildTranslation( position );
+
+		Matrix3 rotateMatr;
+		rotateMatr.BuildRotation( cosA, sinA );
+
+		Matrix3 scaleMatr;
+		scaleMatr.BuildScale( scale );
+
+		transformMatr = pivotMatr * scaleMatr * rotateMatr * translateMatr;
+	}
+
+	void GetPolygon( Polygon2 &polygon ) const
+	{
+		polygon.Clear();
+		polygon.points.reserve( 4 );
+		polygon.AddPoint( Vector2() );
+		polygon.AddPoint( Vector2( size.x, 0 ) );
+		polygon.AddPoint( size );
+		polygon.AddPoint( Vector2( 0, size.y ) );
+
+		Matrix3 transformMtx;
+		BuildTransformMatrix( transformMtx );
+		polygon.Transform( transformMtx );
+	}
+
 	const Rect &GetUnrotatedRect() const
 	{
 		return unrotatedRect;
@@ -1258,7 +1289,7 @@ private:
 	void RecalculateChildsSize();
 	void RecalculatePivotPoint(const Rect &newRect);
 
-	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
+	void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
 	
 	void SetGenerateTilesArraysFlag(bool hierarchic = true);
