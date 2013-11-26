@@ -137,48 +137,49 @@ Image * Image::CreatePinkPlaceholder()
     return image;
 }
 
-void Image::CreateMipMapsImages(Vector<Image *> & imageSet)
+Vector<Image *> Image::CreateMipMapsImages()
 {
+    Vector<Image *> imageSet;
+
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    if(!formatSize)
+        return imageSet;
+
     Image * image0 = this;
     uint32 imageWidth = width;
     uint32 imageHeight = height;
+    uint32 curMipMapLevel = 0;
+    image0->mipmapLevel = curMipMapLevel;
 
+    imageSet.push_back(image0);
     while(imageHeight > 1 || imageWidth > 1)
     {
-        Image * halfSizeImg = Image::CreateFromData(imageWidth, imageHeight, image0->GetPixelFormat(), image0->GetData());
-        halfSizeImg->MakeHalfSize(&imageWidth, &imageHeight);
+        uint32 newWidth = imageWidth;
+        uint32 newHeight = imageHeight;
+        if(newWidth > 1) newWidth >>= 1;
+        if(newHeight > 1) newHeight >>= 1;
+        uint8 * newData = new uint8[newWidth * newHeight * formatSize];
+        memset(newData, 0, newWidth * newHeight * formatSize);
+
+        ImageConvert::DownscaleTwiceBillinear(format, format,
+            image0->data, imageWidth, imageHeight, imageWidth * formatSize,
+            newData, newWidth, newHeight, newWidth * formatSize);
+
+        curMipMapLevel++;
+
+        Image * halfSizeImg = Image::CreateFromData(newWidth, newHeight, format, newData);
+        halfSizeImg->cubeFaceID = image0->cubeFaceID;
+        halfSizeImg->mipmapLevel = curMipMapLevel;
         imageSet.push_back(halfSizeImg);
+
+        imageWidth = newWidth;
+        imageHeight = newHeight;
+        SafeDeleteArray(newData);
 
         image0 = halfSizeImg;
     }
-}
 
-void Image::MakeHalfSize(uint32 * newWidthPtr /* = 0 */, uint32 * newHeightPtr /* = 0 */)
-{
-	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
-    if(formatSize)
-	{
-        uint32 newWidth = width;
-        uint32 newHeight = height;
-        if(newWidth > 1) newWidth = newWidth >> 1;
-        if(newHeight > 1) newHeight = newHeight >> 1;
-        uint8 * newData = new uint8[newWidth * newHeight * formatSize];
-		memset(newData, 0, newWidth * newHeight * formatSize);
-        
-        ImageConvert::DownscaleTwiceBillinear(format, format,
-            data, width, height, width * formatSize,
-            newData, newWidth, newHeight, newWidth * formatSize);
-        
-        if(newWidthPtr)
-            (*newWidthPtr) = newWidth;
-        if(newHeightPtr)
-            (*newHeightPtr) = newHeight;
-        
-        width = newWidth;
-        height = newHeight;
-        SafeDeleteArray(data);
-        data = newData;
-    }
+    return imageSet;
 }
 
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)

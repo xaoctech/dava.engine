@@ -86,16 +86,13 @@ public:
     void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
 #endif
 
-    void CreateMipMapsImages(Vector<Image *> & imageSet);
+    Vector<Image *> CreateMipMapsImages();
 
     // changes size of image canvas to required size, if new size is bigger, sets 0 to all new pixels
     void ResizeCanvas(uint32 newWidth, uint32 newHeight);
     
 	// changes size of image to required size (without any filtration)
 	void ResizeImage(uint32 newWidth, uint32 newHeight);
-    
-    // changes size of image to halfsize (with bilinear filtration)
-    void MakeHalfSize(uint32 * newWidthPtr = 0, uint32 * newHeightPrt = 0);
     
 	static Image* CopyImageRegion(const Image* imageToCopy,
 								  uint32 newWidth, uint32 newHeight,
