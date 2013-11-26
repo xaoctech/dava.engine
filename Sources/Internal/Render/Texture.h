@@ -242,8 +242,8 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 	
-	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
-	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
+	static void GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames);
+	static void GenerateCubeFaceNames(const FilePath & baseName, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames);
 
     TextureDescriptor * CreateDescriptor() const;
 
