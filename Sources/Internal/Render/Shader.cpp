@@ -38,8 +38,6 @@
 #include "Utils/StringFormat.h"
 #include "Math/Math2D.h"
 
-#define GET_UNIFORM(__uniformIndex__) ((Uniform*)(uniformData + uniformOffsets[__uniformIndex__]))
-
 namespace DAVA
 {
 #if defined(__DAVAENGINE_OPENGL__)
@@ -118,16 +116,7 @@ namespace DAVA
 			if (name == uniformStrings[k])return (Shader::eUniform)k;
 		return Shader::UNIFORM_NONE;
 	};
-    
-	int32 Shader::GetUniformCount()
-	{
-		return activeUniforms;
-	}
-    
-	Shader::eUniformType Shader::GetUniformType(int32 index)
-	{
-		return GET_UNIFORM(index)->type;
-	}
+
     
 	int32 Shader::GetUniformTypeSize(eUniformType type)
 	{
@@ -222,25 +211,7 @@ namespace DAVA
 		return "";
 	}
 	
-	Shader::Uniform * Shader::GetUniform(int32 index)
-	{
-		return GET_UNIFORM(index);
-	}
-    
-	const char * Shader::GetUniformName(int32 index)
-	{
-		return GET_UNIFORM(index)->name.c_str();
-	}
-	
-	int32 Shader::GetUniformLocationByIndex(int32 index)
-	{
-		return GET_UNIFORM(index)->location;
-	}
-    
-	int32 Shader::GetUniformArraySize(int32 index)
-	{
-		return GET_UNIFORM(index)->size;
-	}
+
 	
 	/*int32 Shader::FindUniformLocationByName(const FastName & name)
 	 {
@@ -769,16 +740,6 @@ namespace DAVA
 			}
 		}
 		
-	}
-	
-	int32 Shader::GetAttributeCount()
-	{
-		return activeAttributes;
-	}
-    
-	int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
-	{
-		return vertexFormatAttribIndeces[CountLeadingZeros(vertexFormat)];
 	}
 	
 	void Shader::DeleteShaders()
