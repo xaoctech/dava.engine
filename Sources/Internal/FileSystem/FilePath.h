@@ -80,9 +80,6 @@ public:
 
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
-
-    bool operator < (const FilePath& right) const;
-
     
 	/*
         \brief Function to check is filepath empty or no
@@ -251,6 +248,8 @@ public:
     
     bool Exists() const;
     
+	int32 Compare(const FilePath &right) const;
+
 protected:
     
     void Initialize(const String &pathname);
@@ -285,7 +284,9 @@ protected:
 
     static List<FilePath> resourceFolders;
 };
-    
+
+bool operator < (const FilePath& left, const FilePath& right);
+
     
 inline bool FilePath::IsEmpty() const
 {
@@ -296,8 +297,6 @@ inline FilePath::ePathType FilePath::GetType() const
 {
     return pathType;
 }
-
-
     
 };
 
