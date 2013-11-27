@@ -178,7 +178,7 @@ public:
                 return INPUT_SOURCE_KEYBOARD;
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case PHASE_MOVE:
-            case PHASE_WHEELL:
+            case PHASE_WHEEL:
                 return INPUT_SOURCE_MOUSE;
 #endif
             case PHASE_JOYSTICK:

@@ -7,7 +7,6 @@
 
 #include "Base/BaseObject.h"
 #include "UI/UIEvent.h"
-#include <functional>
 
 namespace DAVA
 {
@@ -46,7 +45,9 @@ namespace DAVA
 #if defined(__DAVAENGINE_IPHONE__)
         GamepadDevice(void *gameController);
 #elif defined(__DAVAENGINE_ANDROID__)
-        GameDevice();
+        GamepadDevice();
+#else
+        GamepadDevice();
 #endif
         ~GamepadDevice();
         eDavaGamepadProfile GetProfile();
