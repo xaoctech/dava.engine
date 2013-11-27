@@ -916,7 +916,7 @@ void Texture::DumpTextures()
 	for(Map<FilePath, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 #else //#ifdef USE_FILEPATH_IN_MAP
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-#endif #ifdef USE_FILEPATH_IN_MAP
+#endif //#ifdef USE_FILEPATH_IN_MAP
 	{
 		Texture *t = it->second;
 		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));

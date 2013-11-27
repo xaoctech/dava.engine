@@ -257,7 +257,6 @@ protected:
     String ResolveResourcesPath() const;
     
 
-    static String NormalizePathname(const FilePath &pathname);
     static String NormalizePathname(const String &pathname);
     
     static String MakeDirectory(const String &pathname);
@@ -265,7 +264,6 @@ protected:
     static String AbsoluteToRelative(const FilePath &directoryPathname, const FilePath &absolutePathname);
 
     static String GetFilename(const String &pathname);
-    static FilePath GetDirectory(const String &pathname, const ePathType pType);
 
     static String GetSystemPathname(const String &pathname, const ePathType pType);
 	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType) const;
