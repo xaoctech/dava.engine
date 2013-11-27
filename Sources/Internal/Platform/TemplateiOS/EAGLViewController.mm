@@ -71,7 +71,8 @@
     backgroundView = [[BackgroundView alloc] initWithFrame:[glView frame]];
     [backgroundView setBackgroundColor:[UIColor clearColor]];
     [backgroundView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    
+    [backgroundView setUserInteractionEnabled:NO]; // to do not interfere with touches, see please DF-2796.
+
     [glView addSubview:backgroundView];
     [backgroundView release];
 
