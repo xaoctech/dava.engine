@@ -37,7 +37,7 @@
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
-#define USE_FILEPATH_IN_MAP
+//#define USE_FILEPATH_IN_MAP
 
 namespace DAVA
 {
