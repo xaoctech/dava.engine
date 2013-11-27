@@ -366,10 +366,10 @@ void RenderSystem::Update(float32 timeElapsed)
     }
 }
 
-void RenderSystem::DebugDrawHierarchy()
+void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 {
 	if (renderHierarchy)
-		renderHierarchy->DebugDraw();
+		renderHierarchy->DebugDraw(cameraMatrix);
 }
 
 void RenderSystem::Render()
