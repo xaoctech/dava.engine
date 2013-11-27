@@ -427,6 +427,7 @@ void Texture::GenerateMipmaps()
 		
     Image * image0 = ReadDataToImage();
     images = image0->CreateMipMapsImages();
+    SafeRelease(image0);
 
     for(uint32 i = 1; i < (uint32)images.size(); ++i)
         TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
@@ -529,6 +530,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
             {
                 Vector<Image *> mipmapsImages = imageFace[0]->CreateMipMapsImages();
                 images.insert(images.end(), mipmapsImages.begin(), mipmapsImages.end());
+                SafeRelease(imageFace[0]);
             }
             else
             {
@@ -542,7 +544,9 @@ bool Texture::LoadImages(eGPUFamily gpu)
 		images = ImageLoader::CreateFromFile(imagePathname);
         if(images.size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
-            images = images[0]->CreateMipMapsImages();
+            Image * img = images[0];
+            images = img->CreateMipMapsImages();
+            SafeRelease(img);
         }
 	}
 

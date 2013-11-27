@@ -145,7 +145,7 @@ Vector<Image *> Image::CreateMipMapsImages()
     if(!formatSize)
         return imageSet;
 
-    Image * image0 = this;
+    Image * image0 = SafeRetain(this);
     uint32 imageWidth = width;
     uint32 imageHeight = height;
     uint32 curMipMapLevel = 0;
