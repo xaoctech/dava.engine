@@ -222,10 +222,10 @@ void PVRConverter::SetPVRTexTool(const FilePath &textToolPathname)
 
 FilePath PVRConverter::PrepareCubeMapForPvrConvert(const TextureDescriptor& descriptor)
 {
-	DAVA::Vector<DAVA::String> pvrToolFaceNames;
-	DAVA::Vector<DAVA::String> cubemapFaceNames;
+	DAVA::Vector<DAVA::FilePath> pvrToolFaceNames;
+	DAVA::Vector<DAVA::FilePath> cubemapFaceNames;
 	DAVA::Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
-	DAVA::Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname(), cubemapSuffixes, cubemapFaceNames);
+	DAVA::Texture::GenerateCubeFaceNames(descriptor.pathname, cubemapSuffixes, cubemapFaceNames);
 		
 	DVASSERT(pvrToolSuffixes.size() == cubemapSuffixes.size());
 		
@@ -260,7 +260,7 @@ FilePath PVRConverter::PrepareCubeMapForPvrConvert(const TextureDescriptor& desc
 
 void PVRConverter::CleanupCubemapAfterConversion(const TextureDescriptor& descriptor)
 {
-	Vector<String> pvrToolFaceNames;
+	Vector<FilePath> pvrToolFaceNames;
 	Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
 		
 	for(size_t i = 0; i < pvrToolFaceNames.size(); ++i)

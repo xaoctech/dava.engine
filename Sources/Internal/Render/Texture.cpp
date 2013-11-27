@@ -170,11 +170,12 @@ Texture * Texture::Get(const FilePath & pathName)
 	Texture * texture = NULL;
 #ifdef USE_FILEPATH_IN_MAP
 	Map<FilePath, Texture *>::iterator it;
+	it = textureMap.find(pathName);
 #else //#ifdef USE_FILEPATH_IN_MAP
 	Map<String, Texture *>::iterator it;
+	it = textureMap.find(pathName.GetAbsolutePathname());
 #endif //#ifdef USE_FILEPATH_IN_MAP
 
-	it = textureMap.find(pathName.GetAbsolutePathname());
 	if (it != textureMap.end())
 	{
 		texture = it->second;
@@ -512,17 +513,15 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
-		Vector<String> faceNames;
-		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
-		texDescFullPath.ReplaceExtension(TextureDescriptor::GetSourceTextureExtension());
-		GenerateCubeFaceNames(texDescFullPath.GetAbsolutePathname(), faceNames);
+		Vector<FilePath> faceNames;
+		GenerateCubeFaceNames(texDescriptor->GetSourceTexturePathname(), faceNames);
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
 			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
 			if(imageFace.size() == 0)
 			{
-				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].c_str());
+				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
 
 				ReleaseImages();
 				return false;
@@ -809,7 +808,12 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
+#ifdef USE_FILEPATH_IN_MAP
+		textureMap.erase(relativePathname);
+#else //#ifdef USE_FILEPATH_IN_MAP
 		textureMap.erase(relativePathname.GetAbsolutePathname());
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
 	}
 	return BaseObject::Release();
 }
@@ -1358,7 +1362,7 @@ void Texture::SetInvalidater(TextureInvalidater* invalidater)
 	this->invalidater = invalidater;
 }
 
-void Texture::GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames)
+void Texture::GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames)
 {
 	static Vector<String> defaultSuffixes;
 	if(defaultSuffixes.empty())
@@ -1372,24 +1376,21 @@ void Texture::GenerateCubeFaceNames(const String& baseName, Vector<String>& face
 	GenerateCubeFaceNames(baseName, defaultSuffixes, faceNames);
 }
 
-void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames)
+void Texture::GenerateCubeFaceNames(const FilePath & filePath, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames)
 {
 	faceNames.clear();
 	
-	FilePath filePath(baseName);
-		
-	String fileNameWithoutExtension = filePath.GetFilename();
+	String fileNameWithoutExtension = filePath.GetBasename();
 	String extension = filePath.GetExtension();
-	fileNameWithoutExtension.replace(fileNameWithoutExtension.find(extension), extension.size(), "");
 		
 	for(size_t i = 0; i < faceNameSuffixes.size(); ++i)
 	{
-		DAVA::FilePath faceFilePath = baseName;
+		DAVA::FilePath faceFilePath = filePath;
 		faceFilePath.ReplaceFilename(fileNameWithoutExtension +
 									 faceNameSuffixes[i] +
 									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_UNKNOWN, FORMAT_INVALID));
 			
-		faceNames.push_back(faceFilePath.GetAbsolutePathname());
+		faceNames.push_back(faceFilePath);
 	}
 }
 

@@ -338,15 +338,15 @@ DAVA::Vector<QImage> TextureConvertor::GetOriginalThread(JobItem *item)
 		
 		if(descriptor->IsCubeMap())
 		{
-			DAVA::Vector<DAVA::String> cubeFaceNames;
-			DAVA::Texture::GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str(), cubeFaceNames);
+			DAVA::Vector<DAVA::FilePath> cubeFaceNames;
+			DAVA::Texture::GenerateCubeFaceNames(descriptor->GetSourceTexturePathname(), cubeFaceNames);
 			
 			for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
 			{
 				if((descriptor->faceDescription & (1 << i)) != 0)
 				{
 					QImage img;
-					img = QImage(cubeFaceNames[i].c_str());
+					img = QImage(cubeFaceNames[i].GetAbsolutePathname().c_str());
 					resultArray.push_back(img);
 				}
 			}
