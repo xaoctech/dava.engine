@@ -481,6 +481,22 @@ public:
 	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
 	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
 
+
+private:
+	struct EmitterYamlCacheEntry
+	{
+		YamlParser *parser;
+		int refCount;
+	};
+	static Map<String, EmitterYamlCacheEntry> emitterYamlCache;
+	
+protected:
+	friend class ParticleEmitter3D;
+	YamlParser* GetParser(const FilePath &filename);
+	void RetainInCache(const String& name);
+	void ReleaseFromCache(const String& name);	
+	String emitterFileName;
+
 public:
     
     INTROSPECTION_EXTEND(ParticleEmitter, RenderObject,

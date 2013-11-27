@@ -338,6 +338,7 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	else
 	{
 		CleanupLayers();
+		ReleaseFromCache(static_cast<ParticleEmitter *>(newObject)->emitterFileName);
 	}
 
 	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
@@ -360,26 +361,32 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	if (this->emissionVector)
 	{
 		clonedEmitter->emissionVector = this->emissionVector->Clone();
+        clonedEmitter->emissionVector->Release();
 	}
 	if (this->emissionAngle)
 	{
 		clonedEmitter->emissionAngle = this->emissionAngle->Clone();
+        clonedEmitter->emissionAngle->Release();
 	}
 	if (this->emissionRange)
 	{
 		clonedEmitter->emissionRange = this->emissionRange->Clone();
+        clonedEmitter->emissionRange->Release();
 	}
 	if (this->radius)
 	{
 		clonedEmitter->radius = this->radius->Clone();
+        clonedEmitter->radius->Release();
 	}
 	if (this->colorOverLife)
 	{
 		clonedEmitter->colorOverLife = this->colorOverLife->Clone();
+        clonedEmitter->colorOverLife->Release();
 	}
 	if (this->size)
 	{
 		clonedEmitter->size = this->size->Clone();
+        clonedEmitter->size->Release();
 	}
 	
 	clonedEmitter->emitterType = this->emitterType;
@@ -405,6 +412,9 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	repeatCount = 0;
 	lodLevelLocked = false;
 	currentLodLevel = desiredLodLevel;
+
+	clonedEmitter->emitterFileName = emitterFileName;
+	RetainInCache(emitterFileName);
 
 	return newObject;
 }

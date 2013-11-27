@@ -1138,6 +1138,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 
 		ParticleForce* particleForce = new ParticleForce(force, forceVariation, forceOverLife);
 		AddForce(particleForce);
+        particleForce->Release();
 	}
 
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
