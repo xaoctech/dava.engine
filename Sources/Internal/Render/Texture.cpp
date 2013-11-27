@@ -808,7 +808,12 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
+#ifdef USE_FILEPATH_IN_MAP
+		textureMap.erase(relativePathname);
+#else //#ifdef USE_FILEPATH_IN_MAP
 		textureMap.erase(relativePathname.GetAbsolutePathname());
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
 	}
 	return BaseObject::Release();
 }

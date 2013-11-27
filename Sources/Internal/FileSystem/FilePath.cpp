@@ -165,6 +165,13 @@ bool FilePath::ContainPath(const FilePath& basePath, const FilePath& partPath)
 	return basePath.GetAbsolutePathname().find(partPath.GetAbsolutePathname()) != std::string::npos;
 }
 
+bool operator < (const FilePath& left, const FilePath& right)
+{
+	return left.Compare(right) < 0;
+}
+
+
+
 FilePath::FilePath()
 {
     pathType = PATH_EMPTY;
@@ -337,14 +344,6 @@ bool FilePath::operator!=(const FilePath &path) const
     return absolutePathname != path.absolutePathname;
 }
 
-    
-bool FilePath::operator < (const FilePath& right) const
-{
-//     return GetAbsolutePathname() < right.GetAbsolutePathname();
-	return absolutePathname < right.absolutePathname;
-}
-
-    
     
 bool FilePath::IsDirectoryPathname() const
 {
@@ -804,6 +803,14 @@ bool FilePath::Exists() const
     }
 
     return FileSystem::Instance()->IsFile(*this);
+}
+
+int32 FilePath::Compare( const FilePath &right ) const
+{
+	if(absolutePathname < right.absolutePathname) return -1;
+	if(absolutePathname > right.absolutePathname) return 1;
+
+	return 0;
 }
 
     
