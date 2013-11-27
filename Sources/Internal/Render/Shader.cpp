@@ -43,6 +43,16 @@ namespace DAVA
 #if defined(__DAVAENGINE_OPENGL__)
 	GLuint Shader::activeProgram = 0;
 	
+	bool IsAutobindUniform(Shader::eUniform uniformId)
+	{
+		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+				uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+				uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+				uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+				uniformId == Shader::UNIFORM_COLOR ||
+				uniformId == Shader::UNIFORM_GLOBAL_TIME);
+	}
+	
 	Shader::Shader()
     : RenderResource()
 	{
@@ -59,6 +69,8 @@ namespace DAVA
 		//uniforms = 0;
 		uniformData = NULL;
 		uniformOffsets = NULL;
+		autobindUniforms = NULL;
+		autobindUniformCount = 0;
 		
 		for (int32 ki = 0; ki < VERTEX_FORMAT_STREAM_MAX_COUNT; ++ki)
 			vertexFormatAttribIndeces[ki] = -1;
@@ -424,6 +436,7 @@ namespace DAVA
 		
 		SafeDeleteArray(uniformOffsets);
 		SafeDeleteArray(uniformData);
+		SafeDeleteArray(autobindUniforms);
 		
 		int32 totalSize = 0;
 		uniformOffsets = new uint16[activeUniforms];
@@ -440,6 +453,7 @@ namespace DAVA
 		}
 		
 		uniformData = new uint8[totalSize];
+		autobindUniformCount = 0;
 		for (int32 k = 0; k < activeUniforms; ++k)
 		{
 			GLint size = 0;
@@ -458,6 +472,11 @@ namespace DAVA
 			uniformStruct->size = size;
 			uniformStruct->cacheValueSize = GetUniformTypeSize((eUniformType)type) * size;
 			uniformStruct->cacheValue = uniformData + uniformOffsets[k] + sizeof(Uniform);
+			
+			if(IsAutobindUniform(uniform))
+			{
+				autobindUniformCount++;
+			}
 			
 			//VI: initialize cacheValue with value from shader
 			switch(uniformStruct->type)
@@ -584,6 +603,21 @@ namespace DAVA
 			}
 		}
 		
+		if(autobindUniformCount)
+		{
+			size_t autobindUniformIndex = 0;
+			autobindUniforms = new Uniform*[autobindUniformCount];
+			for (int32 k = 0; k < activeUniforms; ++k)
+			{
+				Uniform* currentUniform = GET_UNIFORM(k);
+				if(IsAutobindUniform(currentUniform->id))
+				{
+					autobindUniforms[autobindUniformIndex] = currentUniform;
+					autobindUniformIndex++;
+				}
+			}
+		}
+		
 		RenderManager::Instance()->UnlockNonMain();
 		return true;
 	}
@@ -678,11 +712,11 @@ namespace DAVA
 		}
 	}
 	
-	void Shader::SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data, uint16 dataLength)
+	void Shader::SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data)
 	{
 		DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 		Uniform* currentUniform = GET_UNIFORM(uniformIndex);
-		if(currentUniform->ValidateCache(data, dataLength) == false)
+		if(currentUniform->ValidateCache(data, currentUniform->cacheValueSize) == false)
 		{
 			switch(uniformType)
 			{
@@ -742,6 +776,142 @@ namespace DAVA
 		
 	}
 	
+
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, int32 value)
+	{
+		if(currentUniform->ValidateCache(value) == false)
+		{
+			RENDER_VERIFY(glUniform1i(currentUniform->location, value));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, float32 value)
+	{
+		if(currentUniform->ValidateCache(value) == false)
+		{
+			RENDER_VERIFY(glUniform1f(currentUniform->location, value));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, const Vector2 & vector)
+	{
+		if(currentUniform->ValidateCache(vector) == false)
+		{
+			RENDER_VERIFY(glUniform2fv(currentUniform->location, 1, &vector.x));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, const Vector3 & vector)
+	{
+		if(currentUniform->ValidateCache(vector) == false)
+		{
+			RENDER_VERIFY(glUniform3fv(currentUniform->location, 1, &vector.x));
+		}
+	}
+	
+	void Shader::SetUniformColor3ByUniform(Uniform* currentUniform, const Color & color)
+	{
+		if(currentUniform->ValidateCacheColor3(color) == false)
+		{
+			RENDER_VERIFY(glUniform3fv(currentUniform->location, 1, &color.r));
+		}
+	}
+	
+	void Shader::SetUniformColor4ByUniform(Uniform* currentUniform, const Color & color)
+	{
+		if(currentUniform->ValidateCacheColor4(color) == false)
+		{
+			RENDER_VERIFY(glUniform4fv(currentUniform->location, 1, &color.r));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, const Vector4 & vector)
+	{
+		if(currentUniform->ValidateCache(vector) == false)
+		{
+			RENDER_VERIFY(glUniform4fv(currentUniform->location, 1, &vector.x));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, const Matrix4 & matrix)
+	{
+		if(currentUniform->ValidateCache(matrix) == false)
+		{
+			RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, matrix.data));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, const Matrix3 & matrix)
+	{
+		if(currentUniform->ValidateCache(matrix) == false)
+		{
+			RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, matrix.data));
+		}
+	}
+	
+	void Shader::SetUniformValueByUniform(Uniform* currentUniform, eUniformType uniformType, uint32 arraySize, void * data)
+	{
+		if(currentUniform->ValidateCache(data, currentUniform->cacheValueSize) == false)
+		{
+			switch(uniformType)
+			{
+				case Shader::UT_FLOAT:
+					RENDER_VERIFY(glUniform1fv(currentUniform->location, arraySize, (float*)data));
+					break;
+				case Shader::UT_FLOAT_VEC2:
+					RENDER_VERIFY(glUniform2fv(currentUniform->location, arraySize, (float*)data));
+					break;
+				case Shader::UT_FLOAT_VEC3:
+					RENDER_VERIFY(glUniform3fv(currentUniform->location, arraySize, (float*)data));
+					break;
+				case Shader::UT_FLOAT_VEC4:
+					RENDER_VERIFY(glUniform4fv(currentUniform->location, arraySize, (float*)data));
+					break;
+				case Shader::UT_INT:
+					RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_INT_VEC2:
+					RENDER_VERIFY(glUniform2iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_INT_VEC3:
+					RENDER_VERIFY(glUniform3iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_INT_VEC4:
+					RENDER_VERIFY(glUniform4iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_BOOL:
+					RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_BOOL_VEC2:
+					RENDER_VERIFY(glUniform2iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_BOOL_VEC3:
+					RENDER_VERIFY(glUniform3iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_BOOL_VEC4:
+					RENDER_VERIFY(glUniform4iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_FLOAT_MAT2:
+					RENDER_VERIFY(glUniformMatrix2fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+					break;
+				case Shader::UT_FLOAT_MAT3:
+					RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+					break;
+				case Shader::UT_FLOAT_MAT4:
+					RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+					break;
+				case Shader::UT_SAMPLER_2D:
+					RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+				case Shader::UT_SAMPLER_CUBE:
+					RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+					break;
+			}
+		}
+		
+	}
+
 	void Shader::DeleteShaders()
 	{
 		RenderManager::Instance()->LockNonMain();
@@ -863,46 +1033,49 @@ namespace DAVA
 			activeProgram = program;
 		}
 		
-		for (int32 k = 0; k < activeUniforms; ++k)
+		//for (int32 k = 0; k < activeUniforms; ++k)
+		//{
+		//	Uniform* currentUniform = GET_UNIFORM(k);
+		for(uint8 k = 0; k < autobindUniformCount; ++k)
 		{
-			Uniform* currentUniform = GET_UNIFORM(k);
+			Uniform* currentUniform = autobindUniforms[k];
 			
 			switch (currentUniform->id)
 			{
 				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
 				{
 					const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-					SetUniformValueByIndex(k, modelViewProj);
+					SetUniformValueByUniform(currentUniform, modelViewProj);
 					break;
 				}
 				case UNIFORM_MODEL_VIEW_MATRIX:
 				{
 					const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-					SetUniformValueByIndex(k, modelView);
+					SetUniformValueByUniform(currentUniform, modelView);
 					break;
 				}
 				case UNIFORM_PROJECTION_MATRIX:
 				{
 					const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-					SetUniformValueByIndex(k, proj);
+					SetUniformValueByUniform(currentUniform, proj);
 					break;
 				}
 				case UNIFORM_NORMAL_MATRIX:
 				{
 					const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
-					SetUniformValueByIndex(k, normalMatrix);
+					SetUniformValueByUniform(currentUniform, normalMatrix);
 					break;
 				}
 				case UNIFORM_COLOR:
 				{
 					const Color & c = RenderManager::Instance()->GetColor();
-					SetUniformColor4ByIndex(k, c);
+					SetUniformColor4ByUniform(currentUniform, c);
 					break;
 				}
 				case UNIFORM_GLOBAL_TIME:
 				{
 					float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
-					SetUniformValueByIndex(k, globalTime);
+					SetUniformValueByUniform(currentUniform, globalTime);
 				};
 				default:
 					
