@@ -334,18 +334,18 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
 	this->startTime = startTime;
 	this->endTime = endTime;
 	/*validate all time depended property lines*/	
-	UpdatePropertyLineKeys(life.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(lifeVariation.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(number.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(numberVariation.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(size.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(sizeVariation.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(velocity.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(velocityVariation.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(spin.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(spinVariation.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(angle.Get(), startTime, translateTime, endTime);
-	UpdatePropertyLineKeys(angleVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(life).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(lifeVariation).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(number).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(numberVariation).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(size).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(sizeVariation).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(velocity).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(velocityVariation).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(spin).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(spinVariation).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angle).Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angleVariation).Get(), startTime, translateTime, endTime);
 }
 
 ParticleEmitter* ParticleLayer::GetEmitter() const
