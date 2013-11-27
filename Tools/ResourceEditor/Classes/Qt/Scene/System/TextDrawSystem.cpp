@@ -43,7 +43,7 @@ TextDrawSystem::TextDrawSystem(DAVA::Scene * scene, SceneCameraSystem *_cameraSy
 	DAVA::FilePath defPath = DAVA::FilePath("~res:/Fonts/terminus.def");
 	DAVA::FilePath txtPath = DAVA::FilePath("~res:/Gfx/Fonts/terminus.txt");
 
-	font = DAVA::GraphicsFont::Create(defPath.GetAbsolutePathname(), txtPath.GetAbsolutePathname());
+	font = DAVA::GraphicsFont::Create(defPath, txtPath);
 }
 
 TextDrawSystem::~TextDrawSystem()

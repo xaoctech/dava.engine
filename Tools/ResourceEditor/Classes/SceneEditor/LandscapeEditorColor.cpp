@@ -378,7 +378,7 @@ void LandscapeEditorColor::SaveTextureAction(const FilePath &pathToFile)
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            ImageLoader::Save(img, pathToFile.GetAbsolutePathname());
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             SafeRelease(savedTexture);

@@ -4,6 +4,7 @@
 #include "Base/BaseObject.h"
 #include "Math/AABBox3.h"
 #include "Render/Highlevel/RenderHierarchy.h"
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -56,7 +57,7 @@ class QuadTree : public RenderHierarchy
 	void UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childType);
 	void UpdateParentBox(AABBox3 &childBox, QuadTreeNode::eNodeType childType);	
 	
-	void DebugDrawNode(uint16 nodeId);
+	
 	void ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags);	
 
 	uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
@@ -69,6 +70,10 @@ class QuadTree : public RenderHierarchy
 
 	bool worldInitialized;
 	List<RenderObject *> worldInitObjects;	
+
+
+	void DebugDrawNode(uint16 nodeId);
+	UniqueHandle debugDrawStateHandle;
 
 protected:
 	~QuadTree()
@@ -84,7 +89,7 @@ public:
 	virtual void Initialize();
 
 	virtual void Update();
-	virtual void DebugDraw();
+	virtual void DebugDraw(const Matrix4& cameraMatrix);
 };
 
 } //namespace DAVA

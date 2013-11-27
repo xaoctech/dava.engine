@@ -77,8 +77,8 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 	FilePath fileToConvert = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 	
 	Vector<Image*> inputImages;
-	Vector<String> faceNames;
-	Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname().c_str(), faceNames);
+	Vector<FilePath> faceNames;
+	Texture::GenerateCubeFaceNames(descriptor.pathname, faceNames);
 	for(size_t i = 0; i < faceNames.size(); ++i)
 	{
 		Vector<Image*> tempImages = ImageLoader::CreateFromFileByExtension(faceNames[i]);

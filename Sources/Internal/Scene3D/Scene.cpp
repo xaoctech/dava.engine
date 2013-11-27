@@ -610,6 +610,7 @@ void Scene::Draw()
 	particleEffectSystem->Process();
 	skyboxSystem->Process();
     renderSystem->Render();
+	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
