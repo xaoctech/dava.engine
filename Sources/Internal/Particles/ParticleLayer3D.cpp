@@ -251,8 +251,8 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	{
 		for (int32 i=0; i<planesCount; ++i)
 		{
-			_up = basises[i].first;
-			_left = basises[i].second;
+			//_up = basises[i].first;
+			//_left = basises[i].second;
 			//Vector3 topRight;
 			//Vector3 topLeft;
 			//Vector3 botRight;
@@ -272,7 +272,9 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 							particlePos[0],
 							particlePos[1],
 							particlePos[2],
-							particlePos[3]);
+							particlePos[3],
+							basises[i].second,
+							basises[i].first);
 			}
 			
 			memcpy(&verts[verticesCount], &particlePos[0], sizeof(Vector3) * 4);
@@ -500,10 +502,12 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 								  Vector3& topLeft,
 								  Vector3& topRight,
 								  Vector3& botLeft,
-								  Vector3& botRight)
+								  Vector3& botRight,
+								  Vector3& dx,
+								  Vector3& dy)
 {
-	Vector3 dx(_left);
-	Vector3 dy(_up);
+	//Vector3 dx(_left);
+	//Vector3 dy(_up);
 
 	float32 sine;
 	float32 cosine;

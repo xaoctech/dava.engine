@@ -165,7 +165,7 @@ public:
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);*/
 
-    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data, uint16 dataLength);
+    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data);
 	void SetUniformValueByIndex(int32 uniformIndex, int32 value);
     void SetUniformValueByIndex(int32 uniformIndex, float32 value);
     //void SetUniformValueByIndex(int32 uniformIndex, int32 count, int32 * value);
@@ -177,6 +177,18 @@ public:
     void SetUniformValueByIndex(int32 uniformIndex, const Vector4 & vector);
     void SetUniformValueByIndex(int32 uniformIndex, const Matrix4 & matrix);
 	void SetUniformValueByIndex(int32 uniformIndex, const Matrix3 & matrix);
+	
+    void SetUniformValueByUniform(Uniform* uniform, eUniformType uniformType, uint32 arraySize, void * data);
+	void SetUniformValueByUniform(Uniform* uniform, int32 value);
+    void SetUniformValueByUniform(Uniform* uniform, float32 value);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector2 & vector);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector3 & vector);
+    void SetUniformColor3ByUniform(Uniform* uniform, const Color & color);
+    void SetUniformColor4ByUniform(Uniform* uniform, const Color & color);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector4 & vector);
+    void SetUniformValueByUniform(Uniform* uniform, const Matrix4 & matrix);
+	void SetUniformValueByUniform(Uniform* uniform, const Matrix3 & matrix);
+
     
     void Dump();
     
@@ -221,6 +233,8 @@ private:
 	
 	uint16* uniformOffsets;
 	uint8* uniformData;
+	Uniform** autobindUniforms;
+	uint8 autobindUniformCount;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     
