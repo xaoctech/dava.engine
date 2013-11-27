@@ -338,6 +338,7 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	else
 	{
 		CleanupLayers();
+		ReleaseFromCache(static_cast<ParticleEmitter *>(newObject)->emitterFileName);
 	}
 
 	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
@@ -411,6 +412,9 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 	repeatCount = 0;
 	lodLevelLocked = false;
 	currentLodLevel = desiredLodLevel;
+
+	clonedEmitter->emitterFileName = emitterFileName;
+	RetainInCache(emitterFileName);
 
 	return newObject;
 }
