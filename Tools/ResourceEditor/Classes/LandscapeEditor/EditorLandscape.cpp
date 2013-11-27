@@ -127,7 +127,7 @@ void EditorLandscape::Draw(Camera * camera)
     
 	if(cursor)
 	{
-		RenderManager::Instance()->SetDefault3DState();
+		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
 		RenderManager::Instance()->FlushState();
 		
 		//RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);

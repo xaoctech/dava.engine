@@ -326,6 +326,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			
 			lastDrawPos = drawState.position;
 
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -365,6 +366,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //			spr->SetPivotPoint(geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx), geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy));
 //			spr->SetAngle(geometricData.angle);
 			
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -464,12 +466,14 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 
 			lastDrawPos = drawState.position;
 			
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
 		
 		case DRAW_FILL:
 		{//TODO: add rotation
+			RenderManager::Instance()->SetDefault2DNoTextureState();
 			RenderHelper::Instance()->FillRect(drawRect);
 		}	
 		break;
@@ -477,10 +481,12 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		case DRAW_STRETCH_BOTH:
 		case DRAW_STRETCH_HORIZONTAL:
 		case DRAW_STRETCH_VERTICAL:
+			RenderManager::Instance()->SetDefault2DState();
 			DrawStretched(drawRect);
 		break;
 		
 		case DRAW_TILED:
+			RenderManager::Instance()->SetDefault2DState();
 			DrawTiled(drawRect);
 		break;
 	}

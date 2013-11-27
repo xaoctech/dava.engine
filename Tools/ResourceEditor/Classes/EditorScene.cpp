@@ -67,6 +67,10 @@ EditorScene::EditorScene()
 	landDispatcher = new btCollisionDispatcher(landCollisionConfiguration);
 	landBroadphase = new btAxisSweep3(worldMin,worldMax);
 	landCollisionWorld = new btCollisionWorld(landDispatcher, landBroadphase, landCollisionConfiguration);
+	
+	gridRenderState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+																	 RenderStateData::STATE_DEPTH_WRITE |
+																	 RenderStateData::STATE_DEPTH_TEST);
 
 	renderSystem->AddRenderLayer(LAYER_ARROWS, PASS_FORWARD, LAST_LAYER);
 
@@ -568,7 +572,7 @@ void EditorScene::Draw()
 #define GRIDSTEP 10.0f
 void EditorScene::DrawGrid()
 {
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetRenderState(gridRenderState);
 	RenderManager::Instance()->SetColor(0.7f, 0.7f, 0.7f, 1.0f);
 	RenderManager::Instance()->FlushState();
 	for (float32 x = -GRIDMAX; x <= GRIDMAX; x+=GRIDSTEP)

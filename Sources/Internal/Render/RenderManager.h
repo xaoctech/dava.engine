@@ -540,13 +540,58 @@ public:
 	{
 		return default2DRenderStateHandle;
 	}
+	
+	inline UniqueHandle GetDefault2DNoTextureStateHandle() const
+	{
+		return default2DNoTextureStateHandle;
+	}
 
 	inline UniqueHandle GetDefault3DStateHandle() const
 	{
 		return default3DRenderStateHandle;
 	}
+	
+	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
+	{
+		const RenderStateData* parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
+		RenderStateData derivedState;
+		memcpy(&derivedState, parentState, sizeof(derivedState));
+		
+		derivedState.state = renderStateFlags;
+		return AddRenderStateData(&derivedState);
+	}
+	
+	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle,
+										  eBlendMode srcBlend,
+										  eBlendMode dstBlend)
+	{
+		const RenderStateData* parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
+		RenderStateData derivedState;
+		memcpy(&derivedState, parentState, sizeof(derivedState));
+		
+		derivedState.sourceFactor = srcBlend;
+		derivedState.destFactor = dstBlend;
+		return AddRenderStateData(&derivedState);
+	}
+
+	inline UniqueHandle Derive3DRenderState(eBlendMode srcBlend,
+										  eBlendMode dstBlend)
+	{
+		return DeriveRenderState(default3DRenderStateHandle, srcBlend, dstBlend);
+	}
+	
+	inline UniqueHandle Derive3DRenderState(uint32 renderStateFlags)
+	{
+		return DeriveRenderState(default3DRenderStateHandle, renderStateFlags);
+	}
+	
+	inline UniqueHandle Derive2DRenderState(uint32 renderStateFlags)
+	{
+		return DeriveRenderState(default2DRenderStateHandle, renderStateFlags);
+	}
 
 	void SetDefault2DState();
+	void SetDefault2DNoTextureState();
 	void SetDefault3DState();
 	
 	inline void SetRenderState(UniqueHandle requestedState)
@@ -628,6 +673,7 @@ protected:
 	
 	UniqueStateSet<RenderStateData, RenderStateDataUniqueHandler> uniqueRenderStates;
 	UniqueHandle default2DRenderStateHandle;
+	UniqueHandle default2DNoTextureStateHandle;
 	UniqueHandle default3DRenderStateHandle;
 	UniqueHandle defaultHardwareState;
 	
