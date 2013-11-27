@@ -39,6 +39,10 @@ SceneGridSystem::SceneGridSystem(DAVA::Scene * scene)
 {
 	gridMax = 500.0f;
 	gridStep = 10.0f;
+	
+	renderState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
+																	   DAVA::RenderStateData::STATE_DEPTH_WRITE |
+																	   DAVA::RenderStateData::STATE_DEPTH_TEST);
 }
 
 SceneGridSystem::~SceneGridSystem()
@@ -64,7 +68,7 @@ void SceneGridSystem::Draw()
 	//DAVA::uint32 oldState = rm->GetState();
 	
 	//rm->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
-	rm->SetDefault3DState();
+	rm->SetRenderState(renderState);
 	rm->FlushState();
 	
 	rm->SetColor(0.4f, 0.4f, 0.4f, 1.0f);

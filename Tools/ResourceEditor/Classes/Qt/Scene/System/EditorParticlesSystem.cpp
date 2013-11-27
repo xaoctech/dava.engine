@@ -49,7 +49,11 @@
 EditorParticlesSystem::EditorParticlesSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 {
-
+	DAVA::RenderManager* rm = DAVA::RenderManager::Instance();
+	
+	renderState = rm->Derive3DRenderState(DAVA::RenderStateData::STATE_BLEND |
+										  DAVA::RenderStateData::STATE_COLORMASK_ALL |
+										  DAVA::RenderStateData::STATE_DEPTH_TEST);
 }
 
 EditorParticlesSystem::~EditorParticlesSystem()
@@ -100,7 +104,7 @@ void EditorParticlesSystem::Draw()
 	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
 	//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 	
-	DAVA::RenderManager::Instance()->SetDefault3DState();
+	DAVA::RenderManager::Instance()->SetRenderState(renderState);
 	DAVA::RenderManager::Instance()->FlushState();
 	
 	// Draw debug information for non-selected entities
