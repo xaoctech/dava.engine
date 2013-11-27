@@ -1961,10 +1961,10 @@ void Landscape::SetupMaterialProperties()
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE2_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE3_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
 		
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE3]);
 		
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);

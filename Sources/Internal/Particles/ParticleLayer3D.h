@@ -76,7 +76,9 @@ protected:
 							Vector3& topLeft,
 							Vector3& topRight,
 							Vector3& botLeft,
-							Vector3& botRight);
+							Vector3& botRight,
+					 Vector3& dx,
+					 Vector3& dy);
 
 	void CalcLong(Particle* current,
 						 Vector3& topLeft,
