@@ -638,7 +638,7 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
     }
     textures[level] = texture;
     
-    if(TEXTURE_TILE_FULL == level)
+    if((TEXTURE_TILE_FULL == level) && ((tiledShaderMode == TILED_MODE_MIXED) || (tiledShaderMode == TILED_MODE_TEXTURE)))
     {
         UpdateFullTiledTexture();
     }
@@ -1526,6 +1526,9 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
+        
+        if(TEXTURE_TILE_FULL == k && tiledShaderMode != TILED_MODE_TEXTURE && tiledShaderMode != TILED_MODE_MIXED)
+            continue;
 
         // load textures
         if(!(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)))

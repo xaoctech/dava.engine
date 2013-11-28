@@ -41,6 +41,7 @@ namespace DAVA
 {
 
 class ParticleEmitter;
+class ModifiablePropertyLineBase;
 class ParticleEffectComponent : public Component
 {
 protected:
@@ -106,6 +107,16 @@ public:
 	float32 GetPlaybackSpeed();
 	void SetPlaybackSpeed(float32 value);
 
+
+	void SetExtertnalValue(const String& name, float32 value);
+	float32 GetExternalValue(const String& name);
+	
+	Set<String> EnumerateVariables();
+
+	void RebuildEffectModifiables();
+	void RegisterModifiable(ModifiablePropertyLineBase *propertyLine);
+	void UnRegisterModifiable(ModifiablePropertyLineBase *propertyLine);
+
 	/**
      \brief Returns the total active particles count for the whole effect.
      */
@@ -120,7 +131,7 @@ protected:
 	bool IsStopEmitter(ParticleEmitter * emitter) const;
 
 	// Check the "Playback Complete", emit a message, if needed.
-	void CheckPlaybackComplete();
+	void CheckPlaybackComplete();	
 
 private:
 	// "Stop after N repeats" value.
@@ -140,6 +151,10 @@ private:
 
 	// Count of emitters currently stopped.
 	int32 emittersCurrentlyStopped;		
+
+	 bool requireRebuildEffectModifiables;
+	MultiMap<String, ModifiablePropertyLineBase *> externalModifiables;	
+	Map<String, float32> externalValues;
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
