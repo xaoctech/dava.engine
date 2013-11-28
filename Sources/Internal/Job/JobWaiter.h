@@ -26,67 +26,47 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_WAITER_H__
+#define __DAVAENGINE_JOB_WAITER_H__
 
-
+#include "Base/BaseTypes.h"
 #include "Platform/Thread.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 
 namespace DAVA
 {
 
-#include <unistd.h>
+class Job;
 
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
+class ThreadIdJobWaiter
 {
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
-	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
+public:
+	ThreadIdJobWaiter(Thread::ThreadId threadId = Thread::GetCurrentThreadId());
+	~ThreadIdJobWaiter();
+	void Wait();
 
-	t->state = Thread::STATE_ENDED;
-	t->Release();
+	Thread::ThreadId & GetThreadId();
+	ConditionalVariable * GetConditionalVariable();
 
-	pthread_exit(0);
-}
-
-void Thread::StartAndroid()
-{
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
-}
-
-bool Thread::IsMainThread()
-{
-    return (mainThreadId == pthread_self());
-}
-
-void Thread::InitMainThread()
-{
-    mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::YieldThread()
-{
-	sched_yield();
-}
-
-Thread::ThreadId Thread::GetCurrentThreadId()
-{
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
-}
-
-
+private:
+	Thread::ThreadId threadId;
+	ConditionalVariable cv;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+class JobInstanceWaiter
+{
+public:
+	JobInstanceWaiter(Job * job);
+	~JobInstanceWaiter();
+	void Wait();
 
+	ConditionalVariable * GetConditionalVariable();
+	Job * GetJob();
+
+private:
+	Job * job;
+	ConditionalVariable cv;
+};
+
+}
+
+#endif //__DAVAENGINE_JOB_WAITER_H__

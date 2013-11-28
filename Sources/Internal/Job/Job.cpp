@@ -26,67 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "Platform/Thread.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Job/Job.h"
+#include "Job/JobManager.h"
 
 namespace DAVA
 {
 
-#include <unistd.h>
-
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
+Job::Job(const Message & _message, const Thread::ThreadId & _creatorThreadId)
+:	message(_message),
+	creatorThreadId(_creatorThreadId),
+	state(STATUS_UNDONE)
 {
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
-	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
 
-	t->state = Thread::STATE_ENDED;
-	t->Release();
-
-	pthread_exit(0);
 }
 
-void Thread::StartAndroid()
+void Job::Perform()
 {
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
+	message(this);
+	JobManager::Instance()->OnJobCompleted(this);
 }
 
-bool Thread::IsMainThread()
+Job::eState Job::GetState()
 {
-    return (mainThreadId == pthread_self());
+	return state;
 }
 
-void Thread::InitMainThread()
+void Job::SetState(eState newState)
 {
-    mainThreadId = GetCurrentThreadId();
+	state = newState;
 }
 
-void Thread::YieldThread()
+void Job::SetPerformedOn(ePerformedWhere _performedWhere)
 {
-	sched_yield();
+	performedWhere = _performedWhere;
 }
 
-Thread::ThreadId Thread::GetCurrentThreadId()
+Job::ePerformedWhere Job::PerformedWhere()
 {
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
+	return performedWhere;
 }
 
 
-};
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+}
