@@ -176,7 +176,7 @@ private:
 		uint32 fileSize;
 		uint32 packedFileSize;
 		uint32 fileFlags;
-		String pathName;
+		FilePath pathName;
 		//String relativePathName;
 	};
 
@@ -188,7 +188,7 @@ private:
 	// common information (for loading archive files & for saving arhchive files)
 	Header					header;
 	Vector<DictionaryNode>			nodeArray;
-	Map<String,uint32>	nodeMap;
+	Map<FilePath,uint32>	nodeMap;
 
 
 	// save information

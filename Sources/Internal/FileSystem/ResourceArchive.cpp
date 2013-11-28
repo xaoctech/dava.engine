@@ -375,10 +375,10 @@ int32	ResourceArchive::LoadResource(const FilePath & pathName, void * data)
 	
 	if (pathName != lastResourceName)
 	{
-		Map<String,uint32>::iterator it = nodeMap.find(pathName.GetAbsolutePathname());
+		Map<FilePath,uint32>::iterator it = nodeMap.find(pathName);
 		if ( it != nodeMap.end())
 		{
-			resourceIndex = nodeMap.find(pathName.GetAbsolutePathname())->second;//FindPathnameIndex(pathName);
+			resourceIndex = it->second;//FindPathnameIndex(pathName);
 			lastResourceIndex = resourceIndex;
 			lastResourceName = pathName;
 		}
