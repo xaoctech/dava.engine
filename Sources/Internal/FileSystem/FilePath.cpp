@@ -165,6 +165,17 @@ bool FilePath::ContainPath(const FilePath& basePath, const FilePath& partPath)
 	return basePath.GetAbsolutePathname().find(partPath.GetAbsolutePathname()) != std::string::npos;
 }
 
+bool ContainPath(const FilePath& basePath, const String & partPath)
+{
+	return basePath.GetAbsolutePathname().find(partPath) != std::string::npos;
+}
+
+bool ContainPath(const FilePath& basePath, const char * partPath)
+{
+	return ContainPath(basePath, String(partPath));
+}
+
+
 bool operator < (const FilePath& left, const FilePath& right)
 {
 	return left.Compare(right) < 0;
@@ -286,14 +297,14 @@ String FilePath::ResolveResourcesPath() const
 
         if(resourceFolders.size() == 1) // optimization to avoid call path.Exists()
         {
-            path = *resourceFolders.begin() + relativePathname;
+            path = (*resourceFolders.begin()).absolutePathname + relativePathname;
         }
         else
         {
             List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
             for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
             {
-                path = *it + relativePathname;
+                path = (*it).absolutePathname + relativePathname;
                 if(path.Exists())
                 {
                     break;
@@ -735,7 +746,6 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
 String FilePath::AddPath(const FilePath &folder, const String & addition)
 {
     if(folder.IsEmpty()) return NormalizePathname(addition);
-    
     
     String absPathname = folder.absolutePathname + addition;
     if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)

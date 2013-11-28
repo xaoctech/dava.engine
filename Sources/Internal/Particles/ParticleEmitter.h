@@ -492,14 +492,28 @@ private:
 		YamlParser *parser;
 		int refCount;
 	};
+
+#if defined (USE_FILEPATH_IN_MAP)
+	static Map<FilePath, EmitterYamlCacheEntry> emitterYamlCache;
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	static Map<String, EmitterYamlCacheEntry> emitterYamlCache;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 	
 protected:
+
 	friend class ParticleEmitter3D;
 	YamlParser* GetParser(const FilePath &filename);
+
+#if defined (USE_FILEPATH_IN_MAP)
+	void RetainInCache(const FilePath & name);
+	void ReleaseFromCache(const FilePath & name);	
+	FilePath emitterFileName;
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	void RetainInCache(const String& name);
 	void ReleaseFromCache(const String& name);	
 	String emitterFileName;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+
 
 public:
     
