@@ -26,67 +26,73 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "Platform/Thread.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Job/JobWaiter.h"
+#include "Job/JobManager.h"
 
 namespace DAVA
 {
 
-#include <unistd.h>
-
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
+ThreadIdJobWaiter::ThreadIdJobWaiter(Thread::ThreadId _threadId/* = Thread::GetCurrentThreadId()*/)
+:	threadId(_threadId)
 {
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
 	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
 
-	t->state = Thread::STATE_ENDED;
-	t->Release();
-
-	pthread_exit(0);
 }
 
-void Thread::StartAndroid()
+ThreadIdJobWaiter::~ThreadIdJobWaiter()
 {
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
+	JobManager::Instance()->UnregisterWaiterForCreatorThread(this);
 }
 
-bool Thread::IsMainThread()
+void ThreadIdJobWaiter::Wait()
 {
-    return (mainThreadId == pthread_self());
+	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForCreatorThread(this))
+	{
+		Thread::Wait(&cv);
+	}
 }
 
-void Thread::InitMainThread()
+Thread::ThreadId & ThreadIdJobWaiter::GetThreadId()
 {
-    mainThreadId = GetCurrentThreadId();
+	return threadId;
 }
 
-void Thread::YieldThread()
+ConditionalVariable * ThreadIdJobWaiter::GetConditionalVariable()
 {
-	sched_yield();
+	return &cv;
 }
 
-Thread::ThreadId Thread::GetCurrentThreadId()
+
+
+JobInstanceWaiter::JobInstanceWaiter(Job * _job)
+:	job(_job)
 {
-	ThreadId ret;
-	ret.internalTid = pthread_self();
 
-	return ret;
+}
+
+JobInstanceWaiter::~JobInstanceWaiter()
+{
+	JobManager::Instance()->UnregisterWaiterForJobInstance(this);
+}
+
+void JobInstanceWaiter::Wait()
+{
+	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForJobInstance(this))
+	{
+		Thread::Wait(&cv);
+	}
+}
+
+ConditionalVariable * JobInstanceWaiter::GetConditionalVariable()
+{
+	return &cv;
+}
+
+Job * JobInstanceWaiter::GetJob()
+{
+	return job;
 }
 
 
-};
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+}
