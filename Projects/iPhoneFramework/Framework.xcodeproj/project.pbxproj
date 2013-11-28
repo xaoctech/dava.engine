@@ -19,10 +19,6 @@
 		02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
 		02C4E8CD18154E520052803E /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
 		02C4E8CE18154E520052803E /* GameAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85175181032EA002B7E1C /* GameAPI.h */; };
-		02C4E8CF18154E520052803E /* KeyedArchive_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */; };
-		02C4E8D118154E520052803E /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */; };
-		02C4E8D218154E520052803E /* UIControl_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */; };
-		02C4E8D318154E520052803E /* Vector_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */; };
 		02D4CFBE18055E29007EC9EC /* FMODSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB618055E29007EC9EC /* FMODSound.cpp */; };
 		02D4CFBF18055E29007EC9EC /* FMODSound.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D4CFB718055E29007EC9EC /* FMODSound.h */; };
 		02D4CFC018055E29007EC9EC /* FMODSoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFB818055E29007EC9EC /* FMODSoundEvent.cpp */; };
@@ -801,17 +797,12 @@
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
-		C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchive_wrap.cxx; sourceTree = "<group>"; };
 		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
-		C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
 		C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
 		C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
-		C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect_wrap.cxx; sourceTree = "<group>"; };
 		C7E76D2816DF69370041ED9A /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
-		C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControl_wrap.cxx; sourceTree = "<group>"; };
 		C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
-		C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector_wrap.cxx; sourceTree = "<group>"; };
 		C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
 		C7E76D4216DF6CC70041ED9A /* liblua_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_ios.a; path = ../../Libs/libs/liblua_ios.a; sourceTree = "<group>"; };
 		CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
@@ -1554,17 +1545,12 @@
 				02C85173181032EA002B7E1C /* AutotestingDB.h */,
 				02C85174181032EA002B7E1C /* GameAPI.cpp */,
 				02C85175181032EA002B7E1C /* GameAPI.h */,
-				C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */,
 				C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */,
-				C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */,
 				C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */,
 				C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */,
 				C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */,
-				C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */,
 				C7E76D2816DF69370041ED9A /* RectSwig.cpp */,
-				C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */,
 				C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */,
-				C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */,
 				C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */,
 				E8B3C7B616B9326D002BD35F /* AutotestingSystem.cpp */,
 				E8B3C7B716B9326D002BD35F /* AutotestingSystem.h */,
@@ -3221,10 +3207,6 @@
 				02D4CFC918056051007EC9EC /* FMODSoundComponent.cpp in Sources */,
 				02C4E8CB18154E490052803E /* AutotestingDB.cpp in Sources */,
 				02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */,
-				02C4E8CF18154E520052803E /* KeyedArchive_wrap.cxx in Sources */,
-				02C4E8D118154E520052803E /* Rect_wrap.cxx in Sources */,
-				02C4E8D218154E520052803E /* UIControl_wrap.cxx in Sources */,
-				02C4E8D318154E520052803E /* Vector_wrap.cxx in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
