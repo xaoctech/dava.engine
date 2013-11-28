@@ -601,10 +601,10 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 
 void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 {
-	Logger::FrameworkDebug("[ParticleLayer3D::SetBlendMode] (%x) sFactor = %s, dFactor = %s",
-						   (size_t)this,
-						   BLEND_MODE_NAMES[sFactor].c_str(),
-						   BLEND_MODE_NAMES[dFactor].c_str());
+	//Logger::FrameworkDebug("[ParticleLayer3D::SetBlendMode] (%x) sFactor = %s, dFactor = %s",
+	//					   (size_t)this,
+	//					   BLEND_MODE_NAMES[sFactor].c_str(),
+	//					   BLEND_MODE_NAMES[dFactor].c_str());
 	ParticleLayer::SetBlendMode(sFactor, dFactor);
 	UpdateBlendState();
 }
@@ -631,10 +631,10 @@ void ParticleLayer3D::UpdateBlendState()
 {
 	if(material)
 	{
-		Logger::FrameworkDebug("[ParticleLayer3D::UpdateBlendState] (%x) sFactor = %s, dFactor = %s",
-							   (size_t)this,
-							   BLEND_MODE_NAMES[srcBlendFactor].c_str(),
-							   BLEND_MODE_NAMES[dstBlendFactor].c_str());
+	//	Logger::FrameworkDebug("[ParticleLayer3D::UpdateBlendState] (%x) sFactor = %s, dFactor = %s",
+	//						   (size_t)this,
+	//						   BLEND_MODE_NAMES[srcBlendFactor].c_str(),
+	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
 
 		
 		const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
