@@ -1411,6 +1411,18 @@ float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueTy
 	return rectsAndOffsets[clampedFrame][valueType];
 }
 
+const float32 * Sprite::GetFrameVerticesForFrame( int32 frame ) const
+{
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return frameVertices[clampedFrame];
+}
+
+const float32 * Sprite::GetTextureCoordsForFrame( int32 frame ) const
+{
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return texCoords[clampedFrame];
+}
+
 void Sprite::PrepareForNewSize()
 {
     String pathname = relativePathname.GetAbsolutePathname();
