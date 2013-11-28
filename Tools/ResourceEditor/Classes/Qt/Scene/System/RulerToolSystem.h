@@ -33,11 +33,11 @@
 
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
+#include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
-class LandscapeEditorDrawSystem;
 
 class RulerToolSystem: public DAVA::SceneSystem
 {
@@ -47,7 +47,7 @@ public:
 	RulerToolSystem(Scene* scene);
 	virtual ~RulerToolSystem();
 
-	bool EnableLandscapeEditing();
+	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
 	bool DisableLandscapeEdititing();
 	bool IsLandscapeEditingEnabled() const;
 
@@ -96,7 +96,7 @@ protected:
 	void DisablePreview();
 	void SendUpdatedLength();
 
-	bool IsCanBeEnabled();
+	LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled();
 
 	void Clear();
 };

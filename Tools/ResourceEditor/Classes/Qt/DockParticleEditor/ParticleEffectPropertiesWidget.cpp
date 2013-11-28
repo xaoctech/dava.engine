@@ -53,13 +53,45 @@ ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent) 
 	effectPlaybackSpeed->setTickInterval(1);
 	effectPlaybackSpeed->setSingleStep(1);
 	mainLayout->addWidget(effectPlaybackSpeed);
+	
+	QHBoxLayout *playerBox = new QHBoxLayout();
+	playBtn = new QPushButton(QIcon(":/QtIcons/play.png"), "");	
+	playBtn->setToolTip("Play");
+	playerBox->addWidget(playBtn);
+	stopBtn = new QPushButton(QIcon(":/QtIcons/stop.png"), "");	
+	stopBtn->setToolTip("Stop");
+	playerBox->addWidget(stopBtn);
+	stopAndDeleteBtn = new QPushButton(QIcon(":/QtIcons/stop_clear.png"), "");	
+	stopAndDeleteBtn->setToolTip("Stop and delete particles");
+	playerBox->addWidget(stopAndDeleteBtn);
+	pauseBtn = new QPushButton(QIcon(":/QtIcons/pause.png"), "");	
+	pauseBtn->setToolTip("Pause");
+	playerBox->addWidget(pauseBtn);
+	restartBtn = new QPushButton(QIcon(":/QtIcons/restart.png"), "");	
+	restartBtn->setToolTip("Restart");
+	playerBox->addWidget(restartBtn);	
+	stepForwardBtn = new QPushButton(QIcon(":/QtIcons/step_forward.png"), "");	
+	stepForwardBtn->setToolTip("Step forward");
+	playerBox->addWidget(stepForwardBtn);	
+	stepForwardFPSSpin = new QSpinBox(this);
+	stepForwardFPSSpin->setMinimum(1);
+	stepForwardFPSSpin->setMaximum(100);
+	stepForwardFPSSpin->setValue(30);
+	playerBox->addWidget(stepForwardFPSSpin);
+	playerBox->addWidget(new QLabel("step FPS"));
+	playerBox->addStretch();
 
-	checkboxStopOnLoad = new QCheckBox("Stop on load");
-	mainLayout->addWidget(checkboxStopOnLoad);
+	connect(playBtn,SIGNAL(clicked(bool)), this, SLOT(OnPlay()));
+	connect(stopBtn,SIGNAL(clicked(bool)), this, SLOT(OnStop()));
+	connect(stopAndDeleteBtn,SIGNAL(clicked(bool)), this, SLOT(OnStopAndDelete()));
+	connect(pauseBtn,SIGNAL(clicked(bool)), this, SLOT(OnPause()));
+	connect(restartBtn,SIGNAL(clicked(bool)), this, SLOT(OnRestart()));
+	connect(stepForwardBtn,SIGNAL(clicked(bool)), this, SLOT(OnStepForward()));
+
+	mainLayout->addLayout(playerBox);
 
 	connect(effectPlaybackSpeed, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
-	connect(checkboxStopOnLoad, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-
+	
 	particleEffect = NULL;
 	blockSignals = false;
 }
@@ -81,16 +113,47 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 		return;
 	
 	DVASSERT(particleEffect != 0);
-	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(effectPlaybackSpeed->value());
-	bool stopOnLoad = checkboxStopOnLoad->isChecked();
+	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(effectPlaybackSpeed->value());	
 
 	CommandUpdateEffect* commandUpdateEffect = new CommandUpdateEffect(particleEffect);
-	commandUpdateEffect->Init(playbackSpeed, stopOnLoad);
+	commandUpdateEffect->Init(playbackSpeed);
 
 	DVASSERT(activeScene != 0);
 	activeScene->Exec(commandUpdateEffect);
 
 	Init(activeScene, particleEffect);
+}
+
+void ParticleEffectPropertiesWidget::OnPlay()
+{
+	DVASSERT(particleEffect != 0);
+	particleEffect->Start();
+}
+void ParticleEffectPropertiesWidget::OnStop()
+{
+	DVASSERT(particleEffect != 0);
+	particleEffect->Stop(false);
+}
+void ParticleEffectPropertiesWidget::OnStopAndDelete()
+{
+	DVASSERT(particleEffect != 0);
+	particleEffect->Stop(true);
+}
+void ParticleEffectPropertiesWidget::OnPause()
+{
+	DVASSERT(particleEffect != 0);
+	particleEffect->Pause(!particleEffect->IsPaused());
+}
+void ParticleEffectPropertiesWidget::OnRestart()
+{
+	DVASSERT(particleEffect != 0);
+	particleEffect->Restart();
+}
+void ParticleEffectPropertiesWidget::OnStepForward()
+{
+	DVASSERT(particleEffect != 0);
+	float32 step = 1.0f/(float32)stepForwardFPSSpin->value();
+	particleEffect->Step(step);
 }
 
 void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect)
@@ -106,8 +169,7 @@ void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEff
 	float32 playbackSpeed = particleEffect->GetPlaybackSpeed();
 	effectPlaybackSpeed->setValue(ConvertFromPlaybackSpeedToSliderValue(playbackSpeed));
 	UpdatePlaybackSpeedLabel();
-	
-	checkboxStopOnLoad->setChecked(particleEffect->IsStopOnLoad());
+		
 	blockSignals = false;
 }
 

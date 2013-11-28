@@ -32,7 +32,6 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "LandscapeEditorDrawSystem.h"
 #include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
@@ -75,26 +74,28 @@ bool VisibilityToolSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
-bool VisibilityToolSystem::IsCanBeEnabled()
+LandscapeEditorDrawSystem::eErrorType VisibilityToolSystem::IsCanBeEnabled()
 {
 	return drawSystem->VerifyLandscape();
 }
 
-bool VisibilityToolSystem::EnableLandscapeEditing()
+LandscapeEditorDrawSystem::eErrorType VisibilityToolSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
-		return true;
+		return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 	}
-
-	if (!IsCanBeEnabled())
+	
+	LandscapeEditorDrawSystem::eErrorType canBeEnabledError = IsCanBeEnabled();
+	if ( canBeEnabledError!= LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return canBeEnabledError;
 	}
-
-	if (!drawSystem->EnableCustomDraw())
+	
+	LandscapeEditorDrawSystem::eErrorType enableCustomDrawError = drawSystem->EnableCustomDraw();
+	if (enableCustomDrawError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		return false;
+		return enableCustomDrawError;
 	}
 
 	SetState(VT_STATE_NORMAL);
@@ -113,7 +114,7 @@ bool VisibilityToolSystem::EnableLandscapeEditing()
 	PrepareConfig();
 
 	enabled = true;
-	return enabled;
+	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 bool VisibilityToolSystem::DisableLandscapeEdititing()

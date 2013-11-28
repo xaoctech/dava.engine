@@ -305,8 +305,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         LoadHierarchy(0, rootNode, file, 1);
     }
 		    
-    OptimizeScene(rootNode);
-	StopParticleEffectComponents(rootNode);
+    OptimizeScene(rootNode);	
     
 	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
 	serializationContext.GetScene()->renderSystem->GetMaterialSystem()->SwitchMaterialQuality(qualityLod, true);
@@ -316,7 +315,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     if (GetError() == ERROR_NO_ERROR)
     {
         // TODO: Check do we need to releae root node here
-        _scene->AddRootNode(rootNode, rootNodePathName.GetAbsolutePathname());
+        _scene->AddRootNode(rootNode, rootNodePathName);
     }
     else
     {
@@ -1068,25 +1067,6 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
-void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
-{
-	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
-	{
-		Entity * childNode = currentNode->GetChild(c);
-		if (childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
-		{
-			ParticleEffectComponent *particleEffect = static_cast<ParticleEffectComponent *>(childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
-			if (particleEffect->IsStopOnLoad())
-			{
-				particleEffect->Stop();
-			}
-		}
-
-		// Do the same for all children.
-		StopParticleEffectComponents(childNode);
-	}
-		
-}
 	
 void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializationContext)
 {
