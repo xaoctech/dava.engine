@@ -56,18 +56,6 @@ void RenderPassBatchArray::Clear()
         it->second->Clear();
     }    
 }
-
-void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
-{
-    RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-    if (!layerBatchArray)
-    {
-        layerBatchArray = new RenderLayerBatchArray();
-        layerBatchArrayMap.insert(name, layerBatchArray);
-    }
-    
-    layerBatchArray->AddRenderBatch(renderBatch);
-}
     
 RenderLayerBatchArray * RenderPassBatchArray::Get(const FastName & name)
 {
@@ -88,13 +76,6 @@ RenderLayerBatchArray::~RenderLayerBatchArray()
     
 }
 
-void RenderLayerBatchArray::AddRenderBatch(RenderBatch * batch)
-{
-    DVASSERT(batch->GetRemoveIndex() == -1)
-    renderBatchArray.push_back(batch);
-    flags |= SORT_REQUIRED;
-}
-
 void RenderLayerBatchArray::Clear()
 {
     renderBatchArray.clear();
@@ -109,6 +90,8 @@ void RenderLayerBatchArray::Sort(Camera * camera)
 {
     TIME_PROFILE("RenderLayerBatchArray::Sort");
     // Need sort
+	flags |= SORT_REQUIRED;
+	
     if ((flags & SORT_THIS_FRAME) == SORT_THIS_FRAME)
     {
         uint32 renderBatchCount = (uint32)renderBatchArray.size();

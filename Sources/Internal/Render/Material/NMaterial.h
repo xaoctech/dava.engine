@@ -62,39 +62,47 @@ public:
 	virtual void ParentChanged(NMaterial* material) = 0;
 	virtual void SystemChanged(NMaterial* material) = 0;
 };
-    
+	
 class NMaterialProperty
 {
 public:
     Shader::eUniformType type;
-    uint32 size;
-    uint32 dataSize;
-    void * data;
+    uint8 size;
+    void* data;
+	
+	virtual ~NMaterialProperty()
+	{
+	}
+	
+	virtual NMaterialProperty* Clone()
+	{
+		return NULL;
+	}
+
+};
+	
+template<typename MEMMANAGER>
+class NManagedMaterialProperty : public NMaterialProperty
+{
 	
 public:
 	
-	~NMaterialProperty()
+	NManagedMaterialProperty()
 	{
-		if(dataSize)
-		{
-			SafeDeleteArray(data);
-		}
+		MEMMANAGER::Init(this);
+	}
+
+	virtual ~NManagedMaterialProperty()
+	{
+		MEMMANAGER::Release(this);
 	}
 	
-	NMaterialProperty* Clone()
+	virtual NMaterialProperty* Clone()
 	{
-		NMaterialProperty* prop = new NMaterialProperty();
-		prop->type = type;
-		prop->size = size;
-		prop->dataSize = dataSize;
-		
-		prop->data = new uint8[dataSize];
-		memcpy(prop->data, data, dataSize);
-		
-		return prop;
+		return MEMMANAGER::Clone(this);
 	}
 };
-	    
+		    
 class MaterialTechnique
 {
 		
@@ -153,6 +161,27 @@ public:
 			
 protected:
 	
+	class GenericPropertyManager
+	{
+	public:
+		static void Init(NMaterialProperty* prop);
+		static void Release(NMaterialProperty* prop);
+		static NMaterialProperty* Clone(NMaterialProperty* prop);
+	};
+	
+	class UniformPropertyManager
+	{
+	public:
+		static void Init(NMaterialProperty* prop);
+		static void Release(NMaterialProperty* prop);
+		static NMaterialProperty* Clone(NMaterialProperty* prop);
+	};
+	
+	typedef NManagedMaterialProperty<NMaterialState::GenericPropertyManager> GenericMaterialProperty;
+	typedef NManagedMaterialProperty<NMaterialState::UniformPropertyManager> UniformMaterialProperty;
+	
+protected:
+	
 	struct TextureBucket
 	{
 		Texture* texture;
@@ -167,7 +196,7 @@ protected:
 	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
 	FastNameSet nativeDefines;
     
-	HashMap<FastName, NMaterialProperty*> materialProperties;
+	HashMap<FastName, NMaterialProperty* > materialProperties;
     
 	HashMap<FastName, TextureBucket*> textures;
 	Vector<Texture*> texturesArray;
@@ -255,7 +284,7 @@ public:
 	void AddMaterialDefine(const FastName& defineName);
 	void RemoveMaterialDefine(const FastName& defineName);
 
-	const FastNameSet & GetRenderLayers();
+	inline const FastNameSet & GetRenderLayers();
 	
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
@@ -325,7 +354,8 @@ protected:
 	{
 		Shader::Uniform* uniform;
 		int32 index;
-		NMaterialProperty* prop;
+		//NMaterialProperty* prop;
+		void* propData;
 	};
 
     
@@ -351,6 +381,12 @@ protected:
 	//TODO: therse should be stored per technique
 	Vector<TextureParamCacheEntry> textureParamsCache;
 	Vector<UniformCacheEntry> activeUniformsCache;
+	Vector<uint8> uniformDataStorage;
+	
+	TextureParamCacheEntry* textureParamsCachePtr;
+	UniformCacheEntry* activeUniformsCachePtr;
+	size_t textureParamsCacheSize;
+	size_t activeUniformsCacheSize;
 	
 	static uint64 uniqueIdSequence;
 	
@@ -392,7 +428,12 @@ public:
 
 };
 
+	inline const FastNameSet& NMaterial::GetRenderLayers()
+	{
+		return effectiveLayers;
+	}
 
+	
 };
 
 #endif // __DAVAENGINE_MATERIAL_H__

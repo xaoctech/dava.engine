@@ -95,15 +95,6 @@ void RenderObject::RecalcBoundingBox()
     }
 }
     
-uint32 RenderObject::GetRenderBatchCount()
-{
-    return (uint32)renderBatchArray.size();
-}
-RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
-{
-    return renderBatchArray[batchIndex];
-}
-
 RenderObject * RenderObject::Clone(RenderObject *newObject)
 {
 	if(!newObject)
