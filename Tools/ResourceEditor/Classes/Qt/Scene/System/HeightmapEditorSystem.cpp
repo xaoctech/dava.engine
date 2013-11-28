@@ -74,14 +74,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
-	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
-	
-	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
-	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
-	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
