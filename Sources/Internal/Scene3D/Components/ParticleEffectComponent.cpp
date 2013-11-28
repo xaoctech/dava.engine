@@ -44,8 +44,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 	stopAfterNRepeats = -1;
 	stopWhenEmpty = false;
 	effectDuration = 0.0f;
-	emittersCurrentlyStopped = 0;
-	stopOnLoad = false;
+	emittersCurrentlyStopped = 0;	
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
@@ -58,8 +57,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->needEmitPlaybackComplete = needEmitPlaybackComplete;
 	newComponent->playbackComplete = playbackComplete;
 	newComponent->effectDuration = effectDuration;
-	newComponent->emittersCurrentlyStopped = emittersCurrentlyStopped;
-	newComponent->stopOnLoad = stopOnLoad;
+	newComponent->emittersCurrentlyStopped = emittersCurrentlyStopped;	
 
 	return newComponent;
 }
@@ -96,7 +94,7 @@ void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 }
 
 void ParticleEffectComponent::Pause(bool isPaused /*= true*/)
-{
+{	
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -128,9 +126,45 @@ bool ParticleEffectComponent::IsStopped()
 	
 	return true;
 }
+
+bool ParticleEffectComponent::IsPaused()
+{
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
+		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
+			if (!emitter->IsPaused())
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void ParticleEffectComponent::Step(float32 delta)
+{
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderObject * ro = GetRenderObject(entity->GetChild(i));
+		if(ro && ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(ro);
+			emitter->Update(delta);			
+		}				
+		
+		
+	}
+}
 	
 void ParticleEffectComponent::Restart()
 {
+	
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -281,32 +315,13 @@ int32 ParticleEffectComponent::GetActiveParticlesCount()
 	return totalActiveParticles;
 }
 
-void ParticleEffectComponent::SetStopOnLoad(bool value)
-{
-	this->stopOnLoad = value;
-}
-
-bool ParticleEffectComponent::IsStopOnLoad() const
-{
-	return this->stopOnLoad;
-}
-
 void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Serialize(archive, serializationContext);
-	if(archive)
-	{
-		archive->SetBool("pec.stoponload", this->stopOnLoad);
-	}
 }
-	
+
 void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	if(archive)
-	{
-		this->stopOnLoad = archive->GetBool("pec.stoponload", false);
-	}
-		
 	Component::Deserialize(archive, serializationContext);
 }
 

@@ -610,6 +610,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
+	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
+	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
@@ -688,6 +690,12 @@ void QtMainWindow::SetupShortCuts()
 
 	// scene tree collapse/expand
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
+	
+	//tab closing
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#if defined (__DAVAENGINE_WIN32__)
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#endif
 }
 
 void QtMainWindow::InitRecent()
@@ -1575,7 +1583,12 @@ void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
-    
+    if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
 
 	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
@@ -1594,6 +1607,12 @@ void QtMainWindow::OnShadowBlendModeAlpha()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_ALPHA));
 }
 
@@ -1601,6 +1620,12 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY));
 }
 
@@ -1648,9 +1673,10 @@ void QtMainWindow::OnSaveTiledTexture()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
-	if (!scene->landscapeEditorDrawSystem->VerifyLandscape())
+	LandscapeEditorDrawSystem::eErrorType varifLandscapeError = scene->landscapeEditorDrawSystem->VerifyLandscape();
+	if (varifLandscapeError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
 	{
-		ShowErrorDialog(ResourceEditor::INVALID_LANDSCAPE_MESSAGE);
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(varifLandscapeError));
 		return;
 	}
 

@@ -59,9 +59,15 @@ void ActionEnableHeightmapEditor::Redo()
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN);
 
-	if (!success || !sceneEditor->heightmapEditorSystem->EnableLandscapeEditing())
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::HEIGHTMAP_EDITOR_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->heightmapEditorSystem->EnableLandscapeEditing();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 
 	SceneSignals::Instance()->EmitHeightmapEditorToggled(sceneEditor);

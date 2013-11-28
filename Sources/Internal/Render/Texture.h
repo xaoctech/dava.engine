@@ -245,8 +245,6 @@ public:
 	static void GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames);
 	static void GenerateCubeFaceNames(const FilePath & baseName, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames);
 
-    TextureDescriptor * CreateDescriptor() const;
-
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
 	void SetInvalidater(TextureInvalidater* invalidater);
@@ -312,6 +310,7 @@ public:							// properties for fast access
     
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
+    inline TextureDescriptor * GetDescritor() const;
     
 private:
     
@@ -326,8 +325,6 @@ private:
 	static void AddToMap(Texture *tex);
     
 	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
-
-	void ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor);
 
 
 	Vector<Image *> images;
@@ -394,6 +391,11 @@ inline const eGPUFamily Texture::GetSourceFileGPUFamily() const
 inline Texture::TextureState Texture::GetState() const
 {
 	return state;
+}
+
+inline TextureDescriptor * Texture::GetDescritor() const
+{
+    return texDescriptor;
 }
 
 

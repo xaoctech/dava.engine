@@ -9,7 +9,6 @@ using namespace DAVA;
 
 class QComboBox;
 class QRadioButton;
-class QCheckBox;
 class QLineEdit;
 class SliderWidget;
 
@@ -45,8 +44,6 @@ private slots:
 	void SetHeightmapCopyPaste();
 	void SetStrength(int strength);
 	void SetAverageStrength(int averageStrength);
-	void SetCopyPasteHeightmap(int state);
-	void SetCopyPasteTilemask(int state);
 
 	void IncreaseBrushSize();
 	void DecreaseBrushSize();
@@ -65,9 +62,6 @@ private slots:
 
 	void PrevTool();
 	void NextTool();
-
-	void ShortcutSetCopyPasteHeightmap();
-	void ShortcutSetCopyPasteTilemask();
 
 protected:
 	virtual bool GetEditorEnabled();
@@ -97,8 +91,6 @@ private:
 	QRadioButton* radioAverage;
 	QRadioButton* radioDropper;
 	QRadioButton* radioRelative;
-	QCheckBox* checkboxHeightmap;
-	QCheckBox* checkboxTilemask;
 	QLineEdit* editHeight;
 
 	void InitBrushImages();
