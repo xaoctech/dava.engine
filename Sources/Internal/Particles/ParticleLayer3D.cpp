@@ -546,12 +546,12 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	Particle* parent = emitter->GetParentParticle();		
 	if ((NULL != parent)&&inheritPosition)
 	{		
-		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
-		currDirection.Normalize();
+		currDirection = current->speed*current->velocityOverLife + parent->speed*parent->velocityOverLife;		
 	}else
 	{
-		currDirection = current->direction;
+		currDirection = current->speed;
 	}
+	currDirection.Normalize();
 
 	Vector3 vecShort = currDirection.CrossProduct(direction);
 	vecShort.Normalize();			
@@ -584,7 +584,12 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
 		}
 
-		dstLayer = new ParticleLayer3D(parentFor3DLayer);
+		ParticleLayer3D *dst = new ParticleLayer3D(parentFor3DLayer);		
+		
+		SafeRelease(dst->material);
+		dst->material = material->Clone();
+
+		dstLayer = dst; 
 		dstLayer->SetLong(this->isLong);
 	}
 		

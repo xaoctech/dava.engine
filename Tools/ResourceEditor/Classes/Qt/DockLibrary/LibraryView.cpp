@@ -124,6 +124,8 @@ void LibraryView::ModelRootPathChanged(const QString & newPath)
 
 void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
+    if(selected.size() == 0) return;
+    
 	DAVA::String previewPath;
 	const QModelIndex index = selected.indexes().first();
 

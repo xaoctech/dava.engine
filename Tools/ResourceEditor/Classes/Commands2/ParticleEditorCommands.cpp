@@ -66,17 +66,15 @@ CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect
 	this->particleEffect = particleEffect;
 }
 
-void CommandUpdateEffect::Init(float32 playbackSpeed, bool stopOnLoad)
+void CommandUpdateEffect::Init(float32 playbackSpeed)
 {
-	this->playbackSpeed = playbackSpeed;
-	this->stopOnLoad = stopOnLoad;
+	this->playbackSpeed = playbackSpeed;	
 }
 
 void CommandUpdateEffect::Redo()
 {
 	DVASSERT(particleEffect);
-	particleEffect->SetPlaybackSpeed(playbackSpeed);
-	particleEffect->SetStopOnLoad(stopOnLoad);
+	particleEffect->SetPlaybackSpeed(playbackSpeed);	
 }
 
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):

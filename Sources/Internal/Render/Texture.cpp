@@ -596,6 +596,13 @@ void Texture::FlushDataToRenderer()
 	for(uint32 i = 0; i < (uint32)images.size(); ++i)
 	{
 		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
+	
+		if(texDescriptor->IsCubeMap() &&
+		   (images[i]->mipmapLevel != (uint32)-1) &&
+		   (images[i]->mipmapLevel != 0))
+		{
+			needGenerateMipMaps = false;
+		}
 	}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -728,16 +735,6 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 }
     
 
-TextureDescriptor * Texture::CreateDescriptor() const
-{
-    if(!isRenderTarget)
-    {
-        return TextureDescriptor::CreateFromFile(relativePathname);
-    }
-
-    return NULL;
-}
-    
 void Texture::Reload()
 {
     ReloadAs(loadedAsFile);
@@ -745,36 +742,22 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
-	TextureDescriptor *descriptor = CreateDescriptor();
-	if(descriptor)
-	{
-		ReloadAs(gpuFamily, descriptor);
-		descriptor->Release();
-	}
-	else if(!isPink)
-	{
-		Logger::Error("[Texture::ReloadAs] Can't create descriptor for gpu = %d", gpuFamily);
-
-		ReleaseTextureData();
-		MakePink((TextureType)textureType);
-	}
-}
-
-void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
-{
     ReleaseTextureData();
-	
-	DVASSERT(NULL != descriptor);
-
-	SafeRelease(texDescriptor);
-	texDescriptor = SafeRetain(descriptor);
     
-	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, descriptor);
+    if(relativePathname.Exists())
+    {
+        texDescriptor->Release();
+        texDescriptor = TextureDescriptor::CreateFromFile(relativePathname);
+    }
+    
+	DVASSERT(NULL != texDescriptor);
+    
+	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
 	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
-
+        
 		SetParamsFromImages();
 		FlushDataToRenderer();
 		ReleaseImages();
@@ -782,9 +765,10 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 	else
     {
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", relativePathname.GetAbsolutePathname().c_str());
-        MakePink(descriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
+        MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
 }
+
     
 bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
@@ -916,7 +900,7 @@ void Texture::DumpTextures()
 	for(Map<FilePath, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 #else //#ifdef USE_FILEPATH_IN_MAP
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-#endif #ifdef USE_FILEPATH_IN_MAP
+#endif //#ifdef USE_FILEPATH_IN_MAP
 	{
 		Texture *t = it->second;
 		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));

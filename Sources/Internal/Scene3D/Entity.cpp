@@ -490,10 +490,10 @@ namespace DAVA
 		if(newNode && newNode != beforeNode)
 		{
 			bool canBeInserted = false;
-			
+
 			//need 2 passes because iterator will be invalidated when the entity
 			//is already present in the list of children and changes its position.
-			
+
 			Vector<Entity*>::iterator itEnd = children.end();
 			for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
 			{
@@ -503,7 +503,7 @@ namespace DAVA
 					break;
 				}
 			}
-			
+
 			if(canBeInserted)
 			{
 				newNode->Retain();
@@ -511,7 +511,7 @@ namespace DAVA
 				{
 					newNode->parent->RemoveNode(newNode);
 				}
-				
+
 				itEnd = children.end();
 				for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
 				{
@@ -526,7 +526,8 @@ namespace DAVA
 			}
 		}
 	}
-	
+
+
 	void Entity::RemoveNode(Entity * node)
 	{
 		if (!node)
