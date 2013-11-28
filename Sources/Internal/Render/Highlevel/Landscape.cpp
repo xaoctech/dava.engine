@@ -2096,7 +2096,7 @@ void Landscape::SetSpecularMapPath(const FilePath& path)
 	Texture* specularMapTexture = tileMaskMaterial->GetTexture(TEXTURE_SPECULAR_MAP);
 	if(specularMapTexture)
 	{
-		needReload = (specularMapTexture->GetPathname().GetAbsolutePathname() != path.GetAbsolutePathname());
+		needReload = (specularMapTexture->GetPathname() != path);
 	}
 	
 	if(needReload && path.Exists())
@@ -2115,7 +2115,7 @@ FilePath Landscape::GetSpecularMapPath()
 	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
 	if(specularMapTexture)
 	{
-		texturePath = specularMapTexture->GetPathname().GetAbsolutePathname();
+		texturePath = specularMapTexture->GetPathname();
 	}
 	
 	return texturePath;

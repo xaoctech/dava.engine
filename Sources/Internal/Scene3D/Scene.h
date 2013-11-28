@@ -276,7 +276,11 @@ protected:
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     
-    Map<String, ProxyNode*> rootNodes;
+#if defined (USE_FILEPATH_IN_MAP)
+    Map<FilePath, ProxyNode*> rootNodes;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	Map<String, ProxyNode*> rootNodes;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 
 //    // TODO: move to nodes
 //    Vector<LodLayer> lodLayers;

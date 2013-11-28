@@ -44,7 +44,12 @@
 namespace DAVA 
 {
 	
-Map<String, Sprite*> spriteMap;
+#if defined (USE_FILEPATH_IN_MAP)
+	Map<FilePath, Sprite*> spriteMap;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	Map<String, Sprite*> spriteMap;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+
 static int32 fboCounter = 0;
 Vector<Vector2> Sprite::clippedTexCoords;
 Vector<Vector2> Sprite::clippedVertices;
@@ -146,7 +151,11 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
     SafeRelease(fp);
     
 //	Logger::FrameworkDebug("Adding to map for key: %s", spr->relativePathname.c_str());
+#if defined (USE_FILEPATH_IN_MAP)
+	spriteMap[spr->relativePathname] = spr;
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	spriteMap[spr->relativePathname.GetAbsolutePathname()] = spr;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 //	Logger::FrameworkDebug("Resetting sprite");
 	spr->Reset();
 //	Logger::FrameworkDebug("Returning pointer");
@@ -156,8 +165,13 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
     
 Sprite* Sprite::GetSpriteFromMap(const FilePath &pathname)
 {
+#if defined (USE_FILEPATH_IN_MAP)
+	Map<FilePath, Sprite*>::iterator it;
+	it = spriteMap.find(pathname);
+#else //#if defined (USE_FILEPATH_IN_MAP)
     Map<String, Sprite*>::iterator it;
 	it = spriteMap.find(pathname.GetAbsolutePathname());
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 	if (it != spriteMap.end())
 	{
 		Sprite *spr = it->second;
@@ -170,11 +184,11 @@ Sprite* Sprite::GetSpriteFromMap(const FilePath &pathname)
     
 FilePath Sprite::GetScaledName(const FilePath &spriteName)
 {
-    String::size_type pos = spriteName.GetAbsolutePathname().find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+	String pathname = spriteName.GetAbsolutePathname();
+    
+	String::size_type pos = pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
     if(String::npos != pos)
 	{
-        String pathname = spriteName.GetAbsolutePathname();
-		
 		String subStrPath = pathname.substr(0, pos);
 		String resFolder = Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex());
 		String footer = pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
@@ -517,7 +531,11 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	
 	// DF-1984 - Set available sprite relative path name here. Use FBO sprite name only if sprite name is empty.
 	this->relativePathname = spriteName.IsEmpty() ? Format("FBO sprite %d", fboCounter) : spriteName;
+#if defined (USE_FILEPATH_IN_MAP)
+	spriteMap[this->relativePathname] = this;
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	spriteMap[this->relativePathname.GetAbsolutePathname()] = this;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 	fboCounter++;
 	this->Reset();
 }
@@ -566,7 +584,11 @@ int32 Sprite::Release()
 	if(GetRetainCount() == 1)
 	{
         SafeRelease(spriteRenderObject);
+#if defined (USE_FILEPATH_IN_MAP)
+		spriteMap.erase(relativePathname);
+#else //#if defined (USE_FILEPATH_IN_MAP)
 		spriteMap.erase(relativePathname.GetAbsolutePathname());
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 	}
 		
 	return BaseObject::Release();
@@ -1415,7 +1437,7 @@ float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueTy
 
 void Sprite::PrepareForNewSize()
 {
-    String pathname = relativePathname.GetAbsolutePathname();
+    const String pathname = relativePathname.GetAbsolutePathname();
     
 	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
 	String scaledName = pathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
@@ -1436,7 +1458,13 @@ void Sprite::PrepareForNewSize()
 		
 	Clear();
 	Logger::FrameworkDebug("erasing from sprite from map");
-	spriteMap.erase(relativePathname.GetAbsolutePathname());
+
+#if defined (USE_FILEPATH_IN_MAP)
+	spriteMap.erase(relativePathname);
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	spriteMap.erase(pathname);
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+
 	textures = 0;
 	textureNames = 0;
 
@@ -1462,8 +1490,7 @@ void Sprite::PrepareForNewSize()
     resourceToPhysicalFactor = 1.0f;
     
     
-    String path = relativePathname.GetAbsolutePathname();
-	PureCreate(path.substr(0, path.length() - 4), this);
+	PureCreate(pathname.substr(0, pathname.length() - 4), this);
 //TODO: следующая строка кода написада здесь только до тех времен 
 //		пока defaultPivotPoint не начнет задаваться прямо в спрайте,
 //		но возможно это навсегда.
@@ -1474,7 +1501,11 @@ void Sprite::ValidateForSize()
 {
 	Logger::FrameworkDebug("--------------- Sprites validation for new resolution ----------------");
 	List<Sprite*> spritesToReload;
+#if defined (USE_FILEPATH_IN_MAP)
+	for(Map<FilePath, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+#endif //if defined (USE_FILEPATH_IN_MAP)
 	{
 		Sprite *sp = it->second;
 		if (sp->type == SPRITE_FROM_FILE && Core::Instance()->GetDesirableResourceIndex() != sp->GetResourceSizeIndex())
@@ -1495,7 +1526,11 @@ void Sprite::DumpSprites()
 {
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated sprites ----------------");
+#if defined (USE_FILEPATH_IN_MAP)
+	for(Map<FilePath, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+#else //#if defined (USE_FILEPATH_IN_MAP)
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+#endif //if defined (USE_FILEPATH_IN_MAP)
 	{
 		Sprite *sp = it->second; //[spriteDict objectForKey:[txKeys objectAtIndex:i]];
 		Logger::FrameworkDebug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
