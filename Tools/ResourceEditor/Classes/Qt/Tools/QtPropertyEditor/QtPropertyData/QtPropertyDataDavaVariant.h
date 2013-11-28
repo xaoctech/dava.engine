@@ -36,8 +36,7 @@
 
 #include "../QtPropertyData.h"
 
-class QToolButton;
-
+class QtComboFake;
 class QtPropertyDataDavaVariant : public QtPropertyData
 {
 	Q_OBJECT
@@ -82,7 +81,7 @@ private:
 
 	QVector<AllowedValue> allowedValues;
 	mutable bool allowedValuesLocked;
-	QToolButton *allowedButton;
+	QtPropertyToolButton *allowedButton;
 
 	void InitFlags();
 	void ChildsCreate();

@@ -150,12 +150,14 @@ void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realVal
 
 	if(NULL == allowedButton)
 	{
-		allowedButton = new QtComboFake();
+		allowedButton = AddButton();
 		allowedButton->setArrowType(Qt::DownArrow);
 		allowedButton->setAutoRaise(true);
+		allowedButton->setEnabled(false);
+		allowedButton->eventsPassThrought = true;
+		allowedButton->overlayed = true;
 
-		AddOW(QtPropertyOW(allowedButton, true));
-		QObject::connect(allowedButton, SIGNAL(pressed()), this, SLOT(AllowedOWPressed()));	
+		QObject::connect(allowedButton, SIGNAL(released()), this, SLOT(AllowedOWPressed()));
 	}
 
 	av.realValue = realValue;
@@ -170,7 +172,7 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 
 	if(NULL != allowedButton)
 	{
-		RemOW(allowedButton);
+		RemButton(allowedButton);
 		allowedButton = NULL;
 	}
 }
@@ -321,11 +323,11 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
 	case DAVA::VariantType::TYPE_COLOR:
 		{
-			QPushButton *colorBtn = new QPushButton(QIcon(":/QtIcons/color.png"), "");
+			QToolButton *colorBtn = AddButton();
+			colorBtn->setIcon(QIcon(":/QtIcons/color.png"));
 			colorBtn->setIconSize(QSize(12, 12));
-			colorBtn->setFlat(true);
-			AddOW(QtPropertyOW(colorBtn));
-			QObject::connect(colorBtn, SIGNAL(pressed()), this, SLOT(ColorOWPressed()));
+			colorBtn->setAutoRaise(true);
+			QObject::connect(colorBtn, SIGNAL(released()), this, SLOT(ColorOWPressed()));
 		}
 		break;
 	case DAVA::VariantType::TYPE_AABBOX3:
@@ -342,11 +344,11 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
 	case DAVA::VariantType::TYPE_FILEPATH:
 		{
-			QPushButton *filePathBtn = new QPushButton(QIcon(":/QtIcons/openscene.png"), "");
+			QToolButton *filePathBtn = AddButton();
+			filePathBtn->setIcon(QIcon(":/QtIcons/openscene.png"));
 			filePathBtn->setIconSize(QSize(14, 14));
-			filePathBtn->setFlat(true);
-			AddOW(QtPropertyOW(filePathBtn));
-			QObject::connect(filePathBtn, SIGNAL(pressed()), this, SLOT(FilePathOWPressed()));
+			filePathBtn->setAutoRaise(true);
+			QObject::connect(filePathBtn, SIGNAL(released()), this, SLOT(FilePathOWPressed()));
 		}
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
@@ -806,7 +808,7 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 
 void QtPropertyDataDavaVariant::ColorOWPressed()
 {
-	QColor c = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), NULL, "Select color", QColorDialog::ShowAlphaChannel);
+	QColor c = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), GetOWViewport(), "Select color", QColorDialog::ShowAlphaChannel);
 	if(c.isValid())
 	{
 		SetValue(c, QtPropertyData::VALUE_EDITED);

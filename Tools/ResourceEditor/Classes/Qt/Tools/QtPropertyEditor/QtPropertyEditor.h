@@ -55,7 +55,9 @@ public:
 	~QtPropertyEditor();
 
 	QModelIndex AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent = QModelIndex());
+	QModelIndex InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent = QModelIndex());
 	QModelIndex AppendHeader(const QString &text);
+	QModelIndex InsertHeader(const QString &text, int row);
 
 	QtPropertyData * GetProperty(const QModelIndex &index) const;
 
@@ -63,6 +65,7 @@ public:
 	void SetEditTracking(bool enabled);
 
 	void RemoveProperty(const QModelIndex &index);
+	void RemoveProperty(QtPropertyData* data);
 	void RemovePropertyAll();
 
 	void SetUpdateTimeout(int ms);
@@ -86,13 +89,23 @@ protected:
 
 	virtual void paintEvent(QPaintEvent * event);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+
+	virtual void mouseMoveEvent(QMouseEvent * event);
+	virtual void mouseReleaseEvent(QMouseEvent * event);
+	virtual void leaveEvent(QEvent * event);
+	
 	virtual void ApplyStyle(QtPropertyData *data, int style);
+	virtual QToolButton* GetButton(QMouseEvent * event);
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
 	virtual void OnItemEdited(const QModelIndex &);
-	virtual void OnRowsRemoved(const QModelIndex &parent, int first, int last);
 	virtual void OnUpdateTimeout();
+
+private:
+	QModelIndex lastHoverIndex;
+
+	void OnHover(const QModelIndex &index);
 };
 
 #endif // __QT_PROPERTY_VIEW_H__

@@ -45,7 +45,7 @@ class QtPropertyModel : public QAbstractItemModel
 	friend class QtPropertyData;
 
 public:
-	QtPropertyModel(QWidget *optionalWidgetViewport, QObject* parent = 0);
+	QtPropertyModel(QWidget *_viewport, QObject* parent = 0);
 	~QtPropertyModel();
 
 	QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
@@ -61,6 +61,7 @@ public:
 	QModelIndex indexFromItem(QtPropertyData *data) const;
 
 	QModelIndex AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent = QModelIndex());
+	QModelIndex InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent = QModelIndex());
 
 	bool GetEditTracking();
 	void SetEditTracking(bool enabled);
@@ -76,7 +77,6 @@ signals:
 
 protected:
 	QtPropertyData *root;
-	QWidget *OWviewport;
 	bool trackEdit;
 
 	QtPropertyData *itemFromIndexInternal(const QModelIndex & index) const;
