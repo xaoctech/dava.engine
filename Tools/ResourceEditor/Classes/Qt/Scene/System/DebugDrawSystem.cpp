@@ -51,17 +51,9 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	DVASSERT(NULL != collSystem);
 	DVASSERT(NULL != selSystem);
 	
-	DAVA::RenderStateData debugStateData = {0};
-	debugStateData.state =	DAVA::RenderStateData::STATE_BLEND |
-							DAVA::RenderStateData::STATE_COLORMASK_ALL |
-							DAVA::RenderStateData::STATE_DEPTH_TEST;
-	debugStateData.cullMode = FACE_BACK;
-	debugStateData.depthFunc = CMP_LESS;
-	debugStateData.sourceFactor = BLEND_SRC_ALPHA;
-	debugStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
-	debugStateData.fillMode = FILLMODE_SOLID;
-
-	debugDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&debugStateData);
+	debugDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_BLEND |
+																		  DAVA::RenderStateData::STATE_COLORMASK_ALL |
+																		  DAVA::RenderStateData::STATE_DEPTH_TEST);
 }
 
 

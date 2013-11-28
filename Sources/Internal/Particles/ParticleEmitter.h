@@ -401,8 +401,10 @@ public:
 	void SetDesiredLodLevel(int32 level);
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
-	
-	Matrix3 GetRotationMatrix();
+
+	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
+	Matrix3 GetRotationMatrix();	
+
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.

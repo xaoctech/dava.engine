@@ -111,7 +111,7 @@ protected:
 
     DAVA::float32 distanceToCamera;
 
-    
+	DAVA::UniqueHandle renderState;
     
 };
 
