@@ -34,8 +34,6 @@
 		02D4CFC918056051007EC9EC /* FMODSoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02D4CFC718056051007EC9EC /* FMODSoundComponent.cpp */; };
 		02D4CFCA18056051007EC9EC /* FMODSoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D4CFC818056051007EC9EC /* FMODSoundComponent.h */; };
 		02E9E3A11729669200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3A01729669200C501BC /* FMODUtils.h */; };
-		02E9E3DE1734176200C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */; };
-		02E9E3DF1734176200C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */; };
 		02E9E3E21734176D00C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3E01734176D00C501BC /* SoundComponent.cpp */; };
 		02E9E3E31734176D00C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3E11734176D00C501BC /* SoundComponent.h */; };
 		02F6403B173A597A0053F038 /* libfmodevent_iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3D01734165D00C501BC /* libfmodevent_iphoneos.a */; };
@@ -752,8 +750,6 @@
 		02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphonesimulator.a; sourceTree = "<group>"; };
 		02E9E3D01734165D00C501BC /* libfmodevent_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodevent_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodevent_iphoneos.a; sourceTree = "<group>"; };
 		02E9E3D11734165D00C501BC /* libfmodevent_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodevent_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodevent_iphonesimulator.a; sourceTree = "<group>"; };
-		02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeAnimatedObject.cpp; sourceTree = "<group>"; };
-		02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeAnimatedObject.h; sourceTree = "<group>"; };
 		02E9E3E01734176D00C501BC /* SoundComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponent.cpp; sourceTree = "<group>"; };
 		02E9E3E11734176D00C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
 		02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
@@ -2305,8 +2301,6 @@
 			isa = PBXGroup;
 			children = (
 				02D4CFC618055E30007EC9EC /* FMOD */,
-				02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */,
-				02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */,
 				E8B3CA1D16B9326E002BD35F /* Sound.h */,
 				E8B3CA2A16B9326E002BD35F /* SoundSystem.cpp */,
 				E8B3CA2B16B9326E002BD35F /* SoundSystem.h */,
@@ -2807,7 +2801,6 @@
 				E8B6B3C71705DEB4004F665E /* DeviceInfo.h in Headers */,
 				E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */,
 				02E9E3A11729669200C501BC /* FMODUtils.h in Headers */,
-				02E9E3DF1734176200C501BC /* VolumeAnimatedObject.h in Headers */,
 				02E9E3E31734176D00C501BC /* SoundComponent.h in Headers */,
 				02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */,
 				84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */,
@@ -3195,7 +3188,6 @@
 				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
 				E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */,
 				E845D4E61732B7C9000DA8E7 /* FilePathObjective.mm in Sources */,
-				02E9E3DE1734176200C501BC /* VolumeAnimatedObject.cpp in Sources */,
 				02E9E3E21734176D00C501BC /* SoundComponent.cpp in Sources */,
 				02F64041173A5A950053F038 /* SoundUpdateSystem.cpp in Sources */,
 				84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */,
