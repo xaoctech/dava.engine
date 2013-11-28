@@ -349,7 +349,7 @@ void ParticleEffectPropertiesWidget::OnContextMenuCommand(QAction *action)
 	{	
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
 		SetForceLineModifiable(data.force, ForceExternals(commandId));		
-		particleEffect->UnRegisterModifiable(GetForceLine(data.force, ForceExternals(commandId)));
+		particleEffect->RegisterModifiable(GetForceLine(data.force, ForceExternals(commandId)));
 		UpdateVaribleTables();
 		data.externalParamId = commandId;
 		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
