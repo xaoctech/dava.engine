@@ -113,8 +113,10 @@ public:
 		bool ValidateCache(const void* value, uint16 valueSize);
     };
 
-    Shader();
+protected:
     virtual ~Shader();
+public:
+    Shader();
     
     Shader * Clone();
     

@@ -78,15 +78,17 @@ namespace DAVA
 	}
 
 	
-	void ActionComponent::Start(int32 switchIndex)
+	void ActionComponent::StartSwitch(int32 switchIndex)
 	{
-		Stop(switchIndex);
-		
+		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
+			return;
+
+		StopSwitch(switchIndex);		
 		uint32 markedCount = 0;
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if(actions[i].action.switchIndex == switchIndex)
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].markedForUpdate = true;
 				markedCount++;
@@ -104,6 +106,34 @@ namespace DAVA
 			allActionsActive = false;
 		}
 	}
+	void ActionComponent::StartAdd()
+	{		
+		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
+			return;
+		uint32 markedCount = 0;
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			if(actions[i].action.eventType == Action::EVENT_ADDED_TO_SCENE)
+			{
+				actions[i].markedForUpdate = true;
+				markedCount++;
+			}
+		}
+
+		if(markedCount > 0)
+		{
+			if(!started)
+			{
+				entity->GetScene()->actionSystem->Watch(this);
+			}
+
+			started = true;
+			allActionsActive = false;
+		}
+	}
+
+
 	
 	bool ActionComponent::IsStarted()
 	{
@@ -129,13 +159,13 @@ namespace DAVA
 		}
 	}
 	
-	void ActionComponent::Stop(int32 switchIndex)
+	void ActionComponent::StopSwitch(int32 switchIndex)
 	{
 		uint32 activeCount = 0;
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if(actions[i].action.switchIndex == switchIndex)
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
@@ -285,6 +315,7 @@ namespace DAVA
 			{
 				KeyedArchive* actionArchive = new KeyedArchive();
 				
+				actionArchive->SetUInt32("act.event", actions[i].action.eventType);
 				actionArchive->SetFloat("act.delay", actions[i].action.delay);
 				actionArchive->SetUInt32("act.type", actions[i].action.type);
 				actionArchive->SetString("act.entityName", actions[i].action.entityName);
@@ -310,6 +341,7 @@ namespace DAVA
 				KeyedArchive* actionArchive = archive->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				
 				Action action;
+				action.eventType = (Action::eEvent)actionArchive->GetUInt32("act.event");
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = actionArchive->GetString("act.entityName");

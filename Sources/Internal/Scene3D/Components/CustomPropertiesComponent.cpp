@@ -93,7 +93,9 @@ namespace DAVA
 		
 		if(NULL != archive && archive->IsKeyExists("cpc.properties"))
 		{
-			LoadFromArchive(*(archive->GetArchiveFromByteArray("cpc.properties")), serializationContext);
+            KeyedArchive *props = archive->GetArchiveFromByteArray("cpc.properties");
+			LoadFromArchive(*props, serializationContext);
+            props->Release();
 		}
 		
 		Component::Deserialize(archive, serializationContext);
