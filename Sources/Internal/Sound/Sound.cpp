@@ -35,7 +35,12 @@ namespace DAVA
 {
 FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2);
 
+#if defined (USE_FILEPATH_IN_MAP)
+Map<FilePath, FMOD::Sound*> soundMap;
+#else //#if defined (USE_FILEPATH_IN_MAP)
 Map<String, FMOD::Sound*> soundMap;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+
 Map<FMOD::Sound*, int32> soundRefsMap;
 
 Sound * Sound::Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority /* = 128 */)
@@ -55,8 +60,13 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
     if(flags & FMOD_3D)
         sound->is3d = true;
 
+#if defined (USE_FILEPATH_IN_MAP)
+	Map<FilePath, FMOD::Sound*>::iterator it;
+	it = soundMap.find(fileName);
+#else //#if defined (USE_FILEPATH_IN_MAP)
     Map<String, FMOD::Sound*>::iterator it;
     it = soundMap.find(fileName.GetAbsolutePathname());
+#endif //#if defined (USE_FILEPATH_IN_MAP)
     if (it != soundMap.end())
     {
         sound->fmodSound = it->second;
@@ -107,7 +117,11 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
             FMOD_VERIFY( sound->fmodSound->set3DMinMaxDistance(12.0f, 1000.0f) );
 #endif
 
-        soundMap[sound->fileName.GetAbsolutePathname()] = sound->fmodSound;
+#if defined (USE_FILEPATH_IN_MAP)
+		soundMap[sound->fileName] = sound->fmodSound;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+		soundMap[sound->fileName.GetAbsolutePathname()] = sound->fmodSound;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
         soundRefsMap[sound->fmodSound] = 1;
     }
 
@@ -141,7 +155,11 @@ int32 Sound::Release()
         soundRefsMap[fmodSound]--;
         if(soundRefsMap[fmodSound] == 0)
         {
+#if defined (USE_FILEPATH_IN_MAP)
+			soundMap.erase(fileName);
+#else //#if defined (USE_FILEPATH_IN_MAP)
             soundMap.erase(fileName.GetAbsolutePathname());
+#endif //#if defined (USE_FILEPATH_IN_MAP)
             soundRefsMap.erase(fmodSound);
             FMOD_VERIFY(fmodSound->release());
         }

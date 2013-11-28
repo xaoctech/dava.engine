@@ -55,6 +55,7 @@
 #define ENABLE_ASSERT_MESSAGE
 #include "Autotesting/Config.h"
 
+#define USE_FILEPATH_IN_MAP
 
 #endif // __DAVAENGINE_CONFIG_H__
 
