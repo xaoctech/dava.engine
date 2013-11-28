@@ -197,12 +197,23 @@ FilePath::FilePath(const String &pathname)
     
 FilePath::FilePath(const char * directory, const String &filename)
 {
-	Initialize(String(directory) + "/" + filename);
+    FilePath directoryPath(directory);
+    DVASSERT(!directoryPath.IsEmpty());
+    
+    directoryPath.MakeDirectoryPathname();
+    
+    pathType = directoryPath.pathType;
+    absolutePathname = AddPath(directoryPath, filename);
 }
 
 FilePath::FilePath(const String &directory, const String &filename)
 {
-	Initialize(directory + "/" + filename);
+    FilePath directoryPath(directory);
+    DVASSERT(!directoryPath.IsEmpty());
+    directoryPath.MakeDirectoryPathname();
+    
+    pathType = directoryPath.pathType;
+    absolutePathname = AddPath(directoryPath, filename);
 }
 
 FilePath::FilePath(const FilePath &directory, const String &filename)
@@ -270,8 +281,6 @@ String FilePath::ResolveResourcesPath() const
     String::size_type find = absolutePathname.find("~res:");
     if(find != String::npos)
     {
-        bool isDirectory = IsDirectoryPathname();
-        
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
 
@@ -284,9 +293,7 @@ String FilePath::ResolveResourcesPath() const
             List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
             for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
             {
-                FilePath t = *it;
                 path = *it + relativePathname;
-                
                 if(path.Exists())
                 {
                     break;
@@ -324,12 +331,14 @@ FilePath FilePath::operator+(const String &path) const
 
 FilePath& FilePath::operator+=(const String & path)
 {
-    absolutePathname = AddPath(*this, path);
-
-	if (pathType == PATH_EMPTY)
-	{
-		pathType = GetPathType(absolutePathname);
-	}
+    if(pathType == PATH_EMPTY)
+    {
+        Initialize(path);
+    }
+    else
+    {
+        absolutePathname = AddPath(*this, path);
+    }
 
     return (*this);
 }
@@ -398,20 +407,15 @@ String FilePath::GetExtension() const
     
 FilePath FilePath::GetDirectory() const
 {
-    return GetDirectory(absolutePathname, pathType);
-}
-
-FilePath FilePath::GetDirectory(const String &pathname, const ePathType pType)
-{
     FilePath directory;
     
-    const String::size_type slashpos = pathname.rfind(String("/"));
+    const String::size_type slashpos = absolutePathname.rfind(String("/"));
     if (slashpos != String::npos)
     {
-        directory = pathname.substr(0, slashpos + 1);
+        directory = absolutePathname.substr(0, slashpos + 1);
     }
-        
-    directory.pathType = pType;
+    
+    directory.pathType = pathType;
     return directory;
 }
 
@@ -433,7 +437,7 @@ String FilePath::GetRelativePathname(const FilePath &forDirectory) const
 
 String FilePath::GetRelativePathname(const String &forDirectory) const
 {
-    if(IsEmpty())
+    if(forDirectory.empty())
         return String();
     
 	return GetRelativePathname(FilePath(forDirectory));
@@ -453,7 +457,7 @@ void FilePath::ReplaceFilename(const String &filename)
 {
     DVASSERT(!IsEmpty());
     
-    absolutePathname = NormalizePathname((GetDirectory() + filename).absolutePathname);
+    absolutePathname = (GetDirectory() + filename).absolutePathname;
 }
     
 void FilePath::ReplaceBasename(const String &basename)
@@ -461,7 +465,7 @@ void FilePath::ReplaceBasename(const String &basename)
     if(!IsEmpty())
     {
         const String extension = GetExtension();
-        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+        absolutePathname = (GetDirectory() + (basename + extension)).absolutePathname;
     }
 }
     
@@ -470,7 +474,7 @@ void FilePath::ReplaceExtension(const String &extension)
     if(!IsEmpty())
     {
         const String basename = GetBasename();
-        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+        absolutePathname = (GetDirectory() + (basename + extension)).absolutePathname;
     }
 }
     
@@ -479,8 +483,7 @@ void FilePath::ReplaceDirectory(const String &directory)
     DVASSERT(!IsEmpty());
     
     const String filename = GetFilename();
-    absolutePathname = NormalizePathname((MakeDirectory(directory) + filename));
-    pathType = GetPathType(absolutePathname);
+    Initialize((MakeDirectory(directory) + filename));
 }
     
 void FilePath::ReplaceDirectory(const FilePath &directory)
@@ -490,7 +493,7 @@ void FilePath::ReplaceDirectory(const FilePath &directory)
     DVASSERT(directory.IsDirectoryPathname());
     const String filename = GetFilename();
 
-    absolutePathname = NormalizePathname((directory + filename).absolutePathname);
+    absolutePathname = (directory + filename).absolutePathname;
     pathType = directory.pathType;
 }
     
@@ -596,11 +599,6 @@ String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePat
 }
 
 
-String FilePath::NormalizePathname(const FilePath &pathname)
-{
-    return NormalizePathname(pathname.GetAbsolutePathname());
-}
-
 String FilePath::NormalizePathname(const String &pathname)
 {
 	if(pathname.empty())
@@ -680,7 +678,7 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     Vector<String> folders;
 	Vector<String> fileFolders;
 
-	if(directoryPathname.GetType() == PATH_IN_RESOURCES &&	absolutePathname.GetType() == PATH_IN_RESOURCES)
+	if(directoryPathname.GetType() == PATH_IN_RESOURCES && absolutePathname.GetType() == PATH_IN_RESOURCES)
 	{
 		Split(directoryPathname.absolutePathname, "/", folders);
 		Split(absolutePathname.GetDirectory().absolutePathname, "/", fileFolders);
@@ -736,28 +734,24 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
 String FilePath::AddPath(const FilePath &folder, const String & addition)
 {
+    if(folder.IsEmpty()) return NormalizePathname(addition);
+    
+    
     String absPathname = folder.absolutePathname + addition;
-    if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") != String::npos)
+    if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") == 0)
     {
         const String frameworkPath = GetSystemPathname("~res:/", PATH_IN_RESOURCES) + "Data";
+        absPathname = NormalizePathname(frameworkPath + absPathname.substr(5));
         
-        String fullPath = frameworkPath + absPathname.substr(5);
-        absPathname = NormalizePathname(fullPath);
-        
-        String::size_type pos = absPathname.find("");
-        if(pos == 0)
+        if(absPathname.find(frameworkPath) == 0)
         {
-            String pathname = absPathname;
-            pathname = pathname.replace(pos, frameworkPath.length(), "~res:");
-            return pathname;
+            absPathname.replace(0, frameworkPath.length(), "~res:");
         }
-        else
-        {
-            return absPathname;
-        }
+
+        return absPathname;
     }
     
-	return NormalizePathname(absPathname);
+    return NormalizePathname(absPathname);
 }
 
 FilePath::ePathType FilePath::GetPathType(const String &pathname)

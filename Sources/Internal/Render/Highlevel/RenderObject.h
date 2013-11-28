@@ -111,8 +111,8 @@ public:
     void RemoveRenderBatch(RenderBatch * batch);
     virtual void RecalcBoundingBox();
     
-	uint32 GetRenderBatchCount();
-    RenderBatch * GetRenderBatch(uint32 batchIndex);
+	inline uint32 GetRenderBatchCount();
+    inline RenderBatch * GetRenderBatch(uint32 batchIndex);
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
@@ -230,7 +230,15 @@ inline Matrix4 * RenderObject::GetWorldTransformPtr() const
     return worldTransform;
 }
 
-    
+	inline uint32 RenderObject::GetRenderBatchCount()
+	{
+		return (uint32)renderBatchArray.size();
+	}
+	
+	inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
+	{
+		return renderBatchArray[batchIndex];
+	}
 } // ns
 
 #endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
