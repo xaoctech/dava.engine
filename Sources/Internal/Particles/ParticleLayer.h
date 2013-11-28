@@ -363,7 +363,7 @@ protected:
 
 	Vector<bool> activeLODS;	
 
-	List<std::pair<String, ModifiablePropertyLineBase *>> modifiables;
+	List<std::pair<String, ModifiablePropertyLineBase *> > modifiables;
 
 public:
 	String			layerName;
