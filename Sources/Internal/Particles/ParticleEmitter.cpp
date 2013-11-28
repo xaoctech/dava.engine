@@ -45,6 +45,9 @@ namespace DAVA
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
 #define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
 
+
+Map<String, ParticleEmitter::EmitterYamlCacheEntry> ParticleEmitter::emitterYamlCache;
+
 ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
@@ -61,12 +64,13 @@ ParticleEmitter::ParticleEmitter()
 	shortEffect = false;
 	lodLevelLocked = false;
 	particleCount = 0;		
-	state = STATE_STOPPED;
+	state = STATE_STOPPED;	
 }
 
 ParticleEmitter::~ParticleEmitter()
 {
 	CleanupLayers();
+	ReleaseFromCache(emitterFileName);
 }
 
 void ParticleEmitter::Cleanup(bool needCleanupLayers)
@@ -570,11 +574,57 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     particle->angle = particleAngle;
 }
 
+void ParticleEmitter::RetainInCache(const String& name)
+{
+	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
+	if (it!=emitterYamlCache.end())
+	{
+		(*it).second.refCount++;
+	}
+}
+
+void ParticleEmitter::ReleaseFromCache(const String& name)
+{
+	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
+	if (it!=emitterYamlCache.end())
+	{
+		(*it).second.refCount--;
+		if (!(*it).second.refCount)
+		{
+			SafeRelease((*it).second.parser);
+			emitterYamlCache.erase(it);
+		}
+	}
+}
+
+YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
+{
+	YamlParser *res = NULL;
+	String name = filename.GetAbsolutePathname();
+	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
+	if (it!=emitterYamlCache.end())
+	{
+		(*it).second.refCount++;
+		res = (*it).second.parser;
+	}
+	else
+	{
+		res = YamlParser::Create(filename);
+		EmitterYamlCacheEntry entry;
+		entry.parser = res;
+		entry.refCount = 1;
+		emitterYamlCache[name] = entry;
+	}
+	ReleaseFromCache(emitterFileName);
+	emitterFileName = name;
+	return res;
+}
+
 void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {
     Cleanup(true);
     
-	YamlParser * parser = YamlParser::Create(filename);
+	YamlParser * parser = GetParser(filename);
 	if(!parser)
 	{
 		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.GetAbsolutePathname().c_str());
@@ -592,10 +642,10 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	if (emitterNode)
 	{
 		if (emitterNode->Get("emissionAngle"))
-			emissionAngle = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionAngle");
+			emissionAngle = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionAngle"));
         
 		if (emitterNode->Get("emissionVector"))
-			emissionVector = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "emissionVector");
+			emissionVector = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("emissionVector"));
         
 		const YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
 		if (!emissionVectorInvertedNode)
@@ -606,12 +656,12 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		}
 
 		if (emitterNode->Get("emissionRange"))
-			emissionRange = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionRange");
+			emissionRange = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionRange"));
         
 		if (emitterNode->Get("colorOverLife"))
-			colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(emitterNode, "colorOverLife");
+			colorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(emitterNode->Get("colorOverLife"));
 		if (emitterNode->Get("radius"))
-			radius = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "radius");
+			radius = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("radius"));
 		
 		emitPointsCount = -1; 
 		const YamlNode * emitAtPointsNode = emitterNode->Get("emitAtPoints");
@@ -661,7 +711,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		}else
 			emitterType = EMITTER_POINT;
 		
-        size = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "size");
+        size = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("size"));
         
         if(size == 0)
         {
@@ -711,9 +761,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	
 	// Yuri Coder, 2013/01/15. The "name" node for Layer was just added and may not exist for
 	// old yaml files. Generate the default name for nodes with empty names.
-	UpdateEmptyLayerNames();
-	
-	SafeRelease(parser);
+	UpdateEmptyLayerNames();		
 }
 
 void ParticleEmitter::SaveToYaml(const FilePath & filename)
@@ -746,7 +794,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
 
-    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
@@ -760,6 +808,20 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
 
     parser->SaveToYamlFile(filename, rootYamlNode, true);
     parser->Release();
+}
+
+void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
+{
+	PropertyLineHelper::AddIfModifiable(emissionVector.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(emissionRange.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(radius.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(size.Get(), modifiables);
+	PropertyLineHelper::AddIfModifiable(colorOverLife.Get(), modifiables);
+	int32 layersCount = this->layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->GetModifableLines(modifiables);
+	}
 }
     
 int32 ParticleEmitter::GetParticleCount()
