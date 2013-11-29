@@ -26,49 +26,40 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Job/JobQueue.h"
+#include "Job/Job.h"
 
-
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
-#include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
-
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
-protected:
-	~ParticleForce(){}
-public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
 
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
+void JobQueue::Update()
+{
+	mutex.Lock();
 
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
+	while(!queue.empty())
+	{
+		Job * job = queue.front();
+		mutex.Unlock();
 
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
+		job->Perform();
 
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
+		mutex.Lock();
+		queue.pop_front();
+		job->Release();
+	}
 
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
-};
+	mutex.Unlock();
+}
 
-};
+void JobQueue::AddJob(Job * job)
+{
+	mutex.Lock();
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+	job->Retain();
+	queue.push_back(job);
+
+	mutex.Unlock();
+}
+
+
+}
