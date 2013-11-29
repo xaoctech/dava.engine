@@ -144,6 +144,29 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
     return stream;
 }
 
+void RenderDataObject::RemoveStream(eVertexFormat formatMark)
+{
+	Map<eVertexFormat, RenderDataStream*>::iterator it = streamMap.find(formatMark);
+	if (it!=streamMap.end())
+	{
+		RenderDataStream *stream = (*it).second;
+		streamMap.erase(it);
+		resultVertexFormat &= ~formatMark;	
+		/*remove from array*/
+		for (Vector<RenderDataStream *>::iterator it = streamArray.begin(), e = streamArray.end(); it!=e; ++it)
+		{
+			if ((*it) == stream)
+			{
+				streamArray.erase(it);
+				break;
+			}
+		}
+		SafeRelease(stream);
+	}
+	
+	
+}
+
 uint32 RenderDataObject::GetResultFormat() const
 {
     return resultVertexFormat;
