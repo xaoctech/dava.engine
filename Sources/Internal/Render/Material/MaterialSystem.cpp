@@ -292,7 +292,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 {
 	NMaterial* material = new NMaterial();
 	material->configMaterial = true;
-	bool result = material->LoadFromFile(filePath.GetAbsolutePathname());
+	bool result = material->LoadFromFile(filePath);
 	
 	DVASSERT(result);
 	if(result)

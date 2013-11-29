@@ -251,8 +251,8 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	{
 		for (int32 i=0; i<planesCount; ++i)
 		{
-			_up = basises[i].first;
-			_left = basises[i].second;
+			//_up = basises[i].first;
+			//_left = basises[i].second;
 			//Vector3 topRight;
 			//Vector3 topLeft;
 			//Vector3 botRight;
@@ -272,7 +272,9 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 							particlePos[0],
 							particlePos[1],
 							particlePos[2],
-							particlePos[3]);
+							particlePos[3],
+							basises[i].second,
+							basises[i].first);
 			}
 			
 			memcpy(&verts[verticesCount], &particlePos[0], sizeof(Vector3) * 4);
@@ -500,10 +502,12 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 								  Vector3& topLeft,
 								  Vector3& topRight,
 								  Vector3& botLeft,
-								  Vector3& botRight)
+								  Vector3& botRight,
+								  Vector3& dx,
+								  Vector3& dy)
 {
-	Vector3 dx(_left);
-	Vector3 dy(_up);
+	//Vector3 dx(_left);
+	//Vector3 dy(_up);
 
 	float32 sine;
 	float32 cosine;
@@ -542,12 +546,12 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	Particle* parent = emitter->GetParentParticle();		
 	if ((NULL != parent)&&inheritPosition)
 	{		
-		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
-		currDirection.Normalize();
+		currDirection = current->speed*current->velocityOverLife + parent->speed*parent->velocityOverLife;		
 	}else
 	{
-		currDirection = current->direction;
+		currDirection = current->speed;
 	}
+	currDirection.Normalize();
 
 	Vector3 vecShort = currDirection.CrossProduct(direction);
 	vecShort.Normalize();			
@@ -580,7 +584,13 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
 		}
 
-		dstLayer = new ParticleLayer3D(parentFor3DLayer);
+		ParticleLayer3D *dst = new ParticleLayer3D(parentFor3DLayer);		
+		
+		SafeRelease(dst->material);
+		dst->material = material->Clone();
+		dst->renderBatch->SetMaterial(dst->material);
+
+		dstLayer = dst; 
 		dstLayer->SetLong(this->isLong);
 	}
 		
@@ -591,6 +601,10 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 
 void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 {
+	//Logger::FrameworkDebug("[ParticleLayer3D::SetBlendMode] (%x) sFactor = %s, dFactor = %s",
+	//					   (size_t)this,
+	//					   BLEND_MODE_NAMES[sFactor].c_str(),
+	//					   BLEND_MODE_NAMES[dFactor].c_str());
 	ParticleLayer::SetBlendMode(sFactor, dFactor);
 	UpdateBlendState();
 }
@@ -617,6 +631,12 @@ void ParticleLayer3D::UpdateBlendState()
 {
 	if(material)
 	{
+	//	Logger::FrameworkDebug("[ParticleLayer3D::UpdateBlendState] (%x) sFactor = %s, dFactor = %s",
+	//						   (size_t)this,
+	//						   BLEND_MODE_NAMES[srcBlendFactor].c_str(),
+	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
+
+		
 		const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
 		material->SwitchParent(parentName);
 	}

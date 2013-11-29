@@ -55,7 +55,7 @@ struct Matrix3
 		};
 	};
 	
-	inline Matrix3() {};
+	inline Matrix3();
 
 	inline Matrix3(	float32 __00, float32 __01, float32 __02,
 					float32 __10, float32 __11, float32 __12,
@@ -69,7 +69,8 @@ struct Matrix3
 	// Helpers
 	inline void Identity();
 	inline void	CreateRotation(const Vector3 & r, float32 angleInRadians);
-	inline void	BuildRotation(float32 Angle);
+	inline void	BuildRotation(float32 cosA, float32 sinA);
+	inline void	BuildRotation(float32 angle);
 	inline void	BuildTranslation(float32 x, float32 y);
 	inline void	BuildTranslation(const Vector2 & vec);
 	inline void	BuildScale(const Vector2 & vec);
@@ -114,6 +115,13 @@ inline float32 Matrix3::Det() const
 		- _02 * _11 * _20 - _01 * _10 * _22 - _00 * _12 * _21;
 }
 
+inline Matrix3::Matrix3()
+{
+	_00 = 1.0f; _01 = 0.0f; _02 = 0.0f;
+	_10 = 0.0f; _11 = 1.0f; _12 = 0.0f;
+	_20 = 0.0f; _21 = 0.0f; _22 = 1.0f;
+}
+
 inline void Matrix3::Identity()
 {
 	_00 = 1.0f; _01 = 0.0f; _02 = 0.0f;
@@ -141,14 +149,19 @@ inline void	Matrix3::CreateRotation(const Vector3 & r, float32 angleInRadians)
 	_data[2][2] = cosA + (1 - cosA) * r.z * r.z;
 }
 
+inline void	Matrix3::BuildRotation(float32 cosA, float32 sinA)
+{
+	_00 = cosA;		_01 = sinA;		_02 = 0;
+	_10 = -sinA;	_11 = cosA;		_12 = 0;
+	_20 = 0;		_21 = 0;		_22 = 1;
+}
+
 inline void Matrix3::BuildRotation(float32 angle)
 {
 	float32	cosA = cosf(angle);
 	float32	sinA = sinf(angle);
 
-	_00 = cosA;		_01 = sinA;		_02 = 0;
-	_10 = -sinA;	_11 = cosA;		_12 = 0;
-	_20 = 0;		_21 = 0;		_22 = 1;
+	BuildRotation( cosA, sinA );
 }
 
 inline void	Matrix3::BuildTranslation(float32 _xT, float32 _yT)

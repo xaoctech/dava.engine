@@ -53,11 +53,17 @@ void ActionEnableNotPassable::Redo()
 	
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
 	
-	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
-	
-	if (!success || !sceneEditor->landscapeEditorDrawSystem->EnableNotPassableTerrain())
+	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL &
+												~SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR);
+	if (!success )
 	{
-		ShowErrorDialog(ResourceEditor::NOT_PASSABLE_TERRAIN_ENABLE_ERROR);
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+	}
+	
+	LandscapeEditorDrawSystem::eErrorType enablingError = sceneEditor->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	if (enablingError != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+	{
+		ShowErrorDialog(LandscapeEditorDrawSystem::GetDescriptionByError(enablingError));
 	}
 
 	SceneSignals::Instance()->EmitNotPassableTerrainToggled(sceneEditor);

@@ -171,7 +171,7 @@ RenderManager::~RenderManager()
 {
     ShaderCache::Instance()->Release();
     
-    SafeRelease(currentRenderData);
+    currentRenderData = 0;
 	SafeRelease(currentRenderEffect);
     SafeRelease(FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
@@ -193,6 +193,17 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.fillMode = FILLMODE_SOLID;
 	
 	default2DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state =	RenderStateData::STATE_BLEND |
+								RenderStateData::STATE_COLORMASK_ALL;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	default2DNoTextureStateHandle = AddRenderStateData(&defaultStateData);
+
 	
 	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
 	defaultStateData.cullMode = FACE_BACK;
@@ -445,8 +456,7 @@ Shader * RenderManager::GetShader()
 
 void RenderManager::SetRenderData(RenderDataObject * object)
 {
-    SafeRelease(currentRenderData);
-    currentRenderData = SafeRetain(object);
+    currentRenderData = object;
 }
 		
 void RenderManager::SetClip(const Rect &rect)
@@ -838,6 +848,11 @@ void RenderManager::ProcessStats()
 void RenderManager::SetDefault2DState()
 {
 	currentState.stateHandle = GetDefault2DStateHandle();
+}
+	
+void RenderManager::SetDefault2DNoTextureState()
+{
+	currentState.stateHandle = GetDefault2DNoTextureStateHandle();
 }
 	
 void RenderManager::SetDefault3DState()

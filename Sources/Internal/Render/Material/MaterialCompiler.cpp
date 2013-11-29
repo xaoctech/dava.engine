@@ -73,12 +73,12 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
 };
     
 String MaterialCompiler::GetCompiledVertexShaderPathname() const
-{
+{	//VK: why we return string instead of FilePath
     return materialCompiledVshName.GetAbsolutePathname();
 }
 
 String MaterialCompiler::GetCompiledFragmentShaderPathname() const
-{
+{	//VK: why we return string instead of FilePath
     return materialCompiledFshName.GetAbsolutePathname();
 }
 

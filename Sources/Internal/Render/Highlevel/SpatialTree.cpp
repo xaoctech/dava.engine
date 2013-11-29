@@ -24,6 +24,7 @@ QuadTree::QuadTree(int32 _maxTreeDepth)
 	: maxTreeDepth(_maxTreeDepth)
 	, worldInitialized(false)
 {		    
+	debugDrawStateHandle = InvalidUniqueHandle;
 }
 
 
@@ -524,11 +525,23 @@ void QuadTree::Update()
 	}
 }
 
-void QuadTree::DebugDraw()
+void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 {
 	if (!worldInitialized) return;
-	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-	RenderManager::Instance()->SetDefault3DState();
+	if (debugDrawStateHandle == InvalidUniqueHandle) //create debug draw state
+	{
+		RenderStateData debugStateData = {0};
+		debugStateData.state =	RenderStateData::STATE_BLEND | RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_TEST;
+		debugStateData.cullMode = FACE_BACK;
+		debugStateData.depthFunc = CMP_LESS;
+		debugStateData.sourceFactor = BLEND_SRC_ALPHA;
+		debugStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+		debugStateData.fillMode = FILLMODE_SOLID;		
+		debugDrawStateHandle = RenderManager::Instance()->AddRenderStateData(&debugStateData);
+	}
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, cameraMatrix);
+	RenderManager::Instance()->SetRenderState(debugDrawStateHandle);
+	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);	
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
 	DebugDrawNode(0);

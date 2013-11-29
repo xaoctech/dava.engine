@@ -458,8 +458,8 @@ void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
         Image *img = colorSprite->GetTexture()->CreateImageFromMemory();
         if(img)
         {
-            StoreSaveFileName(pathToFile.GetAbsolutePathname());
-            ImageLoader::Save(img, pathToFile.GetAbsolutePathname());
+            StoreSaveFileName(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             unsavedChanges = false;
@@ -472,7 +472,7 @@ void LandscapeEditorCustomColors::LoadTextureAction(const FilePath &pathToFile)
 	if(pathToFile.IsEmpty())
 		return;
 
-	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
+	Vector<Image*> images = ImageLoader::CreateFromFileByContent(pathToFile);
 	if(images.empty())
 		return;
 

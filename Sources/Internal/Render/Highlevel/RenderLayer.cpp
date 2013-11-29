@@ -32,6 +32,7 @@
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
 #include "Base/Radix/Radix.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -48,6 +49,8 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {
+    TIME_PROFILE("RenderLayer::Draw");
+    
     renderLayerBatchArray->Sort(camera);
     
 #if CAN_INSTANCE_CHECK

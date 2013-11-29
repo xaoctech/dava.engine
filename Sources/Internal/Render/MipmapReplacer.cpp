@@ -96,7 +96,7 @@ void MipMapReplacer::ReplaceMipMap(Texture * texture, int32 level)
     FilePath textureFilePath = GetDummyTextureFilePath(texture);
     if(!textureFilePath.IsEmpty())
     {
-        Vector<Image*> mipImg = ImageLoader::CreateFromFile(textureFilePath);
+        Vector<Image*> mipImg = ImageLoader::CreateFromFileByContent(textureFilePath);
         if(mipImg.size())
         {
             uint32 mipMapSize = texture->width / (1 << level);

@@ -312,6 +312,15 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 	CloseTab(index);
 }
 
+void SceneTabWidget::TabBarCloseCurrentRequest()
+{
+	int tabIndex = GetCurrentTab();
+	if(tabIndex != -1)
+	{
+		CloseTab(tabIndex);
+	}
+}
+
 void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 {
     if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
