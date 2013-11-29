@@ -26,49 +26,73 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Job/JobWaiter.h"
+#include "Job/JobManager.h"
 
-
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
-#include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
-
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
-protected:
-	~ParticleForce(){}
-public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
 
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
-
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
-
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
-
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
-
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
+ThreadIdJobWaiter::ThreadIdJobWaiter(Thread::ThreadId _threadId/* = Thread::GetCurrentThreadId()*/)
+:	threadId(_threadId)
+{
 	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
-};
 
-};
+}
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+ThreadIdJobWaiter::~ThreadIdJobWaiter()
+{
+	JobManager::Instance()->UnregisterWaiterForCreatorThread(this);
+}
+
+void ThreadIdJobWaiter::Wait()
+{
+	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForCreatorThread(this))
+	{
+		Thread::Wait(&cv);
+	}
+}
+
+Thread::ThreadId & ThreadIdJobWaiter::GetThreadId()
+{
+	return threadId;
+}
+
+ConditionalVariable * ThreadIdJobWaiter::GetConditionalVariable()
+{
+	return &cv;
+}
+
+
+
+JobInstanceWaiter::JobInstanceWaiter(Job * _job)
+:	job(_job)
+{
+
+}
+
+JobInstanceWaiter::~JobInstanceWaiter()
+{
+	JobManager::Instance()->UnregisterWaiterForJobInstance(this);
+}
+
+void JobInstanceWaiter::Wait()
+{
+	if(JobManager::WAITER_WILL_WAIT == JobManager::Instance()->RegisterWaiterForJobInstance(this))
+	{
+		Thread::Wait(&cv);
+	}
+}
+
+ConditionalVariable * JobInstanceWaiter::GetConditionalVariable()
+{
+	return &cv;
+}
+
+Job * JobInstanceWaiter::GetJob()
+{
+	return job;
+}
+
+
+
+}

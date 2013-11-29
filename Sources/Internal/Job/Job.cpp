@@ -26,49 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Job/Job.h"
+#include "Job/JobManager.h"
 
-
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
-#include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
-
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
-protected:
-	~ParticleForce(){}
-public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
 
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
+Job::Job(const Message & _message, const Thread::ThreadId & _creatorThreadId)
+:	message(_message),
+	creatorThreadId(_creatorThreadId),
+	state(STATUS_UNDONE)
+{
 
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
+}
 
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
+void Job::Perform()
+{
+	message(this);
+	JobManager::Instance()->OnJobCompleted(this);
+}
 
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
+Job::eState Job::GetState()
+{
+	return state;
+}
 
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
-};
+void Job::SetState(eState newState)
+{
+	state = newState;
+}
 
-};
+void Job::SetPerformedOn(ePerformedWhere _performedWhere)
+{
+	performedWhere = _performedWhere;
+}
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+Job::ePerformedWhere Job::PerformedWhere()
+{
+	return performedWhere;
+}
+
+
+
+}
