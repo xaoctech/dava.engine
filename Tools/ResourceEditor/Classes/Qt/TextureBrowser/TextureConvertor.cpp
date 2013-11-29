@@ -137,7 +137,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 
 			for(; begin != end; begin++)
 			{
-				DAVA::TextureDescriptor *descriptor = begin->second->CreateDescriptor();
+				DAVA::TextureDescriptor *descriptor = begin->second->GetDescritor();
 
 				if(NULL != descriptor)
 				{
@@ -155,8 +155,6 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 						ret = newJob.id;
 					}
 				}
-
-				descriptor->Release();
 			}
 		}
 	}
@@ -338,15 +336,15 @@ DAVA::Vector<QImage> TextureConvertor::GetOriginalThread(JobItem *item)
 		
 		if(descriptor->IsCubeMap())
 		{
-			DAVA::Vector<DAVA::String> cubeFaceNames;
-			DAVA::Texture::GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str(), cubeFaceNames);
+			DAVA::Vector<DAVA::FilePath> cubeFaceNames;
+			DAVA::Texture::GenerateCubeFaceNames(descriptor->GetSourceTexturePathname(), cubeFaceNames);
 			
 			for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
 			{
 				if((descriptor->faceDescription & (1 << i)) != 0)
 				{
 					QImage img;
-					img = QImage(cubeFaceNames[i].c_str());
+					img = QImage(cubeFaceNames[i].GetAbsolutePathname().c_str());
 					resultArray.push_back(img);
 				}
 			}
@@ -462,7 +460,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 			outputPath = TextureConverter::ConvertTexture(*descriptor, gpu, true);
         }
 		
-		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFileByContent(outputPath);
 		
 		if(davaImages.size() > 0)
 		{

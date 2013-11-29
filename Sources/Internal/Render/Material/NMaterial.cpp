@@ -107,12 +107,68 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	
+	void NMaterialState::GenericPropertyManager::Init(NMaterialProperty* prop)
+	{
+		prop->type = Shader::UT_INT;
+		prop->size = 0;
+		prop->data = NULL;
+	}
+	
+	void NMaterialState::GenericPropertyManager::Release(NMaterialProperty* prop)
+	{
+		if(prop->data)
+		{
+			uint8* fakePtr = (uint8*)prop->data;
+			SafeDeleteArray(fakePtr);
+		}
+	}
+	
+	NMaterialProperty* NMaterialState::GenericPropertyManager::Clone(NMaterialProperty* prop)
+	{
+		NMaterialState::GenericMaterialProperty* cloneProp = new NMaterialState::GenericMaterialProperty();
+		
+		cloneProp->size = prop->size;
+		cloneProp->type = prop->type;
+		if(prop->data)
+		{
+			size_t dataSize = Shader::GetUniformTypeSize(prop->type) * prop->size;
+			cloneProp->data = new uint8[dataSize];
+			memcpy(cloneProp->data, prop->data, dataSize);
+		}
+		
+		return cloneProp;
+	}
+
+	void NMaterialState::UniformPropertyManager::Init(NMaterialProperty* prop)
+	{
+		prop->type = Shader::UT_INT;
+		prop->size = 0;
+		prop->data = NULL;
+	}
+	
+	void NMaterialState::UniformPropertyManager::Release(NMaterialProperty* prop)
+	{
+		//VI: do nothing here: memory is allocated in an external array
+	}
+	
+	NMaterialProperty* NMaterialState::UniformPropertyManager::Clone(NMaterialProperty* prop)
+	{
+		NMaterialState::UniformMaterialProperty* cloneProp = new NMaterialState::UniformMaterialProperty();
+		cloneProp->size = prop->size;
+		cloneProp->type = prop->type;
+		cloneProp->data = prop->data;
+		
+		return cloneProp;
+	}
+	
 	NMaterialState::NMaterialState() :
 	layers(4),
 	techniqueForRenderPass(8),
 	nativeDefines(16),
 	materialProperties(32),
-	textures(8)
+	textures(8),
+	texturesDirty(false)
 	{
 		parent = NULL;
 		requiredVertexFormat = EVF_FORCE_DWORD;
@@ -140,7 +196,7 @@ namespace DAVA
 			i != materialProperties.end();
 			++i)
 		{
-			delete i->second;
+			SafeDelete(i->second);
 		}		
 	}
 	
@@ -216,43 +272,48 @@ namespace DAVA
 				break;
 		}
 		
-		NMaterialProperty * materialProperty = new NMaterialProperty();
+		NMaterialProperty * materialProperty = new NMaterialState::GenericMaterialProperty();
 		materialProperty->size = 1;
 		materialProperty->type = type;
-		materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
-		materialProperty->data = new char[materialProperty->dataSize];
+		size_t dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
+		materialProperty->data = new char[dataSize];
 		
-		memcpy(materialProperty->data, &data, materialProperty->dataSize);
+		memcpy(materialProperty->data, &data, dataSize);
 		
 		materialProperties.insert(uniformName, materialProperty);
 	}
     
 	void NMaterialState::SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data)
 	{
+		size_t dataSize = Shader::GetUniformTypeSize(type) * size;
 		NMaterialProperty * materialProperty = materialProperties.at(propertyFastName);
 		if (materialProperty)
 		{
 			if (materialProperty->type != type || materialProperty->size != size)
 			{
-				char* tmpPtr = static_cast<char*>(materialProperty->data);
-				SafeDeleteArray(tmpPtr); //cannot delete void* pointer
-				materialProperty->size = size;
-				materialProperty->type = type;
-                materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
-				materialProperty->data = new char[materialProperty->dataSize];
+				DVASSERT(false); //VI: technically change material property type or size in runtime should never happen
+				
+				NMaterialProperty* newProp = new NMaterialState::GenericMaterialProperty();
+				newProp->size = size;
+				newProp->type = type;
+				newProp->data = new uint8[dataSize];
+				
+				SafeDelete(materialProperty);
+				materialProperties.insert(propertyFastName, newProp);
+				
+				materialProperty = newProp;
 			}
 		}
 		else
 		{
-			materialProperty = new NMaterialProperty;
+			materialProperty = new NMaterialState::GenericMaterialProperty();
 			materialProperty->size = size;
 			materialProperty->type = type;
-            materialProperty->dataSize = Shader::GetUniformTypeSize(type) * materialProperty->size;
-			materialProperty->data = new char[materialProperty->dataSize];
+			materialProperty->data = new uint8[dataSize];
 			materialProperties.insert(propertyFastName, materialProperty);
 		}
 		
-		memcpy(materialProperty->data, data, materialProperty->dataSize);
+		memcpy(materialProperty->data, data, dataSize);
 	}
 	
 	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
@@ -340,6 +401,8 @@ namespace DAVA
 				SafeRelease(bucket->texture);
 				bucket->texture = SafeRetain(texture);
 				texturesArray[bucket->index] = texture;
+				
+				texturesDirty = true;
 			}
 		}
 		else
@@ -351,6 +414,8 @@ namespace DAVA
 			textures.insert(textureFastName, bucket);
 			texturesArray.push_back(texture);
 			textureNamesArray.push_back(textureFastName);
+			
+			texturesDirty = true;
 		}
 	}
     
@@ -399,6 +464,8 @@ namespace DAVA
 	{
 		parent = SafeRetain(material);
 		parentName = (NULL == parent) ? FastName("") : parent->GetMaterialName();
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
 	void NMaterialState::AddChildToState(NMaterial* material)
@@ -498,6 +565,7 @@ namespace DAVA
 		if (parentNameNode)
 		{
 			parentName = FastName(parentNameNode->AsString());
+			DVASSERT(parentName.IsValid());
 		}
 
 		
@@ -680,6 +748,11 @@ namespace DAVA
 		materialSystem = NULL;
 		memset(lights, 0, sizeof(Light*) * 8);
 		lightCount = 0;
+		
+		textureParamsCachePtr = NULL;
+		activeUniformsCachePtr = NULL;
+		textureParamsCacheSize = 0;
+		activeUniformsCacheSize = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -702,13 +775,13 @@ namespace DAVA
 		}
 	}
     
-	bool NMaterial::LoadFromFile(const String & pathname)
+	bool NMaterial::LoadFromFile(const FilePath & pathname)
 	{
 		bool result = false;
 		YamlParser * parser = YamlParser::Create(pathname);
 		if (!parser)
 		{
-			Logger::Error("Can't load requested material: %s", pathname.c_str());
+			Logger::Error("Can't load requested material: %s", pathname.GetAbsolutePathname().c_str());
 			return result;
 		}
 		
@@ -759,7 +832,7 @@ namespace DAVA
 							{
 								Logger::Error("[NMaterial::LoadFromFile] Failed to load a material state %s in file %s!",
 											  materialStateName.c_str(),
-											  pathname.c_str());
+											  pathname.GetAbsolutePathname().c_str());
 								
 								DVASSERT(false);
 							}
@@ -774,7 +847,7 @@ namespace DAVA
 					{
 						Logger::Error("[NMaterial::LoadFromFile] Duplicate material state %s found in file %s!",
 									  materialStateName.c_str(),
-									  pathname.c_str());
+									  pathname.GetAbsolutePathname().c_str());
 						
 						DVASSERT(false);
 					}
@@ -782,7 +855,7 @@ namespace DAVA
 				}
 				else
 				{
-					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.c_str());
+					Logger::Error("[NMaterial::LoadFromFile] There's a material state without a name in file %s!", pathname.GetAbsolutePathname().c_str());
 					DVASSERT(false);
 				}
 			}
@@ -795,10 +868,14 @@ namespace DAVA
 	
 	void NMaterial::BindMaterialTextures(RenderState* renderState)
 	{
-		Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
-		for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
+		//Vector<TextureParamCacheEntry>::iterator texEnd = textureParamsCache.end();
+		//for(Vector<TextureParamCacheEntry>::iterator i = textureParamsCache.begin(); i < texEnd; ++i)
+		//TextureParamCacheEntry* data = textureParamsCache.data();
+		//size_t dataCount = textureParamsCache.size();
+		//for(size_t i = 0; i < dataCount; ++i)
+		for(size_t i = 0; i < textureParamsCacheSize; ++i)
 		{
-			TextureParamCacheEntry& textureEntry = *i;
+			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
 			
 			if(NULL == textureEntry.tx)
 			{
@@ -812,28 +889,23 @@ namespace DAVA
 	void NMaterial::BindMaterialProperties(Shader * shader)
 	{
 		//VI: need to set uniforms AFTER FlushState (since program has been bind there)
-		Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
-		for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
+		//Vector<UniformCacheEntry>::iterator uniformsEnd = activeUniformsCache.end();
+		//UniformCacheEntry* data = activeUniformsCache.data();
+		//size_t dataCount = activeUniformsCache.size();
+		//for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
+		//for(size_t i = 0; i < dataCount; ++i)
+		for(size_t i = 0; i < activeUniformsCacheSize; ++i)
 		{
-			UniformCacheEntry& uniformEntry = *i;
+			UniformCacheEntry& uniformEntry = activeUniformsCachePtr[i];
+			Shader::Uniform* uniform = uniformEntry.uniform;
 			
-			if(NULL == uniformEntry.prop)
-			{
-				uniformEntry.prop = GetMaterialProperty(uniformEntry.uniform->name);
-			}
-			
-			if(uniformEntry.prop)
-			{
-				//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
-				shader->SetUniformValueByIndex(uniformEntry.index,
-											   uniformEntry.uniform->type,
-											   uniformEntry.uniform->size,
-											   uniformEntry.prop->data,
-											   uniformEntry.prop->dataSize);
-			}
+			//Logger::FrameworkDebug("[NMaterial::BindMaterialTechnique] setting property %s", uniformEntry.uniform->name.c_str());
+			shader->SetUniformValueByUniform(uniform,
+										   uniform->type,
+										   uniform->size,
+										   uniformEntry.propData);
 		}
 	}
-
 	
 	void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* camera)
 	{
@@ -1093,12 +1165,7 @@ namespace DAVA
 		
 		NotifyChildrenOnChange();
 	}
-	
-	const FastNameSet& NMaterial::GetRenderLayers()
-	{
-		return effectiveLayers;
-	}
-	
+		
 	void NMaterial::OnParentChanged()
 	{
 		PropagateParentLayers();
@@ -1232,8 +1299,9 @@ namespace DAVA
 	{
 		//TODO: add code allowing to transition from switchable to non-switchable materials and vice versa
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
+		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 1)
+		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
 		{
 			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
 				it != archiveData.end();
@@ -1252,15 +1320,17 @@ namespace DAVA
 			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
 			Deserialize(*this, stateArchive, serializationContext);
 		}
-		
-		SetMaterialName(archive->GetString("materialName"));
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
 							  KeyedArchive * archive,
 							  SerializationContext * serializationContext)
 	{
+		//Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
+		
+		DVASSERT(materialState.parentName.IsValid());
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
+		archive->SetString("materialName", materialState.materialName.c_str());
 		
 		KeyedArchive* materialLayers = new KeyedArchive();
 		SerializeFastNameSet(materialState.layers, materialLayers);
@@ -1279,14 +1349,15 @@ namespace DAVA
 		{
 			NMaterialProperty* property = it->second;
 			
-			uint8* propertyStorage = new uint8[property->dataSize + sizeof(uint32) + sizeof(uint32)];
+			uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
+			uint8* propertyStorage = new uint8[dataSize + sizeof(uint32) + sizeof(uint32)];
 			
 			uint32 uniformType = property->type; //make sure uniform type is always uint32
 			memcpy(propertyStorage, &uniformType, sizeof(uint32));
 			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, property->dataSize);
+			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, dataSize);
 			
-			materialProps->SetByteArray(it->first.c_str(), propertyStorage, property->dataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(uint32) + sizeof(uint32));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1340,7 +1411,10 @@ namespace DAVA
 								SerializationContext * serializationContext)
 	{
 		materialState.parentName = FastName(archive->GetString("parentName"));
+		DVASSERT(materialState.parentName.IsValid());
 		materialState.materialName = FastName(archive->GetString("materialName"));
+		
+		//Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
 		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialState.nativeDefines);
@@ -1589,6 +1663,8 @@ namespace DAVA
 		{
 			parentName = newParent;
 		}
+		
+		DVASSERT(parentName.IsValid());
 	}
 	
 	void NMaterial::BuildTextureParamsCache(const MaterialTechnique& technique)
@@ -1620,6 +1696,14 @@ namespace DAVA
 				}
 			}
 		}
+		
+		textureParamsCachePtr = NULL;
+		textureParamsCacheSize = 0;
+		if(textureParamsCache.size())
+		{
+			textureParamsCachePtr = &textureParamsCache[0];
+			textureParamsCacheSize = textureParamsCache.size();
+		}
 	}
 	
 	void NMaterial::BuildActiveUniformsCache(const MaterialTechnique& technique)
@@ -1628,7 +1712,31 @@ namespace DAVA
 		
 		Shader * shader = technique.GetShader();
 		
+		//VI: ugly copypaste
+		uint32 cacheTotalSize = 0;
 		uint32 uniformCount = shader->GetUniformCount();
+		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		{
+			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+			
+			if (Shader::UNIFORM_NONE == uniform->id  ||
+				Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+			{
+				NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+				NMaterialProperty* localProp = materialProperties.at(uniform->name);
+				
+				//VI: we need to track only properties not set by parent to shader
+				if(localProp ||
+				   (NULL == localProp && NULL == prop))
+				{
+					cacheTotalSize += Shader::GetUniformTypeSize(uniform->type) * uniform->size;
+				}
+			}
+		}
+		
+		uniformDataStorage.resize(cacheTotalSize, 0);
+				
+		size_t dataOffset = 0;
 		for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
@@ -1643,14 +1751,51 @@ namespace DAVA
 				if(localProp ||
 				   (NULL == localProp && NULL == prop))
 				{
+					if(localProp)
+					{
+						NMaterialProperty* newProp = new NMaterialState::UniformMaterialProperty();
+						newProp->size = uniform->size;
+						newProp->type = uniform->type;
+						newProp->data = &uniformDataStorage[dataOffset];
+
+						size_t dataSize = Shader::GetUniformTypeSize(localProp->type) * localProp->size;
+						memcpy(newProp->data, localProp->data, dataSize);
+						
+						materialProperties.insert(uniform->name, newProp);
+						SafeDelete(localProp);
+						
+						localProp = newProp;
+					}
+					else
+					{
+						localProp = new NMaterialState::UniformMaterialProperty();
+						localProp->size = uniform->size;
+						localProp->type = uniform->type;
+						localProp->data = &uniformDataStorage[dataOffset];
+						
+						materialProperties.insert(uniform->name, localProp);
+					}
+					
 					UniformCacheEntry entry;
 					entry.uniform = uniform;
 					entry.index = uniformIndex;
-					entry.prop = NULL;
 					
+					entry.propData = localProp->data;
+
 					activeUniformsCache.push_back(entry);
+					
+					dataOffset += Shader::GetUniformTypeSize(uniform->type) * uniform->size;
 				}
 			}
+		}
+		
+		activeUniformsCachePtr = NULL;
+		activeUniformsCacheSize = 0;
+		if(activeUniformsCache.size())
+		{
+			activeUniformsCachePtr = &activeUniformsCache[0];
+			activeUniformsCacheSize = activeUniformsCache.size();
+
 		}
 	}
 		
@@ -1678,11 +1823,10 @@ namespace DAVA
 						
 						if(prop)
 						{
-							shader->SetUniformValueByIndex(uniformIndex,
+							shader->SetUniformValueByUniform(uniform,
 														   uniform->type,
 														   uniform->size,
-														   prop->data,
-														   prop->dataSize);
+														   prop->data);
 						}
 					}
 				}

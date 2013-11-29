@@ -45,6 +45,7 @@ typedef char             GLchar;
 #endif //not defined GLchar
 #endif //#ifdef __DAVAENGINE_ANDROID__
 
+#define GET_UNIFORM(__uniformIndex__) ((Uniform*)(uniformData + uniformOffsets[__uniformIndex__]))
 
 namespace DAVA
 {
@@ -112,8 +113,10 @@ public:
 		bool ValidateCache(const void* value, uint16 valueSize);
     };
 
-    Shader();
+protected:
     virtual ~Shader();
+public:
+    Shader();
     
     Shader * Clone();
     
@@ -137,16 +140,17 @@ public:
     
     void Bind();
     static void Unbind();
-    int32 GetAttributeIndex(eVertexFormat vertexFormat);
-    int32 GetAttributeCount();
+    inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
+    inline int32 GetAttributeCount();
     
-    int32 GetUniformCount();
-    Uniform * GetUniform(int32 index);
-    eUniformType GetUniformType(int32 index);
+    inline int32 GetUniformCount();
+    inline Uniform * GetUniform(int32 index);
+    inline eUniformType GetUniformType(int32 index);
+    inline const char * GetUniformName(int32 index);
+    inline int32 GetUniformArraySize(int32 index);
+
     static int32 GetUniformTypeSize(eUniformType type);
     static const char * GetUniformTypeSLName(eUniformType type);
-    const char * GetUniformName(int32 index);
-    int32 GetUniformArraySize(int32 index);
 
     int32 GetUniformLocationByIndex(int32 index);
     //int32 FindUniformLocationByName(const FastName & name);
@@ -163,7 +167,7 @@ public:
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);*/
 
-    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data, uint16 dataLength);
+    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data);
 	void SetUniformValueByIndex(int32 uniformIndex, int32 value);
     void SetUniformValueByIndex(int32 uniformIndex, float32 value);
     //void SetUniformValueByIndex(int32 uniformIndex, int32 count, int32 * value);
@@ -175,6 +179,18 @@ public:
     void SetUniformValueByIndex(int32 uniformIndex, const Vector4 & vector);
     void SetUniformValueByIndex(int32 uniformIndex, const Matrix4 & matrix);
 	void SetUniformValueByIndex(int32 uniformIndex, const Matrix3 & matrix);
+	
+    void SetUniformValueByUniform(Uniform* uniform, eUniformType uniformType, uint32 arraySize, void * data);
+	void SetUniformValueByUniform(Uniform* uniform, int32 value);
+    void SetUniformValueByUniform(Uniform* uniform, float32 value);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector2 & vector);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector3 & vector);
+    void SetUniformColor3ByUniform(Uniform* uniform, const Color & color);
+    void SetUniformColor4ByUniform(Uniform* uniform, const Color & color);
+    void SetUniformValueByUniform(Uniform* uniform, const Vector4 & vector);
+    void SetUniformValueByUniform(Uniform* uniform, const Matrix4 & matrix);
+	void SetUniformValueByUniform(Uniform* uniform, const Matrix3 & matrix);
+
     
     void Dump();
     
@@ -219,6 +235,8 @@ private:
 	
 	uint16* uniformOffsets;
 	uint8* uniformData;
+	Uniform** autobindUniforms;
+	uint8 autobindUniformCount;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     
@@ -242,6 +260,49 @@ private:
     uint32 fragmentShaderSize;*/
 #endif
 };
+
+//
+inline int32 Shader::GetAttributeCount()
+{
+    return activeAttributes;
+}
+
+inline int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
+{
+    return vertexFormatAttribIndeces[FastLog2(vertexFormat)];
+}
+    
+inline int32 Shader::GetUniformCount()
+{
+    return activeUniforms;
+}
+
+inline Shader::eUniformType Shader::GetUniformType(int32 index)
+{
+    return GET_UNIFORM(index)->type;
+}
+
+inline Shader::Uniform * Shader::GetUniform(int32 index)
+{
+    return GET_UNIFORM(index);
+}
+
+inline const char * Shader::GetUniformName(int32 index)
+{
+    return GET_UNIFORM(index)->name.c_str();
+}
+
+inline int32 Shader::GetUniformLocationByIndex(int32 index)
+{
+    return GET_UNIFORM(index)->location;
+}
+
+inline int32 Shader::GetUniformArraySize(int32 index)
+{
+    return GET_UNIFORM(index)->size;
+}
+    
 };
+
 
 #endif // __DAVAENGINE_SHADER_H__

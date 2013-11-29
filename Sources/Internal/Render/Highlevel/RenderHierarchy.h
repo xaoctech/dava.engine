@@ -52,7 +52,7 @@ public:
 	
 	virtual void Initialize(){};
 	virtual void Update(){};
-	virtual void DebugDraw(){};
+	virtual void DebugDraw(const Matrix4& cameraMatrix){};
 
 protected:
 	void AddToRender(RenderObject * renderObject);

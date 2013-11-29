@@ -96,6 +96,13 @@ public:
 		EMITTER_SHOCKWAVE
 	};
 
+	enum eState
+	{
+		STATE_PLAYING,    
+		STATE_STOPPING, //emitter is stopping - no new particle generation, still need to update and recalculate
+		STATE_STOPPED   //emitter is completely stopped - no processing at all
+	};
+
 	ParticleEmitter();
 	virtual ~ParticleEmitter();
 	
@@ -182,6 +189,8 @@ public:
 		\returns is emitter paused 
 	 */
 	bool IsPaused();
+
+	eState GetState(){return state;}
 	
 	/**
 		\brief Function adds layer to emitter.
@@ -392,8 +401,10 @@ public:
 	void SetDesiredLodLevel(int32 level);
 	bool IsShortEffect();
 	void SetShortEffect(bool isShort);
-	
-	Matrix3 GetRotationMatrix();
+
+	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
+	Matrix3 GetRotationMatrix();	
+
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -421,6 +432,9 @@ protected:
 	float32 time;
 	int32	emitPointsCount;
 	bool	isPaused;
+	
+	eState  state;
+	
 	/**
 	 \brief Enable/disable autorestart.
 	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 
@@ -470,6 +484,36 @@ public:
     inline void Set3D(bool is3D) {this->is3D = is3D;};
 	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
 	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
+
+
+private:
+	struct EmitterYamlCacheEntry
+	{
+		YamlParser *parser;
+		int refCount;
+	};
+
+#if defined (USE_FILEPATH_IN_MAP)
+	static Map<FilePath, EmitterYamlCacheEntry> emitterYamlCache;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	static Map<String, EmitterYamlCacheEntry> emitterYamlCache;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+	
+protected:
+
+	friend class ParticleEmitter3D;
+	YamlParser* GetParser(const FilePath &filename);
+
+#if defined (USE_FILEPATH_IN_MAP)
+	void RetainInCache(const FilePath & name);
+	void ReleaseFromCache(const FilePath & name);	
+	FilePath emitterFileName;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	void RetainInCache(const String& name);
+	void ReleaseFromCache(const String& name);	
+	String emitterFileName;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
+
 
 public:
     

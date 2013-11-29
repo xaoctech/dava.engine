@@ -96,12 +96,14 @@ public:
     virtual void    InsertBeforeNode(Entity *newNode, Entity *beforeNode);
     
 	virtual void	RemoveNode(Entity * node);
-	virtual Entity* GetChild(int32 index) const;
-	virtual int32   GetChildrenCount() const;
     virtual int32   GetChildrenCountRecursive() const;
 	virtual void	RemoveAllChildren();
 	virtual Entity*	GetNextChild(Entity *child);
-        
+
+    inline  Entity* GetChild(int32 index) const;
+	inline  int32   GetChildrenCount() const;
+
+    
 	virtual bool FindNodesByNamePart(const String & namePart, List<Entity *> &outNodeList);
     
 	/**
@@ -163,8 +165,8 @@ public:
 	void SetLodVisible(bool isLodVisible);
 	void SetSwitchVisible(bool isSwitchVisible);
 	inline Entity * GetParent();
-	void SetUpdatable(bool isUpdatable);
-	inline bool GetUpdatable(void);
+	DAVA_DEPRECATED(void SetUpdatable(bool isUpdatable));
+	DAVA_DEPRECATED(inline bool GetUpdatable(void));
 	inline bool IsLodPart(void);
     virtual bool IsLodMain(Entity *childToCheck = NULL);//if childToCheck is NULL checks the caller node
 	
@@ -222,7 +224,10 @@ public:
 		NODE_DELETED = 1 << 13,
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
-        SCENE_LIGHTS_MODIFIED = 1 << 31,
+        SCENE_LIGHTS_MODIFIED = 1 << 14,
+        
+        ENTITY_INDEX_POSITION = 16,
+        ENTITY_INDEX_MASK = 0xffff,
     };
 	
     inline void AddFlag(int32 flagToAdd);
@@ -230,6 +235,8 @@ public:
     inline uint32 GetFlags() const;
     void AddFlagRecursive(int32 flagToAdd);
     void RemoveFlagRecursive(int32 flagToRemove);
+    inline uint32 GetIndexInParent() { return (flags >> ENTITY_INDEX_POSITION) & ENTITY_INDEX_MASK; };
+    inline void SetIndexInParent(uint32 index) { flags |= (index & ENTITY_INDEX_MASK) << ENTITY_INDEX_POSITION; };
     
 	// animations 
 	void ExecuteAnimation(SceneNodeAnimation * animation);	
@@ -342,9 +349,6 @@ public:
      */
     virtual void SceneDidLoaded();
 
-	//temporary solution
-	Entity * entity;
-    
     
     void SetFog_Kostil(float32 density, const Color &color);
     
@@ -353,6 +357,8 @@ public:
 	static const char* SCENE_NODE_IS_LOCKED_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
+    
+    Vector<Entity*> children;
     
 protected:
     
@@ -371,7 +377,7 @@ protected:
 
 	Scene * scene;
 	Entity * parent;
-	Vector<Entity*> children;
+	
 
 	String	name;
 	int32	tag;
@@ -405,7 +411,7 @@ public:
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 
-        PROPERTY("isVisible", "isVisible", GetVisible, SetVisible, I_VIEW | I_EDIT)
+        PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
 
 		//COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		//COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -525,6 +531,17 @@ uint32 Entity::GetAvailableComponentFlags()
 {
     return componentFlags;
 }
+    
+Entity * Entity::GetChild(int32 index) const
+{
+    return children[index];
+}
+
+int32 Entity::GetChildrenCount() const
+{
+    return (int32)children.size();
+}
+
 
 };
 

@@ -69,7 +69,6 @@ namespace DAVA
 	: scene(0)
 	, parent(0)
     , tag(0)
-	, entity(0)
 #if !defined(COMPONENT_STORAGE_STDMAP)
     , componentsMap(4)
 #endif
@@ -463,9 +462,9 @@ namespace DAVA
 	}
 	
 	
-	void Entity::SetParent(Entity * node)
+	void Entity::SetParent(Entity * _parent)
 	{
-		parent = node;
+		parent = _parent;
 		((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetParent(parent);
 	}
 	
@@ -478,7 +477,9 @@ namespace DAVA
 			{
 				node->parent->RemoveNode(node);
 			}
+            uint32 insertPosition = (uint32)children.size();
 			children.push_back(node);
+            node->SetIndexInParent(insertPosition);
 			node->SetParent(this);
 			node->SetScene(GetScene());
 		}
@@ -489,10 +490,10 @@ namespace DAVA
 		if(newNode && newNode != beforeNode)
 		{
 			bool canBeInserted = false;
-			
+
 			//need 2 passes because iterator will be invalidated when the entity
 			//is already present in the list of children and changes its position.
-			
+
 			Vector<Entity*>::iterator itEnd = children.end();
 			for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
 			{
@@ -502,7 +503,7 @@ namespace DAVA
 					break;
 				}
 			}
-			
+
 			if(canBeInserted)
 			{
 				newNode->Retain();
@@ -510,7 +511,7 @@ namespace DAVA
 				{
 					newNode->parent->RemoveNode(newNode);
 				}
-				
+
 				itEnd = children.end();
 				for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
 				{
@@ -525,7 +526,8 @@ namespace DAVA
 			}
 		}
 	}
-	
+
+
 	void Entity::RemoveNode(Entity * node)
 	{
 		if (!node)
@@ -542,6 +544,7 @@ namespace DAVA
 				if (node)
 				{
 					node->SetScene(0);
+                    node->SetIndexInParent(ENTITY_INDEX_MASK);
 					node->SetParent(0);
 					node->Release();
 				}
@@ -550,12 +553,7 @@ namespace DAVA
 		}
 		
 	}
-	
-	Entity * Entity::GetChild(int32 index) const
-	{
-		return children[index];
-	}
-	
+		
 	Entity* Entity::GetNextChild(Entity *child)
 	{
 		Entity* next = NULL;
@@ -574,11 +572,7 @@ namespace DAVA
 		
 		return next;
 	}
-	
-	int32 Entity::GetChildrenCount() const
-	{
-		return (int32)children.size();
-	}
+    
 	int32 Entity::GetChildrenCountRecursive() const
 	{
 		int32 result = 0;
@@ -1233,6 +1227,12 @@ namespace DAVA
 					if(NULL != comp)
 					{
 						comp->Deserialize(compArch, serializationContext);
+						
+						if(comp->GetType() == Component::TRANSFORM_COMPONENT)
+						{
+							RemoveComponent(comp->GetType());
+						}
+						
 						AddComponent(comp);
 					}
 					
@@ -1315,8 +1315,12 @@ namespace DAVA
 	{
 		for (uint32 i = 0; i < Component::COMPONENT_COUNT; ++i)
 		{
-			if (components[i])
-				components[i]->OptimizeBeforeExport();
+            uint32 componentsCount = GetComponentCount(i);
+            for(uint32 index = 0; index < componentsCount; ++index)
+            {
+                Component *c = GetComponent(i, index);
+                c->OptimizeBeforeExport();
+            }
 		}
 		
 		uint32 size = (uint32)children.size();

@@ -108,7 +108,7 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
 DAVA::Image * CreateTopLevelImage(const DAVA::FilePath &imagePathname)
 {
     Image *image = NULL;
-    Vector<Image *> imageSet = ImageLoader::CreateFromFile(imagePathname);
+    Vector<Image *> imageSet = ImageLoader::CreateFromFileByContent(imagePathname);
     if(0 != imageSet.size())
     {
         image = SafeRetain(imageSet[0]);

@@ -10,8 +10,10 @@
 using namespace DAVA;
 
 class QComboBox;
+class QRadioButton;
 class SliderWidget;
 class TileTexturePreviewWidget;
+class QFrame;
 
 class TilemaskEditorPanel: public LandscapeEditorBasePanel
 {
@@ -33,6 +35,8 @@ private slots:
 	void SetStrength(int strength);
 	void SetDrawTexture(int textureIndex);
 	void OnTileColorChanged(int32 tileNumber, Color color);
+	void SetNormalDrawing();
+	void SetCopyPaste();
 
 	void IncreaseBrushSize();
 	void DecreaseBrushSize();
@@ -74,9 +78,15 @@ private:
 	SliderWidget* sliderWidgetStrength;
 	QComboBox* comboBrushImage;
 	TileTexturePreviewWidget* tileTexturePreviewWidget;
+	QRadioButton* radioDraw;
+	QRadioButton* radioCopyPaste;
+	QFrame* frameStrength;
+	QFrame* frameTileTexturesPreview;
 
 	void InitBrushImages();
 	void UpdateTileTextures();
+
+	void UpdateControls();
 
 	int32 BrushSizeUIToSystem(int32 uiValue);
 	int32 BrushSizeSystemToUI(int32 systemValue);

@@ -113,7 +113,7 @@ public:
 	
 	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
 
-	void DebugDrawHierarchy();
+	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
 private:
 	void CreateSpatialTree();

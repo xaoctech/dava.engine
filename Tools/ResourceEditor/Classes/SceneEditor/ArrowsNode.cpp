@@ -225,13 +225,8 @@ ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
 {
 	SetOwnerLayerName(LAYER_ARROWS);
 	
-	const RenderStateData* default3dState = RenderManager::Instance()->GetRenderStateData(RenderManager::Instance()->GetDefault3DStateHandle());
-	RenderStateData arrowsStateData;
-	memcpy(&arrowsStateData, default3dState, sizeof(arrowsStateData));
-	
-	arrowsStateData.state = RenderStateData::STATE_COLORMASK_ALL |
-							RenderStateData::STATE_DEPTH_WRITE;
-	arrowsStateHandle = RenderManager::Instance()->AddRenderStateData(&arrowsStateData);
+	arrowsStateHandle = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+																	   RenderStateData::STATE_DEPTH_WRITE);
 }
 
 void ArrowsRenderBatch::DrawPrism(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4, const Vector3& p5)

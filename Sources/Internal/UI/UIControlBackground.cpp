@@ -326,6 +326,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			
 			lastDrawPos = drawState.position;
 
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -365,6 +366,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //			spr->SetPivotPoint(geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx), geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy));
 //			spr->SetAngle(geometricData.angle);
 			
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -464,23 +466,27 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 
 			lastDrawPos = drawState.position;
 			
+			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
 		
 		case DRAW_FILL:
-		{//TODO: add rotation
-			RenderHelper::Instance()->FillRect(drawRect);
+		{
+		    RenderManager::Instance()->SetDefault2DNoTextureState();
+			DrawFilled( geometricData );
 		}	
 		break;
 			
 		case DRAW_STRETCH_BOTH:
 		case DRAW_STRETCH_HORIZONTAL:
 		case DRAW_STRETCH_VERTICAL:
+			RenderManager::Instance()->SetDefault2DState();
 			DrawStretched(drawRect);
 		break;
 		
 		case DRAW_TILED:
+			RenderManager::Instance()->SetDefault2DState();
 			DrawTiled(drawRect);
 		break;
 	}
@@ -886,6 +892,21 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_32, tilesIndeces);
+}
+
+void UIControlBackground::DrawFilled( const UIGeometricData &gd )
+{
+	if( gd.angle != 0.0f ) 
+	{
+		Polygon2 poly;
+		gd.GetPolygon( poly );
+
+		RenderHelper::Instance()->FillPolygon( poly );
+	}
+	else
+	{
+		RenderHelper::Instance()->FillRect( gd.GetUnrotatedRect() );
+	}
 }
 
 void UIControlBackground::SetLeftRightStretchCap(float32 _leftStretchCap)

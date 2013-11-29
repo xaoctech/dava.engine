@@ -37,6 +37,7 @@
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
+
 namespace DAVA
 {
 /**
@@ -240,10 +241,8 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 	
-	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
-	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
-
-    DAVA_DEPRECATED(TextureDescriptor * CreateDescriptor() const);
+	static void GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames);
+	static void GenerateCubeFaceNames(const FilePath & baseName, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames);
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
@@ -293,7 +292,11 @@ public:							// properties for fast access
 
 	void SetDebugInfo(const String & _debugInfo);
 
+#ifdef USE_FILEPATH_IN_MAP
+	static const Map<FilePath, Texture*> & GetTextureMap();
+#else //#ifdef USE_FILEPATH_IN_MAP
 	static const Map<String, Texture*> & GetTextureMap();
+#endif //#ifdef USE_FILEPATH_IN_MAP
     
     int32 GetDataSize() const;
     
@@ -306,20 +309,26 @@ public:							// properties for fast access
     
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
+    inline TextureDescriptor * GetDescritor() const;
     
 private:
     
+#ifdef USE_FILEPATH_IN_MAP
+	static Map<FilePath, Texture*> textureMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
 	static Map<String, Texture*> textureMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
+
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex);
     
 	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
 
-	void ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor);
-
 
 	Vector<Image *> images;
 	bool LoadImages(eGPUFamily gpu);
+    
 	void SetParamsFromImages();
 	void FlushDataToRenderer();
 	void ReleaseImages();
@@ -355,8 +364,7 @@ private:
     
     static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
-	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
-
+	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
 
 	TextureState state;
 	TextureDescriptor *texDescriptor;
@@ -382,6 +390,11 @@ inline const eGPUFamily Texture::GetSourceFileGPUFamily() const
 inline Texture::TextureState Texture::GetState() const
 {
 	return state;
+}
+
+inline TextureDescriptor * Texture::GetDescritor() const
+{
+    return texDescriptor;
 }
 
 

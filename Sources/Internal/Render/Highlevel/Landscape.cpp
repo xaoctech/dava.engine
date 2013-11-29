@@ -309,7 +309,7 @@ bool Landscape::BuildHeightmap()
     bool retValue = false;
     if(heightmapPath.IsEqualToExtension(".png"))
     {
-        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath);
+        Vector<Image *> imageSet = ImageLoader::CreateFromFileByExtension(heightmapPath);
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -670,8 +670,9 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
         textureNames[level] = textureName;
     }
     textures[level] = texture;
-	    
-    if(TEXTURE_TILE_FULL == level)
+
+
+    if((TEXTURE_TILE_FULL == level) && ((tiledShaderMode == TILED_MODE_MIXED) || (tiledShaderMode == TILED_MODE_TEXTURE)))
     {
         UpdateFullTiledTexture();
     }
@@ -762,7 +763,7 @@ void Landscape::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod
     }else
     {
         //int32 newdepth = (int)(logf((float)depth) / logf(2.0f) + 0.5f);
-        int32 newdepth2 = CountLeadingZeros(depth);
+        int32 newdepth2 = FastLog2(depth);
         //Logger::FrameworkDebug("dp: %d %d %d", depth, newdepth, newdepth2);
         //DVASSERT(newdepth == newdepth2); // Check of math, we should use optimized version with depth2
         
@@ -1490,8 +1491,6 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
 #endif
 
-    FilePath path(serializationContext->GetScenePath());
-    path += archive->GetString("hmap");
 
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
@@ -1503,45 +1502,53 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 	isFogEnabled = archive->GetBool("isFogEnabled", isFogEnabled);
     fogDensity = archive->GetFloat("fogdencity", fogDensity);
 
-    BuildLandscapeFromHeightmapImage(path, boxDef);
+	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
+    BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
         
-        String textureName = archive->GetString(Format("tex_%d", k));
-        
-        FilePath absPath;
-        if(!textureName.empty())
-        {
-            FilePath path(serializationContext->GetScenePath());
-            path += archive->GetString("hmap");
+		if(TEXTURE_TILE_FULL == k && tiledShaderMode != TILED_MODE_TEXTURE && tiledShaderMode != TILED_MODE_MIXED)
+			continue;
 
-            absPath = serializationContext->GetScenePath();
-            absPath += textureName;
-        }
+        // load textures
+		if(!(tiledShaderMode == TILED_MODE_TILE_DETAIL_MASK && (TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k)))
+		{
+			String textureName = archive->GetString(Format("tex_%d", k));
+			if(!textureName.empty())
+			{
+				FilePath absPath = serializationContext->GetScenePath() + textureName;
+				if (serializationContext->GetVersion() >= 4)
+				{
+					SetTexture((eTextureLevel)k, absPath);
+				}
+				else
+				{
+					DVASSERT(0); //VK: need to check if we have old scenes
 
-        if(serializationContext->IsDebugLogEnabled())
-            Logger::FrameworkDebug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
+					if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
+						SetTexture((eTextureLevel)(k + 2), absPath);
 
-        if (serializationContext->GetVersion() >= 4)
-        {
-            SetTexture((eTextureLevel)k, absPath);
-            textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+					if (k == 3)
+						SetTexture(TEXTURE_COLOR, absPath);
+				}
+			}
+		}
 
+		//load tiles
+		if (serializationContext->GetVersion() >= 4)
+		{
+			textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
 			tileColor[k] = archive->GetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
-        }
-        else
-        {
-            if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
-                SetTexture((eTextureLevel)(k + 2), absPath);
-                
-            if (k == 3)
-                SetTexture(TEXTURE_COLOR, absPath);
+		}
+		else
+		{
+			DVASSERT(0); //VK: need to check if we have old scenes
 
-            if ((k == 0) || (k == 1))
-                textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
-        }
+			if ((k == 0) || (k == 1))
+				textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+		}
     }
 	
 	SetupMaterialProperties();
@@ -1961,10 +1968,10 @@ void Landscape::SetupMaterialProperties()
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE2_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TEXTURE3_TILING, Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
 		
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE3]);
 		
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
@@ -2089,7 +2096,7 @@ void Landscape::SetSpecularMapPath(const FilePath& path)
 	Texture* specularMapTexture = tileMaskMaterial->GetTexture(TEXTURE_SPECULAR_MAP);
 	if(specularMapTexture)
 	{
-		needReload = (specularMapTexture->GetPathname().GetAbsolutePathname() != path.GetAbsolutePathname());
+		needReload = (specularMapTexture->GetPathname() != path);
 	}
 	
 	if(needReload && path.Exists())
@@ -2108,7 +2115,7 @@ FilePath Landscape::GetSpecularMapPath()
 	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
 	if(specularMapTexture)
 	{
-		texturePath = specularMapTexture->GetPathname().GetAbsolutePathname();
+		texturePath = specularMapTexture->GetPathname();
 	}
 	
 	return texturePath;

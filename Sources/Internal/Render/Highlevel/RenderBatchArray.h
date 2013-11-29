@@ -45,7 +45,7 @@ public:
     ~RenderPassBatchArray();
     
     void Clear();
-    void AddRenderBatch(const FastName & name, RenderBatch * renderBatch);
+    inline void AddRenderBatch(const FastName & name, RenderBatch * renderBatch);
     RenderLayerBatchArray * Get(const FastName & name);
 
 private:
@@ -70,7 +70,7 @@ public:
     static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
     
     void Clear();
-    void AddRenderBatch(RenderBatch * batch);
+    inline void AddRenderBatch(RenderBatch * batch);
     uint32 GetRenderBatchCount();
     RenderBatch * Get(uint32 index);
 
@@ -84,19 +84,32 @@ public:
 private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 flags;
-    
-    struct RenderBatchSortItem
-    {
-        pointer_size sortingKey;
-        RenderBatch * renderBatch;
-    };
-    Vector<RenderBatchSortItem> sortArray;
-    static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
+    static bool MaterialCompareFunction(const RenderBatch * a, const RenderBatch * b);
 public:
     INTROSPECTION(RenderLayerBatchArray,
         COLLECTION(renderBatchArray, "Render Batch Array", I_EDIT)
     );
 };
+	
+	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
+	{
+		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
+		if (!layerBatchArray)
+		{
+			layerBatchArray = new RenderLayerBatchArray();
+			layerBatchArrayMap.insert(name, layerBatchArray);
+		}
+		
+		layerBatchArray->AddRenderBatch(renderBatch);
+	}
+	
+	inline void RenderLayerBatchArray::AddRenderBatch(RenderBatch * batch)
+	{
+		//DVASSERT(batch->GetRemoveIndex() == -1)
+		renderBatchArray.push_back(batch);
+	}
+
+
     
 } // ns
 

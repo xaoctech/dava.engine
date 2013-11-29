@@ -36,6 +36,8 @@
 #include "Entity/SceneSystem.h"
 #include "UI/UIEvent.h"
 
+#include "Render/RenderManager.h"
+
 class SceneGridSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
@@ -73,6 +75,8 @@ protected:
 	
 	float gridMax;
 	float gridStep;
+	
+	DAVA::UniqueHandle renderState;
 };
 
 #endif

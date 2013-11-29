@@ -154,7 +154,13 @@ eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
+#ifdef USE_FILEPATH_IN_MAP
+Map<FilePath, Texture*> Texture::textureMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
 Map<String, Texture*> Texture::textureMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
+
 Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
@@ -162,8 +168,14 @@ static int32 textureFboCounter = 0;
 Texture * Texture::Get(const FilePath & pathName)
 {
 	Texture * texture = NULL;
+#ifdef USE_FILEPATH_IN_MAP
+	Map<FilePath, Texture *>::iterator it;
+	it = textureMap.find(pathName);
+#else //#ifdef USE_FILEPATH_IN_MAP
 	Map<String, Texture *>::iterator it;
 	it = textureMap.find(pathName.GetAbsolutePathname());
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
 	if (it != textureMap.end())
 	{
 		texture = it->second;
@@ -177,7 +189,11 @@ void Texture::AddToMap(Texture *tex)
 {
     if(!tex->relativePathname.IsEmpty())
     {
-        textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+#ifdef USE_FILEPATH_IN_MAP
+		textureMap[tex->relativePathname] = tex;
+#else //#ifdef USE_FILEPATH_IN_MAP
+		textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
+#endif //#ifdef USE_FILEPATH_IN_MAP
     }
 }
 
@@ -497,17 +513,15 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
-		Vector<String> faceNames;
-		FilePath texDescFullPath = texDescriptor->pathname.GetAbsolutePathname();
-		texDescFullPath.ReplaceExtension(TextureDescriptor::GetSourceTextureExtension());
-		GenerateCubeFaceNames(texDescFullPath.GetAbsolutePathname(), faceNames);
+		Vector<FilePath> faceNames;
+		GenerateCubeFaceNames(texDescriptor->GetSourceTexturePathname(), faceNames);
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			Vector<Image *> imageFace = ImageLoader::CreateFromFile(faceNames[i]);
+			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
 			if(imageFace.size() == 0)
 			{
-				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].c_str());
+				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
 
 				ReleaseImages();
 				return false;
@@ -524,7 +538,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	else
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
-		images = ImageLoader::CreateFromFile(imagePathname);
+		images = ImageLoader::CreateFromFileByExtension(imagePathname);
 	}
 
 	if(0 == images.size())
@@ -582,6 +596,13 @@ void Texture::FlushDataToRenderer()
 	for(uint32 i = 0; i < (uint32)images.size(); ++i)
 	{
 		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
+	
+		if(texDescriptor->IsCubeMap() &&
+		   (images[i]->mipmapLevel != (uint32)-1) &&
+		   (images[i]->mipmapLevel != 0))
+		{
+			needGenerateMipMaps = false;
+		}
 	}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -700,7 +721,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(defaultGPU, descriptor);
+	eGPUFamily gpuForLoading = GetGPUForLoading(defaultGPU, descriptor);
 	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
 	{
@@ -714,16 +735,6 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 }
     
 
-TextureDescriptor * Texture::CreateDescriptor() const
-{
-    if(!isRenderTarget)
-    {
-        return TextureDescriptor::CreateFromFile(relativePathname);
-    }
-
-    return NULL;
-}
-    
 void Texture::Reload()
 {
     ReloadAs(loadedAsFile);
@@ -731,36 +742,22 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
-	TextureDescriptor *descriptor = CreateDescriptor();
-	if(descriptor)
-	{
-		ReloadAs(gpuFamily, descriptor);
-		descriptor->Release();
-	}
-	else if(!isPink)
-	{
-		Logger::Error("[Texture::ReloadAs] Can't create descriptor for gpu = %d", gpuFamily);
-
-		ReleaseTextureData();
-		MakePink((TextureType)textureType);
-	}
-}
-
-void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
-{
     ReleaseTextureData();
-	
-	DVASSERT(NULL != descriptor);
-
-	SafeRelease(texDescriptor);
-	texDescriptor = SafeRetain(descriptor);
     
-	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+    if(relativePathname.Exists())
+    {
+        texDescriptor->Release();
+        texDescriptor = TextureDescriptor::CreateFromFile(relativePathname);
+    }
+    
+	DVASSERT(NULL != texDescriptor);
+    
+	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
 	bool loaded = LoadImages(gpuForLoading);
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
-
+        
 		SetParamsFromImages();
 		FlushDataToRenderer();
 		ReleaseImages();
@@ -768,9 +765,10 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, TextureDescriptor *descriptor)
 	else
     {
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", relativePathname.GetAbsolutePathname().c_str());
-        MakePink(descriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
+        MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
 }
+
     
 bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
@@ -794,7 +792,12 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
+#ifdef USE_FILEPATH_IN_MAP
+		textureMap.erase(relativePathname);
+#else //#ifdef USE_FILEPATH_IN_MAP
 		textureMap.erase(relativePathname.GetAbsolutePathname());
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
 	}
 	return BaseObject::Release();
 }
@@ -893,7 +896,11 @@ void Texture::DumpTextures()
 	int32 cnt = 0;
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
+#ifdef USE_FILEPATH_IN_MAP
+	for(Map<FilePath, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+#else //#ifdef USE_FILEPATH_IN_MAP
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+#endif //#ifdef USE_FILEPATH_IN_MAP
 	{
 		Texture *t = it->second;
 		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
@@ -1053,7 +1060,11 @@ Image * Texture::CreateImageFromMemory()
     return image;
 }
 	
+#ifdef USE_FILEPATH_IN_MAP
+const Map<FilePath, Texture*> & Texture::GetTextureMap()
+#else //#ifdef USE_FILEPATH_IN_MAP
 const Map<String, Texture*> & Texture::GetTextureMap()
+#endif //#ifdef USE_FILEPATH_IN_MAP
 {
     return textureMap;
 }
@@ -1322,7 +1333,7 @@ eGPUFamily Texture::GetDefaultGPU()
 }
 
     
-eGPUFamily Texture::GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
+eGPUFamily Texture::GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
         return (eGPUFamily)descriptor->exportedAsGpuFamily;
@@ -1335,7 +1346,7 @@ void Texture::SetInvalidater(TextureInvalidater* invalidater)
 	this->invalidater = invalidater;
 }
 
-void Texture::GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames)
+void Texture::GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames)
 {
 	static Vector<String> defaultSuffixes;
 	if(defaultSuffixes.empty())
@@ -1349,24 +1360,21 @@ void Texture::GenerateCubeFaceNames(const String& baseName, Vector<String>& face
 	GenerateCubeFaceNames(baseName, defaultSuffixes, faceNames);
 }
 
-void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames)
+void Texture::GenerateCubeFaceNames(const FilePath & filePath, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames)
 {
 	faceNames.clear();
 	
-	FilePath filePath(baseName);
-		
-	String fileNameWithoutExtension = filePath.GetFilename();
+	String fileNameWithoutExtension = filePath.GetBasename();
 	String extension = filePath.GetExtension();
-	fileNameWithoutExtension.replace(fileNameWithoutExtension.find(extension), extension.size(), "");
 		
 	for(size_t i = 0; i < faceNameSuffixes.size(); ++i)
 	{
-		DAVA::FilePath faceFilePath = baseName;
+		DAVA::FilePath faceFilePath = filePath;
 		faceFilePath.ReplaceFilename(fileNameWithoutExtension +
 									 faceNameSuffixes[i] +
 									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_UNKNOWN, FORMAT_INVALID));
 			
-		faceNames.push_back(faceFilePath.GetAbsolutePathname());
+		faceNames.push_back(faceFilePath);
 	}
 }
 

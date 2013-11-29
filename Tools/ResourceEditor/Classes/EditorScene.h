@@ -125,6 +125,8 @@ protected:
 	btBroadphaseProxy* originalHandler;
     
     RenderManager::Stats renderStats;
+	
+	UniqueHandle gridRenderState;
     
 public:
 
