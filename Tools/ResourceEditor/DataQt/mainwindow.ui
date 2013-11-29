@@ -171,6 +171,9 @@
      </item>
      <item>
       <widget class="QFrame" name="frame_6">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>3</number>
@@ -711,6 +714,9 @@
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <property name="uniformRowHeights">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
