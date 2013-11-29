@@ -96,6 +96,7 @@ public:
 	int GetDropType(const QtMimeData *data) const;
 
 	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
+	void ResetFilterAcceptFlag();
 
 protected:
 	SceneEditor2 * curScene;
@@ -107,6 +108,7 @@ protected:
 
 	void RebuildIndexesCache();
 	void AddIndexesCache(SceneTreeItem *item);
+	void ResetFilterAcceptFlagInternal(SceneTreeItem *item);
 
 	bool AreSameType(const QModelIndexList & indexes) const;
 
