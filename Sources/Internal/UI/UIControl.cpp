@@ -834,22 +834,6 @@ namespace DAVA
 				relativePosition = absolutePosition = position;
 			}
 		}
-		// DF-1482 - Each time we change control's position - we have to re-generate tiles arrays for DRAW_TILED option				
-		SetGenerateTilesArraysFlag();
-	}
-	
-	void UIControl::SetGenerateTilesArraysFlag(bool hierarchic)
-	{
-		GetBackground()->SetGenerateTilesArraysFlag();
-		// DF-2525 - Set generateTilesArrays flag for all children
-		if(hierarchic)
-		{
-			List<UIControl*>::iterator it = childs.begin();
-			for(; it != childs.end(); ++it)
-			{
-				(*it)->SetGenerateTilesArraysFlag();
-			}
-		}
 	}
 	
 	const Vector2 &UIControl::GetSize() const
@@ -861,8 +845,6 @@ namespace DAVA
 		size = newSize;
 		// Update size and align of childs		
 		RecalculateChildsSize();
-		// DF-1482 - Each time we resize control - we have to reset tiles arrays for DRAW_TILED option
-		GetBackground()->ResetTilesArrays();
 	}
 	
 	float32 UIControl::GetAngle() const
@@ -948,8 +930,6 @@ namespace DAVA
 			scale.y = rect.dy / (size.y * gd.scale.y);
 			SetPosition(Vector2(rect.x + pivotPoint.x * scale.x, rect.y + pivotPoint.y * scale.y), rectInAbsoluteCoordinates);
 		}
-		// DF-1482 - Each time we change control rect - we have to reset tiles arrays for DRAW_TILED option
-		GetBackground()->ResetTilesArrays();
 	}
 
 	

@@ -26,49 +26,69 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_MANAGER_H__
+#define __DAVAENGINE_JOB_MANAGER_H__
 
+#include "Base/BaseTypes.h"
+#include "Base/Singleton.h"
+#include "Base/Message.h"
+#include "Platform/Thread.h"
+#include "Platform/Mutex.h"
+#include "Base/ScopedPtr.h"
+#include "Job/Job.h"
 
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
-#include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
-
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
-protected:
-	~ParticleForce(){}
+
+class JobQueue;
+class ThreadIdJobWaiter;
+class JobInstanceWaiter;
+
+class JobManager : public Singleton<JobManager>
+{
 public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
+	enum eThreadType
+	{
+		THREAD_MAIN = 0,
+		THREAD_WORKER
+	};
 
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
+	enum eWaiterRegistrationResult
+	{
+		WAITER_WILL_WAIT,
+		WAITER_RETURN_IMMEDIATELY
+	};
 
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
+	JobManager();
+	virtual ~JobManager();
 
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
+	ScopedPtr<Job> CreateJob(eThreadType threadType, const Message & message);
 
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
-
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
+	void Update();
 	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
+	void OnJobCreated(Job * job);
+	void OnJobCompleted(Job * job);
+
+	eWaiterRegistrationResult RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+	void UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+
+	eWaiterRegistrationResult RegisterWaiterForJobInstance(JobInstanceWaiter * waiter);
+	void UnregisterWaiterForJobInstance(JobInstanceWaiter * waiter);
+
+protected:
+	Mutex jobsDoneMutex;
+	JobQueue * mainQueue;
+	void UpdateMainQueue();
+
+	Map<Thread::ThreadId, uint32> jobsPerCreatorThread;
+	Map<Thread::ThreadId, ThreadIdJobWaiter *> waitersPerCreatorThread;
+	void CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId);
+	
+	
+	void CheckAndCallWaiterForJobInstance(Job * job);
+	Map<Job *, JobInstanceWaiter *> waitersPerJob;
 };
 
-};
+}
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+#endif //__DAVAENGINE_JOB_MANAGER_H__
