@@ -33,7 +33,6 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaVariant.h"
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
-#include "../QtPropertyWidgets/QtComboFake.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QColorDialog>

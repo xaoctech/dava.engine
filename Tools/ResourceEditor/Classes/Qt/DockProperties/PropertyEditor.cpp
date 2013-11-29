@@ -544,16 +544,17 @@ void PropertyEditor::LoadScheme(const DAVA::FilePath &path)
 {
 	// first, we open the file
 	QFile file(path.GetAbsolutePathname().c_str());
-	if(file.open(QIODevice::WriteOnly))
+	if(file.open(QIODevice::ReadOnly))
 	{
 		scheme.clear();
 
-// 		QTextStream qout(&file);
-// 		foreach(const QString &value, scheme)
-// 		{
-// 			qout << value << endl;
-// 		}
-// 		file.close();
+		QTextStream qin(&file);
+		while(!qin.atEnd())
+		{
+			scheme.insert(qin.readLine());
+		}
+
+ 		file.close();
 	}
 }
 
