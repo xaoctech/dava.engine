@@ -44,9 +44,6 @@ public:
 	virtual void Redo();
 
 	virtual DAVA::Entity* GetEntity() const;
-    
-    static bool EntityGroupHasMaterials(EntityGroup *group, bool recursive);
-    static bool EntityHasMaterials(DAVA::Entity * entity, bool recursive);
 };
 
 #endif // __MATERIAL_ASSIGN_COMMAND_H__

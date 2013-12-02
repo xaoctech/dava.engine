@@ -30,18 +30,21 @@
 
 #include "LibraryMaterialsModel.h"
 #include "LibraryMaterialsFilteringModel.h"
+#include "MaterialsModel.h"
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
 #include "Scene/EntityGroup.h"
 #include "Scene/System/SelectionSystem.h"
 
+#include "MaterialEditor/MaterialsDropSystem.h"
+
 #include "Main/mainwindow.h"
 
-#include "MaterialsModel.h"
 
 #include <QMenu>
 #include <QAction>
+#include <QMessageBox>
 
 LibraryMaterialsModel::LibraryMaterialsModel()
     : LibraryBaseModel("Materials")
@@ -171,6 +174,34 @@ void LibraryMaterialsModel::OnAssign()
 {
     QVariant materialAsVariant = ((QAction *)sender())->data();
     DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
+
+    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+    const EntityGroup selection = scene->selectionSystem->GetSelection();
+
+    if(MaterialsDropSystem::EntityGroupHasMaterials(&selection, true))
+    {
+        bool wasDropped = MaterialsDropSystem::DropMaterialToGroup(&selection, material, true);
+        if(!wasDropped)
+        {
+            DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(&selection, true);
+            
+            DAVA::String names;
+            for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+            {
+                if(ie != 0) names += ",";
+                
+                names += rejectedEntities[ie]->GetName();
+            }
+            
+            String errorString = Format("Cannot drop material to %s", names.c_str());
+            QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+        }
+    }
+    else
+    {
+        QMessageBox::warning(NULL, QString("Drop error"), QString("Selected entities have no materials to change"), QMessageBox::Ok);
+    }
 }
+
 
 
