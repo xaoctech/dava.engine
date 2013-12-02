@@ -36,7 +36,7 @@
 #include "Scene/SceneSignals.h"
 
 #include "Commands2/MaterialAssignCommand.h"
-
+#include "MaterialEditor/MaterialsDropSystem.h"
 
 
 // framework
@@ -47,6 +47,8 @@
 
 //mime data
 #include "Tools/MimeData/MimeDataHelper2.h"
+
+#include <QMessageBox>
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	: QStandardItemModel(parent)
@@ -427,19 +429,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
             
     case DropingMaterial:
         {
-            DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
-            if(targetEntity)
-            {
-//                RenderObject * ro = GetRenderObject(targetEntity);
-//                if(ro && ro->GetRenderBatchCount())
-//                {
-//                    uint32 count = ro->GetRenderBatchCount();
-//                    for(uint32 i = 0; i < count; ++i)
-//                    {
-//                        RenderBatch *rb = ro->GetRenderBatch(i);
-//                    }
-//                }
-            }
+            DropMaterial(parentItem, mimeData);
             break;
         }
 
@@ -572,7 +562,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
             DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
             if(targetEntity)
             {
-                ret = MaterialAssignCommand::EntityHasMaterials(targetEntity, true);
+                ret = MaterialsDropSystem::EntityHasMaterials(targetEntity, true);
             }
             break;
         }
@@ -733,6 +723,39 @@ int SceneTreeModel::GetDropType(const QtMimeData *data) const
 
 	return ret;
 }
+
+void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *mimeData) const
+{
+    DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+    if(targetEntity)
+    {
+        QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
+        DVASSERT(materials->size() == 1);
+        
+        for(int im = 0; im < materials->size(); ++im)
+        {
+            DAVA::NMaterial *mat = materials->at(im);
+            
+            bool wasDropped = MaterialsDropSystem::DropMaterialToEntity(targetEntity, mat, true);
+            if(!wasDropped)
+            {
+                DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(targetEntity, true);
+                
+                DAVA::String names;
+                for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+                {
+                    if(ie != 0) names += ",";
+
+                    names += rejectedEntities[ie]->GetName();
+                }
+                
+                String errorString = Format("Cannot drop material to %s", names.c_str());
+                QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+            }
+        }
+    }
+}
+
 
 
 SceneTreeFilteringModel::SceneTreeFilteringModel(SceneTreeModel *_treeModel, QObject *parent /* = NULL */)

@@ -27,13 +27,15 @@
 =====================================================================================*/
 
 #include "Main/mainwindow.h"
+#include "Main/Request.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
 
-#include "Classes/Deprecated/ScenePreviewDialog.h"
-#include "Classes/Qt/Main/Request.h"
+#include "Deprecated/ScenePreviewDialog.h"
+
+#include "MaterialEditor/MaterialsDropSystem.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -335,7 +337,12 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 {
 	if(NULL != curScene)
 	{
-		if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
+        const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(data);
+        if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
+        {
+            DropMaterial(mimeData);
+        }
+        else if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 		{
             QList<QUrl> urls = data->urls();
             for(int i = 0; i < urls.size(); ++i)
@@ -368,6 +375,38 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 	{
 		TabBarDataDropped(data);
 	}
+}
+
+void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
+{
+    const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
+    if(MaterialsDropSystem::EntityGroupHasMaterials(group, true))
+    {
+        QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
+        DVASSERT(materials->size() == 1);
+        
+        for(int im = 0; im < materials->size(); ++im)
+        {
+            DAVA::NMaterial *mat = materials->at(im);
+            
+            bool wasDropped = MaterialsDropSystem::DropMaterialToGroup(group, mat, true);
+            if(!wasDropped)
+            {
+                DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(group, true);
+                
+                DAVA::String names;
+                for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+                {
+                    if(ie != 0) names += ",";
+                    
+                    names += rejectedEntities[ie]->GetName();
+                }
+                
+                String errorString = Format("Cannot drop material to %s", names.c_str());
+                QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+            }
+        }
+    }
 }
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
@@ -453,7 +492,8 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
+    const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(event->mimeData());
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2") || MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
 	{
 		event->acceptProposedAction();
 	}

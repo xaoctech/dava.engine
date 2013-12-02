@@ -30,9 +30,6 @@
 
 #include "MaterialAssignCommand.h"
 
-#include "Scene/EntityGroup.h"
-
-
 #include "DAVAEngine.h"
 
 MaterialAssignCommand::MaterialAssignCommand()
@@ -55,41 +52,4 @@ void MaterialAssignCommand::Redo()
 DAVA::Entity* MaterialAssignCommand::GetEntity() const
 {
 	return NULL;
-}
-
-bool MaterialAssignCommand::EntityGroupHasMaterials(EntityGroup *group, bool recursive)
-{
-    if(!group) return false;
-    
-    const size_t count = group->Size();
-    for(size_t i = 0; i < count; ++i)
-    {
-        bool hasMaterials = EntityHasMaterials(group->GetEntity(i), recursive);
-        if(hasMaterials) return true;
-    }
-    
-    return false;
-}
-
-bool MaterialAssignCommand::EntityHasMaterials(DAVA::Entity * entity, bool recursive)
-{
-    if(!entity) return false;
-    
-    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
-    if(ro && ro->GetRenderBatchCount())
-    {
-        return true;
-    }
-    
-    if(recursive)
-    {
-        const DAVA::int32 count = entity->GetChildrenCount();
-        for(DAVA::int32 i = 0; i < count; ++i)
-        {
-            bool hasMaterials = EntityHasMaterials(entity->GetChild(i), recursive);
-            if(hasMaterials) return true;
-        }
-    }
-    
-    return false;
 }

@@ -540,6 +540,7 @@
 		E8C994D9184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99428184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp */; };
 		E8C994DA184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9942A184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp */; };
 		E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */; };
+		E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1601,6 +1602,8 @@
 		E8C99435184CD23C00AFBF3F /* ui_waitdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_waitdialog.h; path = _GeneratedQt/ui_waitdialog.h; sourceTree = "<group>"; };
 		E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
 		E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
+		E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsDropSystem.cpp; sourceTree = "<group>"; };
+		E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsDropSystem.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1695,8 +1698,6 @@
 				E8C9938F184CD23C00AFBF3F /* DockSceneInfo */,
 				E8C99391184CD23C00AFBF3F /* DockSceneTree */,
 				E8C99399184CD23C00AFBF3F /* Main */,
-				E8C993A2184CD23C00AFBF3F /* MaterialBrowser */,
-				E8C993A3184CD23C00AFBF3F /* MaterialEditor */,
 				E8C993A4184CD23C00AFBF3F /* Project */,
 				E8C993A6184CD23C00AFBF3F /* QtIcons_qrc.cpp */,
 				E8C993A7184CD23C00AFBF3F /* Scene */,
@@ -2425,6 +2426,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				E8C994EA184D0E4300AFBF3F /* MaterialEditor */,
 				E8C99075184CD0EB00AFBF3F /* CubemapEditor */,
 				E8C99082184CD0EB00AFBF3F /* CustomControls */,
 				E8C99083184CD0EB00AFBF3F /* DockConsole */,
@@ -3382,22 +3384,6 @@
 			path = _GeneratedQt/Main;
 			sourceTree = "<group>";
 		};
-		E8C993A2184CD23C00AFBF3F /* MaterialBrowser */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = MaterialBrowser;
-			path = _GeneratedQt/MaterialBrowser;
-			sourceTree = "<group>";
-		};
-		E8C993A3184CD23C00AFBF3F /* MaterialEditor */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = MaterialEditor;
-			path = _GeneratedQt/MaterialEditor;
-			sourceTree = "<group>";
-		};
 		E8C993A4184CD23C00AFBF3F /* Project */ = {
 			isa = PBXGroup;
 			children = (
@@ -3774,6 +3760,15 @@
 				E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */,
 			);
 			name = SpeedTree;
+			sourceTree = "<group>";
+		};
+		E8C994EA184D0E4300AFBF3F /* MaterialEditor */ = {
+			isa = PBXGroup;
+			children = (
+				E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */,
+				E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */,
+			);
+			path = MaterialEditor;
 			sourceTree = "<group>";
 		};
 		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
@@ -4444,6 +4439,7 @@
 				E8C9943E184CD23C00AFBF3F /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */,
 				E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */,
 				E8C992A4184CD0EC00AFBF3F /* EditorConfig.cpp in Build Sources */,
+				E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */,
 				E8C992C4184CD0EC00AFBF3F /* LibraryBaseModel.cpp in Build Sources */,
 				E8C992FC184CD0EC00AFBF3F /* CollisionSystem.cpp in Build Sources */,
 				E8C9943C184CD23C00AFBF3F /* Console_moc.cpp in Build Sources */,
