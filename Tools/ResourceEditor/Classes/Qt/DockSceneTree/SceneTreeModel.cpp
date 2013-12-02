@@ -420,6 +420,25 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 			}
 		}
 		break;
+            
+    case DropingMaterial:
+        {
+            DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+            if(targetEntity)
+            {
+                RenderObject * ro = GetRenderObject(targetEntity);
+                if(ro && ro->GetRenderBatchCount())
+                {
+                    uint32 count = ro->GetRenderBatchCount();
+                    for(uint32 i = 0; i < count; ++i)
+                    {
+                        RenderBatch *rb = ro->GetRenderBatch(i);
+                    }
+                }
+            }
+            break;
+        }
+
 	default:
 		break;
 	}
@@ -543,6 +562,18 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			}
 		}
 		break;
+            
+        case DropingMaterial:
+        {
+            DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+            if(targetEntity)
+            {
+                RenderObject * ro = GetRenderObject(targetEntity);
+                ret = (ro && ro->GetRenderBatchCount());
+            }
+            break;
+        }
+
 
 	default:
 		break;
@@ -690,6 +721,10 @@ int SceneTreeModel::GetDropType(const QtMimeData *data) const
         else if(MimeDataHelper2<DAVA::ParticleForce>::IsDataSupportType(data))
         {
 			ret = DropingForce;
+        }
+        else if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(data))
+        {
+			ret = DropingMaterial;
         }
 	}
 

@@ -28,53 +28,68 @@
 
 
 
-#ifndef __LIBRARY_MATERIALS_MODEL_H__
-#define __LIBRARY_MATERIALS_MODEL_H__
+#include "MaterialAssignCommand.h"
 
-#include "../LibraryBaseModel.h"
+#include "Scene/EntityGroup.h"
+
+
 #include "DAVAEngine.h"
 
-class SceneEditor2;
-class EntityGroup;
-class LibraryMaterialsModel: public LibraryBaseModel
+MaterialAssignCommand::MaterialAssignCommand()
+	: Command2(CMDID_MATERIAL_ASSIGN, "Assign Material")
 {
-    Q_OBJECT
-    
-public:
-    LibraryMaterialsModel();
-    
-    virtual void TreeItemSelected(const QItemSelection & selection);
-    virtual void ListItemSelected(const QItemSelection & selection);
+}
 
-    virtual void SetProjectPath(const QString & path);
-    
-    virtual const QModelIndex GetTreeRootIndex() const;
-    virtual const QModelIndex GetListRootIndex() const;
+MaterialAssignCommand::~MaterialAssignCommand()
+{
+}
 
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
+void MaterialAssignCommand::Undo()
+{
+}
 
-protected slots:
-    
-    void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
+void MaterialAssignCommand::Redo()
+{
+}
 
-    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
-	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+DAVA::Entity* MaterialAssignCommand::GetEntity() const
+{
+	return NULL;
+}
 
+bool MaterialAssignCommand::EntityGroupHasMaterials(EntityGroup *group, bool recursive)
+{
+    if(!group) return false;
     
-    void OnAssign();
-    void OnEdit();
+    const size_t count = group->Size();
+    for(size_t i = 0; i < count; ++i)
+    {
+        bool hasMaterials = EntityHasMaterials(group->GetEntity(i), recursive);
+        if(hasMaterials) return true;
+    }
     
-protected:
-    
-	virtual void CreateActions();
-    
-    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
-    
-private:
-    
-};
+    return false;
+}
 
-
-#endif // __LIBRARY_MATERIALS_MODEL_H__
+bool MaterialAssignCommand::EntityHasMaterials(DAVA::Entity * entity, bool recursive)
+{
+    if(!entity) return false;
+    
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+    if(ro && ro->GetRenderBatchCount())
+    {
+        return true;
+    }
+    
+    if(recursive)
+    {
+        const DAVA::int32 count = entity->GetChildrenCount();
+        for(DAVA::int32 i = 0; i < count; ++i)
+        {
+            bool hasMaterials = EntityHasMaterials(entity->GetChild(i), recursive);
+            if(hasMaterials) return true;
+        }
+    }
+    
+    return false;
+}

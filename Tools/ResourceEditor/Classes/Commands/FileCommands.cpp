@@ -41,7 +41,6 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
-#include "Classes/Qt/Scene/SceneHelper.h"
 
 #include <QFileDialog>
 #include <QString>

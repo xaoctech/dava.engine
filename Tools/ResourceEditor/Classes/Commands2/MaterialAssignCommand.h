@@ -28,53 +28,25 @@
 
 
 
-#ifndef __LIBRARY_MATERIALS_MODEL_H__
-#define __LIBRARY_MATERIALS_MODEL_H__
+#ifndef __MATERIAL_ASSIGN_COMMAND_H__
+#define __MATERIAL_ASSIGN_COMMAND_H__
 
-#include "../LibraryBaseModel.h"
-#include "DAVAEngine.h"
+#include "Commands2/Command2.h"
 
-class SceneEditor2;
 class EntityGroup;
-class LibraryMaterialsModel: public LibraryBaseModel
+class MaterialAssignCommand: public Command2
 {
-    Q_OBJECT
-    
 public:
-    LibraryMaterialsModel();
-    
-    virtual void TreeItemSelected(const QItemSelection & selection);
-    virtual void ListItemSelected(const QItemSelection & selection);
+	MaterialAssignCommand();
+	~MaterialAssignCommand();
 
-    virtual void SetProjectPath(const QString & path);
-    
-    virtual const QModelIndex GetTreeRootIndex() const;
-    virtual const QModelIndex GetListRootIndex() const;
+	virtual void Undo();
+	virtual void Redo();
 
-    virtual bool PrepareTreeContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-    virtual bool PrepareListContextMenu(QMenu &contextMenu, const QModelIndex &index) const;
-
-protected slots:
+	virtual DAVA::Entity* GetEntity() const;
     
-    void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
-
-    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
-	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-
-    
-    void OnAssign();
-    void OnEdit();
-    
-protected:
-    
-	virtual void CreateActions();
-    
-    bool PrepareContextMenu(QMenu &contextMenu, DAVA::NMaterial *material) const;
-    
-private:
-    
+    static bool EntityGroupHasMaterials(EntityGroup *group, bool recursive);
+    static bool EntityHasMaterials(DAVA::Entity * entity, bool recursive);
 };
 
-
-#endif // __LIBRARY_MATERIALS_MODEL_H__
+#endif // __MATERIAL_ASSIGN_COMMAND_H__
