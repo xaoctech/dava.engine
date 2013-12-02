@@ -38,7 +38,7 @@
 #include "Main/mainwindow.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureCompression/TextureConverter.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 #include "Render/LibDxtHelper.h"
 
 #include "FileSystem/FileSystem.h"

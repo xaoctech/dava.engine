@@ -32,10 +32,10 @@
 
 #include "TexturePacker/CommandLineParser.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Commands2/BeastAction.h"
-#include "Classes/SceneEditor/EditorSettings.h"
+#include "Qt/Scene/SceneEditor2.h"
+#include "Qt/Scene/SceneHelper.h"
+#include "Commands2/BeastAction.h"
+#include "Deprecated/EditorSettings.h"
 
 using namespace DAVA;
 

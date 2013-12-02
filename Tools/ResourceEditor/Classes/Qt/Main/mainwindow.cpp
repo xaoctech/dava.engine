@@ -38,10 +38,9 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
-#include "MaterialBrowser/MaterialBrowser.h"
 
-#include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/EditorConfig.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/EditorConfig.h"
 
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
@@ -61,7 +60,6 @@
 
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "StringConstants.h"
-#include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
 #include "../Settings/SettingsManager.h"
 
@@ -74,7 +72,6 @@
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
 #include "Classes/Qt/Main/Request.h"
-#include "Classes/Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
@@ -116,7 +113,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 	, waitDialog(NULL)
 	, beastWaitDialog(NULL)
-	, materialEditor(NULL)
 	, objectTypesLabel(NULL)
 	, landscapeDialog(NULL)
 	, addSwitchEntityDialog(NULL)
@@ -176,13 +172,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-	SafeRelease(materialEditor);
 	SafeDelete(landscapeDialog);
 	SafeDelete(addSwitchEntityDialog);
     
-    if(HintManager::Instance())
-        HintManager::Instance()->Release();
-	
     TextureBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
@@ -395,7 +387,7 @@ void QtMainWindow::SetupTitle()
 void QtMainWindow::SetupMainMenu()
 {
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
-	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
+	QAction *actionLibrary = ui->dockLibrary2->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
 	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
@@ -606,8 +598,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-	QObject::connect(ui->actionUniteEntitiesWithLODs, SIGNAL(triggered()), this, SLOT(OnUniteEntitiesWithLODs()));
-	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
@@ -755,19 +745,6 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
 	UpdateConflictingActionsState(tools == 0);
-	// TODO: remove this code. it is for old material editor -->
-    CreateMaterialEditorIfNeed();
-    if(materialEditor)
-    {
-        DAVA::UIControl* parent = materialEditor->GetParent();
-        if(NULL != parent && NULL != scene)
-        {
-            parent->RemoveControl(materialEditor);
-            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelectionEntity(0));
-            parent->AddControl(materialEditor);
-        }
-    }
-	// <---
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
@@ -783,7 +760,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
-	ui->dockLibrary->setEnabled(enable);
+	ui->dockLibrary2->setEnabled(enable);
     
     auto endIt = recentScenes.end();
     for(auto it = recentScenes.begin(); it != endIt; ++it)
@@ -855,19 +832,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuScene->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
-}
-
-void QtMainWindow::CreateMaterialEditorIfNeed()
-{
-	if(!materialEditor)
-	{
-		if(HintManager::Instance() == NULL)
-		{
-			new HintManager();//needed for hints in MaterialEditor
-		}
-
-		materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
-	}
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -1241,26 +1205,7 @@ void QtMainWindow::OnResetTransform()
 }
 
 void QtMainWindow::OnMaterialEditor()
-{
-    if(!materialEditor) return;
-    
-	if(NULL == materialEditor->GetParent())
-	{
-		SceneEditor2* sceneEditor = GetCurrentScene();
-		if(NULL != sceneEditor)
-		{
-			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelectionEntity(0));
-			
-			DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
-			curScreen->AddControl(materialEditor);
-		}
-	}
-	else
-	{
-		materialEditor->GetParent()->RemoveControl(materialEditor);
-		materialEditor->SetWorkingScene(NULL, NULL);
-	}
-}
+{ }
 
 void QtMainWindow::OnTextureBrowser()
 {
@@ -1415,33 +1360,6 @@ void QtMainWindow::OnParticleEffectDialog()
 		sceneEditor->selectionSystem->SetSelection(sceneNode);
 	}
 	SafeRelease(sceneNode);
-}
-
-void QtMainWindow::OnUniteEntitiesWithLODs()
-{
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(NULL == sceneEditor)
-	{
-		return;
-	}
-
-	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(sceneEditor->selectionSystem->GetSelection());
-	sceneEditor->Exec(command);
-	sceneEditor->selectionSystem->SetSelection(command->GetEntity());
-}
-
-
-void QtMainWindow::OnAddEntityMenuAboutToShow()
-{
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(NULL == sceneEditor)
-	{
-		ui->actionUniteEntitiesWithLODs->setEnabled(false);
-		return;
-	}
-
-	size_t selectedItemsNumber =	sceneEditor->selectionSystem->GetSelectionCount();
-	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
 }
 
 void QtMainWindow::OnAddEntityFromSceneTree()
@@ -2298,8 +2216,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	//-->
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
-	ui->actionUniteEntitiesWithLODs->setVisible(false);
-	
 	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
 }

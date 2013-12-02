@@ -29,7 +29,7 @@
 
 
 #include "CustomLandscape.h"
-#include "LandscapeEditor/LandscapeRenderer.h"
+#include "Deprecated/LandscapeRenderer.h"
 
 CustomLandscape::CustomLandscape()
 :	landscapeRenderer(NULL)
