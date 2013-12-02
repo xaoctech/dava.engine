@@ -153,11 +153,11 @@ void RenderDataObject::RemoveStream(eVertexFormat formatMark)
 		streamMap.erase(it);
 		resultVertexFormat &= ~formatMark;	
 		/*remove from array*/
-		for (Vector<RenderDataStream *>::iterator it = streamArray.begin(), e = streamArray.end(); it!=e; ++it)
+		for (Vector<RenderDataStream *>::iterator vec_it = streamArray.begin(), e = streamArray.end(); vec_it!=e; ++vec_it)
 		{
-			if ((*it) == stream)
+			if ((*vec_it) == stream)
 			{
-				streamArray.erase(it);
+				streamArray.erase(vec_it);
 				break;
 			}
 		}
