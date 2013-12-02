@@ -143,6 +143,7 @@ void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEm
 	innerParticleEmitter->RememberInitialTranslationVector();
 	innerParticleEmitter->SetParentParticle(this);		
 	innerParticleEmitter->SetAutoRestart(false);
+	innerParticleEmitter->Play();
 
 	RegisterInnerEmitterInRenderSystem(true);
 }

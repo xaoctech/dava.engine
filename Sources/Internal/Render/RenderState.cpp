@@ -105,7 +105,6 @@ void RenderState::Reset(bool doHardwareReset)
     
     if (doHardwareReset)
     {
-        RenderManager::Instance()->LockNonMain();
 //        Logger::FrameworkDebug("Do hardware reset");
         // PrintBackTraceToLog();
         SetColorInHW();
@@ -125,8 +124,6 @@ void RenderState::Reset(bool doHardwareReset)
         {
             SetTextureLevelInHW(textureLevel);
         }
-        RenderManager::Instance()->UnlockNonMain();
-
     }
 }
 bool RenderState::IsEqual(RenderState * anotherState)
@@ -157,8 +154,6 @@ bool RenderState::IsEqual(RenderState * anotherState)
 
 void RenderState::Flush(RenderState * hardwareState) const
 {
-    RenderManager::Instance()->LockNonMain();
-
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::FrameworkDebug("RenderState::Flush started");
 #endif    
@@ -394,8 +389,6 @@ void RenderState::Flush(RenderState * hardwareState) const
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::FrameworkDebug("RenderState::Flush finished");
 #endif    
-    RenderManager::Instance()->UnlockNonMain();
-
 }
     
     
