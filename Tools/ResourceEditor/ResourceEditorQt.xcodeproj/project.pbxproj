@@ -2429,7 +2429,7 @@
 				E8C99082184CD0EB00AFBF3F /* CustomControls */,
 				E8C99083184CD0EB00AFBF3F /* DockConsole */,
 				E8C99088184CD0EB00AFBF3F /* DockLandscapeEditorControls */,
-				E8C9909C184CD0EB00AFBF3F /* DockLibrary2 */,
+				E8C9909C184CD0EB00AFBF3F /* DockLibrary */,
 				E8C990B9184CD0EB00AFBF3F /* DockLODEditor */,
 				E8C990C0184CD0EB00AFBF3F /* DockParticleEditor */,
 				E8C990D7184CD0EB00AFBF3F /* DockProperties */,
@@ -2518,7 +2518,7 @@
 			path = LandscapeEditorPanels;
 			sourceTree = "<group>";
 		};
-		E8C9909C184CD0EB00AFBF3F /* DockLibrary2 */ = {
+		E8C9909C184CD0EB00AFBF3F /* DockLibrary */ = {
 			isa = PBXGroup;
 			children = (
 				E8C9909D184CD0EB00AFBF3F /* FileSystem */,
@@ -2534,6 +2534,7 @@
 				E8C990B3184CD0EB00AFBF3F /* Objects */,
 				E8C990B6184CD0EB00AFBF3F /* Textures */,
 			);
+			name = DockLibrary;
 			path = DockLibrary2;
 			sourceTree = "<group>";
 		};

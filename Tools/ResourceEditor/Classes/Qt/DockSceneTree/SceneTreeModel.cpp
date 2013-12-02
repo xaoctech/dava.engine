@@ -35,6 +35,10 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "Scene/SceneSignals.h"
 
+#include "Commands2/MaterialAssignCommand.h"
+
+
+
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
 
@@ -426,15 +430,15 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
             DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
             if(targetEntity)
             {
-                RenderObject * ro = GetRenderObject(targetEntity);
-                if(ro && ro->GetRenderBatchCount())
-                {
-                    uint32 count = ro->GetRenderBatchCount();
-                    for(uint32 i = 0; i < count; ++i)
-                    {
-                        RenderBatch *rb = ro->GetRenderBatch(i);
-                    }
-                }
+//                RenderObject * ro = GetRenderObject(targetEntity);
+//                if(ro && ro->GetRenderBatchCount())
+//                {
+//                    uint32 count = ro->GetRenderBatchCount();
+//                    for(uint32 i = 0; i < count; ++i)
+//                    {
+//                        RenderBatch *rb = ro->GetRenderBatch(i);
+//                    }
+//                }
             }
             break;
         }
@@ -568,8 +572,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
             DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
             if(targetEntity)
             {
-                RenderObject * ro = GetRenderObject(targetEntity);
-                ret = (ro && ro->GetRenderBatchCount());
+                ret = MaterialAssignCommand::EntityHasMaterials(targetEntity, true);
             }
             break;
         }
