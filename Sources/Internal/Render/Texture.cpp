@@ -437,7 +437,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
-    Image * image0 = ReadDataToImage();
+    Image * image0 = CreateImageFromMemory();
     images = image0->CreateMipMapsImages();
     SafeRelease(image0);
 
