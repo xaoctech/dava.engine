@@ -26,49 +26,52 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_H__
+#define __DAVAENGINE_JOB_H__
 
-
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
+#include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
+#include "Base/Message.h"
+#include "Platform/Thread.h"
 
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
+
+
+class Job : public BaseObject
+{
+public:
+	enum eState
+	{
+		STATUS_UNDONE,
+		STATUS_DONE
+	};
+
+	enum ePerformedWhere
+	{
+		PERFORMED_ON_CREATOR_THREAD,
+		PERFORMED_ON_MAIN_THREAD
+	};
+
+	Job(const Message & message, const Thread::ThreadId & creatorThreadId);
+	eState GetState();
+	ePerformedWhere PerformedWhere();
+
 protected:
-	~ParticleForce(){}
-public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
+	void Perform();
+	void SetState(eState newState);
+	void SetPerformedOn(ePerformedWhere performedWhere);
 
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
+	Message message;
+	Thread::ThreadId creatorThreadId;
 
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
+	eState state;
+	ePerformedWhere performedWhere;
 
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
-
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
-
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
+	friend class JobQueue;
+	friend class JobManager;
 };
 
-};
+}
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+#endif //__DAVAENGINE_JOB_H__

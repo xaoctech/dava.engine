@@ -26,49 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_QUEUE_H__
+#define __DAVAENGINE_JOB_QUEUE_H__
 
+#include "Base/BaseTypes.h"
+#include "Platform/Mutex.h"
 
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
-
-#include "Base/BaseObject.h"
-#include "Particles/ParticlePropertyLine.h"
-
-namespace DAVA {
-
-// Particle Force class is needed to store Particle Force data.
-class ParticleForce : public BaseObject
+namespace DAVA
 {
+
+class Job;
+
+class JobQueue
+{
+public:
+	void Update();
+	void AddJob(Job * job);
+
 protected:
-	~ParticleForce(){}
-public:
-	// Initialization constructor.
-	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				  RefPtr<PropertyLine<float32> > forceOverLife);
-
-	// Copy constructor.
-	ParticleForce(ParticleForce* forceToCopy);
-
-	void Update(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<Vector3> > forceVariation,
-				RefPtr<PropertyLine<float32> > forceOverLife);
-
-	void SetForce(const RefPtr<PropertyLine<Vector3> > &force);
-	void SetForceVariation(const RefPtr<PropertyLine<Vector3> > &forceVariation);
-	void SetForceOverLife(const RefPtr<PropertyLine<float32> > &forceOverLife);
-
-	// Accessors.
-	RefPtr<PropertyLine<Vector3> > GetForce() {return force;};
-	RefPtr<PropertyLine<Vector3> > GetForceVariation() {return forceVariation; };
-	RefPtr<PropertyLine<float32> > GetForceOverlife() { return forceOverLife; };
-
-	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	
-public:
-	RefPtr<PropertyLine<Vector3> > force;
-	RefPtr<PropertyLine<Vector3> > forceVariation;
-	RefPtr<PropertyLine<float32> > forceOverLife;
+	Mutex mutex;
+	Deque<Job*> queue;
 };
 
-};
+}
 
-#endif /* defined(__PARTICLE_FORCE_H__) */
+#endif //__DAVAENGINE_JOB_QUEUE_H__
