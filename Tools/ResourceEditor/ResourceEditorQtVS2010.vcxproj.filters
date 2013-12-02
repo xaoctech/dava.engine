@@ -3415,9 +3415,6 @@
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\materialbrowser.ui">
-      <Filter>QtData</Filter>
-    </None>
     <None Include="DataQt\CustomColorsView.ui">
       <Filter>QtData</Filter>
     </None>

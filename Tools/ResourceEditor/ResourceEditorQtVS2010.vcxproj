@@ -1167,7 +1167,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="DataQt\CustomColorsView.ui" />
-    <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
     <None Include="DataQt\texturebrowser.ui" />
