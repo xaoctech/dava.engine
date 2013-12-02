@@ -2193,12 +2193,6 @@
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -2324,6 +2318,15 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\MimeData\QtMimeData_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\DockProperties.cpp">
+      <Filter>Classes\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\DockProperties_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataProxy.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3737,9 +3740,6 @@
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h">
       <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h">
-      <Filter>Classes\Qt\DockProperties</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClInclude>
@@ -3914,9 +3914,6 @@
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtComboFake.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3994,6 +3991,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\MimeData\QtMimeData.h">
       <Filter>Classes\Qt\Tools\MimeData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\DockProperties.h">
+      <Filter>Classes\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataProxy.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

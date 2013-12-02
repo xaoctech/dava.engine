@@ -145,6 +145,8 @@ protected:
 	// Cleanup the selected Particle Editor items.
 	void CleanupParticleEditorSelectedItems();
 
+	void ExpandUntilFilterAccepted(const QModelIndex &index);
+
 private:
 	// Selected Particle Layer.
 	ParticleLayer* selectedLayer;

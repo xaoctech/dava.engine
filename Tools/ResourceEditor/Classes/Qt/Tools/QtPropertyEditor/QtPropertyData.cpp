@@ -34,18 +34,22 @@
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
 	, parent(NULL)
-	, optionalWidgetViewport(NULL)
 	, updatingValue(false)
+	, isProxy(false)
 	, model(NULL)
+	, userData(NULL)
+	, optionalButtonsViewport(NULL)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 	: curValue(value)
 	, curFlags(flags)
 	, parent(NULL)
-	, optionalWidgetViewport(NULL)
 	, updatingValue(false)
+	, isProxy(false)
 	, model(NULL)
+	, userData(NULL)
+	, optionalButtonsViewport(NULL)
 { }
 
 QtPropertyData::~QtPropertyData()
@@ -63,12 +67,14 @@ QtPropertyData::~QtPropertyData()
 
 	childrenData.clear();
 
-	for (int i = 0; i < optionalWidgets.size(); i++)
+	for (int i = 0; i < optionalButtons.size(); i++)
 	{
-		if(NULL != optionalWidgets.at(i).widget)
-		{
-			optionalWidgets.at(i).widget->deleteLater();
-		}
+		optionalButtons.at(i)->deleteLater();
+	}
+
+	if(NULL != userData)
+	{
+		delete userData;
 	}
 }
 
@@ -321,8 +327,13 @@ void QtPropertyData::SetEnabled(bool enabled)
 	(enabled) ? (curFlags |= Qt::ItemIsEnabled) : (curFlags &= ~Qt::ItemIsEnabled);
 }
 
-void QtPropertyData::SetUserData(const QVariant &data)
+void QtPropertyData::SetUserData(UserData *data)
 {
+	if(NULL != userData)
+	{
+		delete userData;
+	}
+
 	userData = data;
 
 	if(NULL != model)
@@ -331,7 +342,7 @@ void QtPropertyData::SetUserData(const QVariant &data)
 	}
 }
 
-QVariant QtPropertyData::GetUserData() const
+QtPropertyData::UserData* QtPropertyData::GetUserData() const
 {
 	return userData;
 }
@@ -398,6 +409,16 @@ QtPropertyData* QtPropertyData::Parent() const
 
 void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 {
+	ChildInsert(key, data, ChildCount());
+}
+
+void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
+{
+	ChildInsert(key, new QtPropertyData(value), ChildCount());
+}
+
+void QtPropertyData::ChildInsert(const QString &key, QtPropertyData *data, int pos)
+{
 	if(NULL != data && !key.isEmpty())
 	{
 		if(NULL != model)
@@ -405,13 +426,21 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 			model->DataAboutToBeAdded(this, childrenData.size(), childrenData.size());
 		}
 
-		childrenData.append(data);
-		childrenNames.append(key);
+		if(pos >= 0 && pos < childrenData.size())
+		{
+			childrenData.insert(pos, data);
+			childrenNames.insert(pos, key);
+		}
+		else
+		{
+			childrenData.append(data);
+			childrenNames.append(key);
+		}
 
 		data->curName = key;
 		data->parent = this;
 		data->model = model;
-		data->SetOWViewport(optionalWidgetViewport);
+		data->SetOWViewport(optionalButtonsViewport);
 
 		if(NULL != model)
 		{
@@ -420,9 +449,9 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 	}
 }
 
-void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
+void QtPropertyData::ChildInsert(const QString &key, const QVariant &value, int pos)
 {
-	ChildAdd(key, new QtPropertyData(value));
+	ChildInsert(key, new QtPropertyData(value), pos);
 }
 
 int QtPropertyData::ChildCount() const
@@ -488,7 +517,7 @@ void QtPropertyData::ChildRemove(int index)
 
 		data->parent = NULL;
 		data->model = NULL;
-		data->deleteLater();
+		delete data;
 
 		if(NULL != model)
 		{
@@ -511,7 +540,7 @@ void QtPropertyData::ChildRemoveAll()
 			QtPropertyData *data = childrenData.at(i);
 			data->parent = NULL;
 			data->model = NULL;
-			data->deleteLater();
+			delete data;
 		}
 
 		childrenData.clear();
@@ -524,54 +553,54 @@ void QtPropertyData::ChildRemoveAll()
 	}
 }
 
-int QtPropertyData::GetOWCount() const
+int QtPropertyData::GetButtonsCount() const
 {
-	return optionalWidgets.size();
+	return optionalButtons.size();
 }
 
-const QtPropertyOW* QtPropertyData::GetOW(int index)
+QtPropertyToolButton* QtPropertyData::GetButton(int index)
 {
-	const QtPropertyOW *ret = NULL;
+	QtPropertyToolButton *ret = NULL;
 
-	if(index >= 0 && index < optionalWidgets.size())
+	if(index >= 0 && index < optionalButtons.size())
 	{
-		ret = &optionalWidgets.at(index);
+		ret = optionalButtons.at(index);
 	}
 
 	return ret;
 }
 
-void QtPropertyData::AddOW(const QtPropertyOW &ow)
+QtPropertyToolButton* QtPropertyData::AddButton()
 {
-	optionalWidgets.append(ow);
+	QtPropertyToolButton *button = new QtPropertyToolButton(optionalButtonsViewport);
 
-	if(NULL != ow.widget)
-	{
-		ow.widget->setParent(optionalWidgetViewport);
-		ow.widget->hide();
-	}
+	optionalButtons.append(button);
+	button->setGeometry(0, 0, 16, 16);
+	button->hide();
+
+	return button;
 }
 
-void QtPropertyData::RemOW(int index)
+void QtPropertyData::RemButton(int index)
 {
-	if(index >= 0 && index < optionalWidgets.size())
+	if(index >= 0 && index < optionalButtons.size())
 	{
-		if(NULL != optionalWidgets.at(index).widget)
+		if(NULL != optionalButtons.at(index))
 		{
-			delete optionalWidgets.at(index).widget;
+			delete optionalButtons.at(index);
 		}
 
-		optionalWidgets.remove(index);
+		optionalButtons.remove(index);
 	}
 }
 
-void QtPropertyData::RemOW(QWidget *widget)
+void QtPropertyData::RemButton(QtPropertyToolButton *button)
 {
-	for(int i = 0; i < optionalWidgets.size(); ++i)
+	for(int i = 0; i < optionalButtons.size(); ++i)
 	{
-		if(optionalWidgets[i].widget == widget)
+		if(optionalButtons[i] == button)
 		{
-			RemOW(i);
+			RemButton(i);
 			break;
 		}
 	}
@@ -579,23 +608,22 @@ void QtPropertyData::RemOW(QWidget *widget)
 
 QWidget* QtPropertyData::GetOWViewport() const
 {
-	return optionalWidgetViewport;
+	return optionalButtonsViewport;
 }
 
 void QtPropertyData::SetOWViewport(QWidget *viewport)
-{
-	optionalWidgetViewport = viewport;
+ {
+	optionalButtonsViewport = viewport;
 
-	for(int i = 0; i < optionalWidgets.size(); ++i)
+	for(int i = 0; i < optionalButtons.size(); ++i)
 	{
-		if(NULL != optionalWidgets.at(i).widget)
+		if(NULL != optionalButtons[i])
 		{
-			optionalWidgets.at(i).widget->setParent(viewport);
+			optionalButtons[i]->setParent(viewport);
 		}
 	}
 
-	
-	for (int i = 0; i < childrenData.size(); i++)
+	for(int i = 0; i < childrenData.size(); i++)
 	{
 		childrenData.at(i)->SetOWViewport(viewport);
 	}
