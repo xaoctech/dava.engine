@@ -258,8 +258,6 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 						 nodes);
 		}
 		
-		RenderManager::Instance()->LockNonMain();
-		
 		for(size_t i = 0; i < rootCount; ++i)
 		{
 			MaterialData& currentData = roots[i];
@@ -269,8 +267,6 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 			rootMaterial->Rebuild();
 			rootMaterial->Rebind();
 		}
-		
-		RenderManager::Instance()->UnlockNonMain();
 	}
 	else
 	{

@@ -38,6 +38,8 @@
 #include "Base/FastName.h"
 #include "Base/FastNameMap.h"
 #include "FileSystem/FilePath.h"
+#include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -242,7 +244,15 @@ private:
     
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
-    void DeleteShaders();
+    
+	void DeleteShaders();
+	struct DeleteShaderContainer
+	{
+		GLuint program;
+		GLuint vertexShader;
+		GLuint fragmentShader;
+	};
+	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
     eUniform GetUniformByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);

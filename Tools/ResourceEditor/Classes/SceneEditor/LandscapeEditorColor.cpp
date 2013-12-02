@@ -143,7 +143,6 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     
     if(tex)
     {
-        RenderManager::Instance()->LockNonMain();
         //RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 		RenderManager::Instance()->SetRenderState(colorRenderState);
 		RenderManager::Instance()->FlushState();
@@ -161,8 +160,6 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
         RenderManager::Instance()->RestoreRenderTarget();
         
         SafeRelease(oldMask);
-        
-        RenderManager::Instance()->UnlockNonMain();
     }
     
 	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, oldMaskSprite->GetTexture());

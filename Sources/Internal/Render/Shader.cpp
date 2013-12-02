@@ -128,7 +128,6 @@ namespace DAVA
 			if (name == uniformStrings[k])return (Shader::eUniform)k;
 		return Shader::UNIFORM_NONE;
 	};
-
     
 	int32 Shader::GetUniformTypeSize(eUniformType type)
 	{
@@ -392,7 +391,6 @@ namespace DAVA
 			DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
 		}
 		
-		RenderManager::Instance()->LockNonMain();
 		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
 		{
 			Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
@@ -617,8 +615,7 @@ namespace DAVA
 				}
 			}
 		}
-		
-		RenderManager::Instance()->UnlockNonMain();
+
 		return true;
 	}
 	
@@ -776,8 +773,6 @@ namespace DAVA
 		
 	}
 	
-
-	
 	void Shader::SetUniformValueByUniform(Uniform* currentUniform, int32 value)
 	{
 		if(currentUniform->ValidateCache(value) == false)
@@ -911,63 +906,66 @@ namespace DAVA
 		}
 		
 	}
-
-	void Shader::DeleteShaders()
-	{
-		RenderManager::Instance()->LockNonMain();
-		DVASSERT(vertexShader != 0);
-		DVASSERT(fragmentShader != 0);
-		DVASSERT(program != 0);
-		
-		
-		RENDER_VERIFY(glDetachShader(program, vertexShader));
-		RENDER_VERIFY(glDetachShader(program, fragmentShader));
-		RENDER_VERIFY(glDeleteShader(vertexShader));
-		RENDER_VERIFY(glDeleteShader(fragmentShader));
-		RENDER_VERIFY(glDeleteProgram(program));
-		vertexShader = 0;
-		fragmentShader = 0;
-		program = 0;
-		
-		RenderManager::Instance()->UnlockNonMain();
-	}
 	
 	/* Link a program with all currently attached shaders */
 	GLint Shader::LinkProgram(GLuint prog)
 	{
-		RenderManager::Instance()->LockNonMain();
-		
 		GLint status;
 		
 		RENDER_VERIFY(glLinkProgram(prog));
-		
 #ifdef __DAVAENGINE_DEBUG__
-		{
-			GLchar log[4096] = {0};
-			GLsizei logLength = 0;
-			
-			RENDER_VERIFY(glGetProgramInfoLog(prog, 4096, &logLength, log));
-			if (logLength)
-			{
-				Logger::FrameworkDebug("Program link log:\n%s", log);
-			}
-		}
+        {
+            GLchar log[4096] = {0};
+            GLsizei logLength = 0;
+
+            RENDER_VERIFY(glGetProgramInfoLog(prog, 4096, &logLength, log));
+            if (logLength)
+            {
+                Logger::FrameworkDebug("Program link log:\n%s", log);
+            }
+        }
 #endif
-		
-		RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
-		if (status == GL_FALSE)
-			Logger::Error("Failed to link program %d", prog);
-		
-		RenderManager::Instance()->UnlockNonMain();
-		
-		return status;
-	}
+        RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
+        if (status == GL_FALSE)
+            Logger::Error("Failed to link program %d", prog);
+
+        return status;
+    }
+
+void Shader::DeleteShaders()
+{
+    DVASSERT(vertexShader != 0);  
+    DVASSERT(fragmentShader != 0);
+    DVASSERT(program != 0);
+    
+	DeleteShaderContainer * container = new DeleteShaderContainer();
+	container->program = program;
+	container->vertexShader = vertexShader;
+	container->fragmentShader = fragmentShader;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Shader::DeleteShadersInternal, container));
+
+    vertexShader = 0;
+    fragmentShader = 0;
+    program = 0;
+}
+
+void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *callerData)
+{
+	DeleteShaderContainer * container = (DeleteShaderContainer*) param;
+	DVASSERT(container);
+
+	RENDER_VERIFY(glDetachShader(container->program, container->vertexShader));
+	RENDER_VERIFY(glDetachShader(container->program, container->fragmentShader));
+	RENDER_VERIFY(glDeleteShader(container->vertexShader));
+	RENDER_VERIFY(glDeleteShader(container->fragmentShader));
+	RENDER_VERIFY(glDeleteProgram(container->program));
+
+	SafeDelete(container);
+}
     
 	/* Create and compile a shader from the provided source(s) */
 	GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines)
 	{
-		RenderManager::Instance()->LockNonMain();
-		
 		GLint status;
 		//const GLchar *sources;
         
@@ -993,24 +991,11 @@ namespace DAVA
 		
 		RENDER_VERIFY(glCompileShader(*shader));					// compile shader
 		
-#ifdef __DAVAENGINE_DEBUG__
-		{
-			GLchar log[4096] = {0};
-			GLsizei logLength = 0;
-			RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
-			if (logLength)
-			{
-				Logger::FrameworkDebug("Shader compile log:\n%s", log);
-			}
-		}
-#endif
-		
 		RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
 		if (status == GL_FALSE)
 		{
 			Logger::Error("Failed to compile shader: status == GL_FALSE\n");
 		}
-		RenderManager::Instance()->UnlockNonMain();
 		
 		return status;
 	}
@@ -1133,20 +1118,23 @@ namespace DAVA
 	}
     
     
-	Shader * Shader::RecompileNewInstance(const String & combination)
-	{
-		Shader * shader = new Shader();
-		shader->vertexShaderData = SafeRetain(vertexShaderData);
-		shader->fragmentShaderData = SafeRetain(fragmentShaderData);
-		shader->SetDefineList(combination);
-		if (!shader->Recompile())
-		{
-			SafeRelease(shader);
-			return 0;
-		}
-		return shader;
-	}
-	
+Shader * Shader::RecompileNewInstance(const String & combination)
+{
+    Shader * shader = new Shader();
+    shader->vertexShaderData = SafeRetain(vertexShaderData);
+    shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+    shader->SetDefineList(combination);
+    
+	//TODO: return "invalid shader" on error;
+	shader->Recompile();
+	/*if (!shader->Recompile())
+    {
+        SafeRelease(shader);
+        return 0;
+    }*/
+    return shader;
+}
+
 #if defined(__DAVAENGINE_ANDROID__)
 	void Shader::Lost()
 	{

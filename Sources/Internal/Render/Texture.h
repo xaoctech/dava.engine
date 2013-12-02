@@ -301,6 +301,13 @@ public:							// properties for fast access
     int32 GetDataSize() const;
     
     void ReleaseTextureData();
+	struct ReleaseTextureDataContainer
+	{
+		uint32 textureType;
+		uint32 id;
+		uint32 fboID;
+		uint32 rboID;
+	};
 
     void GenerateID();
     
@@ -330,16 +337,21 @@ private:
 	bool LoadImages(eGPUFamily gpu);
     
 	void SetParamsFromImages();
+	void FlushDataToRendererInternal(BaseObject * caller, void * param, void *callerData);
 	void FlushDataToRenderer();
 	void ReleaseImages();
 
     void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
+	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
+
+	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
 
     static bool CheckImageSize(const Vector<Image *> &imageSet);
     static bool IsCompressedFormat(PixelFormat format);
     
 	static uint32 ConvertToPower2FBOValue(uint32 value);
 
+	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
 
 	static PixelFormat defaultRGBAFormat;
 	Texture();
@@ -354,6 +366,7 @@ private:
     
 #if defined(__DAVAENGINE_OPENGL__)
 	void HWglCreateFBOBuffers();
+	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
 
     static GLint HWglFilterToGLFilter(TextureFilter filter);
     static GLint HWglConvertWrapMode(TextureWrap wrap);
