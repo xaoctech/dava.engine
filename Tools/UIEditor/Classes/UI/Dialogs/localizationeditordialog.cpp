@@ -206,8 +206,11 @@ void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& loc
     
     if (!localizationDirectory.isEmpty())
     {
+        FilePath localizationFilePath(localizationDirectory.toStdString());
+        localizationFilePath.MakeDirectoryPathname();
+
         LocalizationSystem::Instance()->SetCurrentLocale(languageId);
-        LocalizationSystem::Instance()->InitWithDirectory(localizationDirectory.toStdString());
+        LocalizationSystem::Instance()->InitWithDirectory(localizationFilePath);
     }
     
 	ReloadLocalizationTable();
