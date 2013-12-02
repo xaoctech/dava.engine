@@ -137,7 +137,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 
 			for(; begin != end; begin++)
 			{
-				DAVA::TextureDescriptor *descriptor = begin->second->CreateDescriptor();
+				DAVA::TextureDescriptor *descriptor = begin->second->GetDescriptor();
 
 				if(NULL != descriptor)
 				{
@@ -164,8 +164,6 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 						ret = newJob.id;
 					}
 				}
-
-				descriptor->Release();
 			}
 		}
 	}
