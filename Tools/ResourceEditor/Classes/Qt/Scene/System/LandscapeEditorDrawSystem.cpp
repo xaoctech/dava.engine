@@ -36,7 +36,7 @@
 #include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
 #include "LandscapeEditorDrawSystem/NotPassableTerrainProxy.h"
 #include "LandscapeEditorDrawSystem/RulerToolProxy.h"
-#include "LandscapeEditor/LandscapeRenderer.h"
+#include "Deprecated/LandscapeRenderer.h"
 
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 

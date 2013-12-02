@@ -30,8 +30,8 @@
 
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/SceneEditor2.h"
-#include "Classes/SceneEditor/EditorConfig.h"
 #include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "Deprecated/EditorConfig.h"
 
 using namespace DAVA;
 

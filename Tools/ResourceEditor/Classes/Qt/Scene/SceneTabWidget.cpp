@@ -26,14 +26,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "SceneEditor/SceneEditorScreenMain.h"
-
 #include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
-#include "AppScreens.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
 
@@ -47,7 +42,7 @@
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
-	, davaUIScreenID(SCREEN_MAIN)
+	, davaUIScreenID(0)
 	, dava3DViewMargin(3)
 	, newSceneCounter(0)
 	, curScene(NULL)

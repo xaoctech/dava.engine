@@ -31,8 +31,7 @@
 #include "EmitterLayerWidget.h"
 #include "Commands2/ParticleEditorCommands.h"
 #include "TextureBrowser/TextureConvertor.h"
-#include "SceneEditor/EditorSettings.h"
-#include "../Scene/SceneDataManager.h"
+#include "Deprecated/EditorSettings.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QHBoxLayout>

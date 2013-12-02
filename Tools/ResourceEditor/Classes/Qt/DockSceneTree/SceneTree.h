@@ -40,9 +40,6 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeDelegate.h"
 
-// temp include
-#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
-
 class SceneTree : public QTreeView
 {
 	Q_OBJECT

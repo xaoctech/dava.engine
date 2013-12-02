@@ -29,7 +29,7 @@
 
 #include "CUbemapEditor/CubemapUtils.h"
 #include "Render/Texture.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include "Qt/Main/QtUtils.h"
 
 #define CUBEMAPEDITOR_MAXFACES 6

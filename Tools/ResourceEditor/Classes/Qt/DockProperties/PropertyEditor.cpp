@@ -29,7 +29,6 @@
 
 
 #include "DAVAEngine.h"
-#include "Scene/SceneDataManager.h"
 #include "Entity/Component.h"
 #include "Main/mainwindow.h"
 

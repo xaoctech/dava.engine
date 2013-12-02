@@ -41,7 +41,7 @@
 #include "Commands2/ParticleForceMoveCommand.h"
 #include "Commands2/ParticleForceRemoveCommand.h"
 
-#include "Classes/SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
