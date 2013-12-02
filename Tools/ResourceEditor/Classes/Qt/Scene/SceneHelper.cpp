@@ -28,7 +28,7 @@
 
 
 #include "SceneHelper.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 #include "CubemapEditor/MaterialHelper.h"
 
 using namespace DAVA;

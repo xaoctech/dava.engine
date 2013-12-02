@@ -28,81 +28,68 @@
 
 
 
-#include "CustomColorsProxy.h"
-#include "Deprecated/EditorConfig.h"
+#include "MaterialAssignCommand.h"
 
-CustomColorsProxy::CustomColorsProxy(int32 size)
-:	changedRect(Rect())
-,	spriteChanged(false)
-,	size(size)
-,	changes(0)
+#include "Scene/EntityGroup.h"
+
+
+#include "DAVAEngine.h"
+
+MaterialAssignCommand::MaterialAssignCommand()
+	: Command2(CMDID_MATERIAL_ASSIGN, "Assign Material")
 {
-	customColorsSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
-	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	if (customColors.size())
-	{
-		Color color = customColors.front();
-		RenderManager::Instance()->ClearWithColor(color.r, color.g, color.b, color.a);
-	}
-	RenderManager::Instance()->RestoreRenderTarget();
 }
 
-CustomColorsProxy::~CustomColorsProxy()
+MaterialAssignCommand::~MaterialAssignCommand()
 {
-	SafeRelease(customColorsSprite);
 }
 
-Sprite* CustomColorsProxy::GetSprite()
+void MaterialAssignCommand::Undo()
 {
-	return customColorsSprite;
 }
 
-void CustomColorsProxy::ResetSpriteChanged()
+void MaterialAssignCommand::Redo()
 {
-	spriteChanged = false;
 }
 
-bool CustomColorsProxy::IsSpriteChanged()
+DAVA::Entity* MaterialAssignCommand::GetEntity() const
 {
-	return spriteChanged;
+	return NULL;
 }
 
-Rect CustomColorsProxy::GetChangedRect()
+bool MaterialAssignCommand::EntityGroupHasMaterials(EntityGroup *group, bool recursive)
 {
-	if (IsSpriteChanged())
-	{
-		return changedRect;
-	}
-	
-	return Rect();
+    if(!group) return false;
+    
+    const size_t count = group->Size();
+    for(size_t i = 0; i < count; ++i)
+    {
+        bool hasMaterials = EntityHasMaterials(group->GetEntity(i), recursive);
+        if(hasMaterials) return true;
+    }
+    
+    return false;
 }
 
-void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
+bool MaterialAssignCommand::EntityHasMaterials(DAVA::Entity * entity, bool recursive)
 {
-	DAVA::Rect bounds(0.f, 0.f, size, size);
-	changedRect = rect;
-	bounds.ClampToRect(changedRect);
-
-	spriteChanged = true;
-}
-
-int32 CustomColorsProxy::GetChangesCount() const
-{
-	return changes;
-}
-
-void CustomColorsProxy::ResetChanges()
-{
-	changes = 0;
-}
-
-void CustomColorsProxy::IncrementChanges()
-{
-	++changes;
-}
-
-void CustomColorsProxy::DecrementChanges()
-{
-	--changes;
+    if(!entity) return false;
+    
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+    if(ro && ro->GetRenderBatchCount())
+    {
+        return true;
+    }
+    
+    if(recursive)
+    {
+        const DAVA::int32 count = entity->GetChildrenCount();
+        for(DAVA::int32 i = 0; i < count; ++i)
+        {
+            bool hasMaterials = EntityHasMaterials(entity->GetChild(i), recursive);
+            if(hasMaterials) return true;
+        }
+    }
+    
+    return false;
 }

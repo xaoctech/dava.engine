@@ -29,11 +29,8 @@
 
 
 #include "SpritePackerHelper.h"
-#include "DockParticleEditor/ParticlesEditorController.h"
-
-#include "../SpritesPacker.h"
-#include "../SceneEditor/EditorSettings.h"
-#include "./Scene/SceneDataManager.h"
+#include "SpritesPacker.h"
+#include "Deprecated/EditorSettings.h"
 
 #include <QtConcurrentRun>
 
@@ -112,9 +109,6 @@ void SpritePackerHelper::Reload()
     {
         it->second->Reload();
     }
-    
-    if(ParticlesEditorController::Instance())
-        ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
 void SpritePackerHelper::EnumerateSpritesForReloading(Scene * scene, Map<String, Sprite *> &sprites)

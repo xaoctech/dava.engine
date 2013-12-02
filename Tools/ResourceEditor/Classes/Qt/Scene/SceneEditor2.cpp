@@ -30,10 +30,9 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "Scene/SceneHelper.h"
 
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/SceneValidator.h"
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Commands2/HeightmapEditorCommands2.h"
@@ -498,24 +497,24 @@ const Color SceneEditor2::GetShadowColor() const
 	return Color::White();
 }
 
-void SceneEditor2::SetShadowBlendMode( ShadowVolumeRenderPass::eBlend blend )
+void SceneEditor2::SetShadowBlendMode(DAVA::ShadowVolumeRenderPass::eBlend blend)
 {
 	if(GetRenderSystem())
 	{
-		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
 		shadowPass->SetBlendMode(blend);
 	}
 }
 
-ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
+DAVA::ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
 		return shadowPass->GetBlendMode();
 	}
 
-	return ShadowVolumeRenderPass::MODE_BLEND_COUNT;
+	return DAVA::ShadowVolumeRenderPass::MODE_BLEND_COUNT;
 }
 
 const RenderManager::Stats & SceneEditor2::GetRenderStats() const
@@ -685,3 +684,4 @@ void SceneEditor2::MarkAsChanged()
 		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
 	}
 }
+

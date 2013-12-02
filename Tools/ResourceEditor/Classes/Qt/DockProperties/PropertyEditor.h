@@ -34,7 +34,6 @@
 #include "PropertyEditorStateHelper.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Scene/SceneData.h"
 #include "Scene/SceneSignals.h"
 
 class DAVA::Entity;

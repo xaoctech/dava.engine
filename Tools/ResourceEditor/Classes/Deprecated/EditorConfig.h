@@ -28,81 +28,71 @@
 
 
 
-#include "CustomColorsProxy.h"
-#include "Deprecated/EditorConfig.h"
+#ifndef __EDITOR_CONFIG_H__
+#define __EDITOR_CONFIG_H__
 
-CustomColorsProxy::CustomColorsProxy(int32 size)
-:	changedRect(Rect())
-,	spriteChanged(false)
-,	size(size)
-,	changes(0)
+#include "DAVAEngine.h"
+
+using namespace DAVA;
+
+class PropertyDescription : public BaseObject
 {
-	customColorsSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
-	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	if (customColors.size())
+protected:
+	~PropertyDescription(){}
+public:
+	PropertyDescription() : BaseObject(), type(0) {};
+
+	String name;
+	int32 type;
+	VariantType defaultValue;
+	Vector<String> comboValues;
+    Vector<Color> colorListValues;
+};
+
+class EditorConfig: public Singleton<EditorConfig>
+{
+    
+public:
+    EditorConfig();
+    virtual ~EditorConfig();
+
+	enum ePropertyType
 	{
-		Color color = customColors.front();
-		RenderManager::Instance()->ClearWithColor(color.r, color.g, color.b, color.a);
-	}
-	RenderManager::Instance()->RestoreRenderTarget();
-}
+		PT_NONE = 0,
+		PT_BOOL,
+		PT_INT,
+		PT_FLOAT,
+		PT_STRING,
+		PT_COMBOBOX,
+        PT_COLOR_LIST,
 
-CustomColorsProxy::~CustomColorsProxy()
-{
-	SafeRelease(customColorsSprite);
-}
+		PROPERTY_TYPES_COUNT
+	};
 
-Sprite* CustomColorsProxy::GetSprite()
-{
-	return customColorsSprite;
-}
+    void ParseConfig(const FilePath &filePath);
 
-void CustomColorsProxy::ResetSpriteChanged()
-{
-	spriteChanged = false;
-}
+	const Vector<String> & GetProjectPropertyNames();
+	const Vector<String> & GetComboPropertyValues(const String & nameStr);
+    const Vector<Color> & GetColorPropertyValues(const String& nameStr);
 
-bool CustomColorsProxy::IsSpriteChanged()
-{
-	return spriteChanged;
-}
+	bool HasProperty(const String &propertyName);
+	int32 GetPropertyValueType(const String &propertyName);
+	VariantType *GetPropertyDefaultValue(const String &propertyName);
 
-Rect CustomColorsProxy::GetChangedRect()
-{
-	if (IsSpriteChanged())
-	{
-		return changedRect;
-	}
-	
-	return Rect();
-}
+protected:
+	void ClearConfig();
 
-void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
-{
-	DAVA::Rect bounds(0.f, 0.f, size, size);
-	changedRect = rect;
-	bounds.ClampToRect(changedRect);
+	PropertyDescription* GetPropertyDescription(const String &propertyName);
 
-	spriteChanged = true;
-}
+	int32 GetValueTypeFromPropertyType(int32 propertyType);
+	int32 ParseType(const String &typeStr);
 
-int32 CustomColorsProxy::GetChangesCount() const
-{
-	return changes;
-}
+	Vector<String> propertyNames;
+	Map<String, PropertyDescription*> properties;
+	Vector<String> empty;
+    Vector<Color> emptyColors;
+};
 
-void CustomColorsProxy::ResetChanges()
-{
-	changes = 0;
-}
 
-void CustomColorsProxy::IncrementChanges()
-{
-	++changes;
-}
 
-void CustomColorsProxy::DecrementChanges()
-{
-	--changes;
-}
+#endif // __EDITOR_CONFIG_H__

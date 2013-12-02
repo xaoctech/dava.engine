@@ -45,7 +45,7 @@
 #include <QCoreApplication>
 #include <QKeyEvent>
 
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
