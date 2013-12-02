@@ -36,6 +36,8 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/System/SelectionSystem.h"
 
+#include "Main/mainwindow.h"
+
 #include "MaterialsModel.h"
 
 #include <QMenu>
@@ -146,6 +148,13 @@ bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMateri
 {
     QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
 
+    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+    if(scene && scene->selectionSystem->GetSelectionCount())
+    {
+        QAction * actionAssign = contextMenu.addAction("Assign to selection", this, SLOT(OnAssign()));
+        actionAssign->setData(materialAsVariant);
+    }
+    
     QAction * actionEdit = contextMenu.addAction("Edit Material", this, SLOT(OnEdit()));
     actionEdit->setData(materialAsVariant);
     
@@ -153,6 +162,12 @@ bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMateri
 }
 
 void LibraryMaterialsModel::OnEdit()
+{
+    QVariant materialAsVariant = ((QAction *)sender())->data();
+    DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
+}
+
+void LibraryMaterialsModel::OnAssign()
 {
     QVariant materialAsVariant = ((QAction *)sender())->data();
     DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();

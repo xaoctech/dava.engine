@@ -34,7 +34,6 @@
 #include "Classes/SceneEditor/SceneValidator.h"
 #include "Classes/Qt/DockLODEditor/EditorLODData.h"
 
-#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 
 using namespace DAVA;

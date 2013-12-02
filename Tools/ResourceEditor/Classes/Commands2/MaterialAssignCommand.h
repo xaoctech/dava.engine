@@ -28,77 +28,25 @@
 
 
 
-#include "BeastCommandLineTool.h"
+#ifndef __MATERIAL_ASSIGN_COMMAND_H__
+#define __MATERIAL_ASSIGN_COMMAND_H__
 
-#include "TexturePacker/CommandLineParser.h"
+#include "Commands2/Command2.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Commands2/BeastAction.h"
-#include "Classes/SceneEditor/EditorSettings.h"
-
-using namespace DAVA;
-
-#if defined (__DAVAENGINE_BEAST__)
-
-BeastCommandLineTool::BeastCommandLineTool()
-	:	CommandLineTool()
+class EntityGroup;
+class MaterialAssignCommand: public Command2
 {
-}
+public:
+	MaterialAssignCommand();
+	~MaterialAssignCommand();
 
-void BeastCommandLineTool::PrintUsage()
-{
-    printf("\n");
-    printf("-beast [-file [file]]\n");
-    printf("\twill beast scene file\n");
-    printf("\t-file - full pathname of scene for beasting \n");
+	virtual void Undo();
+	virtual void Redo();
+
+	virtual DAVA::Entity* GetEntity() const;
     
-    printf("\n");
-    printf("Samples:\n");
-    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
+    static bool EntityGroupHasMaterials(EntityGroup *group, bool recursive);
+    static bool EntityHasMaterials(DAVA::Entity * entity, bool recursive);
+};
 
-}
-
-DAVA::String BeastCommandLineTool::GetCommandLineKey()
-{
-    return "-beast";
-}
-
-bool BeastCommandLineTool::InitializeFromCommandLine()
-{
-    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
-    if(scenePathname.IsEmpty())
-    {
-        errors.insert(String("Incorrect params for beasting of the scene"));
-        return false;
-    }
-    
-    if(!scenePathname.IsEqualToExtension(".sc2"))
-    {
-        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
-        return false;
-    }
-    
-    return true;
-}
-
-void BeastCommandLineTool::Process()
-{
-	SceneEditor2 *scene = new SceneEditor2();
-	if(scene->Load(scenePathname))
-	{
-		scene->Update(0.1f);
-
-		scene->Exec(new BeastAction(scene, NULL));
-
-		scene->Save();
-	}
-	SafeRelease(scene);
-}
-
-const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
-{
-    return scenePathname;
-}
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
-
+#endif // __MATERIAL_ASSIGN_COMMAND_H__

@@ -28,77 +28,68 @@
 
 
 
-#include "BeastCommandLineTool.h"
+#include "MaterialAssignCommand.h"
 
-#include "TexturePacker/CommandLineParser.h"
+#include "Scene/EntityGroup.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Commands2/BeastAction.h"
-#include "Classes/SceneEditor/EditorSettings.h"
 
-using namespace DAVA;
+#include "DAVAEngine.h"
 
-#if defined (__DAVAENGINE_BEAST__)
-
-BeastCommandLineTool::BeastCommandLineTool()
-	:	CommandLineTool()
+MaterialAssignCommand::MaterialAssignCommand()
+	: Command2(CMDID_MATERIAL_ASSIGN, "Assign Material")
 {
 }
 
-void BeastCommandLineTool::PrintUsage()
+MaterialAssignCommand::~MaterialAssignCommand()
 {
-    printf("\n");
-    printf("-beast [-file [file]]\n");
-    printf("\twill beast scene file\n");
-    printf("\t-file - full pathname of scene for beasting \n");
+}
+
+void MaterialAssignCommand::Undo()
+{
+}
+
+void MaterialAssignCommand::Redo()
+{
+}
+
+DAVA::Entity* MaterialAssignCommand::GetEntity() const
+{
+	return NULL;
+}
+
+bool MaterialAssignCommand::EntityGroupHasMaterials(EntityGroup *group, bool recursive)
+{
+    if(!group) return false;
     
-    printf("\n");
-    printf("Samples:\n");
-    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
-
-}
-
-DAVA::String BeastCommandLineTool::GetCommandLineKey()
-{
-    return "-beast";
-}
-
-bool BeastCommandLineTool::InitializeFromCommandLine()
-{
-    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
-    if(scenePathname.IsEmpty())
+    const size_t count = group->Size();
+    for(size_t i = 0; i < count; ++i)
     {
-        errors.insert(String("Incorrect params for beasting of the scene"));
-        return false;
+        bool hasMaterials = EntityHasMaterials(group->GetEntity(i), recursive);
+        if(hasMaterials) return true;
     }
     
-    if(!scenePathname.IsEqualToExtension(".sc2"))
+    return false;
+}
+
+bool MaterialAssignCommand::EntityHasMaterials(DAVA::Entity * entity, bool recursive)
+{
+    if(!entity) return false;
+    
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+    if(ro && ro->GetRenderBatchCount())
     {
-        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
-        return false;
+        return true;
     }
     
-    return true;
+    if(recursive)
+    {
+        const DAVA::int32 count = entity->GetChildrenCount();
+        for(DAVA::int32 i = 0; i < count; ++i)
+        {
+            bool hasMaterials = EntityHasMaterials(entity->GetChild(i), recursive);
+            if(hasMaterials) return true;
+        }
+    }
+    
+    return false;
 }
-
-void BeastCommandLineTool::Process()
-{
-	SceneEditor2 *scene = new SceneEditor2();
-	if(scene->Load(scenePathname))
-	{
-		scene->Update(0.1f);
-
-		scene->Exec(new BeastAction(scene, NULL));
-
-		scene->Save();
-	}
-	SafeRelease(scene);
-}
-
-const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
-{
-    return scenePathname;
-}
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
-

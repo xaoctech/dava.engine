@@ -601,6 +601,7 @@
 		E8C4C69717294CE4004B0B3B /* SceneSignals.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C69517294CE4004B0B3B /* SceneSignals.cpp */; };
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
+		E8C98E4B184C8FE200AFBF3F /* MaterialAssignCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C98E49184C8FE200AFBF3F /* MaterialAssignCommand.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8CFEB7A1830D6CE00FC2FC3 /* LibraryTexturesModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */; };
 		E8CFEB8A1830E77200FC2FC3 /* LibraryObjectsModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CFEB881830E77200FC2FC3 /* LibraryObjectsModel.cpp */; };
@@ -1848,6 +1849,8 @@
 		E8C4C69617294CE4004B0B3B /* SceneSignals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneSignals.h; sourceTree = "<group>"; };
 		E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeastCommandLineTool.cpp; path = Classes/CommandLine/Beast/BeastCommandLineTool.cpp; sourceTree = "<group>"; };
 		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
+		E8C98E49184C8FE200AFBF3F /* MaterialAssignCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialAssignCommand.cpp; sourceTree = "<group>"; };
+		E8C98E4A184C8FE200AFBF3F /* MaterialAssignCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialAssignCommand.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
 		E8CFEB771830D6CE00FC2FC3 /* LibraryTexturesModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryTexturesModel.cpp; sourceTree = "<group>"; };
@@ -2642,6 +2645,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8C98E49184C8FE200AFBF3F /* MaterialAssignCommand.cpp */,
+				E8C98E4A184C8FE200AFBF3F /* MaterialAssignCommand.h */,
 				62A7AD24180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp */,
 				62A7AD25180BDD2100282F2E /* LandscapeSetTexturesCommands.h */,
 				E8DADC2B17E9ED3C00561D52 /* AddComponentCommand.cpp */,
@@ -4667,6 +4672,7 @@
 				49E626CB180C0DF000B62B59 /* PopupEditorDialog.cpp in Build Sources */,
 				5C7F49EA15B44BB70038AF3A /* FrameworkMain.cpp in Build Sources */,
 				5C7F49EB15B44BB70038AF3A /* GameCore.cpp in Build Sources */,
+				E8C98E4B184C8FE200AFBF3F /* MaterialAssignCommand.cpp in Build Sources */,
 				5C7F49EC15B44BB70038AF3A /* LightmapsPacker.cpp in Build Sources */,
 				5C7F49EE15B44BB70038AF3A /* SceneNodeUserData.cpp in Build Sources */,
 				5C7F49EF15B44BB70038AF3A /* UIFileTree.cpp in Build Sources */,

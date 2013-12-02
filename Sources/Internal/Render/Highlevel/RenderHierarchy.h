@@ -43,7 +43,7 @@ class Camera;
 class RenderHierarchy
 {
 public:    
-	~RenderHierarchy(){};
+	virtual ~RenderHierarchy(){};
     
     virtual void AddRenderObject(RenderObject * renderObject) = 0;
     virtual void RemoveRenderObject(RenderObject * renderObject) = 0;

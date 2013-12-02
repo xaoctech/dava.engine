@@ -38,7 +38,6 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
-#include "Scene/SceneHelper.h"
 #include "ImageTools/ImageTools.h"
 #include "CubemapEditor/CubemapUtils.h"
 #include "ImageTools/ImageTools.h"

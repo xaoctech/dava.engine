@@ -45,8 +45,6 @@
 #include "../SceneEditor/EditorSettings.h"
 #include "../CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "Classes/Qt/Scene/SceneHelper.h"
-
 #include "DAVAEngine.h"
 
 using namespace DAVA;

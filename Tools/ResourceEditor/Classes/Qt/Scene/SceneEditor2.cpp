@@ -30,7 +30,6 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "Scene/SceneHelper.h"
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
@@ -685,3 +684,4 @@ void SceneEditor2::MarkAsChanged()
 		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
 	}
 }
+
