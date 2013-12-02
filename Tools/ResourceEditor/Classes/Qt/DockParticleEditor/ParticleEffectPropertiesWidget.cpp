@@ -30,7 +30,6 @@
 
 #include "ParticleEffectPropertiesWidget.h"
 #include "Commands2/ParticleEditorCommands.h"
-#include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
 #include <QEvent>

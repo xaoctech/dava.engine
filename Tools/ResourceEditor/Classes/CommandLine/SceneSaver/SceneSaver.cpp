@@ -29,10 +29,9 @@
 
 
 #include "SceneSaver.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 
 #include "Qt/Scene/SceneHelper.h"
-#include "EditorScene.h"
 
 #include "Classes/StringConstants.h"
 #include "Classes/Qt/Main/QtUtils.h"

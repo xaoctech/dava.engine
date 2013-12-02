@@ -29,8 +29,8 @@
 
 #include "ScenePreviewDialog.h"
 
-#include "../SceneEditor/ControlsFactory.h"
-#include "../SceneEditor/EditorSettings.h"
+#include "Deprecated/ControlsFactory.h"
+#include "Deprecated/EditorSettings.h"
 #include "ScenePreviewControl.h"
 
 ScenePreviewDialog::ScenePreviewDialog()
