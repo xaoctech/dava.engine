@@ -630,6 +630,26 @@ void SceneTreeModel::AddIndexesCache(SceneTreeItem *item)
 	}
 }
 
+void SceneTreeModel::ResetFilterAcceptFlag()
+{
+	for(int i = 0; i < invisibleRootItem()->rowCount(); ++i)
+	{
+		ResetFilterAcceptFlagInternal(GetItem(index(i, 0)));
+	}
+}
+
+void SceneTreeModel::ResetFilterAcceptFlagInternal(SceneTreeItem *item)
+{
+	if(NULL != item)
+	{
+		item->SetAcceptedByFilter(false);
+		for(int i = 0; i < item->rowCount(); ++i)
+		{
+			ResetFilterAcceptFlagInternal((SceneTreeItem *) item->child(i));
+		}
+	}
+}
+
 bool SceneTreeModel::AreSameType(const QModelIndexList & indexes) const
 {
 	bool ret = true;
@@ -718,7 +738,22 @@ bool SceneTreeFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex 
 
 bool SceneTreeFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+	bool accepted = QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+	SceneTreeItem *item = treeModel->GetItem(treeModel->index(sourceRow, 0, sourceParent));
+
+	if(NULL != item)
+	{
+		if(accepted && !filterRegExp().isEmpty())
+		{
+			item->SetAcceptedByFilter(accepted);
+		}
+		else
+		{
+			item->SetAcceptedByFilter(false);
+		}
+	}
+
+	return accepted;
 }
 
 bool SceneTreeFilteringModel::childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const

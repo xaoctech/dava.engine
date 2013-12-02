@@ -34,9 +34,10 @@
 #include <QDialog.h>
 #include "DAVAEngine.h"
 #include "Scene3D/Entity.h"
-#include "DockProperties/PropertyEditorDialog.h"
 #include <QDialogButtonBox>
 
+#include "Scene/SceneEditor2.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
 class DAVA::Entity;
