@@ -33,7 +33,7 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyDataKeyedArchiveMember.h"
-#include "SceneEditor/EditorConfig.h"
+#include "Deprecated/EditorConfig.h"
 
 #include <QSet>
 #include <QMenu>

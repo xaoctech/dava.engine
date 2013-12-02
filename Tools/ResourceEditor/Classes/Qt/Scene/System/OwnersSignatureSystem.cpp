@@ -29,7 +29,7 @@
 
 #include "OwnersSignatureSystem.h"
 #include "Classes/StringConstants.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include "Scene/SceneSignals.h"
 
 const DAVA::int32 OwnersSignatureSystem::validIDs[] =

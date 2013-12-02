@@ -31,9 +31,10 @@
 #ifndef __BEASTSYSTEM_H__
 #define __BEASTSYSTEM_H__
 
-#include "Base/BaseTypes.h"
+#include "DAVAEngine.h"
 #include "Entity/SceneSystem.h"
-#include "EditorScene.h"
+
+using namespace DAVA;
 
 class BeastSystem: public DAVA::SceneSystem
 {

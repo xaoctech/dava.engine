@@ -66,6 +66,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 	batch->Retain();
 	batch->SetRenderObject(this);
     renderBatchArray.push_back(batch);
+    batch->AttachToRenderSystem(renderSystem);
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
 //    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&

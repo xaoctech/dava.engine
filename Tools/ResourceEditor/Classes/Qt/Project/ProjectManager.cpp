@@ -31,10 +31,9 @@
 #include "Project/ProjectManager.h"
 #include "Main/QtUtils.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
-#include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/SceneValidator.h"
-#include "Classes/SceneEditor/EditorConfig.h"
-#include "Classes/SceneEditor/SceneEditorScreenMain.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/SceneValidator.h"
+#include "Deprecated/EditorConfig.h"
 
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "Classes/Qt/SpritesPacker/SpritePackerHelper.h"
