@@ -29,18 +29,14 @@
 
 
 #include "QtUtils.h"
-#include "../../SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 
 #include <QMessageBox>
 #include <QToolButton>
 #include "mainwindow.h"
-#include "QtMainWindowHandler.h"
 
 #include "TexturePacker/CommandLineParser.h"
-#include "../../Commands/FileCommands.h"
-#include "../../Commands/CommandsManager.h"
-
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 #include "DAVAEngine.h"
@@ -167,20 +163,6 @@ int ShowQuestion(const DAVA::String &header, const DAVA::String &question, int b
 {
     int answer = QMessageBox::question(NULL, QString::fromStdString(header), QString::fromStdString(question),
                                        (QMessageBox::StandardButton)buttons, (QMessageBox::StandardButton)defaultButton);
-    return answer;
-}
-
-int ShowSaveSceneQuestion(DAVA::Scene *scene)
-{
-    int answer = MB_FLAG_NO;
-    
-    int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(scene);
-    if(changesCount)
-    {
-        answer = ShowQuestion("Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
-                                    MB_FLAG_YES | MB_FLAG_NO | MB_FLAG_CANCEL, MB_FLAG_CANCEL);
-    }
-    
     return answer;
 }
 

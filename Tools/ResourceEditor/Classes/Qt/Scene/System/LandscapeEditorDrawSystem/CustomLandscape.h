@@ -32,7 +32,7 @@
 #define __RESOURCEEDITORQT__CUSTOMLANDSCAPE__
 
 #include "DAVAEngine.h"
-#include "LandscapeEditor/EditorLandscape.h"
+#include "Deprecated/LandscapeRenderer.h"
 
 using namespace DAVA;
 

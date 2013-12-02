@@ -28,81 +28,25 @@
 
 
 
-#include "CustomColorsProxy.h"
-#include "Deprecated/EditorConfig.h"
+#ifndef __MATERIAL_ASSIGN_COMMAND_H__
+#define __MATERIAL_ASSIGN_COMMAND_H__
 
-CustomColorsProxy::CustomColorsProxy(int32 size)
-:	changedRect(Rect())
-,	spriteChanged(false)
-,	size(size)
-,	changes(0)
+#include "Commands2/Command2.h"
+
+class EntityGroup;
+class MaterialAssignCommand: public Command2
 {
-	customColorsSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
-	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
-	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	if (customColors.size())
-	{
-		Color color = customColors.front();
-		RenderManager::Instance()->ClearWithColor(color.r, color.g, color.b, color.a);
-	}
-	RenderManager::Instance()->RestoreRenderTarget();
-}
+public:
+	MaterialAssignCommand();
+	~MaterialAssignCommand();
 
-CustomColorsProxy::~CustomColorsProxy()
-{
-	SafeRelease(customColorsSprite);
-}
+	virtual void Undo();
+	virtual void Redo();
 
-Sprite* CustomColorsProxy::GetSprite()
-{
-	return customColorsSprite;
-}
+	virtual DAVA::Entity* GetEntity() const;
+    
+    static bool EntityGroupHasMaterials(EntityGroup *group, bool recursive);
+    static bool EntityHasMaterials(DAVA::Entity * entity, bool recursive);
+};
 
-void CustomColorsProxy::ResetSpriteChanged()
-{
-	spriteChanged = false;
-}
-
-bool CustomColorsProxy::IsSpriteChanged()
-{
-	return spriteChanged;
-}
-
-Rect CustomColorsProxy::GetChangedRect()
-{
-	if (IsSpriteChanged())
-	{
-		return changedRect;
-	}
-	
-	return Rect();
-}
-
-void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
-{
-	DAVA::Rect bounds(0.f, 0.f, size, size);
-	changedRect = rect;
-	bounds.ClampToRect(changedRect);
-
-	spriteChanged = true;
-}
-
-int32 CustomColorsProxy::GetChangesCount() const
-{
-	return changes;
-}
-
-void CustomColorsProxy::ResetChanges()
-{
-	changes = 0;
-}
-
-void CustomColorsProxy::IncrementChanges()
-{
-	++changes;
-}
-
-void CustomColorsProxy::DecrementChanges()
-{
-	--changes;
-}
+#endif // __MATERIAL_ASSIGN_COMMAND_H__

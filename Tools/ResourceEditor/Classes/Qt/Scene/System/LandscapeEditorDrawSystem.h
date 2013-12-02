@@ -32,8 +32,8 @@
 #define __RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__
 
 #include "Entity/SceneSystem.h"
-#include "EditorScene.h"
-
+#include "Scene3D/Scene.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/UniqueStateSet.h"
 
 class LandscapeProxy;
@@ -42,6 +42,8 @@ class NotPassableTerrainProxy;
 class CustomColorsProxy;
 class VisibilityToolProxy;
 class RulerToolProxy;
+
+using namespace DAVA;
 
 class LandscapeEditorDrawSystem: public DAVA::SceneSystem
 {

@@ -39,8 +39,8 @@
 #include <QDropEvent>
 #include <QMenu>
 
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/SceneValidator.h"
 #include "Main/QTUtils.h"
 #include "Project/ProjectManager.h"
 #include "Scene/SceneEditor2.h"
