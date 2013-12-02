@@ -68,7 +68,7 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
 #endif
     
     GenerateCode(materialGraph);
-    
+
     return COMPILATION_SUCCESS;
 };
     

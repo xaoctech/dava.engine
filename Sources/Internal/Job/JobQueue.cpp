@@ -26,67 +26,40 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "Platform/Thread.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Job/JobQueue.h"
+#include "Job/Job.h"
 
 namespace DAVA
 {
 
-#include <unistd.h>
-
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
+void JobQueue::Update()
 {
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
-	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
+	mutex.Lock();
 
-	t->state = Thread::STATE_ENDED;
-	t->Release();
+	while(!queue.empty())
+	{
+		Job * job = queue.front();
+		mutex.Unlock();
 
-	pthread_exit(0);
+		job->Perform();
+
+		mutex.Lock();
+		queue.pop_front();
+		job->Release();
+	}
+
+	mutex.Unlock();
 }
 
-void Thread::StartAndroid()
+void JobQueue::AddJob(Job * job)
 {
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
-}
+	mutex.Lock();
 
-bool Thread::IsMainThread()
-{
-    return (mainThreadId == pthread_self());
-}
+	job->Retain();
+	queue.push_back(job);
 
-void Thread::InitMainThread()
-{
-    mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::YieldThread()
-{
-	sched_yield();
-}
-
-Thread::ThreadId Thread::GetCurrentThreadId()
-{
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
+	mutex.Unlock();
 }
 
 
-};
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+}

@@ -210,19 +210,7 @@ public:
 	 \brief 
 	 */
 	void Unlock();
-	/** 
-	 \brief 
-	 */
-	void LockNonMain();
-	/** 
-	 \brief 
-	 */
-	void UnlockNonMain();
 	
-	
-	int32 GetNonMainLockCount();
-	
-    
     /**
      === Viewport and orientation 
      */
@@ -734,10 +722,9 @@ protected:
 	
 	int32 fps;
 
-	int32 lockCount;
 	bool isInsideDraw;
 
-	RefPtr<Mutex> glMutex;
+	Mutex glMutex;
 	
 	Rect currentClip;
 	

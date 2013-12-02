@@ -40,6 +40,8 @@
 namespace DAVA
 {
 
+//Shader * ShadowVolume::shader = 0;
+//int32 ShadowVolume::uniformLightPosition0 = 0;
 
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)

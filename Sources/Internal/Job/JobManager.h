@@ -26,67 +26,69 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_MANAGER_H__
+#define __DAVAENGINE_JOB_MANAGER_H__
 
-
+#include "Base/BaseTypes.h"
+#include "Base/Singleton.h"
+#include "Base/Message.h"
 #include "Platform/Thread.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Platform/Mutex.h"
+#include "Base/ScopedPtr.h"
+#include "Job/Job.h"
 
 namespace DAVA
 {
 
-#include <unistd.h>
+class JobQueue;
+class ThreadIdJobWaiter;
+class JobInstanceWaiter;
 
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
+class JobManager : public Singleton<JobManager>
 {
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
+public:
+	enum eThreadType
+	{
+		THREAD_MAIN = 0,
+		THREAD_WORKER
+	};
+
+	enum eWaiterRegistrationResult
+	{
+		WAITER_WILL_WAIT,
+		WAITER_RETURN_IMMEDIATELY
+	};
+
+	JobManager();
+	virtual ~JobManager();
+
+	ScopedPtr<Job> CreateJob(eThreadType threadType, const Message & message);
+
+	void Update();
 	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
+	void OnJobCreated(Job * job);
+	void OnJobCompleted(Job * job);
 
-	t->state = Thread::STATE_ENDED;
-	t->Release();
+	eWaiterRegistrationResult RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
+	void UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter);
 
-	pthread_exit(0);
-}
+	eWaiterRegistrationResult RegisterWaiterForJobInstance(JobInstanceWaiter * waiter);
+	void UnregisterWaiterForJobInstance(JobInstanceWaiter * waiter);
 
-void Thread::StartAndroid()
-{
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
-}
+protected:
+	Mutex jobsDoneMutex;
+	JobQueue * mainQueue;
+	void UpdateMainQueue();
 
-bool Thread::IsMainThread()
-{
-    return (mainThreadId == pthread_self());
-}
-
-void Thread::InitMainThread()
-{
-    mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::YieldThread()
-{
-	sched_yield();
-}
-
-Thread::ThreadId Thread::GetCurrentThreadId()
-{
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
-}
-
-
+	Map<Thread::ThreadId, uint32> jobsPerCreatorThread;
+	Map<Thread::ThreadId, ThreadIdJobWaiter *> waitersPerCreatorThread;
+	void CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId);
+	
+	
+	void CheckAndCallWaiterForJobInstance(Job * job);
+	Map<Job *, JobInstanceWaiter *> waitersPerJob;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+}
 
+#endif //__DAVAENGINE_JOB_MANAGER_H__
