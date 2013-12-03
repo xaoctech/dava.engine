@@ -60,14 +60,18 @@ RenderBatch::RenderBatch()
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 	aabbox = AABBox3(Vector3(), Vector3());
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     occlusionQuery = new OcclusionQuery();
+#endif
     queryRequested = -1;
     lastFraemDrawn = -10;
 }
     
 RenderBatch::~RenderBatch()
 {
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     SafeDelete(occlusionQuery);
+#endif
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	
@@ -127,7 +131,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //        return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (uint32)worldTransformPtr);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 

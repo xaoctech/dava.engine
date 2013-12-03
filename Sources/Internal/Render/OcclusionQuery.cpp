@@ -31,6 +31,7 @@
 namespace DAVA
 {
 #if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
 OcclusionQuery::OcclusionQuery()
 {
     queryActive = false;
@@ -104,6 +105,7 @@ void OcclusionQuery::GetQuery(uint32 * resultValue)
 #endif
 }
     
+#endif //#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     
 #else
 #error "Require Occlusion Queries Implementation"
