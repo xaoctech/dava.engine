@@ -799,7 +799,7 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
     SetMatrix(type, matrix, 0);
 }
     
-void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue)
+void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, pointer_size cacheValue)
 {
     GLint matrixMode[2] = {GL_MODELVIEW, GL_PROJECTION};
     if (type == MATRIX_PROJECTION)
