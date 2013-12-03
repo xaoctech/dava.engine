@@ -36,6 +36,7 @@
 #include "Render/Highlevel/RenderBatch.h"
 
 class EntityGroup;
+class SceneEditor2;
 class MaterialsDropSystem
 {
 public:
@@ -52,18 +53,22 @@ public:
     };
     
 public:
+
+    static void AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material);
+    static void AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material);
     
     static DropTestResult TestEntityGroup(const EntityGroup *group, const bool recursive);
     static DropTestResult TestEntity(const DAVA::Entity * entity, const bool recursive);
     
+protected:
+
     static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const EntityGroup *group, const bool recursive);
     static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const DAVA::Entity *entity, const bool recursive);
     
     static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const EntityGroup *group, const bool recursive);
     static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive);
-    
-protected:
 
+    
     static void TestEntity(DropTestResult & result, const DAVA::Entity * entity, const bool recursive);
 
     static void GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive);

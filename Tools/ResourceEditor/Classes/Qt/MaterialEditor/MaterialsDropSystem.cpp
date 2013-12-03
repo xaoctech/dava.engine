@@ -29,11 +29,15 @@
 
 #include "MaterialsDropSystem.h"
 #include "Scene/EntityGroup.h"
+#include "Scene/SceneEditor2.h"
+
+#include "Commands2/MaterialSwitchParentCommand.h"
 
 #include "Base/BaseTypes.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include <QMessageBox>
 
 MaterialsDropSystem::DropTestResult::DropTestResult()
 {
@@ -55,6 +59,72 @@ MaterialsDropSystem::DropTestResult MaterialsDropSystem::TestEntityGroup(const E
     
     return result;
 }
+
+void MaterialsDropSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material)
+{
+    MaterialsDropSystem::DropTestResult result = TestEntityGroup(group, true);
+    if(result.hasEntitiesAvailableToDrop)
+    {
+        scene->BeginBatch("Set material");
+        
+        DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(group, true);
+        auto endIt = oldMaterials.end();
+        for(auto it = oldMaterials.begin(); it != endIt; ++it)
+        {
+            scene->Exec(new MaterialSwitchParentCommand(*it, material));
+        }
+        scene->EndBatch();
+    }
+    if(result.hasEntityUnavailableToDrop)
+    {
+        DAVA::Vector<const DAVA::Entity *> rejectedEntities = GetDropRejectedEntities(group, true);
+        
+        DAVA::String names;
+        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+        {
+            if(ie != 0) names += ",";
+            
+            names += rejectedEntities[ie]->GetName();
+        }
+        
+        String errorString = Format("Cannot drop material to %s", names.c_str());
+        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+    }
+}
+
+
+void MaterialsDropSystem::AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material)
+{
+    MaterialsDropSystem::DropTestResult result = TestEntity(entity, true);
+    if(result.hasEntitiesAvailableToDrop)
+    {
+        scene->BeginBatch("Set Material");
+        
+        DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(entity, true);
+        auto endIt = oldMaterials.end();
+        for(auto it = oldMaterials.begin(); it != endIt; ++it)
+        {
+            scene->Exec(new MaterialSwitchParentCommand(*it, material));
+        }
+        scene->EndBatch();
+    }
+    if(result.hasEntityUnavailableToDrop)
+    {
+        DAVA::Vector<const DAVA::Entity *> rejectedEntities = GetDropRejectedEntities(entity, true);
+        
+        DAVA::String names;
+        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+        {
+            if(ie != 0) names += ",";
+            
+            names += rejectedEntities[ie]->GetName();
+        }
+        
+        String errorString = Format("Cannot drop material to %s", names.c_str());
+        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+    }
+}
+
 
 MaterialsDropSystem::DropTestResult MaterialsDropSystem::TestEntity(const DAVA::Entity * entity, const bool recursive)
 {
