@@ -794,13 +794,32 @@ void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 	RemoveClip();
 }
 
-    
 void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 {
+    SetMatrix(type, matrix, 0);
+}
+    
+void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue)
+{
     GLint matrixMode[2] = {GL_MODELVIEW, GL_PROJECTION};
-    matrices[type] = matrix;
-    uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
-    uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
+    if (type == MATRIX_PROJECTION)
+    {
+        matrices[type] = matrix;
+        uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
+        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
+        projectionMatrixCache++;
+    }
+    else if (type == MATRIX_MODELVIEW)
+    {
+        if (cacheValue == 0 ||
+            modelViewMatrixCache != cacheValue)
+        {
+            matrices[type] = matrix;
+            uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
+            uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
+            modelViewMatrixCache = cacheValue;
+        }
+    }
     
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
     {

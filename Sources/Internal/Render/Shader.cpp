@@ -37,6 +37,9 @@
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
 #include "Math/Math2D.h"
+#ifdef USE_CRC_COMPARE
+#include "Utils/CRC32.h"
+#endif
 
 namespace DAVA
 {
@@ -77,6 +80,11 @@ namespace DAVA
 		
 		vertexShaderData = 0;
 		fragmentShaderData = 0;
+        
+        lastPorectionMatrixCache = 0;
+        lastModelViewMatrixCache = 0;
+        lastModelViewProjectionMatricCache1 = 0;
+        lastModelViewProjectionMatricCache2 = 0;
 		
 		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		//    relativeFileName = "";
@@ -470,6 +478,12 @@ namespace DAVA
 			uniformStruct->size = size;
 			uniformStruct->cacheValueSize = GetUniformTypeSize((eUniformType)type) * size;
 			uniformStruct->cacheValue = uniformData + uniformOffsets[k] + sizeof(Uniform);
+#ifdef USE_CRC_COMPARE
+            uniformStruct->crc = CRC32::ForBuffer(uniformStruct->cacheValue, uniformStruct->cacheValueSize);
+#endif
+#ifdef USE_NEON_MATRIX_COMPARE
+            uniformStruct->matrixCRC = vmovq_n_u32(0);
+#endif
 			
 			if(IsAutobindUniform(uniform))
 			{
@@ -1029,20 +1043,40 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			{
 				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
 				{
-					const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-					SetUniformValueByUniform(currentUniform, modelViewProj);
+                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    if (modelViewMatrixCache == 0   ||
+                        lastModelViewProjectionMatricCache1 != modelViewMatrixCache    ||
+                        lastModelViewProjectionMatricCache2 != projectionMatrixCache)
+                    {
+                        const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+                        SetUniformValueByUniform(currentUniform, modelViewProj);
+                        lastModelViewProjectionMatricCache1 = modelViewMatrixCache;
+                        lastModelViewProjectionMatricCache2 = projectionMatrixCache;
+                    }
 					break;
 				}
 				case UNIFORM_MODEL_VIEW_MATRIX:
 				{
-					const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-					SetUniformValueByUniform(currentUniform, modelView);
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    if (modelViewMatrixCache == 0   ||
+                        lastModelViewMatrixCache != modelViewMatrixCache)
+                    {
+                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                        SetUniformValueByUniform(currentUniform, modelView);
+                        lastModelViewMatrixCache = modelViewMatrixCache;
+                    }
 					break;
 				}
 				case UNIFORM_PROJECTION_MATRIX:
 				{
-					const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-					SetUniformValueByUniform(currentUniform, proj);
+                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
+                    if (lastPorectionMatrixCache != projectionMatrixCache)
+                    {
+                        const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+                        SetUniformValueByUniform(currentUniform, proj);
+                        lastPorectionMatrixCache = projectionMatrixCache;
+                    }
 					break;
 				}
 				case UNIFORM_NORMAL_MATRIX:
@@ -1262,16 +1296,81 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 	
 	bool Shader::Uniform::ValidateCache(const Matrix4 & value)
 	{
-		Matrix4& cachedVector = *(Matrix4*)cacheValue;
-		bool result = (value == cachedVector);
-		
-		if(!result)
-		{
-			DVASSERT(sizeof(value) == cacheValueSize);
-			memcpy(cacheValue, value.data, cacheValueSize);
-		}
-		
-		return result;
+#ifdef USE_NEON_MATRIX_COMPARE
+        uint64 a0;// = (uint32)value._00 << 32 | (uint32)value._11;
+        memcpy(&a0, &value._00, sizeof(float32));
+        a0 = a0 << 32;
+        memcpy(&a0, &value._11, sizeof(float32));
+        uint64 a1;// = (uint32)value._22 << 32 | (uint32)value._33;
+        memcpy(&a1, &value._22, sizeof(float32));
+        a1 = a1 << 32;
+        memcpy(&a1, &value._23, sizeof(float32));
+        uint64 a2;// = (uint32)value._03 << 32 | (uint32)value._13;
+        memcpy(&a2, &value._03, sizeof(float32));
+        a2 = a2 << 32;
+        memcpy(&a1, &value._13, sizeof(float32));
+        uint64 a3;// = (uint32)value._20 << 32 | (uint32)value._33;
+        memcpy(&a3, &value._23, sizeof(float32));
+        a3 = a3 << 32;
+        memcpy(&a3, &value._32, sizeof(float32));
+        
+        static poly8x8_t lhs1 = vcreate_p8(0xB1E6B0926655004F);
+        poly8x8_t rhs1 = vcreate_p8(a0);
+        poly8x8_t rhs2 = vcreate_p8(a1);
+        poly8x8_t rhs3 = vcreate_p8(a2);
+        poly8x8_t rhs4 = vcreate_p8(a3);
+        
+        // first 16 bit multiply
+        poly16x8_t l1m1 = vmull_p8(lhs1, rhs1);
+        poly16x8_t l1m2 = vmull_p8(lhs1, rhs2);
+        poly16x4x2_t l1z1 = vuzp_p16(vget_low_p16(l1m2), vget_high_p16(l1m2));
+        uint16x4_t l1e1 = veor_u16(vreinterpret_u16_p16(l1z1.val[0]), vreinterpret_u16_p16(l1z1.val[1]));
+        
+        uint32x4_t l1s1 = vshll_n_u16(l1e1, 8);
+        uint32x4_t l1f1 = veorq_u32(l1s1, vreinterpretq_u32_p16(l1m1));
+        
+        // second 16 bit multiply
+        poly16x8_t l1m3 = vmull_p8(lhs1, rhs3);
+        poly16x8_t l1m4 = vmull_p8(lhs1, rhs4);
+        poly16x4x2_t l1z2 = vuzp_p16(vget_low_p16(l1m4), vget_high_p16(l1m4));
+        uint16x4_t l1e2 = veor_u16(vreinterpret_u16_p16(l1z2.val[0]), vreinterpret_u16_p16(l1z2.val[1]));
+        uint32x4_t l1s2 = vshll_n_u16(l1e2, 8);
+        uint32x4_t l1f2 = veorq_u32(l1s2, vreinterpretq_u32_p16(l1m3));
+
+        // now combine the two 16 bit multiplies
+        uint32x2_t l1e3 = veor_u32(vget_low_u32(l1f2), vget_high_u32(l1f2));
+        uint64x2_t l1s3 = vshll_n_u32(l1e3, 16);
+        uint64x2_t l1e4 = veorq_u64(l1s3, vreinterpretq_u64_u32(l1f1));
+        // l1e4 = "vmull_p32"(lhs1, rhs1);
+
+        uint32x4_t crc = vreinterpretq_u32_u64(l1e4);
+        uint32x4_t cmp = vceqq_u32(crc, matrixCRC);
+        
+        uint32_t res = 0xffffffff;
+        res &= vgetq_lane_u32(cmp, 0);
+        res &= vgetq_lane_u32(cmp, 1);
+        res &= vgetq_lane_u32(cmp, 2);
+        res &= vgetq_lane_u32(cmp, 3);
+
+        if (res != 0xffffffff)
+        {
+            matrixCRC = cmp;
+            return false;
+        }
+        
+        return true;
+#else
+        Matrix4& cachedVector = *(Matrix4*)cacheValue;
+        bool result = (value == cachedVector);
+
+        if (!result)
+        {
+            DVASSERT(sizeof(value) == cacheValueSize);
+            memcpy(cacheValue, value.data, cacheValueSize);
+        }
+
+        return result;
+#endif
 	}
 	
 	bool Shader::Uniform::ValidateCache(const Matrix3 & value)
@@ -1290,6 +1389,14 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 	
 	bool Shader::Uniform::ValidateCache(const void* value, uint16 valueSize)
 	{
+#ifdef USE_CRC_COMPARE
+        uint32 crc32 = CRC32::ForBuffer(value, valueSize);
+        result = crc == crc32;
+        if (!result)
+        {
+            crc = crc32;
+        }
+#else
 		DVASSERT(valueSize >= cacheValueSize);
 		
 		bool result = false;
@@ -1301,10 +1408,9 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 				memcpy(cacheValue, value, cacheValueSize);
 			}
 		}
-		
+#endif
 		return result;
 	}
-	
 	
 #endif
 	
