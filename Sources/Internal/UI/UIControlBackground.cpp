@@ -668,15 +668,17 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 	if( leftStretchCap < 0.0f || topStretchCap < 0.0f )
 		return;
 
-	Vector2 textureSize( spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH), spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT) );
+	Vector2 spriteSize( spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH), spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT) );
 
-	const float32 hVertStretchCap = leftStretchCap * 2.0f;
-	const float32 vVertStretchCap = topStretchCap * 2.0f;
-
-	if( textureSize.x <= hVertStretchCap || textureSize.y <= vVertStretchCap )
-		return;
+	Vector2 stretchCap( Min( leftStretchCap, spriteSize.x * 0.5f ),
+						Min( topStretchCap , spriteSize.y * 0.5f ) );
 
 	const Vector2 &size = gd.size;
+
+	stretchCap.x = Min( stretchCap.x, size.x * 0.5f );
+	stretchCap.y = Min( stretchCap.y, size.y * 0.5f );
+
+	Texture *texture = spr->GetTexture(frame);
 
 	bool needGenerateTileData = false;
 	if( !tiledDrawData )
@@ -686,8 +688,7 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 	}
 	else
 	{
-		needGenerateTileData |= leftStretchCap != tiledDrawData->lastHStretchCap;
-		needGenerateTileData |= topStretchCap != tiledDrawData->lastVStretchCap;
+		needGenerateTileData |= stretchCap != tiledDrawData->lastStretchCap;
 		needGenerateTileData |= frame != tiledDrawData->lastFrame;
 		needGenerateTileData |= spr != tiledDrawData->lastSprite;
 		needGenerateTileData |= size != tiledDrawData->lastSize;
@@ -697,59 +698,119 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 
 	if( needGenerateTileData )
 	{
-		const float32 * vertices = spr->GetFrameVerticesForFrame(frame);
-		Vector2 tempVertices[4];
+		Vector2 textureSize( (float32)texture->GetWidth(), (float32)texture->GetHeight() );
 
-		tempVertices[0].x = vertices[0];
-		tempVertices[0].y = vertices[1];
-		tempVertices[1].x = vertices[2] - hVertStretchCap;
-		tempVertices[1].y = vertices[3];
-		tempVertices[2].x = vertices[4];
-		tempVertices[2].y = vertices[5] - vVertStretchCap;
-		tempVertices[3].x = vertices[6] - hVertStretchCap;
-		tempVertices[3].y = vertices[7] - vVertStretchCap;
+		Vector2 sideCellSize = stretchCap;
 
-		const float32 * textCoords = spr->GetTextureCoordsForFrame(frame);
-		Vector2 tempTexCoords[4];
+		Vector2 centerCellSize( spriteSize.x - sideCellSize.x * 2.0f,
+								spriteSize.y - sideCellSize.y * 2.0f );
 
-		const float32 hTexStretchCap = leftStretchCap / textureSize.x;
-		const float32 vTexStretchCap = topStretchCap / textureSize.y;
+		Vector2 tileAreaSize( size.x - sideCellSize.x * 2.0f,
+							  size.y - sideCellSize.y * 2.0f );
 
-		tempTexCoords[0].x = textCoords[0] + hTexStretchCap;
-		tempTexCoords[0].y = textCoords[1] + vTexStretchCap;
-		tempTexCoords[1].x = textCoords[2] - hTexStretchCap;
-		tempTexCoords[1].y = textCoords[3] + vTexStretchCap;
-		tempTexCoords[2].x = textCoords[4] + hTexStretchCap;
-		tempTexCoords[2].y = textCoords[5] - vTexStretchCap;
-		tempTexCoords[3].x = textCoords[6] - hTexStretchCap;
-		tempTexCoords[3].y = textCoords[7] - vTexStretchCap;
+		Vector2 partCellSize( tileAreaSize.x - floorf( tileAreaSize.x / centerCellSize.x ) * centerCellSize.x,
+							  tileAreaSize.y - floorf( tileAreaSize.y / centerCellSize.y ) * centerCellSize.y );
 
-		const float32 cellWidth = tempVertices[1].x - tempVertices[0].x;
-		const float32 cellHeight = tempVertices[2].y - tempVertices[0].y;
+		Vector2 centerCellTexSize( centerCellSize.x / textureSize.x,
+								   centerCellSize.y / textureSize.y );
 
-		int32 columnsCount = (int32)ceilf(size.x / cellWidth);
-		int32 rowsCount = (int32)ceilf(size.y / cellHeight);
+		Vector2 sideCellTexSize( sideCellSize.x / textureSize.x,
+								 sideCellSize.y / textureSize.y );
 
-		td.tilesVerticesList.resize( 4 *columnsCount * rowsCount );
-		td.transformedVerList.resize( 4 *columnsCount * rowsCount );
-		td.tilesTexCoordsList.resize( 4 *columnsCount * rowsCount );
-		td.tilesIndecesList.resize( 6 *columnsCount * rowsCount );
-		int32 offsetIndex = 0;
-		for( int32 row = 0; row < rowsCount; ++row )
+		Size2i gridSize( (int32)ceilf( ( size.x - sideCellSize.x * 2.0f ) / centerCellSize.x ),
+						 (int32)ceilf( ( size.y - sideCellSize.y * 2.0f ) / centerCellSize.y ) );
+
+		if( sideCellSize.x > 0.0f )
+			gridSize.dx += 2;
+		if( sideCellSize.y > 0.0f )
+			gridSize.dy += 2;
+
+		Vector< Vector3 > cellsWidth;
+		cellsWidth.resize( gridSize.dx );
+
+		int32 beginOffset = 0;
+		int32 endOffset = 0;
+		if( sideCellSize.x > 0.0f )
 		{
-			for( int32 column = 0; column < columnsCount; ++column, ++offsetIndex )
-			{
-				Vector2 transform( column * cellWidth, row * cellHeight );
-				int32 vertIndex = offsetIndex*4;
-				td.tilesVerticesList[vertIndex + 0] = tempVertices[0] + transform;
-				td.tilesVerticesList[vertIndex + 1] = tempVertices[1] + transform;
-				td.tilesVerticesList[vertIndex + 2] = tempVertices[2] + transform;
-				td.tilesVerticesList[vertIndex + 3] = tempVertices[3] + transform;
+			cellsWidth.front() = Vector3( sideCellSize.x, sideCellTexSize.x, 0.0f );
+			cellsWidth.back() = Vector3( sideCellSize.x, sideCellTexSize.x, sideCellTexSize.x + centerCellTexSize.x );
+			beginOffset = 1;
+			endOffset = 1;
+		}
 
-				td.tilesTexCoordsList[vertIndex + 0] = tempTexCoords[0];
-				td.tilesTexCoordsList[vertIndex + 1] = tempTexCoords[1];
-				td.tilesTexCoordsList[vertIndex + 2] = tempTexCoords[2];
-				td.tilesTexCoordsList[vertIndex + 3] = tempTexCoords[3];
+		if( partCellSize.x > 0.0f )
+		{
+			++endOffset;
+			const int32 index = gridSize.dx - endOffset;
+			cellsWidth[index].x = partCellSize.x;
+			cellsWidth[index].y = partCellSize.x / textureSize.x;
+			cellsWidth[index].z = sideCellTexSize.x;
+		}
+
+		std::fill( cellsWidth.begin() + beginOffset, cellsWidth.begin() + gridSize.dx - endOffset, Vector3( centerCellSize.x, centerCellTexSize.x, sideCellTexSize.x ) );
+
+		Vector< Vector3 > cellsHeight;
+		cellsHeight.resize( gridSize.dy );
+
+		beginOffset = 0;
+		endOffset = 0;
+		if( sideCellSize.y > 0.0f )
+		{
+			cellsHeight.front() = Vector3( sideCellSize.y, sideCellTexSize.y, 0.0f );
+			cellsHeight.back() = Vector3( sideCellSize.y, sideCellTexSize.y, sideCellTexSize.y + centerCellTexSize.y );
+			beginOffset = 1;
+			endOffset = 1;
+		}
+
+		if( partCellSize.y > 0.0f )
+		{
+			++endOffset;
+			const int32 index = gridSize.dy - endOffset;
+			cellsHeight[index].x = partCellSize.y;
+			cellsHeight[index].y = partCellSize.y / textureSize.y;
+			cellsHeight[index].z = sideCellTexSize.y;
+		}
+		std::fill( cellsHeight.begin() + beginOffset, cellsHeight.begin() + gridSize.dy - endOffset, Vector3( centerCellSize.y, centerCellTexSize.y, sideCellTexSize.y ) );
+
+		int32 vertexCount = 4 *gridSize.dx * gridSize.dy;
+		td.tilesVerticesList.resize( vertexCount );
+		td.transformedVerList.resize( vertexCount );
+		td.tilesTexCoordsList.resize( vertexCount );
+
+		int32 indecesCount = 6 *gridSize.dx * gridSize.dy;
+		td.tilesIndecesList.resize( indecesCount );
+
+		int32 offsetIndex = 0;
+		const float32 * textCoords = spr->GetTextureCoordsForFrame(frame);
+		Vector2 trasformOffset;
+		Vector2 cellSize;
+		Vector2 texTrasformOffset;
+		Vector2 texCellSize;
+		Vector2 tempTexCoordsPt( textCoords[0], textCoords[1] );
+		for( int32 row = 0; row < gridSize.dy; ++row )
+		{
+			cellSize.y = cellsHeight[row].x;
+			texCellSize.y = cellsHeight[row].y;
+			texTrasformOffset.y = cellsHeight[row].z;
+			trasformOffset.x = 0.0f;
+
+			for( int32 column = 0; column < gridSize.dx; ++column, ++offsetIndex )
+			{
+				cellSize.x = cellsWidth[column].x;
+				texCellSize.x = cellsWidth[column].y;
+				texTrasformOffset.x = cellsWidth[column].z;
+
+				int32 vertIndex = offsetIndex*4;
+				td.tilesVerticesList[vertIndex + 0] = trasformOffset;
+				td.tilesVerticesList[vertIndex + 1] = trasformOffset + Vector2( cellSize.x, 0.0f );
+				td.tilesVerticesList[vertIndex + 2] = trasformOffset + Vector2( 0.0f, cellSize.y );
+				td.tilesVerticesList[vertIndex + 3] = trasformOffset + cellSize;
+
+				const Vector2 texel = tempTexCoordsPt + texTrasformOffset;
+				td.tilesTexCoordsList[vertIndex + 0] = texel;
+				td.tilesTexCoordsList[vertIndex + 1] = texel + Vector2( texCellSize.x, 0.0f );
+				td.tilesTexCoordsList[vertIndex + 2] = texel + Vector2( 0.0f, texCellSize.y );
+				td.tilesTexCoordsList[vertIndex + 3] = texel + texCellSize;
 
 				int32 indecesIndex = offsetIndex*6;
 				td.tilesIndecesList[indecesIndex + 0] = vertIndex;
@@ -760,65 +821,35 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 				td.tilesIndecesList[indecesIndex + 4] = vertIndex + 3;
 				td.tilesIndecesList[indecesIndex + 5] = vertIndex + 2;
 
-				if( column == columnsCount - 1 ||
-					row == rowsCount -1 )
-				{
-					if( td.tilesVerticesList[vertIndex + 1].x > size.x )
-					{
-						td.tilesVerticesList[vertIndex + 1].x = size.x;
-						td.tilesVerticesList[vertIndex + 3].x = size.x;
-
-						float32 texX = ( size.x - cellWidth * ( columnsCount - 1) ) / cellWidth;
-						float32 texDx = (tempTexCoords[1].x - tempTexCoords[0].x);
-
-						td.tilesTexCoordsList[vertIndex + 1].x = tempTexCoords[0].x + texDx * texX;
-						td.tilesTexCoordsList[vertIndex + 3].x = td.tilesTexCoordsList[vertIndex + 1].x;
-					}
-
-					if( td.tilesVerticesList[vertIndex + 2].y > size.y )
-					{
-						td.tilesVerticesList[vertIndex + 2].y = size.y;
-						td.tilesVerticesList[vertIndex + 3].y = size.y;
-
-						float32 texY = ( size.y - cellHeight * ( rowsCount - 1 ) ) / cellHeight;
-						float32 texDy = (tempTexCoords[2].y - tempTexCoords[0].y);
-
-						td.tilesTexCoordsList[vertIndex + 2].y = tempTexCoords[0].y + texDy * texY;
-						td.tilesTexCoordsList[vertIndex + 3].y = td.tilesTexCoordsList[vertIndex + 2].y;
-					}
-				}
+				trasformOffset.x += cellSize.x;
 			}
+			trasformOffset.y += cellSize.y;
 		}
+		td.lastStretchCap = stretchCap;
+		td.lastSize = size;
+		td.lastFrame = frame;
+		td.lastSprite = spr;
 	}
 
 	Matrix3 transformMatr;
 	gd.BuildTransformMatrix( transformMatr );
 
-	bool needUpdateGeometricData = needGenerateTileData;
-	needUpdateGeometricData |= td.lastTransformMatr != transformMatr;
-
-	if( needUpdateGeometricData )
+	if( needGenerateTileData || td.lastTransformMatr != transformMatr )
 	{
 		for( uint32 index = 0; index < td.tilesVerticesList.size(); ++index )
 		{
 			td.transformedVerList[index] = td.tilesVerticesList[index] * transformMatr;
 		}
+		td.lastTransformMatr = transformMatr;
 	}
 
 	vertexStream->Set(TYPE_FLOAT, 2, 0, &td.transformedVerList[0]);
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, &td.tilesTexCoordsList[0]);
 
-	RenderManager::Instance()->SetTexture( spr->GetTexture(frame) );
+	RenderManager::Instance()->SetTexture( texture );
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, td.tilesIndecesList.size(), EIF_32, &td.tilesIndecesList[0]);
-
-	td.lastTransformMatr = transformMatr;
-	td.lastHStretchCap = leftStretchCap;
-	td.lastVStretchCap = topStretchCap;
-	td.lastSize = size;
-	td.lastFrame = frame;
-	td.lastSprite = spr;
 }
 
 void UIControlBackground::DrawFilled( const UIGeometricData &gd )
