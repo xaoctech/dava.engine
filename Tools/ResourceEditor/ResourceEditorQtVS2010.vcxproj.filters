@@ -205,6 +205,9 @@
     <Filter Include="Classes\Beast\Wrapper">
       <UniqueIdentifier>{01fa5c99-ec9f-4ec7-b643-9d10506ce681}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\MaterialEditor">
+      <UniqueIdentifier>{ea826a3c-9452-431d-b0a6-e817887c9e50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1827,6 +1830,9 @@
     <ClCompile Include="Classes\Commands2\MaterialAssignCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialsDropSystem.cpp">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2543,27 +2549,6 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h">
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
@@ -3247,6 +3232,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\MaterialAssignCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialsDropSystem.h">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
