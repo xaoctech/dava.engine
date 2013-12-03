@@ -290,8 +290,7 @@ private:
 		Sprite *lastSprite;
 		int32 lastFrame;
 		Vector2 lastSize;
-		float32 lastVStretchCap;
-		float32 lastHStretchCap;
+		Vector2 lastStretchCap;
 		Matrix3 lastTransformMatr;
 	};
 
