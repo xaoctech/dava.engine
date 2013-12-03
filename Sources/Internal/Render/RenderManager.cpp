@@ -161,6 +161,9 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 	
 	renderContextId = 0;
+    
+    projectionMatrixCache = 0;
+    modelViewMatrixCache = 0;
 
 	InitDefaultRenderStates();
 }
@@ -640,7 +643,7 @@ void RenderManager::IdentityMappingMatrix()
 void RenderManager::IdentityModelMatrix()
 {
     mappingMatrixChanged = true;
-    RenderManager::Instance()->SetMatrix(MATRIX_MODELVIEW, Matrix4::IDENTITY);
+    RenderManager::Instance()->SetMatrix(MATRIX_MODELVIEW, Matrix4::IDENTITY, (uint32)&Matrix4::IDENTITY);
 	currentDrawOffset = Vector2(0, 0);
     currentDrawScale = Vector2(1, 1);
 }

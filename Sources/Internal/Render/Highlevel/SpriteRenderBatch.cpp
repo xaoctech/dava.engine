@@ -128,7 +128,7 @@ void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 		};   
 	}
 
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (uint32)worldTransformPtr);
 
 	
 	material->BindMaterialTechnique(ownerRenderPass, camera);
