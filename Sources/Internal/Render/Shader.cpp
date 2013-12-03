@@ -1043,8 +1043,8 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			{
 				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
 				{
-                    pointer_size projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    pointer_size modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
                     if (modelViewMatrixCache == 0   ||
                         lastModelViewProjectionMatricCache1 != modelViewMatrixCache    ||
                         lastModelViewProjectionMatricCache2 != projectionMatrixCache)
@@ -1058,7 +1058,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				}
 				case UNIFORM_MODEL_VIEW_MATRIX:
 				{
-                    pointer_size modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
                     if (modelViewMatrixCache == 0   ||
                         lastModelViewMatrixCache != modelViewMatrixCache)
                     {
@@ -1070,7 +1070,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				}
 				case UNIFORM_PROJECTION_MATRIX:
 				{
-                    pointer_size projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
+                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
                     if (lastPorectionMatrixCache != projectionMatrixCache)
                     {
                         const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);

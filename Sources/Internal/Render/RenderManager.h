@@ -466,13 +466,13 @@ public:
     };
     
     void SetMatrix(eMatrixType type, const Matrix4 & matrix);
-    void SetMatrix(eMatrixType type, const Matrix4 & matrix, pointer_size cacheValue);
+    void SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue);
     const Matrix4 & GetMatrix(eMatrixType type);
     const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
     const Matrix3 & GetNormalMatrix();
     void  ClearUniformMatrices();
-    pointer_size GetProjectionMatrixCache() const {return projectionMatrixCache;};
-    pointer_size GetModelViewMatrixCache() const {return modelViewMatrixCache;};
+    uint32 GetProjectionMatrixCache() const {return projectionMatrixCache;};
+    uint32 GetModelViewMatrixCache() const {return modelViewMatrixCache;};
 
 
 	/**
@@ -596,8 +596,8 @@ protected:
     // 
     
     Matrix4 matrices[MATRIX_COUNT];
-    pointer_size projectionMatrixCache;
-    pointer_size modelViewMatrixCache;
+    uint32 projectionMatrixCache;
+    uint32 modelViewMatrixCache;
     int32   uniformMatrixFlags[UNIFORM_MATRIX_COUNT];
     Matrix4 uniformMatrices[UNIFORM_MATRIX_COUNT];
     Matrix3 uniformMatrixNormal;

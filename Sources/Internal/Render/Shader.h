@@ -290,10 +290,10 @@ private:
     uint32 fragmentShaderSize;*/
 #endif
     
-    pointer_size lastPorectionMatrixCache;
-    pointer_size lastModelViewMatrixCache;
-    pointer_size lastModelViewProjectionMatricCache1;
-    pointer_size lastModelViewProjectionMatricCache2;
+    uint32 lastPorectionMatrixCache;
+    uint32 lastModelViewMatrixCache;
+    uint32 lastModelViewProjectionMatricCache1;
+    uint32 lastModelViewProjectionMatricCache2;
 };
 
 //
