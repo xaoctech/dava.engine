@@ -612,18 +612,17 @@ void ParticleLayer3D::SetBlendMode(eBlendMode sFactor, eBlendMode dFactor)
 
 void ParticleLayer3D::SetFrameBlend(bool enable)
 {
+	if (enableFrameBlend==enable) return; 
 	ParticleLayer::SetFrameBlend(enable);
 	
 	UpdateBlendState();// this will choose appropriate material
 	
 	if (!enableFrameBlend)
 	{
-		SafeRelease(renderData); //to remove unnecessary vertex streams
-		renderData = new RenderDataObject();
+		renderData->RemoveStream(EVF_TEXCOORD1);
+		renderData->RemoveStream(EVF_TIME);
 		textures2.resize(0);
 		times.resize(0);
-		
-		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 

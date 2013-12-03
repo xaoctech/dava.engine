@@ -34,7 +34,6 @@
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"
-#include "Main/QtMainWindowHandler.h"
 #include "StringConstants.h"
 
 #include <QFileDialog>

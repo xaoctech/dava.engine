@@ -108,6 +108,8 @@ void LibraryComplexView::SetupViews()
     leftTree = new QTreeView(splitter);
     leftTree->setContextMenuPolicy(Qt::CustomContextMenu);
     leftTree->header()->setVisible(false);
+    leftTree->setDragDropMode(QAbstractItemView::DragOnly);
+	leftTree->setDragEnabled(true);
     
     rightList = new QListView(splitter);
     rightList->setContextMenuPolicy(Qt::CustomContextMenu);

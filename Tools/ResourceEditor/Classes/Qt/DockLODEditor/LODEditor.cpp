@@ -34,8 +34,7 @@
 #include "EditorLODData.h"
 #include "DistanceSlider.h"
 
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
-#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Scene/SceneSignals.h"
 
 #include <QLabel>
 #include <QWidget>

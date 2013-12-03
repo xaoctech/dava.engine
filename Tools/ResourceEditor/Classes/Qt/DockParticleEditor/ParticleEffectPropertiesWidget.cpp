@@ -441,6 +441,8 @@ ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetEmitterLine(Parti
 		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->size.Get());
 	case EE_COLOR_OVER_LIFE:
 		return dynamic_cast<ModifiablePropertyLineBase*>(emitter->colorOverLife.Get());
+            
+    default: break;
 	}
 	return NULL;
 }
@@ -486,6 +488,8 @@ ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetLayerLine(Particl
 		return dynamic_cast<ModifiablePropertyLineBase*>(layer->angleVariation.Get());
 	case EL_ANIM_SPEED_OVERLIFE:
 		return dynamic_cast<ModifiablePropertyLineBase*>(layer->animSpeedOverLife.Get());
+
+    default: break;
 	}
 	return NULL;
 }
@@ -499,6 +503,8 @@ ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetForceLine(Particl
 		return dynamic_cast<ModifiablePropertyLineBase*>(force->forceVariation.Get());
 	case EF_FORCE_OVERLIFE:
 		return dynamic_cast<ModifiablePropertyLineBase*>(force->forceOverLife.Get());
+
+        default: break;
 	}
 	return NULL;
 }
@@ -517,6 +523,8 @@ void ParticleEffectPropertiesWidget::SetEmitterLineModifiable(ParticleEmitter *e
 		PropertyLineHelper::MakeModifiable(emitter->size); break;
 	case EE_COLOR_OVER_LIFE:
 		PropertyLineHelper::MakeModifiable(emitter->colorOverLife); break;
+
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::SetLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId)
@@ -561,6 +569,8 @@ void ParticleEffectPropertiesWidget::SetLayerLineModifiable(ParticleLayer *layer
 		PropertyLineHelper::MakeModifiable(layer->angleVariation); break;
 	case EL_ANIM_SPEED_OVERLIFE:
 		PropertyLineHelper::MakeModifiable(layer->animSpeedOverLife); break;
+
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::SetForceLineModifiable(ParticleForce *force, ForceExternals lineId)
@@ -573,6 +583,8 @@ void ParticleEffectPropertiesWidget::SetForceLineModifiable(ParticleForce *force
 		PropertyLineHelper::MakeModifiable(force->forceVariation); break;
 	case EF_FORCE_OVERLIFE:
 		PropertyLineHelper::MakeModifiable(force->forceOverLife); break;
+            
+        default: break;
 	}
 }
 
@@ -590,6 +602,8 @@ void ParticleEffectPropertiesWidget::RemoveEmitterLineModifiable(ParticleEmitter
 		PropertyLineHelper::RemoveModifiable(emitter->size); break;
 	case EE_COLOR_OVER_LIFE:
 		PropertyLineHelper::RemoveModifiable(emitter->colorOverLife); break;
+            
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::RemoveLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId)
@@ -634,6 +648,8 @@ void ParticleEffectPropertiesWidget::RemoveLayerLineModifiable(ParticleLayer *la
 		PropertyLineHelper::RemoveModifiable(layer->angleVariation); break;
 	case EL_ANIM_SPEED_OVERLIFE:
 		PropertyLineHelper::RemoveModifiable(layer->animSpeedOverLife); break;
+            
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::RemoveForceLineModifiable(ParticleForce *force, ForceExternals lineId)
@@ -646,6 +662,8 @@ void ParticleEffectPropertiesWidget::RemoveForceLineModifiable(ParticleForce *fo
 		PropertyLineHelper::RemoveModifiable(force->forceVariation); break;
 	case EF_FORCE_OVERLIFE:
 		PropertyLineHelper::RemoveModifiable(force->forceOverLife); break;
+            
+        default: break;
 	}
 }
 
@@ -664,6 +682,8 @@ void ParticleEffectPropertiesWidget::EditEmitterModifiable(ParticleEmitter *emit
 		EditModificationLine(emitter->size, onAdd); break;
 	case EE_COLOR_OVER_LIFE:
 		EditModificationLine(emitter->colorOverLife, onAdd); break;
+            
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd)
@@ -708,6 +728,8 @@ void ParticleEffectPropertiesWidget::EditLayerModifiable(ParticleLayer *layer, L
 		EditModificationLine(layer->angleVariation, onAdd); break;
 	case EL_ANIM_SPEED_OVERLIFE:
 		EditModificationLine(layer->animSpeedOverLife, onAdd); break;
+            
+        default: break;
 	}
 }
 void ParticleEffectPropertiesWidget::EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd)
@@ -720,6 +742,8 @@ void ParticleEffectPropertiesWidget::EditForceModifiable(ParticleForce *force, F
 		EditModificationLine(force->forceVariation, onAdd); break;
 	case EF_FORCE_OVERLIFE:
 		EditModificationLine(force->forceOverLife, onAdd); break;
+            
+        default: break;
 	}
 }
 

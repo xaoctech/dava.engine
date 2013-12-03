@@ -55,7 +55,8 @@ public:
 
 		DropingEntity,
 		DropingLayer,
-		DropingForce
+		DropingForce,
+        DropingMaterial
 	};
 
 	enum CustomFlags
@@ -111,6 +112,8 @@ protected:
 	void ResetFilterAcceptFlagInternal(SceneTreeItem *item);
 
 	bool AreSameType(const QModelIndexList & indexes) const;
+    
+    void DropMaterial(SceneTreeItem *parentItem, const QtMimeData *mimeData) const;
 
 protected slots:
 	void ItemChanged(QStandardItem * item);

@@ -32,8 +32,8 @@
 
 #include "TexturePacker/CommandLineParser.h"
 
-#include "Qt/Scene/SceneEditor2.h"
-#include "Qt/Scene/SceneHelper.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/SceneHelper.h"
 #include "Commands2/BeastAction.h"
 #include "Deprecated/EditorSettings.h"
 

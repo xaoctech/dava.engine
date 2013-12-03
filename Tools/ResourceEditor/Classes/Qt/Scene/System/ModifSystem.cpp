@@ -382,6 +382,8 @@ void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 		case ST_AXIS_Z:
 			rotateAround = DAVA::Vector3(0, 0, 1);
 			break;
+                
+            default: break;
 		}
 
 		// 2d axis projection we are rotating around

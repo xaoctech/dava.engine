@@ -63,6 +63,7 @@ protected slots:
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     
+    void OnAssign();
     void OnEdit();
     
 protected:

@@ -38,6 +38,13 @@
 #include "Base/FastName.h"
 #include "Base/FastNameMap.h"
 #include "FileSystem/FilePath.h"
+#include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
+
+#ifdef __DAVAENGINE_ARM_7__
+#define USE_NEON_MATRIX_COMPARE
+#include <arm_neon.h>
+#endif
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -91,6 +98,10 @@ public:
         UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
     };
     
+#ifdef USE_NEON_MATRIX_COMPARE
+#pragma pack(push)
+#pragma pack(4)
+#endif
     struct Uniform
     {
         eUniform        id;
@@ -100,6 +111,14 @@ public:
         eUniformType    type;
 		void*			cacheValue;
 		uint16			cacheValueSize;
+        
+#ifdef USE_NEON_MATRIX_COMPARE
+        uint32x4_t      matrixCRC;
+#endif
+        
+#ifdef USE_CRC_COMPARE
+        uint32          crc;
+#endif
 		
 		bool ValidateCache(int32 value);
 		bool ValidateCache(float32 value);
@@ -112,6 +131,9 @@ public:
 		bool ValidateCache(const Matrix3 & value);
 		bool ValidateCache(const void* value, uint16 valueSize);
     };
+#ifdef USE_NEON_MATRIX_COMPARE
+#pragma pack(pop)
+#endif
 
 protected:
     virtual ~Shader();
@@ -242,7 +264,15 @@ private:
     
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
-    void DeleteShaders();
+    
+	void DeleteShaders();
+	struct DeleteShaderContainer
+	{
+		GLuint program;
+		GLuint vertexShader;
+		GLuint fragmentShader;
+	};
+	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
     eUniform GetUniformByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);
@@ -259,6 +289,11 @@ private:
     uint8 * fragmentShaderBytes;
     uint32 fragmentShaderSize;*/
 #endif
+    
+    uint32 lastPorectionMatrixCache;
+    uint32 lastModelViewMatrixCache;
+    uint32 lastModelViewProjectionMatricCache1;
+    uint32 lastModelViewProjectionMatricCache2;
 };
 
 //
