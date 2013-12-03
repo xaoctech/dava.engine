@@ -35,6 +35,7 @@
 #include "SceneEditor/EditorSettings.h"
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Qt/Main/QtUtils.h"
+#include "Commands2/EntityParentChangeCommand.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -71,13 +72,7 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	propEditor->setMinimumHeight(0);
 	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
 
-	Entity* entityToAdd = new Entity();
-	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(ScopedPtr<SwitchComponent> (new SwitchComponent()));
-	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-	SetEntity(entityToAdd);
-	SafeRelease(entityToAdd);
+	
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
@@ -112,9 +107,6 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 void AddSwitchEntityDialog::accept()
 {
 	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
-	
-	Entity* switchEntity = entity;
-	
 	if( NULL == scene)
 	{
 		CleanupPathWidgets();
@@ -131,22 +123,33 @@ void AddSwitchEntityDialog::accept()
 	}
 	
 	CleanupPathWidgets();
+
+	scene->BeginBatch("Unite entities into switch entity.");
+	
+	Entity* switchEntity = new Entity();
+	switchEntity->SetName(ResourceEditor::SWITCH_NODE_NAME);
+	scene->Exec(new EntityAddCommand(switchEntity, scene));
+	
+	SwitchComponent* component = new SwitchComponent();
+	switchEntity->AddComponent(component);
+	SafeRelease(component);
+	KeyedArchive *customProperties = switchEntity->GetCustomProperties();
+	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	
 	Q_FOREACH(Entity* item, vector)
 	{
 		if(item)
 		{
-			Entity *e = item->Clone();
-			switchEntity->AddNode(e);
-			e->Release();
+			scene->Exec(new EntityParentChangeCommand(item, switchEntity));
 		}
 	}
-	
-	EntityAddCommand* command = new EntityAddCommand(switchEntity, scene);
-	scene->Exec(command);
-	scene->selectionSystem->SetSelection(switchEntity);
-	scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
 		
+	scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
+	scene->EndBatch();
+
+	scene->selectionSystem->SetSelection(switchEntity);
+	SafeRelease(switchEntity);
+	
 	BaseAddEntityDialog::accept();
 }
 
