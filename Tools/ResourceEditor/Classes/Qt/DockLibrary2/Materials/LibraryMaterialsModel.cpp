@@ -178,10 +178,14 @@ void LibraryMaterialsModel::OnAssign()
     SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
     const EntityGroup selection = scene->selectionSystem->GetSelection();
 
-    if(MaterialsDropSystem::EntityGroupHasMaterials(&selection, true))
+    MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntityGroup(&selection, true);
+    if(result.hasEntitiesAvailableToDrop)
     {
-        bool wasDropped = MaterialsDropSystem::DropMaterialToGroup(&selection, material, true);
-        if(!wasDropped)
+        scene->BeginBatch("Set material");
+        MaterialsDropSystem::DropMaterialToGroup(&selection, material, true);
+        scene->EndBatch();
+        
+        if(result.hasEntityUnavailableToDrop)
         {
             DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(&selection, true);
             
