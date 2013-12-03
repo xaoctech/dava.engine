@@ -28,70 +28,47 @@
 
 
 
-#ifndef __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
-#define __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+#ifndef __MATERIALS_DROP_SYSTEM_H__
+#define __MATERIALS_DROP_SYSTEM_H__
 
-#include "Render/3D/PolygonGroup.h"
-#include "Render/Shader.h"
-#include "Render/3D/EdgeAdjacency.h"
+#include "Scene3D/Entity.h"
+#include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
 
-namespace DAVA
+class EntityGroup;
+class MaterialsDropSystem
 {
-
-class PolygonGroup;
-class Light;
+public:
     
-class ShadowVolume : public RenderBatch
-{
+    struct DropTestResult
+    {
+        DropTestResult();
+        
+        bool hasEntitiesAvailableToDrop;
+        bool hasEntityUnavailableToDrop;
+        
+        DAVA::int32 countEntitiesAvailableToDrop;
+        DAVA::int32 countEntityUnavailableToDrop;
+    };
+    
+public:
+    
+    static DropTestResult TestEntityGroup(const EntityGroup *group, const bool recursive);
+    static DropTestResult TestEntity(const DAVA::Entity * entity, const bool recursive);
+    
+    static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const EntityGroup *group, const bool recursive);
+    static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const DAVA::Entity *entity, const bool recursive);
+    
+    static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const EntityGroup *group, const bool recursive);
+    static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive);
+    
 protected:
-	virtual ~ShadowVolume();
-public:
-	ShadowVolume();
 
-    //virtual void Draw(Camera * camera);
-	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
+    static void TestEntity(DropTestResult & result, const DAVA::Entity * entity, const bool recursive);
 
-	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
-    void SetPolygonGroup(PolygonGroup * polygonGroup);
-    PolygonGroup * GetPolygonGroup();
-    
-	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
-	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
-	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
+    static void GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive);
 
-	virtual void UpdateAABBoxFromSource();
-
-private:
-	//Shader * shader;
-
-	//shadow mesh generation
-	PolygonGroup * shadowPolygonGroup;
-
-	struct EdgeMapping
-	{
-		int32 oldEdge[2];
-		int32 newEdge[2][2];
-
-	public:
-		EdgeMapping()
-		{
-			Memset(oldEdge, -1, sizeof(oldEdge));
-			Memset(newEdge, -1, sizeof(newEdge));
-		}
-	};
-
-	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
-    
-public:
-    
-    INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
-        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", I_VIEW | I_EDIT | I_SAVE )
-    );
+    static void GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive);
 };
 
-}
-
-#endif //__DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+#endif // __MATERIALS_DROP_SYSTEM_H__

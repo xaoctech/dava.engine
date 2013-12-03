@@ -35,7 +35,6 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include "mainwindow.h"
-#include "QtMainWindowHandler.h"
 
 #include "TexturePacker/CommandLineParser.h"
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"

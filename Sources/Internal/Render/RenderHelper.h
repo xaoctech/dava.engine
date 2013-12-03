@@ -32,7 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/StaticSingleton.h"
+#include "Base/Singleton.h"
 #include "Render/RenderBase.h"
 
 #include "Render/Texture.h"
@@ -51,7 +51,7 @@ class RenderDataStream;
     Keep in mind that output of all line-drawing functions can depend on hardware and look differently on different systems
  */
 
-class RenderHelper : public StaticSingleton<RenderHelper>
+class RenderHelper : public Singleton<RenderHelper>
 {
 public:
 	RenderHelper();

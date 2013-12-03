@@ -26,42 +26,47 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_JOB_WAITER_H__
+#define __DAVAENGINE_JOB_WAITER_H__
 
+#include "Base/BaseTypes.h"
+#include "Platform/Thread.h"
 
-#ifndef __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
-#define __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
+namespace DAVA
+{
 
-#include "Commands2/Command2.h"
-#include "Qt/Scene/EntityGroup.h"
-#include "Qt/Scene/SceneEditor2.h"
-#include "Scene3D/Entity.h"
+class Job;
 
-class GroupEntitiesForMultiselectCommand : public Command2
+class ThreadIdJobWaiter
 {
 public:
-	GroupEntitiesForMultiselectCommand(const EntityGroup &entities);
-	virtual ~GroupEntitiesForMultiselectCommand();
+	ThreadIdJobWaiter(Thread::ThreadId threadId = Thread::GetCurrentThreadId());
+	~ThreadIdJobWaiter();
+	void Wait();
 
-	virtual void Undo();
-	virtual void Redo();
+	Thread::ThreadId & GetThreadId();
+	ConditionalVariable * GetConditionalVariable();
 
-	virtual DAVA::Entity* GetEntity() const;
-
-protected:
-	EntityGroup				entitiesToGroup;
-	DAVA::Entity*			resultEntity;
-	DAVA::Map<DAVA::Entity*, DAVA::Entity*>	originalChildParentRelations;//child, paretn
-	SceneEditor2*			sceneEditor;
-	
-	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> originalMatrixes; // local, world
-	DAVA::Map<DAVA::Entity*, DAVA::Component*> originalLodComponents;
-		
-	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
-	void MoveEntity(Entity* entity, Vector3& destPoint);
-	Entity* GetEntityWithSolidProp(Entity* en);
-	void GetLodComponentsRecursive(Entity* fromEntity, DAVA::Map<DAVA::Entity*, DAVA::Component*>& hostEntitiesAndComponents);
-    
-    bool IsSelectionValid(const EntityGroup &entities);
+private:
+	Thread::ThreadId threadId;
+	ConditionalVariable cv;
 };
 
-#endif // __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
+class JobInstanceWaiter
+{
+public:
+	JobInstanceWaiter(Job * job);
+	~JobInstanceWaiter();
+	void Wait();
+
+	ConditionalVariable * GetConditionalVariable();
+	Job * GetJob();
+
+private:
+	Job * job;
+	ConditionalVariable cv;
+};
+
+}
+
+#endif //__DAVAENGINE_JOB_WAITER_H__

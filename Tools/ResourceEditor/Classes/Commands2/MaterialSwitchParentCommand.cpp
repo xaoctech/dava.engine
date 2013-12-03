@@ -28,65 +28,34 @@
 
 
 
-#include "Platform/Thread.h"
+#include "MaterialSwitchParentCommand.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
-
-namespace DAVA
+MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, DAVA::NMaterial *newMat)
+	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
+    , oldMaterialParent(oldMat->GetParent())
+    , newMaterialParent(newMat)
+    , currentMaterial(oldMat)
 {
-
-#include <unistd.h>
-
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId;
-void * PthreadMain (void * param)
-{
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
-	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
-
-	t->state = Thread::STATE_ENDED;
-	t->Release();
-
-	pthread_exit(0);
+    DVASSERT(oldMaterialParent && newMaterialParent && currentMaterial);
 }
 
-void Thread::StartAndroid()
+MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
 {
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
+    oldMaterialParent = newMaterialParent = currentMaterial = NULL;
 }
 
-bool Thread::IsMainThread()
+void MaterialSwitchParentCommand::Redo()
 {
-    return (mainThreadId == pthread_self());
+    currentMaterial->SwitchParent(newMaterialParent->GetMaterialName());
 }
 
-void Thread::InitMainThread()
+void MaterialSwitchParentCommand::Undo()
 {
-    mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::YieldThread()
-{
-	sched_yield();
-}
-
-Thread::ThreadId Thread::GetCurrentThreadId()
-{
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
+    currentMaterial->SwitchParent(oldMaterialParent->GetMaterialName());
 }
 
 
-};
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+DAVA::Entity* MaterialSwitchParentCommand::GetEntity() const
+{
+	return NULL;
+}

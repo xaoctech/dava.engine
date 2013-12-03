@@ -661,9 +661,12 @@ const Color & Landscape::GetTileColor(eTextureLevel level)
     
 void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
-    SafeRelease(textures[level]);
-    textureNames[level] = String("");
-    
+	SafeRelease(textures[level]);
+	textureNames[level] = String("");
+
+	if((TILED_MODE_TILEMASK == tiledShaderMode || TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode) && TEXTURE_TILE_FULL == level)
+		return;
+
     Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {
@@ -1738,12 +1741,10 @@ void Landscape::UpdateFullTiledTexture()
 	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
     if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
     {
-		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
         t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
-		RenderManager::Instance()->UnlockNonMain();
     }
 }
     
@@ -1825,12 +1826,8 @@ void Landscape::SetFog(const bool& fogState)
 				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
 			}
 			
-			RenderManager::Instance()->LockNonMain();
-			
 			global->Rebuild();
 			global->Rebind();
-			
-			RenderManager::Instance()->UnlockNonMain();
 			
 			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
 			DVASSERT(global);
