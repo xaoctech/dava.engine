@@ -382,7 +382,7 @@ void ImposterNode::DrawImposter()
 	}
 
 	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-    pointer_size matrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+    uint32 matrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
 	const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 	Matrix4 meshFinalMatrix;
 
