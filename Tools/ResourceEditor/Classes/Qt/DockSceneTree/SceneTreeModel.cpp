@@ -35,7 +35,7 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "Scene/SceneSignals.h"
 
-#include "Commands2/MaterialAssignCommand.h"
+#include "Commands2/MaterialSwitchParentCommand.h"
 #include "MaterialEditor/MaterialsDropSystem.h"
 
 
@@ -563,7 +563,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
             if(targetEntity)
             {
                 MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntity(targetEntity, true);
-                ret =  result.hasEntitiesAvailableToDrop;
+                ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
             }
             break;
         }
@@ -736,7 +736,12 @@ void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *m
         curScene->BeginBatch("Set Material");
         for(int im = 0; im < materials->size(); ++im)
         {
-            MaterialsDropSystem::DropMaterialToEntity(targetEntity, materials->at(im), true);
+            DAVA::Set<DAVA::NMaterial *> oldMaterials = MaterialsDropSystem::GetAvailableMaterials(targetEntity, true);
+            auto endIt = oldMaterials.end();
+            for(auto it = oldMaterials.begin(); it != endIt; ++it)
+            {
+                curScene->Exec(new MaterialSwitchParentCommand(*it, materials->at(im)));
+            }
         }
         curScene->EndBatch();
         

@@ -194,7 +194,7 @@
 		E8C99291184CD0EC00AFBF3F /* KeyedArchiveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99030184CD0EB00AFBF3F /* KeyedArchiveCommand.cpp */; };
 		E8C99292184CD0EC00AFBF3F /* LandscapeEditorDrawSystemActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99032184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.cpp */; };
 		E8C99293184CD0EC00AFBF3F /* LandscapeSetTexturesCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */; };
-		E8C99294184CD0EC00AFBF3F /* MaterialAssignCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */; };
+		E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */; };
 		E8C99295184CD0EC00AFBF3F /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */; };
 		E8C99296184CD0EC00AFBF3F /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */; };
 		E8C99297184CD0EC00AFBF3F /* ParticleForceMoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9903C184CD0EB00AFBF3F /* ParticleForceMoveCommand.cpp */; };
@@ -1053,8 +1053,8 @@
 		E8C99033184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorDrawSystemActions.h; sourceTree = "<group>"; };
 		E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeSetTexturesCommands.cpp; sourceTree = "<group>"; };
 		E8C99035184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeSetTexturesCommands.h; sourceTree = "<group>"; };
-		E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialAssignCommand.cpp; sourceTree = "<group>"; };
-		E8C99037184CD0EB00AFBF3F /* MaterialAssignCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialAssignCommand.h; sourceTree = "<group>"; };
+		E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSwitchParentCommand.cpp; sourceTree = "<group>"; };
+		E8C99037184CD0EB00AFBF3F /* MaterialSwitchParentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSwitchParentCommand.h; sourceTree = "<group>"; };
 		E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MetaObjModifyCommand.cpp; sourceTree = "<group>"; };
 		E8C99039184CD0EB00AFBF3F /* MetaObjModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaObjModifyCommand.h; sourceTree = "<group>"; };
 		E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEditorCommands.cpp; sourceTree = "<group>"; };
@@ -2348,8 +2348,8 @@
 				E8C99033184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.h */,
 				E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */,
 				E8C99035184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.h */,
-				E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */,
-				E8C99037184CD0EB00AFBF3F /* MaterialAssignCommand.h */,
+				E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */,
+				E8C99037184CD0EB00AFBF3F /* MaterialSwitchParentCommand.h */,
 				E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */,
 				E8C99039184CD0EB00AFBF3F /* MetaObjModifyCommand.h */,
 				E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */,
@@ -4095,7 +4095,7 @@
 				E8C99481184CD23C00AFBF3F /* CollisionBaseObject_moc.cpp in Build Sources */,
 				E8C9928B184CD0EC00AFBF3F /* EntityAddCommand.cpp in Build Sources */,
 				E8C9944B184CD23C00AFBF3F /* LibraryFilteringModel_moc.cpp in Build Sources */,
-				E8C99294184CD0EC00AFBF3F /* MaterialAssignCommand.cpp in Build Sources */,
+				E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */,
 				E8C99207184CD0EC00AFBF3F /* btSimulationIslandManager.cpp in Build Sources */,
 				E8C9945B184CD23C00AFBF3F /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,
 				E8C99340184CD0EC00AFBF3F /* QtPropertyItemDelegate.cpp in Build Sources */,

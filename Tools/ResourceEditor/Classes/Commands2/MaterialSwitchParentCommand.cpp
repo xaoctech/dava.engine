@@ -28,28 +28,34 @@
 
 
 
-#include "MaterialAssignCommand.h"
+#include "MaterialSwitchParentCommand.h"
 
-#include "DAVAEngine.h"
-
-MaterialAssignCommand::MaterialAssignCommand()
-	: Command2(CMDID_MATERIAL_ASSIGN, "Assign Material")
+MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, DAVA::NMaterial *newMat)
+	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
+    , oldMaterialParent(oldMat->GetParent())
+    , newMaterialParent(newMat)
+    , currentMaterial(oldMat)
 {
+    DVASSERT(oldMaterialParent && newMaterialParent && currentMaterial);
 }
 
-MaterialAssignCommand::~MaterialAssignCommand()
+MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
 {
+    oldMaterialParent = newMaterialParent = currentMaterial = NULL;
 }
 
-void MaterialAssignCommand::Undo()
+void MaterialSwitchParentCommand::Redo()
 {
+    currentMaterial->SwitchParent(newMaterialParent->GetMaterialName());
 }
 
-void MaterialAssignCommand::Redo()
+void MaterialSwitchParentCommand::Undo()
 {
+    currentMaterial->SwitchParent(oldMaterialParent->GetMaterialName());
 }
 
-DAVA::Entity* MaterialAssignCommand::GetEntity() const
+
+DAVA::Entity* MaterialSwitchParentCommand::GetEntity() const
 {
 	return NULL;
 }
