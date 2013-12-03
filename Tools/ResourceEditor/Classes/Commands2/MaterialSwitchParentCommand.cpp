@@ -28,22 +28,34 @@
 
 
 
-#ifndef __MATERIAL_ASSIGN_COMMAND_H__
-#define __MATERIAL_ASSIGN_COMMAND_H__
+#include "MaterialSwitchParentCommand.h"
 
-#include "Commands2/Command2.h"
-
-class EntityGroup;
-class MaterialAssignCommand: public Command2
+MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, DAVA::NMaterial *newMat)
+	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
+    , oldMaterialParent(oldMat->GetParent())
+    , newMaterialParent(newMat)
+    , currentMaterial(oldMat)
 {
-public:
-	MaterialAssignCommand();
-	~MaterialAssignCommand();
+    DVASSERT(oldMaterialParent && newMaterialParent && currentMaterial);
+}
 
-	virtual void Undo();
-	virtual void Redo();
+MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
+{
+    oldMaterialParent = newMaterialParent = currentMaterial = NULL;
+}
 
-	virtual DAVA::Entity* GetEntity() const;
-};
+void MaterialSwitchParentCommand::Redo()
+{
+    currentMaterial->SwitchParent(newMaterialParent->GetMaterialName());
+}
 
-#endif // __MATERIAL_ASSIGN_COMMAND_H__
+void MaterialSwitchParentCommand::Undo()
+{
+    currentMaterial->SwitchParent(oldMaterialParent->GetMaterialName());
+}
+
+
+DAVA::Entity* MaterialSwitchParentCommand::GetEntity() const
+{
+	return NULL;
+}

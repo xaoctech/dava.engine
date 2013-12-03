@@ -28,28 +28,29 @@
 
 
 
-#include "MaterialAssignCommand.h"
+#ifndef __MATERIAL_ASSIGN_COMMAND_H__
+#define __MATERIAL_ASSIGN_COMMAND_H__
 
-#include "DAVAEngine.h"
+#include "Commands2/Command2.h"
+#include "Render/Material/NMaterial.h"
 
-MaterialAssignCommand::MaterialAssignCommand()
-	: Command2(CMDID_MATERIAL_ASSIGN, "Assign Material")
+class EntityGroup;
+class MaterialSwitchParentCommand: public Command2
 {
-}
+public:
+	MaterialSwitchParentCommand(DAVA::NMaterial *oldMaterial, DAVA::NMaterial *newMaterial);
+	~MaterialSwitchParentCommand();
 
-MaterialAssignCommand::~MaterialAssignCommand()
-{
-}
+	virtual void Undo();
+	virtual void Redo();
 
-void MaterialAssignCommand::Undo()
-{
-}
+	virtual DAVA::Entity* GetEntity() const;
+    
+protected:
+    
+    DAVA::NMaterial *newMaterialParent;
+    DAVA::NMaterial *oldMaterialParent;
+    DAVA::NMaterial *currentMaterial;
+};
 
-void MaterialAssignCommand::Redo()
-{
-}
-
-DAVA::Entity* MaterialAssignCommand::GetEntity() const
-{
-	return NULL;
-}
+#endif // __MATERIAL_ASSIGN_COMMAND_H__

@@ -38,6 +38,7 @@
 #include "Scene/System/SelectionSystem.h"
 
 #include "MaterialEditor/MaterialsDropSystem.h"
+#include "Commands2/MaterialSwitchParentCommand.h"
 
 #include "Main/mainwindow.h"
 
@@ -182,28 +183,29 @@ void LibraryMaterialsModel::OnAssign()
     if(result.hasEntitiesAvailableToDrop)
     {
         scene->BeginBatch("Set material");
-        MaterialsDropSystem::DropMaterialToGroup(&selection, material, true);
-        scene->EndBatch();
         
-        if(result.hasEntityUnavailableToDrop)
+        DAVA::Set<DAVA::NMaterial *> oldMaterials = MaterialsDropSystem::GetAvailableMaterials(&selection, true);
+        auto endIt = oldMaterials.end();
+        for(auto it = oldMaterials.begin(); it != endIt; ++it)
         {
-            DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(&selection, true);
-            
-            DAVA::String names;
-            for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
-            {
-                if(ie != 0) names += ",";
-                
-                names += rejectedEntities[ie]->GetName();
-            }
-            
-            String errorString = Format("Cannot drop material to %s", names.c_str());
-            QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+            scene->Exec(new MaterialSwitchParentCommand(*it, material));
         }
+        scene->EndBatch();
     }
-    else
+    if(result.hasEntityUnavailableToDrop)
     {
-        QMessageBox::warning(NULL, QString("Drop error"), QString("Selected entities have no materials to change"), QMessageBox::Ok);
+        DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(&selection, true);
+        
+        DAVA::String names;
+        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+        {
+            if(ie != 0) names += ",";
+            
+            names += rejectedEntities[ie]->GetName();
+        }
+        
+        String errorString = Format("Cannot drop material to %s", names.c_str());
+        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
     }
 }
 
