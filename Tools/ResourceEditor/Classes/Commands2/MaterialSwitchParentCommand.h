@@ -38,7 +38,7 @@ class EntityGroup;
 class MaterialSwitchParentCommand: public Command2
 {
 public:
-	MaterialSwitchParentCommand(DAVA::NMaterial *oldMaterial, DAVA::NMaterial *newMaterial);
+	MaterialSwitchParentCommand(DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial);
 	~MaterialSwitchParentCommand();
 
 	virtual void Undo();
@@ -48,8 +48,8 @@ public:
     
 protected:
     
-    DAVA::NMaterial *newMaterialParent;
-    DAVA::NMaterial *oldMaterialParent;
+    const DAVA::NMaterial *newMaterialParent;
+    const DAVA::NMaterial *oldMaterialParent;
     DAVA::NMaterial *currentMaterial;
 };
 
