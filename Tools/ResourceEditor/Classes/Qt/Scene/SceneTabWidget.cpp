@@ -379,18 +379,25 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 
 void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
 {
+    SceneEditor2 *scene = GetCurrentScene();
+    if(!scene) return;
+
+    
     const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
-    if(MaterialsDropSystem::EntityGroupHasMaterials(group, true))
+    MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntityGroup(group, true);
+    if(result.hasEntitiesAvailableToDrop)
     {
         QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
         DVASSERT(materials->size() == 1);
+        
+        scene->BeginBatch("Set Material");
         
         for(int im = 0; im < materials->size(); ++im)
         {
             DAVA::NMaterial *mat = materials->at(im);
             
-            bool wasDropped = MaterialsDropSystem::DropMaterialToGroup(group, mat, true);
-            if(!wasDropped)
+            MaterialsDropSystem::DropMaterialToGroup(group, mat, true);
+            if(result.hasEntityUnavailableToDrop)
             {
                 DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(group, true);
                 
@@ -406,6 +413,8 @@ void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
                 QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
             }
         }
+        
+        scene->EndBatch();
     }
 }
 

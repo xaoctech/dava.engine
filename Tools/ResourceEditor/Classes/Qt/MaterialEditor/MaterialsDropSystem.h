@@ -39,18 +39,31 @@ class MaterialsDropSystem
 {
 public:
     
-    static bool EntityGroupHasMaterials(const EntityGroup *group, const bool recursive);
-    static bool EntityHasMaterials(const DAVA::Entity * entity, const bool recursive);
-
-	
-    static bool DropMaterialToGroup(const EntityGroup *group, DAVA::NMaterial *material, const bool recursive);
-    static bool DropMaterialToEntity(const DAVA::Entity *entity, DAVA::NMaterial *material, const bool recursive);
+    struct DropTestResult
+    {
+        DropTestResult();
+        
+        bool AllTestsTrue();
+        
+        bool hasEntitiesAvailableToDrop;
+        bool hasEntityUnavailableToDrop;
+    };
+    
+public:
+    
+    static DropTestResult TestEntityGroup(const EntityGroup *group, const bool recursive);
+    static DropTestResult TestEntity(const DAVA::Entity * entity, const bool recursive);
+    
+    static void DropMaterialToGroup(const EntityGroup *group, DAVA::NMaterial *material, const bool recursive);
+    static void DropMaterialToEntity(const DAVA::Entity *entity, DAVA::NMaterial *material, const bool recursive);
     
     static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const EntityGroup *group, const bool recursive);
     static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive);
     
 protected:
-    
+
+    static void TestEntity(DropTestResult & result, const DAVA::Entity * entity, const bool recursive);
+
     static void GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive);
 };
 

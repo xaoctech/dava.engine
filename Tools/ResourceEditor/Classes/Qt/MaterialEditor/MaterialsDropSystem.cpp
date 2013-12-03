@@ -36,28 +36,57 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 
 
-bool MaterialsDropSystem::EntityGroupHasMaterials(const EntityGroup *group, const bool recursive)
+MaterialsDropSystem::DropTestResult::DropTestResult()
 {
-    if(!group) return false;
+    hasEntitiesAvailableToDrop = hasEntityUnavailableToDrop = false;
+}
+
+bool MaterialsDropSystem::DropTestResult::AllTestsTrue()
+{
+    return (hasEntitiesAvailableToDrop && hasEntityUnavailableToDrop);
+}
+
+MaterialsDropSystem::DropTestResult MaterialsDropSystem::TestEntityGroup(const EntityGroup *group, const bool recursive)
+{
+    if(!group) return MaterialsDropSystem::DropTestResult();
+
+    MaterialsDropSystem::DropTestResult result;
     
     const size_t count = group->Size();
     for(size_t i = 0; i < count; ++i)
     {
-        bool hasMaterials = EntityHasMaterials(group->GetEntity(i), recursive);
-        if(hasMaterials) return true;
+        TestEntity(result, group->GetEntity(i), recursive);
+        if(result.AllTestsTrue()) break;
     }
     
-    return false;
+    return result;
 }
 
-bool MaterialsDropSystem::EntityHasMaterials(const DAVA::Entity * entity, const bool recursive)
+MaterialsDropSystem::DropTestResult MaterialsDropSystem::TestEntity(const DAVA::Entity * entity, const bool recursive)
 {
-    if(!entity) return false;
+    MaterialsDropSystem::DropTestResult result;
     
+    TestEntity(result, entity, recursive);
+    
+    return result;
+}
+
+void MaterialsDropSystem::TestEntity(MaterialsDropSystem::DropTestResult & result, const DAVA::Entity * entity, const bool recursive)
+{
     DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
-    if(ro && ro->GetRenderBatchCount())
+    if(ro)
     {
-        return true;
+        DAVA::uint32 rbCount = ro->GetRenderBatchCount();
+        if(rbCount == 1)
+        {
+            result.hasEntitiesAvailableToDrop = true;
+        }
+        else
+        {
+            result.hasEntityUnavailableToDrop = true;
+        }
+        
+        if(result.AllTestsTrue()) return;
     }
     
     if(recursive)
@@ -65,46 +94,38 @@ bool MaterialsDropSystem::EntityHasMaterials(const DAVA::Entity * entity, const 
         const DAVA::int32 count = entity->GetChildrenCount();
         for(DAVA::int32 i = 0; i < count; ++i)
         {
-            bool hasMaterials = EntityHasMaterials(entity->GetChild(i), recursive);
-            if(hasMaterials) return true;
+            TestEntity(result, entity->GetChild(i), recursive);
+            
+            if(result.AllTestsTrue()) break;
         }
     }
-    
-    return false;
 }
 
-bool MaterialsDropSystem::DropMaterialToGroup(const EntityGroup *group, DAVA::NMaterial *material, const bool recursive)
+
+void MaterialsDropSystem::DropMaterialToGroup(const EntityGroup *group, DAVA::NMaterial *material, const bool recursive)
 {
-    bool dropWasSuccessful = true;
-    
     size_t count = group->Size();
     for(size_t i = 0; i < count; ++i)
     {
-        dropWasSuccessful &= DropMaterialToEntity(group->GetEntity(i), material, recursive);
+        DropMaterialToEntity(group->GetEntity(i), material, recursive);
     }
-
-    return dropWasSuccessful;
 }
 
 
-bool MaterialsDropSystem::DropMaterialToEntity(const DAVA::Entity *entity, DAVA::NMaterial *material, const bool recursive)
+void MaterialsDropSystem::DropMaterialToEntity(const DAVA::Entity *entity, DAVA::NMaterial *material, const bool recursive)
 {
-    bool dropWasSuccessful = true;
-    
     DAVA::RenderObject * ro = DAVA::GetRenderObject(entity);
     if(ro)
     {
         DAVA::uint32 count = ro->GetRenderBatchCount();
-        dropWasSuccessful = (count == 1);
-        
-        if(dropWasSuccessful)
+        if(1 == count)
         {
-            DAVA::RenderBatch *rb = ro->GetRenderBatch(0);
-            DAVA::NMaterial *oldMaterial = rb->GetMaterial();
-
-            DVASSERT(oldMaterial);
-            
-            oldMaterial->SetParent(material);
+//            DAVA::RenderBatch *rb = ro->GetRenderBatch(0);
+//            DAVA::NMaterial *oldMaterial = rb->GetMaterial();
+//
+//            DVASSERT(oldMaterial);
+//            
+//            oldMaterial->SetParent(material);
         }
     }
     
@@ -113,11 +134,9 @@ bool MaterialsDropSystem::DropMaterialToEntity(const DAVA::Entity *entity, DAVA:
         DAVA::int32 count = entity->GetChildrenCount();
         for(DAVA::int32 i = 0; i < count; ++i)
         {
-            dropWasSuccessful &= DropMaterialToEntity(entity->GetChild(i), material, recursive);
+            DropMaterialToEntity(entity->GetChild(i), material, recursive);
         }
     }
-    
-    return dropWasSuccessful;
 }
 
 DAVA::Vector<const DAVA::Entity *> MaterialsDropSystem::GetDropRejectedEntities(const EntityGroup *group, const bool recursive)

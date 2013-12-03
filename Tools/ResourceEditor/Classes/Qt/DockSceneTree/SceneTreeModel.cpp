@@ -562,7 +562,8 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
             DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
             if(targetEntity)
             {
-                ret = MaterialsDropSystem::EntityHasMaterials(targetEntity, true);
+                MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntity(targetEntity, true);
+                ret =  result.hasEntitiesAvailableToDrop;
             }
             break;
         }
@@ -731,27 +732,29 @@ void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *m
     {
         QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
         DVASSERT(materials->size() == 1);
-        
+
+        curScene->BeginBatch("Set Material");
         for(int im = 0; im < materials->size(); ++im)
         {
-            DAVA::NMaterial *mat = materials->at(im);
+            MaterialsDropSystem::DropMaterialToEntity(targetEntity, materials->at(im), true);
+        }
+        curScene->EndBatch();
+        
+        MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntity(targetEntity, true);
+        if(result.hasEntityUnavailableToDrop)
+        {
+            DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(targetEntity, true);
             
-            bool wasDropped = MaterialsDropSystem::DropMaterialToEntity(targetEntity, mat, true);
-            if(!wasDropped)
+            DAVA::String names;
+            for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
             {
-                DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(targetEntity, true);
+                if(ie != 0) names += ",";
                 
-                DAVA::String names;
-                for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
-                {
-                    if(ie != 0) names += ",";
-
-                    names += rejectedEntities[ie]->GetName();
-                }
-                
-                String errorString = Format("Cannot drop material to %s", names.c_str());
-                QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+                names += rejectedEntities[ie]->GetName();
             }
+            
+            String errorString = Format("Cannot drop material to %s", names.c_str());
+            QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
         }
     }
 }
