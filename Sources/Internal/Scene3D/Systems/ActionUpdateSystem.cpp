@@ -84,6 +84,24 @@ void ActionUpdateSystem::Process()
 		ActionComponent* component = activeActions[index];
 		component->Update(timeElapsed);
 	}
+
+	DelayedDeleteActions();
+}
+
+void ActionUpdateSystem::DelayedDeleteActions()
+{
+	Vector<ActionComponent*>::iterator end = deleteActions.end();
+	for(Vector<ActionComponent*>::iterator it = deleteActions.begin(); it != end; ++it)
+	{
+		Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), *it);
+
+		if(i != activeActions.end())
+		{
+			activeActions.erase(i);
+		}
+	}
+
+	deleteActions.clear();
 }
 	
 void ActionUpdateSystem::Watch(ActionComponent* component)
@@ -93,12 +111,7 @@ void ActionUpdateSystem::Watch(ActionComponent* component)
 
 void ActionUpdateSystem::UnWatch(ActionComponent* component)
 {
-	Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), component);
-	
-	if(i != activeActions.end())
-	{
-		activeActions.erase(i);
-	}
+	deleteActions.push_back(component);
 }
 	
 }
