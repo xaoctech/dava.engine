@@ -212,6 +212,14 @@ eGPUFamily GPUFamilyDescriptor::GetGPUByName(const String & name)
     return GPU_UNKNOWN;
 }
 
+bool GPUFamilyDescriptor::IsFormatSupported(const eGPUFamily gpu, const PixelFormat format)
+{
+	if(gpu <= GPU_UNKNOWN || gpu >= GPU_FAMILY_COUNT)
+	{
+		return false;
+	}
+	return gpuData[gpu].availableFormats.find(format) != gpuData[gpu].availableFormats.end();
+}
     
 const String & GPUFamilyDescriptor::GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
 {
