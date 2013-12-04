@@ -343,9 +343,11 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleGroup.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleRenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\MovieViewControlStub.h" />
@@ -732,6 +734,7 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleRenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />

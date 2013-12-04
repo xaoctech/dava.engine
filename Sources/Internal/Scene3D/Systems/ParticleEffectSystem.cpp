@@ -33,14 +33,12 @@
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
 #include "Debug/Stats.h"
+#include "Core/PerformanceSettings.h"
 
 namespace DAVA
 {
 
-ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
-	:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
-	,	index(0)
-	,	size(0)
+ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)	
 {
 }
 
@@ -48,34 +46,43 @@ void ParticleEffectSystem::Process()
 {
     TIME_PROFILE("ParticleEffectSystem::Process");
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-
-	size = components.size();
-	for(index = 0; index < size; ++index)
+	
+	/*shortEffectTime*/
+	float32 currFps = 1.0f/timeElapsed;
+	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
+	currPSValue = Clamp(currPSValue, 0.0f, 1.0f);
+	float32 speedMult = 1.0f+(PerformanceSettings::Instance()->GetPsPerformanceSpeedMult()-1.0f)*(1-currPSValue);
+	float32 shortEffectTime = timeElapsed*speedMult;
+	
+	for(int i=0; i<activeComponents.size(); i++) //we take size in loop as it can actually change
 	{
-		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(components[index]);
-		component->EffectUpdate(timeElapsed);
+		ParticleEffectComponent * component = activeComponents[i];
+		UpdateEffect(component, timeElapsed, shortEffectTime);
+		/*finish restart criteria*/
+		if ((component->state == ParticleEffectComponent::STATE_STOPPING)&&component->effectData.groups.empty())
+		{
+			//effect is moved to stopped state and removed form activeEffects/renderSystem
+		}
+		
 	}
 }
 
-
-void ParticleEffectSystem::AddComponent(Entity * entity, Component * component)
+void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime)
 {
-	BaseProcessSystem::AddComponent(entity, component);
-	//set global externals
-	ParticleEffectComponent *comp = (ParticleEffectComponent *)component;
-	for (Map<String, float32>::iterator it = globalExternalValues.begin(), e = globalExternalValues.end(); it!=e; ++it)
-		comp->SetExtertnalValue((*it).first, (*it).second);
+	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
+	{
+		ParticleGroup &group = *it;
+		float32 dt = group.emitter->IsShortEffect()?shortEffectTime:time;
+		group.time+=dt;
+		/*imagine here is update code from emitter/layer/particle*/
+		/*finally*/
+		if (group.finishingGroup&&(!group.head))
+			it = effect->effectData.groups.erase(it);
+		else
+			++it;
+	}
 }
 
-void ParticleEffectSystem::RemoveComponent( Entity * entity, Component * component )
-
-{
-	BaseProcessSystem::RemoveComponent(entity, component);
-
-	//Effects can be deleted at EffectUpdate()
-	--index;
-	--size;
-}
 
 
 

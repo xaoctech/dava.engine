@@ -1356,6 +1356,12 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleGroup.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleRenderObject.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2413,6 +2419,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeLeafBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleRenderObject.cpp">
+      <Filter>Internal\Particles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

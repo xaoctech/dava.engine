@@ -33,31 +33,32 @@
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 namespace DAVA
 {
 
 class Component;
-class ParticleEffectSystem : public BaseProcessSystem
+class ParticleEffectSystem : public SceneSystem
 {
 public:
 	ParticleEffectSystem(Scene * scene);
-	virtual void Process();
+	virtual void Process();	
 
-	virtual void AddComponent(Entity * entity, Component * component);
-	virtual void RemoveComponent(Entity * entity, Component * component);
-	
+	void StartEffect(ParticleEffectComponent *effect);	
 
 	void SetGlobalExtertnalValue(const String& name, float32 value);
 	float32 GetGlobalExternalValue(const String& name);
 	Map<String, float32> GetGlobalExternals();
-
+	
 protected:
-	uint32 index;
-	uint32 size;
+	void UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime);
+	
 
 private:
 	Map<String, float32> globalExternalValues;
+	
+	Vector<ParticleEffectComponent *> activeComponents;
 };
 
 }

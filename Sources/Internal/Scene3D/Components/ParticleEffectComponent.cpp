@@ -43,15 +43,13 @@ ParticleEffectComponent::ParticleEffectComponent()
 {
 	stopAfterNRepeats = -1;
 	stopWhenEmpty = false;
-	effectDuration = 0.0f;
-	emittersCurrentlyStopped = 0;
-	requireRebuildEffectModifiables = true;
-
+	effectDuration = 0.0f;	
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
 {
-	ParticleEffectComponent * newComponent = new ParticleEffectComponent();
+	DVASSERT(0);
+	/*ParticleEffectComponent * newComponent = new ParticleEffectComponent();
 	newComponent->SetEntity(toEntity);
 
 	newComponent->stopAfterNRepeats = stopAfterNRepeats;
@@ -61,16 +59,14 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->effectDuration = effectDuration;
 	newComponent->emittersCurrentlyStopped = emittersCurrentlyStopped;	
 
-	return newComponent;
+	return newComponent;*/
 }
 
 void ParticleEffectComponent::Start()
 {
-	if (requireRebuildEffectModifiables)
-	{
-		RebuildEffectModifiables();
-		requireRebuildEffectModifiables = false;
-	}
+	
+	RebuildEffectModifiables();
+	
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
@@ -81,8 +77,7 @@ void ParticleEffectComponent::Start()
 			emitter->Play();
 		}
 	}
-
-	this->emittersCurrentlyStopped = 0;
+	
 }
 
 void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
