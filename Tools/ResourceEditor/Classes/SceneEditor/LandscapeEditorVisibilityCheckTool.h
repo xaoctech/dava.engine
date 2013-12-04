@@ -36,6 +36,7 @@
 #include "LandscapeToolsPanel.h"
 #include "LandscapeEditorPropertyControl.h"
 
+
 using namespace DAVA;
 
 enum eVisibilityCheckToolState
@@ -144,6 +145,5 @@ protected:
 	bool		isCursorTransparent;
 	bool isFogEnabled;
 };
-
 
 #endif //__RESOURCE_EDITOR_LANDSCAPE_EDITOR_VISIBILITY_CHECK_TOOL_H__

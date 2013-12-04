@@ -41,6 +41,8 @@
 
 #include "FileSystem/FilePath.h"
 
+#include "Render/UniqueStateSet.h"
+
 namespace DAVA
 {
 
@@ -173,6 +175,7 @@ public:
 	
 	Texture* GetTexture();
 	Texture* GetTexture(int32 frameNumber);
+	UniqueHandle GetTextureHandle(int32 frameNumber);
 	
 	int32 GetFrameCount() const;
 	
@@ -293,6 +296,9 @@ protected:
     static File* LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath);
     
     void ReloadExistingTextures();
+	
+	void RegisterTextureStates();
+	void UnregisterTextureStates();
 //private:
     
     
@@ -312,6 +318,7 @@ protected:
 	FilePath *textureNames;
 	int32 *frameTextureIndex;
 	int32 textureCount;
+	Vector<UniqueHandle> textureHandles;
 	
 	float32 **frameVertices;
 	float32 **texCoords;

@@ -159,7 +159,6 @@ LandscapeEditorVisibilityCheckTool* CommandPlaceAreaVisibilityTool::GetEditor()
 	return editor;
 }
 
-
 CommandSetVisibilityPoint::CommandSetVisibilityPoint(Image* originalImage,
 													 Sprite* cursorSprite,
 													 VisibilityToolProxy* visibilityToolProxy,

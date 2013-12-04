@@ -474,6 +474,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		case DRAW_FILL:
 		{
 		    RenderManager::Instance()->SetDefault2DNoTextureState();
+			RenderManager::Instance()->SetDefaultTextureState();
 			DrawFilled( geometricData );
 		}	
 		break;
@@ -498,7 +499,8 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 void UIControlBackground::DrawStretched(const Rect &drawRect)
 {
 	if (!spr)return;
-	Texture *texture = spr->GetTexture(frame);
+	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
+	Texture* texture = spr->GetTexture(frame);
 	
 	float32 texX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
 	float32 texY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
@@ -660,7 +662,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, texCoords);
 
-	RenderManager::Instance()->SetTexture(texture);
+	RenderManager::Instance()->SetTextureState(textureHandle);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_16, indeces);
@@ -720,6 +722,7 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 {
 	if (!spr)return;
 	Texture *texture = spr->GetTexture(frame);
+	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
 	
 	float32 texX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
 	float32 texY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
@@ -888,7 +891,7 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	vertexStream->Set(TYPE_FLOAT, 2, 0, tilesVertices);
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, tilesTexCoords);
 
-	RenderManager::Instance()->SetTexture(texture);
+	RenderManager::Instance()->SetTextureState(textureHandle);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_32, tilesIndeces);

@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __LANDSCAPE_EDITOR_CUSTOM_COLOR_H__
 #define __LANDSCAPE_EDITOR_CUSTOM_COLOR_H__
 
@@ -116,6 +114,8 @@ protected:
     bool editingIsEnabled;
 
 	Texture*	circleTexture;
+	UniqueHandle circleTextureHandle;
+	
 	Sprite*		colorSprite;
 	Texture*	texSurf;
 
@@ -128,6 +128,5 @@ protected:
 
 	Image* originalTexture;
 };
-
 
 #endif //__LANDSCAPE_EDITOR_CUSTOM_COLOR_H__

@@ -806,6 +806,12 @@
 		A670F2CA184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2C6184773B40030E075 /* SpeedTreeLeafBatch.h */; };
 		A670F2CB184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2C6184773B40030E075 /* SpeedTreeLeafBatch.h */; };
 		A670F2CC184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2C6184773B40030E075 /* SpeedTreeLeafBatch.h */; };
+		A670F2F11847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
+		A670F2F21847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
+		A670F2F31847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
+		A670F2F41847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
+		A670F2F51847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
+		A670F2F61847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
 		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
@@ -2219,6 +2225,8 @@
 		A66533E717F98EC100B8906A /* Serializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serializable.h; sourceTree = "<group>"; };
 		A670F2C5184773B40030E075 /* SpeedTreeLeafBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeLeafBatch.cpp; sourceTree = "<group>"; };
 		A670F2C6184773B40030E075 /* SpeedTreeLeafBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeLeafBatch.h; sourceTree = "<group>"; };
+		A670F2EF1847A99E0030E075 /* TextureStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateData.h; sourceTree = "<group>"; };
+		A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
 		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
 		A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerializationContext.cpp; sourceTree = "<group>"; };
@@ -3463,6 +3471,8 @@
 		E8989C1516BD24E400732C04 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				A670F2EF1847A99E0030E075 /* TextureStateData.h */,
+				A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */,
 				A69B7A461834CD640093AF7F /* RenderStateData.h */,
 				A69B7A471834CD640093AF7F /* UniqueStateSet.h */,
 				50A5186E17B256250022E8FA /* ShaderCache.cpp */,
@@ -4367,6 +4377,8 @@
 				A69B7A4D1834CD640093AF7F /* UniqueStateSet.h in Headers */,
 				A69B7A511834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2CC184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */,
+				A670F2F31847A99E0030E075 /* TextureStateData.h in Headers */,
+				A670F2F61847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4735,6 +4747,8 @@
 				A69B7A4B1834CD640093AF7F /* UniqueStateSet.h in Headers */,
 				A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2CA184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */,
+				A670F2F11847A99E0030E075 /* TextureStateData.h in Headers */,
+				A670F2F41847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5089,6 +5103,8 @@
 				A69B7A4C1834CD640093AF7F /* UniqueStateSet.h in Headers */,
 				A69B7A501834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2CB184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */,
+				A670F2F21847A99E0030E075 /* TextureStateData.h in Headers */,
+				A670F2F51847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

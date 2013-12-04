@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "LandscapeEditorColor.h"
 
 #include "LandscapeTool.h"
@@ -59,6 +57,10 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 	toolSprite = NULL;
     savedTexture = NULL;
     settings = NULL;
+	
+	maskSpriteTextureHandle = InvalidUniqueHandle;
+	oldMaskSpriteTextureHandle = InvalidUniqueHandle;
+	curTextureRenderHandle = InvalidUniqueHandle;
 
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
@@ -84,6 +86,16 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 
 LandscapeEditorColor::~LandscapeEditorColor()
 {
+	if(InvalidUniqueHandle != maskSpriteTextureHandle)
+	{
+		RenderManager::Instance()->ReleaseTextureStateData(maskSpriteTextureHandle);
+	}
+	
+	if(InvalidUniqueHandle != oldMaskSpriteTextureHandle)
+	{
+		RenderManager::Instance()->ReleaseTextureStateData(oldMaskSpriteTextureHandle);
+	}
+	
     SafeRelease(tileMaskEditorShader);
 
     SafeRelease(savedTexture);
@@ -140,6 +152,17 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
 	oldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
     toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+	
+	TextureStateData maskSpriteData;
+	maskSpriteData.textures[0] = maskSprite->GetTexture();
+	maskSpriteData.textures[1] = toolSprite->GetTexture();
+	maskSpriteTextureHandle = RenderManager::Instance()->AddTextureStateData(&maskSpriteData);
+	
+	maskSpriteData.textures[0] = oldMaskSprite->GetTexture();
+	maskSpriteData.textures[1] = toolSprite->GetTexture();
+	oldMaskSpriteTextureHandle = RenderManager::Instance()->AddTextureStateData(&maskSpriteData);
+
+	curTextureRenderHandle = maskSpriteTextureHandle;
     
     if(tex)
     {
@@ -205,8 +228,11 @@ void LandscapeEditorColor::UpdateTileMask()
 	RenderManager::Instance()->SetShader(tileMaskEditorShader);
 	oldMaskSprite->PrepareSpriteRenderData(0);
 	RenderManager::Instance()->SetRenderData(oldMaskSprite->spriteRenderObject);
-	RenderManager::Instance()->SetTexture(oldMaskSprite->GetTexture(), 0);
-	RenderManager::Instance()->SetTexture(toolSprite->GetTexture(), 1);
+	
+	//RenderManager::Instance()->SetTexture(oldMaskSprite->GetTexture(), 0);
+	//RenderManager::Instance()->SetTexture(toolSprite->GetTexture(), 1);
+	RenderManager::Instance()->SetTextureState(curTextureRenderHandle);
+	
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     
@@ -226,9 +252,12 @@ void LandscapeEditorColor::UpdateTileMask()
 	RenderManager::Instance()->RestoreRenderTarget();
     
 	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, maskSprite->GetTexture());
-	Sprite * temp = oldMaskSprite;
-	oldMaskSprite = maskSprite;
-	maskSprite = temp;
+	
+	//Sprite * temp = oldMaskSprite;
+	//oldMaskSprite = maskSprite;
+	//maskSprite = temp;
+	
+	curTextureRenderHandle = (curTextureRenderHandle == oldMaskSpriteTextureHandle) ? maskSpriteTextureHandle : oldMaskSpriteTextureHandle;
 }
 
 void LandscapeEditorColor::UpdateTileMaskTool()
@@ -258,7 +287,7 @@ void LandscapeEditorColor::UpdateCursor()
 		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
 		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
 
-		workingLandscape->SetCursorTexture(cursorTexture);
+		workingLandscape->SetCursorTexture(cursorTextureHandle);
 		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaleSize);

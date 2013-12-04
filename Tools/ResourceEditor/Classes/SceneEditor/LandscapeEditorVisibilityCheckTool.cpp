@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "LandscapeEditorVisibilityCheckTool.h"
 
 #include "LandscapeTool.h"
@@ -178,7 +176,8 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		float32 scaledSize = cursorTexture->GetWidth() * scale;
 		Vector2 pos = landscapePoint - Vector2(scaledSize, scaledSize) / 2;
 
-		workingLandscape->SetCursorTexture(cursorTexture);
+		//VI: texture state
+		//workingLandscape->SetCursorTexture(cursorTexture);
 		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaledSize);

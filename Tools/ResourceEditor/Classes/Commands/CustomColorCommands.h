@@ -69,7 +69,6 @@ protected:
 	virtual void Cancel();
 };
 
-
 class CustomColorsProxy;
 
 class CommandModifyCustomColors: public Command

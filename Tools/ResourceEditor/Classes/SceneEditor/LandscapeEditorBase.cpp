@@ -27,9 +27,7 @@
 =====================================================================================*/
 
 
-
 #include "LandscapeEditorBase.h"
-
 #include "HeightmapNode.h"
 #include "EditorSettings.h"
 #include "../EditorScene.h"
@@ -70,12 +68,18 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	
+	TextureStateData cursorStateData;
+	cursorStateData.textures[0] = cursorTexture;
+	cursorTextureHandle = RenderManager::Instance()->AddTextureStateData(&cursorStateData);
     
     savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
 {
+	RenderManager::Instance()->ReleaseTextureStateData(cursorTextureHandle);
+	
     SafeRelease(toolsPanel);
     
     SafeRelease(heightmapNode);
@@ -362,4 +366,3 @@ void LandscapeEditorBase::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialo
     
     Close();
 }
-

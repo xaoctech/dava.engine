@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "LandscapeEditorCustomColors.h"
 
 #include "LandscapeTool.h"
@@ -79,10 +77,18 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	originalTexture = NULL;
 
 	unsavedChanges = false;
+	
+	circleTextureHandle = InvalidUniqueHandle;
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
 {
+	if(circleTextureHandle != InvalidUniqueHandle)
+	{
+		RenderManager::Instance()->ReleaseTextureStateData(circleTextureHandle);
+		circleTextureHandle = InvalidUniqueHandle;
+	}
+	
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
 	SafeRelease(originalTexture);
@@ -264,7 +270,7 @@ void LandscapeEditorCustomColors::UpdateCursor()
 	{
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
 		UpdateCircleTexture(false);
-		workingLandscape->SetCursorTexture(circleTexture);
+		workingLandscape->SetCursorTexture(circleTextureHandle);
 		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		
@@ -307,8 +313,21 @@ void LandscapeEditorCustomColors::UpdateCircleTexture(bool setTransparent)
 	{
 		return;
 	}
+	
+	if(circleTextureHandle != InvalidUniqueHandle)
+	{
+		RenderManager::Instance()->ReleaseTextureStateData(circleTextureHandle);
+		circleTextureHandle = InvalidUniqueHandle;
+	}
+	
 	SafeRelease(circleTexture);
 	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2,false);
+	
+	TextureStateData textureStateData;
+	textureStateData.textures[0] = circleTexture;
+	
+	circleTextureHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+	
 	//check addref
 	delete[] texArr;
 }

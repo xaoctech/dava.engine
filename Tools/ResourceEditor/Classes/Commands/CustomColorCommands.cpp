@@ -90,7 +90,6 @@ void CommandLoadTextureCustomColors::Execute()
 	}
 }
 
-
 CommandDrawCustomColors::CommandDrawCustomColors(Image* originalImage, Image* newImage)
 :	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_CUSTOM_COLORS)
 {
@@ -137,7 +136,6 @@ LandscapeEditorCustomColors* CommandDrawCustomColors::GetEditor()
 
 	return editor;
 }
-
 
 CommandModifyCustomColors::CommandModifyCustomColors(Image* originalImage,
 													 CustomColorsProxy* customColorsProxy,
