@@ -30,16 +30,22 @@
 
 #include "LibraryMaterialsModel.h"
 #include "LibraryMaterialsFilteringModel.h"
+#include "MaterialsModel.h"
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
 #include "Scene/EntityGroup.h"
 #include "Scene/System/SelectionSystem.h"
 
-#include "MaterialsModel.h"
+#include "MaterialEditor/MaterialsDropSystem.h"
+#include "Commands2/MaterialSwitchParentCommand.h"
+
+#include "Main/mainwindow.h"
+
 
 #include <QMenu>
 #include <QAction>
+#include <QMessageBox>
 
 LibraryMaterialsModel::LibraryMaterialsModel()
     : LibraryBaseModel("Materials")
@@ -146,6 +152,13 @@ bool LibraryMaterialsModel::PrepareContextMenu(QMenu &contextMenu, DAVA::NMateri
 {
     QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
 
+    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+    if(scene && scene->selectionSystem->GetSelectionCount())
+    {
+        QAction * actionAssign = contextMenu.addAction("Assign to selection", this, SLOT(OnAssign()));
+        actionAssign->setData(materialAsVariant);
+    }
+    
     QAction * actionEdit = contextMenu.addAction("Edit Material", this, SLOT(OnEdit()));
     actionEdit->setData(materialAsVariant);
     
@@ -157,5 +170,44 @@ void LibraryMaterialsModel::OnEdit()
     QVariant materialAsVariant = ((QAction *)sender())->data();
     DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
 }
+
+void LibraryMaterialsModel::OnAssign()
+{
+    QVariant materialAsVariant = ((QAction *)sender())->data();
+    DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
+
+    SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+    const EntityGroup selection = scene->selectionSystem->GetSelection();
+
+    MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntityGroup(&selection, true);
+    if(result.hasEntitiesAvailableToDrop)
+    {
+        scene->BeginBatch("Set material");
+        
+        DAVA::Set<DAVA::NMaterial *> oldMaterials = MaterialsDropSystem::GetAvailableMaterials(&selection, true);
+        auto endIt = oldMaterials.end();
+        for(auto it = oldMaterials.begin(); it != endIt; ++it)
+        {
+            scene->Exec(new MaterialSwitchParentCommand(*it, material));
+        }
+        scene->EndBatch();
+    }
+    if(result.hasEntityUnavailableToDrop)
+    {
+        DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(&selection, true);
+        
+        DAVA::String names;
+        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+        {
+            if(ie != 0) names += ",";
+            
+            names += rejectedEntities[ie]->GetName();
+        }
+        
+        String errorString = Format("Cannot drop material to %s", names.c_str());
+        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+    }
+}
+
 
 

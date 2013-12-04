@@ -35,6 +35,10 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "Scene/SceneSignals.h"
 
+#include "Commands2/MaterialSwitchParentCommand.h"
+#include "MaterialEditor/MaterialsDropSystem.h"
+
+
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
 
@@ -43,6 +47,8 @@
 
 //mime data
 #include "Tools/MimeData/MimeDataHelper2.h"
+
+#include <QMessageBox>
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	: QStandardItemModel(parent)
@@ -420,6 +426,13 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 			}
 		}
 		break;
+            
+    case DropingMaterial:
+        {
+            DropMaterial(parentItem, mimeData);
+            break;
+        }
+
 	default:
 		break;
 	}
@@ -543,6 +556,18 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			}
 		}
 		break;
+            
+        case DropingMaterial:
+        {
+            DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+            if(targetEntity)
+            {
+                MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntity(targetEntity, true);
+                ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
+            }
+            break;
+        }
+
 
 	default:
 		break;
@@ -630,6 +655,26 @@ void SceneTreeModel::AddIndexesCache(SceneTreeItem *item)
 	}
 }
 
+void SceneTreeModel::ResetFilterAcceptFlag()
+{
+	for(int i = 0; i < invisibleRootItem()->rowCount(); ++i)
+	{
+		ResetFilterAcceptFlagInternal(GetItem(index(i, 0)));
+	}
+}
+
+void SceneTreeModel::ResetFilterAcceptFlagInternal(SceneTreeItem *item)
+{
+	if(NULL != item)
+	{
+		item->SetAcceptedByFilter(false);
+		for(int i = 0; i < item->rowCount(); ++i)
+		{
+			ResetFilterAcceptFlagInternal((SceneTreeItem *) item->child(i));
+		}
+	}
+}
+
 bool SceneTreeModel::AreSameType(const QModelIndexList & indexes) const
 {
 	bool ret = true;
@@ -671,10 +716,54 @@ int SceneTreeModel::GetDropType(const QtMimeData *data) const
         {
 			ret = DropingForce;
         }
+        else if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(data))
+        {
+			ret = DropingMaterial;
+        }
 	}
 
 	return ret;
 }
+
+void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *mimeData) const
+{
+    DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+    if(targetEntity)
+    {
+        QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
+        DVASSERT(materials->size() == 1);
+
+        curScene->BeginBatch("Set Material");
+        for(int im = 0; im < materials->size(); ++im)
+        {
+            DAVA::Set<DAVA::NMaterial *> oldMaterials = MaterialsDropSystem::GetAvailableMaterials(targetEntity, true);
+            auto endIt = oldMaterials.end();
+            for(auto it = oldMaterials.begin(); it != endIt; ++it)
+            {
+                curScene->Exec(new MaterialSwitchParentCommand(*it, materials->at(im)));
+            }
+        }
+        curScene->EndBatch();
+        
+        MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntity(targetEntity, true);
+        if(result.hasEntityUnavailableToDrop)
+        {
+            DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(targetEntity, true);
+            
+            DAVA::String names;
+            for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
+            {
+                if(ie != 0) names += ",";
+                
+                names += rejectedEntities[ie]->GetName();
+            }
+            
+            String errorString = Format("Cannot drop material to %s", names.c_str());
+            QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
+        }
+    }
+}
+
 
 
 SceneTreeFilteringModel::SceneTreeFilteringModel(SceneTreeModel *_treeModel, QObject *parent /* = NULL */)
@@ -718,7 +807,22 @@ bool SceneTreeFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex 
 
 bool SceneTreeFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+	bool accepted = QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+	SceneTreeItem *item = treeModel->GetItem(treeModel->index(sourceRow, 0, sourceParent));
+
+	if(NULL != item)
+	{
+		if(accepted && !filterRegExp().isEmpty())
+		{
+			item->SetAcceptedByFilter(accepted);
+		}
+		else
+		{
+			item->SetAcceptedByFilter(false);
+		}
+	}
+
+	return accepted;
 }
 
 bool SceneTreeFilteringModel::childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const

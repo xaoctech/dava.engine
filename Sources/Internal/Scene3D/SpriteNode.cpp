@@ -163,7 +163,8 @@ void SpriteNode::Draw()
 	}
     
     // Get current modelview matrix, and in this case it's always a camera matrix
-	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    uint32 matrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
     const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
     Matrix4 meshFinalMatrix;
     
@@ -309,7 +310,7 @@ void SpriteNode::Draw()
 //        RenderHelper::Instance()->DrawBox(box);
 //    }
     
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix, matrixCache);
 }
 
 Sprite * SpriteNode::GetSprite() const

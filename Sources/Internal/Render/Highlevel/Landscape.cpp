@@ -661,9 +661,12 @@ const Color & Landscape::GetTileColor(eTextureLevel level)
     
 void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
-    SafeRelease(textures[level]);
-    textureNames[level] = String("");
-    
+	SafeRelease(textures[level]);
+	textureNames[level] = String("");
+
+	if((TILED_MODE_TILEMASK == tiledShaderMode || TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode) && TEXTURE_TILE_FULL == level)
+		return;
+
     Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {
@@ -1741,12 +1744,10 @@ void Landscape::UpdateFullTiledTexture()
 	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
     if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
     {
-		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
         t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
-		RenderManager::Instance()->UnlockNonMain();
     }
 }
     
@@ -1802,6 +1803,28 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 		tileMaskMaterial->Rebuild();
 	}
 }
+	
+void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
+{
+	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
+	DVASSERT(global);
+	
+	if(isFogEnabled)
+	{
+		global->AddMaterialDefine(FastName("VERTEX_FOG"));
+		
+		global->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+		global->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	}
+	else
+	{
+		global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
+	}
+	
+	global->Rebuild();
+	global->Rebind();	
+}
+	
     
 void Landscape::SetFog(const bool& fogState)
 {
@@ -1811,9 +1834,9 @@ void Landscape::SetFog(const bool& fogState)
 		
 		if(renderSystem)
 		{
-		//VI: TODO: Fog should be set in adifferent way
+		//VI: TODO: Fog should be set in a different way
 			
-			NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
+			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
 			DVASSERT(global);
 			
 			if(isFogEnabled)
@@ -1828,53 +1851,13 @@ void Landscape::SetFog(const bool& fogState)
 				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
 			}
 			
-			RenderManager::Instance()->LockNonMain();
-			
 			global->Rebuild();
-			global->Rebind();
+			global->Rebind();	*/
 			
-			RenderManager::Instance()->UnlockNonMain();
-			
-			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
-			DVASSERT(global);
-			
-			if(isFogEnabled)
-			{
-				global->AddMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			else
-			{
-				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			
-			global->Rebuild();*/
-			
-			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Textured.Lightmap"));
-			DVASSERT(global);
-			
-			if(isFogEnabled)
-			{
-				global->AddMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			else
-			{
-				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			
-			global->Rebuild();
-			
-			global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Landscape"));
-			
-			if(isFogEnabled)
-			{
-				global->AddMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			else
-			{
-				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			
-			global->Rebuild();*/
+			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+																   Message(this, &Landscape::SetFogInternal));
+			JobInstanceWaiter waiter(job);
+			waiter.Wait();
 		}
     }
 }

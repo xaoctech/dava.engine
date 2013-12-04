@@ -65,6 +65,12 @@ void SceneTreeDelegate::customDraw(QPainter *painter, QStyleOptionViewItem *opti
 		{
 			QModelIndex realIndex = proxyModel->mapToSource(index);
 			QVector<QIcon> icons = model->GetCustomIcons(realIndex);
+			SceneTreeItem *item = model->GetItem(realIndex);
+
+			if(NULL != item && item->IsAcceptedByFilter())
+			{
+				painter->fillRect(option->rect, QBrush(QColor(0, 255, 0, 20)));
+			}
 
 			if(icons.size() > 0)
 			{

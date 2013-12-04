@@ -41,10 +41,6 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
-// TODO: remove old screen -->
-#include "Classes/SceneEditor/MaterialEditor.h"
-// <---
-
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
@@ -135,8 +131,6 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
-	void OnUniteEntitiesWithLODs();
-	void OnAddEntityMenuAboutToShow();
 	void OnAddEntityFromSceneTree();
 
 	void OnSetSkyboxNode();
@@ -197,12 +191,9 @@ protected:
 	void InitRecent();
 	void AddRecent(const QString &path);
     
-    void CreateMaterialEditorIfNeed();
-    
     void StartGlobalInvalidateTimer();
 
 	void RunBeast();
-
 
 	bool IsAnySceneChanged();
 
@@ -235,10 +226,6 @@ private:
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
-
-	// TODO: remove this old screen -->
-	MaterialEditor *materialEditor;
-	// <--
 
 	QtLabelWithActions *objectTypesLabel;
     QComboBox *objectTypesWidget;

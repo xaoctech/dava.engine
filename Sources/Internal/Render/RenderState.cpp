@@ -112,7 +112,7 @@ void RenderState::Reset(bool doHardwareReset)
     if (doHardwareReset)
     {
 		RenderManager* rm = RenderManager::Instance();
-        RenderManager::Instance()->LockNonMain();
+       // RenderManager::Instance()->LockNonMain();
 		
 		const RenderStateData* renderStateData =
 				rm->GetRenderStateData(rm->GetDefault2DStateHandle());
@@ -139,8 +139,6 @@ void RenderState::Reset(bool doHardwareReset)
 		textureState = RenderManager::Instance()->GetDefaultTextureState();
 		stateHandle = RenderManager::Instance()->GetDefault2DStateHandle();
 		
-        RenderManager::Instance()->UnlockNonMain();
-
     }
 }
 bool RenderState::IsEqual(RenderState * anotherState)
@@ -168,8 +166,6 @@ bool RenderState::IsEqual(RenderState * anotherState)
 
 void RenderState::Flush(RenderState * hardwareState) const
 {
-    RenderManager::Instance()->LockNonMain();
-	
 	RenderManager::Instance()->GetStats().renderStateSwitches++;
 	
 	if(hardwareState->stateHandle != stateHandle)
@@ -382,8 +378,6 @@ void RenderState::Flush(RenderState * hardwareState) const
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::FrameworkDebug("RenderState::Flush finished");
 #endif    
-    RenderManager::Instance()->UnlockNonMain();
-
 }
     
     

@@ -34,6 +34,7 @@
 #include <QObject>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Base/StaticSingleton.h"
 
 #include "Commands2/CommandStack.h"
@@ -144,8 +145,8 @@ public:
 	const Color GetShadowColor() const;
 	void UpdateShadowColorFromLandscape();
 
-	void SetShadowBlendMode(ShadowVolumeRenderPass::eBlend blend);
-	ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
+	void SetShadowBlendMode(DAVA::ShadowVolumeRenderPass::eBlend blend);
+	DAVA::ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
 
     const RenderManager::Stats & GetRenderStats() const;
 

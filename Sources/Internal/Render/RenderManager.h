@@ -481,10 +481,13 @@ public:
     };
     
     void SetMatrix(eMatrixType type, const Matrix4 & matrix);
+    void SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue);
     const Matrix4 & GetMatrix(eMatrixType type);
     const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
     const Matrix3 & GetNormalMatrix();
     void  ClearUniformMatrices();
+    uint32 GetProjectionMatrixCache() const {return projectionMatrixCache;};
+    uint32 GetModelViewMatrixCache() const {return modelViewMatrixCache;};
 
 
 	/**
@@ -639,6 +642,8 @@ protected:
     // 
     
     Matrix4 matrices[MATRIX_COUNT];
+    uint32 projectionMatrixCache;
+    uint32 modelViewMatrixCache;
     int32   uniformMatrixFlags[UNIFORM_MATRIX_COUNT];
     Matrix4 uniformMatrices[UNIFORM_MATRIX_COUNT];
     Matrix3 uniformMatrixNormal;
@@ -772,10 +777,9 @@ protected:
 	
 	int32 fps;
 
-	int32 lockCount;
 	bool isInsideDraw;
 
-	RefPtr<Mutex> glMutex;
+	Mutex glMutex;
 	
 	Rect currentClip;
 	

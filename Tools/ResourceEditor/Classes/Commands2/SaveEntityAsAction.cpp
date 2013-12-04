@@ -31,7 +31,6 @@
 #include "SaveEntityAsAction.h"
 #include "Scene3D/SceneFileV2.h"
 
-#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/StringConstants.h"
 
 

@@ -31,8 +31,7 @@
 #ifndef __RESOURCEEDITORQT__CUSTOMCOLORSSYSTEM__
 #define __RESOURCEEDITORQT__CUSTOMCOLORSSYSTEM__
 
-#include "Entity/SceneSystem.h"
-#include "EditorScene.h"
+#include "DAVAEngine.h"
 #include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;

@@ -34,10 +34,22 @@
 #include "PropertyEditorStateHelper.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Scene/SceneData.h"
 #include "Scene/SceneSignals.h"
 
 class DAVA::Entity;
+
+struct PropEditorUserData : public QtPropertyData::UserData {
+	PropEditorUserData() : type(NORMAL), link(NULL) {}
+
+	enum Type
+	{
+		NORMAL,
+		PROXY
+	};
+
+	Type type;
+	QtPropertyData *link;
+};
 
 class PropertyEditor : public QtPropertyEditor
 {
@@ -61,6 +73,9 @@ public:
 	bool IsFavorite(QtPropertyData *data) const;
 	void SetFavorite(QtPropertyData *data, bool favorite);
 
+	void LoadScheme(const DAVA::FilePath &path);
+	void SaveScheme(const DAVA::FilePath &path);
+
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
@@ -76,6 +91,9 @@ protected:
 	QtPosSaver posSaver;
 	QSet<QString> scheme;
 
+	QtPropertyData *favoriteGroup;
+	QList<QtPropertyData *> favoriteList;
+
 	DAVA::Entity *curNode;
 	PropertyEditorStateHelper treeStateHelper;
 
@@ -89,7 +107,9 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 
+	void FindAndCheckFavorite(QtPropertyData *data);
 	bool IsParentFavorite(QtPropertyData *data) const;
+	PropEditorUserData* GetUserData(QtPropertyData *data) const;
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__
