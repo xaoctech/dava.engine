@@ -311,7 +311,7 @@ public:							// properties for fast access
     
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
-    inline TextureDescriptor * GetDescritor() const;
+    inline TextureDescriptor * GetDescriptor() const;
     
 private:
     
@@ -394,7 +394,7 @@ inline Texture::TextureState Texture::GetState() const
 	return state;
 }
 
-inline TextureDescriptor * Texture::GetDescritor() const
+inline TextureDescriptor * Texture::GetDescriptor() const
 {
     return texDescriptor;
 }
