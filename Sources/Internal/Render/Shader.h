@@ -264,6 +264,8 @@ private:
     
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
+	
+	void RecompileInternal(BaseObject * caller, void * param, void *callerData);
     
 	void DeleteShaders();
 	struct DeleteShaderContainer

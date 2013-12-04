@@ -264,8 +264,14 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
 			DVASSERT(rootMaterial);
 			
-			rootMaterial->Rebuild();
-			rootMaterial->Rebind();
+			//rootMaterial->Rebuild();
+			//rootMaterial->Rebind();
+			
+			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+																   Message(this, &MaterialSystem::BuildAndBindOnMainThread,
+																		   rootMaterial));
+			JobInstanceWaiter waiter(job);
+			waiter.Wait();
 		}
 	}
 	else
@@ -278,6 +284,16 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 	DVASSERT(defaultMaterial);
 	
 	return true;
+}
+	
+void MaterialSystem::BuildAndBindOnMainThread(BaseObject * caller,
+											  void * param,
+											  void *callerData)
+{
+	NMaterial* rootMaterial = static_cast<NMaterial*>(param);
+	
+	rootMaterial->Rebuild();
+	rootMaterial->Rebind();
 }
 	
 NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
