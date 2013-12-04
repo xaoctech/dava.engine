@@ -1501,6 +1501,9 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     fogColor = archive->GetByteArrayAsType("fogcolor", fogColor);
 	isFogEnabled = archive->GetBool("isFogEnabled", isFogEnabled);
     fogDensity = archive->GetFloat("fogdencity", fogDensity);
+	
+	isFogEnabled = !isFogEnabled;
+	SetFog(!isFogEnabled);
 
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
@@ -1578,7 +1581,7 @@ void Landscape::CursorDisable()
 	SafeDelete(cursor);
 }
 
-void Landscape::SetCursorTexture(Texture * texture)
+void Landscape::SetCursorTexture(UniqueHandle texture)
 {
 	cursor->SetCursorTexture(texture);
 }

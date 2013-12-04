@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __LANDSCAPE_EDITOR_HEIGHTMAP_H__
 #define __LANDSCAPE_EDITOR_HEIGHTMAP_H__
 
@@ -125,6 +123,5 @@ protected:
 	void ResetAccumulatorRect();
 	Rect GetUpdatedRect();
 };
-
 
 #endif //__LANDSCAPE_EDITOR_HEIGHTMAP_H__

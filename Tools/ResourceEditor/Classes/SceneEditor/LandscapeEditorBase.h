@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __LANDSCAPE_EDITOR_BASE_H__
 #define __LANDSCAPE_EDITOR_BASE_H__
 
@@ -149,10 +147,9 @@ protected:
     int32 touchID;
     
 	Texture * cursorTexture;
-
+	UniqueHandle cursorTextureHandle;
     
     Landscape::eTiledShaderMode savedShaderMode;
 };
-
 
 #endif //__LANDSCAPE_EDITOR_BASE_H__

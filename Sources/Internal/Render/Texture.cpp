@@ -235,11 +235,14 @@ Texture::~Texture()
 void Texture::ReleaseTextureData()
 {
 	RenderManager::Instance()->LockNonMain();
-			
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
+
+	//VI: commented out releasing texture data
+	//VI: textures are now consolidated in th texture states
+	
+//	if(RenderManager::Instance()->GetTexture() == this)
+//	{//to avoid drawing deleted textures
+//		RenderManager::Instance()->SetTexture(0);
+//	}
 
 	//release data that was loaded from file
 	ReleaseImages();

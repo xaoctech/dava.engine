@@ -85,7 +85,6 @@ protected:
 	virtual void Cancel();
 };
 
-
 class VisibilityToolProxy;
 
 class CommandSetVisibilityPoint: public Command

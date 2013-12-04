@@ -807,9 +807,9 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
                 RenderBatch * batch = mesh->GetRenderBatch(k);
                 NMaterial * material = batch->GetMaterial();
-                MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
+                //MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
 
-                tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
+                //tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
                 batch->GetMaterial()->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap);
 
                 

@@ -27,37 +27,55 @@
  =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_RENDERSTATEDATAUNIQUEHANDLER_H__
-#define __DAVAENGINE_RENDERSTATEDATAUNIQUEHANDLER_H__
+#ifndef __DAVAENGINE_TEXTURESTATEDATAUNIQUEHANDLER_H__
+#define __DAVAENGINE_TEXTURESTATEDATAUNIQUEHANDLER_H__
+
+#include "Render/TextureStateData.h"
 
 namespace DAVA
 {
-	class RenderStateDataUniqueHandler
+	class TextureStateDataUniqueHandler
 	{
 	public:
 		
-		void Assign(RenderStateData* to, const RenderStateData* from)
+		void Assign(TextureStateData* to, const TextureStateData* from)
 		{
-			memcpy(to, from, sizeof(RenderStateData));
+			*to = *from;
 		}
 		
-		void Release(const RenderStateData* data)
+		void Release(TextureStateData* data)
 		{
-			//do nothing here for RenderStateDatas
+			//VI: do not release anything until Clear() called
+			
+			/*for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+			{
+				if(data->textures[i])
+				{
+					data->textures[i]->Release();
+				}
+			}*/
 		}
 		
-		void Clear(RenderStateData* data)
+		void Clear(TextureStateData* data)
 		{
-			memset(data, 0, sizeof(RenderStateData));
+			data->ReleaseAll();
 		}
 		
-		bool Equals(const RenderStateData* a, const RenderStateData* b)
+		bool Equals(const TextureStateData* a, const TextureStateData* b)
 		{
 			bool equals = (a == b);
 			
 			if(!equals)
 			{
-				equals = (0 == memcmp(a, b, sizeof(RenderStateData)));
+				equals = true;
+				for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+				{
+					if(a->textures[i] != b->textures[i])
+					{
+						equals = false;
+						break;
+					}
+				}
 			}
 			
 			return equals;

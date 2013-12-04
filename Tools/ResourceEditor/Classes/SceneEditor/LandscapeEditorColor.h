@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __LANDSCAPE_EDITOR_COLOR_H__
 #define __LANDSCAPE_EDITOR_COLOR_H__
 
@@ -107,7 +105,10 @@ protected:
 	Image* originalImage;
 	
 	UniqueHandle colorRenderState;
+	
+	UniqueHandle maskSpriteTextureHandle;
+	UniqueHandle oldMaskSpriteTextureHandle;
+	UniqueHandle curTextureRenderHandle;
 };
-
 
 #endif //__LANDSCAPE_EDITOR_COLOR_H__

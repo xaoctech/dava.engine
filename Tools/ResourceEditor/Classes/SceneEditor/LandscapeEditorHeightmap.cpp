@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "LandscapeEditorHeightmap.h"
 
 #include "LandscapeTool.h"
@@ -318,7 +316,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2.f;
 
         Landscape *landscape = landscapesController->GetCurrentLandscape();
-		landscape->SetCursorTexture(cursorTexture);
+		landscape->SetCursorTexture(cursorTextureHandle);
 		landscape->SetBigTextureSize((float32)landscapeSize);
 		landscape->SetCursorPosition(pos);
 		landscape->SetCursorScale(scaleSize);
