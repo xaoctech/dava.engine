@@ -29,8 +29,8 @@
 
 
 #include "SystemsSettingsEditor.h"
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/EditorConfig.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/EditorConfig.h"
 
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"

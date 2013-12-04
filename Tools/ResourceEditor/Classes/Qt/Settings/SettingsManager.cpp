@@ -29,8 +29,8 @@
 
 
 #include "SettingsManager.h"
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/ControlsFactory.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/ControlsFactory.h"
 #include "Render/RenderManager.h"
 #include <QHeaderView>
 #include "../StringConstants.h"

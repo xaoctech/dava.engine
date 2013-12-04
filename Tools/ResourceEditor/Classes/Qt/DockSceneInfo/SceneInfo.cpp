@@ -30,10 +30,9 @@
 
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "../../SceneEditor/EditorSettings.h"
-#include "../../EditorScene.h"
+#include "Deprecated/EditorSettings.h"
 
-#include "../../CommandLine/CommandLineManager.h"
+#include "CommandLine/CommandLineManager.h"
 
 
 #include "Main/QtUtils.h"

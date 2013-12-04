@@ -40,6 +40,8 @@
 namespace DAVA
 {
 
+//Shader * ShadowVolume::shader = 0;
+//int32 ShadowVolume::uniformLightPosition0 = 0;
 
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)
@@ -91,7 +93,7 @@ void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
 	}
 	
 	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
 	
     material->BindMaterialTechnique(ownerRenderPass, camera);
     material->Draw(shadowPolygonGroup);

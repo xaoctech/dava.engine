@@ -34,26 +34,12 @@
 #include <QStyledItemDelegate>
 #include <QHash>
 #include <QIcon>
+#include <QToolButton>
 #include "QtPropertyModel.h"
 
 // model class
 class QtPropertyModel;
-
-// Optional widget
-struct QtPropertyOW
-{
-	QtPropertyOW() : widget(NULL), overlay(false), size(0, 0)
-	{ }
-
-	QtPropertyOW(QWidget *_widget, bool _overlay = false, QSize _size = QSize(16, 16))
-		: widget(_widget), overlay(_overlay), size(_size)
-	{ }
-
-	QWidget *widget;
-	QSize size;
-	bool overlay;
-};
-
+class QtPropertyToolButton;
 
 // PropertyData class
 class QtPropertyData : public QObject
@@ -62,6 +48,7 @@ class QtPropertyData : public QObject
 
 	friend class QtPropertyModel;
 	friend class QtPropertyItemDelegate;
+	friend class QtPropertyDataProxy;
 
 public:
 	enum ValueChangeReason
@@ -70,6 +57,9 @@ public:
 		VALUE_SET,
 		VALUE_EDITED
 	};
+
+	struct UserData
+	{ };
 
 	QtPropertyData();
 	QtPropertyData(const QVariant &value, Qt::ItemFlags flags = (Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable));
@@ -104,8 +94,8 @@ public:
 	Qt::ItemFlags GetFlags() const;
 	void SetFlags(Qt::ItemFlags flags);
 
-	QVariant GetUserData() const;
-	void SetUserData(const QVariant &data);
+	virtual UserData* GetUserData() const;
+	virtual void SetUserData(UserData* userdata);
 
 	// reset background/foreground/font settings
 	void ResetStyle();
@@ -132,6 +122,8 @@ public:
 	QtPropertyData *Parent() const;
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
+	void ChildInsert(const QString &key, QtPropertyData *data, int pos);
+	void ChildInsert(const QString &key, const QVariant &value, int pos);
 	int ChildCount() const;
 	QtPropertyData* ChildGet(int i) const;
 	QtPropertyData* ChildGet(const QString &key) const;
@@ -142,35 +134,36 @@ public:
 	void ChildRemoveAll();
 
 	// Optional widgets
-	int GetOWCount() const;
-	const QtPropertyOW* GetOW(int index = 0);
-	void AddOW(const QtPropertyOW &ow);
-	void RemOW(int index);
-	void RemOW(QWidget *widget);
+	int GetButtonsCount() const;
+	QtPropertyToolButton* GetButton(int index = 0);
+	QtPropertyToolButton* AddButton();
+	void RemButton(int index);
+	void RemButton(QtPropertyToolButton *button);
+
+	void EmitDataChanged(ValueChangeReason reason);
 
 	// edit command
 	virtual void* CreateLastCommand() const;
 
 protected:
 	mutable QVariant curValue;
-	QVariant userData;
 
 	QString curName;
 	Qt::ItemFlags curFlags;
 
 	QMap<int, QVariant> style;
 	bool updatingValue;
+	bool isProxy;
 
 	QtPropertyModel *model;
 	QtPropertyData *parent;
+	UserData* userData;
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;
-
-	QVector<QtPropertyOW> optionalWidgets;
-	QWidget *optionalWidgetViewport;
-
-	void EmitDataChanged(ValueChangeReason reason);
+	
+	QWidget *optionalButtonsViewport;
+	QVector<QtPropertyToolButton*> optionalButtons;
 
 	virtual void UpdateUp();
 	virtual void UpdateDown();
@@ -184,9 +177,52 @@ protected:
 	virtual bool EditorDoneInternal(QWidget *editor);
 	virtual bool SetEditorDataInternal(QWidget *editor);
 
-	// viewport, where optional widgets (OW) should be drawn
+	// viewport, where optional toolbuttons should be drawn
 	QWidget* GetOWViewport() const;
 	void SetOWViewport(QWidget *viewport);
+};
+
+class QtPropertyToolButton : public QToolButton
+{
+	friend class QtPropertyData;
+
+public:
+	QtPropertyToolButton(QWidget * parent = 0) 
+		: QToolButton(parent)
+		, eventsPassThrought(false) 
+		, overlayed(false)
+	{}
+
+	~QtPropertyToolButton() 
+	{}
+
+	virtual bool event(QEvent * event)
+	{
+		if(eventsPassThrought)
+		{
+			QToolButton::event(event);
+			return false;
+		}
+		
+		return QToolButton::event(event);
+	}
+
+	QModelIndex activeIndex;
+	bool eventsPassThrought;
+	bool overlayed;
+};
+
+class QtPropertyDataProxy : public QtPropertyData
+{
+public:
+	QtPropertyDataProxy(QtPropertyData *_original) : original(_original) { isProxy = true; }
+	virtual ~QtPropertyDataProxy() { }
+	QtPropertyData* GetOriginal() {	return original; }
+
+protected:
+	QtPropertyData *original;
+	virtual QVariant GetValueInternal() const { return QString("Proxy"); }
+
 };
 
 #endif // __QT_PROPERTY_DATA_H__

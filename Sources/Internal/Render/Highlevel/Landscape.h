@@ -445,6 +445,8 @@ protected:
 	//NMaterial* currentMaterial;
 	
 	uint32 drawIndices;
+	
+	void SetFogInternal(BaseObject * caller, void * param, void *callerData);
     
 public:
    

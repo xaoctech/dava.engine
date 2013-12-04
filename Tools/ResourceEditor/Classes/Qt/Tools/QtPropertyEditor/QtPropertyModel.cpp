@@ -31,14 +31,13 @@
 #include "QtPropertyModel.h"
 #include "QtPropertyData.h"
 
-QtPropertyModel::QtPropertyModel(QWidget *optionalWidgetViewport, QObject* parent /* = 0 */)
+QtPropertyModel::QtPropertyModel(QWidget *viewport, QObject* parent /* = 0 */)
 	: QAbstractItemModel(parent)
 	, trackEdit(false)
-	, OWviewport(optionalWidgetViewport)
 { 
 	root = new QtPropertyData();
 	root->model = this;
-	root->SetOWViewport(OWviewport);
+	root->SetOWViewport(viewport);
 }
 
 QtPropertyModel::~QtPropertyModel()
@@ -50,14 +49,14 @@ QModelIndex QtPropertyModel::index(int row, int column, const QModelIndex & pare
 {
 	QModelIndex ret;
 
-	QtPropertyData *parentData = itemFromIndexInternal(parent);
-	if((NULL != parentData) &&
+	QtPropertyData *data = itemFromIndexInternal(parent);
+	if((NULL != data) &&
 		(row >= 0) &&
 		(column >= 0) &&
-		(row < parentData->ChildCount()) &&
+		(row < data->ChildCount()) &&
 		(column < 2))
 	{
-		ret = createIndex(row, column, parentData);
+		ret = createIndex(row, column, data);
 	}
 
 	return ret;
@@ -120,17 +119,6 @@ QVariant QtPropertyModel::data(const QModelIndex & index, int role /* = Qt::Disp
 		else if(index.column() == 1)
 		{
 			ret = data->data(role);
-		}
-		else
-		{
-			switch(role)
-			{
-			case Qt::DisplayRole:
-				ret = data->GetUserData();
-				break;
-			default:
-				break;
-			}
 		}
 	}
 
@@ -205,6 +193,11 @@ QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 		if(NULL != parent)
 		{
 			ret = parent->ChildGet(index.row());
+
+			if(NULL != ret && ret->isProxy)
+			{
+				ret = ((QtPropertyDataProxy *)ret)->GetOriginal();
+			}
 		}
 	}
 
@@ -252,16 +245,29 @@ QModelIndex QtPropertyModel::AppendProperty(const QString &name, QtPropertyData*
 	if(NULL != data)
 	{
 		QtPropertyData *parentData = itemFromIndexInternal(parent);
-		if(NULL == parentData)
+		if(NULL != parentData)
 		{
-			parentData = root;
+			parentData->ChildAdd(name, data);
 		}
-
-		parentData->ChildAdd(name, data);
 	}
 
 	return indexFromItem(data);
 }
+
+QModelIndex QtPropertyModel::InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent /* = QModelIndex() */)
+{
+	if(NULL != data)
+	{
+		QtPropertyData *parentData = itemFromIndexInternal(parent);
+		if(NULL != parentData)
+		{
+			parentData->ChildInsert(name, data, row);
+		}
+	}
+
+	return indexFromItem(data);
+}
+
 
 void QtPropertyModel::RemoveProperty(const QModelIndex &index)
 {
