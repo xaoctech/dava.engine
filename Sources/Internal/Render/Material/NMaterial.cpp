@@ -774,6 +774,11 @@ namespace DAVA
 			RenderManager::Instance()->ReleaseTextureStateData(textureStateHandle);
 		}
 		
+		if(materialSystem)
+		{
+			materialSystem->RemoveMaterial(this);
+		}
+		
 		SetParent(NULL);
 	}
     
