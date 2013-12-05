@@ -642,6 +642,9 @@
     <ClCompile Include="Classes\Commands\CenterPivotPointCommand.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Helpers\UIControlResizeHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1027,6 +1030,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\CenterPivotPointCommand.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\UIControlResizeHelper.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
