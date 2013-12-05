@@ -294,7 +294,8 @@ namespace DAVA
 			{
 				if(oldMaterialState)
 				{
-					targetState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+                    targetState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+                    resultMaterial->GetIlluminationParams()->lightmapSize = oldMaterialState->GetLightmapSize();
 				}
 			}
 			else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)

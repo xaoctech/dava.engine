@@ -753,6 +753,8 @@ namespace DAVA
 		activeUniformsCachePtr = NULL;
 		textureParamsCacheSize = 0;
 		activeUniformsCacheSize = 0;
+
+        illuminationParams = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -773,6 +775,8 @@ namespace DAVA
 		{
 			materialSystem->RemoveMaterial(this);
 		}
+
+        SafeDelete(illuminationParams);
 	}
     
 	bool NMaterial::LoadFromFile(const FilePath & pathname)
@@ -1353,8 +1357,9 @@ namespace DAVA
 			uint8* propertyStorage = new uint8[dataSize + sizeof(uint32) + sizeof(uint32)];
 			
 			uint32 uniformType = property->type; //make sure uniform type is always uint32
-			memcpy(propertyStorage, &uniformType, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
+            uint32 propertySize = (uint32)property->size;
+            memcpy(propertyStorage, &uniformType, sizeof(uint32));
+            memcpy(propertyStorage + sizeof(uint32), &propertySize, sizeof(uint32));
 			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, dataSize);
 			
 			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(uint32) + sizeof(uint32));
@@ -1369,7 +1374,9 @@ namespace DAVA
 			it != materialState.textures.end();
 			++it)
 		{
-			materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+            TextureBucket* bucket = it->second;
+            if(bucket->texture)
+			    materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
 		}
 		archive->SetArchive("textures", materialTextures);
 		SafeRelease(materialTextures);
@@ -1404,6 +1411,14 @@ namespace DAVA
 		}
 		archive->SetArchive("techniques", materialTechniques);
 		SafeRelease(materialTechniques);
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Deserialize(NMaterialState& materialState,
@@ -1481,7 +1496,17 @@ namespace DAVA
 			
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
-		}		
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
@@ -1846,4 +1871,19 @@ namespace DAVA
 			}
 		}
 	}	
+
+    IlluminationParams * NMaterial::GetIlluminationParams()
+    {
+        if(!illuminationParams)
+        {
+            illuminationParams = new IlluminationParams();
+            illuminationParams->SetDefaultParams();
+        }
+        return illuminationParams;
+    }
+
+    void NMaterial::ReleaseIlluminationParams()
+    {
+        SafeDelete(illuminationParams);
+    }
 };
