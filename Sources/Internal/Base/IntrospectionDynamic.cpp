@@ -26,78 +26,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "Base/IntrospectionBase.h"
-#include "Base/Meta.h"
+#include "Base/IntrospectionDynamic.h"
+#include "Base/Introspection.h"
 
 namespace DAVA
 {
-
-InspMember::InspMember(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags /* = 0 */)
-: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags), parentInsp(NULL)
-{ }
-
-const char* InspMember::Name() const
-{
-	return name;
-}
-
-const InspDesc& InspMember::Desc() const
-{
-	return desc;
-}
-
-const MetaInfo* InspMember::Type() const
-{
-	return type;
-}
-
-void* InspMember::Pointer(void *object) const
-{
-	return (((char *) object) + offset);
-}
-
-void* InspMember::Data(void *object) const
-{
-	if(type->IsPointer())
+	InspMemberDynamic::InspMemberDynamic(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags, InspInfoDynamic *_dynamicInfo)
+		: InspMember(_name, _desc, _offset, _type, _flags)
+		, dynamicInfo(_dynamicInfo)
 	{
-		return *(void **) Pointer(object);
+
 	}
-	else
+
+	InspMemberDynamic::~InspMemberDynamic()
 	{
-		return Pointer(object);
+		if(NULL != dynamicInfo)
+		{
+			delete dynamicInfo;
+		}
 	}
-}
 
-VariantType InspMember::Value(void *object) const
-{
-	return VariantType::LoadData(Pointer(object), type);
-}
+	const InspMemberDynamic* InspMemberDynamic::Dynamic() const
+	{
+		return this;
+	}
 
-void InspMember::SetValue(void *object, const VariantType &val) const
-{
-	VariantType::SaveData(Pointer(object), type, val);
-}
-
-const InspColl* InspMember::Collection() const
-{
-	return NULL;
-}
-
-const InspMemberDynamic* InspMember::Dynamic() const
-{
-	return NULL;
-}
-
-int InspMember::Flags() const
-{
-	return flags;
-}
-
-void InspMember::ApplyParentInsp(const InspInfo *_parentInsp) const
-{
-	parentInsp = _parentInsp;
-}
+	InspInfoDynamic* InspMemberDynamic::GetDynamicInfo() const
+	{
+		return dynamicInfo;
+	}
 
 };
