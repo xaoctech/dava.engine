@@ -75,7 +75,6 @@ bool FMODSoundEvent::Trigger()
             FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
             FMOD_VERIFY(fmodEvent->setUserData(this));
             FMODSoundSystem::GetFMODSoundSystem()->AddActiveFMODEvent(fmodEvent);
-            Logger::Debug("[FMODSoundEvent::Trigger()] %x %s", fmodEvent, eventName.c_str());
         }
         else
         {
