@@ -1366,14 +1366,13 @@ namespace DAVA
 			NMaterialProperty* property = it->second;
 			
 			uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
-			uint8* propertyStorage = new uint8[dataSize + sizeof(uint32) + sizeof(uint32)];
+			uint8* propertyStorage = new uint8[dataSize + sizeof(property->type) + sizeof(property->size)];
 			
-			uint32 uniformType = property->type; //make sure uniform type is always uint32
-			memcpy(propertyStorage, &uniformType, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, dataSize);
+			memcpy(propertyStorage, &property->type, sizeof(property->type));
+			memcpy(propertyStorage + sizeof(property->type), &property->size, sizeof(property->size));
+			memcpy(propertyStorage + sizeof(property->type) + sizeof(property->size), property->data, dataSize);
 			
-			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(property->type) + sizeof(property->size));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1385,7 +1384,10 @@ namespace DAVA
 			it != materialState.textures.end();
 			++it)
 		{
-			materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			if(it->second->texture)
+			{
+				materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			}
 		}
 		archive->SetArchive("textures", materialTextures);
 		SafeRelease(materialTextures);
@@ -1446,7 +1448,7 @@ namespace DAVA
 			
 			const uint8* ptr = propVariant->AsByteArray();
 			
-			materialState.SetPropertyValue(FastName(it->first), (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
+			materialState.SetPropertyValue(FastName(it->first), *(Shader::eUniformType*)ptr, *(ptr + sizeof(Shader::eUniformType)), ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
 		}
 		
 		const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
