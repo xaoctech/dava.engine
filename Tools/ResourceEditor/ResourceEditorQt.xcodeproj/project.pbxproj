@@ -194,7 +194,7 @@
 		E8C99291184CD0EC00AFBF3F /* KeyedArchiveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99030184CD0EB00AFBF3F /* KeyedArchiveCommand.cpp */; };
 		E8C99292184CD0EC00AFBF3F /* LandscapeEditorDrawSystemActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99032184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.cpp */; };
 		E8C99293184CD0EC00AFBF3F /* LandscapeSetTexturesCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */; };
-		E8C99294184CD0EC00AFBF3F /* MaterialAssignCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */; };
+		E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */; };
 		E8C99295184CD0EC00AFBF3F /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */; };
 		E8C99296184CD0EC00AFBF3F /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */; };
 		E8C99297184CD0EC00AFBF3F /* ParticleForceMoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9903C184CD0EB00AFBF3F /* ParticleForceMoveCommand.cpp */; };
@@ -540,7 +540,7 @@
 		E8C994D9184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99428184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp */; };
 		E8C994DA184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9942A184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp */; };
 		E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */; };
-		E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */; };
+		E8C994ED184D0E4300AFBF3F /* MaterialsAssignSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1053,8 +1053,8 @@
 		E8C99033184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorDrawSystemActions.h; sourceTree = "<group>"; };
 		E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeSetTexturesCommands.cpp; sourceTree = "<group>"; };
 		E8C99035184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeSetTexturesCommands.h; sourceTree = "<group>"; };
-		E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialAssignCommand.cpp; sourceTree = "<group>"; };
-		E8C99037184CD0EB00AFBF3F /* MaterialAssignCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialAssignCommand.h; sourceTree = "<group>"; };
+		E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSwitchParentCommand.cpp; sourceTree = "<group>"; };
+		E8C99037184CD0EB00AFBF3F /* MaterialSwitchParentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSwitchParentCommand.h; sourceTree = "<group>"; };
 		E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MetaObjModifyCommand.cpp; sourceTree = "<group>"; };
 		E8C99039184CD0EB00AFBF3F /* MetaObjModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaObjModifyCommand.h; sourceTree = "<group>"; };
 		E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEditorCommands.cpp; sourceTree = "<group>"; };
@@ -1602,8 +1602,8 @@
 		E8C99435184CD23C00AFBF3F /* ui_waitdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_waitdialog.h; path = _GeneratedQt/ui_waitdialog.h; sourceTree = "<group>"; };
 		E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
 		E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
-		E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsDropSystem.cpp; sourceTree = "<group>"; };
-		E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsDropSystem.h; sourceTree = "<group>"; };
+		E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsAssignSystem.cpp; sourceTree = "<group>"; };
+		E8C994EC184D0E4300AFBF3F /* MaterialsAssignSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsAssignSystem.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2348,8 +2348,8 @@
 				E8C99033184CD0EB00AFBF3F /* LandscapeEditorDrawSystemActions.h */,
 				E8C99034184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.cpp */,
 				E8C99035184CD0EB00AFBF3F /* LandscapeSetTexturesCommands.h */,
-				E8C99036184CD0EB00AFBF3F /* MaterialAssignCommand.cpp */,
-				E8C99037184CD0EB00AFBF3F /* MaterialAssignCommand.h */,
+				E8C99036184CD0EB00AFBF3F /* MaterialSwitchParentCommand.cpp */,
+				E8C99037184CD0EB00AFBF3F /* MaterialSwitchParentCommand.h */,
 				E8C99038184CD0EB00AFBF3F /* MetaObjModifyCommand.cpp */,
 				E8C99039184CD0EB00AFBF3F /* MetaObjModifyCommand.h */,
 				E8C9903A184CD0EB00AFBF3F /* ParticleEditorCommands.cpp */,
@@ -3765,8 +3765,8 @@
 		E8C994EA184D0E4300AFBF3F /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
-				E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */,
-				E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */,
+				E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */,
+				E8C994EC184D0E4300AFBF3F /* MaterialsAssignSystem.h */,
 			);
 			path = MaterialEditor;
 			sourceTree = "<group>";
@@ -4095,7 +4095,7 @@
 				E8C99481184CD23C00AFBF3F /* CollisionBaseObject_moc.cpp in Build Sources */,
 				E8C9928B184CD0EC00AFBF3F /* EntityAddCommand.cpp in Build Sources */,
 				E8C9944B184CD23C00AFBF3F /* LibraryFilteringModel_moc.cpp in Build Sources */,
-				E8C99294184CD0EC00AFBF3F /* MaterialAssignCommand.cpp in Build Sources */,
+				E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */,
 				E8C99207184CD0EC00AFBF3F /* btSimulationIslandManager.cpp in Build Sources */,
 				E8C9945B184CD23C00AFBF3F /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,
 				E8C99340184CD0EC00AFBF3F /* QtPropertyItemDelegate.cpp in Build Sources */,
@@ -4439,7 +4439,7 @@
 				E8C9943E184CD23C00AFBF3F /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */,
 				E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */,
 				E8C992A4184CD0EC00AFBF3F /* EditorConfig.cpp in Build Sources */,
-				E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */,
+				E8C994ED184D0E4300AFBF3F /* MaterialsAssignSystem.cpp in Build Sources */,
 				E8C992C4184CD0EC00AFBF3F /* LibraryBaseModel.cpp in Build Sources */,
 				E8C992FC184CD0EC00AFBF3F /* CollisionSystem.cpp in Build Sources */,
 				E8C9943C184CD23C00AFBF3F /* Console_moc.cpp in Build Sources */,

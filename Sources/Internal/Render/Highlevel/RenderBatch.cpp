@@ -131,7 +131,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //        return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (uint32)worldTransformPtr);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 

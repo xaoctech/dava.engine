@@ -65,7 +65,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
 	Matrix4 worldMatrix = Matrix4::IDENTITY;
 	Matrix4 finalMatrix = worldMatrix * camera->GetMatrix();
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (uint32)&worldMatrix);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)&worldMatrix);
 
     particleLayer->Draw(camera); //note - it is mostly deprecated and is here for compatibility with old not-3d particles
     
