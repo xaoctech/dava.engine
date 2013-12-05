@@ -1845,5 +1845,24 @@ namespace DAVA
 				}
 			}
 		}
-	}	
+	}
+
+	FastName NMaterialState::NMaterialStateDynamicTexturesInsp::GetFastName(int index) const
+	{
+		FastName ret;
+
+		switch(index)
+		{
+		case 0: ret = NMaterial::TEXTURE_ALBEDO; break;
+		case 1: ret = NMaterial::TEXTURE_NORMAL; break;
+		case 2: ret = NMaterial::TEXTURE_DETAIL; break;
+		case 3: ret = NMaterial::TEXTURE_LIGHTMAP; break;
+		case 4: ret = NMaterial::TEXTURE_DECAL; break;
+
+		default:
+			break;
+		}
+
+		return ret;
+	}
 };
