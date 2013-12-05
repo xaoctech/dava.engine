@@ -336,7 +336,8 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 		}
 
-		HierarchyTreeController::Instance()->SelectControl(selectedControl);
+        // Switch the selection state of the control instead of just selecting it (see DF-2838).
+        HierarchyTreeController::Instance()->ChangeItemSelection(selectedControl);
 	}
 }
 
