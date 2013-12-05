@@ -220,24 +220,8 @@ void SelectPathWidgetBase::dropEvent(QDropEvent* event)
 
 void SelectPathWidgetBase::dragEnterEvent(QDragEnterEvent* event)
 {
-	if(event->mimeData()->hasFormat("text/uri-list"))
+	if(DAVA::MimeDataHelper::IsMimeDataTypeSupported(event->mimeData()))
 	{
-		bool isFormatSupported = allowedFormatsList.size() == 0 ? true : false;
-
-		DAVA::FilePath path(event->mimeData()->urls().first().toString().toStdString());
-		DAVA::String extension = path.GetExtension();
-		Q_FOREACH(DAVA::String item, allowedFormatsList)
-		{
-			if(item == extension)
-			{
-				isFormatSupported = true;
-				break;
-			}
-		}
-
-		if(isFormatSupported)
-		{
-			event->acceptProposedAction();
-		}
+		event->acceptProposedAction();
 	}
 }

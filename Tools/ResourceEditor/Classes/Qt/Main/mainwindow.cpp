@@ -112,6 +112,8 @@
 
 #include "Classes/Constants.h"
 
+#include "TextureCompression/TextureConverter.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -611,6 +613,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
+	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
+	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
@@ -622,6 +626,8 @@ void QtMainWindow::SetupActions()
     
 	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+	
+	QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
     
 #if defined(__DAVAENGINE_BEAST__)
 	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
@@ -693,6 +699,12 @@ void QtMainWindow::SetupShortCuts()
 
 	// scene tree collapse/expand
 	QObject::connect(new QShortcut(QKeySequence(Qt::Key_X), ui->sceneTree), SIGNAL(activated()), ui->sceneTree, SLOT(CollapseSwitch()));
+	
+	//tab closing
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#if defined (__DAVAENGINE_WIN32__)
+	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
+#endif
 }
 
 void QtMainWindow::InitRecent()
@@ -852,6 +864,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuScene->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
+	ui->actionConvertModifiedTextures->setEnabled(enable);
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()
@@ -1580,7 +1593,12 @@ void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
-    
+    if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
     QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
 
 	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
@@ -1599,6 +1617,12 @@ void QtMainWindow::OnShadowBlendModeAlpha()
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
 
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_ALPHA));
 }
 
@@ -1606,6 +1630,12 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
+	if(NULL == FindLandscape(scene))
+	{
+		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
+		return;
+	}
+	
 	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY));
 }
 
@@ -1676,6 +1706,47 @@ void QtMainWindow::OnSaveTiledTexture()
     }
     
     SafeRelease(descriptor);
+}
+
+void QtMainWindow::OnConvertModifiedTextures()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene)
+	{
+		return;
+	}
+	
+	WaitStart("Conversion of modified textures.","Checking for modified textures.");
+	Map<Texture *, Vector<eGPUFamily> > textures;
+	int filesToUpdate = SceneHelper::EnumerateModifiedTextures(scene, textures);
+	
+	if(filesToUpdate == 0)
+	{
+		WaitStop();
+		return;
+	}
+	
+	int convretedNumber = 0;
+	waitDialog->SetRange(convretedNumber, filesToUpdate);
+	WaitSetValue(convretedNumber);
+	for(Map<Texture *, Vector<eGPUFamily> >::iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		DAVA::TextureDescriptor *descriptor = it->first->GetDescriptor();
+		
+		if(NULL == descriptor)
+		{
+			continue;
+		}
+		
+		Vector<eGPUFamily> updatedGPUs = it->second;
+		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+		foreach(eGPUFamily gpu, updatedGPUs)
+		{
+			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
+			WaitSetValue(++convretedNumber);
+		}
+	}
+	WaitStop();
 }
 
 void QtMainWindow::OnGlobalInvalidateTimeout()
