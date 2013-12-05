@@ -617,7 +617,7 @@ public:
 	
 	inline void ReleaseTextureStateData(UniqueHandle handle)
 	{
-		Logger::FrameworkDebug("[ReleaseTextureStateData] handle %d", handle);
+		//Logger::FrameworkDebug("[ReleaseTextureStateData] handle %d", handle);
 		uniqueTextureStates.ReleaseUnique(handle);
 	}
 
