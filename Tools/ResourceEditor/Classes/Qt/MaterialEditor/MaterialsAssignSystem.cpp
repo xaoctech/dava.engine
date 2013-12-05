@@ -58,6 +58,12 @@ MaterialsAssignSystem::DropTestResult::DropTestResult()
 }
 
 
+void MaterialsAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial)
+{
+    scene->Exec(new MaterialSwitchParentCommand(oldMaterial, newMaterial));
+}
+
+
 void MaterialsAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material)
 {
     MaterialsAssignSystem::DropTestResult result = TestEntityGroup(group, true);
