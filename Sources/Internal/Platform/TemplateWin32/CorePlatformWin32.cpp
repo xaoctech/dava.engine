@@ -610,7 +610,7 @@ namespace DAVA
 	static bool mouseCursorShown = true;
 	static USHORT mouseButtonsDownMask = 0;
 
-	void HandleMouseButtonsPressed(HWND hWnd, USHORT buttsFlags)
+	void HandleMouseButtonsPressed(USHORT buttsFlags)
 	{
 		if (buttsFlags & RI_MOUSE_BUTTON_1_DOWN)
 		{
@@ -634,7 +634,7 @@ namespace DAVA
 		}
 	}
 
-	void HandleMouseButtonsReleased(HWND hWnd, USHORT buttsFlags)
+	void HandleMouseButtonsReleased(USHORT buttsFlags)
 	{
 		if (mouseButtonsDownMask == 0)
 		{
@@ -664,7 +664,7 @@ namespace DAVA
 		}
 	}
 
-	void OnMouseEvent(HWND hWnd, USHORT buttsFlags, WPARAM wParam, LPARAM lParam, USHORT buttonData)
+	void OnMouseEvent(USHORT buttsFlags, WPARAM wParam, LPARAM lParam, USHORT buttonData)
     {
         Vector<DAVA::UIEvent> touches;
         Vector<DAVA::UIEvent> emptyTouches;
@@ -672,7 +672,7 @@ namespace DAVA
 
         if (HIWORD(wParam) || mouseButtonsDownMask > 0) // isPoint inside window or some clicks already captured
         {
-            HandleMouseButtonsPressed(hWnd, buttsFlags);
+            HandleMouseButtonsPressed(buttsFlags);
         }
 
         if(buttsFlags & RI_MOUSE_WHEEL)
@@ -706,7 +706,7 @@ namespace DAVA
 			mouseCursorShown = false;
 		}
 
-		HandleMouseButtonsReleased(hWnd, buttsFlags);
+		HandleMouseButtonsReleased(buttsFlags);
 	}
 
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -836,7 +836,7 @@ namespace DAVA
 
                 bool isInside = (x > clientRect.left && x < clientRect.right && y > clientRect.top && y < clientRect.bottom) || InputSystem::Instance()->IsCursorPining();
 
-                OnMouseEvent(hWnd, raw->data.mouse.usButtonFlags, MAKEWPARAM(isMove, isInside), MAKELPARAM(x, y), raw->data.mouse.usButtonData); // only move, drag and wheel events
+                OnMouseEvent(raw->data.mouse.usButtonFlags, MAKEWPARAM(isMove, isInside), MAKELPARAM(x, y), raw->data.mouse.usButtonData); // only move, drag and wheel events
             }
 
             break;
