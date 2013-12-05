@@ -1082,6 +1082,9 @@ void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializ
 	{
 		NMaterial* mat = materials[i];
 		
+        if(isSaveForGame)
+            mat->ReleaseIlluminationParams();
+
 		if(!mat->IsConfigMaterial())
 		{
 			KeyedArchive* materialArchive = new KeyedArchive();

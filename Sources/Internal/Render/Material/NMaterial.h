@@ -62,7 +62,30 @@ public:
 	virtual void ParentChanged(NMaterial* material) = 0;
 	virtual void SystemChanged(NMaterial* material) = 0;
 };
-	
+
+struct IlluminationParams 
+{
+    static const int32 LIGHTMAP_SIZE_DEFAULT = 128;
+    
+    bool isUsed;
+    bool castShadow;
+    bool receiveShadow;
+    int32 lightmapSize;
+
+    void SetDefaultParams() 
+    {
+        isUsed = castShadow = receiveShadow = true;
+        lightmapSize = LIGHTMAP_SIZE_DEFAULT;
+    }
+
+    INTROSPECTION(IlluminationParams, 
+        MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(lightmapSize, "Lightmap Size", I_SAVE | I_VIEW | I_EDIT)
+        );
+};
+
 class NMaterialProperty
 {
 public:
@@ -341,6 +364,9 @@ public:
 	inline MaterialChangeListener* GetChangeListener() {return stateListener;}
 	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}
 	
+    IlluminationParams * GetIlluminationParams();
+    void ReleaseIlluminationParams();
+
 protected:
 	
 	struct TextureParamCacheEntry
@@ -394,6 +420,8 @@ protected:
 	
 	MaterialChangeListener* stateListener;
 	
+    IlluminationParams * illuminationParams;
+
 protected:
 	
 	void ResetParent();
@@ -424,6 +452,7 @@ protected:
 public:
     INTROSPECTION_EXTEND(NMaterial, NMaterialState,
 		COLLECTION(states, "Material states", I_SAVE | I_VIEW)
+        MEMBER(illuminationParams, "Illumination Parameters", I_SAVE | I_VIEW | I_EDIT)
 	);
 
 };
