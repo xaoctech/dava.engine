@@ -311,7 +311,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	{
 		material->SetMaterialName(name.c_str());
 		AddMaterial(material);
-		material->Release(); //need to release material since material system took ownership
+		//material->Release(); //need to release material since material system took ownership
 		material->SetParent(parentMaterial);
 		
 		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
@@ -342,7 +342,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	void MaterialSystem::AddMaterial(NMaterial* material)
 	{
 		DVASSERT(material);
-		SafeRetain(material);
+		//SafeRetain(material);
 		
 		material->SetMaterialSystem(this);
 		
@@ -382,7 +382,7 @@ void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
 	materials.erase(material->GetMaterialName());
-	SafeRelease(material);
+	//SafeRelease(material);
 }
 	
 void MaterialSystem::Clear()

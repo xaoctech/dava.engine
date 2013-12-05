@@ -153,7 +153,7 @@ Landscape::Landscape()
 	//fullTiledMaterial = NULL;
 	
 	tileMaskMaterial = MaterialSystem::CreateNamed();
-	tileMaskMaterial->SwitchParent(FastName("Global.Landscape.TileMask"));
+	tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
@@ -1806,7 +1806,7 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
 {
-	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
+	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
 	DVASSERT(global);
 	
 	if(isFogEnabled)
