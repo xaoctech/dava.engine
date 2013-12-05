@@ -396,6 +396,9 @@ void DefaultScreen::GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST
 		UIControl* control = controlNode->GetUIObject();
 		if (!control->GetVisible())
 			continue;
+        
+        if (!control->GetVisibleForUIEditor())
+			continue;
 		
 		Rect controlRect = GetControlRect(controlNode);
 		if (controlRect.RectIntersects(rect))
