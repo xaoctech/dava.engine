@@ -755,6 +755,8 @@ namespace DAVA
 		activeUniformsCachePtr = NULL;
 		textureParamsCacheSize = 0;
 		activeUniformsCacheSize = 0;
+
+        illuminationParams = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -778,7 +780,8 @@ namespace DAVA
 		{
 			materialSystem->RemoveMaterial(this);
 		}
-		
+
+        SafeDelete(illuminationParams);
 		SetParent(NULL);
 	}
     
@@ -1422,6 +1425,14 @@ namespace DAVA
 		}
 		archive->SetArchive("techniques", materialTechniques);
 		SafeRelease(materialTechniques);
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Deserialize(NMaterialState& materialState,
@@ -1499,7 +1510,17 @@ namespace DAVA
 			
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
-		}		
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
@@ -1865,7 +1886,22 @@ namespace DAVA
 				}
 			}
 		}
-	}
+	}	
+
+    IlluminationParams * NMaterial::GetIlluminationParams()
+    {
+        if(!illuminationParams)
+        {
+            illuminationParams = new IlluminationParams();
+            illuminationParams->SetDefaultParams();
+        }
+        return illuminationParams;
+    }
+
+    void NMaterial::ReleaseIlluminationParams()
+    {
+        SafeDelete(illuminationParams);
+    }
 	
 	void NMaterial::OnDirtyTextures()
 	{

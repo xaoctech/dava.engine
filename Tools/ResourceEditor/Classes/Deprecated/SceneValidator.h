@@ -158,7 +158,7 @@ protected:
     
     bool IsFBOTexture(Texture *texture);
     
-	DAVA_DEPRECATED(void ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState));
+    void ConvertIlluminationParamsFromProperty(Entity *ownerNode, NMaterial *material);
 
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
