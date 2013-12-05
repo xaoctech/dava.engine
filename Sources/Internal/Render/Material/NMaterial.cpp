@@ -168,7 +168,8 @@ namespace DAVA
 	nativeDefines(16),
 	materialProperties(32),
 	textures(8),
-	texturesDirty(false)
+	texturesDirty(false),
+	textureStateHandle(InvalidUniqueHandle)
 	{
 		parent = NULL;
 		requiredVertexFormat = EVF_FORCE_DWORD;
@@ -479,6 +480,7 @@ namespace DAVA
 		Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
 		if(children.end() != child)
 		{
+			SafeRelease(material);
 			children.erase(child);
 		}
 	}
@@ -769,7 +771,10 @@ namespace DAVA
 			}
 		}
 		
-		SetParent(NULL);
+		if(InvalidUniqueHandle != textureStateHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(textureStateHandle);
+		}
 		
 		if(materialSystem)
 		{
@@ -777,6 +782,7 @@ namespace DAVA
 		}
 
         SafeDelete(illuminationParams);
+		SetParent(NULL);
 	}
     
 	bool NMaterial::LoadFromFile(const FilePath & pathname)
@@ -877,17 +883,26 @@ namespace DAVA
 		//TextureParamCacheEntry* data = textureParamsCache.data();
 		//size_t dataCount = textureParamsCache.size();
 		//for(size_t i = 0; i < dataCount; ++i)
-		for(size_t i = 0; i < textureParamsCacheSize; ++i)
+		
+		if(texturesDirty)
 		{
-			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-			
-			if(NULL == textureEntry.tx)
+			for(size_t i = 0; i < textureParamsCacheSize; ++i)
 			{
-				textureEntry.tx = GetTexture(textureEntry.textureName);
+				TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
+				
+				if(NULL == textureEntry.tx)
+				{
+					textureEntry.tx = GetTexture(textureEntry.textureName);
+				}
+				
+				//renderState->SetTexture(textureEntry.tx, textureEntry.slot);
 			}
-	
-			renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+			
+			OnDirtyTextures();
+			texturesDirty = false;
 		}
+		
+		renderState->textureState = textureStateHandle;
 	}
 	
 	void NMaterial::BindMaterialProperties(Shader * shader)
@@ -1729,6 +1744,8 @@ namespace DAVA
 			textureParamsCachePtr = &textureParamsCache[0];
 			textureParamsCacheSize = textureParamsCache.size();
 		}
+		
+		texturesDirty = true;
 	}
 	
 	void NMaterial::BuildActiveUniformsCache(const MaterialTechnique& technique)
@@ -1886,4 +1903,24 @@ namespace DAVA
     {
         SafeDelete(illuminationParams);
     }
+	
+	void NMaterial::OnDirtyTextures()
+	{
+		TextureStateData stateData;
+		for(size_t i = 0; i < textureParamsCacheSize; ++i)
+		{
+			TextureParamCacheEntry& entry = textureParamsCachePtr[i];
+			stateData.textures[entry.slot] = entry.tx;
+		}
+		
+		UniqueHandle prevHandle = textureStateHandle;
+		
+		textureStateHandle = RenderManager::Instance()->AddTextureStateData(&stateData);
+		
+		//VI: release state handle AFTER adding new
+		if(InvalidUniqueHandle != prevHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(prevHandle);
+		}
+	}
 };

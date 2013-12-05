@@ -32,18 +32,26 @@
 #define __MATERIAL_ASSIGN_COMMAND_H__
 
 #include "Commands2/Command2.h"
+#include "Render/Material/NMaterial.h"
+#include "Base/FastName.h"
 
 class EntityGroup;
-class MaterialAssignCommand: public Command2
+class MaterialSwitchParentCommand: public Command2
 {
 public:
-	MaterialAssignCommand();
-	~MaterialAssignCommand();
+	MaterialSwitchParentCommand(DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial);
+	~MaterialSwitchParentCommand();
 
 	virtual void Undo();
 	virtual void Redo();
 
 	virtual DAVA::Entity* GetEntity() const;
+    
+protected:
+    
+    const DAVA::FastName newMaterialParent;
+    const DAVA::FastName oldMaterialParent;
+    DAVA::NMaterial *currentMaterial;
 };
 
 #endif // __MATERIAL_ASSIGN_COMMAND_H__

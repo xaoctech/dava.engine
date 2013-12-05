@@ -152,15 +152,15 @@ namespace DAVA
 					if(mat->GetAlphablend() ||
                        Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
                     {
-                        name = FastName("LodAlphablend");
+                        name = FastName(mat->IsFogEnabled() ? "LodAlphablendFog" : "LodAlphablend");
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = FastName("LodAlphatest");
+                        name = FastName(mat->IsFogEnabled() ? "LodAlphatestFog" : "LodAlphatest");
                     }
                     else
                     {
-                        name = FastName("LodTextured");
+                        name = FastName(mat->IsFogEnabled() ? "LodTexturedFog" : "LodTextured");
                     }
                     
 					break;
@@ -170,11 +170,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("LodLightmapAlphatest");
+                        name = FastName(mat->IsFogEnabled() ? "LodLightmapAlphatestFog" : "LodLightmapAlphatest");
                     }
                     else
                     {
-                        name = FastName("LodLightmap");
+                        name = FastName(mat->IsFogEnabled() ? "LodLightmapFog" : "LodLightmap");
                     }
 
 					break;
@@ -185,11 +185,11 @@ namespace DAVA
 					if(mat->GetAlphablend() ||
                        Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
                     {
-                        name = FastName("LodDecalAlphablend");
+                        name = FastName(mat->IsFogEnabled() ? "LodDecalAlphablendFog" : "LodDecalAlphablend");
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = FastName("LodDecalAlphatest");
+                        name = FastName(mat->IsFogEnabled() ? "LodDecalAlphatestFog" : "LodDecalAlphatest");
                     }
 
 					break;
@@ -199,11 +199,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("LodDetailAlphatest");
+                        name = FastName(mat->IsFogEnabled() ? "LodDetailAlphatestFog" : "LodDetailAlphatest");
                     }
                     else
                     {
-                        name = FastName("LodDetail");
+                        name = FastName(mat->IsFogEnabled() ? "LodDetailFog" : "LodDetail");
                     }
                     
 					break;
@@ -213,36 +213,36 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("LodVertexLitAlphatest");
+                        name = FastName(mat->IsFogEnabled() ? "LodVertexLitAlphatestFog" : "LodVertexLitAlphatest");
                     }
                     else
                     {
-                        name = FastName("LodVertexLit");
+                        name = FastName(mat->IsFogEnabled() ? "LodVertexLitFog" : "LodVertexLit");
                     }
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
 				{
-					name = FastName("LodTextured");
+					name = FastName(mat->IsFogEnabled() ? "LodTexturedFog" : "LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
 				{
-					name = FastName("LodTextured");
+					name = FastName(mat->IsFogEnabled() ? "LodTexturedFog" : "LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
 				{
-					name = FastName("LodTextured");
+					name = FastName(mat->IsFogEnabled() ? "LodTexturedFog" : "LodTextured");
 					break;
 				}
 					
 				case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 				{
-					name = FastName("LodTextured");
+					name = FastName(mat->IsFogEnabled() ? "LodTexturedFog" : "LodTextured");
 					break;
 				}
 					

@@ -35,11 +35,10 @@
 
 #include "Deprecated/ScenePreviewDialog.h"
 
-#include "MaterialEditor/MaterialsDropSystem.h"
+#include "MaterialEditor/MaterialsAssignSystem.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
-#include <QMessageBox>
 #include <QFileInfo>
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
@@ -379,43 +378,15 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 
 void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
 {
-    SceneEditor2 *scene = GetCurrentScene();
-    if(!scene) return;
-
+    if(!curScene) return;
     
+    QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
+
     const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
-    MaterialsDropSystem::DropTestResult result = MaterialsDropSystem::TestEntityGroup(group, true);
-    if(result.hasEntitiesAvailableToDrop)
-    {
-        QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
-        DVASSERT(materials->size() == 1);
-        
-        scene->BeginBatch("Set Material");
-        
-        for(int im = 0; im < materials->size(); ++im)
-        {
-            DAVA::NMaterial *mat = materials->at(im);
-            
-            MaterialsDropSystem::DropMaterialToGroup(group, mat, true);
-            if(result.hasEntityUnavailableToDrop)
-            {
-                DAVA::Vector<const DAVA::Entity *> rejectedEntities = MaterialsDropSystem::GetDropRejectedEntities(group, true);
-                
-                DAVA::String names;
-                for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
-                {
-                    if(ie != 0) names += ",";
-                    
-                    names += rejectedEntities[ie]->GetName();
-                }
-                
-                String errorString = Format("Cannot drop material to %s", names.c_str());
-                QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
-            }
-        }
-        
-        scene->EndBatch();
-    }
+    if(!group || (group->Size() == 0) || (materials->size() != 1)) return;
+    
+    const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
+    MaterialsAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
 }
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
