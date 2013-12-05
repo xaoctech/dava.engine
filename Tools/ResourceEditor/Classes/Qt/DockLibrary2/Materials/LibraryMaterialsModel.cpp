@@ -37,7 +37,7 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/System/SelectionSystem.h"
 
-#include "MaterialEditor/MaterialsDropSystem.h"
+#include "MaterialEditor/MaterialsAssignSystem.h"
 
 #include "Main/mainwindow.h"
 
@@ -178,7 +178,7 @@ void LibraryMaterialsModel::OnAssign()
 
     if(scene && selection.Size() > 0)
     {
-        MaterialsDropSystem::AssignMaterialToGroup(scene, &selection, material);
+        MaterialsAssignSystem::AssignMaterialToGroup(scene, &selection, material);
     }
 }
 
