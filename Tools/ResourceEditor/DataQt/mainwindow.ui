@@ -83,7 +83,7 @@
        <property name="toolButtonStyle">
         <enum>Qt::ToolButtonIconOnly</enum>
        </property>
-       <addaction name="actionShowAdvancedProp"/>
+       <addaction name="actionFavoritesEdit"/>
        <addaction name="actionAddNewComponent"/>
        <addaction name="actionRemoveComponent"/>
       </widget>
@@ -1157,16 +1157,19 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionShowAdvancedProp">
+  <action name="actionFavoritesEdit">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
+     <normaloff>:/QtIcons/star.png</normaloff>:/QtIcons/star.png</iconset>
    </property>
    <property name="text">
-    <string>Advanced View</string>
+    <string>Favorites edit</string>
+   </property>
+   <property name="toolTip">
+    <string>Favorites edit</string>
    </property>
   </action>
   <action name="actionModifyReset">
