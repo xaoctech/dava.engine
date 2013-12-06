@@ -38,6 +38,7 @@
 #include "Base/Message.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Particles/ParticleGroup.h"
+#include "Particles/ParticleRenderObject.h"
 
 namespace DAVA
 {
@@ -124,10 +125,11 @@ private:
 		
 	ParticleEffectData effectData;
 	ParticleRenderObject *effectRenderObject;
+	int32 currLodLevel;
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_VIEW | I_EDIT | I_SAVE)
+		MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
         MEMBER(stopWhenEmpty, "stopWhenEmpty",  I_VIEW | I_EDIT | I_SAVE)
         MEMBER(effectDuration, "effectDuration",  I_VIEW | I_SAVE)		
     );
