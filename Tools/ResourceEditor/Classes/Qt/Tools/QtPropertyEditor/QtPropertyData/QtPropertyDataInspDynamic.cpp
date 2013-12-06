@@ -20,6 +20,7 @@ QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspIn
 	: QtPropertyDataDavaVariant(DAVA::VariantType())
 	, object(_object)
 	, dynamicInfo(_dynamicInfo)
+	, index(_index)
 	//, lastCommand(NULL)
 {
 	if(NULL != dynamicInfo)
