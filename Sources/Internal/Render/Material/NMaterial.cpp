@@ -889,13 +889,7 @@ namespace DAVA
 			for(size_t i = 0; i < textureParamsCacheSize; ++i)
 			{
 				TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-				
-				if(NULL == textureEntry.tx)
-				{
-					textureEntry.tx = GetTexture(textureEntry.textureName);
-				}
-				
-				//renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+				textureEntry.tx = GetTexture(textureEntry.textureName);
 			}
 			
 			OnDirtyTextures();
