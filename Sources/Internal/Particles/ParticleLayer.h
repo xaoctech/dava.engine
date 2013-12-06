@@ -59,6 +59,7 @@ class ParticleEmitter;
  */
 class ParticleLayer : public BaseObject
 {
+	friend class ParticleEffectSystem;
 public:
 	enum eType 
 	{

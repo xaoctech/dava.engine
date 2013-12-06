@@ -47,7 +47,12 @@ struct ParticleGroup
 	Particle *head;
 	
 	bool finishingGroup;
-	float32 time;
+
+	bool visibleLod;
+
+	float32 time;	
+	float32 loopStartTime, loopDuration, loopRestartDuration; //well - that's how it works
+	float32 particlesToGenerate;
 };
 
 struct ParticleEffectData
