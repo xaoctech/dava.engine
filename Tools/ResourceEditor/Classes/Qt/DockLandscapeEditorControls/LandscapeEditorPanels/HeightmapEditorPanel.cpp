@@ -525,6 +525,13 @@ void HeightmapEditorPanel::ConnectToShortcuts()
 			this, SLOT(SetAbsDropDrawing()));
 	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			this, SLOT(SetDropper()));
+	
+	shortcutManager->SetHeightMapEditorShortcutsEnabled(true);
+	
+	shortcutManager->SetBrushSizeShortcutsEnabled(true);
+	shortcutManager->SetStrengthShortcutsEnabled(true);
+	shortcutManager->SetAvgStrengthShortcutsEnabled(true);
+	shortcutManager->SetBrushImageSwitchingShortcutsEnabled(true);
 }
 
 void HeightmapEditorPanel::DisconnectFromShortcuts()
@@ -575,6 +582,12 @@ void HeightmapEditorPanel::DisconnectFromShortcuts()
 			   this, SLOT(SetAbsDropDrawing()));
 	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
 			   this, SLOT(SetDropper()));
+	
+	shortcutManager->SetHeightMapEditorShortcutsEnabled(false);
+	shortcutManager->SetBrushSizeShortcutsEnabled(false);
+	shortcutManager->SetStrengthShortcutsEnabled(false);
+	shortcutManager->SetAvgStrengthShortcutsEnabled(false);
+	shortcutManager->SetBrushImageSwitchingShortcutsEnabled(false);
 }
 
 void HeightmapEditorPanel::IncreaseBrushSize()
