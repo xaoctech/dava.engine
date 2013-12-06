@@ -39,11 +39,6 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
-	if(_info->Type() == DAVA::MetaInfo::Instance<DAVA::NMaterial>())
-	{
-		printf("111\n");
-	}
-
 	while(NULL != _info && NULL != object)
 	{
 		for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
