@@ -81,10 +81,10 @@ namespace DAVA
 		vertexShaderData = 0;
 		fragmentShaderData = 0;
         
-        lastPorectionMatrixCache = 0;
+        lastProjectionMatrixCache = 0;
         lastModelViewMatrixCache = 0;
-        lastModelViewProjectionMatricCache1 = 0;
-        lastModelViewProjectionMatricCache2 = 0;
+        lastMVPMatrixModelViewCache = 0;
+        lastMVPMatrixProjectionCache = 0;
 		
 		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		//    relativeFileName = "";
@@ -1056,13 +1056,13 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
                     uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
                     if (modelViewMatrixCache == 0   ||
-                        lastModelViewProjectionMatricCache1 != modelViewMatrixCache    ||
-                        lastModelViewProjectionMatricCache2 != projectionMatrixCache)
+                        lastMVPMatrixModelViewCache != modelViewMatrixCache    ||
+                        lastMVPMatrixProjectionCache != projectionMatrixCache)
                     {
                         const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
                         SetUniformValueByUniform(currentUniform, modelViewProj);
-                        lastModelViewProjectionMatricCache1 = modelViewMatrixCache;
-                        lastModelViewProjectionMatricCache2 = projectionMatrixCache;
+                        lastMVPMatrixModelViewCache = modelViewMatrixCache;
+                        lastMVPMatrixProjectionCache = projectionMatrixCache;
                     }
 					break;
 				}
@@ -1081,11 +1081,11 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				case UNIFORM_PROJECTION_MATRIX:
 				{
                     uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    if (lastPorectionMatrixCache != projectionMatrixCache)
+                    if (lastProjectionMatrixCache != projectionMatrixCache)
                     {
                         const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
                         SetUniformValueByUniform(currentUniform, proj);
-                        lastPorectionMatrixCache = projectionMatrixCache;
+                        lastProjectionMatrixCache = projectionMatrixCache;
                     }
 					break;
 				}
