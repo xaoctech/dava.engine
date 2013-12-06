@@ -755,6 +755,8 @@ namespace DAVA
 		activeUniformsCachePtr = NULL;
 		textureParamsCacheSize = 0;
 		activeUniformsCacheSize = 0;
+
+        illuminationParams = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -778,7 +780,8 @@ namespace DAVA
 		{
 			materialSystem->RemoveMaterial(this);
 		}
-		
+
+        SafeDelete(illuminationParams);
 		SetParent(NULL);
 	}
     
@@ -886,13 +889,7 @@ namespace DAVA
 			for(size_t i = 0; i < textureParamsCacheSize; ++i)
 			{
 				TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-				
-				if(NULL == textureEntry.tx)
-				{
-					textureEntry.tx = GetTexture(textureEntry.textureName);
-				}
-				
-				//renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+				textureEntry.tx = GetTexture(textureEntry.textureName);
 			}
 			
 			OnDirtyTextures();
@@ -1366,14 +1363,13 @@ namespace DAVA
 			NMaterialProperty* property = it->second;
 			
 			uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
-			uint8* propertyStorage = new uint8[dataSize + sizeof(uint32) + sizeof(uint32)];
+			uint8* propertyStorage = new uint8[dataSize + sizeof(property->type) + sizeof(property->size)];
 			
-			uint32 uniformType = property->type; //make sure uniform type is always uint32
-			memcpy(propertyStorage, &uniformType, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, dataSize);
+			memcpy(propertyStorage, &property->type, sizeof(property->type));
+			memcpy(propertyStorage + sizeof(property->type), &property->size, sizeof(property->size));
+			memcpy(propertyStorage + sizeof(property->type) + sizeof(property->size), property->data, dataSize);
 			
-			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(property->type) + sizeof(property->size));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1385,7 +1381,10 @@ namespace DAVA
 			it != materialState.textures.end();
 			++it)
 		{
-			materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			if(it->second->texture)
+			{
+				materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			}
 		}
 		archive->SetArchive("textures", materialTextures);
 		SafeRelease(materialTextures);
@@ -1420,6 +1419,14 @@ namespace DAVA
 		}
 		archive->SetArchive("techniques", materialTechniques);
 		SafeRelease(materialTechniques);
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Deserialize(NMaterialState& materialState,
@@ -1446,7 +1453,7 @@ namespace DAVA
 			
 			const uint8* ptr = propVariant->AsByteArray();
 			
-			materialState.SetPropertyValue(FastName(it->first), (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
+			materialState.SetPropertyValue(FastName(it->first), *(Shader::eUniformType*)ptr, *(ptr + sizeof(Shader::eUniformType)), ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
 		}
 		
 		const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
@@ -1497,7 +1504,17 @@ namespace DAVA
 			
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
-		}		
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
@@ -1863,7 +1880,22 @@ namespace DAVA
 				}
 			}
 		}
-	}
+	}	
+
+    IlluminationParams * NMaterial::GetIlluminationParams()
+    {
+        if(!illuminationParams)
+        {
+            illuminationParams = new IlluminationParams();
+            illuminationParams->SetDefaultParams();
+        }
+        return illuminationParams;
+    }
+
+    void NMaterial::ReleaseIlluminationParams()
+    {
+        SafeDelete(illuminationParams);
+    }
 	
 	void NMaterial::OnDirtyTextures()
 	{
