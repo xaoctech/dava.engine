@@ -35,3 +35,25 @@ DockProperties::DockProperties(QWidget *parent /* = NULL */)
 
 DockProperties::~DockProperties()
 { }
+
+void DockProperties::Init()
+{
+	Ui::MainWindow* ui = QtMainWindow::Instance()->GetUI();
+
+	// toggle favorites edit mode
+	QObject::connect(ui->actionFavoritesEdit, SIGNAL(triggered()), this, SLOT(ActionFavoritesEdit()));
+	ui->propertyEditor->SetFavoritesEditMode(ui->actionFavoritesEdit->isChecked());
+
+	// filter
+	QObject::connect(ui->propertiesFilterClear, SIGNAL(pressed()), ui->propertiesFilterEdit, SLOT(clear()));
+	QObject::connect(ui->propertiesFilterEdit, SIGNAL(textChanged(const QString &)), ui->propertyEditor, SLOT(SetFilter(const QString &)));
+}
+
+void DockProperties::ActionFavoritesEdit()
+{
+	QAction *favoritesEditAction = dynamic_cast<QAction *>(QObject::sender());
+	if(NULL != favoritesEditAction)
+	{
+		QtMainWindow::Instance()->GetUI()->propertyEditor->SetFavoritesEditMode(favoritesEditAction->isChecked());
+	}
+}

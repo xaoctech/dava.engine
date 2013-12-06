@@ -51,7 +51,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
-	, editorMode(EM_NORMAL)
+	, viewMode(VIEW_NORMAL)
 	, curNode(NULL)
 	, treeStateHelper(this, curModel)
 	, favoriteGroup(NULL)
@@ -62,10 +62,6 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 		QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
 		QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool )));
 		QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-
-		// MainWindow actions
-		QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(ActionToggleAdvanced()));
-		//advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
 	}
 	posSaver.Attach(this, "DocPropetyEditor");
 
@@ -75,7 +71,6 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	SetUpdateTimeout(5000);
 	SetEditTracking(true);
 	setMouseTracking(true);
-	SetEditorMode(EM_FAVORITE_EDIT);
 
 	LoadScheme("~doc:/PropEditorDefault.scheme");
 }
@@ -110,13 +105,32 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
 	SaveScheme("~doc:/PropEditorDefault.scheme");
 }
 
-void PropertyEditor::SetEditorMode(eEditoMode mode)
+void PropertyEditor::SetViewMode(eViewMode mode)
 {
-	if(editorMode != mode)
+	if(viewMode != mode)
 	{
-		editorMode = mode;
+		viewMode = mode;
         ResetProperties();
 	}
+}
+
+PropertyEditor::eViewMode PropertyEditor::GetViewMode() const
+{
+	return viewMode;
+}
+
+void PropertyEditor::SetFavoritesEditMode(bool set)
+{
+	if(favoritesEditMode != set)
+	{
+		favoritesEditMode = set;
+		ResetProperties();
+	}
+}
+
+bool PropertyEditor::GetFavoritesEditMode() const
+{
+	return favoritesEditMode;
 }
 
 void PropertyEditor::ResetProperties()
@@ -229,18 +243,15 @@ QModelIndex PropertyEditor::AddInspMember(const QModelIndex &parent, void *objec
 		}
 		else
 		{
-			int flags;
+			int flags = 0;
 
-			switch(editorMode)
+			switch(viewMode)
 			{
-			case EM_NORMAL:
+			case VIEW_NORMAL:
 				flags = DAVA::I_EDIT | DAVA::I_VIEW;
 				break;
-			case EM_ADVANCED:
-			case EM_FAVORITE_EDIT:
-			case EM_FAVORITE:
-				flags = DAVA::I_VIEW;
-				break;
+			case VIEW_ADVANCED:
+			case VIEW_FAVORITES:
 			default:
 				break;
 			}
@@ -351,7 +362,8 @@ void PropertyEditor::mouseReleaseEvent(QMouseEvent *event)
 	bool skipEvent = false;
 	QModelIndex index = indexAt(event->pos());
 
-	if(index.parent().isValid() && index.column() == 0)
+	// handle favorite state toggle for item under mouse
+	if(favoritesEditMode && index.parent().isValid() && index.column() == 0)
 	{
 		QRect rect = visualRect(index);
 		rect.setX(0);
@@ -379,8 +391,9 @@ void PropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem & op
 	static QIcon favIcon = QIcon(":/QtIcons/star.png");
 	static QIcon nfavIcon = QIcon(":/QtIcons/star_empty.png");
 
+	// custom draw for favorites edit mode
 	QStyleOptionViewItemV4 opt = option;
-	if(index.parent().isValid() && editorMode == EM_FAVORITE_EDIT)
+	if(index.parent().isValid() && favoritesEditMode)
 	{
 		QtPropertyData *data = GetProperty(index);
 		if(NULL != data)
@@ -400,19 +413,6 @@ void PropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem & op
 	}
 
 	QtPropertyEditor::drawRow(painter, opt, index);
-}
-
-void PropertyEditor::ActionToggleAdvanced()
-{
-	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
-	if(NULL != showAdvancedAction)
-	{
-		// TODO:
-		// toggle
-
-		//SetEditorMode(EM_ADVANCED);
-		//SetAdvancedMode(showAdvancedAction->isChecked());
-	}
 }
 
 void PropertyEditor::ActionEditComponent()

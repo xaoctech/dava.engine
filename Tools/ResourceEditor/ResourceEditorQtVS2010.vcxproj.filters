@@ -1833,6 +1833,9 @@
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialsAssignSystem.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3235,6 +3238,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialsAssignSystem.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

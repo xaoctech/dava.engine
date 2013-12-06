@@ -28,76 +28,28 @@
 
 
 
+#ifndef __DAVAENGINE_INTROSPECTION_DYNAMIC_H__
+#define __DAVAENGINE_INTROSPECTION_DYNAMIC_H__
+
+#include "Base/BaseTypes.h"
 #include "Base/IntrospectionBase.h"
-#include "Base/Meta.h"
 
 namespace DAVA
 {
+	class InspInfoDynamic;
 
-InspMember::InspMember(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags /* = 0 */)
-: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags), parentInsp(NULL)
-{ }
-
-const char* InspMember::Name() const
-{
-	return name;
-}
-
-const InspDesc& InspMember::Desc() const
-{
-	return desc;
-}
-
-const MetaInfo* InspMember::Type() const
-{
-	return type;
-}
-
-void* InspMember::Pointer(void *object) const
-{
-	return (((char *) object) + offset);
-}
-
-void* InspMember::Data(void *object) const
-{
-	if(type->IsPointer())
+	class InspMemberDynamic : public InspMember
 	{
-		return *(void **) Pointer(object);
-	}
-	else
-	{
-		return Pointer(object);
-	}
-}
+	public:
+		InspMemberDynamic(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags, InspInfoDynamic *_dynamicInfo);
+		~InspMemberDynamic();
 
-VariantType InspMember::Value(void *object) const
-{
-	return VariantType::LoadData(Pointer(object), type);
-}
+		virtual const InspMemberDynamic* Dynamic() const;
+		InspInfoDynamic* GetDynamicInfo() const;
 
-void InspMember::SetValue(void *object, const VariantType &val) const
-{
-	VariantType::SaveData(Pointer(object), type, val);
-}
-
-const InspColl* InspMember::Collection() const
-{
-	return NULL;
-}
-
-const InspMemberDynamic* InspMember::Dynamic() const
-{
-	return NULL;
-}
-
-int InspMember::Flags() const
-{
-	return flags;
-}
-
-void InspMember::ApplyParentInsp(const InspInfo *_parentInsp) const
-{
-	parentInsp = _parentInsp;
-}
-
+	protected:
+		InspInfoDynamic* dynamicInfo;
+	};
 };
+
+#endif // __DAVAENGINE_INTROSPECTION_DYNAMIC_H__
