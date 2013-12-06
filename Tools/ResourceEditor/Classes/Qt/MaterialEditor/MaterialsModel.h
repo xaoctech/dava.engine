@@ -28,23 +28,53 @@
 
 
 
-#ifndef __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
-#define __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+#ifndef __MATERIALS_MODEL_H__
+#define __MATERIALS_MODEL_H__
 
-#include "../LibraryFilteringModel.h"
+#include "Render/Material/NMaterial.h"
 
-class  LibraryFileSystemFilteringModel: public LibraryFilteringModel
+#include <QStandardItemModel>
+#include <QString>
+
+class QMimeData;
+class QStandardItem;
+class SceneEditor2;
+class MaterialsItem;
+class MaterialsModel: public QStandardItemModel
 {
-public:
-	LibraryFileSystemFilteringModel(QObject *parent = NULL);
+    Q_OBJECT
     
-	void SetSourceRoot(const QModelIndex &root);
-
+public:
+    MaterialsModel(QObject *parent = 0);
+    virtual ~MaterialsModel();
+    
+    void SetScene(SceneEditor2 * scene);
+    
+    
+    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
+    
+    // drag and drop support
+	QMimeData *	mimeData(const QModelIndexList & indexes) const;
+	QStringList	mimeTypes() const;
+    
 protected:
+    
+    void RemoveAllItems();
+    void RetriveMaterials();
+    void RebuildModel();
+    
+    void AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
+    
+protected:
+    
+    DAVA::Vector<DAVA::NMaterial *> switchableMaterials;
 
-	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-
-	QModelIndex sourceRoot;
+    SceneEditor2 *curScene;
+    
+    
 };
 
-#endif // __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+Q_DECLARE_METATYPE( DAVA::NMaterial * )
+
+
+#endif // __MATERIALS_MODEL_H__
