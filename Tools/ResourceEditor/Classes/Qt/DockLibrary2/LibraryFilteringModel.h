@@ -28,21 +28,26 @@
 
 
 
-#ifndef __LIBRARY_FILTERING_MODEL_H__
-#define __LIBRARY_FILTERING_MODEL_H__
+#ifndef __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+#define __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
 
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
 
-class QAbstractItemModel;
-class LibraryFilteringModel : public QSortFilterProxyModel
+class QFileSystemModel;
+class  LibraryFilteringModel: public QSortFilterProxyModel
 {
 public:
 	LibraryFilteringModel(QObject *parent = NULL);
-    void SetModel(QAbstractItemModel *newModel);
     
+    void SetModel(QAbstractItemModel *newModel);
+	void SetSourceRoot(const QModelIndex &root);
+
 protected:
+
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+	QModelIndex sourceRoot;
 	QAbstractItemModel *model;
 };
 
-#endif //__LIBRARY_FILTERING_MODEL_H__
+#endif // __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__

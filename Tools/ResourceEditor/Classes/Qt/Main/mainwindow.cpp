@@ -158,7 +158,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo , SLOT(UpdateInfoByTimer()));
 
-    ui->libraryTabWidget->SetupSignals();
+    ui->libraryWidget->SetupSignals();
 
 	LoadGPUFormat();
 

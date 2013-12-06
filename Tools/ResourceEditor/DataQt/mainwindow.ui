@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -734,7 +734,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="LibraryTabWidget" name="libraryTabWidget"/>
+   <widget class="LibraryWidget" name="libraryWidget"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1704,15 +1704,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LibraryTabWidget</class>
-   <extends>QWidget</extends>
-   <header>DockLibrary2/LibraryTabWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DockProperties</class>
    <extends>QDockWidget</extends>
    <header>DockProperties/DockProperties.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LibraryWidget</class>
+   <extends>QWidget</extends>
+   <header>DockLibrary2/LibraryWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
