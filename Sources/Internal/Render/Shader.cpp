@@ -384,9 +384,11 @@ namespace DAVA
 	{
 		return (vertexShader != 0 && fragmentShader != 0 && program != 0);
 	}
-    
-	bool Shader::Recompile(bool silentDelete)
+	
+	void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerData)
 	{
+		bool silentDelete = (param != NULL);
+		
 		if(silentDelete &&
 		   ((vertexShader != 0) || (fragmentShader != 0) || (program != 0)))
 		{
@@ -402,13 +404,13 @@ namespace DAVA
 		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
 		{
 			Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
-			return false;
+			return;
 		}
 		
 		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr(), fragmentShaderDefines))
 		{
 			Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
-			return false;
+			return ;
 		}
 		
 		program = glCreateProgram();
@@ -420,7 +422,7 @@ namespace DAVA
 			Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
 			
 			DeleteShaders();
-			return false;
+			return;
 		}
 		
 		RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes));
@@ -628,8 +630,16 @@ namespace DAVA
 					autobindUniformIndex++;
 				}
 			}
-		}
-
+		}		
+	}
+    
+	bool Shader::Recompile(bool silentDelete)
+	{
+		ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+															   Message(this, &Shader::RecompileInternal, (silentDelete) ? this : NULL));
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
+		
 		return true;
 	}
 	

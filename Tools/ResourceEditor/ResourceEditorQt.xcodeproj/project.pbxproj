@@ -540,7 +540,7 @@
 		E8C994D9184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99428184CD23C00AFBF3F /* TileTexturePreviewWidgetItemDelegate_moc.cpp */; };
 		E8C994DA184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9942A184CD23C00AFBF3F /* ToolButtonWithWidget_moc.cpp */; };
 		E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */; };
-		E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */; };
+		E8C994ED184D0E4300AFBF3F /* MaterialsAssignSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1602,8 +1602,8 @@
 		E8C99435184CD23C00AFBF3F /* ui_waitdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_waitdialog.h; path = _GeneratedQt/ui_waitdialog.h; sourceTree = "<group>"; };
 		E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
 		E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
-		E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsDropSystem.cpp; sourceTree = "<group>"; };
-		E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsDropSystem.h; sourceTree = "<group>"; };
+		E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialsAssignSystem.cpp; sourceTree = "<group>"; };
+		E8C994EC184D0E4300AFBF3F /* MaterialsAssignSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialsAssignSystem.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3765,8 +3765,8 @@
 		E8C994EA184D0E4300AFBF3F /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
-				E8C994EB184D0E4300AFBF3F /* MaterialsDropSystem.cpp */,
-				E8C994EC184D0E4300AFBF3F /* MaterialsDropSystem.h */,
+				E8C994EB184D0E4300AFBF3F /* MaterialsAssignSystem.cpp */,
+				E8C994EC184D0E4300AFBF3F /* MaterialsAssignSystem.h */,
 			);
 			path = MaterialEditor;
 			sourceTree = "<group>";
@@ -4439,7 +4439,7 @@
 				E8C9943E184CD23C00AFBF3F /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */,
 				E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */,
 				E8C992A4184CD0EC00AFBF3F /* EditorConfig.cpp in Build Sources */,
-				E8C994ED184D0E4300AFBF3F /* MaterialsDropSystem.cpp in Build Sources */,
+				E8C994ED184D0E4300AFBF3F /* MaterialsAssignSystem.cpp in Build Sources */,
 				E8C992C4184CD0EC00AFBF3F /* LibraryBaseModel.cpp in Build Sources */,
 				E8C992FC184CD0EC00AFBF3F /* CollisionSystem.cpp in Build Sources */,
 				E8C9943C184CD23C00AFBF3F /* Console_moc.cpp in Build Sources */,

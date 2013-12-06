@@ -255,10 +255,10 @@ void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void
 	DVASSERT(container);
 
 #if defined(__DAVAENGINE_OPENGL__)
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
+	//if(RenderManager::Instance()->GetTexture() == this)
+	//{//to avoid drawing deleted textures
+	//	RenderManager::Instance()->SetTexture(0);
+	//}
 
 	//VI: reset texture for the current texture type in order to avoid
 	//issue when cubemap texture was deleted while being binded to the state
