@@ -28,58 +28,81 @@
 
 
 
-#ifndef __LIBRARY_TAB_WIDGET_H__
-#define __LIBRARY_TAB_WIDGET_H__
-
-#include "DAVAEngine.h"
-
-#include "Tools/QtPosSaver/QtPosSaver.h"
+#ifndef __LIBRARY_WIDGET_H__
+#define __LIBRARY_WIDGET_H__
 
 #include <QWidget>
-#include <QTabBar>
+#include <QItemSelection>
 
-class LibraryBaseModel;
-class LibraryComplexView;
-class LibraryTabWidget : public QWidget
+class QToolBar;
+class QTreeView;
+class QAction;
+class QLineEdit;
+class QComboBox;
+class QFileSystemModel;
+class LibraryFilteringModel;
+
+class LibraryWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	LibraryTabWidget(QWidget *parent = NULL);
-	~LibraryTabWidget();
+	LibraryWidget(QWidget *parent = 0);
+	~LibraryWidget();
 
     void SetupSignals();
     
 protected slots:
+
     void ProjectOpened(const QString &path);
 	void ProjectClosed();
 
-	void TabBarCurrentChanged(int index);
+    void ViewAsList();
+    void ViewDetailed();
     
-protected:
+	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void ShowContextMenu(const QPoint & point);
     
-    void SetupTabbar();
-    void AddModel(LibraryBaseModel *model);
+    void SetFilter(const QString &filter);
+    void ResetFilter();
     
-    void UpdateViewForProject(const QString &projectPath);
+    void OnFilesTypeChanged(int typeIndex);
     
-    
-    
-    LibraryBaseModel * GetModel(int index);
-	int GetCurrentTab() const;
-	void SetCurrentTab(int index);
-    
-	int GetTabCount() const;
-    
-protected:
-    
-    QTabBar *tabBar;
-    LibraryComplexView * libraryView;
-    
-    QtPosSaver posSaver;
+    void OnAddModel();
+    void OnEditModel();
+    void OnConvertDae();
+    void OnConvertGeometry();
+    void OnEditTextureDescriptor();
+    void OnRevealAtFolder();
 
+private:
     
-    DAVA::List<LibraryBaseModel *>models;
+    void ActivateProject(const QString &projectPath);
+
+    void SetupToolbar();
+    void SetupView();
+    void SetupLayout();
+    
+    void HideDetailedColumnsAtFilesView(bool show);
+    
+    void HidePreview() const;
+    void ShowPreview(const QString & pathname) const;
+    
+private:
+
+    QToolBar *toolbar;
+    QTreeView *filesView;
+    
+    QLineEdit *searchFilter;
+    QComboBox *filesTypeFilter;
+    
+    QAction *actionViewAsList;
+    QAction *actionViewDetailed;
+
+    QString rootPathname;
+    QFileSystemModel *filesModel;
+    
+    LibraryFilteringModel *proxyModel;
 };
 
-#endif // __LIBRARY_TAB_WIDGET_H__
+#endif // __LIBRARY_WIDGET_H__
