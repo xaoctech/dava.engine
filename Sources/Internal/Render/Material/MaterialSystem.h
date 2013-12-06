@@ -103,6 +103,8 @@ private:
 							bool isLod,
 							Map<String, Vector<MaterialData> >& nodes);
 	
+	void BuildAndBindOnMainThread(BaseObject * caller, void * param, void *callerData);
+	
 private:
 	
     HashMap<FastName, NMaterial*> materials;

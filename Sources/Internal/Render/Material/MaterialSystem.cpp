@@ -264,8 +264,14 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
 			DVASSERT(rootMaterial);
 			
-			rootMaterial->Rebuild();
-			rootMaterial->Rebind();
+			//rootMaterial->Rebuild();
+			//rootMaterial->Rebind();
+			
+			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+																   Message(this, &MaterialSystem::BuildAndBindOnMainThread,
+																		   rootMaterial));
+			JobInstanceWaiter waiter(job);
+			waiter.Wait();
 		}
 	}
 	else
@@ -278,6 +284,16 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 	DVASSERT(defaultMaterial);
 	
 	return true;
+}
+	
+void MaterialSystem::BuildAndBindOnMainThread(BaseObject * caller,
+											  void * param,
+											  void *callerData)
+{
+	NMaterial* rootMaterial = static_cast<NMaterial*>(param);
+	
+	rootMaterial->Rebuild();
+	rootMaterial->Rebind();
 }
 	
 NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
@@ -295,7 +311,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	{
 		material->SetMaterialName(name.c_str());
 		AddMaterial(material);
-		material->Release(); //need to release material since material system took ownership
+		//material->Release(); //need to release material since material system took ownership
 		material->SetParent(parentMaterial);
 		
 		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
@@ -326,7 +342,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	void MaterialSystem::AddMaterial(NMaterial* material)
 	{
 		DVASSERT(material);
-		SafeRetain(material);
+		//SafeRetain(material);
 		
 		material->SetMaterialSystem(this);
 		
@@ -366,7 +382,7 @@ void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
 	materials.erase(material->GetMaterialName());
-	SafeRelease(material);
+	//SafeRelease(material);
 }
 	
 void MaterialSystem::Clear()

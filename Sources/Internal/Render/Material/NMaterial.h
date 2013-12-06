@@ -203,6 +203,7 @@ protected:
 	HashMap<FastName, TextureBucket*> textures;
 	Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
+	UniqueHandle textureStateHandle;
 	//Vector<int32> textureSlotArray;
 	
 	NMaterial* parent;
@@ -483,6 +484,8 @@ protected:
 	void BuildActiveUniformsCache(const MaterialTechnique& technique);
 	void BindMaterialTextures(RenderState* renderState);
 	void BindMaterialProperties(Shader * shader);
+	
+	void OnDirtyTextures();
 
 public:
     INTROSPECTION_EXTEND(NMaterial, NMaterialState,

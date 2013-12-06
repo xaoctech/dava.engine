@@ -1827,11 +1827,11 @@
     <ClCompile Include="Classes\Beast\LightmapsPacker.cpp">
       <Filter>Classes\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialsDropSystem.cpp">
-      <Filter>Classes\Qt\MaterialEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\MaterialSwitchParentCommand.cpp">
       <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialsAssignSystem.cpp">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
@@ -3233,11 +3233,11 @@
     <ClInclude Include="Classes\Beast\LightmapsPacker.h">
       <Filter>Classes\Beast</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialsDropSystem.h">
-      <Filter>Classes\Qt\MaterialEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\MaterialSwitchParentCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialsAssignSystem.h">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
