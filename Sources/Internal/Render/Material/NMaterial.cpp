@@ -912,7 +912,6 @@ namespace DAVA
 		//size_t dataCount = activeUniformsCache.size();
 		//for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
 		//for(size_t i = 0; i < dataCount; ++i)
-		
 		for(size_t i = 0; i < activeUniformsCacheSize; ++i)
 		{
 			UniformCacheEntry& uniformEntry = activeUniformsCachePtr[i];
@@ -1593,7 +1592,7 @@ namespace DAVA
 			
 			SetParent(newParent);
 			
-			currentStateName = stateName;
+			currentStateName = stateName;			
 			texturesDirty = true;
 		}
 		
@@ -1937,5 +1936,24 @@ namespace DAVA
 		{
 			RenderManager::Instance()->ReleaseTextureStateData(prevHandle);
 		}
+	}
+
+	FastName NMaterialState::NMaterialStateDynamicTexturesInsp::GetFastName(int index) const
+	{
+		FastName ret;
+
+		switch(index)
+		{
+		case 0: ret = NMaterial::TEXTURE_ALBEDO; break;
+		case 1: ret = NMaterial::TEXTURE_NORMAL; break;
+		case 2: ret = NMaterial::TEXTURE_DETAIL; break;
+		case 3: ret = NMaterial::TEXTURE_LIGHTMAP; break;
+		case 4: ret = NMaterial::TEXTURE_DECAL; break;
+
+		default:
+			break;
+		}
+
+		return ret;
 	}
 };

@@ -73,7 +73,16 @@ QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspCo
 					QString s;
 					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", collection->ItemData(i)));
 					childData->SetEnabled(false);
-					ChildAdd(QString::number(index), childData);
+
+					if(collection->ItemKeyType() == DAVA::MetaInfo::Instance<DAVA::FastName>())
+					{
+						const DAVA::FastName *fname = (const DAVA::FastName *) collection->ItemKeyData(i);
+						ChildAdd(fname->operator*(), childData);
+					}
+					else
+					{
+						ChildAdd(QString::number(index), childData);
+					}
 				}
 			}
 

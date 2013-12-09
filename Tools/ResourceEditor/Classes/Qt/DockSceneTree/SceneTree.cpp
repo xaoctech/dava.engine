@@ -672,7 +672,7 @@ void SceneTree::ReloadModel()
 		{
 			EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
 			String wrongPathes;
-			for(int i = 0; i < selection.Size(); ++i)
+			for(size_t i = 0; i < selection.Size(); ++i)
 			{
 				DAVA::Entity *entity = selection.GetEntity(i);
 				DAVA::FilePath pathToReload(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));

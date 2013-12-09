@@ -26,73 +26,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Base/IntrospectionDynamic.h"
+#include "Base/Introspection.h"
 
-
-#ifndef __LIBRARY_COMPLEX_VIEW_H__
-#define __LIBRARY_COMPLEX_VIEW_H__
-
-#include <QWidget>
-#include <QItemSelection>
-#include <QSortFilterProxyModel>
-
-class QToolBar;
-class QSplitter;
-class QTreeView;
-class QListView;
-class QAction;
-class QLineEdit;
-
-class LibraryBaseModel;
-class LibraryComplexView : public QWidget
+namespace DAVA
 {
-	Q_OBJECT
+	InspMemberDynamic::InspMemberDynamic(const char *_name, const InspDesc &_desc, const long int _offset, const MetaInfo *_type, int _flags, InspInfoDynamic *_dynamicInfo)
+		: InspMember(_name, _desc, _offset, _type, _flags)
+		, dynamicInfo(_dynamicInfo)
+	{
 
-public:
-	LibraryComplexView(QWidget *parent = 0);
-	~LibraryComplexView();
+	}
 
-    void SetModel(LibraryBaseModel * newModel);
-    
-    
-protected slots:
+	InspMemberDynamic::~InspMemberDynamic()
+	{
+		if(NULL != dynamicInfo)
+		{
+			delete dynamicInfo;
+		}
+	}
 
-    void ViewAsList();
-    void ViewAsIcons();
-    
-    void TreeSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-	void ListSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+	const InspMemberDynamic* InspMemberDynamic::Dynamic() const
+	{
+		return this;
+	}
 
-    void ShowTreeContextMenu(const QPoint & point);
-    void ShowListContextMenu(const QPoint & point);
-    
-    void SetFilter(const QString &filter);
-    void ResetFilter();
+	InspInfoDynamic* InspMemberDynamic::GetDynamicInfo() const
+	{
+		return dynamicInfo;
+	}
 
-    void ChangeSplitterOrientation();
-
-private:
-    
-    void SetupToolbar();
-    void SetupViews();
-    void SetupLayout();
-    
-	void ResetModel();
-
-private:
-
-    QToolBar *toolbar;
-    QSplitter *splitter;
-    QTreeView *leftTree;
-    QListView *rightList;
-    
-    QLineEdit *searchFilter;
-    
-    QAction *actionViewAsList;
-    QAction *actionViewAsIcons;
-
-	QAction *modelSeparator;
-    
-    LibraryBaseModel *model;
 };
-
-#endif // __LIBRARY_COMPLEX_VIEW_H__

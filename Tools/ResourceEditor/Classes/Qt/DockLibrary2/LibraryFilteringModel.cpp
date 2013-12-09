@@ -38,10 +38,41 @@ LibraryFilteringModel::LibraryFilteringModel(QObject *parent /* = NULL */)
 {
 }
 
-
 void LibraryFilteringModel::SetModel(QAbstractItemModel *newModel)
 {
     model = newModel;
     setSourceModel(model);
 }
+
+
+void LibraryFilteringModel::SetSourceRoot( const QModelIndex &root )
+{
+	sourceRoot = root;
+}
+
+
+bool LibraryFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	if(model == NULL) return true;
+
+	// First we see if we're the source root node
+	QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+	if (!sourceIndex.isValid() || !sourceParent.isValid())
+		return true; // viewer will handle filtering
+
+	// Make sure the root is always accepted, or we become rootless
+	// See http://stackoverflow.com/questions/3212392/qtreeview-qfilesystemmodel-setrootpath-and-qsortfilterproxymodel-with-regexp-fo
+	if (sourceRoot.isValid() && sourceIndex == sourceRoot) 
+		return true; // true root, always accept
+
+	// filter only items at parent
+	if(sourceParent == sourceRoot)
+	{
+		QString data = sourceModel()->data(sourceIndex).toString();
+		return (data.contains(filterRegExp()));
+	}
+
+	return true; // nothing matched
+}
+
 

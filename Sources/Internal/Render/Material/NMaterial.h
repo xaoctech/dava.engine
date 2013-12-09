@@ -149,10 +149,12 @@ protected:
 	};
 
 class NMaterial;
-class NMaterialState
+class NMaterialState : public BaseObject
 {
 	friend class NMaterial;
-
+	friend class NMaterialStateDynamicPropertiesInsp;
+	friend class NMaterialStateDynamicTexturesInsp;
+	
 public:
 			
 	NMaterialState();
@@ -255,18 +257,79 @@ protected:
 	
 	void CopyTechniquesTo(NMaterialState* targetState);
 
+protected:
+	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
+	{
+	public:
+		NMaterialStateDynamicTexturesInsp()	{}
+		~NMaterialStateDynamicTexturesInsp() {}
+
+		int MembersCount(void *object) const
+		{
+			NMaterialState *state = (NMaterialState *)object;
+			return 5;
+		}
+
+		InspDesc MemberDesc(void *object, int index) const
+		{
+			return InspDesc(MemberName(object, index));
+		}
+
+		const char* MemberName(void *object, int index) const
+		{
+			FastName name = GetFastName(index);
+			return name.c_str();
+		}
+
+		VariantType MemberValueGet(void *object, int index) const
+		{
+			VariantType ret;
+
+			NMaterialState *state = (NMaterialState *)object;
+			FastName name = GetFastName(index);
+
+			if(name.IsValid() && NULL != state)
+			{
+				Texture* tex = state->GetTexture(name);
+
+				if(NULL != tex)
+				{
+					ret.SetFilePath(tex->GetPathname());
+				}
+				else
+				{
+					ret.SetFilePath(FilePath());
+				}
+			}
+
+			return ret;
+		}
+
+		void MemberValueSet(void *object, int index, const VariantType &value)
+		{
+			NMaterialState *state = (NMaterialState *)object;
+			FastName name = GetFastName(index);
+
+			if(name.IsValid() && NULL != state && value.type == VariantType::TYPE_FILEPATH)
+			{
+				state->SetTexture(name, Texture::CreateFromFile(value.AsFilePath()));
+			}
+		}
+
+		FastName GetFastName(int index) const;
+	};
+
 public:
 	INTROSPECTION(NMaterialState,
 		COLLECTION(materialProperties, "Material properties", I_SAVE | I_EDIT | I_VIEW)
-		COLLECTION(textures, "Material textures", I_SAVE | I_EDIT | I_VIEW)
+		DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 		);
 };
-
 
 class Camera;
 class SerializationContext;
 class MaterialSystem;
-class NMaterial : public BaseObject, public NMaterialState
+class NMaterial : public NMaterialState
 {
 	friend class MaterialSystem;
 
@@ -462,12 +525,51 @@ public:
 
 };
 
-	inline const FastNameSet& NMaterial::GetRenderLayers()
-	{
-		return effectiveLayers;
-	}
+inline const FastNameSet& NMaterial::GetRenderLayers()
+{
+	return effectiveLayers;
+}
 
 	
+class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
+{
+	int MembersCount(void *object) const
+	{
+		NMaterialState *state = (NMaterialState *) object;
+		return 0;
+
+		// TODO:
+		// ...
+	}
+
+	/*
+	InspDesc MemberDesc(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState *)object;
+
+
+	}
+
+	const char* MemberName(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState *)object;
+
+	}
+
+	VariantType MemberValueGet(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState *)object;
+
+	}
+
+	void MemberValueSet(void *object, int index, const VariantType &value)
+	{
+		NMaterialState *state = (NMaterialState *)object;
+
+	}
+	*/
+};
+
 };
 
 #endif // __DAVAENGINE_MATERIAL_H__

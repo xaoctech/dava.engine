@@ -28,19 +28,27 @@
 
 
 
-#ifndef __LIBRARY_MATERIALS_FILTERING_MODEL_H__
-#define __LIBRARY_MATERIALS_FILTERING_MODEL_H__
+#ifndef __MATERIALS_ITEM_H__
+#define __MATERIALS_ITEM_H__
 
-#include "../LibraryFilteringModel.h"
+#include "Render/Material/NMaterial.h"
 
-class  LibraryMaterialsFilteringModel: public LibraryFilteringModel
+#include <QStandardItem>
+
+class MaterialsModel;
+class MaterialsItem: public QStandardItem
 {
 public:
-	LibraryMaterialsFilteringModel(QObject *parent = NULL);
+    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
+    virtual ~MaterialsItem();
     
-protected:
-
-	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    QVariant data(int role = Qt::UserRole + 1) const;
+    
+private:
+    
+    DAVA::NMaterial * material;
+    MaterialsModel * model;
 };
 
-#endif // __LIBRARY_MATERIALS_FILTERING_MODEL_H__
+
+#endif // __MATERIALS_ITEM_H__

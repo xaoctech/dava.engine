@@ -83,7 +83,7 @@
        <property name="toolButtonStyle">
         <enum>Qt::ToolButtonIconOnly</enum>
        </property>
-       <addaction name="actionShowAdvancedProp"/>
+       <addaction name="actionFavoritesEdit"/>
        <addaction name="actionAddNewComponent"/>
        <addaction name="actionRemoveComponent"/>
       </widget>
@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -734,7 +734,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="LibraryTabWidget" name="libraryTabWidget"/>
+   <widget class="LibraryWidget" name="libraryWidget"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1157,16 +1157,19 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionShowAdvancedProp">
+  <action name="actionFavoritesEdit">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
+     <normaloff>:/QtIcons/star.png</normaloff>:/QtIcons/star.png</iconset>
    </property>
    <property name="text">
-    <string>Advanced View</string>
+    <string>Favorites edit</string>
+   </property>
+   <property name="toolTip">
+    <string>Favorites edit</string>
    </property>
   </action>
   <action name="actionModifyReset">
@@ -1704,15 +1707,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LibraryTabWidget</class>
-   <extends>QWidget</extends>
-   <header>DockLibrary2/LibraryTabWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DockProperties</class>
    <extends>QDockWidget</extends>
    <header>DockProperties/DockProperties.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LibraryWidget</class>
+   <extends>QWidget</extends>
+   <header>DockLibrary2/LibraryWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
