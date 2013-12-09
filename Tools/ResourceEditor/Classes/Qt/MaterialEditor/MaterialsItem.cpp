@@ -28,39 +28,45 @@
 
 
 
-#ifndef __LIBRARY_TEXTURES_MODEL_H__
-#define __LIBRARY_TEXTURES_MODEL_H__
+#include "MaterialsItem.h"
+#include "MaterialsModel.h"
 
-#include "../FileSystem/LibraryFileSystemModel.h"
-
-class LibraryTexturesModel: public LibraryFileSystemModel
+MaterialsItem::MaterialsItem(DAVA::NMaterial * _material, MaterialsModel * _model)
+    : QStandardItem()
+    , material(_material)
+    , model(_model)
 {
-    Q_OBJECT
+    DVASSERT(model);
+    DVASSERT(material);
     
-public:
-    LibraryTexturesModel();
+    setText(material->GetMaterialName().c_str());
+    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
-protected slots:
-    
-	void OnEdit();
-    
-protected:
-    
-	virtual void CreateActions();
-    
-    virtual void TreeFileSelected(const QFileInfo & fileInfo);
-    virtual void ListFileSelected(const QFileInfo & fileInfo);
-    
-    virtual bool PrepareTreeContextMenuInternal(QMenu &contextMenu, const QFileInfo & fileInfo) const;
-    virtual bool PrepareListContextMenuInternal(QMenu &contextMenu, const QFileInfo & fileInfo) const;
+    if(material->IsSwitchable())
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
+    }
+    else
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    }
+    setEditable(false);
+}
 
-private:
+MaterialsItem::~MaterialsItem()
+{
+}
+
+QVariant MaterialsItem::data(int role) const
+{
+//    if(role == Qt::BackgroundColorRole)
+//    {
+//        if(model && model->IsMaterialSelected(material))
+//        {
+//            return QColor(235, 215, 210);
+//        }
+//    }
     
-    QAction *showTEX;
-	QAction *showPNG;
-	QAction *showPVR;
-	QAction *showDDS;
-};
+    return QStandardItem::data(role);
+}
 
-
-#endif // __LIBRARY_TEXTURES_MODEL_H__
