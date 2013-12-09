@@ -109,6 +109,10 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	{
 		LoadTexture(filePath, false);
 	}
+	else
+	{
+		drawSystem->GetCustomColorsProxy()->UpdateSpriteFromConfig();
+	}
 
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
@@ -127,7 +131,7 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
-bool CustomColorsSystem::DisableLandscapeEdititing()
+bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
 {
 	if (!enabled)
 	{
@@ -147,9 +151,9 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 	
 	enabled = false;
 
-	if (drawSystem->GetCustomColorsProxy()->GetChangesCount())
+	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
 	{
-		SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
+		return SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
 	}
 
 	return !enabled;
@@ -357,10 +361,10 @@ void CustomColorsSystem::CreateUndoPoint()
 	SafeRelease(originalImage);
 }
 
-void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
+bool CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 {
 	if(filePath.IsEmpty())
-		return;
+		return false;
 
 	Sprite* customColorsSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	Texture* customColorsTexture = customColorsSprite->GetTexture();
@@ -371,6 +375,7 @@ void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 
 	StoreSaveFileName(filePath);
 	drawSystem->GetCustomColorsProxy()->ResetChanges();
+	return true;
 }
 
 void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool createUndo /* = true */)

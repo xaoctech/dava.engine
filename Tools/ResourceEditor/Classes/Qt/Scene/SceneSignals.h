@@ -95,7 +95,7 @@ signals:
 
 	void DropperHeightChanged(SceneEditor2* scene, double height);
 	void VisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state);
-	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
+	bool CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
 	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
 	void SnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
@@ -136,7 +136,7 @@ public:
 	{
 		emit VisibilityToolStateChanged(scene, state);
 	};
-	void EmitCustomColorsTextureShouldBeSaved(SceneEditor2* scene) { emit CustomColorsTextureShouldBeSaved(scene); };
+	bool EmitCustomColorsTextureShouldBeSaved(SceneEditor2* scene) { return emit CustomColorsTextureShouldBeSaved(scene); };
 	void EmitRulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength)
 	{
 		emit RulerToolLengthChanged(scene, length, previewLength);
