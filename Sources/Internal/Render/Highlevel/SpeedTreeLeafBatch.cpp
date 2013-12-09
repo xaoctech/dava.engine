@@ -54,8 +54,11 @@ void SpeedTreeLeafBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         return;
 
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    material->SetPropertyValue(PARAM_WORLD_TRANSLATE, Shader::UT_FLOAT_VEC3, 1, &finalMatrix.GetTranslationVector());
-    material->SetPropertyValue(PARAM_WORLD_SCALE, Shader::UT_FLOAT_VEC3, 1, &worldTransformPtr->GetScaleVector());
+    Vector3 translationVerctor = finalMatrix.GetTranslationVector();
+    Vector3 scaleVector = worldTransformPtr->GetScaleVector();
+    
+    material->SetPropertyValue(PARAM_WORLD_TRANSLATE, Shader::UT_FLOAT_VEC3, 1, &translationVerctor);
+    material->SetPropertyValue(PARAM_WORLD_SCALE, Shader::UT_FLOAT_VEC3, 1, &scaleVector);
 
     RenderBatch::Draw(ownerRenderPass, camera);
 }
