@@ -732,6 +732,17 @@ namespace DAVA
 		
 		return clonedState;
 	}
+	
+	NMaterialState* NMaterialState::CreateTemplate(NMaterial* templateParent)
+	{
+		NMaterialState* templateState = new NMaterialState();
+		
+		templateState->parent = templateParent;
+		templateState->parentName = templateParent->materialName;
+				
+		return templateState;
+
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -886,18 +897,6 @@ namespace DAVA
 		
 		if(texturesDirty)
 		{
-			for(size_t i = 0; i < textureParamsCacheSize; ++i)
-			{
-				TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-				
-				if(NULL == textureEntry.tx)
-				{
-					textureEntry.tx = GetTexture(textureEntry.textureName);
-				}
-				
-				//renderState->SetTexture(textureEntry.tx, textureEntry.slot);
-			}
-			
 			OnDirtyTextures();
 			texturesDirty = false;
 		}
@@ -913,6 +912,7 @@ namespace DAVA
 		//size_t dataCount = activeUniformsCache.size();
 		//for(Vector<UniformCacheEntry>::iterator i = activeUniformsCache.begin(); i != uniformsEnd; ++i)
 		//for(size_t i = 0; i < dataCount; ++i)
+		
 		for(size_t i = 0; i < activeUniformsCacheSize; ++i)
 		{
 			UniformCacheEntry& uniformEntry = activeUniformsCachePtr[i];
@@ -1593,7 +1593,8 @@ namespace DAVA
 			
 			SetParent(newParent);
 			
-			currentStateName = stateName;			
+			currentStateName = stateName;
+			texturesDirty = true;
 		}
 		
 		return (state != NULL);
@@ -1842,44 +1843,56 @@ namespace DAVA
 		
 	void NMaterial::Rebind(bool recursive)
 	{
-		if(IsConfigMaterial())
+		size_t childrenCount = NMaterialState::children.size();
+		if(childrenCount > 0 ||
+		   IsConfigMaterial())
 		{
-			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
-			while(iter != techniqueForRenderPass.end())
+			//VI: need to propagate properties defined for the current material
+			//VI: up in the material tree
+			
+			NMaterial* curMaterial = this;
+			while(curMaterial != NULL)
 			{
-				MaterialTechnique* technique = iter->second;
-
-				Shader * shader = technique->GetShader();
-				shader->Bind();
 				
-				uint32 uniformCount = shader->GetUniformCount();
-				for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+				HashMap<FastName, MaterialTechnique *>::iterator iter = curMaterial->techniqueForRenderPass.begin();
+				while(iter != curMaterial->techniqueForRenderPass.end())
 				{
-					Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+					MaterialTechnique* technique = iter->second;
 					
-					if (Shader::UNIFORM_NONE == uniform->id  ||
-						Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+					Shader * shader = technique->GetShader();
+					shader->Bind();
+					
+					uint32 uniformCount = shader->GetUniformCount();
+					for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 					{
-						NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+						Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 						
-						if(prop)
+						if (Shader::UNIFORM_NONE == uniform->id  ||
+							Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 						{
-							shader->SetUniformValueByUniform(uniform,
-														   uniform->type,
-														   uniform->size,
-														   prop->data);
+							NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+							
+							if(prop)
+							{
+								shader->SetUniformValueByUniform(uniform,
+																 uniform->type,
+																 uniform->size,
+																 prop->data);
+							}
 						}
 					}
+					
+					shader->Unbind();
+					
+					++iter;
 				}
 				
-				shader->Unbind();
-				
-				++iter;
+				curMaterial = curMaterial->parent;
 			}
 			
 			if(recursive)
 			{
-				size_t childrenCount = NMaterialState::children.size();
+				
 				for(size_t i = 0; i < childrenCount; ++i)
 				{
 					NMaterialState::children[i]->Rebind(recursive);
@@ -1908,8 +1921,11 @@ namespace DAVA
 		TextureStateData stateData;
 		for(size_t i = 0; i < textureParamsCacheSize; ++i)
 		{
-			TextureParamCacheEntry& entry = textureParamsCachePtr[i];
-			stateData.textures[entry.slot] = entry.tx;
+			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
+			
+			textureEntry.tx = GetTexture(textureEntry.textureName);
+
+			stateData.textures[textureEntry.slot] = textureEntry.tx;
 		}
 		
 		UniqueHandle prevHandle = textureStateHandle;

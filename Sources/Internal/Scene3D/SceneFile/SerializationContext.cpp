@@ -35,6 +35,8 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material.h"
 
+#include "Utils/StringFormat.h"
+
 namespace DAVA
 {
 	class MaterialNameMapper
@@ -275,14 +277,83 @@ namespace DAVA
 	NMaterial* SerializationContext::ConvertOldMaterialToNewMaterial(Material* oldMaterial,
 											   InstanceMaterialState* oldMaterialState)
 	{
-		NMaterial * parentMaterial = 0;
-		
 		MaterialSystem* matSystem = scene->renderSystem->GetMaterialSystem();
-		FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
-		parentMaterial = matSystem->GetMaterial(newMaterialName);
-		DVASSERT(parentMaterial);
+		
+		//VI: need to build the following material structure:
+		//VI: CONFIG_MATERIAL ->
+		//VI:                    INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES
+		//VI:                    (this instance has
+		//VI:                     same name as old material) ->
+		//VI:                                                   OBJECT_INSTANCE
+		//VI:                                                  (this instance is
+		//VI:                                                   assigned to object
+		//VI:                                                   and has specific
+		//VI:                                                   properties set)
+		
+		//VI: try to find INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES by old material name
+		String oldMaterialNameStr = Format("%s[%d]", oldMaterial->GetName().c_str(), (pointer_size)oldMaterial);
+		FastName oldMaterialName(oldMaterialNameStr);
+		NMaterial* commonNodeMaterial = matSystem->GetSpecificMaterial(oldMaterialName);
+		
+		//VI: create and setup common material node
+		if(NULL == commonNodeMaterial)
+		{
+			FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
+			NMaterial * parentMaterial = matSystem->GetMaterial(newMaterialName);
+
+			commonNodeMaterial = matSystem->CreateSwitchableChild(parentMaterial);
+			commonNodeMaterial->SetMaterialName(oldMaterialNameStr);
+
+			uint32 nodeStateCount = commonNodeMaterial->GetStateCount();
+			uint32 nodeSetupStateCount = (nodeStateCount) ? nodeStateCount : 1;
+			for(uint32 i = 0; i < nodeSetupStateCount; ++i)
+			{
+				NMaterialState* targetState = (0 == nodeStateCount) ? commonNodeMaterial : commonNodeMaterial->GetState(i);
+			
+				if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
+				{
+					targetState->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
+				}
+				else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
+				{
+					targetState->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
+				}
 				
-		NMaterial* resultMaterial = matSystem->CreateChild(parentMaterial);
+				if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
+				{
+					targetState->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+				}
+				
+				if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+				{
+					if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
+					{
+						targetState->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
+					}
+				}
+				
+				if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+				   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+				   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+				   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+				{
+					targetState->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+					
+					targetState->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+					targetState->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+					targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
+				}
+			}
+			
+			matSystem->AddMaterial(commonNodeMaterial);
+		}
+				
+		NMaterial* resultMaterial = matSystem->CreateSwitchableChild(commonNodeMaterial);
 		uint32 materialStateCount = resultMaterial->GetStateCount();
 		
 		uint32 materialMultiplexStepCount = (0 == materialStateCount) ? 1 : materialStateCount;
@@ -298,49 +369,7 @@ namespace DAVA
                     resultMaterial->GetIlluminationParams()->lightmapSize = oldMaterialState->GetLightmapSize();
 				}
 			}
-			else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
-			{
-				targetState->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
-			}
-			else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
-			{
-				targetState->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
-			}
-			
-			if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
-			{
-				targetState->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
-			}
-			
-			if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-			{
-				if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
-				{
-					targetState->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
-				}
-			}
 						
-			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-			{
-				targetState->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
-				
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
-			}
-			
-			//VI: do not set fog property here!
-			//targetState->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
-			//targetState->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->fogColor);
-			
 			if(oldMaterial->isFlatColorEnabled)
 			{
 				targetState->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());

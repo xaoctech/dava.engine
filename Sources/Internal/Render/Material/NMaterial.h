@@ -152,7 +152,7 @@ class NMaterial;
 class NMaterialState
 {
 	friend class NMaterial;
-	
+
 public:
 			
 	NMaterialState();
@@ -181,6 +181,8 @@ public:
 	
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
 	inline NMaterial* GetParent() {return parent;}
+	
+	NMaterialState* CreateTemplate(NMaterial* templateParent);
 			
 protected:
 	

@@ -68,6 +68,13 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 	return material;
 }
 	
+NMaterial* MaterialSystem::GetSpecificMaterial(const FastName & name)
+{
+	NMaterial* material = materials.at(name);
+		
+	return material;
+}
+	
 void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const
 {
 	if(NULL == parent)
@@ -444,9 +451,21 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 			mat->SwitchState(qualityLevelName, this, forceSwitch);
 		}
 	}
+	
+	for(Vector<NMaterial*>::iterator it = materialList.begin();
+		it != materialList.end();
+		++it)
+	{
+		NMaterial* mat = *it;
+		if(mat->GetParent() == NULL) //parent == NULL means it's root material
+		{
+			mat->Rebuild();
+			mat->Rebind();
+		}
+	}
 }
 	
-NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
+NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 {
 	NMaterial* child = MaterialSystem::CreateNamed();
 	
@@ -455,22 +474,50 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 	return child;
 }
 	
-	NMaterial* MaterialSystem::CreateChild(const FastName& parentName)
+	NMaterial* MaterialSystem::CreateInstanceChild(const FastName& parentName)
 	{
 		NMaterial* parent = GetMaterial(parentName);
-		return CreateChild(parent);
+		return CreateInstanceChild(parent);
 	}
 	
 	void MaterialSystem::BindMaterial(NMaterial* newMaterial)
 	{
-		FastName parentName = newMaterial->GetParentName();
 		AddMaterial(newMaterial);
 		
+		FastName parentName = newMaterial->GetParentName();
 		NMaterial* newParent = GetMaterial(parentName);
 		if(newParent)
 		{
 			newMaterial->SetParent(newParent);
 		}
+	}
+	
+	NMaterial* MaterialSystem::CreateSwitchableChild(NMaterial* parent)
+	{
+		NMaterial* child = MaterialSystem::CreateNamed();
+		uint32 stateCount = parent->GetStateCount();
+		
+		if(stateCount > 0)
+		{
+			HashMap<FastName, NMaterialState*>::iterator stateIter = parent->states.begin();
+			while(stateIter != parent->states.end())
+			{
+				NMaterialState* matState = stateIter->second->CreateTemplate(parent);
+				child->states.insert(stateIter->first, matState);
+				
+				++stateIter;
+			}
+		}
+		
+		child->SetParent(parent);
+		
+		return child;
+	}
+	
+	NMaterial* MaterialSystem::CreateSwitchableChild(const FastName& parentName)
+	{
+		NMaterial* parent = GetMaterial(parentName);
+		return CreateSwitchableChild(parent);
 	}
 	
 	NMaterial* MaterialSystem::CreateNamed()
