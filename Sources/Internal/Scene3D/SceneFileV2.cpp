@@ -308,7 +308,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     OptimizeScene(rootNode);	
     
 	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
-	serializationContext.GetScene()->renderSystem->GetMaterialSystem()->SwitchMaterialQuality(qualityLod, true);
+	MaterialSystem* matSystem = serializationContext.GetScene()->renderSystem->GetMaterialSystem();
+	matSystem->SwitchMaterialQuality(qualityLod, true);
 	
 	rootNode->SceneDidLoaded();
     
