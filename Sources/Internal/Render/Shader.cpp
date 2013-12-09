@@ -1014,7 +1014,19 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 		
 		RENDER_VERIFY(glCompileShader(*shader));					// compile shader
-		
+
+#ifdef __DAVAENGINE_DEBUG__
+        {
+            GLchar log[4096] = {0};
+            GLsizei logLength = 0;
+            RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
+            if (logLength)
+            {
+                Logger::FrameworkDebug("Shader compile log:\n%s", log);
+            }
+        }
+#endif
+
 		RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
 		if (status == GL_FALSE)
 		{
