@@ -76,6 +76,8 @@ void ActionUpdateSystem::RemoveEntity(Entity * entity)
 		
 void ActionUpdateSystem::Process()
 {
+	DelayedDeleteActions();
+
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	
 	uint32 size = activeActions.size();
@@ -84,8 +86,6 @@ void ActionUpdateSystem::Process()
 		ActionComponent* component = activeActions[index];
 		component->Update(timeElapsed);
 	}
-
-	DelayedDeleteActions();
 }
 
 void ActionUpdateSystem::DelayedDeleteActions()
