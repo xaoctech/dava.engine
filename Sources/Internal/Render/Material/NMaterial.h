@@ -63,7 +63,7 @@ public:
 	virtual void SystemChanged(NMaterial* material) = 0;
 };
 
-struct IlluminationParams 
+struct IlluminationParams : public InspBase
 {
     static const int32 LIGHTMAP_SIZE_DEFAULT = 128;
     

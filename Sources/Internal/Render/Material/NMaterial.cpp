@@ -1306,6 +1306,14 @@ namespace DAVA
 				++stateIter;
 			}
 		}
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1314,25 +1322,35 @@ namespace DAVA
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
 		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
-		{
-			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
-				it != archiveData.end();
-				++it)
-			{
-				if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
-				{
-					NMaterialState* matState = new NMaterialState();
-					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
-					states.insert(FastName(it->first), matState);
-				}
-			}
-		}
-		else
-		{
-			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
-			Deserialize(*this, stateArchive, serializationContext);
-		}
+        if(archive->IsKeyExists("__defaultState__"))
+        {
+            KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
+            Deserialize(*this, stateArchive, serializationContext);
+        }
+        else
+        {
+            for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
+                it != archiveData.end();
+                ++it)
+            {
+                if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
+                {
+                    NMaterialState* matState = new NMaterialState();
+                    Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
+                    states.insert(FastName(it->first), matState);
+                }
+            }
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
@@ -1419,14 +1437,6 @@ namespace DAVA
 		}
 		archive->SetArchive("techniques", materialTechniques);
 		SafeRelease(materialTechniques);
-
-        if(illuminationParams)
-        {
-            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
-            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
-            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
-            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
-        }
 	}
 	
 	void NMaterial::Deserialize(NMaterialState& materialState,
@@ -1504,16 +1514,6 @@ namespace DAVA
 			
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
-        }
-
-        if(archive->IsKeyExists("illumination.isUsed"))
-        {
-            GetIlluminationParams(); //create only
-
-            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
-            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
-            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
-            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
         }
 	}
 	
@@ -1648,6 +1648,15 @@ namespace DAVA
 			}
 		}
 		
+        if(illuminationParams)
+        {
+            IlluminationParams * params = clonedMaterial->GetIlluminationParams();
+            params->isUsed = illuminationParams->isUsed;
+            params->castShadow = illuminationParams->castShadow;
+            params->receiveShadow = illuminationParams->receiveShadow;
+            params->lightmapSize = illuminationParams->lightmapSize;
+        }
+
 		return clonedMaterial;
 	}
     
