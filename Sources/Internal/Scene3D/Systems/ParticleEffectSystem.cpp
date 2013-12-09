@@ -84,15 +84,8 @@ void ParticleEffectSystem::Process()
 
 void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime)
 {
-	const Matrix4 &effectTransform = effect->GetEntity()->GetWorldTransform();
-	Matrix3 rotationMatrix = Matrix3::Identity();
+	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();
 	
-
-	if(worldTransformPtr)
-	{
-		tempPosition = worldTransformPtr->GetTranslationVector();
-		rotationMatrix = Matrix3(*worldTransformPtr);;
-	}
 	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
 	{
 		ParticleGroup &group = *it;
@@ -188,7 +181,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			if (group.layer->type == ParticleLayer::TYPE_SINGLE_PARTICLE)
 			{
 				if (!group.head)
-					GenerateNewParticle(group, currLoopTime, );
+					GenerateNewParticle(group, currLoopTime, worldTransform);
 			}else
 			{
 				float32 newParticles = 0.0f;
@@ -203,7 +196,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				while(group.particlesToGenerate >= 1.0f)
 				{
 					group.particlesToGenerate -= 1.0f;					
-					GenerateNewParticle(group, currLoopTime);					
+					GenerateNewParticle(group, currLoopTime, worldTransform);					
 				}
 			}
 			
@@ -218,7 +211,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 }
 
 
-void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, Matrix4 *worldTransform)
+void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform)
 {
 	Particle *particle = new Particle();		
 	particle->life = 0.0f;	
@@ -228,6 +221,11 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 	{
 		particle->color = group.layer->colorRandom->GetValue(Random::Instance()->RandFloat());
 	}
+	if (group.emitter->colorOverLife)
+	{
+		particle->color*=group.emitter->colorOverLife->GetValue(group.time);
+	}
+
 	particle->lifeTime = 0.0f;
 	if (group.layer->life)
 		particle->lifeTime += group.layer->life->GetValue(currLoopTime);
@@ -245,13 +243,7 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 	/*if (emitter->parentParticle){
 		particle->size.x*=emitter->parentParticle->size.x;
 		particle->size.y*=emitter->parentParticle->size.y;
-	}*/
-
-	float32 vel = 0.0f;
-	if (group.layer->velocity)
-		vel += group.layer->velocity->GetValue(currLoopTime);
-	if (group.layer->velocityVariation)
-		vel += (group.layer->velocityVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+	}*/	
 
 	particle->angle = 0.0f;
 	particle->spin = 0.0f;
@@ -276,17 +268,102 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 	}	
 	
 	
-	//particle->position = emitter->GetPosition();	
-	// parameters should be prepared inside prepare emitter parameters
-	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
-	if (this->emitter&&!inheritPosition) //just generate at correct position
+	
+	PrepareEmitterParameters(particle, group, worldTransform);
+	
+	float32 vel = 0.0f;
+	if (group.layer->velocity)
+		vel += group.layer->velocity->GetValue(currLoopTime);
+	if (group.layer->velocityVariation)
+		vel += (group.layer->velocityVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+	
+	//TODO: superemitter stuff
+	/*if (this->emitter&&!inheritPosition) //just generate at correct position
 	{		
 		particle->position += emitter->GetPosition()-emitter->GetInitialTranslationVector();
-	}		
-
+	}*/		
 		
 	particle->next = group.head;
 	group.head = particle;	
+}
+
+void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform)
+{	
+	//calculate position new particle position in emitter space (for point leave it V3(0,0,0))
+	if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
+	{        
+		if (group.emitter->size)
+		{
+			Vector3 currSize = group.emitter->size->GetValue(group.time);
+			particle->position = Vector3(currSize.x*(Random::Instance()->RandFloat() - 0.5f), currSize.y*(Random::Instance()->RandFloat() - 0.5f), currSize.z*(Random::Instance()->RandFloat() - 0.5f));
+		}				
+	}
+	else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES)||(group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
+	{
+		float32 curRadius = 1.0f;
+		if (group.emitter->radius)		
+			curRadius = group.emitter->radius->GetValue(group.time);		
+		float32 curAngle = PI_2 * (float32)Random::Instance()->RandFloat();
+		if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)		
+			curRadius *= (float32)Random::Instance()->RandFloat();		
+		float sinAngle = 0.0f;
+		float cosAngle = 0.0f;
+		SinCosFast(curAngle, sinAngle, cosAngle);
+		particle->position = Vector3(curRadius * cosAngle, curRadius * sinAngle, 0.0f);
+	}
+	particle->position += group.emitter->position;
+	//current emission vector and it's length
+	Vector3 currEmissionVector(0,0,1);
+	if (group.emitter->emissionVector)
+		currEmissionVector = group.emitter->emissionVector->GetValue(group.time);
+	float32 currEmissionPower = currEmissionVector.Length();
+	//calculate speed in emitter space not transformed by emission vector yet
+	if (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE)
+	{
+		particle->speed = particle->position;
+		float32 spl = particle->speed.SquareLength();
+		if (spl>EPSILON)
+		{
+			particle->speed*=currEmissionPower/sqrtf(spl);
+		}
+	}
+	else
+	{
+		if (group.emitter->emissionRange)
+		{
+			float32 theta = Random::Instance()->RandFloat()*group.emitter->emissionRange->GetValue(group.time);
+			float phi = Random::Instance()->RandFloat() * PI_2;
+			particle->speed = Vector3(currEmissionPower* cos(phi) * sin(theta), currEmissionPower * sin (phi) * sin(theta), currEmissionPower * cos(theta));			
+		}
+		else
+		{
+			particle->speed = Vector3(0, 0, currEmissionPower);
+		}
+	}
+
+	//now transform position and speed by emissionVector and worldTransfrom rotations - preserving length	
+	Matrix3 newTransform(worldTransform);
+	if ((fabs(currEmissionVector.x)<EPSILON)&&(fabs(currEmissionVector.z)<EPSILON))
+	{
+		if (currEmissionVector.z<0)
+		{
+			Matrix3 rotation;
+			rotation.CreateRotation(Vector3(1,0,0), PI);
+			newTransform = rotation*newTransform;
+		}
+	}
+	else
+	{
+		Vector3 axis(currEmissionVector.y, -currEmissionVector.x, 0);
+		axis.Normalize();
+		float32 angle = acosf(currEmissionVector.z/currEmissionPower);
+		Matrix3 rotation;
+		rotation.CreateRotation(axis, angle);
+		newTransform = rotation*newTransform;
+	}
+	TransformPerserveLength(particle->speed, newTransform);
+	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)
+	particle->position+=worldTransform.GetTranslationVector();		
 }
 
 
