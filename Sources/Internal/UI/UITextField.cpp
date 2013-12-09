@@ -924,7 +924,7 @@ uint32 UITextField::GetCursorPos()
 #ifdef __DAVAENGINE_IPHONE__
 	return textFieldiPhone->GetCursorPos();
 #elif defined(__DAVAENGINE_ANDROID__)
-    // TODO! implement for Android!
+	return textFieldAndroid->GetCursorPos();
 #endif
     // TODO! implement for other OS!
     return 0;
@@ -935,7 +935,7 @@ void UITextField::SetCursorPos(uint32 pos)
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetCursorPos(pos);
 #elif defined(__DAVAENGINE_ANDROID__)
-    // TODO! implement for Android!
+	textFieldAndroid->SetCursorPos(pos);
 #endif
     // TODO! implement for other OS!
 }
