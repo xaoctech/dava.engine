@@ -53,17 +53,17 @@ public:
 	
 protected:
 	void UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime);
-	void GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, Matrix4 *worldTransform);
-	void PrepareEmitterParameters(Particle * particle, float32 velocity, ParticleEmitter *emitter);		
-	//emitter generation - should be rethought
+	void GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform);
 	
-	void CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition, const Matrix3& rotationMatrix);
+	void PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform);
+
+	/*void CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition, const Matrix3& rotationMatrix);
 	void PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
 		int32 emitIndex, const Vector3& tempPosition,
 		const Matrix3& rotationMatrix);
 	void PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
 		int32 emitIndex, const Vector3& tempPosition,
-		const Matrix3& rotationMatrix);
+		const Matrix3& rotationMatrix);*/
 	
 
 private:
