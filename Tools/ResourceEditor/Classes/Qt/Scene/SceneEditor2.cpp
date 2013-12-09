@@ -523,11 +523,11 @@ const RenderManager::Stats & SceneEditor2::GetRenderStats() const
     return renderStats;
 }
 
-void SceneEditor2::DisableTools(int32 toolFlags)
+void SceneEditor2::DisableTools(int32 toolFlags, bool textureSavingNeeded/* = true*/)
 {
 	if (toolFlags & LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
-		Exec(new ActionDisableCustomColors(this));
+		Exec(new ActionDisableCustomColors(this, textureSavingNeeded));
 	}
 	
 	if (toolFlags & LANDSCAPE_TOOL_VISIBILITY)

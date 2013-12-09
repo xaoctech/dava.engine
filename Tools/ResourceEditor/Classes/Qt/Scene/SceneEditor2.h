@@ -149,7 +149,7 @@ public:
 
     const RenderManager::Stats & GetRenderStats() const;
 
-	void DisableTools(int32 toolFlags);
+	void DisableTools(int32 toolFlags, bool textureSavingNeeded = true);
 	bool IsToolsEnabled(int32 toolFlags);
 	int32 GetEnabledTools();
 

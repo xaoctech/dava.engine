@@ -193,7 +193,7 @@ void CustomColorsPanel::SetColor(int color)
 	GetActiveScene()->customColorsSystem->SetColor(color);
 }
 
-void CustomColorsPanel::SaveTexture()
+bool CustomColorsPanel::SaveTexture()
 {
 	SceneEditor2* sceneEditor = GetActiveScene();
 	
@@ -212,6 +212,11 @@ void CustomColorsPanel::SaveTexture()
 	if (!selectedPathname.IsEmpty())
 	{
 		sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -235,7 +240,7 @@ void CustomColorsPanel::LoadTexture()
 	}
 }
 
-void CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
+bool CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
 {
 	if (scene != GetActiveScene())
 	{
@@ -245,11 +250,11 @@ void CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
 	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
 	if(!selectedPathname.IsEmpty())
 	{
-		scene->customColorsSystem->SaveTexture(selectedPathname);
+		return scene->customColorsSystem->SaveTexture(selectedPathname);
 	}
 	else
 	{
-		SaveTexture();
+		return SaveTexture();
 	}
 }
 

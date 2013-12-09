@@ -54,11 +54,11 @@ protected:
 class ActionDisableCustomColors: public CommandAction
 {
 public:
-	ActionDisableCustomColors(SceneEditor2* forSceneEditor);
+	ActionDisableCustomColors(SceneEditor2* forSceneEditor, bool textureSavingNeeded);
 	
 protected:
 	SceneEditor2* sceneEditor;
-	
+	bool		  textureSaveingNeeded;
 	virtual void Redo();
 };
 

@@ -46,7 +46,7 @@ public:
 	virtual ~CustomColorsSystem();
 	
 	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
-	bool DisableLandscapeEdititing();
+	bool DisableLandscapeEdititing(bool saveNeeded = true);
 	bool IsLandscapeEditingEnabled() const;
 	
 	void Update(DAVA::float32 timeElapsed);
@@ -57,10 +57,10 @@ public:
 	void SetColor(int32 colorIndex);
 	int32 GetColor();
 
-	void SaveTexture(const FilePath& filePath);
+	bool SaveTexture(const FilePath& filePath);
 	void LoadTexture(const FilePath& filePath, bool createUndo = true);
 	FilePath GetCurrentSaveFileName();
-
+	
 protected:
 	bool enabled;
 	
