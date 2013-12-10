@@ -322,41 +322,53 @@ void ParticleEffectPropertiesWidget::OnContextMenuCommand(QAction *action)
 	{
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
 		SetEmitterLineModifiable(data.emmiter, EmitterExternals(commandId));		
-		particleEffect->RegisterModifiable(GetEmitterLine(data.emmiter, EmitterExternals(commandId)));
-		UpdateVaribleTables();
-		data.externalParamId = commandId;
-		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
-		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
-		externalItem->setIcon(0, iconExternal);
-		externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));		
-		EditEmitterModifiable(data.emmiter, EmitterExternals(commandId), true);		
+		if (EditEmitterModifiable(data.emmiter, EmitterExternals(commandId), true))		
+		{					
+			data.externalParamId = commandId;
+			QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
+			externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
+			externalItem->setIcon(0, iconExternal);
+			externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));		
+		}
+		else
+		{
+			RemoveEmitterLineModifiable(data.emmiter, EmitterExternals(commandId));
+		}
+		
 	}
 	else if (commandId<EL_TOTAL)
 	{
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
-		SetLayerLineModifiable(data.layer, LayerExternals(commandId));		
-		particleEffect->RegisterModifiable(GetLayerLine(data.layer, LayerExternals(commandId)));
-		UpdateVaribleTables();
-		data.externalParamId = commandId;
-		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
-		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
-		externalItem->setIcon(0, iconExternal);
-		externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));
-		EditLayerModifiable(data.layer, LayerExternals(commandId), true);
-		
+		SetLayerLineModifiable(data.layer, LayerExternals(commandId));	
+		if (EditLayerModifiable(data.layer, LayerExternals(commandId), true))
+		{			
+			data.externalParamId = commandId;
+			QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
+			externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
+			externalItem->setIcon(0, iconExternal);
+			externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));
+		}
+		else
+		{
+			RemoveLayerLineModifiable(data.layer, LayerExternals(commandId));
+		}				
 	}
 	else
 	{	
 		EffectTreeData data = currSelectedTreeItem->data(0, Qt::UserRole).value<EffectTreeData>();
 		SetForceLineModifiable(data.force, ForceExternals(commandId));		
-		particleEffect->UnRegisterModifiable(GetForceLine(data.force, ForceExternals(commandId)));
-		UpdateVaribleTables();
-		data.externalParamId = commandId;
-		QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
-		externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
-		externalItem->setIcon(0, iconExternal);
-		externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));
-		EditForceModifiable(data.force, ForceExternals(commandId), true);
+		if (EditForceModifiable(data.force, ForceExternals(commandId), true))
+		{			
+			data.externalParamId = commandId;
+			QTreeWidgetItem *externalItem = new QTreeWidgetItem(currSelectedTreeItem, TreeItemTypeExternal);
+			externalItem->setText(0, QString("External ")+QString(EXTERNAL_NAMES[commandId].c_str()));
+			externalItem->setIcon(0, iconExternal);
+			externalItem->setData(0, Qt::UserRole, QVariant::fromValue(data));
+		}
+		else
+		{
+			RemoveForceLineModifiable(data.force, ForceExternals(commandId));
+		}
 	}
 }
 
@@ -651,77 +663,80 @@ void ParticleEffectPropertiesWidget::RemoveForceLineModifiable(ParticleForce *fo
 }
 
 
-void ParticleEffectPropertiesWidget::EditEmitterModifiable(ParticleEmitter *emitter, EmitterExternals lineId, bool onAdd)
+bool ParticleEffectPropertiesWidget::EditEmitterModifiable(ParticleEmitter *emitter, EmitterExternals lineId, bool onAdd)
 {
 	switch(lineId)
 	{
 	case EE_EMISSION_VECTOR:
-		EditModificationLine(emitter->emissionVector, onAdd); break;
+		return EditModificationLine(emitter->emissionVector, onAdd); break;
 	case EE_EMISSION_RANGE:
-		EditModificationLine(emitter->emissionRange, onAdd); break;
+		return EditModificationLine(emitter->emissionRange, onAdd); break;
 	case EE_RADUS:
-		EditModificationLine(emitter->radius, onAdd); break;
+		return EditModificationLine(emitter->radius, onAdd); break;
 	case EE_SIZE:
-		EditModificationLine(emitter->size, onAdd); break;
+		return EditModificationLine(emitter->size, onAdd); break;
 	case EE_COLOR_OVER_LIFE:
-		EditModificationLine(emitter->colorOverLife, onAdd); break;
+		return EditModificationLine(emitter->colorOverLife, onAdd); break;
 	}
+	return false;
 }
-void ParticleEffectPropertiesWidget::EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd)
+bool ParticleEffectPropertiesWidget::EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd)
 {
 	switch (lineId)
 	{
 	case EL_LIFE:
-		EditModificationLine(layer->life, onAdd); break;
+		return EditModificationLine(layer->life, onAdd); break;
 	case EL_LIFE_VARIATION:
-		EditModificationLine(layer->lifeVariation, onAdd); break;
+		return EditModificationLine(layer->lifeVariation, onAdd); break;
 	case EL_NUMBER:
-		EditModificationLine(layer->number, onAdd); break;
+		return EditModificationLine(layer->number, onAdd); break;
 	case EL_NUMBER_VARIATION:
-		EditModificationLine(layer->numberVariation, onAdd); break;
+		return EditModificationLine(layer->numberVariation, onAdd); break;
 	case EL_SIZE:
-		EditModificationLine(layer->size, onAdd); break;
+		return EditModificationLine(layer->size, onAdd); break;
 	case EL_SIZE_VARIATION:
-		EditModificationLine(layer->sizeVariation, onAdd); break;
+		return EditModificationLine(layer->sizeVariation, onAdd); break;
 	case EL_SIZE_OVERLIFE:
-		EditModificationLine(layer->sizeOverLifeXY, onAdd); break;
+		return EditModificationLine(layer->sizeOverLifeXY, onAdd); break;
 	case EL_VELOCITY:
-		EditModificationLine(layer->velocity, onAdd); break;
+		return EditModificationLine(layer->velocity, onAdd); break;
 	case EL_VELOCITY_VARIATON:
-		EditModificationLine(layer->velocityVariation, onAdd); break;
+		return EditModificationLine(layer->velocityVariation, onAdd); break;
 	case EL_VELOCITY_OVERLIFE:
-		EditModificationLine(layer->velocityOverLife, onAdd); break;
+		return EditModificationLine(layer->velocityOverLife, onAdd); break;
 	case EL_SPIN:
-		EditModificationLine(layer->spin, onAdd); break;
+		return EditModificationLine(layer->spin, onAdd); break;
 	case EL_SPIN_VARIATION:
-		EditModificationLine(layer->spinVariation, onAdd); break;
+		return EditModificationLine(layer->spinVariation, onAdd); break;
 	case EL_SPIN_OVERLIFE:
-		EditModificationLine(layer->spinOverLife, onAdd); break;
+		return EditModificationLine(layer->spinOverLife, onAdd); break;
 	case EL_COLOR:
-		EditModificationLine(layer->colorRandom, onAdd); break;
+		return EditModificationLine(layer->colorRandom, onAdd); break;
 	case EL_ALPHA_OVERLIFE:
-		EditModificationLine(layer->alphaOverLife, onAdd); break;
+		return EditModificationLine(layer->alphaOverLife, onAdd); break;
 	case EL_COLOR_OVERLIFE:
-		EditModificationLine(layer->colorOverLife, onAdd); break;
+		return EditModificationLine(layer->colorOverLife, onAdd); break;
 	case EL_ANGLE:
-		EditModificationLine(layer->angle, onAdd); break;
+		return EditModificationLine(layer->angle, onAdd); break;
 	case EL_ANGLE_VARIATION:
-		EditModificationLine(layer->angleVariation, onAdd); break;
+		return EditModificationLine(layer->angleVariation, onAdd); break;
 	case EL_ANIM_SPEED_OVERLIFE:
-		EditModificationLine(layer->animSpeedOverLife, onAdd); break;
+		return EditModificationLine(layer->animSpeedOverLife, onAdd); break;
 	}
+	return false;
 }
-void ParticleEffectPropertiesWidget::EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd)
+bool ParticleEffectPropertiesWidget::EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd)
 {
 	switch(lineId)
 	{
 	case EF_FORCE:
-		EditModificationLine(force->force, onAdd); break;
+		return EditModificationLine(force->force, onAdd); break;
 	case EF_FORCE_VARIATION:
-		EditModificationLine(force->forceVariation, onAdd); break;
+		return EditModificationLine(force->forceVariation, onAdd); break;
 	case EF_FORCE_OVERLIFE:
-		EditModificationLine(force->forceOverLife, onAdd); break;
+		return EditModificationLine(force->forceOverLife, onAdd); break;
 	}
+	return false;
 }
 
 

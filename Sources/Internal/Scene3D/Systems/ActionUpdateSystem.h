@@ -58,6 +58,9 @@ namespace DAVA
 	protected:
 		bool eventBlocked[ActionComponent::Action::EVENTS_COUNT];
 		Vector<ActionComponent*> activeActions;
+
+		void DelayedDeleteActions();
+		Vector<ActionComponent*> deleteActions;
 	};
 	
 }

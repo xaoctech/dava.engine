@@ -256,6 +256,8 @@
    <addaction name="actionEqualBetweenYCenters"/>
    <addaction name="actionEqualBetweenBottomEdges"/>
    <addaction name="actionEqualBetweenYObjects"/>
+   <addaction name="separator"/>
+   <addaction name="actionRepack_And_Reload"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="propertiesDockWidget">
@@ -592,9 +594,8 @@
   </action>
   <action name="actionEqualBetweenXCenters">
    <property name="icon">
-    <iconset>
-     <disabledoff>:/Icons/distribute_horizontal_center.png</disabledoff>
-    </iconset>
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/distribute_horizontal_center.png</normaloff>:/Icons/distribute_horizontal_center.png</iconset>
    </property>
    <property name="text">
     <string>Eq X Centers</string>
@@ -658,6 +659,18 @@
    </property>
    <property name="text">
     <string>Eq Y</string>
+   </property>
+  </action>
+  <action name="actionRepack_And_Reload">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/reloadtextures.png</normaloff>:/Icons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Repack And Reload</string>
+   </property>
+   <property name="toolTip">
+    <string>Repack and reload sprites</string>
    </property>
   </action>
  </widget>
