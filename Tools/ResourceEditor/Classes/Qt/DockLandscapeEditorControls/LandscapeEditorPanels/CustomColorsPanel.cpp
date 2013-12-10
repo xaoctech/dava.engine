@@ -242,20 +242,23 @@ void CustomColorsPanel::LoadTexture()
 
 bool CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
 {
+	bool savingCanceled = false;
 	if (scene != GetActiveScene())
 	{
-		return;
+		return savingCanceled;
 	}
 
 	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
 	if(!selectedPathname.IsEmpty())
 	{
-		return scene->customColorsSystem->SaveTexture(selectedPathname);
+		scene->customColorsSystem->SaveTexture(selectedPathname);
+		savingCanceled = false;
 	}
 	else
 	{
-		return SaveTexture();
+		savingCanceled = !SaveTexture();
 	}
+	return savingCanceled;
 }
 
 void CustomColorsPanel::ConnectToShortcuts()

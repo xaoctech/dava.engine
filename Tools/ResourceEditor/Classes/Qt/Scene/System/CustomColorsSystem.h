@@ -46,7 +46,7 @@ public:
 	virtual ~CustomColorsSystem();
 	
 	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
-	bool DisableLandscapeEdititing(bool saveNeeded = true);
+	bool DisableLandscapeEdititing(bool& savingCanceled, bool saveNeeded = true);
 	bool IsLandscapeEditingEnabled() const;
 	
 	void Update(DAVA::float32 timeElapsed);
@@ -61,6 +61,8 @@ public:
 	void LoadTexture(const FilePath& filePath, bool createUndo = true);
 	FilePath GetCurrentSaveFileName();
 	
+	bool ChangesPresent();
+		
 protected:
 	bool enabled;
 	
