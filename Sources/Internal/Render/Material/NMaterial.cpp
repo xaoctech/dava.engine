@@ -1604,14 +1604,14 @@ namespace DAVA
 		return (states.size() > 0);
 	}
 	
-	NMaterial* NMaterial::Clone()
+	NMaterial* NMaterial::Clone(const String& newName)
 	{
 		NMaterial* clonedMaterial = new NMaterial();
 		
 		if(this->IsSwitchable())
 		{
 			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
-						
+			
 			while(stateIter != states.end())
 			{
 				clonedMaterial->states.insert(stateIter->first,
@@ -1625,13 +1625,20 @@ namespace DAVA
 			DeepCopyTo(clonedMaterial);
 		}
 		
-		if(IsConfigMaterial())
+		if(newName.length())
 		{
-			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			clonedMaterial->SetMaterialName(newName);
 		}
 		else
 		{
-			clonedMaterial->GenerateName();
+			if(IsConfigMaterial())
+			{
+				clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			}
+			else
+			{
+				clonedMaterial->GenerateName();
+			}
 		}
 		
 		clonedMaterial->SetMaterialSystem(materialSystem);
@@ -1662,8 +1669,14 @@ namespace DAVA
             params->receiveShadow = illuminationParams->receiveShadow;
             params->lightmapSize = illuminationParams->lightmapSize;
         }
-
+		
 		return clonedMaterial;
+
+	}
+	
+	NMaterial* NMaterial::Clone()
+	{
+		return Clone("");
 	}
     
     void NMaterial::SetMaterialName(const String& name)
