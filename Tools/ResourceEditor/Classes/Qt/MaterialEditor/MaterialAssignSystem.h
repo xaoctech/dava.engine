@@ -37,7 +37,7 @@
 
 class EntityGroup;
 class SceneEditor2;
-class MaterialsAssignSystem
+class MaterialAssignSystem
 {
 public:
     

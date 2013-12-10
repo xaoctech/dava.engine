@@ -28,27 +28,45 @@
 
 
 
-#ifndef __MATERIALS_ITEM_H__
-#define __MATERIALS_ITEM_H__
+#include "MaterialItem.h"
+#include "MaterialModel.h"
 
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItem>
-
-class MaterialsModel;
-class MaterialsItem: public QStandardItem
+MaterialItem::MaterialItem(DAVA::NMaterial * _material, MaterialModel * _model)
+    : QStandardItem()
+    , material(_material)
+    , model(_model)
 {
-public:
-    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
-    virtual ~MaterialsItem();
+    DVASSERT(model);
+    DVASSERT(material);
     
-    QVariant data(int role = Qt::UserRole + 1) const;
+    setText(material->GetMaterialName().c_str());
+    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
-private:
-    
-    DAVA::NMaterial * material;
-    MaterialsModel * model;
-};
+    if(material->IsSwitchable())
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
+    }
+    else
+    {
+        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+    }
+    setEditable(false);
+}
 
+MaterialItem::~MaterialItem()
+{
+}
 
-#endif // __MATERIALS_ITEM_H__
+QVariant MaterialItem::data(int role) const
+{
+//    if(role == Qt::BackgroundColorRole)
+//    {
+//        if(model && model->IsMaterialSelected(material))
+//        {
+//            return QColor(235, 215, 210);
+//        }
+//    }
+    
+    return QStandardItem::data(role);
+}
+

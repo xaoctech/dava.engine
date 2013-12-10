@@ -35,7 +35,10 @@ namespace DAVA
 		: InspMember(_name, _desc, _offset, _type, _flags)
 		, dynamicInfo(_dynamicInfo)
 	{
-
+		if(NULL != dynamicInfo)
+		{
+			dynamicInfo->memberDynamic = this;
+		}
 	}
 
 	InspMemberDynamic::~InspMemberDynamic()

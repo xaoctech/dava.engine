@@ -28,8 +28,8 @@
 
 
 
-#include "MaterialsModel.h"
-#include "MaterialsItem.h"
+#include "MaterialModel.h"
+#include "MaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
@@ -38,25 +38,25 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Material/MaterialSystem.h"
 
-MaterialsModel::MaterialsModel(QObject * parent)
+MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
     , curScene(NULL)
 {
 }
 
-MaterialsModel::~MaterialsModel()
+MaterialModel::~MaterialModel()
 {
     switchableMaterials.clear();
     curScene = NULL;
 }
 
-void MaterialsModel::RemoveAllItems()
+void MaterialModel::RemoveAllItems()
 {
     QStandardItem * rootItem = invisibleRootItem();
     rootItem->removeRows(0, rowCount());
 }
 
-void MaterialsModel::SetScene(SceneEditor2 *scene)
+void MaterialModel::SetScene(SceneEditor2 *scene)
 {
     switchableMaterials.clear();
 
@@ -67,7 +67,7 @@ void MaterialsModel::SetScene(SceneEditor2 *scene)
     RebuildModel();
 }
 
-void MaterialsModel::RetriveMaterials()
+void MaterialModel::RetriveMaterials()
 {
     if(!curScene) return;
     
@@ -83,27 +83,27 @@ void MaterialsModel::RetriveMaterials()
     }
 }
 
-void MaterialsModel::RebuildModel()
+void MaterialModel::RebuildModel()
 {
     RemoveAllItems();
 
     QStandardItem * rootItem = invisibleRootItem();
     for(DAVA::uint32 i = 0; i < (DAVA::uint32)switchableMaterials.size(); ++i)
     {
-        MaterialsItem *item = new MaterialsItem(switchableMaterials[i], this);
+        MaterialItem *item = new MaterialItem(switchableMaterials[i], this);
         AddMaterialToItem(switchableMaterials[i], item);
 
         rootItem->appendRow(item);
     }
 }
 
-void MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * rootItem)
+void MaterialModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialItem * rootItem)
 {
     for(DAVA::int32 i = 0; i < material->GetChildrenCount(); ++i)
     {
         DAVA::NMaterial *mat = material->GetChild(i);
 
-        MaterialsItem *item = new MaterialsItem(mat, this);
+        MaterialItem *item = new MaterialItem(mat, this);
         AddMaterialToItem(mat, item);
 
         rootItem->appendRow(item);
@@ -111,7 +111,7 @@ void MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem
 }
 
 
-DAVA::NMaterial * MaterialsModel::GetMaterial(const QModelIndex & index) const
+DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {
     if(!index.isValid()) return NULL;
     
@@ -121,7 +121,7 @@ DAVA::NMaterial * MaterialsModel::GetMaterial(const QModelIndex & index) const
     return material;
 }
 
-QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
+QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
 {
 	if(indexes.size() > 0)
 	{
@@ -137,7 +137,7 @@ QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
 	return NULL;
 }
 
-QStringList MaterialsModel::mimeTypes() const
+QStringList MaterialModel::mimeTypes() const
 {
 	QStringList types;
     
