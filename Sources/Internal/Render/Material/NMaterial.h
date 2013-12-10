@@ -185,6 +185,8 @@ public:
 	inline NMaterial* GetParent() {return parent;}
 	
 	NMaterialState* CreateTemplate(NMaterial* templateParent);
+	
+	void SetParentToState(NMaterial* material);
 			
 protected:
 	
@@ -246,7 +248,6 @@ protected:
 	void AddMaterialDefineToState(const FastName& defineName);
 	void RemoveMaterialDefineFromState(const FastName& defineName);
 	
-	void SetParentToState(NMaterial* material);
 	void AddChildToState(NMaterial* material);
 	void RemoveChildFromState(NMaterial* material);
 	
