@@ -122,6 +122,9 @@ public:
 	void AlignSelectedControls(eAlignControlsType alignType);
 	void DistributeSelectedControls(eDistributeControlsType distributeType);
 
+    // Repack and reload sprites.
+    void RepackAndReloadSprites();
+
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	String GetNewControlName(const String& baseName);
