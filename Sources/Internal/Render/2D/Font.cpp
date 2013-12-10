@@ -181,11 +181,25 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	{
 		SKIP = 0,
 		GOODCHAR,	// all characters we like (symbols, special chars, except \n and space
-		NEXTLINE, // state after symbol '\'
 		FINISH,	// process last line
 		EXIT,
 	};
-	
+
+    // Yuri Coder, 2013/12/10. Replace "\n" occurences (two chars) to '\n' (one char). See please MOBWOT-6499.
+	WideString postProcessedText = text;
+
+    static const WideString searchString(L"\\n");
+    static const WideString replaceString(L"\n");
+    static size_t searchStringLength = searchString.length();
+
+    size_t pos = 0;
+    pos = postProcessedText.find(searchString, pos);
+    while ((pos = postProcessedText.find(searchString, pos)) != std::string::npos)
+    {
+        postProcessedText.replace(pos, searchStringLength, replaceString);
+        pos += searchStringLength;
+    }
+
 	resultVector.clear();
 	//int textLength = text.length();
 	int state = SKIP;
@@ -193,17 +207,17 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	int lastWordEnd = 0;
 	int currentLineStart = -1;
 	int currentLineEnd = 0;
-	int totalSize = (int)text.length();
+	int totalSize = (int)postProcessedText.length();
 	
 	Vector<int32> sizes;
-	GetStringSize(text, &sizes);
+	GetStringSize(postProcessedText, &sizes);
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
 		wchar_t t = 0;
 		if(pos < totalSize)
 		{
-			t = text[pos];
+			t = postProcessedText[pos];
 		}
 		switch (state) 
 		{
@@ -218,7 +232,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
+						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, pos - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
@@ -230,7 +244,6 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					state = SKIP; //always switch to SKIP because we do not know here what will be next
 					break;
 				}
-				else if (t == '\\'){ state = NEXTLINE; break; } // if find \ go to NEXTLINE state to check if we will get n char
 				else // everything else is good characters
 				{
 					state = GOODCHAR;
@@ -240,14 +253,14 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				}
 				break;
 			case GOODCHAR: 
-				if ((t == ' ') || (t == '\\') || (t == '\n') || t == 0) // if we've found any possible separator process current line
+				if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
 				{ 
 					lastWordEnd = pos;
 					
 					//					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
 					//					Size2i currentLineSize = GetStringSize(currentLine);
 					int currentLineDx = 0;
-					for (int i = currentLineStart; i < lastWordEnd ; i++) 
+					for (int i = currentLineStart; i < lastWordEnd ; i++)
 					{
 						currentLineDx += sizes[i];
 					}
@@ -257,7 +270,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					}else // here we add current line to results because current word is too big for current line
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, currentLineEnd - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						currentLineStart = lastWordStart;
@@ -276,7 +289,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
+						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, pos - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
@@ -288,44 +301,15 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					state = SKIP; //always switch to SKIP because we do not know here what will be next
 					break;
 				}
-				else if (t == '\\') state = NEXTLINE; // if \ check NEXTLINE 
+
 				else if (t == 0) state = FINISH; 
 				
-				break;
-			case NEXTLINE:
-				if (t == 0){ state = FINISH; break; } // if found 0 go to finish
-				else if (t == 'n') // we found n so this mean we should go to next line
-				{	
-					if (currentLineStart != -1) // if we already have something in current line we add to result
-					{
-						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, (pos - 1) - currentLineStart);
-						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
-						resultVector.push_back(currentLineWithoutLastWord);
-						
-						currentLineStart = -1;	// start seach of characters for the new line
-					}else
-					{
-						resultVector.push_back(L""); // here we add empty line if there was no characters in current line
-					}
-					state = SKIP; //always switch to SKIP because we do not know here what will be next
-					break;
-				}else if (t == ' ')
-				{	
-					state = SKIP; // found space after \ this mean that we go to skip
-					break;
-				}
-				else // found other char so we go to goodchar because we haven't broken the line yet
-				{
-					state = GOODCHAR;
-					break;
-				};
 				break;
 			case FINISH:
 				if (currentLineStart != -1) // we check if we have something left in currentline and add this line to results
 				{
 					//Logger::FrameworkDebug("ending=%d %d", currentLineStart, currentLineEnd);
-					WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+					WideString currentLine = postProcessedText.substr(currentLineStart, currentLineEnd - currentLineStart);
 					//Logger::FrameworkDebug(L"after=%S", currentLine.c_str());
 					resultVector.push_back(currentLine);
 				}
