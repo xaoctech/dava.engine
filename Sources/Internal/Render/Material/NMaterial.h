@@ -404,6 +404,7 @@ public:
 	bool IsSwitchable() const;
 	
 	NMaterial* Clone();
+	NMaterial* Clone(const String& newName);
     
     virtual void SetMaterialName(const String& name);
 	
