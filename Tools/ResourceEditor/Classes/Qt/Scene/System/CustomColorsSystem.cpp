@@ -131,13 +131,27 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
-bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
+bool CustomColorsSystem::ChangesPresent()
+{
+	if(drawSystem && drawSystem->GetCustomColorsProxy())
+	{
+		return drawSystem->GetCustomColorsProxy()->GetChangesCount() > 0;
+	}
+	return false;
+}
+
+bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool saveNeeded)
 {
 	if (!enabled)
 	{
 		return true;
 	}
-
+	
+	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
+	{	
+		savingCanceled = SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
+		return true;
+	}
 	FinishEditing();
 
 	selectionSystem->SetLocked(false);
@@ -150,12 +164,6 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTextureEnabled(false);
 	
 	enabled = false;
-
-	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
-	{
-		return SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
-	}
-
 	return !enabled;
 }
 

@@ -523,11 +523,14 @@ const RenderManager::Stats & SceneEditor2::GetRenderStats() const
     return renderStats;
 }
 
-void SceneEditor2::DisableTools(int32 toolFlags, bool textureSavingNeeded/* = true*/)
+bool SceneEditor2::DisableTools(int32 toolFlags, bool textureSavingNeeded/* = true*/)
 {
+	bool retValue = false;
 	if (toolFlags & LANDSCAPE_TOOL_CUSTOM_COLOR)
 	{
-		Exec(new ActionDisableCustomColors(this, textureSavingNeeded));
+		ActionDisableCustomColors* action = new ActionDisableCustomColors(this, textureSavingNeeded);
+		Exec(action);
+		retValue = action->WasSavingCanceled();
 	}
 	
 	if (toolFlags & LANDSCAPE_TOOL_VISIBILITY)
@@ -554,6 +557,7 @@ void SceneEditor2::DisableTools(int32 toolFlags, bool textureSavingNeeded/* = tr
 	{
 		Exec(new ActionDisableNotPassable(this));
 	}
+	return retValue;
 }
 
 bool SceneEditor2::IsToolsEnabled(int32 toolFlags)

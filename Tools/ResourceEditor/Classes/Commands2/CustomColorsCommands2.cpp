@@ -75,7 +75,8 @@ void ActionEnableCustomColors::Redo()
 ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor, bool textureSavingNeeded)
 :	CommandAction(CMDID_CUSTOM_COLORS_DISABLE)
 ,	sceneEditor(forSceneEditor)
-,	textureSaveingNeeded(textureSavingNeeded)
+,	textureSavingNeeded(textureSavingNeeded)
+,	savingCanceled(false)
 {
 }
 
@@ -92,15 +93,24 @@ void ActionDisableCustomColors::Redo()
 		return;
 	}
 	
-	disabled = sceneEditor->customColorsSystem->DisableLandscapeEdititing(textureSaveingNeeded);
-	if (!disabled)
+	bool success = sceneEditor->customColorsSystem->DisableLandscapeEdititing(savingCanceled, textureSavingNeeded);
+	if (!success)
 	{
 		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_DISABLE_ERROR);
 	}
-
-	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
+	else
+	{
+		if(!savingCanceled)
+		{
+			SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
+		}
+	}
 }
 
+bool ActionDisableCustomColors::WasSavingCanceled()
+{
+	return savingCanceled;
+}
 
 ModifyCustomColorsCommand::ModifyCustomColorsCommand(Image* originalImage,
 													 CustomColorsProxy* customColorsProxy,
