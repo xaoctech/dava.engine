@@ -185,20 +185,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 		EXIT,
 	};
 
-    // Yuri Coder, 2013/12/10. Replace "\n" occurences (two chars) to '\n' (one char). See please MOBWOT-6499.
-	WideString postProcessedText = text;
-
-    static const WideString searchString(L"\\n");
-    static const WideString replaceString(L"\n");
-    static size_t searchStringLength = searchString.length();
-
-    size_t pos = 0;
-    pos = postProcessedText.find(searchString, pos);
-    while ((pos = postProcessedText.find(searchString, pos)) != std::string::npos)
-    {
-        postProcessedText.replace(pos, searchStringLength, replaceString);
-        pos += searchStringLength;
-    }
+    // Yuri Coder, 2013/12/10. Replace "\n" occurences (two chars) to '\n' (one char) is done by Yaml parser,
+    // so appropriate code (state NEXTLINE)is removed from here. See please MOBWOT-6499.
 
 	resultVector.clear();
 	//int textLength = text.length();
@@ -207,17 +195,17 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	int lastWordEnd = 0;
 	int currentLineStart = -1;
 	int currentLineEnd = 0;
-	int totalSize = (int)postProcessedText.length();
+	int totalSize = (int)text.length();
 	
 	Vector<int32> sizes;
-	GetStringSize(postProcessedText, &sizes);
+	GetStringSize(text, &sizes);
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
 		wchar_t t = 0;
 		if(pos < totalSize)
 		{
-			t = postProcessedText[pos];
+			t = text[pos];
 		}
 		switch (state) 
 		{
@@ -232,7 +220,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, pos - currentLineStart);
+						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
@@ -270,7 +258,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					}else // here we add current line to results because current word is too big for current line
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
-						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, currentLineEnd - currentLineStart);
+						WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						currentLineStart = lastWordStart;
@@ -289,7 +277,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart != -1) // if we already have something in current line we add to result
 					{
 						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = postProcessedText.substr(currentLineStart, pos - currentLineStart);
+						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
 						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
 						resultVector.push_back(currentLineWithoutLastWord);
 						
@@ -309,7 +297,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				if (currentLineStart != -1) // we check if we have something left in currentline and add this line to results
 				{
 					//Logger::FrameworkDebug("ending=%d %d", currentLineStart, currentLineEnd);
-					WideString currentLine = postProcessedText.substr(currentLineStart, currentLineEnd - currentLineStart);
+					WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
 					//Logger::FrameworkDebug(L"after=%S", currentLine.c_str());
 					resultVector.push_back(currentLine);
 				}
