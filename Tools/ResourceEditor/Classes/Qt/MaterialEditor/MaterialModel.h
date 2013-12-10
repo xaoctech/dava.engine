@@ -39,14 +39,14 @@
 class QMimeData;
 class QStandardItem;
 class SceneEditor2;
-class MaterialsItem;
-class MaterialsModel: public QStandardItemModel
+class MaterialItem;
+class MaterialModel: public QStandardItemModel
 {
     Q_OBJECT
     
 public:
-    MaterialsModel(QObject *parent = 0);
-    virtual ~MaterialsModel();
+    MaterialModel(QObject *parent = 0);
+    virtual ~MaterialModel();
     
     void SetScene(SceneEditor2 * scene);
     
@@ -63,7 +63,7 @@ protected:
     void RetriveMaterials();
     void RebuildModel();
     
-    void AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
+    void AddMaterialToItem(DAVA::NMaterial * material, MaterialItem * item);
     
 protected:
     
