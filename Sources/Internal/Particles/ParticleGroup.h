@@ -45,6 +45,7 @@ struct ParticleGroup
 	NMaterial *material;
 	
 	Particle *head;
+	int32 activeParticleCount;
 	
 	bool finishingGroup;
 
@@ -52,7 +53,7 @@ struct ParticleGroup
 
 	float32 time;	
 	float32 loopStartTime, loopDuration, loopRestartDuration; //well - that's how it works
-	float32 particlesToGenerate;
+	float32 particlesToGenerate;	
 };
 
 struct ParticleEffectData
