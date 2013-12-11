@@ -178,6 +178,10 @@ private:
 	
 	void WriteDescriptor(File* file, const Descriptor& descriptor) const;
 	void ReadDescriptor(File* file, /*out*/ Descriptor& descriptor);
+	
+	void SwitchMaterialQualityOnMainThread(BaseObject * caller,
+										   void * param,
+										   void *callerData);
 
     bool isDebugLogEnabled;
     bool isSaveForGame;

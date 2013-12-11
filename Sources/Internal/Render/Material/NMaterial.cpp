@@ -732,6 +732,17 @@ namespace DAVA
 		
 		return clonedState;
 	}
+	
+	NMaterialState* NMaterialState::CreateTemplate(NMaterial* templateParent)
+	{
+		NMaterialState* templateState = new NMaterialState();
+		
+		templateState->parent = templateParent;
+		templateState->parentName = templateParent->materialName;
+				
+		return templateState;
+
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -886,12 +897,6 @@ namespace DAVA
 		
 		if(texturesDirty)
 		{
-			for(size_t i = 0; i < textureParamsCacheSize; ++i)
-			{
-				TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-				textureEntry.tx = GetTexture(textureEntry.textureName);
-			}
-			
 			OnDirtyTextures();
 			texturesDirty = false;
 		}
@@ -1306,6 +1311,14 @@ namespace DAVA
 				++stateIter;
 			}
 		}
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1314,25 +1327,35 @@ namespace DAVA
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
 		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
-		{
-			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
-				it != archiveData.end();
-				++it)
-			{
-				if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
-				{
-					NMaterialState* matState = new NMaterialState();
-					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
-					states.insert(FastName(it->first), matState);
-				}
-			}
-		}
-		else
-		{
-			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
-			Deserialize(*this, stateArchive, serializationContext);
-		}
+        if(archive->IsKeyExists("__defaultState__"))
+        {
+            KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
+            Deserialize(*this, stateArchive, serializationContext);
+        }
+        else
+        {
+            for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
+                it != archiveData.end();
+                ++it)
+            {
+                if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
+                {
+                    NMaterialState* matState = new NMaterialState();
+                    Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
+                    states.insert(FastName(it->first), matState);
+                }
+            }
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
@@ -1419,14 +1442,6 @@ namespace DAVA
 		}
 		archive->SetArchive("techniques", materialTechniques);
 		SafeRelease(materialTechniques);
-
-        if(illuminationParams)
-        {
-            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
-            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
-            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
-            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
-        }
 	}
 	
 	void NMaterial::Deserialize(NMaterialState& materialState,
@@ -1505,16 +1520,6 @@ namespace DAVA
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
         }
-
-        if(archive->IsKeyExists("illumination.isUsed"))
-        {
-            GetIlluminationParams(); //create only
-
-            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
-            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
-            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
-            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
-        }
 	}
 	
 	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
@@ -1588,6 +1593,7 @@ namespace DAVA
 			SetParent(newParent);
 			
 			currentStateName = stateName;			
+			texturesDirty = true;
 		}
 		
 		return (state != NULL);
@@ -1598,14 +1604,14 @@ namespace DAVA
 		return (states.size() > 0);
 	}
 	
-	NMaterial* NMaterial::Clone()
+	NMaterial* NMaterial::Clone(const String& newName)
 	{
 		NMaterial* clonedMaterial = new NMaterial();
 		
 		if(this->IsSwitchable())
 		{
 			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
-						
+			
 			while(stateIter != states.end())
 			{
 				clonedMaterial->states.insert(stateIter->first,
@@ -1619,13 +1625,20 @@ namespace DAVA
 			DeepCopyTo(clonedMaterial);
 		}
 		
-		if(IsConfigMaterial())
+		if(newName.length())
 		{
-			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			clonedMaterial->SetMaterialName(newName);
 		}
 		else
 		{
-			clonedMaterial->GenerateName();
+			if(IsConfigMaterial())
+			{
+				clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			}
+			else
+			{
+				clonedMaterial->GenerateName();
+			}
 		}
 		
 		clonedMaterial->SetMaterialSystem(materialSystem);
@@ -1648,7 +1661,22 @@ namespace DAVA
 			}
 		}
 		
+        if(illuminationParams)
+        {
+            IlluminationParams * params = clonedMaterial->GetIlluminationParams();
+            params->isUsed = illuminationParams->isUsed;
+            params->castShadow = illuminationParams->castShadow;
+            params->receiveShadow = illuminationParams->receiveShadow;
+            params->lightmapSize = illuminationParams->lightmapSize;
+        }
+		
 		return clonedMaterial;
+
+	}
+	
+	NMaterial* NMaterial::Clone()
+	{
+		return Clone("");
 	}
     
     void NMaterial::SetMaterialName(const String& name)
@@ -1836,44 +1864,56 @@ namespace DAVA
 		
 	void NMaterial::Rebind(bool recursive)
 	{
-		if(IsConfigMaterial())
+		size_t childrenCount = NMaterialState::children.size();
+		if(childrenCount > 0 ||
+		   IsConfigMaterial())
 		{
-			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
-			while(iter != techniqueForRenderPass.end())
+			//VI: need to propagate properties defined for the current material
+			//VI: up in the material tree
+			
+			NMaterial* curMaterial = this;
+			while(curMaterial != NULL)
 			{
-				MaterialTechnique* technique = iter->second;
-
-				Shader * shader = technique->GetShader();
-				shader->Bind();
 				
-				uint32 uniformCount = shader->GetUniformCount();
-				for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+				HashMap<FastName, MaterialTechnique *>::iterator iter = curMaterial->techniqueForRenderPass.begin();
+				while(iter != curMaterial->techniqueForRenderPass.end())
 				{
-					Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+					MaterialTechnique* technique = iter->second;
 					
-					if (Shader::UNIFORM_NONE == uniform->id  ||
-						Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+					Shader * shader = technique->GetShader();
+					shader->Bind();
+					
+					uint32 uniformCount = shader->GetUniformCount();
+					for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 					{
-						NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+						Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 						
-						if(prop)
+						if (Shader::UNIFORM_NONE == uniform->id  ||
+							Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 						{
-							shader->SetUniformValueByUniform(uniform,
-														   uniform->type,
-														   uniform->size,
-														   prop->data);
+							NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+							
+							if(prop)
+							{
+								shader->SetUniformValueByUniform(uniform,
+																 uniform->type,
+																 uniform->size,
+																 prop->data);
+							}
 						}
 					}
+					
+					shader->Unbind();
+					
+					++iter;
 				}
 				
-				shader->Unbind();
-				
-				++iter;
+				curMaterial = curMaterial->parent;
 			}
 			
 			if(recursive)
 			{
-				size_t childrenCount = NMaterialState::children.size();
+				
 				for(size_t i = 0; i < childrenCount; ++i)
 				{
 					NMaterialState::children[i]->Rebind(recursive);
@@ -1902,8 +1942,11 @@ namespace DAVA
 		TextureStateData stateData;
 		for(size_t i = 0; i < textureParamsCacheSize; ++i)
 		{
-			TextureParamCacheEntry& entry = textureParamsCachePtr[i];
-			stateData.textures[entry.slot] = entry.tx;
+			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
+			
+			textureEntry.tx = GetTexture(textureEntry.textureName);
+
+			stateData.textures[textureEntry.slot] = textureEntry.tx;
 		}
 		
 		UniqueHandle prevHandle = textureStateHandle;

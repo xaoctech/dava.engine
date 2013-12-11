@@ -41,6 +41,8 @@
 #include "Job/JobManager.h"
 #include "Job/JobWaiter.h"
 
+//#define USE_CRC_COMPARE
+
 #ifdef __DAVAENGINE_ARM_7__
 #define USE_NEON_MATRIX_COMPARE
 #include <arm_neon.h>
@@ -109,17 +111,17 @@ public:
         GLint           location;
         GLint           size;
         eUniformType    type;
-		void*			cacheValue;
+#ifdef USE_CRC_COMPARE
+        uint32          crc;
+#else
+        void*			cacheValue;
 		uint16			cacheValueSize;
+#endif
         
 #ifdef USE_NEON_MATRIX_COMPARE
         uint32x4_t      matrixCRC;
 #endif
         
-#ifdef USE_CRC_COMPARE
-        uint32          crc;
-#endif
-		
 		bool ValidateCache(int32 value);
 		bool ValidateCache(float32 value);
 		bool ValidateCache(const Vector2 & value);
