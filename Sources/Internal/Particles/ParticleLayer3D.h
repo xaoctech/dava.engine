@@ -91,8 +91,7 @@ protected:
 	void UpdateCurrentParticlePosition(Particle* particle);
 	
 	void UpdateBlendState();
-
-	bool isLong;
+	
 	
 	RenderDataObject * renderData;
 	Vector<float32> verts;

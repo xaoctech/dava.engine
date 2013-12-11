@@ -28,403 +28,253 @@
 
 #include "ParticleRenderObject.h"
 
-#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 16)
 
 namespace DAVA
 {
+static const int32 POINTS_PER_PARTICLE = 4;
+static const int32 INDICES_PER_PARTICLE = 6;
 
-static const uint32 BLEND_KEYS[] =
+//camera_facing, x_emitter, y_emitter, z_emitter, x_world, y_world, z_world
+static Vector3 basisVectors[7*2] = {Vector3(), Vector3(), 
+									Vector3(), Vector3(), 
+									Vector3(), Vector3(), 
+									Vector3(), Vector3(), 
+									Vector3(0,1,0), Vector3(0,0,1), 
+									Vector3(0,0,1), Vector3(1,0,0), 
+									Vector3(0,1,0), Vector3(1,0,0)};
+
+static Vector3 currCamDirection = Vector3(0,0,1);
+
+
+void ParticleRenderGroup::UpdateRenderBatch()
 {
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA)
-};
-
-static const FastName BLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.Particles0"),
-	FastName("Global.Textured.VertexColor.Particles1")
-};
-
-static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1")
-};
-
-
-const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameBlendEnabled)
-{
-	uint32 blendKey = MAKE_BLEND_KEY(src, dst);
-	for(uint32 i = 0; i < COUNT_OF(BLEND_KEYS); ++i)
+	renderBatch->GetRenderDataObject()->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
+	renderBatch->GetRenderDataObject()->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
+	renderBatch->GetRenderDataObject()->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
+	if (enableFrameBlend)
 	{
-		if(BLEND_KEYS[i] == blendKey)
+		renderBatch->GetRenderDataObject()->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &texcoords2.front());
+		renderBatch->GetRenderDataObject()->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
+	}
+	/*else  //TODO: once merged with dev, return to removeStream code
+	{
+		renderBatch->GetRenderDataObject()->RemoveStream(EVF_TEXCOORD1);
+		renderBatch->GetRenderDataObject()->RemoveStream(EVF_TIME);
+	}*/
+
+	renderBatch->SetIndexCount(currParticlesCount*INDICES_PER_PARTICLE);		
+}
+void ParticleRenderGroup::ResizeArrays(uint32 particlesCount)
+{
+	vertices.resize(particlesCount * POINTS_PER_PARTICLE * 3); // 4 vertices per each particle, 3 coords per vertex.
+	texcoords.resize(particlesCount * POINTS_PER_PARTICLE * 2); // 4 texture coords per particle, 2 values per texture coord.
+	colors.resize(particlesCount * POINTS_PER_PARTICLE);	
+	
+	if (enableFrameBlend)
+	{
+		texcoords2.resize(particlesCount * POINTS_PER_PARTICLE * 2);
+		times.resize(particlesCount * POINTS_PER_PARTICLE); //single time value per vertex
+	}
+}
+
+void ParticleRenderGroup::ClearArrays()
+{
+	currParticlesCount = 0;
+	vertices.clear();
+	texcoords.clear();
+	colors.clear();
+	texcoords2.clear();
+	times.clear();
+}
+
+
+
+void ParticleRenderObject::PrepareRenderData(Camera * camera)
+{
+	for (int32 i=0, sz = renderGroupCache.size(), i<sz; ++i)
+		renderGroupCache[i]->ClearArrays();
+	renderBatchArray.clear();
+	
+	Matrix4 * transformPtr = GetWorldTransformPtr();	
+	if (!transformPtr)
+		return;
+
+	currCamDirection = camera->GetDirection();
+
+	/*prepare effect basises*/
+	const Matrix4 &mv = camera->GetMatrix();
+	basisVectors[0] = Vector3(mv._01, mv._11, mv._21);
+	basisVectors[1] = Vector3(mv._00, mv._10, mv._20);
+	basisVectors[0].Normalize();
+	basisVectors[1].Normalize();	
+	Vector3 ex(transformPtr->_00, transformPtr->_01, transformPtr->_02);
+	Vector3 ey(transformPtr->_10, transformPtr->_11, transformPtr->_12);
+	Vector3 ez(transformPtr->_20, transformPtr->_21, transformPtr->_22);
+	ex.Normalize();
+	ey.Normalize();
+	ez.Normalize();
+	basisVectors[2] = ey; basisVectors[3] = ez;
+	basisVectors[4] = ez; basisVectors[5] = ex;
+	basisVectors[6] = ey; basisVectors[7] = ex;	
+
+	NMaterial *currMaterial = NULL;
+	int32 renderGroupCount = 0;	
+	ParticleRenderGroup *currRenderGroup = NULL;
+	int32 maxParticlesPerBatch = 0;
+	for (List<ParticleGroup>::iterator it = effectData->groups.begin(), e=effectData->groups.end(); it!=e; ++it)
+	{
+		const ParticleGroup& currGroup = (*it);
+		if (!currGroup.material) continue; //if no material was set up - dont draw
+		if (!currGroup.head) continue; //skip empty group
+
+		//start new batch if needed
+		if (currGroup.material!=currMaterial) 
 		{
-			return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[i] : BLEND_MATERIAL_NAMES[i];
+			if (currRenderGroup&&(currRenderGroup->currParticlesCount>maxParticlesPerBatch))
+				maxParticlesPerBatch = currRenderGroup->currParticlesCount;
+				
+			renderGroupCount++;
+			if (renderGroupCache.size()<renderGroupCount)
+			{
+				currRenderGroup = new ParticleRenderGroup();
+				currRenderGroup->renderBatch = new RenderBatch();
+				currRenderGroup->renderBatch->SetRenderDataObject(new RenderDataObject());
+				renderGroupCache.push_back(currRenderGroup);
+			}	
+			else
+				currRenderGroup=renderGroupCache[renderGroupCount-1];
+			
+			currRenderGroup->enableFrameBlend = currGroup.layer->enableFrameBlend;
+			currRenderGroup->renderBatch->SetMaterial(currMaterial);
+		}
+
+	}
+	
+	
+	int32 currParticleIndices = indices.size()/INDICES_PER_PARTICLE;
+	if (maxParticlesPerBatch>currParticleIndices)
+	{
+		indices.resize(maxParticlesPerBatch*INDICES_PER_PARTICLE);
+		for (;currParticleIndices<maxParticlesPerBatch; currParticleIndices++)
+		{
+			indices[currParticleIndices*INDICES_PER_PARTICLE+0] = currParticleIndices*POINTS_PER_PARTICLE+0;
+			indices[currParticleIndices*INDICES_PER_PARTICLE+1] = currParticleIndices*POINTS_PER_PARTICLE+1;
+			indices[currParticleIndices*INDICES_PER_PARTICLE+2] = currParticleIndices*POINTS_PER_PARTICLE+2;
+			indices[currParticleIndices*INDICES_PER_PARTICLE+3] = currParticleIndices*POINTS_PER_PARTICLE+2;
+			indices[currParticleIndices*INDICES_PER_PARTICLE+4] = currParticleIndices*POINTS_PER_PARTICLE+1;
+			indices[currParticleIndices*INDICES_PER_PARTICLE+5] = currParticleIndices*POINTS_PER_PARTICLE+3; //preserve order
 		}
 	}
-
-	//VI: fallback to default material
-	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
-}
-
-
-void ParticleRenderObject::CreateParticleLayer3DData()
-{	
-	/*renderData = new RenderDataObject();	
-
-	material = MaterialSystem::CreateNamed();
-	material->SwitchParent(FindParticleMaterial(BLEND_SRC_ALPHA, BLEND_ONE, false));
-
-	renderBatch->SetIndices(&indices);
-	renderBatch->SetRenderDataObject(renderData);
-	renderBatch->SetMaterial(material);
-	currentTexture = NULL;*/
-}
-
-
-
-void ParticleRenderObject::SetFrameBlend(bool enable)
-{	
-	/*UpdateBlendState();// this will choose appropriate material
-
-	if (!enableFrameBlend)
+	for (int32 i=0; i<renderGroupCount; ++i)
 	{
-		SafeRelease(renderData); //to remove unnecessary vertex streams
-		renderData = new RenderDataObject();
-		textures2.resize(0);
-		times.resize(0);
-
-		renderBatch->SetRenderDataObject(renderData);
-	}*/
-}
-
-void ParticleRenderObject::UpdateBlendState()
-{
-	/*if(material)
-	{
-		const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
-		material->SwitchParent(parentName);
-	}*/
-}
-
-void ParticleRenderObject::PrepareRenderData(Camera* camera)
-{
-	/*AABBox3 bbox;
-	if (emitter->GetWorldTransformPtr())
-	{
-		Vector3 emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();
-		bbox = AABBox3(emmiterPos, emmiterPos);
-	}	
-
-	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
-	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
-	{		
-		//build bounding box as sum of inner particle emitters bboxes
-		if (type == TYPE_SUPEREMITTER_PARTICLES)
+		if (renderGroupCache[i]->currParticlesCount)
 		{
-			Particle *current = head;
-			while (current)
-			{
-				bbox.AddAABBox(current->GetInnerEmitter()->GetBoundingBox());
-				current=current->next;
-			}
+			renderGroupCache[i]->UpdateRenderBatch();
+			renderGroupCache[i]->renderBatch->GetRenderDataObject()->SetIndices(EIF_16, (uint8*)(&indices.front()), renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);
+			renderBatchArray.push_back(renderGroupCache[i]->renderBatch);
 		}
 		
-		renderBatch->SetLayerBoundingBox(bbox);
-		renderBatch->SetTotalCount(0);		
-		return;
-	}
-
-
-	Matrix4 mv;
-	Matrix3 rotation;
-	bool worldAlign = particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
-	if (!worldAlign)
-	{
-		rotation = emitter->GetRotationMatrix();
-	}
-	Vector<std::pair<Vector3, Vector3> > basises;
-	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
-	{
-		mv = camera->GetMatrix();
-		basises.push_back(std::pair<Vector3, Vector3>(Vector3(mv._01, mv._11, mv._21), Vector3(mv._00, mv._10, mv._20)));
-	}
-	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
-	{
-		Vector3 up(0,1,0);
-		Vector3 left(0,0,1);
-		if (!worldAlign)
-		{
-			up = up*rotation;
-			up.Normalize();
-			left = left*rotation;
-			left.Normalize();
-		}
-		basises.push_back(std::pair<Vector3, Vector3>(up, left));
-	}
-	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
-	{
-		Vector3 up(0,0,1);
-		Vector3 left(1,0,0);
-		if (!worldAlign)
-		{
-			up = up*rotation;
-			up.Normalize();
-			left = left*rotation;
-			left.Normalize();
-		}
-		basises.push_back(std::pair<Vector3, Vector3>(up, left));
-	}
-	if (particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
-	{
-		Vector3 up(0,1,0);
-		Vector3 left(1,0,0);
-		if (!worldAlign)
-		{
-			up = up*rotation;
-			up.Normalize();
-			left = left*rotation;
-			left.Normalize();
-		}
-		basises.push_back(std::pair<Vector3, Vector3>(up, left));
 	}
 	
-	int32 planesCount =  basises.size();
+}
 
-	direction = camera->GetDirection();
 
-	verts.clear();
-	textures.clear();
-	colors.clear();
 
-	if (enableFrameBlend)
-	{
-		textures2.clear();
-		times.clear();
-	}
-	int32 totalCount = 0;
+void ParticleRenderObject::AppendParticleGroup(ParticleGroup &group, ParticleRenderGroup *renderGroup)
+{
+	//prepare basis indexes
+	int32 basisCount = 0;
+	int32 basises[4]; //4 basises max per particle
+	bool worldAlign = group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
+		basises[basisCount++] = 0;
+	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING)
+		basises[basisCount++] = worldAlign?4:1;
+	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Y_FACING)
+		basises[basisCount++] = worldAlign?5:2;
+	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_Z_FACING)
+		basises[basisCount++] = worldAlign?6:3;
 
-	// Reserve the memory for vectors to avoid the resize operations. Actually there can be less than count
-	// particles (for Single Particle or Superemitter one), but never more than count.
-	static const int32 POINTS_PER_PARTICLE = 4;
-	static const int32 INDICES_PER_PARTICLE = 6;
-	verts.resize(count * POINTS_PER_PARTICLE * 3 * planesCount); // 4 vertices per each particle, 3 coords per vertex.
-	textures.resize(count * POINTS_PER_PARTICLE * 2 * planesCount); // 4 texture coords per particle, 2 values per texture coord.
-	colors.resize(count * POINTS_PER_PARTICLE*planesCount);	
-	
-	//frame blending
-	if (enableFrameBlend)
-	{
-		textures2.resize(count * POINTS_PER_PARTICLE * 2 * planesCount);
-		times.resize(count * POINTS_PER_PARTICLE * planesCount); //single time value per vertex
-	}
+	//prepare arrays in group
+	renderGroup->ResizeArrays(renderGroup->currParticlesCount + group.activeParticleCount*basisCount);
 
-	Particle * current = head;
-	
-	
-	if(current)
-	{
-		renderBatch->GetMaterial()->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
-	}
-
-	int32 verticesCount = 0;
-	int32 texturesCount = 0;
-	int32 texturesCount2 = 0;
-	int32 timesCount = 0;
-	int32 colorsCount = 0;
-	
+	int32 currVerticesCount = renderGroup->currParticlesCount*POINTS_PER_PARTICLE;
+	Particle *current = group.head;
 	Vector3 particlePos[4];
-	
-	while(current != 0)
+	while (current)
 	{
-		for (int32 i=0; i<planesCount; ++i)
+		for (int32 i=0; i<basisCount; i++)
 		{
-			_up = basises[i].first;
-			_left = basises[i].second;			
-			
-			if (IsLong())
+			Vector3 ex = basisVectors[basises[i]*2];
+			Vector3 ey = basisVectors[basises[i]*2+1];
+			//TODO: rethink this code - it should be easier
+			if (group.layer->isLong) //note that for now it's just a copy of long implementatio - later rethink it;
 			{
-				CalcLong(current, particlePos[0], particlePos[1], particlePos[2], particlePos[3]);
-			}
-			else
-			{
-				CalcNonLong(current, particlePos[0], particlePos[1], particlePos[2], particlePos[3]);
-			}
+				ex = current->speed;
+				float32 vel = ex.Length();
+				ey = ex.CrossProduct(currCamDirection);
+				ey.Normalize();				
+				ex *=(group.layer->scaleVelocityBase/vel+group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
+			}			
+
+			float32 sin_angle;
+			float32 cos_angle;
+			SinCosFast(current->angle, sin_angle, cos_angle);
+			Vector3 left = ex*cos_angle+ey*sin_angle;
+			Vector3 right = -left;
+			Vector3 top = ey*cos_angle + ex*sin_angle;
+			Vector3 bot = -top;
 			
-			memcpy(&verts[verticesCount], &particlePos[0], sizeof(Vector3) * 4);
-			verticesCount += 12; //4 * 3
+			left*=0.5f*current->currSize.x*(1+group.layer->layerPivotPoint.x);
+			right*=0.5f*current->currSize.x*(1-group.layer->layerPivotPoint.x);
+			top*=0.5f*current->currSize.y*(1+group.layer->layerPivotPoint.y);
+			bot*=0.5f*current->currSize.y*(1-group.layer->layerPivotPoint.y);			
+
+			particlePos[0] = current->position+left+top;
+			particlePos[1] = current->position+right+top;
+			particlePos[2] = current->position+left+bot;			
+			particlePos[3] = current->position+right+bot;
 			
-			bbox.AddPoint(particlePos[0]);
-			bbox.AddPoint(particlePos[1]);
-			bbox.AddPoint(particlePos[2]);
-			bbox.AddPoint(particlePos[3]);
+			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);
 			
-			float32 *pT = sprite->GetTextureVerts(current->frame);
+			float32 *pT = group.layer->sprite->GetTextureVerts(current->frame);
+			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);
 			
-			memcpy(&textures[texturesCount], pT, sizeof(float32) * 8);
-			texturesCount += 8;
+			Color currColor = current->color;
+			if (group.layer->colorOverLife)
+				currColor = group.layer->colorOverLife->GetValue(current->life/current->lifeTime);
+			if (group.layer->alphaOverLife)
+				currColor.a = group.layer->alphaOverLife->GetValue(current->life/current->lifeTime);
+
+			uint32 color = (((uint32)(currColor.a*255.f))<<24) |  (((uint32)(currColor.b*255.f))<<16) |
+				(((uint32)(currColor.g*255.f))<<8) | ((uint32)(currColor.r*255.f));
 			
-			//frame blending
-			if (enableFrameBlend)
+			renderGroup->colors[currVerticesCount] = color;
+			renderGroup->colors[currVerticesCount+1] = color;
+			renderGroup->colors[currVerticesCount+2] = color;
+			renderGroup->colors[currVerticesCount+3] = color;
+
+			if (renderGroup->enableFrameBlend)
 			{
 				int32 nextFrame = current->frame+1;
-				if (nextFrame >= sprite->GetFrameCount())
+				if (nextFrame >= group.layer->sprite->GetFrameCount())
 				{
-					if (loopSpriteAnimation)
+					if (group.layer->loopSpriteAnimation)
 						nextFrame = 0;
 					else
-						nextFrame = sprite->GetFrameCount()-1;
-					
+						nextFrame = group.layer->sprite->GetFrameCount()-1;
 				}
-				pT = sprite->GetTextureVerts(nextFrame);
-				
-				memcpy(&textures2[texturesCount2], pT, sizeof(float32) * 8);
-				texturesCount2 += 8;
-				
-				times[timesCount] = current->animTime;
-				timesCount++;
-				times[timesCount] = current->animTime;
-				timesCount++;
-				times[timesCount] = current->animTime;
-				timesCount++;
-				times[timesCount] = current->animTime;
-				timesCount++;
+				pT = group.layer->sprite->GetTextureVerts(nextFrame);
+
+				memcpy(&renderGroup->texcoords2[currVerticesCount], pT, sizeof(float32) * 8);				
+				renderGroup->times[currVerticesCount] = current->animTime;
+				renderGroup->times[currVerticesCount+1] = current->animTime;
+				renderGroup->times[currVerticesCount+2] = current->animTime;
+				renderGroup->times[currVerticesCount+3] = current->animTime;
 			}
-			
-			
-			// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
-			// to take colorOverlife property into account.
-			uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
-			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
-			for(int32 i = 0; i < POINTS_PER_PARTICLE; ++i)
-			{
-				colors[i + colorsCount] = color;
-			}
-			colorsCount += POINTS_PER_PARTICLE;
-			
-			totalCount++;
+			renderGroup->currParticlesCount++;
+			currVerticesCount+=4;			
 		}
-		current = TYPE_PARTICLES == type ? current->next : 0;
-	}
-	
-	int indexCount = indices.size()/INDICES_PER_PARTICLE;
-	if (totalCount>indexCount)
-	{
-		indices.resize(totalCount*INDICES_PER_PARTICLE);
-		for (;indexCount<totalCount; ++indexCount)
-		{
-			indices[indexCount*INDICES_PER_PARTICLE+0] = indexCount*POINTS_PER_PARTICLE+0;
-			indices[indexCount*INDICES_PER_PARTICLE+1] = indexCount*POINTS_PER_PARTICLE+1;
-			indices[indexCount*INDICES_PER_PARTICLE+2] = indexCount*POINTS_PER_PARTICLE+2;
-			indices[indexCount*INDICES_PER_PARTICLE+3] = indexCount*POINTS_PER_PARTICLE+2;
-			indices[indexCount*INDICES_PER_PARTICLE+4] = indexCount*POINTS_PER_PARTICLE+1;
-			indices[indexCount*INDICES_PER_PARTICLE+5] = indexCount*POINTS_PER_PARTICLE+3; //preserve order
-		}
-	}
-
-	renderBatch->SetTotalCount(totalCount);	
-	renderBatch->SetLayerBoundingBox(bbox);
-	if(totalCount > 0)
-	{					
-		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
-		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
-		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
-		if (enableFrameBlend)
-		{
-			renderData->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &textures2.front());
-			renderData->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
-		}				
-	}*/
-	
-}
-
-void ParticleRenderObject::CalcNonLong(Particle* current,
-								  Vector3& topLeft,
-								  Vector3& topRight,
-								  Vector3& botLeft,
-								  Vector3& botRight)
-{
-	/*Vector3 dx(_left);
-	Vector3 dy(_up);
-
-	float32 sine;
-	float32 cosine;
-	SinCosFast(current->angle, sine, cosine);
-
-	// Draw pivot point is Sprite center + layer pivot point.
-	Vector2 drawPivotPoint = GetDrawPivotPoint();
-
-	float32 pivotRight = ((sprite->GetWidth()-drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
-	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
-
-	Vector3 dxc = dx*cosine;
-	Vector3 dxs = dx*sine;
-	Vector3 dyc = dy*cosine;
-	Vector3 dys = dy*sine;
-
-	// Apply offset to the current position according to the emitter position.
-	UpdateCurrentParticlePosition(current);
-
-	topLeft = currentParticlePosition+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-	topRight = currentParticlePosition+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-	botLeft = currentParticlePosition+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
-	botRight = currentParticlePosition+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;*/
-}
-
-void ParticleRenderObject::CalcLong(Particle* current,
-							   Vector3& topLeft,
-							   Vector3& topRight,
-							   Vector3& botLeft,
-							   Vector3& botRight)
-{
-
-/*	Vector3 currDirection;
-	Particle* parent = emitter->GetParentParticle();		
-	if ((NULL != parent)&&inheritPosition)
-	{		
-		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
-		currDirection.Normalize();
-	}else
-	{
-		currDirection = current->direction;
-	}
-
-	Vector3 vecShort = currDirection.CrossProduct(direction);
-	vecShort.Normalize();			
-	//Vector3 vecLong = vecShort.CrossProduct(direction);
-	Vector3 vecLong = -currDirection*(scaleVelocityBase+scaleVelocityFactor*current->speed);
-	vecShort /= 2.f;	
-
-	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x/2;
-	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y/2;
-
-	// Apply offset to the current position according to the emitter position.
-	UpdateCurrentParticlePosition(current);
-
-	topRight = currentParticlePosition + widthDiv2*vecShort - heightDiv2/2*vecLong;
-	topLeft = currentParticlePosition - widthDiv2*vecShort - heightDiv2/2*vecLong;
-	botRight = topRight + heightDiv2*vecLong;
-	botLeft = topLeft + heightDiv2*vecLong;*/
-}
-
-
-void ParticleRenderObject::UpdateCurrentParticlePosition(Particle* particle)
-{
-	if (this->emitter)
-	{
-		// For Superemitter adjust the particle position according to the
-		// current emitter position.
-		if (inheritPosition)
-			this->currentParticlePosition = particle->position + (emitter->GetPosition() - emitter->GetInitialTranslationVector());
-		else
-			this->currentParticlePosition = particle->position;
-	}
-	else
-	{
-		// For all other types just leave the particle position untouched.
-		this->currentParticlePosition = particle->position;
 	}
 }
 

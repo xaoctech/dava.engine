@@ -34,16 +34,39 @@
 namespace DAVA
 {
 
+struct ParticleRenderGroup
+{
+	RenderBatch *renderBatch;	
+	
+	Vector<float> vertices;
+	Vector<float> texcoords;
+	Vector<uint32> colors;
+
+	Vector<float> texcoords2;
+	Vector<float> times;	
+
+	uint16 currParticlesCount;
+	bool enableFrameBlend;
+
+	void ClearArrays();
+	void ResizeArrays(uint32 particlesCount);
+	void UpdateRenderBatch();
+};
 
 class ParticleRenderObject : public RenderObject
 {
 	ParticleEffectData *effectData;
+	Vector<ParticleRenderGroup*> renderGroupCache;
 
+	void AppendParticleGroup(ParticleGroup &group, ParticleRenderGroup *renderGroup);	
+	
+	Vector<uint16> indices;
 public:
+	ParticleRenderObject(ParticleEffectData *effect);
+	~ParticleRenderObject();
 	void PrepareRenderData(Camera * camera);
 	
-	virtual void RecalcBoundingBox();
-	virtual void RecalculateWorldBoundingBox();
+	
 };
 
 }

@@ -89,6 +89,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
 	{
 		ParticleGroup &group = *it;
+		group.activeParticleCount = 0;
 		float32 dt = group.emitter->IsShortEffect()?shortEffectTime:time;
 		group.time+=dt;		
 		float32 groupEndTime = group.layer->isLooped?group.layer->loopEndTime:group.layer->endTime;
@@ -107,7 +108,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				currLoopTime = 0;
 			}			
 		}
-		//prepare forces as they will now actually change in time even fro already generated particles
+		//prepare forces as they will now actually change in time even for already generated particles
 		Vector<Vector3> currForceValues;
 		int32 forcesCount;
 		if (group.head)
@@ -117,7 +118,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			{
 				currForceValues.resize(forcesCount);
 				for (int32 i=0; i<forcesCount; ++i)
-					currForceValues[i]=group.layer->forces[i].force->GetValue(currLoopTime);
+					currForceValues[i]=group.layer->forces[i]->force->GetValue(currLoopTime);
 			}
 		}		
 		Particle *current = group.head;
@@ -135,6 +136,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				current = next;
 				continue;
 			}			
+			group.activeParticleCount++;
 
 			float32 overLifeTime = current->life/current->lifeTime;
 			float32 currVelocityOverLife = 1.0f;
@@ -150,10 +152,12 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				Vector3 acceleration;
 				for(int32 i = 0; i < forcesCount; ++i)
 				{
-					acceleration += (group.layer->forces[i].forceOverLife)?(currForceValues[i] * group.layer->forces[i].forceOverLife->GetValue(overLifeTime)) : currForceValues[i];				
+					acceleration += (group.layer->forces[i]->forceOverLife)?(currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLifeTime)) : currForceValues[i];				
 				}
 				current->speed+=acceleration*dt;
-			}			
+			}		
+
+			
 			//TODO update inner emitter here - rethink it						
 			
 			if (group.layer->frameOverLifeEnabled)
@@ -180,7 +184,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 		{
 			if (group.layer->type == ParticleLayer::TYPE_SINGLE_PARTICLE)
 			{
-				if (!group.head)
+				if (!group.head)				
 					GenerateNewParticle(group, currLoopTime, worldTransform);
 			}else
 			{
@@ -233,11 +237,15 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 		particle->lifeTime += (group.layer->lifeVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
 
 	// size 
-	particle->size = Vector2(1.0f, 1.0f); 
+	particle->baseSize = Vector2(1.0f, 1.0f); 
 	if (group.layer->size)
-		particle->size = group.layer->size->GetValue(currLoopTime);
+		particle->baseSize = group.layer->size->GetValue(currLoopTime);
 	if (group.layer->sizeVariation)
-		particle->size +=(group.layer->sizeVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+		particle->baseSize +=(group.layer->sizeVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+	particle->currSize = particle->baseSize;
+	if (group.layer->sizeOverLifeXY)
+		particle->currSize*=group.layer->sizeOverLifeXY->GetValue(0);
+
 
 	//TODO: superemitter stuff - rethink later
 	/*if (emitter->parentParticle){
@@ -276,6 +284,7 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 		vel += group.layer->velocity->GetValue(currLoopTime);
 	if (group.layer->velocityVariation)
 		vel += (group.layer->velocityVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+	particle->speed*=vel;
 	
 	//TODO: superemitter stuff
 	/*if (this->emitter&&!inheritPosition) //just generate at correct position
@@ -285,6 +294,7 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 		
 	particle->next = group.head;
 	group.head = particle;	
+	group.activeParticleCount++;
 }
 
 void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform)

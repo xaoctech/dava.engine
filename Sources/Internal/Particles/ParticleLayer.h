@@ -60,6 +60,7 @@ class ParticleEmitter;
 class ParticleLayer : public BaseObject
 {
 	friend class ParticleEffectSystem;
+	friend class ParticleRenderObject;
 public:
 	enum eType 
 	{
@@ -349,6 +350,8 @@ protected:
 
 	bool		isDisabled;	
 	bool		isLooped;
+
+	bool isLong;
 
 	eBlendMode srcBlendFactor, dstBlendFactor;
 

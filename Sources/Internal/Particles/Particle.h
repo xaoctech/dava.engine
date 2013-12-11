@@ -55,7 +55,8 @@ struct Particle
 	int32	frame;
 	float32 animTime;	
 
-	Vector2 size;		
+	Vector2 baseSize, currSize;
+
 
 	Color color;	
 };
