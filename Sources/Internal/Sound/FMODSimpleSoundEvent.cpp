@@ -26,7 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Sound/FMODSound.h"
+#include "Sound/FMODSimpleSoundEvent.h"
 #include "Sound/FMODSoundSystem.h"
 #include "Sound/FMODSoundGroup.h"
 #include "Sound/FMODUtils.h"
@@ -39,9 +39,9 @@ Map<FMOD::Sound*, int32> soundRefsMap;
 
 FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2);
 
-Sound * FMODSound::CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 flags, int32 priority)
+SimpleSoundEvent * FMODSimpleSoundEvent::CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 flags, int32 priority)
 {
-	FMODSound * sound = new FMODSound(fileName, type, priority);
+	FMODSimpleSoundEvent * sound = new FMODSimpleSoundEvent(fileName, type, priority);
 
 	if(flags & FMOD_3D)
 		sound->is3d = true;
@@ -112,7 +112,7 @@ Sound * FMODSound::CreateWithFlags(const FilePath & fileName, eType type, const 
 
 	return sound;
 }
-FMODSound::FMODSound(const FilePath & _fileName, eType _type, int32 _priority) : Sound(_type),
+FMODSimpleSoundEvent::FMODSimpleSoundEvent(const FilePath & _fileName, eType _type, int32 _priority) : SimpleSoundEvent(_type),
     fileName(_fileName),
 	priority(_priority),
 	is3d(false),
@@ -122,14 +122,14 @@ FMODSound::FMODSound(const FilePath & _fileName, eType _type, int32 _priority) :
 {
 }
 
-FMODSound::~FMODSound()
+FMODSimpleSoundEvent::~FMODSimpleSoundEvent()
 {
     SafeDeleteArray(soundData);
 
     FMOD_VERIFY(fmodInstanceGroup->release());
 }
 
-int32 FMODSound::Release()
+int32 FMODSimpleSoundEvent::Release()
 {
     if(GetRetainCount() == 1)
     {
@@ -145,7 +145,7 @@ int32 FMODSound::Release()
     return BaseObject::Release();
 }
 
-void FMODSound::SetSoundGroup(const FastName & groupName)
+void FMODSimpleSoundEvent::SetSoundGroup(const FastName & groupName)
 {
 	FMODSoundGroup * soundGroup = FMODSoundSystem::GetFMODSoundSystem()->CreateSoundGroup(groupName);
 	if(soundGroup)
@@ -154,33 +154,32 @@ void FMODSound::SetSoundGroup(const FastName & groupName)
 	}
 }
 
-void FMODSound::Play(const Message & msg)
+bool FMODSimpleSoundEvent::Trigger()
 {
-	FMOD::Channel * fmodInstance = 0;
-	FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodSystem->playSound(FMOD_CHANNEL_FREE, fmodSound, true, &fmodInstance)); //start sound paused
-	FMOD_VECTOR pos = {position.x, position.y, position.z};
-	FMOD_VERIFY(fmodInstance->setPriority(priority));
-	FMOD_VERIFY(fmodInstance->setCallback(SoundInstanceEndPlaying));
-	FMOD_VERIFY(fmodInstance->setUserData(this));
-	FMOD_VERIFY(fmodInstance->setChannelGroup(fmodInstanceGroup));
+    FMOD::Channel * fmodInstance = 0;
+    FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodSystem->playSound(FMOD_CHANNEL_FREE, fmodSound, true, &fmodInstance)); //start sound paused
+    FMOD_VECTOR pos = {position.x, position.y, position.z};
+    FMOD_VERIFY(fmodInstance->setPriority(priority));
+    FMOD_VERIFY(fmodInstance->setCallback(SoundInstanceEndPlaying));
+    FMOD_VERIFY(fmodInstance->setUserData(this));
+    FMOD_VERIFY(fmodInstance->setChannelGroup(fmodInstanceGroup));
 
-    if(fmodInstance && !msg.IsEmpty())
-        callbacks[fmodInstance] = msg;
+    if(is3d)
+        FMOD_VERIFY(fmodInstance->set3DAttributes(&pos, 0));
 
-	if(is3d)
-		FMOD_VERIFY(fmodInstance->set3DAttributes(&pos, 0));
-
-	FMOD_VERIFY(fmodInstance->setPaused(false));
+    FMOD_VERIFY(fmodInstance->setPaused(false));
 
     Retain();
+
+    return true;
 }
 
-void FMODSound::SetPosition(const Vector3 & _position)
+void FMODSimpleSoundEvent::SetPosition(const Vector3 & _position)
 {
 	position = _position;
 }
 
-void FMODSound::UpdateInstancesPosition()
+void FMODSimpleSoundEvent::UpdateInstancesPosition()
 {
 	if(is3d)
 	{
@@ -196,55 +195,46 @@ void FMODSound::UpdateInstancesPosition()
 	}
 }
 
-void FMODSound::SetVolume(float32 volume)
+void FMODSimpleSoundEvent::SetVolume(float32 volume)
 {
 	FMOD_VERIFY(fmodInstanceGroup->setVolume(volume));
 }
 
-float32	FMODSound::GetVolume()
+float32	FMODSimpleSoundEvent::GetVolume()
 {
 	float32 volume = 0;
 	FMOD_VERIFY(fmodInstanceGroup->getVolume(&volume));
 	return volume;
 }
 
-void FMODSound::Pause(bool isPaused)
+bool FMODSimpleSoundEvent::IsActive()
 {
-    FMOD_VERIFY(fmodInstanceGroup->setPaused(isPaused));
-}
-
-bool FMODSound::IsPaused()
-{
+    //TODO
 	bool isPaused = false;
 	FMOD_VERIFY(fmodInstanceGroup->getPaused(&isPaused));
 	return isPaused;
 }
 
-void FMODSound::Stop()
+void FMODSimpleSoundEvent::Stop()
 {
     FMOD_VERIFY(fmodInstanceGroup->stop());
 }
 
-int32 FMODSound::GetLoopCount()
+int32 FMODSimpleSoundEvent::GetLoopCount()
 {
 	int32 loopCount;
 	FMOD_VERIFY(fmodSound->getLoopCount(&loopCount));
 	return loopCount;
 }
 
-void FMODSound::SetLoopCount(int32 loopCount)
+void FMODSimpleSoundEvent::SetLoopCount(int32 loopCount)
 {
 	FMOD_VERIFY(fmodSound->setLoopCount(loopCount));
 }
 
-void FMODSound::PerformCallback(FMOD::Channel * instance)
+void FMODSimpleSoundEvent::PerformCallback(FMOD::Channel * instance)
 {
-    Map<FMOD::Channel *, Message>::iterator it = callbacks.find(instance);
-    if(it != callbacks.end())
-    {
-        it->second(this);
-        callbacks.erase(it);
-    }
+    PerformEvent(EVENT_END);
 
     FMODSoundSystem::GetFMODSoundSystem()->ReleaseOnUpdate(this);
 }
@@ -256,7 +246,7 @@ FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANN
 		FMOD::Channel *cppchannel = (FMOD::Channel *)channel;
         if(cppchannel)
         {
-            FMODSound * sound = 0;
+            FMODSimpleSoundEvent * sound = 0;
             FMOD_VERIFY(cppchannel->getUserData((void**)&sound));
             if(sound)
                 sound->PerformCallback(cppchannel);

@@ -43,7 +43,7 @@ class System;
 namespace DAVA
 {
 
-class FMODSound;
+class FMODSimpleSoundEvent;
 class FMODSoundGroup : public BaseObject
 {
 public:
@@ -58,7 +58,7 @@ public:
 private:
 	FMOD::SoundGroup * fmodSoundGroup;
 
-friend class FMODSound;
+friend class FMODSimpleSoundEvent;
 friend class FMODSoundSystem;
 };
 

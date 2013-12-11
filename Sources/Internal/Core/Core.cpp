@@ -43,7 +43,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Debug/Replay.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/Sound.h"
+#include "Sound/SimpleSoundEvent.h"
 #include "Input/InputSystem.h"
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"

@@ -31,7 +31,7 @@
 #include "Sound/FMODSoundGroup.h"
 #include "Scene3D/Components/FMODSoundComponent.h"
 #include "Sound/FMODUtils.h"
-#include "Sound/FMODSound.h"
+#include "Sound/FMODSimpleSoundEvent.h"
 #include "FileSystem/FileList.h"
 #include "Scene3D/Entity.h"
 
@@ -69,12 +69,12 @@ FMODSoundSystem::~FMODSoundSystem()
 	FMOD_VERIFY(fmodEventSystem->release());
 }
 
-Sound * FMODSoundSystem::CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D /* = false */, int32 priority /*  = 128 */)
+SimpleSoundEvent * FMODSoundSystem::CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D /* = false */, int32 priority /*  = 128 */)
 {
     int32 flags = FMOD_DEFAULT;
     if(is3D)
         flags |= FMOD_3D;
-    return FMODSound::CreateWithFlags(fileName, type, groupName, flags, priority);
+    return FMODSimpleSoundEvent::CreateWithFlags(fileName, type, groupName, flags, priority);
 }
 
 Component * FMODSoundSystem::CreateSoundComponent()
@@ -274,7 +274,7 @@ FMODSoundGroup * FMODSoundSystem::CreateSoundGroup(const FastName & groupName)
 	return group;
 }
 
-void FMODSoundSystem::ReleaseOnUpdate(FMODSound * sound)
+void FMODSoundSystem::ReleaseOnUpdate(FMODSimpleSoundEvent * sound)
 {
     soundsToReleaseOnUpdate.push_back(sound);
 }

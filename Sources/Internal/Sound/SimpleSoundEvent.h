@@ -26,42 +26,43 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_SOUND_H__
+#define __DAVAENGINE_SOUND_H__
 
-#include "Sound/FMODSoundGroup.h"
-#include "Sound/SimpleSoundEvent.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/FMODUtils.h"
-#include "Sound/FMODSoundSystem.h"
-#include "Scene3D/Entity.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Sound/SoundEvent.h"
 
 namespace DAVA
 {
 
-FMODSoundGroup::FMODSoundGroup(FMOD::System * fmodSystem)
+class SimpleSoundEvent : public SoundEvent
 {
-	FMOD_VERIFY(fmodSystem->createSoundGroup(0, &fmodSoundGroup));
-}
+public:
+    enum eType
+    {
+        TYPE_STATIC = 0,
+        TYPE_STREAMED
+    };
 
-FMODSoundGroup::~FMODSoundGroup()
-{
-	FMOD_VERIFY(fmodSoundGroup->release());
-}
+    virtual void SetVolume(float32 volume) = 0;
+    virtual float32	GetVolume() = 0;
 
-void FMODSoundGroup::SetVolume(float32 volume)
-{
-	FMOD_VERIFY(fmodSoundGroup->setVolume(volume));
-}
+    virtual void SetPosition(const Vector3 & position) = 0;
+    virtual void UpdateInstancesPosition() = 0;
 
-float32 FMODSoundGroup::GetVolume()
-{
-	float32 volume;
-	FMOD_VERIFY(fmodSoundGroup->getVolume(&volume));
-	return volume;
-}
+    virtual void SetLoopCount(int32 looping) = 0; // -1 = infinity
+    virtual int32 GetLoopCount() = 0;
 
-void FMODSoundGroup::Stop()
-{
-	FMOD_VERIFY(fmodSoundGroup->stop());
-}
+    eType GetType() {return type;};
+
+protected:
+    SimpleSoundEvent(eType _type) : type(_type) {};
+    virtual ~SimpleSoundEvent() {};
+
+    eType type;
+};
 
 };
+
+#endif //__DAVAENGINE_SOUND_H__

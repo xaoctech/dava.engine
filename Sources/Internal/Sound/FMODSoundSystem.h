@@ -32,7 +32,7 @@
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastNameMap.h"
-#include "Sound/Sound.h"
+#include "Sound/SimpleSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/SoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
@@ -48,7 +48,7 @@ class EventGroup;
 
 namespace DAVA
 {
-class FMODSound;
+class FMODSimpleSoundEvent;
 class FMODSoundGroup;
 class FMODSoundComponent;
 class FMODSoundSystem : public SoundSystemInstance
@@ -57,7 +57,7 @@ public:
 	FMODSoundSystem(int32 maxChannels = 64);
 	virtual ~FMODSoundSystem();
 
-    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128);
+    virtual SimpleSoundEvent * CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128);
     virtual Component * CreateSoundComponent();
     virtual SoundEvent * CreateSoundEvent(const String & eventName);
 
@@ -103,7 +103,7 @@ protected:
     FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
     FMODSoundGroup * GetSoundGroup(const FastName & groupName);
 
-    void ReleaseOnUpdate(FMODSound * sound);
+    void ReleaseOnUpdate(FMODSimpleSoundEvent * sound);
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
 
     void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
@@ -114,7 +114,7 @@ protected:
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
 
-    Vector<FMODSound *> soundsToReleaseOnUpdate;
+    Vector<FMODSimpleSoundEvent *> soundsToReleaseOnUpdate;
     FastNameMap<FMODSoundGroup *> soundGroups;
     Map<FMODSoundEvent *, FMODSoundEvent::CallbackType> callbackOnUpdate;
     Vector<FMOD::Event *> activeEvents;
@@ -127,7 +127,7 @@ protected:
     float32 distanceUpdateTime;
 
 friend class FMODSoundGroup;
-friend class FMODSound;
+friend class FMODSimpleSoundEvent;
 friend class FMODSoundEvent;
 friend class FMODSoundComponent;
 };
