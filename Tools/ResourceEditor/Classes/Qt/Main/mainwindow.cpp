@@ -1982,7 +1982,7 @@ void QtMainWindow::OnCustomColorsEditor()
 	
 	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
 	{
-		bool shouldBeChangesSaved = false;
+		bool shouldBeChangesSaved = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
 		if(sceneEditor->customColorsSystem->ChangesPresent() && sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty())
 		{
 			int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?", QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);

@@ -150,7 +150,10 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool sa
 	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
 	{	
 		savingCanceled = SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
-		return true;
+		if(savingCanceled)
+		{
+			return true;
+		}
 	}
 	FinishEditing();
 
