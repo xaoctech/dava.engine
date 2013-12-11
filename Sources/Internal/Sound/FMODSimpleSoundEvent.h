@@ -34,7 +34,7 @@
 #include "Base/BaseMath.h"
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
-#include "Sound/Sound.h"
+#include "Sound/SimpleSoundEvent.h"
 
 namespace FMOD
 {
@@ -48,7 +48,7 @@ namespace DAVA
 
 class SoundSystem;
 class FMODSoundSystem;
-class FMODSound : public Sound
+class FMODSimpleSoundEvent : public SimpleSoundEvent
 {
 public:
 	virtual int32 Release();
@@ -56,10 +56,9 @@ public:
 	virtual void SetVolume(float32 volume);
 	virtual float32	GetVolume();
 
-	virtual void Play(const Message & msg = Message());
-	virtual void Pause(bool isPaused);
-	virtual bool IsPaused();
-	virtual void Stop();
+    virtual bool Trigger();
+    virtual bool IsActive();
+    virtual void Stop();
 
 	virtual void SetPosition(const Vector3 & position);
 	virtual void UpdateInstancesPosition();
@@ -71,10 +70,10 @@ public:
     void PerformCallback(FMOD::Channel * instance);
 
 protected:
-	FMODSound(const FilePath & fileName, eType type, int32 priority);
-	virtual ~FMODSound();
+	FMODSimpleSoundEvent(const FilePath & fileName, eType type, int32 priority);
+	virtual ~FMODSimpleSoundEvent();
 
-	static Sound * CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority = 128);
+	static SimpleSoundEvent * CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority = 128);
 
 	void SetSoundGroup(const FastName & groupName);
 
@@ -88,8 +87,6 @@ protected:
 	FMOD::ChannelGroup * fmodInstanceGroup;
 
     uint8 * soundData;
-
-    Map<FMOD::Channel *, Message> callbacks;
 
 friend class FMODSoundSystem;
 };

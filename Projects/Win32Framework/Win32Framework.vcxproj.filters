@@ -1308,14 +1308,8 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundSystem.h">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\FMODSoundComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSound.h">
-      <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundEvent.h">
       <Filter>Internal\Sound\FMOD</Filter>
@@ -1349,6 +1343,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h">
       <Filter>Internal\Job</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SimpleSoundEvent.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.h">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2369,9 +2369,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\FMODSoundComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSound.cpp">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
@@ -2401,6 +2398,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
       <Filter>Internal\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

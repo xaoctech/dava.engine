@@ -191,8 +191,8 @@
 #include "Scene2D/Box2DHelper.h"
 
 // Sound & Music
-#include "Sound/Sound.h"
-#include "Sound/FMODSound.h"
+#include "Sound/SimpleSoundEvent.h"
+#include "Sound/FMODSimpleSoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundSystem.h"

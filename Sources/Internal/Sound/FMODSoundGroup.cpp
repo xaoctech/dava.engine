@@ -28,7 +28,7 @@
 
 
 #include "Sound/FMODSoundGroup.h"
-#include "Sound/Sound.h"
+#include "Sound/SimpleSoundEvent.h"
 #include "Animation/LinearAnimation.h"
 #include "Sound/FMODUtils.h"
 #include "Sound/FMODSoundSystem.h"

@@ -35,7 +35,7 @@
 #include "Base/FastNameMap.h"
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
-#include "Sound/Sound.h"
+#include "Sound/SimpleSoundEvent.h"
 
 #define DEFAULT_SOUNDS_DIRECTORY "~res:/Sfx/"
 
@@ -49,7 +49,7 @@ class SoundSystemInstance
 public:
     virtual ~SoundSystemInstance() {};
     
-    virtual Sound * CreateSound(const FilePath & fileName, Sound::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
+    virtual SimpleSoundEvent * CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
     virtual Component * CreateSoundComponent() = 0;
     virtual SoundEvent * CreateSoundEvent(const String & eventName) = 0;
 

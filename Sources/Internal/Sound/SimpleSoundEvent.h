@@ -26,32 +26,43 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#ifndef __DAVAENGINE_SOUND_EVENT_H__
-#define __DAVAENGINE_SOUND_EVENT_H__
+#ifndef __DAVAENGINE_SOUND_H__
+#define __DAVAENGINE_SOUND_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/EventDispatcher.h"
+#include "Base/BaseObject.h"
+#include "Sound/SoundEvent.h"
 
-namespace DAVA 
+namespace DAVA
 {
 
-class SoundEvent : public EventDispatcher
+class SimpleSoundEvent : public SoundEvent
 {
 public:
-    enum CallbackType
+    enum eType
     {
-        EVENT_END,     /* Called when an event is stopped for any reason. */
-
-        EVENT_COUNT
+        TYPE_STATIC = 0,
+        TYPE_STREAMED
     };
-    
-    virtual bool Trigger() = 0;
-    virtual bool IsActive() = 0;
-    virtual void Stop() = 0;
+
+    virtual void SetVolume(float32 volume) = 0;
+    virtual float32	GetVolume() = 0;
+
+    virtual void SetPosition(const Vector3 & position) = 0;
+    virtual void UpdateInstancesPosition() = 0;
+
+    virtual void SetLoopCount(int32 looping) = 0; // -1 = infinity
+    virtual int32 GetLoopCount() = 0;
+
+    eType GetType() {return type;};
+
+protected:
+    SimpleSoundEvent(eType _type) : type(_type) {};
+    virtual ~SimpleSoundEvent() {};
+
+    eType type;
 };
 
 };
 
-#endif
+#endif //__DAVAENGINE_SOUND_H__
