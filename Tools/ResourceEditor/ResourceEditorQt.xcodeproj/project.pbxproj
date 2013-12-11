@@ -413,7 +413,6 @@
 		E8C99461184CD23C00AFBF3F /* ActionComponentEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99389184CD23C00AFBF3F /* ActionComponentEditor_moc.cpp */; };
 		E8C99462184CD23C00AFBF3F /* DockProperties_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9938A184CD23C00AFBF3F /* DockProperties_moc.cpp */; };
 		E8C99463184CD23C00AFBF3F /* PropertyEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9938B184CD23C00AFBF3F /* PropertyEditor_moc.cpp */; };
-		E8C99464184CD23C00AFBF3F /* PropertyEditorDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9938C184CD23C00AFBF3F /* PropertyEditorDialog_moc.cpp */; };
 		E8C99465184CD23C00AFBF3F /* PropertyEditorStateHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9938D184CD23C00AFBF3F /* PropertyEditorStateHelper_moc.cpp */; };
 		E8C99466184CD23C00AFBF3F /* SceneInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99390184CD23C00AFBF3F /* SceneInfo_moc.cpp */; };
 		E8C99467184CD23C00AFBF3F /* SceneTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99392184CD23C00AFBF3F /* SceneTree_moc.cpp */; };
@@ -1446,7 +1445,6 @@
 		E8C99389184CD23C00AFBF3F /* ActionComponentEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor_moc.cpp; sourceTree = "<group>"; };
 		E8C9938A184CD23C00AFBF3F /* DockProperties_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DockProperties_moc.cpp; sourceTree = "<group>"; };
 		E8C9938B184CD23C00AFBF3F /* PropertyEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditor_moc.cpp; sourceTree = "<group>"; };
-		E8C9938C184CD23C00AFBF3F /* PropertyEditorDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditorDialog_moc.cpp; sourceTree = "<group>"; };
 		E8C9938D184CD23C00AFBF3F /* PropertyEditorStateHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditorStateHelper_moc.cpp; sourceTree = "<group>"; };
 		E8C99390184CD23C00AFBF3F /* SceneInfo_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo_moc.cpp; sourceTree = "<group>"; };
 		E8C99392184CD23C00AFBF3F /* SceneTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTree_moc.cpp; sourceTree = "<group>"; };
@@ -3216,7 +3214,6 @@
 				E8C99389184CD23C00AFBF3F /* ActionComponentEditor_moc.cpp */,
 				E8C9938A184CD23C00AFBF3F /* DockProperties_moc.cpp */,
 				E8C9938B184CD23C00AFBF3F /* PropertyEditor_moc.cpp */,
-				E8C9938C184CD23C00AFBF3F /* PropertyEditorDialog_moc.cpp */,
 				E8C9938D184CD23C00AFBF3F /* PropertyEditorStateHelper_moc.cpp */,
 			);
 			name = DockProperties;
@@ -4239,7 +4236,6 @@
 				E8C99231184CD0EC00AFBF3F /* btContactProcessing.cpp in Build Sources */,
 				E8C994D4184CD23C00AFBF3F /* SettingsDialogQt_moc.cpp in Build Sources */,
 				E8C991FE184CD0EC00AFBF3F /* btConvex2dConvex2dAlgorithm.cpp in Build Sources */,
-				E8C99464184CD23C00AFBF3F /* PropertyEditorDialog_moc.cpp in Build Sources */,
 				E8C99289184CD0EC00AFBF3F /* DAEConvertAction.cpp in Build Sources */,
 				E8C99251184CD0EC00AFBF3F /* btSliderConstraint.cpp in Build Sources */,
 				E8C991EE184CD0EC00AFBF3F /* btCollisionAlgorithm.cpp in Build Sources */,
