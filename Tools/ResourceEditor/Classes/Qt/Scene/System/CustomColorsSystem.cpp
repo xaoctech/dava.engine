@@ -166,8 +166,7 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool sa
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTexture(NULL);
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTextureEnabled(false);
 	
-	enabled = false;
-	return !enabled;
+	return true;
 }
 
 void CustomColorsSystem::Update(DAVA::float32 timeElapsed)
@@ -372,10 +371,10 @@ void CustomColorsSystem::CreateUndoPoint()
 	SafeRelease(originalImage);
 }
 
-bool CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
+void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 {
 	if(filePath.IsEmpty())
-		return false;
+		return;
 
 	Sprite* customColorsSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	Texture* customColorsTexture = customColorsSprite->GetTexture();
@@ -386,7 +385,6 @@ bool CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 
 	StoreSaveFileName(filePath);
 	drawSystem->GetCustomColorsProxy()->ResetChanges();
-	return true;
 }
 
 void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool createUndo /* = true */)
