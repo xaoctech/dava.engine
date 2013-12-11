@@ -63,7 +63,7 @@ public:
 	virtual void SystemChanged(NMaterial* material) = 0;
 };
 
-struct IlluminationParams 
+struct IlluminationParams : public InspBase
 {
     static const int32 LIGHTMAP_SIZE_DEFAULT = 128;
     
@@ -183,6 +183,10 @@ public:
 	
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
 	inline NMaterial* GetParent() {return parent;}
+	
+	NMaterialState* CreateTemplate(NMaterial* templateParent);
+	
+	void SetParentToState(NMaterial* material);
 			
 protected:
 	
@@ -244,7 +248,6 @@ protected:
 	void AddMaterialDefineToState(const FastName& defineName);
 	void RemoveMaterialDefineFromState(const FastName& defineName);
 	
-	void SetParentToState(NMaterial* material);
 	void AddChildToState(NMaterial* material);
 	void RemoveChildFromState(NMaterial* material);
 	
@@ -402,6 +405,7 @@ public:
 	bool IsSwitchable() const;
 	
 	NMaterial* Clone();
+	NMaterial* Clone(const String& newName);
     
     virtual void SetMaterialName(const String& name);
 	

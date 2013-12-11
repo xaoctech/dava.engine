@@ -307,8 +307,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 		    
     OptimizeScene(rootNode);	
     
-	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
-	serializationContext.GetScene()->renderSystem->GetMaterialSystem()->SwitchMaterialQuality(qualityLod, true);
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+														   Message(this, &SceneFileV2::SwitchMaterialQualityOnMainThread));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
 	
 	rootNode->SceneDidLoaded();
     
@@ -327,6 +329,15 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     SafeRelease(file);
     return GetError();
 }
+	
+void SceneFileV2::SwitchMaterialQualityOnMainThread(BaseObject * caller,
+														void * param,
+														void *callerData)
+{
+	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
+	MaterialSystem* matSystem = serializationContext.GetScene()->renderSystem->GetMaterialSystem();
+	matSystem->SwitchMaterialQuality(qualityLod, true);
+}	
 	
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
 {
