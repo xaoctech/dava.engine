@@ -30,6 +30,7 @@
 
 #include "LibraryWidget.h"
 #include "LibraryFilteringModel.h"
+#include "LibraryFileSystemModel.h"
 
 #include "Main/mainwindow.h"
 #include "Project/ProjectManager.h"
@@ -58,6 +59,12 @@ Q_DECLARE_METATYPE( QFileInfo )
 struct FileType
 {
     FileType() {}
+
+    FileType(const QString &n)
+    {
+        name = n;
+    }
+
     
     FileType(const QString &n, const QString &f)
     {
@@ -81,7 +88,13 @@ QVector<FileType> fileTypeValues;
 LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 	: QWidget(parent)
 {
-    fileTypeValues.push_back(FileType("All files", "*"));
+    FileType allFiles("All files");
+    allFiles.filter << "*.dae";
+    allFiles.filter << "*.sc2";
+    allFiles.filter << "*.png";
+    allFiles.filter << "*.tex";
+
+    fileTypeValues.push_back(allFiles);
     fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
     fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));
     fileTypeValues.push_back(FileType("DAE", "*.dae"));
@@ -120,7 +133,7 @@ void LibraryWidget::SetupToolbar()
     toolbar->setMovable(false);
 
     searchFilter = new QLineEdit(toolbar);
-    searchFilter->setToolTip("Search something at right list view");
+    searchFilter->setToolTip("Enter text to search something at tree");
     searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     
     filesTypeFilter = new QComboBox(toolbar);
@@ -147,7 +160,7 @@ void LibraryWidget::SetupToolbar()
     actionViewDetailed->setCheckable(true);
     actionViewDetailed->setChecked(false);
 
-    QObject::connect(searchFilter, SIGNAL(textChanged(const QString &)), this, SLOT(SetFilter(const QString &)));
+    QObject::connect(searchFilter, SIGNAL(editingFinished()), this, SLOT(SetFilter()));
     QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(filesTypeFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(OnFilesTypeChanged(int)));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
@@ -164,13 +177,8 @@ void LibraryWidget::SetupToolbar()
 
 void LibraryWidget::SetupView()
 {
-    filesModel = new QFileSystemModel(this);
-    filesModel->setFilter(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::AllDirs);
-    
-    proxyModel = new LibraryFilteringModel(this);
-    proxyModel->SetModel(filesModel);
-    proxyModel->setFilterKeyColumn(0);
-    
+    filesModel = new LibraryFileSystemModel(this);
+
     filesView = new QTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->header()->setVisible(false);
@@ -178,7 +186,12 @@ void LibraryWidget::SetupView()
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
     
-    filesView->setModel(proxyModel);
+    filesView->setModel(NULL);
+    
+    proxyModel = new LibraryFilteringModel(this);
+    
+    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
+    
 }
 
 void LibraryWidget::SetupLayout()
@@ -195,6 +208,8 @@ void LibraryWidget::SetupLayout()
 
 void LibraryWidget::ViewAsList()
 {
+    viewMode = VIEW_AS_LIST;
+    
     HideDetailedColumnsAtFilesView(true);
     
     actionViewAsList->setChecked(true);
@@ -203,6 +218,8 @@ void LibraryWidget::ViewAsList()
 
 void LibraryWidget::ViewDetailed()
 {
+    viewMode = VIEW_DETAILED;
+    
     // Magic trick for MacOS: call funciton twice
     HideDetailedColumnsAtFilesView(false);
     HideDetailedColumnsAtFilesView(false);
@@ -227,6 +244,7 @@ void LibraryWidget::HideDetailedColumnsAtFilesView(bool hide)
         filesView->setColumnHidden(i, hide);
         filesView->setColumnWidth(i, width);
 	}
+
 }
 
 
@@ -234,9 +252,9 @@ void LibraryWidget::SelectionChanged(const QItemSelection &selected, const QItem
 {
     if(0 == selected.count()) return;
 
-    const QItemSelection & realSelection = proxyModel->mapSelectionToSource(selected);
-    
-    const QModelIndex & index = realSelection.indexes().first();
+    const QItemSelection realSelection = proxyModel->mapSelectionToSource(selected);
+    const QModelIndex index = realSelection.indexes().first();
+
     QFileInfo fileInfo = filesModel->fileInfo(index);
 
     if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
@@ -253,14 +271,12 @@ void LibraryWidget::SelectionChanged(const QItemSelection &selected, const QItem
 void LibraryWidget::ShowContextMenu(const QPoint & point)
 {
     HidePreview();
-    
-    const QModelIndex & index = filesView->indexAt(point);
+
+    const QModelIndex index = proxyModel->mapToSource(filesView->indexAt(point));
     
 	if(!index.isValid()) return;
-
-    const QModelIndex & realIndex = proxyModel->mapToSource(index);
     
-    QFileInfo fileInfo = filesModel->fileInfo(realIndex);
+    QFileInfo fileInfo = filesModel->fileInfo(index);
     if(!fileInfo.isFile()) return;
 
     QMenu contextMenu(this);
@@ -303,38 +319,33 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
     contextMenu.exec(filesView->mapToGlobal(point));
 }
 
-void LibraryWidget::SetFilter(const QString &filter)
+void LibraryWidget::SetFilter()
 {
+    QString filter = searchFilter->text();
+    
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-
-    if(filter.isEmpty())
-    {
-        
-    }
-    else
-    {
-        
-    }
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    
+    if(!filter.isEmpty())
+	{
+		for(int i = 0; i < proxyModel->rowCount(); ++i)
+		{
+			ExpandUntilFilterAccepted(proxyModel->index(i, 0));
+		}
+	}
 }
 
 void LibraryWidget::ResetFilter()
 {
     searchFilter->setText("");
+    SetFilter();
 }
 
 
 void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 {
-    QStringList nameFilters;
-    nameFilters << fileTypeValues[typeIndex].filter;
-
-    filesModel->setNameFilters(nameFilters);
-    filesModel->setNameFilterDisables(false);
-
-    filesModel->setFilter(QDir::Files);
-    filesModel->setFilter(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::AllDirs);
-    
-    proxyModel->invalidate();
+    filesModel->SetExtensionFilter(fileTypeValues[typeIndex].filter);
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
 }
 
 
@@ -353,14 +364,11 @@ void LibraryWidget::ActivateProject(const QString &projectPath)
 {
     rootPathname = projectPath + "/DataSource/3d/";
     
-    QDir rootDir(rootPathname);
-    
-    filesModel->setRootPath(rootPathname);
-    proxyModel->invalidate();
- 
-    proxyModel->SetSourceRoot(filesModel->index(rootPathname));
+    proxyModel->SetModel(NULL);
 
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    filesView->setModel(NULL);
+
+    filesModel->Load(rootPathname);
 }
 
 
@@ -455,5 +463,52 @@ void LibraryWidget::ShowPreview(const QString & pathname) const
 {
     SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
     widget->ShowScenePreview(pathname.toStdString());
+}
+
+bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
+{
+    bool childExpanded = false;
+    for(int i = 0; i < proxyModel->rowCount(proxyIndex); ++i)
+    {
+        childExpanded |= ExpandUntilFilterAccepted(proxyModel->index(i, 0, proxyIndex));
+    }
+
+    bool wasExpanded = childExpanded;
+    if(filesModel->IsAccepted(proxyModel->mapToSource(proxyIndex)))
+    {
+        QModelIndex index = proxyIndex.parent();
+        while(index.isValid())
+        {
+            filesView->expand(index);
+            
+            index = index.parent();
+        }
+        
+        wasExpanded = true;
+    }
+    if(!childExpanded)
+    {
+        filesView->collapse(proxyIndex);
+    }
+    
+    return wasExpanded;
+}
+
+void LibraryWidget::OnModelLoaded()
+{
+    QDir rootDir(rootPathname);
+    
+    proxyModel->SetModel(filesModel);
+    filesView->setModel(proxyModel);
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    
+    if(VIEW_AS_LIST == viewMode)
+    {
+        ViewAsList();
+    }
+    else
+    {
+        ViewDetailed();
+    }
 }
 

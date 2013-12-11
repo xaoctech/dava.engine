@@ -39,13 +39,19 @@ class QTreeView;
 class QAction;
 class QLineEdit;
 class QComboBox;
-class QFileSystemModel;
+class LibraryFileSystemModel;
 class LibraryFilteringModel;
 
 class LibraryWidget : public QWidget
 {
 	Q_OBJECT
 
+    enum eViewMode
+    {
+        VIEW_AS_LIST = 0,
+        VIEW_DETAILED
+    };
+    
 public:
 	LibraryWidget(QWidget *parent = 0);
 	~LibraryWidget();
@@ -63,7 +69,7 @@ protected slots:
 	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void ShowContextMenu(const QPoint & point);
     
-    void SetFilter(const QString &filter);
+    void SetFilter();
     void ResetFilter();
     
     void OnFilesTypeChanged(int typeIndex);
@@ -75,6 +81,8 @@ protected slots:
     void OnEditTextureDescriptor();
     void OnRevealAtFolder();
 
+    void OnModelLoaded();
+    
 private:
     
     void ActivateProject(const QString &projectPath);
@@ -88,6 +96,9 @@ private:
     void HidePreview() const;
     void ShowPreview(const QString & pathname) const;
     
+	bool ExpandUntilFilterAccepted(const QModelIndex &proxyIndex);
+//    bool IsAnyChildAccepted
+    
 private:
 
     QToolBar *toolbar;
@@ -100,9 +111,10 @@ private:
     QAction *actionViewDetailed;
 
     QString rootPathname;
-    QFileSystemModel *filesModel;
-    
+    LibraryFileSystemModel *filesModel;
     LibraryFilteringModel *proxyModel;
+    
+    eViewMode viewMode;
 };
 
 #endif // __LIBRARY_WIDGET_H__
