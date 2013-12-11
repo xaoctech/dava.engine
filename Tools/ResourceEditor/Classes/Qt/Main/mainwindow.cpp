@@ -77,13 +77,7 @@
 #include "Classes/Commands2/GroupEntitiesForMultiselectCommand.h"
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
-/*
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/VisibilityToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/TilemaskEditorPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
-*/
+
 #include "Classes/Commands2/CustomColorsCommands2.h"
 #include "Classes/Commands2/HeightmapEditorCommands2.h"
 #include "Classes/Commands2/LandscapeEditorDrawSystemActions.h"

@@ -122,6 +122,9 @@ protected:
 	UIControlBackground::eDrawType minDrawType;
 	UIControlBackground::eDrawType maxDrawType;
 
+    bool needSetMinDrawType;
+    bool needSetMaxDrawType;
+
 	void InitThumb();
 	void InitMinBackground();
 	void InitMaxBackground();

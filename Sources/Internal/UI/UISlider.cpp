@@ -53,6 +53,8 @@ UISlider::UISlider(const Rect & rect)
 ,	thumbButton(0)
 ,	minDrawType(UIControlBackground::DRAW_ALIGNED)
 ,	maxDrawType(UIControlBackground::DRAW_ALIGNED)
+,   needSetMinDrawType(false)
+,   needSetMaxDrawType(false)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
@@ -72,7 +74,9 @@ UISlider::UISlider() :
 	bgMax(0),
 	thumbButton(0),
 	minDrawType(UIControlBackground::DRAW_ALIGNED),
-	maxDrawType(UIControlBackground::DRAW_ALIGNED)
+	maxDrawType(UIControlBackground::DRAW_ALIGNED),
+    needSetMinDrawType(false),
+    needSetMaxDrawType(false)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
@@ -501,12 +505,14 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	if(minDrawTypeNode)
 	{
 		this->minDrawType =(UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
+        this->needSetMinDrawType = true;
 	}
 	
 	const YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
 	if(maxDrawTypeNode)
 	{
 		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
+        this->needSetMaxDrawType = true;
 	}
 }
 
@@ -514,8 +520,15 @@ void UISlider::LoadFromYamlNodeCompleted()
 {
 	// All the UIControls should exist at this moment - just attach to them.
 	AttachToSubcontrols();
-	bgMin->GetBackground()->SetDrawType(minDrawType);
-	bgMax->GetBackground()->SetDrawType(maxDrawType);
+    if (this->needSetMinDrawType)
+    {
+        bgMin->GetBackground()->SetDrawType(minDrawType);
+    }
+
+    if (needSetMaxDrawType)
+    {
+        bgMax->GetBackground()->SetDrawType(maxDrawType);
+    }
 
 	RecalcButtonPos();
 }
