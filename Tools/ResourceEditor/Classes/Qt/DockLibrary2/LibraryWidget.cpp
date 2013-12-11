@@ -45,6 +45,8 @@
 #include <QComboBox>
 #include <QTreeView>
 #include <QHeaderView>
+#include <QProgressBar>
+#include <QLabel>
 #include <QVBoxLayout>
 #include <QProcess>
 #include <QFileSystemModel>
@@ -87,6 +89,7 @@ QVector<FileType> fileTypeValues;
 
 LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 	: QWidget(parent)
+    , currentInfoWidget(NULL)
 {
     FileType allFiles("All files");
     allFiles.filter << "*.dae";
@@ -107,13 +110,48 @@ LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
     SetupView();
     SetupLayout();
     
+    waitBar = new QProgressBar(NULL);
+    waitBar->setMinimumHeight(20);
+    waitBar->setMinimum(0);
+    waitBar->setMaximum(0);
+    
+    notFoundMessage = new QLabel("Nothing found");
+    notFoundMessage->setMinimumHeight(20);
+    notFoundMessage->setMaximumHeight(20);
+    notFoundMessage->setAlignment(Qt::AlignCenter);
+    
+    spacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
+    
     ViewAsList();
     OnFilesTypeChanged(0);
 }
 
 LibraryWidget::~LibraryWidget()
 {
+    currentInfoWidget = NULL;
+
+    if(filesView->parent() == NULL)
+    {
+        delete filesView;
+        filesView = NULL;
+    }
+    else
+    {
+        delete spacer;
+    }
     
+    if(waitBar->parent() == NULL)
+    {
+        delete waitBar;
+        waitBar = NULL;
+    }
+    
+    if(notFoundMessage->parent() == NULL)
+    {
+        delete notFoundMessage;
+        notFoundMessage = NULL;
+    }
 }
 
 void LibraryWidget::SetupSignals()
@@ -179,7 +217,7 @@ void LibraryWidget::SetupView()
 {
     filesModel = new LibraryFileSystemModel(this);
 
-    filesView = new QTreeView(this);
+    filesView = new QTreeView(NULL);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->header()->setVisible(false);
     filesView->setDragDropMode(QAbstractItemView::DragOnly);
@@ -197,7 +235,7 @@ void LibraryWidget::SetupView()
 void LibraryWidget::SetupLayout()
 {
     // put tab bar and davawidget into vertical layout
-	QVBoxLayout *layout = new QVBoxLayout();
+	layout = new QVBoxLayout();
 	layout->addWidget(toolbar);
 	layout->addWidget(filesView);
 	layout->setMargin(0);
@@ -244,7 +282,6 @@ void LibraryWidget::HideDetailedColumnsAtFilesView(bool hide)
         filesView->setColumnHidden(i, hide);
         filesView->setColumnWidth(i, width);
 	}
-
 }
 
 
@@ -324,15 +361,19 @@ void LibraryWidget::SetFilter()
     QString filter = searchFilter->text();
     
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-    
-    if(!filter.isEmpty())
-	{
-		for(int i = 0; i < proxyModel->rowCount(); ++i)
-		{
-			ExpandUntilFilterAccepted(proxyModel->index(i, 0));
-		}
-	}
+
+    if(filesView->model())
+    {
+        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+        if(!filter.isEmpty())
+        {
+            for(int i = 0; i < proxyModel->rowCount(); ++i)
+            {
+                ExpandUntilFilterAccepted(proxyModel->index(i, 0));
+            }
+        }
+        SwitchTreeAndLabel();
+    }
 }
 
 void LibraryWidget::ResetFilter()
@@ -345,31 +386,114 @@ void LibraryWidget::ResetFilter()
 void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 {
     filesModel->SetExtensionFilter(fileTypeValues[typeIndex].filter);
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    
+    if(filesView->model())
+    {
+        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+        SwitchTreeAndLabel();
+    }
 }
 
 
 void LibraryWidget::ProjectOpened(const QString &path)
 {
-    ActivateProject(path);
+    rootPathname = path + "/DataSource/3d/";
+    
+    filesView->setModel(NULL);
+    proxyModel->SetModel(NULL);
+    
+    EnableInfoWidget(waitBar);
+    
+    filesModel->Load(rootPathname);
 }
 
 void LibraryWidget::ProjectClosed()
 {
-    ActivateProject("");
-}
-
-
-void LibraryWidget::ActivateProject(const QString &projectPath)
-{
-    rootPathname = projectPath + "/DataSource/3d/";
+    rootPathname = "";
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    filesView->collapseAll();
     
-    proxyModel->SetModel(NULL);
-
-    filesView->setModel(NULL);
-
-    filesModel->Load(rootPathname);
+    if(currentInfoWidget)
+        DisableInfoWidget();
 }
+
+void LibraryWidget::OnModelLoaded()
+{
+    QDir rootDir(rootPathname);
+    
+    proxyModel->SetModel(filesModel);
+    filesView->setModel(proxyModel);
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+
+    DisableInfoWidget();
+    SwitchTreeAndLabel();
+    
+    if(VIEW_AS_LIST == viewMode)
+    {
+        ViewAsList();
+    }
+    else
+    {
+        ViewDetailed();
+    }
+}
+
+void LibraryWidget::SwitchTreeAndLabel()
+{
+    if(proxyModel->rowCount())
+    {
+        if(filesView->parent() == NULL)
+        {
+            DisableInfoWidget();
+        }
+    }
+    else
+    {
+        if(notFoundMessage->parent() == NULL)
+        {
+            EnableInfoWidget(notFoundMessage);
+        }
+    }
+}
+
+void LibraryWidget::EnableInfoWidget(QWidget *widget)
+{
+    if(currentInfoWidget == widget) return;
+
+    if(currentInfoWidget)
+    {
+        RemoveWidget(currentInfoWidget);
+        layout->removeItem(spacer);
+    }
+
+    currentInfoWidget = widget;
+    
+    RemoveWidget(filesView);
+    AddWidget(currentInfoWidget);
+    layout->addSpacerItem(spacer);
+}
+
+void LibraryWidget::DisableInfoWidget()
+{
+    RemoveWidget(currentInfoWidget);
+    layout->removeItem(spacer);
+    AddWidget(filesView);
+
+    currentInfoWidget = NULL;
+}
+
+
+void LibraryWidget::AddWidget(QWidget *widget)
+{
+    layout->addWidget(widget);
+}
+
+void LibraryWidget::RemoveWidget(QWidget *widget)
+{
+    layout->removeWidget(widget);
+    widget->setParent(NULL);
+}
+
 
 
 void LibraryWidget::OnAddModel()
@@ -492,23 +616,5 @@ bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
     }
     
     return wasExpanded;
-}
-
-void LibraryWidget::OnModelLoaded()
-{
-    QDir rootDir(rootPathname);
-    
-    proxyModel->SetModel(filesModel);
-    filesView->setModel(proxyModel);
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-    
-    if(VIEW_AS_LIST == viewMode)
-    {
-        ViewAsList();
-    }
-    else
-    {
-        ViewDetailed();
-    }
 }
 

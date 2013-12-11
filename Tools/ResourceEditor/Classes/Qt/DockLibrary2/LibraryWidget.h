@@ -34,14 +34,18 @@
 #include <QWidget>
 #include <QItemSelection>
 
+class QVBoxLayout;
 class QToolBar;
 class QTreeView;
 class QAction;
 class QLineEdit;
 class QComboBox;
+class QProgressBar;
+class QLabel;
+class QSpacerItem;
+
 class LibraryFileSystemModel;
 class LibraryFilteringModel;
-
 class LibraryWidget : public QWidget
 {
 	Q_OBJECT
@@ -85,8 +89,6 @@ protected slots:
     
 private:
     
-    void ActivateProject(const QString &projectPath);
-
     void SetupToolbar();
     void SetupView();
     void SetupLayout();
@@ -97,19 +99,34 @@ private:
     void ShowPreview(const QString & pathname) const;
     
 	bool ExpandUntilFilterAccepted(const QModelIndex &proxyIndex);
-//    bool IsAnyChildAccepted
+
+    void SwitchTreeAndLabel();
+    
+    void EnableInfoWidget(QWidget *widget);
+    void DisableInfoWidget();
+    
+    void AddWidget(QWidget *widget);
+    void RemoveWidget(QWidget *widget);
     
 private:
 
+    QVBoxLayout *layout;
+    
     QToolBar *toolbar;
     QTreeView *filesView;
     
     QLineEdit *searchFilter;
     QComboBox *filesTypeFilter;
     
+    QProgressBar *waitBar;
+    QLabel * notFoundMessage;
+    QWidget *currentInfoWidget;
+    QSpacerItem *spacer;
+    
     QAction *actionViewAsList;
     QAction *actionViewDetailed;
 
+    
     QString rootPathname;
     LibraryFileSystemModel *filesModel;
     LibraryFilteringModel *proxyModel;

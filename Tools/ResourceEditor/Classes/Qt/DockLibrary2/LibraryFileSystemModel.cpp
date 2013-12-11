@@ -61,9 +61,11 @@ void LibraryFileSystemModel::DirectoryLoaded(const QString &path)
 {
     QDir dir(path);
     QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-    for (int i = 0; i < entries.size(); ++i)
+
+    auto endIt = entries.end();
+    for (auto it = entries.begin(); it != endIt; ++it)
     {
-        QModelIndex ind = index(entries.at(i).absoluteFilePath());
+        QModelIndex ind = index(it->absoluteFilePath());
         if(ind.isValid())
         {
             if(canFetchMore(ind))
@@ -83,16 +85,19 @@ void LibraryFileSystemModel::DirectoryLoaded(const QString &path)
 
 void LibraryFileSystemModel::Load(const QString & pathname)
 {
-    loadingCounter = 1;
-
-    beginResetModel();
-    
     acceptionMap.clear();
-    reset();
-    
-    endResetModel();
-    
-    setRootPath(pathname);
+
+    QModelIndex index = this->index(pathname);
+    if(canFetchMore(index))
+    {
+        loadingCounter = 1;
+        setRootPath(pathname);
+    }
+    else
+    {
+        setRootPath(pathname);
+        emit ModelLoaded();
+    }
 }
 
 void LibraryFileSystemModel::SetAccepted(const QModelIndex &index, bool accepted)
