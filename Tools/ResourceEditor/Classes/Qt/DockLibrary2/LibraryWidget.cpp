@@ -89,38 +89,14 @@ QVector<FileType> fileTypeValues;
 
 LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 	: QWidget(parent)
-    , currentInfoWidget(NULL)
 {
-    FileType allFiles("All files");
-    allFiles.filter << "*.dae";
-    allFiles.filter << "*.sc2";
-    allFiles.filter << "*.png";
-    allFiles.filter << "*.tex";
-
-    fileTypeValues.push_back(allFiles);
-    fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
-    fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));
-    fileTypeValues.push_back(FileType("DAE", "*.dae"));
-    fileTypeValues.push_back(FileType("PNG", "*.png"));
-    fileTypeValues.push_back(FileType("SC2", "*.sc2"));
-    fileTypeValues.push_back(FileType("TEX", "*.tex"));
-    
+    SetupFileTypes();
     SetupToolbar();
-
     SetupView();
     SetupLayout();
+
     
-    waitBar = new QProgressBar(NULL);
-    waitBar->setMinimumHeight(20);
-    waitBar->setMinimum(0);
-    waitBar->setMaximum(0);
-    
-    notFoundMessage = new QLabel("Nothing found");
-    notFoundMessage->setMinimumHeight(20);
-    notFoundMessage->setMaximumHeight(20);
-    notFoundMessage->setAlignment(Qt::AlignCenter);
-    
-    spacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer = NULL;
     
     
     ViewAsList();
@@ -129,29 +105,28 @@ LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 
 LibraryWidget::~LibraryWidget()
 {
-    currentInfoWidget = NULL;
-
-    if(filesView->parent() == NULL)
-    {
-        delete filesView;
-        filesView = NULL;
-    }
-    else
+    if(spacer)
     {
         delete spacer;
+        spacer = NULL;
     }
+}
+
+void LibraryWidget::SetupFileTypes()
+{
+    FileType allFiles("All files");
+    allFiles.filter << "*.dae";
+    allFiles.filter << "*.sc2";
+    allFiles.filter << "*.png";
+    allFiles.filter << "*.tex";
     
-    if(waitBar->parent() == NULL)
-    {
-        delete waitBar;
-        waitBar = NULL;
-    }
-    
-    if(notFoundMessage->parent() == NULL)
-    {
-        delete notFoundMessage;
-        notFoundMessage = NULL;
-    }
+    fileTypeValues.push_back(allFiles);
+    fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
+    fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));
+    fileTypeValues.push_back(FileType("DAE", "*.dae"));
+    fileTypeValues.push_back(FileType("PNG", "*.png"));
+    fileTypeValues.push_back(FileType("SC2", "*.sc2"));
+    fileTypeValues.push_back(FileType("TEX", "*.tex"));
 }
 
 void LibraryWidget::SetupSignals()
@@ -216,8 +191,9 @@ void LibraryWidget::SetupToolbar()
 void LibraryWidget::SetupView()
 {
     filesModel = new LibraryFileSystemModel(this);
+    proxyModel = new LibraryFilteringModel(this);
 
-    filesView = new QTreeView(NULL);
+    filesView = new QTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->header()->setVisible(false);
     filesView->setDragDropMode(QAbstractItemView::DragOnly);
@@ -226,10 +202,17 @@ void LibraryWidget::SetupView()
     
     filesView->setModel(NULL);
     
-    proxyModel = new LibraryFilteringModel(this);
-    
     QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
     
+    waitBar = new QProgressBar(this);
+    waitBar->setMinimumHeight(20);
+    waitBar->setMinimum(0);
+    waitBar->setMaximum(0);
+    
+    notFoundMessage = new QLabel("Nothing found", this);
+    notFoundMessage->setMinimumHeight(20);
+    notFoundMessage->setMaximumHeight(20);
+    notFoundMessage->setAlignment(Qt::AlignCenter);
 }
 
 void LibraryWidget::SetupLayout()
@@ -237,10 +220,16 @@ void LibraryWidget::SetupLayout()
     // put tab bar and davawidget into vertical layout
 	layout = new QVBoxLayout();
 	layout->addWidget(toolbar);
+	layout->addWidget(waitBar);
+	layout->addWidget(notFoundMessage);
 	layout->addWidget(filesView);
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
+    
+    waitBar->setVisible(false);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(true);
 }
 
 
@@ -401,20 +390,35 @@ void LibraryWidget::ProjectOpened(const QString &path)
     
     filesView->setModel(NULL);
     proxyModel->SetModel(NULL);
+
+    if(filesView->isVisible())
+    {
+        AddSpacer();
+    }
     
-    EnableInfoWidget(waitBar);
+    waitBar->setVisible(true);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(false);
     
     filesModel->Load(rootPathname);
 }
 
 void LibraryWidget::ProjectClosed()
 {
+    ResetFilter();
+    
     rootPathname = "";
     filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
     filesView->collapseAll();
-    
-    if(currentInfoWidget)
-        DisableInfoWidget();
+
+    if(filesView->isVisible() == false)
+    {
+        RemoveSpacer();
+        
+        waitBar->setVisible(false);
+        notFoundMessage->setVisible(false);
+        filesView->setVisible(true);
+    }
 }
 
 void LibraryWidget::OnModelLoaded()
@@ -425,8 +429,10 @@ void LibraryWidget::OnModelLoaded()
     filesView->setModel(proxyModel);
     filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
 
-    DisableInfoWidget();
-    SwitchTreeAndLabel();
+    RemoveSpacer();
+    waitBar->setVisible(false);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(true);
     
     if(VIEW_AS_LIST == viewMode)
     {
@@ -442,59 +448,23 @@ void LibraryWidget::SwitchTreeAndLabel()
 {
     if(proxyModel->rowCount())
     {
-        if(filesView->parent() == NULL)
+        if(filesView->isVisible() == false)
         {
-            DisableInfoWidget();
+            notFoundMessage->setVisible(false);
+            filesView->setVisible(true);
+            RemoveSpacer();
         }
     }
     else
     {
-        if(notFoundMessage->parent() == NULL)
+        if(filesView->isVisible())
         {
-            EnableInfoWidget(notFoundMessage);
+            notFoundMessage->setVisible(true);
+            filesView->setVisible(false);
+            AddSpacer();
         }
     }
 }
-
-void LibraryWidget::EnableInfoWidget(QWidget *widget)
-{
-    if(currentInfoWidget == widget) return;
-
-    if(currentInfoWidget)
-    {
-        RemoveWidget(currentInfoWidget);
-        layout->removeItem(spacer);
-    }
-
-    currentInfoWidget = widget;
-    
-    RemoveWidget(filesView);
-    AddWidget(currentInfoWidget);
-    layout->addSpacerItem(spacer);
-}
-
-void LibraryWidget::DisableInfoWidget()
-{
-    RemoveWidget(currentInfoWidget);
-    layout->removeItem(spacer);
-    AddWidget(filesView);
-
-    currentInfoWidget = NULL;
-}
-
-
-void LibraryWidget::AddWidget(QWidget *widget)
-{
-    layout->addWidget(widget);
-}
-
-void LibraryWidget::RemoveWidget(QWidget *widget)
-{
-    layout->removeWidget(widget);
-    widget->setParent(NULL);
-}
-
-
 
 void LibraryWidget::OnAddModel()
 {
@@ -618,3 +588,19 @@ bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
     return wasExpanded;
 }
 
+void LibraryWidget::AddSpacer()
+{
+    DVASSERT(spacer == NULL);
+    
+    spacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->addSpacerItem(spacer);
+}
+
+void LibraryWidget::RemoveSpacer()
+{
+    DVASSERT(spacer);
+    
+    layout->removeItem(spacer);
+    delete spacer;
+    spacer = NULL;
+}
