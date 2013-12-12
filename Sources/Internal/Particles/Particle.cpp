@@ -31,7 +31,6 @@
 #include "Render/RenderManager.h"
 #include "Particles/Particle.h"
 #include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA 
 {

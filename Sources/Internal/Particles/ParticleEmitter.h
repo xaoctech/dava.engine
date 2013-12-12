@@ -51,7 +51,7 @@ namespace DAVA
 #define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
 #define PARTICLE_EMITTER_MAX_PLAYBACK_SPEED 4.0f
 
-class ParticleEmitter
+class ParticleEmitter : public BaseObject
 {
 public:
 	enum eType
@@ -144,6 +144,6 @@ protected:
  
 };
 
-};
+}
 
 #endif // __DAVAENGINE_PARTICLE_EMITTER_H__

@@ -156,7 +156,7 @@ ParticleEmitter * ParticleEmitter::Clone()
 	// Now can add Layers. Need to update their parents.
 	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end(); ++iter)
 	{
-		ParticleLayer* clonedLayer = (*iter)->Clone(NULL);
+		ParticleLayer* clonedLayer = (*iter)->Clone();
 		clonedEmitter->AddLayer(clonedLayer);
 		SafeRelease(clonedLayer);
 	}	
@@ -473,7 +473,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     int32 layersCount = this->layers.size();
     for (int32 i = 0; i < layersCount; i ++)
     {
-        this->layers[i]->SaveToYamlNode(rootYamlNode, i);
+        this->layers[i]->SaveToYamlNode(configPath, rootYamlNode, i);
     }
 
     parser->SaveToYamlFile(filename, rootYamlNode, true);
