@@ -363,7 +363,10 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
 void LibraryWidget::SetFilter()
 {
     QString filter = searchFilter->text();
+    
+    bool b = proxyModel->blockSignals(true);
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+    proxyModel->blockSignals(b);
 
     if(filesView->model())
     {
@@ -398,8 +401,15 @@ void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 	if(curTypeIndex == typeIndex) return;
 
 	curTypeIndex = typeIndex;
+    
+    bool bProxy = proxyModel->blockSignals(true);
+    bool bFiles = filesModel->blockSignals(true);
+
     filesModel->SetExtensionFilter(fileTypeValues[curTypeIndex].filter);
 	proxyModel->invalidate();
+
+    filesModel->blockSignals(bFiles);
+    proxyModel->blockSignals(bProxy);
     
     if(filesView->model())
     {
