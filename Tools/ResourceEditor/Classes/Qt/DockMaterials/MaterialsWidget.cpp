@@ -196,6 +196,8 @@ void MaterialsWidget::SetFilter()
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
     proxyModel->blockSignals(b);
 
+    Invalidate();
+
     SwitchListAndLabel();
 }
 
@@ -212,8 +214,8 @@ void MaterialsWidget::SceneActivated(SceneEditor2 *scene)
     curScene = scene;
     
     materialsModel->SetScene(curScene);
-    proxyModel->invalidate();
-
+    Invalidate();
+    
     SwitchListAndLabel();
 }
 
@@ -222,10 +224,19 @@ void MaterialsWidget::SceneDeactivated(SceneEditor2 *scene)
     curScene = NULL;
     
     materialsModel->SetScene(curScene);
-    proxyModel->invalidate();
+    Invalidate();
 
     SwitchListAndLabel();
 }
+
+void MaterialsWidget::Invalidate()
+{
+    proxyModel->invalidate();
+
+    const QModelIndex rootIndex = materialsModel->indexFromItem(materialsModel->invisibleRootItem());
+    materialsView->setRootIndex(proxyModel->mapFromSource(rootIndex));
+}
+
 
 void MaterialsWidget::SwitchListAndLabel()
 {

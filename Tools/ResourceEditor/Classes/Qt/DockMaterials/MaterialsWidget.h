@@ -79,6 +79,8 @@ private:
     
     void SwitchListAndLabel();
     
+    void Invalidate();
+    
 private:
 
     QVBoxLayout *layout;
