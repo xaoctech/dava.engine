@@ -172,6 +172,7 @@ public:
 	
 	virtual void SetMaterialName(const String& name);
 	const FastName& GetMaterialName() const;
+	virtual void SetParentName(const String& name);
 	const FastName& GetParentName() const;
 	
 	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
@@ -428,6 +429,7 @@ public:
 	inline bool HasDefine(const FastName& defineName) const {return (inheritedDefines.count(defineName) > 0);}
 		
 	void SwitchParent(const FastName& newParent);
+	void SwitchParentForAllStates(const FastName& newParent);
 	
 	inline MaterialChangeListener* GetChangeListener() {return stateListener;}
 	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}

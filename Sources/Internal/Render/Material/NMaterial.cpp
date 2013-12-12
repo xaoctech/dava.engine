@@ -345,6 +345,11 @@ namespace DAVA
 		return materialName;
 	}
 	
+	void NMaterialState::SetParentName(const String& name)
+	{
+		parentName = FastName(name);
+	}
+	
 	const FastName& NMaterialState::GetParentName() const
 	{
 		return parentName;
@@ -527,7 +532,12 @@ namespace DAVA
 			it != materialProperties.end();
 			++it)
 		{
-			targetState->materialProperties.insert(it->first, it->second);
+			//targetState->materialProperties.insert(it->first, it->second);
+			targetState->SetPropertyValue(it->first,
+										  it->second->type,
+										  it->second->size,
+										  it->second->data);
+
 		}
 
 		
@@ -716,7 +726,11 @@ namespace DAVA
 		HashMap<FastName, NMaterialProperty*>::iterator propIter = materialProperties.begin();
 		while(propIter != materialProperties.end())
 		{
-			targetState->materialProperties.insert(propIter->first, propIter->second->Clone());
+			//targetState->materialProperties.insert(propIter->first, propIter->second->Clone());
+			targetState->SetPropertyValue(propIter->first,
+										  propIter->second->type,
+										  propIter->second->size,
+										  propIter->second->data);
 			
 			++propIter;
 		}
@@ -1728,6 +1742,21 @@ namespace DAVA
 		DVASSERT(parentName.IsValid());
 	}
 	
+	void NMaterial::SwitchParentForAllStates(const FastName& newParent)
+	{
+		if(states.size() > 0)
+		{
+			for(HashMap<FastName, NMaterialState*>::iterator it = states.begin();
+				it != states.end();
+				++it)
+			{
+				it->second->SetParentName(newParent.c_str());
+			}
+		}
+
+		SwitchParent(newParent);
+ 	}
+	
 	void NMaterial::BuildTextureParamsCache(const MaterialTechnique& technique)
 	{
 		textureParamsCache.clear();
@@ -1822,6 +1851,7 @@ namespace DAVA
 						newProp->data = &uniformDataStorage[dataOffset];
 
 						size_t dataSize = Shader::GetUniformTypeSize(localProp->type) * localProp->size;
+						DVASSERT(dataSize > 0);
 						memcpy(newProp->data, localProp->data, dataSize);
 						
 						materialProperties.insert(uniform->name, newProp);

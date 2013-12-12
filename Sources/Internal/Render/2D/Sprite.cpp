@@ -653,7 +653,8 @@ Texture* Sprite::GetTexture(int32 frameNumber)
 	
 UniqueHandle Sprite::GetTextureHandle(int32 frameNumber)
 {
-	return textureHandles[frameNumber];
+	frame = Clamp(frameNumber, 0, frameCount - 1);
+	return textureHandles[frameTextureIndex[frame]];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
