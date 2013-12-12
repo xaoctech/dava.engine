@@ -36,6 +36,8 @@
 		E8BAD5A81852074500C98C8D /* MaterialsModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5A51852074500C98C8D /* MaterialsModel_moc.cpp */; };
 		E8BAD5AB185213A600C98C8D /* QtPropertyDataInspDynamic.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */; };
 		E8BAD5AD185213C200C98C8D /* QtPropertyDataInspDynamic_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5AC185213C200C98C8D /* QtPropertyDataInspDynamic_moc.cpp */; };
+		E8BAD5B81855FB3900C98C8D /* LibraryFileSystemModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5B61855FB3900C98C8D /* LibraryFileSystemModel.cpp */; };
+		E8BAD5BA1856FB9B00C98C8D /* LibraryFilesystemModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5B91856FB9B00C98C8D /* LibraryFilesystemModel_moc.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C98E7B184CD0EA00AFBF3F /* BeastProxy.cpp */; };
 		E8C991EB184CD0EC00AFBF3F /* LightmapsPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C98E7E184CD0EA00AFBF3F /* LightmapsPacker.cpp */; };
@@ -640,6 +642,9 @@
 		E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataInspDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AA185213A600C98C8D /* QtPropertyDataInspDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataInspDynamic.h; sourceTree = "<group>"; };
 		E8BAD5AC185213C200C98C8D /* QtPropertyDataInspDynamic_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataInspDynamic_moc.cpp; sourceTree = "<group>"; };
+		E8BAD5B61855FB3900C98C8D /* LibraryFileSystemModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFileSystemModel.cpp; sourceTree = "<group>"; };
+		E8BAD5B71855FB3900C98C8D /* LibraryFileSystemModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryFileSystemModel.h; sourceTree = "<group>"; };
+		E8BAD5B91856FB9B00C98C8D /* LibraryFilesystemModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryFilesystemModel_moc.cpp; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E8C98E7B184CD0EA00AFBF3F /* BeastProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastProxy.cpp; sourceTree = "<group>"; };
 		E8C98E7C184CD0EA00AFBF3F /* BeastProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastProxy.h; sourceTree = "<group>"; };
@@ -2501,6 +2506,8 @@
 			children = (
 				E8BAD597185200A200C98C8D /* LibraryFilteringModel.cpp */,
 				E8BAD598185200A200C98C8D /* LibraryFilteringModel.h */,
+				E8BAD5B61855FB3900C98C8D /* LibraryFileSystemModel.cpp */,
+				E8BAD5B71855FB3900C98C8D /* LibraryFileSystemModel.h */,
 				E8BAD5871850C56500C98C8D /* LibraryWidget.cpp */,
 				E8BAD5881850C56500C98C8D /* LibraryWidget.h */,
 			);
@@ -3155,6 +3162,7 @@
 		E8C99366184CD23C00AFBF3F /* DockLibrary2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8BAD5B91856FB9B00C98C8D /* LibraryFilesystemModel_moc.cpp */,
 				E8BAD59A185200DB00C98C8D /* LibraryFilteringModel_moc.cpp */,
 				E8BAD58A1850C70100C98C8D /* LibraryWidget_moc.cpp */,
 			);
@@ -3905,6 +3913,7 @@
 				E8C99295184CD0EC00AFBF3F /* MetaObjModifyCommand.cpp in Build Sources */,
 				E8C99467184CD23C00AFBF3F /* SceneTree_moc.cpp in Build Sources */,
 				E8C9930C184CD0EC00AFBF3F /* HeightmapProxy.cpp in Build Sources */,
+				E8BAD5BA1856FB9B00C98C8D /* LibraryFilesystemModel_moc.cpp in Build Sources */,
 				E8C992E8184CD0EC00AFBF3F /* davaglwidget.cpp in Build Sources */,
 				E8C992D7184CD0EC00AFBF3F /* ParticleEmitterPropertiesWidget.cpp in Build Sources */,
 				E8C994C0184CD23C00AFBF3F /* QtPosSaver_moc.cpp in Build Sources */,
@@ -4230,6 +4239,7 @@
 				E8C99289184CD0EC00AFBF3F /* DAEConvertAction.cpp in Build Sources */,
 				E8C99251184CD0EC00AFBF3F /* btSliderConstraint.cpp in Build Sources */,
 				E8C991EE184CD0EC00AFBF3F /* btCollisionAlgorithm.cpp in Build Sources */,
+				E8BAD5B81855FB3900C98C8D /* LibraryFileSystemModel.cpp in Build Sources */,
 				E8C99217184CD0EC00AFBF3F /* btConvexInternalShape.cpp in Build Sources */,
 				E8C991F2184CD0EC00AFBF3F /* btMultiSapBroadphase.cpp in Build Sources */,
 				E8C99348184CD0EC00AFBF3F /* SystemsSettingsEditor.cpp in Build Sources */,
