@@ -38,6 +38,7 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
+#include "MaterialEditor/MaterialEditor.h"
 
 #include "Deprecated/EditorSettings.h"
 #include "Deprecated/EditorConfig.h"
@@ -139,6 +140,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
+	new MaterialEditor(this);
 	waitDialog = new QtWaitDialog(this);
 	beastWaitDialog = new QtWaitDialog(this);
 
@@ -176,6 +178,7 @@ QtMainWindow::~QtMainWindow()
 	SafeDelete(addSwitchEntityDialog);
     
     TextureBrowser::Instance()->Release();
+	MaterialEditor::Instance()->Release();
 
 	posSaver.SaveState(this);
 
@@ -1204,7 +1207,9 @@ void QtMainWindow::OnResetTransform()
 }
 
 void QtMainWindow::OnMaterialEditor()
-{ }
+{ 
+	MaterialEditor::Instance()->show();
+}
 
 void QtMainWindow::OnTextureBrowser()
 {

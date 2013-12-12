@@ -26,24 +26,21 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__DOCKPROPERTIES__
-#define __RESOURCEEDITORQT__DOCKPROPERTIES__
+#include "QtPropertyDataProxy.h"
 
-#include <QDockWidget>
+QtPropertyDataProxy::QtPropertyDataProxy(QtPropertyData *_original)
+: original(_original)
+{ }
 
-class DockProperties : public QDockWidget
+QtPropertyDataProxy::~QtPropertyDataProxy()
+{ }
+
+QtPropertyData* QtPropertyDataProxy::GetProxyOriginal()
 {
-	Q_OBJECT
+	return original;
+}
 
-public:
-	DockProperties(QWidget *parent = NULL);
-	~DockProperties();
-
-	void Init();
-
-protected slots:
-	void ActionFavoritesEdit();
-	void ViewModeSelected(int index);
-};
-
-#endif // __RESOURCEEDITORQT__DOCKPROPERTIES__
+QVariant QtPropertyDataProxy::GetValueInternal() const
+{
+	return QString("Proxy");
+}

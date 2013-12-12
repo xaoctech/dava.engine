@@ -28,8 +28,8 @@
 
 
 
-#include "MaterialsModel.h"
-#include "MaterialsItem.h"
+#include "MaterialModel.h"
+#include "MaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
@@ -38,90 +38,49 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Material/MaterialSystem.h"
 
-MaterialsModel::MaterialsModel(QObject * parent)
+MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
-    , curScene(NULL)
-{
+{ 
+	QStringList headerLabels;
+	headerLabels.append("Materials hierarchy");
+	setHorizontalHeaderLabels(headerLabels);
 }
 
-MaterialsModel::~MaterialsModel()
+MaterialModel::~MaterialModel()
+{ }
+
+void MaterialModel::SetScene(SceneEditor2 *scene)
 {
-    switchableMaterials.clear();
-    curScene = NULL;
+	removeRows(0, rowCount());
+
+	if(NULL != scene)
+	{
+		QStandardItem *root = invisibleRootItem();
+		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
+
+		DAVA::Vector<DAVA::NMaterial *> materials;
+		matSys->BuildMaterialList(NULL, materials);
+
+		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
+		{
+			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
+			{
+				MaterialItem *item = new MaterialItem(materials[i]);
+				root->appendRow(item);
+			}
+		}
+	}
 }
 
-void MaterialsModel::RemoveAllItems()
-{
-    QStandardItem * rootItem = invisibleRootItem();
-    rootItem->removeRows(0, rowCount());
-}
-
-void MaterialsModel::SetScene(SceneEditor2 *scene)
-{
-    switchableMaterials.clear();
-
-    curScene = scene;
-
-    RetriveMaterials();
-    
-    RebuildModel();
-}
-
-void MaterialsModel::RetriveMaterials()
-{
-    if(!curScene) return;
-    
-    DAVA::MaterialSystem *system = curScene->renderSystem->GetMaterialSystem();
-    DAVA::Vector<DAVA::NMaterial *> materials;
-    system->BuildMaterialList(NULL, materials);
-    for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
-    {
-        if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
-        {
-            switchableMaterials.push_back(materials[i]);
-        }
-    }
-}
-
-void MaterialsModel::RebuildModel()
-{
-    RemoveAllItems();
-
-    QStandardItem * rootItem = invisibleRootItem();
-    for(DAVA::uint32 i = 0; i < (DAVA::uint32)switchableMaterials.size(); ++i)
-    {
-        MaterialsItem *item = new MaterialsItem(switchableMaterials[i], this);
-        AddMaterialToItem(switchableMaterials[i], item);
-
-        rootItem->appendRow(item);
-    }
-}
-
-void MaterialsModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * rootItem)
-{
-    for(DAVA::int32 i = 0; i < material->GetChildrenCount(); ++i)
-    {
-        DAVA::NMaterial *mat = material->GetChild(i);
-
-        MaterialsItem *item = new MaterialsItem(mat, this);
-        AddMaterialToItem(mat, item);
-
-        rootItem->appendRow(item);
-    }
-}
-
-
-DAVA::NMaterial * MaterialsModel::GetMaterial(const QModelIndex & index) const
+DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {
     if(!index.isValid()) return NULL;
     
-    QStandardItem *item = itemFromIndex(index);
-    
-    DAVA::NMaterial *material = item->data().value<DAVA::NMaterial *>();
-    return material;
+	MaterialItem *item = (MaterialItem *) itemFromIndex(index);
+    return item->GetMaterial();
 }
 
-QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
+QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
 {
 	if(indexes.size() > 0)
 	{
@@ -137,11 +96,45 @@ QMimeData * MaterialsModel::mimeData(const QModelIndexList & indexes) const
 	return NULL;
 }
 
-QStringList MaterialsModel::mimeTypes() const
+QStringList MaterialModel::mimeTypes() const
 {
 	QStringList types;
     
 	types << MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName();
     
 	return types;
+}
+
+
+MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /*= NULL*/)
+: QSortFilterProxyModel(parent)
+, materialModel(_materialModel)
+{ 
+	setSourceModel(materialModel);
+}
+
+bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+	bool ret = false;
+
+	if(NULL != materialModel)
+	{
+		DAVA::NMaterial *materialLeft = materialModel->GetMaterial(left);
+		DAVA::NMaterial *materialRight = materialModel->GetMaterial(right);
+
+		if(materialLeft->IsConfigMaterial() && materialRight->IsConfigMaterial())
+		{
+			if( materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() > 0 ||
+				materialLeft->GetChildrenCount() == 0 && materialRight->GetChildrenCount() == 0)
+			{
+				ret = (strcmp(materialLeft->GetMaterialName().c_str(), materialRight->GetMaterialName().c_str()) < 0);
+			}
+			else if(materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() == 0)
+			{
+				ret = true;
+			}
+		}
+	}
+
+	return ret;
 }

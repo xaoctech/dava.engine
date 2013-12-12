@@ -28,27 +28,43 @@
 
 
 
-#ifndef __MATERIALS_ITEM_H__
-#define __MATERIALS_ITEM_H__
+#ifndef __LIBRARY_FILESYSTEM_MODEL_H__
+#define __LIBRARY_FILESYSTEM_MODEL_H__
 
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItem>
-
-class MaterialsModel;
-class MaterialsItem: public QStandardItem
+#include <QFileSystemModel>
+class  LibraryFileSystemModel: public QFileSystemModel
 {
+    Q_OBJECT
+    
+    static const int ACCEPT_ROLE = Qt::UserRole + 5;
+    
 public:
-    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
-    virtual ~MaterialsItem();
+    explicit LibraryFileSystemModel(QObject *parent = 0);
     
-    QVariant data(int role = Qt::UserRole + 1) const;
+    void Load(const QString & pathname);
     
-private:
+    void SetExtensionFilter(const QStringList & extensionFilter);
+
+    void SetAccepted(const QModelIndex & index, bool accepted);
+    bool IsAccepted(const QModelIndex & index) const;
     
-    DAVA::NMaterial * material;
-    MaterialsModel * model;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    bool HasFilteredChildren(const QModelIndex &index);
+    
+signals:
+    
+    void ModelLoaded();
+    
+protected slots:
+    
+    void DirectoryLoaded(const QString &path);
+    
+protected:
+    
+    QMap<QString, QVariant> acceptionMap;
+    
+    uint loadingCounter;
 };
 
-
-#endif // __MATERIALS_ITEM_H__
+#endif // __LIBRARY_FILESYSTEM_MODEL_H__

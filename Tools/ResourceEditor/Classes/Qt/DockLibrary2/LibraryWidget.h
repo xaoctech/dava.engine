@@ -34,18 +34,28 @@
 #include <QWidget>
 #include <QItemSelection>
 
+class QVBoxLayout;
 class QToolBar;
 class QTreeView;
 class QAction;
 class QLineEdit;
 class QComboBox;
-class QFileSystemModel;
-class LibraryFilteringModel;
+class QProgressBar;
+class QLabel;
+class QSpacerItem;
 
+class LibraryFileSystemModel;
+class LibraryFilteringModel;
 class LibraryWidget : public QWidget
 {
 	Q_OBJECT
 
+    enum eViewMode
+    {
+        VIEW_AS_LIST = 0,
+        VIEW_DETAILED
+    };
+    
 public:
 	LibraryWidget(QWidget *parent = 0);
 	~LibraryWidget();
@@ -63,7 +73,7 @@ protected slots:
 	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void ShowContextMenu(const QPoint & point);
     
-    void SetFilter(const QString &filter);
+    void SetFilter();
     void ResetFilter();
     
     void OnFilesTypeChanged(int typeIndex);
@@ -75,10 +85,11 @@ protected slots:
     void OnEditTextureDescriptor();
     void OnRevealAtFolder();
 
+    void OnModelLoaded();
+    
 private:
     
-    void ActivateProject(const QString &projectPath);
-
+    void SetupFileTypes();
     void SetupToolbar();
     void SetupView();
     void SetupLayout();
@@ -88,21 +99,36 @@ private:
     void HidePreview() const;
     void ShowPreview(const QString & pathname) const;
     
+	bool ExpandUntilFilterAccepted(const QModelIndex &proxyIndex);
+
+    void SwitchTreeAndLabel();
+    
+    void RemoveSpacer();
+    void AddSpacer();
+    
 private:
 
+    QVBoxLayout *layout;
+    
     QToolBar *toolbar;
     QTreeView *filesView;
     
     QLineEdit *searchFilter;
     QComboBox *filesTypeFilter;
     
+    QProgressBar *waitBar;
+    QLabel * notFoundMessage;
+    QSpacerItem *spacer;
+    
     QAction *actionViewAsList;
     QAction *actionViewDetailed;
 
-    QString rootPathname;
-    QFileSystemModel *filesModel;
     
+    QString rootPathname;
+    LibraryFileSystemModel *filesModel;
     LibraryFilteringModel *proxyModel;
+    
+    eViewMode viewMode;
 };
 
 #endif // __LIBRARY_WIDGET_H__

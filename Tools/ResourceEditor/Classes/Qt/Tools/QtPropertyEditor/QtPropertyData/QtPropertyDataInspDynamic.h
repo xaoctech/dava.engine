@@ -28,6 +28,7 @@ public:
 	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, int _index);
 	virtual ~QtPropertyDataInspDynamic();
 
+	virtual const DAVA::MetaInfo * MetaInfo() const;
 	// virtual void* CreateLastCommand() const;
 
 protected:

@@ -35,7 +35,7 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "Scene/SceneSignals.h"
 
-#include "MaterialEditor/MaterialsAssignSystem.h"
+#include "MaterialEditor/MaterialAssignSystem.h"
 
 
 // framework
@@ -559,7 +559,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
             DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
             if(targetEntity)
             {
-                MaterialsAssignSystem::DropTestResult result = MaterialsAssignSystem::TestEntity(targetEntity, true);
+                MaterialAssignSystem::DropTestResult result = MaterialAssignSystem::TestEntity(targetEntity, true);
                 ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
             }
             break;
@@ -728,7 +728,7 @@ void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *m
     QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
     if(curScene && targetEntity && (materials->size() == 1))
     {
-        MaterialsAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
+        MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
     }
 }
 
