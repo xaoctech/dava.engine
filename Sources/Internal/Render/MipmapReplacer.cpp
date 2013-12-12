@@ -107,9 +107,7 @@ void MipMapReplacer::ReplaceMipMap(Texture * texture, int32 level)
                 Image * dummyImg = mipImg[i];
                 if(dummyImg->width == mipMapSize)
                 {
-                    RenderManager::Instance()->LockNonMain();
                     texture->TexImage(level, dummyImg->width, dummyImg->height, dummyImg->data, dummyImg->dataSize, Texture::CUBE_FACE_INVALID);
-                    RenderManager::Instance()->UnlockNonMain();
                 }
 
                 SafeRelease(dummyImg);
@@ -163,9 +161,7 @@ void MipMapReplacer::ReplaceMipMapFromMemory(Texture * texture, int32 level)
         }
     }
 
-    RenderManager::Instance()->LockNonMain();
     texture->TexImage(level, mipMapSize, mipMapSize, data, dataSize, Texture::CUBE_FACE_INVALID);
-    RenderManager::Instance()->UnlockNonMain();
 
     SafeDeleteArray(data);
 }

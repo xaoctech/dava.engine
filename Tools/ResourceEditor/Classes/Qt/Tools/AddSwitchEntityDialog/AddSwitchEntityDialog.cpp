@@ -32,7 +32,7 @@
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include "Main/mainwindow.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Qt/Main/QtUtils.h"
 

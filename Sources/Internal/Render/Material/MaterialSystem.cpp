@@ -68,6 +68,13 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 	return material;
 }
 	
+NMaterial* MaterialSystem::GetSpecificMaterial(const FastName & name)
+{
+	NMaterial* material = materials.at(name);
+		
+	return material;
+}
+	
 void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const
 {
 	if(NULL == parent)
@@ -258,19 +265,21 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 						 nodes);
 		}
 		
-		RenderManager::Instance()->LockNonMain();
-		
 		for(size_t i = 0; i < rootCount; ++i)
 		{
 			MaterialData& currentData = roots[i];
 			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
 			DVASSERT(rootMaterial);
 			
-			rootMaterial->Rebuild();
-			rootMaterial->Rebind();
+			//rootMaterial->Rebuild();
+			//rootMaterial->Rebind();
+			
+			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+																   Message(this, &MaterialSystem::BuildAndBindOnMainThread,
+																		   rootMaterial));
+			JobInstanceWaiter waiter(job);
+			waiter.Wait();
 		}
-		
-		RenderManager::Instance()->UnlockNonMain();
 	}
 	else
 	{
@@ -282,6 +291,16 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 	DVASSERT(defaultMaterial);
 	
 	return true;
+}
+	
+void MaterialSystem::BuildAndBindOnMainThread(BaseObject * caller,
+											  void * param,
+											  void *callerData)
+{
+	NMaterial* rootMaterial = static_cast<NMaterial*>(param);
+	
+	rootMaterial->Rebuild();
+	rootMaterial->Rebind();
 }
 	
 NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
@@ -299,7 +318,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	{
 		material->SetMaterialName(name.c_str());
 		AddMaterial(material);
-		material->Release(); //need to release material since material system took ownership
+		//material->Release(); //need to release material since material system took ownership
 		material->SetParent(parentMaterial);
 		
 		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
@@ -330,7 +349,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	void MaterialSystem::AddMaterial(NMaterial* material)
 	{
 		DVASSERT(material);
-		SafeRetain(material);
+		//SafeRetain(material);
 		
 		material->SetMaterialSystem(this);
 		
@@ -370,7 +389,7 @@ void MaterialSystem::RemoveMaterial(NMaterial* material)
 {
 	DVASSERT(material);
 	materials.erase(material->GetMaterialName());
-	SafeRelease(material);
+	//SafeRelease(material);
 }
 	
 void MaterialSystem::Clear()
@@ -432,9 +451,21 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 			mat->SwitchState(qualityLevelName, this, forceSwitch);
 		}
 	}
+	
+	for(Vector<NMaterial*>::iterator it = materialList.begin();
+		it != materialList.end();
+		++it)
+	{
+		NMaterial* mat = *it;
+		if(mat->GetParent() == NULL) //parent == NULL means it's root material
+		{
+			mat->Rebuild();
+			mat->Rebind();
+		}
+	}
 }
 	
-NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
+NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 {
 	NMaterial* child = MaterialSystem::CreateNamed();
 	
@@ -443,22 +474,50 @@ NMaterial* MaterialSystem::CreateChild(NMaterial* parent)
 	return child;
 }
 	
-	NMaterial* MaterialSystem::CreateChild(const FastName& parentName)
+	NMaterial* MaterialSystem::CreateInstanceChild(const FastName& parentName)
 	{
 		NMaterial* parent = GetMaterial(parentName);
-		return CreateChild(parent);
+		return CreateInstanceChild(parent);
 	}
 	
 	void MaterialSystem::BindMaterial(NMaterial* newMaterial)
 	{
-		FastName parentName = newMaterial->GetParentName();
 		AddMaterial(newMaterial);
 		
+		FastName parentName = newMaterial->GetParentName();
 		NMaterial* newParent = GetMaterial(parentName);
 		if(newParent)
 		{
 			newMaterial->SetParent(newParent);
 		}
+	}
+	
+	NMaterial* MaterialSystem::CreateSwitchableChild(NMaterial* parent)
+	{
+		NMaterial* child = MaterialSystem::CreateNamed();
+		uint32 stateCount = parent->GetStateCount();
+		
+		if(stateCount > 0)
+		{
+			HashMap<FastName, NMaterialState*>::iterator stateIter = parent->states.begin();
+			while(stateIter != parent->states.end())
+			{
+				NMaterialState* matState = stateIter->second->CreateTemplate(parent);
+				child->states.insert(stateIter->first, matState);
+				
+				++stateIter;
+			}
+		}
+		
+		child->SetParent(parent);
+		
+		return child;
+	}
+	
+	NMaterial* MaterialSystem::CreateSwitchableChild(const FastName& parentName)
+	{
+		NMaterial* parent = GetMaterial(parentName);
+		return CreateSwitchableChild(parent);
 	}
 	
 	NMaterial* MaterialSystem::CreateNamed()

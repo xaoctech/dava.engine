@@ -28,8 +28,8 @@
 
 
 #include "ScenePreviewControl.h"
-#include "SceneEditor/ControlsFactory.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/ControlsFactory.h"
+#include "Deprecated/SceneValidator.h"
 #include "Scene3D/Components/CameraComponent.h"
 
 // ***************** PreviewCameraController *************** //

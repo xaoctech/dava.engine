@@ -29,14 +29,12 @@
 
 
 #include "SceneExporter.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/SceneValidator.h"
 
 #include "TextureCompression/TextureConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "Qt/Scene/SceneHelper.h"
-#include "EditorScene.h"
-
 #include "Render/GPUFamilyDescriptor.h"
 
 #include "../StringConstants.h"

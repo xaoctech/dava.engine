@@ -32,13 +32,13 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "../SceneEditor2.h"
+#include "Scene/SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
-#include "../SceneEditor/EditorConfig.h"
-#include "../SceneSignals.h"
-#include "../../../Commands2/VisibilityToolActions.h"
+#include "Deprecated/EditorConfig.h"
+#include "Scene/SceneSignals.h"
+#include "Commands2/VisibilityToolActions.h"
 
 VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 :	SceneSystem(scene)

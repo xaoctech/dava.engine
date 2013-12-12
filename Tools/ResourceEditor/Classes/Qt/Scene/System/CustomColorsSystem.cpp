@@ -32,14 +32,14 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "../SceneEditor2.h"
+#include "Scene/SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
-#include "../SceneEditor/EditorConfig.h"
-#include "../../../Commands2/CustomColorsCommands2.h"
-#include "../SceneSignals.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Commands2/CustomColorsCommands2.h"
+#include "Scene/SceneSignals.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/EditorConfig.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)

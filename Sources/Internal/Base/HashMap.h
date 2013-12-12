@@ -521,14 +521,10 @@ inline typename HashMap<K, V>::HashMapIterator HashMap<K, V>::HashMapIterator::o
 {
 	// operator iterator++
 
-	HashMapIterator tmp = *this;
+	HashMapIterator orig = *this;
+	++(*this);
 
-	while(0 < count--)
-	{
-		++tmp;
-	}
-
-	return tmp;
+	return orig;
 }
 
 

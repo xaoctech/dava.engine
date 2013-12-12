@@ -252,6 +252,8 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		textureNames[k] = tp;
 		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
 	}
+	
+	RegisterTextureStates();
 
     resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(resourceSizeIndex);
 	resourceToPhysicalFactor = Core::Instance()->GetResourceToPhysicalFactor(resourceSizeIndex);
@@ -404,11 +406,9 @@ void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat
 	this->type = SPRITE_RENDER_TARGET;
 
 	// Clear created render target first 
-	RenderManager::Instance()->LockNonMain();
 	RenderManager::Instance()->SetRenderTarget(this);
 	RenderManager::Instance()->ClearWithColor(0, 0, 0, 0);
 	RenderManager::Instance()->RestoreRenderTarget();
-	RenderManager::Instance()->UnlockNonMain();
 }
 	
 Sprite* Sprite::CreateFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded)
@@ -538,6 +538,8 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 #endif //#if defined (USE_FILEPATH_IN_MAP)
 	fboCounter++;
 	this->Reset();
+	
+	RegisterTextureStates();
 }
     
 void Sprite::PrepareForTiling()
@@ -596,6 +598,7 @@ int32 Sprite::Release()
 	
 void Sprite::Clear()
 {
+	UnregisterTextureStates();
 	for (int32 k = 0; k < textureCount; ++k)
 	{
 		SafeRelease(textures[k]);
@@ -626,6 +629,7 @@ void Sprite::Clear()
 	SafeDeleteArray(texCoords);
 	SafeDeleteArray(rectsAndOffsets);
 	SafeDeleteArray(frameTextureIndex);
+	textureCount = 0;
 }
 
 Sprite::~Sprite()
@@ -645,6 +649,11 @@ Texture* Sprite::GetTexture(int32 frameNumber)
 //	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
     frame = Clamp(frameNumber, 0, frameCount - 1);
 	return textures[frameTextureIndex[frame]];
+}
+	
+UniqueHandle Sprite::GetTextureHandle(int32 frameNumber)
+{
+	return textureHandles[frameNumber];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
@@ -1164,7 +1173,8 @@ void Sprite::Draw()
         RenderManager::Instance()->ClipRect( clipRect );
     }
 
-    RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
     RenderManager::Instance()->SetRenderData(spriteRenderObject);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
@@ -1215,7 +1225,8 @@ void Sprite::Draw(DrawState * state)
         RenderManager::Instance()->ClipRect( clipRect );
     }
 
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	//RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
@@ -1423,7 +1434,8 @@ void Sprite::DrawPoints(Vector2 *verticies)
         }
     }	
 
-    RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
@@ -1433,6 +1445,18 @@ float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueTy
 {
 	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
 	return rectsAndOffsets[clampedFrame][valueType];
+}
+
+const float32 * Sprite::GetFrameVerticesForFrame( int32 frame ) const
+{
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return frameVertices[clampedFrame];
+}
+
+const float32 * Sprite::GetTextureCoordsForFrame( int32 frame ) const
+{
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return texCoords[clampedFrame];
 }
 
 void Sprite::PrepareForNewSize()
@@ -1660,6 +1684,32 @@ void Sprite::ReloadExistingTextures()
             Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
         }
     }
+}
+	
+void Sprite::RegisterTextureStates()
+{
+	textureHandles.resize(textureCount, InvalidUniqueHandle);
+	for(int32 i = 0; i < textureCount; ++i)
+    {
+        if(textures[i])
+        {
+			TextureStateData data;
+			data.textures[0] = textures[i];
+			
+			textureHandles[i] = RenderManager::Instance()->AddTextureStateData(&data);
+		}
+	}
+}
+
+void Sprite::UnregisterTextureStates()
+{
+	for(int32 i = 0; i < textureCount; ++i)
+    {
+		if(textureHandles[i] != InvalidUniqueHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(textureHandles[i]);
+		}
+	}
 }
     
     

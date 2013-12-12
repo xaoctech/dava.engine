@@ -55,8 +55,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     currentState(),
     hardwareState(),
     needGLScreenShot(false),
-    screenShotCallback(NULL),
-    glMutex( new Mutex() )
+    screenShotCallback(NULL)
 {
     // Create shader cache singleton
     ShaderCache * cache = new ShaderCache();
@@ -104,7 +103,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 
 	fps = 60;
 
-	lockCount = 0;
 	debugEnabled = false;
 	fboViewRenderbuffer = 0;
 	fboViewFramebuffer = 0;
@@ -163,8 +161,12 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 	
 	renderContextId = 0;
+    
+    projectionMatrixCache = 0;
+    modelViewMatrixCache = 0;
 
 	InitDefaultRenderStates();
+	InitDefaultTextureStates();
 }
 	
 RenderManager::~RenderManager()
@@ -229,7 +231,13 @@ void RenderManager::InitDefaultRenderStates()
 	defaultHardwareState = AddRenderStateData(&defaultStateData);
 	hardwareState.stateHandle = defaultHardwareState;
 }
-
+	
+void RenderManager::InitDefaultTextureStates()
+{
+	TextureStateData textureData;
+	defaultTextureState = AddTextureStateData(&textureData);
+}
+	
 void RenderManager::SetDebug(bool isDebugEnabled)
 {
 	debugEnabled = isDebugEnabled;
@@ -275,29 +283,27 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 	currentState.direct3DDevice = GetD3DDevice();
 #endif
     
-    RenderManager::LockNonMain();
 	currentState.Reset(false);
     hardwareState.Reset(true);
 
 #if defined(__DAVAENGINE_OPENGL__)
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)//Dizz: glDisableClientState functions are not supported by GL ES 2.0
-    glDisableClientState(GL_VERTEX_ARRAY);
+    RENDER_VERIFY(glDisableClientState(GL_VERTEX_ARRAY));
     oldVertexArrayEnabled = 0;                      
 
-    glDisableClientState(GL_NORMAL_ARRAY);
+    RENDER_VERIFY(glDisableClientState(GL_NORMAL_ARRAY));
     oldNormalArrayEnabled = 0;                      
 	for (int k = 0; k < RenderState::MAX_TEXTURE_LEVELS; ++k)
     {
-        glClientActiveTexture(GL_TEXTURE0 + k);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0 + k));
+        RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
         oldTextureCoordArrayEnabled[k] = 0;                
     }
-    glClientActiveTexture(GL_TEXTURE0);
+    RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
     
-    glDisableClientState(GL_COLOR_ARRAY);
+    RENDER_VERIFY(glDisableClientState(GL_COLOR_ARRAY));
     oldColorArrayEnabled = 0;                       
 
-    RenderManager::UnlockNonMain();
 #endif    
 #endif
     
@@ -390,56 +396,16 @@ void RenderManager::ResetColor()
 	currentState.ResetColor();
 }
 	
-	
-void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
+/*void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
 {	
     currentState.SetTexture(texture, textureLevel);
-	
-/*  DVASSERT(textureLevel < MAX_TEXTURE_LEVELS);
-	if(texture != currentTexture[textureLevel])
-	{
-		currentTexture[textureLevel] = texture;
-		if(currentTexture[textureLevel])
-		{
-			if(debugEnabled)
-			{
-				Logger::FrameworkDebug("Bind texture: id %d", texture->id);
-			}
-            
-#if defined(__DAVAENGINE_OPENGL__)
-            RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
-            if (textureLevel != 0)
-            {
-                // todo: boroda: fix that for OpenGL ES because glDisable / glEnable is deprecated
-                // fix it pizdato
-                if (GetRenderer() != Core::RENDERER_OPENGL_ES_2_0)
-                    RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
-            }
-            RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, texture->id));
-#elif defined(__DAVAENGINE_DIRECTX9__)
-			RENDER_VERIFY(GetD3DDevice()->SetTexture(textureLevel, texture->id));
-#endif
-		}else
-        {
-#if defined(__DAVAENGINE_OPENGL__)
-            RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
-            if (textureLevel != 0)
-            {
-                // todo: boroda: fix that for OpenGL ES because glDisable / glEnable is deprecated
-                // fix it pizdato
-                if (GetRenderer() != Core::RENDERER_OPENGL_ES_2_0)
-                    RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
-            }
-#endif
-        }
-	}*/
 }
 	
 Texture *RenderManager::GetTexture(uint32 textureLevel)
 {
     DVASSERT(textureLevel < RenderState::MAX_TEXTURE_LEVELS);
 	return currentState.currentTexture[textureLevel];	
-}
+}*/
     
 void RenderManager::SetShader(Shader * _shader)
 {
@@ -586,40 +552,11 @@ void RenderManager::DrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 void RenderManager::Lock()
 {
-	glMutex->Lock();
+	glMutex.Lock();
 }
 void RenderManager::Unlock()
 {
-	glMutex->Unlock();
-}
-	
-void RenderManager::LockNonMain()
-{
-	if(!Thread::IsMainThread())
-	{
-		if(!lockCount)
-		{
-			Lock();
-		}
-		lockCount++;
-	}
-}
-	
-int32 RenderManager::GetNonMainLockCount()
-{
-	return lockCount;
-}
-
-void RenderManager::UnlockNonMain()
-{
-	if(!Thread::IsMainThread())
-	{
-		lockCount--;
-		if(!lockCount)
-		{
-			Unlock();
-		}
-	}
+	glMutex.Unlock();
 }
 
 void RenderManager::SetFPS(int32 newFps)
@@ -673,7 +610,7 @@ void RenderManager::IdentityMappingMatrix()
 void RenderManager::IdentityModelMatrix()
 {
     mappingMatrixChanged = true;
-    RenderManager::Instance()->SetMatrix(MATRIX_MODELVIEW, Matrix4::IDENTITY);
+    RenderManager::Instance()->SetMatrix(MATRIX_MODELVIEW, Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 	currentDrawOffset = Vector2(0, 0);
     currentDrawScale = Vector2(1, 1);
 }
@@ -822,6 +759,7 @@ void RenderManager::Stats::Clear()
     occludedRenderBatchCount = 0;
 	renderStateSwitches = 0;
 	renderStateFullSwitches = 0;
+	textureStateFullSwitches = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
 }
