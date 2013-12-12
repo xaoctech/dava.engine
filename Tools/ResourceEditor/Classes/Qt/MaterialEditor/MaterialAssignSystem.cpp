@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 
-#include "MaterialsAssignSystem.h"
+#include "MaterialAssignSystem.h"
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditor2.h"
 
@@ -48,7 +48,7 @@
 Q_DECLARE_METATYPE( DAVA::NMaterial * );
 
 
-MaterialsAssignSystem::DropTestResult::DropTestResult()
+MaterialAssignSystem::DropTestResult::DropTestResult()
 {
     hasEntitiesAvailableToDrop = hasEntityUnavailableToDrop = false;
     
@@ -58,15 +58,15 @@ MaterialsAssignSystem::DropTestResult::DropTestResult()
 }
 
 
-void MaterialsAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial)
+void MaterialAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial)
 {
     scene->Exec(new MaterialSwitchParentCommand(oldMaterial, newMaterial));
 }
 
 
-void MaterialsAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material)
+void MaterialAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material)
 {
-    MaterialsAssignSystem::DropTestResult result = TestEntityGroup(group, true);
+    MaterialAssignSystem::DropTestResult result = TestEntityGroup(group, true);
     DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(result, group, true);
     if(oldMaterials.size())
     {
@@ -99,9 +99,9 @@ void MaterialsAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const Ent
 }
 
 
-void MaterialsAssignSystem::AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material)
+void MaterialAssignSystem::AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material)
 {
-    MaterialsAssignSystem::DropTestResult result = TestEntity(entity, true);
+    MaterialAssignSystem::DropTestResult result = TestEntity(entity, true);
     DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(result, entity, true);
     if(oldMaterials.size())
     {
@@ -133,11 +133,11 @@ void MaterialsAssignSystem::AssignMaterialToEntity(SceneEditor2 *scene, const DA
     }
 }
 
-MaterialsAssignSystem::DropTestResult MaterialsAssignSystem::TestEntityGroup(const EntityGroup *group, const bool recursive)
+MaterialAssignSystem::DropTestResult MaterialAssignSystem::TestEntityGroup(const EntityGroup *group, const bool recursive)
 {
-    if(!group) return MaterialsAssignSystem::DropTestResult();
+    if(!group) return MaterialAssignSystem::DropTestResult();
     
-    MaterialsAssignSystem::DropTestResult result;
+    MaterialAssignSystem::DropTestResult result;
     
     const size_t count = group->Size();
     for(size_t i = 0; i < count; ++i)
@@ -149,16 +149,16 @@ MaterialsAssignSystem::DropTestResult MaterialsAssignSystem::TestEntityGroup(con
 }
 
 
-MaterialsAssignSystem::DropTestResult MaterialsAssignSystem::TestEntity(const DAVA::Entity * entity, const bool recursive)
+MaterialAssignSystem::DropTestResult MaterialAssignSystem::TestEntity(const DAVA::Entity * entity, const bool recursive)
 {
-    MaterialsAssignSystem::DropTestResult result;
+    MaterialAssignSystem::DropTestResult result;
     
     TestEntity(result, entity, recursive);
     
     return result;
 }
 
-void MaterialsAssignSystem::TestEntity(MaterialsAssignSystem::DropTestResult & result, const DAVA::Entity * entity, const bool recursive)
+void MaterialAssignSystem::TestEntity(MaterialAssignSystem::DropTestResult & result, const DAVA::Entity * entity, const bool recursive)
 {
     DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
     if(ro)
@@ -189,7 +189,7 @@ void MaterialsAssignSystem::TestEntity(MaterialsAssignSystem::DropTestResult & r
 }
 
 
-DAVA::Set<DAVA::NMaterial *> MaterialsAssignSystem::GetAvailableMaterials(const MaterialsAssignSystem::DropTestResult & result, const EntityGroup *group, const bool recursive)
+DAVA::Set<DAVA::NMaterial *> MaterialAssignSystem::GetAvailableMaterials(const MaterialAssignSystem::DropTestResult & result, const EntityGroup *group, const bool recursive)
 {
     DAVA::Set<DAVA::NMaterial *> materials;
     
@@ -204,7 +204,7 @@ DAVA::Set<DAVA::NMaterial *> MaterialsAssignSystem::GetAvailableMaterials(const 
     return materials;
 }
 
-DAVA::Set<DAVA::NMaterial *> MaterialsAssignSystem::GetAvailableMaterials(const MaterialsAssignSystem::DropTestResult & result, const DAVA::Entity *entity, const bool recursive)
+DAVA::Set<DAVA::NMaterial *> MaterialAssignSystem::GetAvailableMaterials(const MaterialAssignSystem::DropTestResult & result, const DAVA::Entity *entity, const bool recursive)
 {
     DAVA::Set<DAVA::NMaterial *> materials;
     
@@ -214,7 +214,7 @@ DAVA::Set<DAVA::NMaterial *> MaterialsAssignSystem::GetAvailableMaterials(const 
     return materials;
 }
 
-void MaterialsAssignSystem::GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive)
+void MaterialAssignSystem::GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive)
 {
     DAVA::RenderObject * ro = DAVA::GetRenderObject(entity);
     if(ro)
@@ -237,7 +237,7 @@ void MaterialsAssignSystem::GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &
 }
 
 
-DAVA::Vector<const DAVA::Entity *> MaterialsAssignSystem::GetDropRejectedEntities(const EntityGroup *group, const bool recursive)
+DAVA::Vector<const DAVA::Entity *> MaterialAssignSystem::GetDropRejectedEntities(const EntityGroup *group, const bool recursive)
 {
     DAVA::Vector<const DAVA::Entity *> rejectedEntities;
     
@@ -251,7 +251,7 @@ DAVA::Vector<const DAVA::Entity *> MaterialsAssignSystem::GetDropRejectedEntitie
 }
 
 
-DAVA::Vector<const DAVA::Entity *> MaterialsAssignSystem::GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive)
+DAVA::Vector<const DAVA::Entity *> MaterialAssignSystem::GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive)
 {
     DAVA::Vector<const DAVA::Entity *> rejectedEntities;
     
@@ -260,7 +260,7 @@ DAVA::Vector<const DAVA::Entity *> MaterialsAssignSystem::GetDropRejectedEntitie
     return rejectedEntities;
 }
     
-void MaterialsAssignSystem::GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive)
+void MaterialAssignSystem::GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive)
 {
     DAVA::RenderObject * ro = DAVA::GetRenderObject(entity);
     if(ro)
@@ -282,7 +282,7 @@ void MaterialsAssignSystem::GetDropRejectedEntities(DAVA::Vector<const DAVA::Ent
     }
 }
 
-void MaterialsAssignSystem::AddSelectedMaterial(DAVA::Set<DAVA::NMaterial *> &materials, const MaterialsAssignSystem::DropTestResult &result)
+void MaterialAssignSystem::AddSelectedMaterial(DAVA::Set<DAVA::NMaterial *> &materials, const MaterialAssignSystem::DropTestResult &result)
 {
     if(result.countEntityUnavailableToDrop == 1)
     {

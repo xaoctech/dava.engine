@@ -28,45 +28,46 @@
 
 
 
-#include "MaterialsItem.h"
-#include "MaterialsModel.h"
+#ifndef __MATERIALS_MODEL_H__
+#define __MATERIALS_MODEL_H__
 
-MaterialsItem::MaterialsItem(DAVA::NMaterial * _material, MaterialsModel * _model)
-    : QStandardItem()
-    , material(_material)
-    , model(_model)
+#include "Render/Material/NMaterial.h"
+
+#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+#include <QString>
+
+class QMimeData;
+class QStandardItem;
+class SceneEditor2;
+class MaterialItem;
+class MaterialModel: public QStandardItemModel
 {
-    DVASSERT(model);
-    DVASSERT(material);
+    Q_OBJECT
     
-    setText(material->GetMaterialName().c_str());
-    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+public:
+    MaterialModel(QObject *parent = 0);
+    virtual ~MaterialModel();
     
-    if(material->IsSwitchable())
-    {
-        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
-    }
-    else
-    {
-        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
-    }
-    setEditable(false);
-}
+    void SetScene(SceneEditor2 * scene);
+    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
+    
+    // drag and drop support
+	QMimeData *	mimeData(const QModelIndexList & indexes) const;
+	QStringList	mimeTypes() const;
+};
 
-MaterialsItem::~MaterialsItem()
+class MaterialFilteringModel : public QSortFilterProxyModel
 {
-}
+public:
+	MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent = NULL);
 
-QVariant MaterialsItem::data(int role) const
-{
-//    if(role == Qt::BackgroundColorRole)
-//    {
-//        if(model && model->IsMaterialSelected(material))
-//        {
-//            return QColor(235, 215, 210);
-//        }
-//    }
-    
-    return QStandardItem::data(role);
-}
+protected:
+	MaterialModel *materialModel;
 
+	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+};
+
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
+
+#endif // __MATERIALS_MODEL_H__

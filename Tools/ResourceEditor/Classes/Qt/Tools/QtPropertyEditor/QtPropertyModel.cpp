@@ -36,7 +36,7 @@ QtPropertyModel::QtPropertyModel(QWidget *viewport, QObject* parent /* = 0 */)
 	, trackEdit(false)
 { 
 	root = new QtPropertyData();
-	root->model = this;
+	root->SetModel(this);
 	root->SetOWViewport(viewport);
 }
 
@@ -194,9 +194,9 @@ QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 		{
 			ret = parent->ChildGet(index.row());
 
-			if(NULL != ret && ret->isProxy)
+			if(NULL != ret)
 			{
-				ret = ((QtPropertyDataProxy *)ret)->GetOriginal();
+				ret = ret->GetProxyOriginal();
 			}
 		}
 	}

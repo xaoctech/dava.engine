@@ -30,6 +30,7 @@
 
 #include "LibraryWidget.h"
 #include "LibraryFilteringModel.h"
+#include "LibraryFileSystemModel.h"
 
 #include "Main/mainwindow.h"
 #include "Project/ProjectManager.h"
@@ -44,6 +45,8 @@
 #include <QComboBox>
 #include <QTreeView>
 #include <QHeaderView>
+#include <QProgressBar>
+#include <QLabel>
 #include <QVBoxLayout>
 #include <QProcess>
 #include <QFileSystemModel>
@@ -58,6 +61,12 @@ Q_DECLARE_METATYPE( QFileInfo )
 struct FileType
 {
     FileType() {}
+
+    FileType(const QString &n)
+    {
+        name = n;
+    }
+
     
     FileType(const QString &n, const QString &f)
     {
@@ -81,18 +90,14 @@ QVector<FileType> fileTypeValues;
 LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 	: QWidget(parent)
 {
-    fileTypeValues.push_back(FileType("All files", "*"));
-    fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
-    fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));
-    fileTypeValues.push_back(FileType("DAE", "*.dae"));
-    fileTypeValues.push_back(FileType("PNG", "*.png"));
-    fileTypeValues.push_back(FileType("SC2", "*.sc2"));
-    fileTypeValues.push_back(FileType("TEX", "*.tex"));
-    
+    SetupFileTypes();
     SetupToolbar();
-
     SetupView();
     SetupLayout();
+
+    
+    spacer = NULL;
+    
     
     ViewAsList();
     OnFilesTypeChanged(0);
@@ -100,7 +105,28 @@ LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 
 LibraryWidget::~LibraryWidget()
 {
+    if(spacer)
+    {
+        delete spacer;
+        spacer = NULL;
+    }
+}
+
+void LibraryWidget::SetupFileTypes()
+{
+    FileType allFiles("All files");
+    allFiles.filter << "*.dae";
+    allFiles.filter << "*.sc2";
+    allFiles.filter << "*.png";
+    allFiles.filter << "*.tex";
     
+    fileTypeValues.push_back(allFiles);
+    fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
+    fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));
+    fileTypeValues.push_back(FileType("DAE", "*.dae"));
+    fileTypeValues.push_back(FileType("PNG", "*.png"));
+    fileTypeValues.push_back(FileType("SC2", "*.sc2"));
+    fileTypeValues.push_back(FileType("TEX", "*.tex"));
 }
 
 void LibraryWidget::SetupSignals()
@@ -120,7 +146,7 @@ void LibraryWidget::SetupToolbar()
     toolbar->setMovable(false);
 
     searchFilter = new QLineEdit(toolbar);
-    searchFilter->setToolTip("Search something at right list view");
+    searchFilter->setToolTip("Enter text to search something at tree");
     searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     
     filesTypeFilter = new QComboBox(toolbar);
@@ -147,7 +173,7 @@ void LibraryWidget::SetupToolbar()
     actionViewDetailed->setCheckable(true);
     actionViewDetailed->setChecked(false);
 
-    QObject::connect(searchFilter, SIGNAL(textChanged(const QString &)), this, SLOT(SetFilter(const QString &)));
+    QObject::connect(searchFilter, SIGNAL(editingFinished()), this, SLOT(SetFilter()));
     QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(filesTypeFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(OnFilesTypeChanged(int)));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
@@ -164,13 +190,9 @@ void LibraryWidget::SetupToolbar()
 
 void LibraryWidget::SetupView()
 {
-    filesModel = new QFileSystemModel(this);
-    filesModel->setFilter(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::AllDirs);
-    
+    filesModel = new LibraryFileSystemModel(this);
     proxyModel = new LibraryFilteringModel(this);
-    proxyModel->SetModel(filesModel);
-    proxyModel->setFilterKeyColumn(0);
-    
+
     filesView = new QTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->header()->setVisible(false);
@@ -178,23 +200,43 @@ void LibraryWidget::SetupView()
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
     
-    filesView->setModel(proxyModel);
+    filesView->setModel(NULL);
+    
+    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
+    
+    waitBar = new QProgressBar(this);
+    waitBar->setMinimumHeight(20);
+    waitBar->setMinimum(0);
+    waitBar->setMaximum(0);
+    
+    notFoundMessage = new QLabel("Nothing found", this);
+    notFoundMessage->setMinimumHeight(20);
+    notFoundMessage->setMaximumHeight(20);
+    notFoundMessage->setAlignment(Qt::AlignCenter);
 }
 
 void LibraryWidget::SetupLayout()
 {
     // put tab bar and davawidget into vertical layout
-	QVBoxLayout *layout = new QVBoxLayout();
+	layout = new QVBoxLayout();
 	layout->addWidget(toolbar);
+	layout->addWidget(waitBar);
+	layout->addWidget(notFoundMessage);
 	layout->addWidget(filesView);
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
+    
+    waitBar->setVisible(false);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(true);
 }
 
 
 void LibraryWidget::ViewAsList()
 {
+    viewMode = VIEW_AS_LIST;
+    
     HideDetailedColumnsAtFilesView(true);
     
     actionViewAsList->setChecked(true);
@@ -203,6 +245,8 @@ void LibraryWidget::ViewAsList()
 
 void LibraryWidget::ViewDetailed()
 {
+    viewMode = VIEW_DETAILED;
+    
     // Magic trick for MacOS: call funciton twice
     HideDetailedColumnsAtFilesView(false);
     HideDetailedColumnsAtFilesView(false);
@@ -234,9 +278,9 @@ void LibraryWidget::SelectionChanged(const QItemSelection &selected, const QItem
 {
     if(0 == selected.count()) return;
 
-    const QItemSelection & realSelection = proxyModel->mapSelectionToSource(selected);
-    
-    const QModelIndex & index = realSelection.indexes().first();
+    const QItemSelection realSelection = proxyModel->mapSelectionToSource(selected);
+    const QModelIndex index = realSelection.indexes().first();
+
     QFileInfo fileInfo = filesModel->fileInfo(index);
 
     if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
@@ -253,14 +297,12 @@ void LibraryWidget::SelectionChanged(const QItemSelection &selected, const QItem
 void LibraryWidget::ShowContextMenu(const QPoint & point)
 {
     HidePreview();
-    
-    const QModelIndex & index = filesView->indexAt(point);
+
+    const QModelIndex index = proxyModel->mapToSource(filesView->indexAt(point));
     
 	if(!index.isValid()) return;
-
-    const QModelIndex & realIndex = proxyModel->mapToSource(index);
     
-    QFileInfo fileInfo = filesModel->fileInfo(realIndex);
+    QFileInfo fileInfo = filesModel->fileInfo(index);
     if(!fileInfo.isFile()) return;
 
     QMenu contextMenu(this);
@@ -303,66 +345,126 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
     contextMenu.exec(filesView->mapToGlobal(point));
 }
 
-void LibraryWidget::SetFilter(const QString &filter)
+void LibraryWidget::SetFilter()
 {
+    QString filter = searchFilter->text();
+    
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
 
-    if(filter.isEmpty())
+    if(filesView->model())
     {
-        
-    }
-    else
-    {
-        
+        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+        if(!filter.isEmpty())
+        {
+            for(int i = 0; i < proxyModel->rowCount(); ++i)
+            {
+                ExpandUntilFilterAccepted(proxyModel->index(i, 0));
+            }
+        }
+        SwitchTreeAndLabel();
     }
 }
 
 void LibraryWidget::ResetFilter()
 {
     searchFilter->setText("");
+    SetFilter();
 }
 
 
 void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 {
-    QStringList nameFilters;
-    nameFilters << fileTypeValues[typeIndex].filter;
-
-    filesModel->setNameFilters(nameFilters);
-    filesModel->setNameFilterDisables(false);
-
-    filesModel->setFilter(QDir::Files);
-    filesModel->setFilter(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::AllDirs);
+    filesModel->SetExtensionFilter(fileTypeValues[typeIndex].filter);
     
-    proxyModel->invalidate();
+    if(filesView->model())
+    {
+        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+        SwitchTreeAndLabel();
+    }
 }
 
 
 void LibraryWidget::ProjectOpened(const QString &path)
 {
-    ActivateProject(path);
+    rootPathname = path + "/DataSource/3d/";
+    
+    filesView->setModel(NULL);
+    proxyModel->SetModel(NULL);
+
+    if(filesView->isVisible())
+    {
+        AddSpacer();
+    }
+    
+    waitBar->setVisible(true);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(false);
+    
+    filesModel->Load(rootPathname);
 }
 
 void LibraryWidget::ProjectClosed()
 {
-    ActivateProject("");
+    ResetFilter();
+    
+    rootPathname = "";
+    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+    filesView->collapseAll();
+
+    if(filesView->isVisible() == false)
+    {
+        RemoveSpacer();
+        
+        waitBar->setVisible(false);
+        notFoundMessage->setVisible(false);
+        filesView->setVisible(true);
+    }
 }
 
-
-void LibraryWidget::ActivateProject(const QString &projectPath)
+void LibraryWidget::OnModelLoaded()
 {
-    rootPathname = projectPath + "/DataSource/3d/";
-    
     QDir rootDir(rootPathname);
     
-    filesModel->setRootPath(rootPathname);
-    proxyModel->invalidate();
- 
-    proxyModel->SetSourceRoot(filesModel->index(rootPathname));
-
+    proxyModel->SetModel(filesModel);
+    filesView->setModel(proxyModel);
     filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+
+    RemoveSpacer();
+    waitBar->setVisible(false);
+    notFoundMessage->setVisible(false);
+    filesView->setVisible(true);
+    
+    if(VIEW_AS_LIST == viewMode)
+    {
+        ViewAsList();
+    }
+    else
+    {
+        ViewDetailed();
+    }
 }
 
+void LibraryWidget::SwitchTreeAndLabel()
+{
+    if(proxyModel->rowCount())
+    {
+        if(filesView->isVisible() == false)
+        {
+            notFoundMessage->setVisible(false);
+            filesView->setVisible(true);
+            RemoveSpacer();
+        }
+    }
+    else
+    {
+        if(filesView->isVisible())
+        {
+            notFoundMessage->setVisible(true);
+            filesView->setVisible(false);
+            AddSpacer();
+        }
+    }
+}
 
 void LibraryWidget::OnAddModel()
 {
@@ -457,3 +559,48 @@ void LibraryWidget::ShowPreview(const QString & pathname) const
     widget->ShowScenePreview(pathname.toStdString());
 }
 
+bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
+{
+    bool childExpanded = false;
+    for(int i = 0; i < proxyModel->rowCount(proxyIndex); ++i)
+    {
+        childExpanded |= ExpandUntilFilterAccepted(proxyModel->index(i, 0, proxyIndex));
+    }
+
+    bool wasExpanded = childExpanded;
+    if(filesModel->IsAccepted(proxyModel->mapToSource(proxyIndex)))
+    {
+        QModelIndex index = proxyIndex.parent();
+        while(index.isValid())
+        {
+            filesView->expand(index);
+            
+            index = index.parent();
+        }
+        
+        wasExpanded = true;
+    }
+    if(!childExpanded)
+    {
+        filesView->collapse(proxyIndex);
+    }
+    
+    return wasExpanded;
+}
+
+void LibraryWidget::AddSpacer()
+{
+    DVASSERT(spacer == NULL);
+    
+    spacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->addSpacerItem(spacer);
+}
+
+void LibraryWidget::RemoveSpacer()
+{
+    DVASSERT(spacer);
+    
+    layout->removeItem(spacer);
+    delete spacer;
+    spacer = NULL;
+}

@@ -25,3 +25,44 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+#ifndef __MATERIAL_EDITOR_H__
+#define __MATERIAL_EDITOR_H__
+
+#include <QDialog>
+#include "DAVAEngine.h"
+
+#include "MaterialModel.h"
+#include "Scene/SceneSignals.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+
+namespace Ui {
+	class MaterialEditor;
+}
+
+class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
+{
+	Q_OBJECT
+
+public:
+	MaterialEditor(QWidget *parent = 0);
+	~MaterialEditor();
+
+public slots:
+	void sceneActivated(SceneEditor2 *scene);
+	void sceneDeactivated(SceneEditor2 *scene);
+	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	void materialClicked(const QModelIndex &index);
+
+protected:
+	MaterialModel *treeModel;
+	MaterialFilteringModel *treeFilteringModel;
+
+	virtual void showEvent(QShowEvent * event);
+
+private:
+	Ui::MaterialEditor *ui;
+	QtPosSaver posSaver;
+};
+
+#endif

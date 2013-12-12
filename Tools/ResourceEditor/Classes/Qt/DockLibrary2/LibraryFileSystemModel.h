@@ -28,53 +28,43 @@
 
 
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
+#ifndef __LIBRARY_FILESYSTEM_MODEL_H__
+#define __LIBRARY_FILESYSTEM_MODEL_H__
 
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItemModel>
-#include <QString>
-
-class QMimeData;
-class QStandardItem;
-class SceneEditor2;
-class MaterialsItem;
-class MaterialsModel: public QStandardItemModel
+#include <QFileSystemModel>
+class  LibraryFileSystemModel: public QFileSystemModel
 {
     Q_OBJECT
     
+    static const int ACCEPT_ROLE = Qt::UserRole + 5;
+    
 public:
-    MaterialsModel(QObject *parent = 0);
-    virtual ~MaterialsModel();
+    explicit LibraryFileSystemModel(QObject *parent = 0);
     
-    void SetScene(SceneEditor2 * scene);
+    void Load(const QString & pathname);
     
-    
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-    
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-    
-protected:
-    
-    void RemoveAllItems();
-    void RetriveMaterials();
-    void RebuildModel();
-    
-    void AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
-    
-protected:
-    
-    DAVA::Vector<DAVA::NMaterial *> switchableMaterials;
+    void SetExtensionFilter(const QStringList & extensionFilter);
 
-    SceneEditor2 *curScene;
+    void SetAccepted(const QModelIndex & index, bool accepted);
+    bool IsAccepted(const QModelIndex & index) const;
     
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    bool HasFilteredChildren(const QModelIndex &index);
     
+signals:
+    
+    void ModelLoaded();
+    
+protected slots:
+    
+    void DirectoryLoaded(const QString &path);
+    
+protected:
+    
+    QMap<QString, QVariant> acceptionMap;
+    
+    uint loadingCounter;
 };
 
-Q_DECLARE_METATYPE( DAVA::NMaterial * )
-
-
-#endif // __MATERIALS_MODEL_H__
+#endif // __LIBRARY_FILESYSTEM_MODEL_H__

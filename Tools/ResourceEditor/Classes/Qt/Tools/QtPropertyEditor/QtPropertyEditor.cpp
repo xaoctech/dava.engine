@@ -88,16 +88,13 @@ QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
+	lastHoverIndex = QModelIndex();
 	curModel->RemoveProperty(index);
 }
 
 void QtPropertyEditor::RemoveProperty(QtPropertyData *data)
 {
-	if(GetProperty(lastHoverIndex) == data)
-	{
-		lastHoverIndex = QModelIndex();
-	}
-
+	lastHoverIndex = QModelIndex();
 	curModel->RemoveProperty(curModel->indexFromItem(data));
 }
 
