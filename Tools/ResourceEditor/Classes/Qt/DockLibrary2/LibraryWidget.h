@@ -89,6 +89,7 @@ protected slots:
     
 private:
     
+    void SetupFileTypes();
     void SetupToolbar();
     void SetupView();
     void SetupLayout();
@@ -102,11 +103,8 @@ private:
 
     void SwitchTreeAndLabel();
     
-    void EnableInfoWidget(QWidget *widget);
-    void DisableInfoWidget();
-    
-    void AddWidget(QWidget *widget);
-    void RemoveWidget(QWidget *widget);
+    void RemoveSpacer();
+    void AddSpacer();
     
 private:
 
@@ -120,7 +118,6 @@ private:
     
     QProgressBar *waitBar;
     QLabel * notFoundMessage;
-    QWidget *currentInfoWidget;
     QSpacerItem *spacer;
     
     QAction *actionViewAsList;
