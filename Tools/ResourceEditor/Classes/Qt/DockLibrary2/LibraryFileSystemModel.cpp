@@ -35,6 +35,7 @@
 #include <QDir>
 #include <QFileInfoList>
 #include <QString>
+#include <QtConcurrentRun>
 
 LibraryFileSystemModel::LibraryFileSystemModel(QObject *parent /* = NULL */)
     : QFileSystemModel(parent)
@@ -43,6 +44,7 @@ LibraryFileSystemModel::LibraryFileSystemModel(QObject *parent /* = NULL */)
     SetExtensionFilter(QStringList());
     
     connect(this, SIGNAL(directoryLoaded(const QString &)), this, SLOT(DirectoryLoaded(const QString &)));
+	connect(this, SIGNAL(rootPathChanged(const QString &)), this, SLOT(RootPathChanged(const QString &)));
 }
 
 
@@ -85,20 +87,21 @@ void LibraryFileSystemModel::DirectoryLoaded(const QString &path)
 
 void LibraryFileSystemModel::Load(const QString & pathname)
 {
-    acceptionMap.clear();
+	rootPathname = pathname;
+	ConcurentLoad();
 
-    QModelIndex index = this->index(pathname);
-    if(canFetchMore(index))
-    {
-        loadingCounter = 1;
-        setRootPath(pathname);
-    }
-    else
-    {
-        setRootPath(pathname);
-        emit ModelLoaded();
-    }
+//	QtConcurrent::run(this, &LibraryFileSystemModel::ConcurentLoad);
 }
+
+void LibraryFileSystemModel::ConcurentLoad()
+{
+	acceptionMap.clear();
+	reset();
+
+	loadingCounter = 1;
+	setRootPath(rootPathname);
+}
+
 
 void LibraryFileSystemModel::SetAccepted(const QModelIndex &index, bool accepted)
 {
@@ -153,4 +156,10 @@ bool LibraryFileSystemModel::HasFilteredChildren(const QModelIndex &index)
     
     return false;
 }
+
+void LibraryFileSystemModel::RootPathChanged( const QString & newPath )
+{
+	DAVA::Logger::Debug("[rpc] %s", newPath.toStdString().c_str());
+}
+
 

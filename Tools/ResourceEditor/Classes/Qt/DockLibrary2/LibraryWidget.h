@@ -103,9 +103,6 @@ private:
 
     void SwitchTreeAndLabel();
     
-    void RemoveSpacer();
-    void AddSpacer();
-    
 private:
 
     QVBoxLayout *layout;
@@ -116,9 +113,9 @@ private:
     QLineEdit *searchFilter;
     QComboBox *filesTypeFilter;
     
-    QProgressBar *waitBar;
+	QWidget *waitBar;
+//     QProgressBar *waitBar;
     QLabel * notFoundMessage;
-    QSpacerItem *spacer;
     
     QAction *actionViewAsList;
     QAction *actionViewDetailed;
@@ -129,6 +126,7 @@ private:
     LibraryFilteringModel *proxyModel;
     
     eViewMode viewMode;
+	int curTypeIndex;
 };
 
 #endif // __LIBRARY_WIDGET_H__
