@@ -140,7 +140,7 @@ bool CustomColorsSystem::ChangesPresent()
 	return false;
 }
 
-bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool saveNeeded)
+bool CustomColorsSystem::DisableLandscapeEdititing(bool& savedOK, bool saveNeeded)
 {
 	if (!enabled)
 	{
@@ -149,8 +149,8 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool sa
 	
 	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
 	{	
-		savingCanceled = SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
-		if(savingCanceled)
+		savedOK = SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
+		if(!savedOK)
 		{
 			return true;
 		}
@@ -165,8 +165,9 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool& savingCanceled, bool sa
 	
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTexture(NULL);
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTextureEnabled(false);
+	enabled = false;
 	
-	return true;
+	return !enabled;
 }
 
 void CustomColorsSystem::Update(DAVA::float32 timeElapsed)
