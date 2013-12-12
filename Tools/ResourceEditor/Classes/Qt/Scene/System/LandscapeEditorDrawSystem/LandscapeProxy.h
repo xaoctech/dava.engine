@@ -32,7 +32,7 @@
 #define __RESOURCEEDITORQT__LANDSCAPEPROXY__
 
 #include "DAVAEngine.h"
-#include "LandscapeEditor/EditorLandscape.h"
+#include "Deprecated/LandscapeRenderer.h"
 
 #include "Render/UniqueStateSet.h"
 

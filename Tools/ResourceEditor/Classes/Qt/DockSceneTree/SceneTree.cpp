@@ -39,8 +39,8 @@
 #include <QDropEvent>
 #include <QMenu>
 
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/SceneValidator.h"
 #include "Main/QTUtils.h"
 #include "Project/ProjectManager.h"
 #include "Scene/SceneEditor2.h"
@@ -106,9 +106,39 @@ SceneTree::~SceneTree()
 
 void SceneTree::SetFilter(const QString &filter)
 {
+// 	if(!filter.isEmpty())
+// 	{
+// 		treeModel->ResetFilterAcceptFlag();
+// 	}
+
 	filteringProxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-    
     SyncSelectionToTree();
+
+	if(!filter.isEmpty())
+	{
+		for(int i = 0; i < filteringProxyModel->rowCount(); ++i)
+		{
+			ExpandUntilFilterAccepted(filteringProxyModel->index(i, 0));
+		}
+	}
+// 	else
+// 	{
+// 		treeModel->ResetFilterAcceptFlag();
+// 	}
+}
+
+void SceneTree::ExpandUntilFilterAccepted(const QModelIndex &index)
+{
+	SceneTreeItem *item = treeModel->GetItem(filteringProxyModel->mapToSource(index));
+	if(NULL != item && !item->IsAcceptedByFilter())
+	{
+		expand(index);
+
+		for(int i = 0; i < filteringProxyModel->rowCount(index); ++i)
+		{
+			ExpandUntilFilterAccepted(filteringProxyModel->index(i, 0, index));
+		}
+	}
 }
 
 void SceneTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
@@ -642,7 +672,7 @@ void SceneTree::ReloadModel()
 		{
 			EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
 			String wrongPathes;
-			for(int i = 0; i < selection.Size(); ++i)
+			for(size_t i = 0; i < selection.Size(); ++i)
 			{
 				DAVA::Entity *entity = selection.GetEntity(i);
 				DAVA::FilePath pathToReload(entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));

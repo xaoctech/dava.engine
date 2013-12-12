@@ -31,35 +31,28 @@
 namespace DAVA
 {
 #if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVA_USE_OCCLUSION_QUERY__)
 OcclusionQuery::OcclusionQuery()
 {
-	RenderManager::Instance()->LockNonMain();
     queryActive = false;
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glGenQueries(1, &id));
 #else
     RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
-    RenderManager::Instance()->UnlockNonMain();
 }
 
 OcclusionQuery::~OcclusionQuery()
 {
-	RenderManager::Instance()->LockNonMain();
-
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glDeleteQueries(1, &id));
 #else
     RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
 #endif
-	
-	RenderManager::Instance()->UnlockNonMain();
 }
 
 void OcclusionQuery::BeginQuery()
 {
-	RenderManager::Instance()->LockNonMain();
-
     queryActive = true;
 // Temporarly written, should be refactored and moved to RenderBase.h defines
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
@@ -67,9 +60,6 @@ void OcclusionQuery::BeginQuery()
 #else
     RENDER_VERIFY(glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, id));
 #endif
-	
-	RenderManager::Instance()->UnlockNonMain();
-
 }
     
 void OcclusionQuery::EndQuery()
@@ -115,6 +105,7 @@ void OcclusionQuery::GetQuery(uint32 * resultValue)
 #endif
 }
     
+#endif //#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     
 #else
 #error "Require Occlusion Queries Implementation"

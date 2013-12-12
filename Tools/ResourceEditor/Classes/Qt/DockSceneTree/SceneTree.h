@@ -40,9 +40,6 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeDelegate.h"
 
-// temp include
-#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
-
 class SceneTree : public QTreeView
 {
 	Q_OBJECT
@@ -144,6 +141,8 @@ protected:
 
 	// Cleanup the selected Particle Editor items.
 	void CleanupParticleEditorSelectedItems();
+
+	void ExpandUntilFilterAccepted(const QModelIndex &index);
 
 private:
 	// Selected Particle Layer.

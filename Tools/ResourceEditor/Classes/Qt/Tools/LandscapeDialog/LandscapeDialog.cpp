@@ -30,15 +30,15 @@
 #include <QLabel>
 #include <QMessageBox>
 #include "ui_BaseAddEntityDialog.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include "Main/mainwindow.h"
-#include "Classes/Commands2/EntityAddCommand.h"
-#include "Classes/Commands2/EntityRemoveCommand.h"
-#include "Classes/Commands2/LandscapeSetTexturesCommands.h"
+#include "Commands2/EntityAddCommand.h"
+#include "Commands2/EntityRemoveCommand.h"
+#include "Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 #include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
-#include "../Qt/Main/QtUtils.h"
-#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Main/QtUtils.h"
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 #define TEXTURE_TITLE "Open texture"
 #define HEIGHTMAP_TITLE "Open height map"

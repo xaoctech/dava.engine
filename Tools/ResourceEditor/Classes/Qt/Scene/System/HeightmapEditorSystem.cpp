@@ -32,14 +32,14 @@
 #include "CollisionSystem.h"
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
-#include "../SceneEditor2.h"
-#include "../SceneSignals.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/SceneSignals.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
-#include "../../../Commands2/HeightmapEditorCommands2.h"
-#include "../../../Commands2/TilemaskEditorCommands.h"
-#include "../../Main/QtUtils.h"
-#include "../../../SceneEditor/EditorSettings.h"
+#include "Commands2/HeightmapEditorCommands2.h"
+#include "Commands2/TilemaskEditorCommands.h"
+#include "Main/QtUtils.h"
+#include "Deprecated/EditorSettings.h"
 #include "HoodSystem.h"
 
 #include <QApplication>
@@ -292,8 +292,6 @@ void HeightmapEditorSystem::UpdateToolImage(bool force)
 
 Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& filePath)
 {
-	RenderManager::Instance()->LockNonMain();
-	
 	Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888);
 	Texture *srcTex = Texture::CreateFromFile(filePath);
 	Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)srcTex->GetWidth(), (float32)srcTex->GetHeight());
@@ -319,8 +317,6 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	SafeRelease(srcSprite);
 	SafeRelease(srcTex);
 	SafeRelease(dstSprite);
-	
-	RenderManager::Instance()->UnlockNonMain();
 	
 	return retImage;
 }

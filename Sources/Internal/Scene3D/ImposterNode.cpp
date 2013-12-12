@@ -381,7 +381,8 @@ void ImposterNode::DrawImposter()
 		return;
 	}
 
-	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    uint32 matrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
 	const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 	Matrix4 meshFinalMatrix;
 
@@ -398,7 +399,7 @@ void ImposterNode::DrawImposter()
 	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 
 	SharedFBO * fbo = manager->GetFBO();
-	RenderManager::Instance()->SetTexture(fbo->GetTexture());
+	RenderManager::Instance()->SetTextureState(fbo->GetTextureHandle());
 
 	RenderManager::Instance()->SetRenderData(renderData);
 
@@ -410,7 +411,7 @@ void ImposterNode::DrawImposter()
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 	//RenderManager::Instance()->SetBlendMode(src, dst);
 
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix, matrixCache);
 }
 
 Entity* ImposterNode::Clone(Entity *dstNode /*= NULL*/)

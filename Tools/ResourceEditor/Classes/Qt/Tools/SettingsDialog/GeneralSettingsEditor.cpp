@@ -29,7 +29,7 @@
 
 
 #include "GeneralSettingsEditor.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include <QHeaderView>
 #include "../../Settings/SettingsManager.h"
 #include "../StringConstants.h"

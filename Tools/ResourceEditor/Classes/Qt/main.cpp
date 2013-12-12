@@ -39,15 +39,16 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/EditorConfig.h"
-#include "SceneEditor/SceneValidator.h"
-#include "SceneEditor/TextureSquarenessChecker.h"
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/SceneEditor/ControlsFactory.h"
 #include "FileSystem/ResourceArchive.h"
+
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/EditorConfig.h"
+#include "Deprecated/SceneValidator.h"
+#include "Deprecated/TextureSquarenessChecker.h"
+#include "Deprecated/ControlsFactory.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"

@@ -31,7 +31,7 @@
 #include <QMouseEvent>
 #include <QHeaderView>
 #include <QPainter>
-#include <QWindowsStyle>
+#include <QCoreApplication>
 
 #include "QtPropertyEditor.h"
 #include "QtPropertyItemDelegate.h"
@@ -48,10 +48,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
-	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
-	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
 	QObject::connect(curModel, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnItemEdited(const QModelIndex &)));
-	QObject::connect(curModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SLOT(OnRowsRemoved(const QModelIndex &, int, int)));
 	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
 }
 
@@ -63,9 +60,22 @@ QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData
 	return curModel->AppendProperty(name, data, parent);
 }
 
+QModelIndex QtPropertyEditor::InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent)
+{
+	return curModel->InsertProperty(name, data, row, parent);
+}
+
 QModelIndex QtPropertyEditor::AppendHeader(const QString &text)
 {
 	QModelIndex propHeader = AppendProperty(text, new QtPropertyData(""));
+
+	ApplyStyle(GetProperty(propHeader), HEADER_STYLE);
+	return propHeader;
+}
+
+QModelIndex QtPropertyEditor::InsertHeader(const QString &text, int row)
+{
+	QModelIndex propHeader = InsertProperty(text, new QtPropertyData(""), row);
 
 	ApplyStyle(GetProperty(propHeader), HEADER_STYLE);
 	return propHeader;
@@ -81,8 +91,19 @@ void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 	curModel->RemoveProperty(index);
 }
 
+void QtPropertyEditor::RemoveProperty(QtPropertyData *data)
+{
+	if(GetProperty(lastHoverIndex) == data)
+	{
+		lastHoverIndex = QModelIndex();
+	}
+
+	curModel->RemoveProperty(curModel->indexFromItem(data));
+}
+
 void QtPropertyEditor::RemovePropertyAll()
 {
+	lastHoverIndex = QModelIndex();
 	curModel->RemovePropertyAll();
 }
 
@@ -171,6 +192,59 @@ void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &o
 	}
 }
 
+void QtPropertyEditor::mouseMoveEvent(QMouseEvent * event)
+{
+	OnHover(indexAt(event->pos()));
+	QTreeView::mouseMoveEvent(event);
+}
+
+void QtPropertyEditor::mouseReleaseEvent(QMouseEvent * event)
+{
+	OnHover(indexAt(event->pos()));
+	QTreeView::mouseReleaseEvent(event);
+}
+
+void QtPropertyEditor::leaveEvent(QEvent * event)
+{
+	OnHover(QModelIndex());
+	QTreeView::leaveEvent(event);
+}
+
+void QtPropertyEditor::OnHover(const QModelIndex &index)
+{
+	if(index != lastHoverIndex)
+	{
+		QtPropertyData *data = GetProperty(index);
+		QtPropertyData *lastHoverData = GetProperty(lastHoverIndex);
+
+		QModelIndex dataIndex = index.sibling(index.row(), 1);
+
+		if(NULL != lastHoverData)
+		{
+			for(int i = 0; i < lastHoverData->GetButtonsCount(); ++i)
+			{
+				QtPropertyToolButton *btn = lastHoverData->GetButton(i);
+				btn->activeIndex = QModelIndex();
+				btn->hide();
+			}
+		}
+
+		if(NULL != data)
+		{
+			for(int i = 0; i < data->GetButtonsCount(); ++i)
+			{
+				QtPropertyToolButton *btn = data->GetButton(i);
+				btn->activeIndex = dataIndex;
+				btn->show();
+			}
+
+			update(dataIndex);
+		}
+	}
+
+	lastHoverIndex = index;
+}
+
 void QtPropertyEditor::ApplyStyle(QtPropertyData *data, int style)
 {
 	if(NULL != data)
@@ -198,6 +272,28 @@ void QtPropertyEditor::ApplyStyle(QtPropertyData *data, int style)
 	}
 }
 
+QToolButton* QtPropertyEditor::GetButton(QMouseEvent * event)
+{
+	QToolButton *ret = NULL;
+	QtPropertyData *data = GetProperty(indexAt(event->pos()));
+
+	if(NULL != data)
+	{
+		for(int i = 0; i < data->GetButtonsCount(); ++i)
+		{
+			QToolButton *btn = data->GetButton(i);
+			QPoint p = event->pos() - btn->pos();
+
+			if(p.x() >= 0 && p.y() >= 0 && p.x() < btn->width() && p.y() < btn->height())
+			{
+				ret = btn;
+			}
+		}
+	}
+
+	return ret;
+}
+
 void QtPropertyEditor::paintEvent(QPaintEvent * event)
 {
 	QTreeView::paintEvent(event);
@@ -211,17 +307,4 @@ void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
 	emit PropertyEdited(index);
-}
-
-void QtPropertyEditor::OnRowsRemoved(const QModelIndex &parent, int first, int last)
-{
-// 	QModelIndexList si = selectedIndexes();
-// 	for(int row = first; row <= last; row++)
-// 	{
-// 		QModelIndex index = curModel->index(row, 0, parent);
-// 		if(si.contains(index))
-// 		{
-// 			printf("111");
-// 		}
-// 	}
 }

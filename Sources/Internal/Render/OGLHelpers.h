@@ -59,23 +59,23 @@ namespace DAVA
 {
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || (defined(__DAVAENGINE_IPHONE__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
-	{ \
-		if(!Thread::IsMainThread() && RenderManager::Instance()->GetNonMainLockCount() == 0)\
-		{\
-			DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");\
-		}\
-		if(Thread::IsMainThread())\
-		{\
-			RenderManager::Instance()->VerifyRenderContext();\
-		}\
-		if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ALL_RENDER_FUNCTIONS_ENABLED)) command;\
-		GLenum err = glGetError();\
-		if (err != GL_NO_ERROR)\
-		{  \
-			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-			OGLDebugBreak(); \
-		}\
-	}
+{ \
+	if(!Thread::IsMainThread())\
+	{\
+		DVASSERT(0 && "Application tried to call GL or DX in separate thread");\
+	}\
+	if(Thread::IsMainThread())\
+	{\
+		RenderManager::Instance()->VerifyRenderContext();\
+	}\
+	command;\
+	GLenum err = glGetError();\
+	if (err != GL_NO_ERROR)\
+    {  \
+        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        OGLDebugBreak(); \
+    }\
+}
 #elif (defined(__DAVAENGINE_ANDROID__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
 { \
@@ -92,7 +92,7 @@ namespace DAVA
 /* 
     If you want to have ability to disable all rendering functions in release build you should uncomment the line below.
  */
-// #define CAN_DISABLE_ALL_RENDERING_IN_BUILD
+ //#define CAN_DISABLE_ALL_RENDERING_IN_BUILD
     
 #if defined(CAN_DISABLE_ALL_RENDERING_IN_BUILD)
     #define RENDER_VERIFY(command) if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ALL_RENDER_FUNCTIONS_ENABLED)) command;

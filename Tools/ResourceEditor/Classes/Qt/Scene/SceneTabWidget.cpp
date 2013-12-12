@@ -26,28 +26,24 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include "SceneEditor/SceneEditorScreenMain.h"
-
 #include "Main/mainwindow.h"
+#include "Main/Request.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
-#include "AppScreens.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
 
-#include "Classes/Deprecated/ScenePreviewDialog.h"
-#include "Classes/Qt/Main/Request.h"
+#include "Deprecated/ScenePreviewDialog.h"
+
+#include "MaterialEditor/MaterialsAssignSystem.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
-#include <QMessageBox>
 #include <QFileInfo>
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
-	, davaUIScreenID(SCREEN_MAIN)
+	, davaUIScreenID(0)
 	, dava3DViewMargin(3)
 	, newSceneCounter(0)
 	, curScene(NULL)
@@ -340,7 +336,12 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 {
 	if(NULL != curScene)
 	{
-		if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
+        const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(data);
+        if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
+        {
+            DropMaterial(mimeData);
+        }
+        else if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
 		{
             QList<QUrl> urls = data->urls();
             for(int i = 0; i < urls.size(); ++i)
@@ -373,6 +374,19 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 	{
 		TabBarDataDropped(data);
 	}
+}
+
+void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
+{
+    if(!curScene) return;
+    
+    QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
+
+    const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
+    if(!group || (group->Size() == 0) || (materials->size() != 1)) return;
+    
+    const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
+    MaterialsAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
 }
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
@@ -458,7 +472,8 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
+    const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(event->mimeData());
+	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2") || MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
 	{
 		event->acceptProposedAction();
 	}

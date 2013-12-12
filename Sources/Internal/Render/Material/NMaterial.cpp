@@ -168,7 +168,8 @@ namespace DAVA
 	nativeDefines(16),
 	materialProperties(32),
 	textures(8),
-	texturesDirty(false)
+	texturesDirty(false),
+	textureStateHandle(InvalidUniqueHandle)
 	{
 		parent = NULL;
 		requiredVertexFormat = EVF_FORCE_DWORD;
@@ -479,6 +480,7 @@ namespace DAVA
 		Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
 		if(children.end() != child)
 		{
+			SafeRelease(material);
 			children.erase(child);
 		}
 	}
@@ -730,6 +732,17 @@ namespace DAVA
 		
 		return clonedState;
 	}
+	
+	NMaterialState* NMaterialState::CreateTemplate(NMaterial* templateParent)
+	{
+		NMaterialState* templateState = new NMaterialState();
+		
+		templateState->parent = templateParent;
+		templateState->parentName = templateParent->materialName;
+				
+		return templateState;
+
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -753,6 +766,8 @@ namespace DAVA
 		activeUniformsCachePtr = NULL;
 		textureParamsCacheSize = 0;
 		activeUniformsCacheSize = 0;
+
+        illuminationParams = 0;
 	}
     
 	NMaterial::~NMaterial()
@@ -767,12 +782,18 @@ namespace DAVA
 			}
 		}
 		
-		SetParent(NULL);
+		if(InvalidUniqueHandle != textureStateHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(textureStateHandle);
+		}
 		
 		if(materialSystem)
 		{
 			materialSystem->RemoveMaterial(this);
 		}
+
+        SafeDelete(illuminationParams);
+		SetParent(NULL);
 	}
     
 	bool NMaterial::LoadFromFile(const FilePath & pathname)
@@ -873,17 +894,14 @@ namespace DAVA
 		//TextureParamCacheEntry* data = textureParamsCache.data();
 		//size_t dataCount = textureParamsCache.size();
 		//for(size_t i = 0; i < dataCount; ++i)
-		for(size_t i = 0; i < textureParamsCacheSize; ++i)
+		
+		if(texturesDirty)
 		{
-			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
-			
-			if(NULL == textureEntry.tx)
-			{
-				textureEntry.tx = GetTexture(textureEntry.textureName);
-			}
-	
-			renderState->SetTexture(textureEntry.tx, textureEntry.slot);
+			OnDirtyTextures();
+			texturesDirty = false;
 		}
+		
+		renderState->textureState = textureStateHandle;
 	}
 	
 	void NMaterial::BindMaterialProperties(Shader * shader)
@@ -1293,6 +1311,14 @@ namespace DAVA
 				++stateIter;
 			}
 		}
+
+        if(illuminationParams)
+        {
+            archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+            archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+            archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Load(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1301,25 +1327,35 @@ namespace DAVA
 		const Map<String, VariantType*>& archiveData = archive->GetArchieveData();
 		SetMaterialName(archive->GetString("materialName"));
 		
-		if(archive->Count() > 2) //2 default keys - material name and __defaultState__
-		{
-			for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
-				it != archiveData.end();
-				++it)
-			{
-				if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
-				{
-					NMaterialState* matState = new NMaterialState();
-					Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
-					states.insert(FastName(it->first), matState);
-				}
-			}
-		}
-		else
-		{
-			KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
-			Deserialize(*this, stateArchive, serializationContext);
-		}
+        if(archive->IsKeyExists("__defaultState__"))
+        {
+            KeyedArchive* stateArchive = archive->GetArchive("__defaultState__");
+            Deserialize(*this, stateArchive, serializationContext);
+        }
+        else
+        {
+            for(Map<String, VariantType*>::const_iterator it = archiveData.begin();
+                it != archiveData.end();
+                ++it)
+            {
+                if(VariantType::TYPE_KEYED_ARCHIVE == it->second->type)
+                {
+                    NMaterialState* matState = new NMaterialState();
+                    Deserialize(*matState, it->second->AsKeyedArchive(), serializationContext);
+                    states.insert(FastName(it->first), matState);
+                }
+            }
+        }
+
+        if(archive->IsKeyExists("illumination.isUsed"))
+        {
+            GetIlluminationParams(); //create only
+
+            illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+            illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+            illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+            illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+        }
 	}
 	
 	void NMaterial::Serialize(const NMaterialState& materialState,
@@ -1350,14 +1386,13 @@ namespace DAVA
 			NMaterialProperty* property = it->second;
 			
 			uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
-			uint8* propertyStorage = new uint8[dataSize + sizeof(uint32) + sizeof(uint32)];
+			uint8* propertyStorage = new uint8[dataSize + sizeof(property->type) + sizeof(property->size)];
 			
-			uint32 uniformType = property->type; //make sure uniform type is always uint32
-			memcpy(propertyStorage, &uniformType, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32), &property->size, sizeof(uint32));
-			memcpy(propertyStorage + sizeof(uint32) + sizeof(uint32), property->data, dataSize);
+			memcpy(propertyStorage, &property->type, sizeof(property->type));
+			memcpy(propertyStorage + sizeof(property->type), &property->size, sizeof(property->size));
+			memcpy(propertyStorage + sizeof(property->type) + sizeof(property->size), property->data, dataSize);
 			
-			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(uint32) + sizeof(uint32));
+			materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(property->type) + sizeof(property->size));
 			
 			SafeDeleteArray(propertyStorage);
 		}
@@ -1369,7 +1404,10 @@ namespace DAVA
 			it != materialState.textures.end();
 			++it)
 		{
-			materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			if(it->second->texture)
+			{
+				materialTextures->SetString(it->first.c_str(), it->second->texture->GetPathname().GetRelativePathname(serializationContext->GetScenePath()));
+			}
 		}
 		archive->SetArchive("textures", materialTextures);
 		SafeRelease(materialTextures);
@@ -1430,7 +1468,7 @@ namespace DAVA
 			
 			const uint8* ptr = propVariant->AsByteArray();
 			
-			materialState.SetPropertyValue(FastName(it->first), (Shader::eUniformType)*(const uint32*)ptr, *(((const uint32*)ptr) + 1), ptr + sizeof(uint32) + sizeof(uint32));
+			materialState.SetPropertyValue(FastName(it->first), *(Shader::eUniformType*)ptr, *(ptr + sizeof(Shader::eUniformType)), ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
 		}
 		
 		const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
@@ -1481,7 +1519,7 @@ namespace DAVA
 			
 			MaterialTechnique* technique = new MaterialTechnique(FastName(shaderName), techniqueDefines, renderState);
 			materialState.AddMaterialTechnique(FastName(renderPassName), technique);
-		}		
+        }
 	}
 	
 	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet)
@@ -1555,6 +1593,7 @@ namespace DAVA
 			SetParent(newParent);
 			
 			currentStateName = stateName;			
+			texturesDirty = true;
 		}
 		
 		return (state != NULL);
@@ -1565,14 +1604,14 @@ namespace DAVA
 		return (states.size() > 0);
 	}
 	
-	NMaterial* NMaterial::Clone()
+	NMaterial* NMaterial::Clone(const String& newName)
 	{
 		NMaterial* clonedMaterial = new NMaterial();
 		
 		if(this->IsSwitchable())
 		{
 			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
-						
+			
 			while(stateIter != states.end())
 			{
 				clonedMaterial->states.insert(stateIter->first,
@@ -1586,13 +1625,20 @@ namespace DAVA
 			DeepCopyTo(clonedMaterial);
 		}
 		
-		if(IsConfigMaterial())
+		if(newName.length())
 		{
-			clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			clonedMaterial->SetMaterialName(newName);
 		}
 		else
 		{
-			clonedMaterial->GenerateName();
+			if(IsConfigMaterial())
+			{
+				clonedMaterial->SetMaterialName(GetMaterialName().c_str());
+			}
+			else
+			{
+				clonedMaterial->GenerateName();
+			}
 		}
 		
 		clonedMaterial->SetMaterialSystem(materialSystem);
@@ -1615,7 +1661,22 @@ namespace DAVA
 			}
 		}
 		
+        if(illuminationParams)
+        {
+            IlluminationParams * params = clonedMaterial->GetIlluminationParams();
+            params->isUsed = illuminationParams->isUsed;
+            params->castShadow = illuminationParams->castShadow;
+            params->receiveShadow = illuminationParams->receiveShadow;
+            params->lightmapSize = illuminationParams->lightmapSize;
+        }
+		
 		return clonedMaterial;
+
+	}
+	
+	NMaterial* NMaterial::Clone()
+	{
+		return Clone("");
 	}
     
     void NMaterial::SetMaterialName(const String& name)
@@ -1704,6 +1765,8 @@ namespace DAVA
 			textureParamsCachePtr = &textureParamsCache[0];
 			textureParamsCacheSize = textureParamsCache.size();
 		}
+		
+		texturesDirty = true;
 	}
 	
 	void NMaterial::BuildActiveUniformsCache(const MaterialTechnique& technique)
@@ -1801,44 +1864,56 @@ namespace DAVA
 		
 	void NMaterial::Rebind(bool recursive)
 	{
-		if(IsConfigMaterial())
+		size_t childrenCount = NMaterialState::children.size();
+		if(childrenCount > 0 ||
+		   IsConfigMaterial())
 		{
-			HashMap<FastName, MaterialTechnique *>::iterator iter = techniqueForRenderPass.begin();
-			while(iter != techniqueForRenderPass.end())
+			//VI: need to propagate properties defined for the current material
+			//VI: up in the material tree
+			
+			NMaterial* curMaterial = this;
+			while(curMaterial != NULL)
 			{
-				MaterialTechnique* technique = iter->second;
-
-				Shader * shader = technique->GetShader();
-				shader->Bind();
 				
-				uint32 uniformCount = shader->GetUniformCount();
-				for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+				HashMap<FastName, MaterialTechnique *>::iterator iter = curMaterial->techniqueForRenderPass.begin();
+				while(iter != curMaterial->techniqueForRenderPass.end())
 				{
-					Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+					MaterialTechnique* technique = iter->second;
 					
-					if (Shader::UNIFORM_NONE == uniform->id  ||
-						Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+					Shader * shader = technique->GetShader();
+					shader->Bind();
+					
+					uint32 uniformCount = shader->GetUniformCount();
+					for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 					{
-						NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+						Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 						
-						if(prop)
+						if (Shader::UNIFORM_NONE == uniform->id  ||
+							Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
 						{
-							shader->SetUniformValueByUniform(uniform,
-														   uniform->type,
-														   uniform->size,
-														   prop->data);
+							NMaterialProperty* prop = GetMaterialProperty(uniform->name);
+							
+							if(prop)
+							{
+								shader->SetUniformValueByUniform(uniform,
+																 uniform->type,
+																 uniform->size,
+																 prop->data);
+							}
 						}
 					}
+					
+					shader->Unbind();
+					
+					++iter;
 				}
 				
-				shader->Unbind();
-				
-				++iter;
+				curMaterial = curMaterial->parent;
 			}
 			
 			if(recursive)
 			{
-				size_t childrenCount = NMaterialState::children.size();
+				
 				for(size_t i = 0; i < childrenCount; ++i)
 				{
 					NMaterialState::children[i]->Rebind(recursive);
@@ -1846,4 +1921,61 @@ namespace DAVA
 			}
 		}
 	}	
+
+    IlluminationParams * NMaterial::GetIlluminationParams()
+    {
+        if(!illuminationParams)
+        {
+            illuminationParams = new IlluminationParams();
+            illuminationParams->SetDefaultParams();
+        }
+        return illuminationParams;
+    }
+
+    void NMaterial::ReleaseIlluminationParams()
+    {
+        SafeDelete(illuminationParams);
+    }
+	
+	void NMaterial::OnDirtyTextures()
+	{
+		TextureStateData stateData;
+		for(size_t i = 0; i < textureParamsCacheSize; ++i)
+		{
+			TextureParamCacheEntry& textureEntry = textureParamsCachePtr[i];
+			
+			textureEntry.tx = GetTexture(textureEntry.textureName);
+
+			stateData.textures[textureEntry.slot] = textureEntry.tx;
+		}
+		
+		UniqueHandle prevHandle = textureStateHandle;
+		
+		textureStateHandle = RenderManager::Instance()->AddTextureStateData(&stateData);
+		
+		//VI: release state handle AFTER adding new
+		if(InvalidUniqueHandle != prevHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(prevHandle);
+		}
+	}
+
+	FastName NMaterialState::NMaterialStateDynamicTexturesInsp::GetFastName(int index) const
+	{
+		FastName ret;
+
+		switch(index)
+		{
+		case 0: ret = NMaterial::TEXTURE_ALBEDO; break;
+		case 1: ret = NMaterial::TEXTURE_NORMAL; break;
+		case 2: ret = NMaterial::TEXTURE_DETAIL; break;
+		case 3: ret = NMaterial::TEXTURE_LIGHTMAP; break;
+		case 4: ret = NMaterial::TEXTURE_DECAL; break;
+
+		default:
+			break;
+		}
+
+		return ret;
+	}
 };

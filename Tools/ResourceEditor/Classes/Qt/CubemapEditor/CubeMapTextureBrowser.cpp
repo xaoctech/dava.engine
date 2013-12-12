@@ -39,7 +39,7 @@
 #include <QFileDialog>
 #include <QScrollBar>
 
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include <qdir>
 
 const int FACE_IMAGE_SIZE = 64;

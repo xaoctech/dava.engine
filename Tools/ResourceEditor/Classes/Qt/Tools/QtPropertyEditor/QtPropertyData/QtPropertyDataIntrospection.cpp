@@ -32,6 +32,7 @@
 #include "QtPropertyDataIntrospection.h"
 #include "QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyDataInspMember.h"
+#include "QtPropertyDataInspDynamic.h"
 #include "QtPropertyDataInspColl.h"
 
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, int hasAllFlags)
@@ -94,6 +95,21 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
             {
                 retData = new QtPropertyDataInspColl(memberObject, member->Collection(), hasAllFlags);
             }
+			// dynamic 
+			else if(NULL != member->Dynamic())
+			{
+				retData = new QtPropertyData("Dynamic data");
+
+				DAVA::InspInfoDynamic *dynamicInfo = member->Dynamic()->GetDynamicInfo();
+				if(NULL != dynamicInfo)
+				{
+					for(int i = 0; i < dynamicInfo->MembersCount(_object); ++i)
+					{
+						QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(_object, dynamicInfo, i);
+						retData->ChildAdd(dynamicInfo->MemberName(_object, i), dynamicMember);
+					}
+				}
+			}
 			// variant
             else
             {

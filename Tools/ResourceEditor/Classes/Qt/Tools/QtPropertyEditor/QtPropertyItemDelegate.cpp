@@ -38,34 +38,29 @@
 QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyModel *_model, QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
 	, model(_model)
-{
-	childWidgetsStyle = new QWindowsStyle();
-}
+{ }
 
 QtPropertyItemDelegate::~QtPropertyItemDelegate()
-{
-	delete childWidgetsStyle;
-}
+{ }
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QStyleOptionViewItemV4 opt = option;
 	initStyleOption(&opt, index);
 
-	// name
-	if(index.column() == 0)
-	{
-
-	}
-
 	// data
 	if(index.column() == 1)
 	{
 		opt.textElideMode = Qt::ElideLeft;
-		recalcOptionalWidgets(index, &opt);
+		drawOptionalButtons(painter, opt, index, NORMAL);
 	}
 
 	QStyledItemDelegate::paint(painter, opt, index);
+
+	if(index.column() == 1)
+	{
+		drawOptionalButtons(painter, opt, index, OVERLAYED);
+	}
 }
 
 QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -81,8 +76,6 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 	if(model == index.model())
 	{
 		QtPropertyData* data = model->itemFromIndex(index);
-
-		recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
 
 		if(NULL != data)
 		{
@@ -146,7 +139,6 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 		editor->setObjectName("customPropertyEditor");
 		editor->setStyleSheet("#customPropertyEditor{ border: 1px solid gray; }");
 		QRect r = option.rect;
-		//r.adjust(2, -1, 0, 1);
 
 		if(!index.model()->data(index, Qt::DecorationRole).isNull())
 		{
@@ -183,93 +175,40 @@ bool QtPropertyItemDelegate::helpEvent(QHelpEvent * event, QAbstractItemView * v
 	return false;
 }
 
-void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const
+void QtPropertyItemDelegate::drawOptionalButtons(QPainter *painter, QStyleOptionViewItem &opt, const QModelIndex &index, OptionalButtonsType type) const
 {
 	QtPropertyData* data = model->itemFromIndex(index);
-
-	if(NULL != data && index.column() == 1)
+	if(index.column() == 1 && NULL != data && data->GetButtonsCount() > 0)
 	{
-		QWidget *owViewport = data->GetOWViewport();
-
-		int prevOWSpace = 0;
 		int owSpacing = 1;
-		int optionRectRight = option->rect.right();
+		int owXPos = opt.rect.right() - owSpacing;
+		int owYPos;
 
-		int owCount = data->GetOWCount();
-		for (int i = (owCount - 1); i >= 0; --i)
+		// draw not overlaid widgets
+		for(int i = data->GetButtonsCount() - 1; i >= 0; --i)
 		{
-			const QtPropertyOW *ow = data->GetOW(i);
-			if(NULL != ow && NULL != owViewport && NULL != ow->widget)
+			QtPropertyToolButton *btn = data->GetButton(i);
+			if((type == NORMAL && !btn->overlayed) || (type == OVERLAYED && btn->overlayed))
 			{
-				QWidget *owWidget = ow->widget;
-				int owWidth = ow->size.width();
+				owXPos -= btn->width();
+				owYPos = opt.rect.y() + (opt.rect.height() - btn->height()) / 2;
 
-				if(0 != owWidth)
+				if(index != btn->activeIndex)
 				{
-					QRect owRect = option->rect;
-					owRect.setLeft(optionRectRight - owWidth - prevOWSpace);
-					owRect.setRight(owRect.left() + owWidth);
-
-					if(owWidget->style() != childWidgetsStyle)
-					{
-						owWidget->setStyle(childWidgetsStyle);
-					}
-
-					owWidget->setGeometry(owRect);
-					owWidget->show();
-
-					// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
-					if(!ow->overlay)
-					{
-						option->rect.setRight(owRect.left());
-					}
-
-					prevOWSpace += (owWidth + owSpacing);
+					painter->drawPixmap(owXPos, owYPos, QPixmap::grabWidget(btn));
 				}
 				else
 				{
-					owWidget->hide();
+					btn->move(owXPos, owYPos);
 				}
+
+				owXPos -= owSpacing;
 			}
 		}
-	}
-}
 
-void QtPropertyItemDelegate::collapse(const QModelIndex & collapse_index)
-{
-	// hide all optional widgets from child
-	// they will be shown after expanding them and on first paint call
-	if(collapse_index.isValid())
-	{
-		if(NULL != model)
+		if(type == NORMAL)
 		{
-			// go thought columns and hide OW in each cell PropertyData
-			for (int c = 0; c < model->columnCount(); c++)
-			{
-				QModelIndex cellIndex = model->index(collapse_index.row(), c, collapse_index.parent());
-				QtPropertyData* cellData = model->itemFromIndex(cellIndex);
-				if(NULL != cellData)
-				{
-					hideAllChildOptionalWidgets(cellData);
-				}
-			}
+			opt.rect.setRight(owXPos);
 		}
-	}
-}
-
-void QtPropertyItemDelegate::expand(const QModelIndex & index)
-{ }
-
-void QtPropertyItemDelegate::hideAllChildOptionalWidgets(QtPropertyData* data)
-{
-	for(int i = 0; i < data->ChildCount(); i++)
-	{
-		QtPropertyData *childData = data->ChildGet(i);
-		for (int j = 0; j < childData->GetOWCount(); j++)
-		{
-			childData->GetOW(j)->widget->hide();
-		}
-
-		hideAllChildOptionalWidgets(childData);
 	}
 }
