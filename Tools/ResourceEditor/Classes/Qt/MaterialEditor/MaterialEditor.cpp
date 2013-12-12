@@ -28,7 +28,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MaterialEditor.h"
 #include "ui_materialeditor.h"
+
+#include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
@@ -37,7 +40,70 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
 
+	treeModel = new MaterialModel();
+	treeFilteringModel = new MaterialFilteringModel(treeModel);
+
+	ui->materialTree->setModel(treeFilteringModel);
+	ui->materialTree->setSortingEnabled(true);
+
+	// global scene manager signals
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+
+	// ui signals
+	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
+
+	posSaver.Attach(this);
+	posSaver.LoadState(ui->splitter);
 }
 
 MaterialEditor::~MaterialEditor()
-{ }
+{ 
+	posSaver.SaveState(ui->splitter);
+}
+
+void MaterialEditor::sceneActivated(SceneEditor2 *scene)
+{
+	treeModel->SetScene(scene);
+	ui->materialTree->sortByColumn(0, Qt::AscendingOrder);
+	ui->materialTree->expandToDepth(0);
+}
+
+void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
+{
+
+}
+
+void MaterialEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+
+}
+
+void MaterialEditor::materialClicked(const QModelIndex &index)
+{
+	ui->materialProperty->RemovePropertyAll();
+
+	DAVA::NMaterial *material = treeModel->GetMaterial(treeFilteringModel->mapToSource(index));
+	if(NULL != material)
+	{
+		const DAVA::InspInfo *info = material->GetTypeInfo();
+
+		QtPropertyDataIntrospection *inspData = new QtPropertyDataIntrospection(material, info);
+
+		while(0 != inspData->ChildCount())
+		{
+			QtPropertyData *c = inspData->ChildGet(0);
+			inspData->ChildExtract(c);
+
+			ui->materialProperty->AppendProperty(c->GetName(), c);
+		}
+
+		delete inspData;
+	}
+}
+
+void MaterialEditor::showEvent(QShowEvent * event)
+{
+	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
+}
