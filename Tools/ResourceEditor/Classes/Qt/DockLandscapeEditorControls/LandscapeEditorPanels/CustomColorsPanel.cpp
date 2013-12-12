@@ -127,7 +127,7 @@ void CustomColorsPanel::ConnectToSignals()
 	connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
-			this, SLOT(NeedSaveTexture(SceneEditor2*)));
+			this, SLOT(SaveTextureIfNeeded(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsToggled(SceneEditor2*)),
 			this, SLOT(EditorToggled(SceneEditor2*)));
 
@@ -214,10 +214,8 @@ bool CustomColorsPanel::SaveTexture()
 		sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	
+	return false;
 }
 
 void CustomColorsPanel::LoadTexture()
@@ -240,25 +238,21 @@ void CustomColorsPanel::LoadTexture()
 	}
 }
 
-bool CustomColorsPanel::NeedSaveTexture(SceneEditor2* scene)
+bool CustomColorsPanel::SaveTextureIfNeeded(SceneEditor2* scene)
 {
-	bool savingCanceled = false;
 	if (scene != GetActiveScene())
 	{
-		return savingCanceled;
+		return false;
 	}
 
 	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
 	if(!selectedPathname.IsEmpty())
 	{
 		scene->customColorsSystem->SaveTexture(selectedPathname);
-		savingCanceled = false;
+		return true;
 	}
-	else
-	{
-		savingCanceled = !SaveTexture();
-	}
-	return savingCanceled;
+	
+	return SaveTexture();
 }
 
 void CustomColorsPanel::ConnectToShortcuts()

@@ -530,7 +530,7 @@ bool SceneEditor2::DisableTools(int32 toolFlags, bool textureSavingNeeded/* = tr
 	{
 		ActionDisableCustomColors* action = new ActionDisableCustomColors(this, textureSavingNeeded);
 		Exec(action);
-		retValue = action->WasSavingCanceled();
+		retValue = action->WasSavingSuccess();
 	}
 	
 	if (toolFlags & LANDSCAPE_TOOL_VISIBILITY)

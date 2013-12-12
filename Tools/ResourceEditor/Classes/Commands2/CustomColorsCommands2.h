@@ -55,12 +55,12 @@ class ActionDisableCustomColors: public CommandAction
 {
 public:
 	ActionDisableCustomColors(SceneEditor2* forSceneEditor, bool textureSavingNeeded);
-	bool WasSavingCanceled();
+	bool WasSavingSuccess();
 	
 protected:
 	SceneEditor2* sceneEditor;
 	bool		  textureSavingNeeded;
-	bool		  savingCanceled;
+	bool		  savedOK;
 	virtual void Redo();
 };
 

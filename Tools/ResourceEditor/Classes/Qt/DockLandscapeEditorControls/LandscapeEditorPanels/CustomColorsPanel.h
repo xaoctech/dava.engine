@@ -28,8 +28,8 @@ private slots:
 	void SetColor(int color);
 	bool SaveTexture();
 	void LoadTexture();
-	// return true if canceled
-	bool NeedSaveTexture(SceneEditor2* scene);
+	// return true if saved. false if saving canceled
+	bool SaveTextureIfNeeded(SceneEditor2* scene);
 
 	void IncreaseBrushSize();
 	void DecreaseBrushSize();

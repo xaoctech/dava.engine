@@ -1005,8 +1005,8 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 
 	if (scene->GetEnabledTools() != 0)
 	{
-		bool savingCanceled = scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, answer == QMessageBox::Yes);
-		if(savingCanceled)
+		bool savingOk = scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, answer == QMessageBox::Yes);
+		if(!savingOk && answer == QMessageBox::Yes)
 		{
 			closeRequest->Cancel();
 			return;
@@ -1976,8 +1976,10 @@ void QtMainWindow::OnCustomColorsEditor()
 	
 	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
 	{
-		bool shouldBeChangesSaved = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
-		if(sceneEditor->customColorsSystem->ChangesPresent() && sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty())
+		bool changesPresent = sceneEditor->customColorsSystem->ChangesPresent();
+		bool texturePathPresent = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
+		bool needSaveChanges = false;
+		if(changesPresent && !texturePathPresent)
 		{
 			int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?", QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 			if(answer == QMessageBox::Cancel)
@@ -1985,9 +1987,13 @@ void QtMainWindow::OnCustomColorsEditor()
 				return;
 			}
 			
-			shouldBeChangesSaved = answer == QMessageBox::Yes;
+			needSaveChanges = answer == QMessageBox::Yes;
 		}
-		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, shouldBeChangesSaved));
+		if(changesPresent && texturePathPresent)
+		{
+			needSaveChanges = true;
+		}
+		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, needSaveChanges));
 	}
 	else
 	{
