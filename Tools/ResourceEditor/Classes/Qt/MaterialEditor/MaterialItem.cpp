@@ -27,46 +27,161 @@
 =====================================================================================*/
 
 
+#include <QSet>
 
 #include "MaterialItem.h"
 #include "MaterialModel.h"
 
-MaterialItem::MaterialItem(DAVA::NMaterial * _material, MaterialModel * _model)
+MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     : QStandardItem()
     , material(_material)
-    , model(_model)
 {
-    DVASSERT(model);
-    DVASSERT(material);
+	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
+	static QIcon userMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
+	static QIcon instanceMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
+
+	DVASSERT(material);
     
-    setText(material->GetMaterialName().c_str());
+	setEditable(false);
+	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
     if(material->IsSwitchable())
     {
-        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
+		setIcon(qualityMaterialIcon);
     }
     else
     {
-        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
+		setIcon(userMaretialIcon);
     }
-    setEditable(false);
+
+	Sync();
 }
 
 MaterialItem::~MaterialItem()
-{
-}
+{ }
 
 QVariant MaterialItem::data(int role) const
 {
-//    if(role == Qt::BackgroundColorRole)
-//    {
-//        if(model && model->IsMaterialSelected(material))
-//        {
-//            return QColor(235, 215, 210);
-//        }
-//    }
-    
     return QStandardItem::data(role);
 }
+
+DAVA::NMaterial * MaterialItem::GetMaterial() const
+{
+	return material;
+}
+
+void MaterialItem::Sync()
+{
+	QSet<DAVA::NMaterial *> materialsSet;
+
+	// remember all entity childs
+	for(int i = 0; i < material->GetChildrenCount(); ++i)
+	{
+		materialsSet.insert(material->GetChild(i));
+	}
+
+	// remove items, that are not in set
+	for(int i = 0; i < rowCount(); ++i)
+	{
+		MaterialItem *childItem = (MaterialItem *) child(i);
+		if(!materialsSet.contains(childItem->GetMaterial()))
+		{
+			removeRow(i);
+			i--;
+		}
+	}
+
+	materialsSet.clear();
+
+	// add items, that are not in childs
+	for(int row = 0, i = 0; i < material->GetChildrenCount(); ++i)
+	{
+		bool repeatStep;
+		DAVA::NMaterial *childMaterial = material->GetChild(i);
+
+		do
+		{
+			MaterialItem *item = (MaterialItem *) child(i);
+			DAVA::NMaterial *itemMaterial = NULL;
+			
+			if(NULL != item)
+			{
+				item->GetMaterial();
+			}
+
+			repeatStep = false;
+
+			// remove items that we already add
+			while(materialsSet.contains(itemMaterial))
+			{
+				removeRow(row);
+
+				item = (MaterialItem *) child(row);
+				itemMaterial = item->GetMaterial();
+			}
+
+			// append entity that isn't in child items list
+			if(NULL == item)
+			{
+				appendRow(new MaterialItem(childMaterial));
+			}
+			else if(childMaterial != itemMaterial)
+			{
+				// now we should decide what to do: remove item or insert it
+
+				// calculate len until itemMaterial will be found in real entity childs
+				int lenUntilRealEntity = 0;
+				for(int j = i; j < material->GetChildrenCount(); ++j)
+				{
+					if(material->GetChild(j) == itemMaterial)
+					{
+						lenUntilRealEntity = j - i;
+						break;
+					}
+				}
+
+				// calculate len until current real entity child will be found in current item childs
+				int lenUntilItem = 0;
+				for(int j = i; j < rowCount(); ++j)
+				{
+					MaterialItem *itm = (MaterialItem *) child(j);
+
+					if(NULL != itm && childMaterial == itm->GetMaterial())
+					{
+						lenUntilItem = j - i;
+						break;
+					}
+				}
+
+				if(lenUntilRealEntity >= lenUntilItem)
+				{
+					removeRow(row);
+					repeatStep = true;
+				}
+				else
+				{
+					insertRow(row, new MaterialItem(childMaterial));
+				}
+			}
+			else
+			{
+				item->Sync();
+			}
+		} 
+		while(repeatStep);
+
+		// remember that we add that entity
+		materialsSet.insert(childMaterial);
+		row++;
+	}
+
+	if(material->IsConfigMaterial())
+	{
+		setEnabled(rowCount() > 0);
+	}
+}
+
+
+
 

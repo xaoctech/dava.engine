@@ -40,85 +40,44 @@
 
 MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
-    , curScene(NULL)
-{
+{ 
+	QStringList headerLabels;
+	headerLabels.append("Materials hierarchy");
+	setHorizontalHeaderLabels(headerLabels);
 }
 
 MaterialModel::~MaterialModel()
-{
-    switchableMaterials.clear();
-    curScene = NULL;
-}
-
-void MaterialModel::RemoveAllItems()
-{
-    QStandardItem * rootItem = invisibleRootItem();
-    rootItem->removeRows(0, rowCount());
-}
+{ }
 
 void MaterialModel::SetScene(SceneEditor2 *scene)
 {
-    switchableMaterials.clear();
+	removeRows(0, rowCount());
 
-    curScene = scene;
+	if(NULL != scene)
+	{
+		QStandardItem *root = invisibleRootItem();
+		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
 
-    RetriveMaterials();
-    
-    RebuildModel();
+		DAVA::Vector<DAVA::NMaterial *> materials;
+		matSys->BuildMaterialList(NULL, materials);
+
+		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
+		{
+			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
+			{
+				MaterialItem *item = new MaterialItem(materials[i]);
+				root->appendRow(item);
+			}
+		}
+	}
 }
-
-void MaterialModel::RetriveMaterials()
-{
-    if(!curScene) return;
-    
-    DAVA::MaterialSystem *system = curScene->renderSystem->GetMaterialSystem();
-    DAVA::Vector<DAVA::NMaterial *> materials;
-    system->BuildMaterialList(NULL, materials);
-    for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
-    {
-        if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
-        {
-            switchableMaterials.push_back(materials[i]);
-        }
-    }
-}
-
-void MaterialModel::RebuildModel()
-{
-    RemoveAllItems();
-
-    QStandardItem * rootItem = invisibleRootItem();
-    for(DAVA::uint32 i = 0; i < (DAVA::uint32)switchableMaterials.size(); ++i)
-    {
-        MaterialItem *item = new MaterialItem(switchableMaterials[i], this);
-        AddMaterialToItem(switchableMaterials[i], item);
-
-        rootItem->appendRow(item);
-    }
-}
-
-void MaterialModel::AddMaterialToItem(DAVA::NMaterial * material, MaterialItem * rootItem)
-{
-    for(DAVA::int32 i = 0; i < material->GetChildrenCount(); ++i)
-    {
-        DAVA::NMaterial *mat = material->GetChild(i);
-
-        MaterialItem *item = new MaterialItem(mat, this);
-        AddMaterialToItem(mat, item);
-
-        rootItem->appendRow(item);
-    }
-}
-
 
 DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {
     if(!index.isValid()) return NULL;
     
-    QStandardItem *item = itemFromIndex(index);
-    
-    DAVA::NMaterial *material = item->data().value<DAVA::NMaterial *>();
-    return material;
+	MaterialItem *item = (MaterialItem *) itemFromIndex(index);
+    return item->GetMaterial();
 }
 
 QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
@@ -144,4 +103,38 @@ QStringList MaterialModel::mimeTypes() const
 	types << MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName();
     
 	return types;
+}
+
+
+MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /*= NULL*/)
+: QSortFilterProxyModel(parent)
+, materialModel(_materialModel)
+{ 
+	setSourceModel(materialModel);
+}
+
+bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+	bool ret = false;
+
+	if(NULL != materialModel)
+	{
+		DAVA::NMaterial *materialLeft = materialModel->GetMaterial(left);
+		DAVA::NMaterial *materialRight = materialModel->GetMaterial(right);
+
+		if(materialLeft->IsConfigMaterial() && materialRight->IsConfigMaterial())
+		{
+			if( materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() > 0 ||
+				materialLeft->GetChildrenCount() == 0 && materialRight->GetChildrenCount() == 0)
+			{
+				ret = (strcmp(materialLeft->GetMaterialName().c_str(), materialRight->GetMaterialName().c_str()) < 0);
+			}
+			else if(materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() == 0)
+			{
+				ret = true;
+			}
+		}
+	}
+
+	return ret;
 }

@@ -33,6 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DAVAEngine.h"
 
 #include "MaterialModel.h"
+#include "Scene/SceneSignals.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
 	class MaterialEditor;
@@ -46,8 +48,21 @@ public:
 	MaterialEditor(QWidget *parent = 0);
 	~MaterialEditor();
 
+public slots:
+	void sceneActivated(SceneEditor2 *scene);
+	void sceneDeactivated(SceneEditor2 *scene);
+	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	void materialClicked(const QModelIndex &index);
+
+protected:
+	MaterialModel *treeModel;
+	MaterialFilteringModel *treeFilteringModel;
+
+	virtual void showEvent(QShowEvent * event);
+
 private:
 	Ui::MaterialEditor *ui;
+	QtPosSaver posSaver;
 };
 
 #endif

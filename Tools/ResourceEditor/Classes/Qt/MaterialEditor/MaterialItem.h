@@ -39,15 +39,16 @@ class MaterialModel;
 class MaterialItem: public QStandardItem
 {
 public:
-    MaterialItem(DAVA::NMaterial * material, MaterialModel * model);
+    MaterialItem(DAVA::NMaterial * material);
     virtual ~MaterialItem();
     
     QVariant data(int role = Qt::UserRole + 1) const;
+
+	DAVA::NMaterial * GetMaterial() const;
+	void Sync();
     
 private:
-    
     DAVA::NMaterial * material;
-    MaterialModel * model;
 };
 
 

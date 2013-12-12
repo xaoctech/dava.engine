@@ -37,7 +37,17 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTreeView" name="materialTree"/>
+        <widget class="QTreeView" name="materialTree">
+         <property name="dragEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::DragDrop</enum>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -53,7 +63,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QtPropertyEdior" name="materialProperty"/>
+        <widget class="QtPropertyEditor" name="materialProperty"/>
        </item>
       </layout>
      </widget>
@@ -63,9 +73,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtPropertyEdior</class>
+   <class>QtPropertyEditor</class>
    <extends>QTreeView</extends>
-   <header>Tools/QtPropertyEdior/QtPropertyEdior.h</header>
+   <header>Tools/QtPropertyEditor/QtPropertyEditor.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
