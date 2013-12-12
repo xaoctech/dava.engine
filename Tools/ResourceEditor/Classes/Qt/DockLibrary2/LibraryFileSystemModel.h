@@ -59,17 +59,11 @@ signals:
 protected slots:
     
     void DirectoryLoaded(const QString &path);
-	void RootPathChanged(const QString & newPath);
     
-protected:
-
-	void ConcurentLoad();
-
 protected:
     
     QMap<QString, QVariant> acceptionMap;
     
-	QString rootPathname;
     uint loadingCounter;
 };
 
