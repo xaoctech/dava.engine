@@ -48,21 +48,20 @@ static Vector3 currCamDirection = Vector3(0,0,1);
 
 void ParticleRenderGroup::UpdateRenderBatch()
 {
-	renderBatch->GetRenderDataObject()->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
-	renderBatch->GetRenderDataObject()->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
-	renderBatch->GetRenderDataObject()->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
+	RenderDataObject *renderDataObject = renderBatch->GetRenderDataObject();
+	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
+	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
+	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
 	if (enableFrameBlend)
 	{
-		renderBatch->GetRenderDataObject()->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &texcoords2.front());
-		renderBatch->GetRenderDataObject()->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
+		renderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &texcoords2.front());
+		renderDataObject->SetStream(EVF_TIME, TYPE_FLOAT, 1, 0, &times.front());
 	}
-	/*else  //TODO: once merged with dev, return to removeStream code
+	else  
 	{
-		renderBatch->GetRenderDataObject()->RemoveStream(EVF_TEXCOORD1);
-		renderBatch->GetRenderDataObject()->RemoveStream(EVF_TIME);
-	}*/
-
-	renderBatch->SetIndexCount(currParticlesCount*INDICES_PER_PARTICLE);		
+		renderDataObject->RemoveStream(EVF_TEXCOORD1);
+		renderDataObject->RemoveStream(EVF_TIME);
+	}	
 }
 void ParticleRenderGroup::ResizeArrays(uint32 particlesCount)
 {
@@ -170,6 +169,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 		if (renderGroupCache[i]->currParticlesCount)
 		{
 			renderGroupCache[i]->UpdateRenderBatch();
+			renderGroupCache[i]->renderBatch->SetIndexCount(renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);		
 			renderGroupCache[i]->renderBatch->GetRenderDataObject()->SetIndices(EIF_16, (uint8*)(&indices.front()), renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);
 			renderBatchArray.push_back(renderGroupCache[i]->renderBatch);
 		}
