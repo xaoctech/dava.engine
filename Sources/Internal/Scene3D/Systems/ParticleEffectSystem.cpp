@@ -35,8 +35,46 @@
 #include "Utils/Random.h"
 #include "Core/PerformanceSettings.h"
 
+#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 16)
+
 namespace DAVA
 {
+
+
+static const uint32 BLEND_KEYS[] =
+{
+	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
+	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA)
+};
+
+static const FastName BLEND_MATERIAL_NAMES[] =
+{
+	FastName("Global.Textured.VertexColor.Particles0"),
+	FastName("Global.Textured.VertexColor.Particles1")
+};
+
+static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
+{
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1")
+};
+
+
+const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameBlendEnabled)
+{
+	uint32 blendKey = MAKE_BLEND_KEY(src, dst);
+	for(uint32 i = 0; i < COUNT_OF(BLEND_KEYS); ++i)
+	{
+		if(BLEND_KEYS[i] == blendKey)
+		{
+			return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[i] : BLEND_MATERIAL_NAMES[i];
+		}
+	}
+
+	//VI: fallback to default material
+	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
+}
+
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)	
 {
