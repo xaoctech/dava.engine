@@ -28,36 +28,43 @@
 
 
 
-#ifndef __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
-#define __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+#ifndef __LIBRARY_FILESYSTEM_MODEL_H__
+#define __LIBRARY_FILESYSTEM_MODEL_H__
 
-#include <QSortFilterProxyModel>
-class LibraryFileSystemModel;
-class LibraryFilteringModel: public QSortFilterProxyModel
+#include <QFileSystemModel>
+class  LibraryFileSystemModel: public QFileSystemModel
 {
     Q_OBJECT
     
+    static const int ACCEPT_ROLE = Qt::UserRole + 5;
+    
 public:
-	LibraryFilteringModel(QObject *parent = NULL);
+    explicit LibraryFileSystemModel(QObject *parent = 0);
     
-    void SetModel(LibraryFileSystemModel *newModel);
+    void Load(const QString & pathname);
+    
+    void SetExtensionFilter(const QStringList & extensionFilter);
+
+    void SetAccepted(const QModelIndex & index, bool accepted);
+    bool IsAccepted(const QModelIndex & index) const;
+    
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    bool HasFilteredChildren(const QModelIndex &index);
+    
+signals:
+    
+    void ModelLoaded();
+    
+protected slots:
+    
+    void DirectoryLoaded(const QString &path);
     
 protected:
-
-    bool EmptyFilterAccept(int sourceRow, const QModelIndex &sourceParent) const;
-    bool FilterAccept(int sourceRow, const QModelIndex &sourceParent) const;
     
+    QMap<QString, QVariant> acceptionMap;
     
-	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-
-    bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
-	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
-	bool parentAcceptRow(const QModelIndex &sourceParent) const;
-
-    bool HideEmptyFolder(const QModelIndex & index) const;
-    
-protected:
-	LibraryFileSystemModel *model;
+    uint loadingCounter;
 };
 
-#endif // __LIBRARY_FILESYSTEM_FILTERING_MODEL_H__
+#endif // __LIBRARY_FILESYSTEM_MODEL_H__

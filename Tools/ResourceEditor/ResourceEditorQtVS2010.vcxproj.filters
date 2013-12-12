@@ -1788,6 +1788,12 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyDataProxy_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.cpp">
+      <Filter>Classes\Qt\DockLibrary2</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary2\LibraryFileSystemModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3175,6 +3181,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary2\LibraryFileSystemModel.h">
+      <Filter>Classes\Qt\DockLibrary2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
