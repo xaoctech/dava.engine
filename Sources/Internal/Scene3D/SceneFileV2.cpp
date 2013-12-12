@@ -931,9 +931,10 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		Entity * parent = particleEmitterNode->GetParent();
 
 		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
-		RenderComponent * renderComponent = new RenderComponent();
+		//!NB emitter is not render component anymore
+		/*RenderComponent * renderComponent = new RenderComponent();
 		newNode->AddComponent(renderComponent);
-		renderComponent->SetRenderObject(emitter);
+		renderComponent->SetRenderObject(emitter);*/
 		
 		DVASSERT(parent);
 		if(parent)

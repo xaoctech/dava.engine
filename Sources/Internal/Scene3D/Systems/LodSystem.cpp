@@ -33,7 +33,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
-#include "Particles/ParticleEmitter.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Platform/SystemTimer.h"
@@ -126,11 +126,11 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 	}
 
 	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
-	ParticleEmitter * emmiter = GetEmitter(entity);
-	if (emmiter)
+	ParticleEffectComponent * effect = GetEffectComponent(entity);
+	if (effect)
 	{
 		lod->currentLod = LodComponent::MAX_LOD_LAYERS-1;
-		emmiter->SetDesiredLodLevel(lod->currentLod);
+		effect->SetDesiredLodLevel(lod->currentLod);
 	}
 	else if(lod->lodLayers.size() > 0)
 	{
@@ -175,12 +175,12 @@ void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 p
 
 	if (oldLod != lodComponent->currentLod) 
 	{
-		ParticleEmitter * emmiter = GetEmitter(entity);
-		if (emmiter)
-		{
-			emmiter->SetDesiredLodLevel(lodComponent->currentLod);
+		ParticleEffectComponent * effect = GetEffectComponent(entity);
+		if (effect)
+		{			
+			effect->SetDesiredLodLevel(lodComponent->currentLod);
 			return;
-		}
+		}			
 		
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{

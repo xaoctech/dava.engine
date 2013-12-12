@@ -43,8 +43,6 @@ void DAVA::RegisterDAVAClasses()
 REGISTER_CLASS(TheoraPlayer);
 #endif
 
-REGISTER_CLASS(ParticleEmitter);
-REGISTER_CLASS(ParticleEmitter3D);
 REGISTER_CLASS(PolygonGroup);
 REGISTER_CLASS(StaticMesh);
 REGISTER_CLASS(Camera);

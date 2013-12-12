@@ -76,13 +76,12 @@ const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameB
 }
 
 
-ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)	
+ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
 {
 }
 
 void ParticleEffectSystem::Process()
-{
-    TIME_PROFILE("ParticleEffectSystem::Process");
+{    
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	
 	/*shortEffectTime*/
@@ -96,7 +95,7 @@ void ParticleEffectSystem::Process()
 	{
 		ParticleEffectComponent * component = activeComponents[i];
 		UpdateEffect(component, timeElapsed, shortEffectTime);		
-		bool effectEnded = component->stopWhenEmpty?component->effectData.groups.empty():(component->=time>component->effectDuration);
+		bool effectEnded = component->stopWhenEmpty?component->effectData.groups.empty():(component->time>component->effectDuration);
 		if (effectEnded)
 		{
 			component->currRepeatsCont++;
@@ -124,11 +123,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 {
 	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();
 	
-	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
+	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;++it)
 	{
 		ParticleGroup &group = *it;
 		group.activeParticleCount = 0;
-		float32 dt = group.emitter->IsShortEffect()?shortEffectTime:time;
+		float32 dt = group.emitter->shortEffect?shortEffectTime:time;
 		group.time+=dt;		
 		float32 groupEndTime = group.layer->isLooped?group.layer->loopEndTime:group.layer->endTime;
 		float32 currLoopTime = group.time;

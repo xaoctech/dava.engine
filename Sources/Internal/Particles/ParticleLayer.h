@@ -78,7 +78,7 @@ struct ParticleLayer : public BaseObject
 	virtual ParticleLayer * Clone();
 	
 	void LoadFromYaml(const FilePath & configPath, const YamlNode * node);	
-    void SaveToYamlNode(YamlNode* parentNode, int32 layerIndex);
+    void SaveToYamlNode(const FilePath & configPath, YamlNode* parentNode, int32 layerIndex);
 	void SaveForcesToYamlNode(YamlNode* layerNode);
 
 	void AddForce(ParticleForce* force);
@@ -98,8 +98,12 @@ struct ParticleLayer : public BaseObject
 
 	void UpdateLayerTime(float32 startTime, float32 endTime);
 
+	bool IsLodActive(int32 lod);	
+	void SetLodActive(int32 lod, bool active);
 	
 	Sprite 			* sprite;
+	void SetSprite(Sprite * sprite);
+
 	FilePath		spritePath;	
 	
 	bool isLooped;
@@ -183,5 +187,6 @@ private:
 	};
 	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
 };
+}
 
 #endif // __DAVAENGINE_PARTICLE_LAYER_H__

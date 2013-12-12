@@ -83,6 +83,7 @@ public:
 	float32 GetPlaybackSpeed();
 	void SetPlaybackSpeed(float32 value);
     
+	void SetDesiredLodLevel(int32 level);
     
     void SetPlaybackCompleteMessage(const Message & msg);		
 
@@ -102,7 +103,7 @@ private:
 	/*effect playback setup       i bit changed logic*/	
 	bool stopWhenEmpty;			  //if true effect is considered finished when no particles left, otherwise effect is considered finished if time>effectDuration
 	float32 effectDuration;       //duration for effect
-	int32 repeatsCount;			  // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
+	uint32 repeatsCount;			  // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
 	bool clearOnRestart;		  // when effect is restarted (explicitly or by repeatsCount)
 	
 	/*state*/

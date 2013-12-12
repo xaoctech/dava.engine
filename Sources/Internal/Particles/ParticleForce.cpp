@@ -36,6 +36,14 @@ ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3> > force_, RefPtr<Prope
 {	
 }
 
+ParticleForce* ParticleForce::Clone()
+{
+	ParticleForce *dst = new ParticleForce();
+	dst->force = force->Clone();
+	dst->forceOverLife = forceOverLife->Clone();
+	return dst;
+}
+
 void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
 {
 	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);

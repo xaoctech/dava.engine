@@ -62,6 +62,6 @@ struct Particle
 };
 
 
-};
+}
 
 #endif // __DAVAENGINE_PARTICLE_H__

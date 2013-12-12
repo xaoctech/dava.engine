@@ -43,6 +43,7 @@ public:
 	ParticleForce(){}
 	ParticleForce(RefPtr<PropertyLine<Vector3> > force, RefPtr<PropertyLine<float32> > forceOverLife);	
 
+	ParticleForce* Clone();
 	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);	
 	RefPtr<PropertyLine<Vector3> > force;	
 	RefPtr<PropertyLine<float32> > forceOverLife;

@@ -90,7 +90,7 @@ void ParticleRenderGroup::ClearArrays()
 
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
 {
-	for (int32 i=0, sz = renderGroupCache.size(), i<sz; ++i)
+	for (int32 i=0, sz = renderGroupCache.size(); i<sz; ++i)
 		renderGroupCache[i]->ClearArrays();
 	renderBatchArray.clear();
 	
