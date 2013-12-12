@@ -28,22 +28,15 @@
 
 
 #include "Particles/ParticleEmitter.h"
-#include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
-#include "Particles/ParticleLayer3D.h"
-#include "Render/RenderManager.h"
-#include "Utils/Random.h"
 #include "Utils/StringFormat.h"
-#include "Animation/LinearAnimation.h"
-#include "Scene3D/Scene.h"
 #include "FileSystem/FileSystem.h"
-#include "Scene3D/SceneFileV2.h"
+
 
 namespace DAVA 
 {
 
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
-#define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
 
 
 #if defined (USE_FILEPATH_IN_MAP)
@@ -53,28 +46,13 @@ namespace DAVA
 #endif //#if defined (USE_FILEPATH_IN_MAP)
 
 ParticleEmitter::ParticleEmitter()
-{
-	type = TYPE_PARTICLE_EMTITTER;
-	Cleanup(false);
-
-	bbox = AABBox3(Vector3(), Vector3());
-	parentParticle = NULL;
-	deferredTimeElapsed = 0.0f;
-
-	time = 0.0f;
-	repeatCount = 0;
-	currentLodLevel = 0;
-	desiredLodLevel = 0;
-	shortEffect = false;
-	lodLevelLocked = false;
-	particleCount = 0;		
-	state = STATE_STOPPED;	
+{	
+	
 }
 
 ParticleEmitter::~ParticleEmitter()
 {
-	CleanupLayers();
-	ReleaseFromCache(emitterFileName);
+	CleanupLayers();	
 }
 
 void ParticleEmitter::Cleanup(bool needCleanupLayers)
@@ -85,28 +63,11 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	emissionAngle.Set(NULL);
 	emissionAngle = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(0.0f));
 	emissionRange.Set(NULL);
-	emissionRange = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(360.0f));
+	emissionRange = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(0.0f));
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-
-	// number = new PropertyLineValue<float>(1.0f);
-	particleCount = 0;
-	time = 0.0f;
-	repeatCount = 0;
-	lodLevelLocked = false;
-	currentLodLevel = 0;
-	desiredLodLevel = 0;
-	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
-	emitPointsCount = -1;
-	isPaused = false;
-	angle = 0.f;
-	isAutorestart = true;
-	particlesFollow = false;
-    is3D = false;
-	playbackSpeed = 1.0f;
-	shouldBeDeleted = false;
-	// Also cleanup layers, if needed.
+	
 	if (needCleanupLayers)
 	{
 		CleanupLayers();
@@ -151,44 +112,61 @@ void ParticleEmitter::CleanupLayers()
 //	return emitter;
 //}
 
-RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
+ParticleEmitter * ParticleEmitter::Clone()
 {
-	if(!newObject)
+	ParticleEmitter* clonedEmitter = new ParticleEmitter();
+	clonedEmitter->configPath = this->configPath;
+	clonedEmitter->position = this->position;
+	
+
+	if (this->emissionVector)
 	{
-		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitter>(this), "Can clone only ParticleEmitter");
-		newObject = new ParticleEmitter();
+		clonedEmitter->emissionVector = this->emissionVector->Clone();
+		clonedEmitter->emissionVector->Release();
+	}
+	if (this->emissionAngle)
+	{
+		clonedEmitter->emissionAngle = this->emissionAngle->Clone();
+		clonedEmitter->emissionAngle->Release();
+	}
+	if (this->emissionRange)
+	{
+		clonedEmitter->emissionRange = this->emissionRange->Clone();
+		clonedEmitter->emissionRange->Release();
+	}
+	if (this->radius)
+	{
+		clonedEmitter->radius = this->radius->Clone();
+		clonedEmitter->radius->Release();
+	}
+	if (this->colorOverLife)
+	{
+		clonedEmitter->colorOverLife = this->colorOverLife->Clone();
+		clonedEmitter->colorOverLife->Release();
+	}
+	if (this->size)
+	{
+		clonedEmitter->size = this->size->Clone();
+		clonedEmitter->size->Release();
 	}
 
-	((ParticleEmitter*)newObject)->LoadFromYaml(configPath);
+	clonedEmitter->emitterType = this->emitterType;	
+	clonedEmitter->shortEffect = shortEffect;
 
-	return newObject;
-}
-
-void ParticleEmitter::Save(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	RenderObject::Save(archive, serializationContext);
-
-	if(NULL != archive)
+	// Now can add Layers. Need to update their parents.
+	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end(); ++iter)
 	{
-        String filename = configPath.GetRelativePathname(serializationContext->GetScenePath());
-		archive->SetString("pe.configpath", filename);
-	}
-}
-
-void ParticleEmitter::Load(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	RenderObject::Load(archive, serializationContext);
-
-	if(NULL != archive)
-	{
-		String filename = archive->GetString("pe.configpath");
-		if(!filename.empty())
-		{
-			configPath = serializationContext->GetScenePath() + filename;
-			LoadFromYaml(configPath);
-		}
+		ParticleLayer* clonedLayer = (*iter)->Clone(NULL);
+		clonedEmitter->AddLayer(clonedLayer);
+		SafeRelease(clonedLayer);
 	}	
+
+	clonedEmitter->emitterFileName = emitterFileName;
+	RetainInCache(emitterFileName);
+
+	return clonedEmitter;
 }
+
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
 {
@@ -198,23 +176,15 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	}
 
 	// Don't allow the same layer to be added twice.
-	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(),
-																 layer);
+	Vector<ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != layers.end())
 	{
 		DVASSERT(false);
 		return;
 	}
 
-	layer->Retain();
-	if (layer->GetEmitter())
-	{
-		layer->GetEmitter()->RemoveLayer(layer);
-	}
-		
-	layers.push_back(layer);
-	layer->SetEmitter(this);
-	AddRenderBatch(layer->GetRenderBatch());
+	layer->Retain();			
+	layers.push_back(layer);		
 }
 
 void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
@@ -233,14 +203,10 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 		return;
 	}
 
-	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	Vector<ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
-	{
-		layer->RemoveInnerEmitter();
-		layers.erase(layerIter);
-
-        RemoveRenderBatch(layer->GetRenderBatch());
-		layer->SetEmitter(NULL);
+	{		
+		layers.erase(layerIter);     
 		SafeRelease(layer);
 	}
 }
@@ -254,8 +220,8 @@ void ParticleEmitter::RemoveLayer(int32 index)
 	
 void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
-	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
-	Vector<DAVA::ParticleLayer*>::iterator beforeLayerIter = std::find(layers.begin(), layers.end(),beforeLayer);
+	Vector<ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	Vector<ParticleLayer*>::iterator beforeLayerIter = std::find(layers.begin(), layers.end(),beforeLayer);
 
 	if (layerIter == layers.end() || beforeLayerIter == layers.end() ||
 		layerIter == beforeLayerIter)
@@ -270,313 +236,6 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLay
 	layers.insert(beforeLayerIter, layer);
 }
 
-ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
-{
-	if (!layer || layers.size() < 2)
-	{
-		return NULL;
-	}
-
-	int32 layersToCheck = layers.size() - 1;
-	for (int32 i = 0; i < layersToCheck; i ++)
-	{
-		ParticleLayer* curLayer = layers[i];
-		if (curLayer == layer)
-		{
-			return layers[i + 1];
-		}
-	}
-	
-	return NULL;
-}
-
-/* float32 ParticleEmitter::GetCurrentNumberScale()
-{
-	return number->GetValue(time);
-} */
-
-void ParticleEmitter::SetDesiredLodLevel(int32 level)
-{
-	desiredLodLevel = level;
-	if (!lodLevelLocked){
-		currentLodLevel = desiredLodLevel;
-	}
-}
-
-bool ParticleEmitter::IsShortEffect()
-{
-	return shortEffect;
-}
-void ParticleEmitter::SetShortEffect(bool isShort)
-{
-	shortEffect = isShort;
-	if (!isShort)
-	{
-		lodLevelLocked = false; //once effect is not considered short anymore - unlock lod
-		currentLodLevel = desiredLodLevel;
-	}
-}
-
-Matrix3 ParticleEmitter::GetRotationMatrix()
-{
-	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
-	Matrix3 rotationMatrix;	
-
-	if(worldTransformPtr)
-	{	
-		rotationMatrix = Matrix3(*worldTransformPtr);
-	}
-	else
-	{
-		rotationMatrix.Identity();
-	}
-
-	return rotationMatrix;
-}
-
-void ParticleEmitter::Pause(bool _isPaused)
-{
-	isPaused = _isPaused;
-
-	// Also update Inner Emitters.
-	int32 layersCount = layers.size();
-	for (int32 i = 0; i < layersCount; i ++)
-	{
-		layers[i]->PauseInnerEmitter(_isPaused);
-	}
-}
-
-void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
-{
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		(*it)->Restart(isDeleteAllParticles);
-	}
-
-	time = 0.0f;
-	repeatCount = 0;
-	lodLevelLocked = false;
-	currentLodLevel = desiredLodLevel;
-}
-
-void ParticleEmitter::Play()
-{
-	isPaused = false;
-	state = STATE_PLAYING;
-	int32 layersCount = layers.size();
-	for (int32 i = 0; i < layersCount; i ++)
-	{
-		layers[i]->PauseInnerEmitter(false);
-	}
-    /*Pause(false);
-    DoRestart(false);*/
-}
-    
-void ParticleEmitter::Stop(bool isDeleteAllParticles)
-{
-	state = STATE_STOPPING;
-	time = 0.0f;
-	repeatCount = 0;
-	lodLevelLocked = false;
-	currentLodLevel = desiredLodLevel;
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		(*it)->Restart(isDeleteAllParticles);
-	}	
-
-}
-
-void ParticleEmitter::Restart(bool isDeleteAllParticles)
-{
-	state = STATE_PLAYING;
-	isPaused = false;
-	time = 0.0f;
-	repeatCount = 0;
-	lodLevelLocked = false;
-	currentLodLevel = desiredLodLevel;
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		(*it)->Restart(isDeleteAllParticles);
-	}	
-}
-    
-bool ParticleEmitter::IsPaused()
-{
-	return isPaused;
-}
-
-bool ParticleEmitter::IsStopped()
-{    
-    return (state == STATE_STOPPED);
-}
-	
-
-bool ParticleEmitter::DeferredUpdate(float32 timeElapsed)
-{
-	deferredTimeElapsed += timeElapsed;
-	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
-	{
-		Update(deferredTimeElapsed);
-		deferredTimeElapsed = 0.0f;
-		return true;
-	}	
-	return false;	
-}
-	
-void ParticleEmitter::Update(float32 timeElapsed)
-{	
-	timeElapsed *= playbackSpeed;
-
-	
-	time += timeElapsed;
-	float32 t = time / lifeTime;
-
-	if (colorOverLife)
-	{
-		currentColor = colorOverLife->GetValue(t);
-	}
-
-	if(isAutorestart && (time > lifeTime))
-	{
-		time -= lifeTime;
-
-		// Restart() resets repeatCount, so store it locally and then revert.
-		int16 curRepeatCount = repeatCount;
-		Restart(true);
-		repeatCount = curRepeatCount;
-
-		repeatCount ++;
-	}
-
-
-	particleCount = 0;
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-        if(!(*it)->GetDisabled())
-            (*it)->Update(timeElapsed, (*it)->IsLodActive(currentLodLevel));
-		particleCount+=(*it)->GetParticleCount();
-	}
-
-	if (shortEffect)
-		lodLevelLocked = true;
-	if ((state == STATE_STOPPING) && (particleCount == 0))
-	{
-		state = STATE_STOPPED;
-	}
-}
-
-void ParticleEmitter::PrepareRenderData(Camera * camera){
-	for(Vector<ParticleLayer*>::iterator it = layers.begin(), e = layers.end(); it!=e; ++it)
-	{
-		(*it)->PrepareRenderData(camera);
-	}
-}
-
-void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
-{
-	//eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
-	//eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
-
-	// Yuri Coder, 2013/01/30. ParticleEmitter class can be now only 2D.
-	if(particlesFollow)
-	{
-		RenderManager::Instance()->PushDrawMatrix();
-		RenderManager::Instance()->SetDrawTranslate(position);
-	}
-
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		if(!(*it)->GetDisabled())
-			(*it)->Draw(camera);
-	}
-
-	if(particlesFollow)
-	{
-		RenderManager::Instance()->PopDrawMatrix();
-	}
-
-	//RenderManager::Instance()->SetBlendMode(srcMode, destMode);
-}
-
-void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
-{
-	// Yuri Coder, 2013/01/30. ParticleEmitter class can be now only 2D.
-    Vector3 tempPosition = particlesFollow ? Vector3() : position;
-    if (emitterType == EMITTER_POINT)
-    {
-        particle->position = tempPosition;
-    }
-    else if (emitterType == EMITTER_RECT)
-    {
-        // TODO: add emitter angle support
-        float32 rand05_x = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        float32 rand05_y = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        float32 rand05_z = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        Vector3 lineDirection(0, 0, 0);
-        if(size)
-            lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
-		particle->position = tempPosition + lineDirection;
-	}
-    else if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
-			 (emitterType == EMITTER_ONCIRCLE_EDGES) ||
-			 (emitterType == EMITTER_SHOCKWAVE))
-    {
-        // here just set particle position
-		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
-		// currently draw them in the same way as "onCircle" ones.
-        particle->position = tempPosition;
-    }
-        
-    Vector3 vel;
-    //vel.x = (float32)((rand() & 255) - 128);
-    //vel.y = (float32)((rand() & 255) - 128);
-    //vel.Normalize();
-        
-    float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-
-    float32 particleAngle = 0;
-    if(emissionAngle)
-        particleAngle = DegToRad(emissionAngle->GetValue(time) + angle);
-        
-    float32 range = 0.0f;
-    if(emissionRange)
-        range = DegToRad(emissionRange->GetValue(time));
-        
-    if (emitPointsCount == -1)
-    {
-        // if emitAtPoints property is not set just emit randomly in range
-        particleAngle += range * rand05;
-    }
-    else
-    {
-        particleAngle += range * (float32)emitIndex / (float32)emitPointsCount;
-    }
-        
-        
-    vel.x = cosf(particleAngle);
-    vel.y = sinf(particleAngle);
-    vel.z = 0;
-        
-    // reuse particle velocity we've calculated
-	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
-	// currently draw them in the same way as "onCircle" ones.
-    if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
-		(emitterType == EMITTER_ONCIRCLE_EDGES) ||
-		(emitterType == EMITTER_SHOCKWAVE))
-    {
-        if(radius)
-            particle->position += vel * radius->GetValue(time);
-    }
-        
-    particle->speed.x = vel.x*velocity;
-    particle->speed.y = vel.y*velocity;	
-    particle->angle = particleAngle;
-}
 
 #if defined (USE_FILEPATH_IN_MAP)
 void ParticleEmitter::RetainInCache(const FilePath& name)
@@ -685,10 +344,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		return;
 	}
 
-	configPath = filename;
-	time = 0.0f;
-	repeatCount = 0;
-	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
+	configPath = filename;	
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -716,27 +372,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			colorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(emitterNode->Get("colorOverLife"));
 		if (emitterNode->Get("radius"))
 			radius = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("radius"));
-		
-		emitPointsCount = -1; 
-		const YamlNode * emitAtPointsNode = emitterNode->Get("emitAtPoints");
-		if (emitAtPointsNode)
-			emitPointsCount = emitAtPointsNode->AsInt();
-		
-		const YamlNode * lifeTimeNode = emitterNode->Get("life");
-		if (lifeTimeNode)
-		{
-			lifeTime = lifeTimeNode->AsFloat();
-		}else
-		{
-			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
-		}
-        
-        is3D = false;
-		const YamlNode * _3dNode = emitterNode->Get("3d");
-		if (_3dNode)
-		{	
-			is3D = _3dNode->AsBool();
-		}
+								
 		const YamlNode * shortEffectNode = emitterNode->Get("shortEffect");
 		if (shortEffectNode)
 			shortEffect = shortEffectNode->AsBool();
@@ -747,9 +383,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			if (typeNode->AsString() == "point")
 				emitterType = EMITTER_POINT;
 			else if (typeNode->AsString() == "line")
-			{
-				// Yuri Coder, 2013/04/09. Get rid of the "line" node type -
-				// it can be completely replaced by "rect" one.
+			{				
 				emitterType = EMITTER_RECT;
 			}
 			else if (typeNode->AsString() == "rect")
@@ -783,33 +417,17 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
                 _size.y = depthNode->AsFloat();
             
             size = new PropertyLineValue<Vector3>(_size);
-        }
-        
-		const YamlNode * autorestartNode = emitterNode->Get("autorestart");
-		if(autorestartNode)
-			isAutorestart = autorestartNode->AsBool();
-
-		const YamlNode * particlesFollowNode = emitterNode->Get("particlesFollow");
-		if(particlesFollowNode)
-			particlesFollow = particlesFollowNode->AsBool();
+        }        		
 	}
 
 	int cnt = rootNode->GetCount();
 	for (int k = 0; k < cnt; ++k)
 	{
 		const YamlNode * node = rootNode->Get(k);
-		const YamlNode * typeNode = node->Get("type");
-		
-		const YamlNode * longNode = node->Get("isLong");
-		bool isLong = false;
-		if(longNode && (longNode->AsBool() == true))
-		{
-			isLong = true;
-		}
-
+		const YamlNode * typeNode = node->Get("type");				
 		if (typeNode && typeNode->AsString() == "layer")
 		{
-			LoadParticleLayerFromYaml(node, isLong);
+			LoadParticleLayerFromYaml(node);
 		}
 	}
 	
@@ -832,8 +450,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
-    
-    emitterYamlNode->Set("3d", this->is3D);
+        
     emitterYamlNode->Set("type", GetEmitterTypeName());
 	emitterYamlNode->Set("shortEffect", shortEffect);
     
@@ -850,8 +467,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);    
 
     // Now write all the Layers. Note - layers are child of root node, not the emitter one.
     int32 layersCount = this->layers.size();
@@ -878,83 +494,7 @@ void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase *> &modi
 	}
 }
     
-int32 ParticleEmitter::GetParticleCount()
-{
-	return particleCount;
-}
 
-int32 ParticleEmitter::GetRepeatCount()
-{
-	return repeatCount;
-}
-
-int32 ParticleEmitter::GetEmitPointsCount()
-{
-	return emitPointsCount;
-}
-	
-Vector<ParticleLayer*> & ParticleEmitter::GetLayers()
-{
-	return layers;
-}
-	
-float32 ParticleEmitter::GetLifeTime()
-{
-	return lifeTime;
-}
-    
-void ParticleEmitter::SetLifeTime(float32 time)
-{
-    lifeTime = time;
-	
-	/*see DF-1686*/
-	for (int32 i = 0, size = layers.size(); i<size; ++i)
-	{
-		if (lifeTime<layers[i]->endTime)
-		{
-			layers[i]->UpdateLayerTime(layers[i]->startTime, lifeTime);
-		}
-	}
-}
-    
-float32 ParticleEmitter::GetTime()
-{
-    return time;
-}    
-
-bool ParticleEmitter::GetAutoRestart()
-{
-	return isAutorestart;
-}
-
-Vector3 ParticleEmitter::GetSize()
-{
-    if(size)
-        return size->GetValue(0);
-    return Vector3(0, 0, 0);
-}
-    
-Vector3 ParticleEmitter::GetSize(float32 time)
-{
-    if(size)
-        return size->GetValue(time);
-    return Vector3(0, 0, 0);
-}
-    
-void ParticleEmitter::SetSize(const Vector3& _size)
-{
-	size = new PropertyLineValue<Vector3>(_size);
-}
-
-Animation * ParticleEmitter::SizeAnimation(const Vector3 & newSize, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
-{
-    Vector3 _size(0, 0, 0);
-    if(size)
-        _size = size->GetValue(0);
-	LinearAnimation<Vector3> * animation = new LinearAnimation<Vector3>(this, &_size, newSize, time, interpolationFunc);
-	animation->Start(track);
-	return animation;
-}
 
 String ParticleEmitter::GetEmitterTypeName()
 {
@@ -994,10 +534,10 @@ String ParticleEmitter::GetEmitterTypeName()
 
 void ParticleEmitter::UpdateEmptyLayerNames()
 {
-	int32 layersCount = this->GetLayers().size();
+	int32 layersCount = layers.size();
 	for (int i = 0; i < layersCount; i ++)
 	{
-		UpdateLayerNameIfEmpty(this->layers[i], i);
+		UpdateLayerNameIfEmpty(layers[i], i);
 	}
 }
 
@@ -1010,35 +550,13 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 }
 
 
-void ParticleEmitter::LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLong)
+void ParticleEmitter::LoadParticleLayerFromYaml(const YamlNode* yamlNode)
 {
-	ParticleLayer* layer = new ParticleLayer();
-	AddLayer(layer);
+
+	ParticleLayer* layer = new ParticleLayer();	
 	layer->LoadFromYaml(configPath, yamlNode);
-
+	AddLayer(layer);	
 	SafeRelease(layer);
-}
-
-bool ParticleEmitter::Is3DFlagCorrect()
-{
-	// ParticleEmitter class can be created only for non-3D Emitters.
-	return (is3D == false);
-}
-
-void ParticleEmitter::SetPlaybackSpeed(float32 value)
-{
-	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
-								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		this->layers[i]->SetPlaybackSpeed(this->playbackSpeed);
-	}
-}
-
-float32 ParticleEmitter::GetPlaybackSpeed()
-{
-	return this->playbackSpeed;
 }
 
 void ParticleEmitter::InvertEmissionVectorCoordinates()
@@ -1053,76 +571,6 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
 	for (uint32 i = 0; i < keysSize; ++i)
 	{
 		pvk->keys[i].value *= -1;
-	}
-}
-
-int32 ParticleEmitter::GetActiveParticlesCount()
-{
-	uint32 particlesCount = 0;
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		particlesCount += this->layers[i]->GetActiveParticlesCount();
-	}
-
-	return particlesCount;
-}
-
-void ParticleEmitter::RememberInitialTranslationVector()
-{
-	if (GetWorldTransformPtr())
-	{
-		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
-	}
-}
-
-const Vector3& ParticleEmitter::GetInitialTranslationVector()
-{
-	return this->initialTranslationVector;
-}
-
-void ParticleEmitter::SetDisabledForAllLayers(bool value)
-{
-	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
-	{
-		(*iter)->SetDisabled(value);
-	}
-}
-
-void ParticleEmitter::RecalcBoundingBox()
-{
-	bbox = AABBox3(Vector3(), Vector3());
-}
-
-void ParticleEmitter::RecalculateWorldBoundingBox()
-{
-	worldBBox = bbox; //as ParticelEmmiter dont use world transform for particle rendering, just for generation
-}
-
-void ParticleEmitter::SetLongToAllLayers(bool isLong)
-{
-	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
-	{
-		(*it)->SetLong(isLong);
-	}
-}
-
-void ParticleEmitter::SetParentParticle(Particle* parent)
-{
-	parentParticle = parent;
-}
-
-Particle* ParticleEmitter::GetParentParticle()
-{
-	return parentParticle;
-}
-
-void ParticleEmitter::HandleRemoveFromSystem()
-{
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		(*it)->HandleRemoveFromSystem();
 	}
 }
 }; 

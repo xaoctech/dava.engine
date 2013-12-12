@@ -30,11 +30,8 @@
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
 #include "Utils/StringFormat.h"
-#include "Render/RenderManager.h"
 #include "Render/Image.h"
-#include "Utils/Random.h"
 #include "FileSystem/FileSystem.h"
-#include "Scene3D/Components/LodComponent.h"
 
 namespace DAVA
 {
@@ -46,11 +43,7 @@ const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 	{ TYPE_SUPEREMITTER_PARTICLES, "superEmitter" }
 };
 
-ParticleLayer::ParticleLayer()
-	: head(0)
-	, count(0)
-	, limit(1000)
-	, emitter(0)
+ParticleLayer::ParticleLayer()	
 	, sprite(0)
 	, innerEmitter(NULL)
 {
@@ -123,24 +116,19 @@ ParticleLayer::ParticleLayer()
 
 ParticleLayer::~ParticleLayer()
 {
-	DeleteAllParticles();
-
-	SafeRelease(renderBatch);
+	
 	SafeRelease(sprite);
 	SafeRelease(innerEmitter);
-
-	head = 0;
+	
 	CleanupForces();
 	// dynamic cache automatically delete all particles
 }
 
-ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
+ParticleLayer * ParticleLayer::Clone()
 {
-	if(!dstLayer)
-	{
-		DVASSERT_MSG(IsPointerToExactClass<ParticleLayer>(this), "Can clone only ParticleLayer");
-		dstLayer = new ParticleLayer();
-	}
+	
+	ParticleLayer *	dstLayer = new ParticleLayer();
+	
 
 	if (life)
 		dstLayer->life.Set(life->Clone());
@@ -211,7 +199,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	SafeRelease(dstLayer->innerEmitter);
 	if (innerEmitter)
-		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
+		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone());
 	
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
