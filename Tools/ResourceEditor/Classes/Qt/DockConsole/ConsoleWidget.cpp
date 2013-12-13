@@ -27,50 +27,73 @@
 =====================================================================================*/
 
 
-#include "SceneHelper.h"
-#include "Deprecated/SceneValidator.h"
-#include "CubemapEditor/MaterialHelper.h"
 
-using namespace DAVA;
+#include "ConsoleWidget.h"
+#include "ConsoleView.h"
+#include "Console.h"
 
-void SceneHelper::EnumerateTextures(Entity *forNode, TexturesMap &textureCollection)
+#include <QToolBar>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QIcon>
+#include <QAction>
+
+ConsoleWidget::ConsoleWidget(QWidget *parent /* = 0 */)
+	: QWidget(parent)
 {
-	if(!forNode) return;
-
-	Vector<Entity *> nodes;
-	forNode->GetChildNodes(nodes);
-	nodes.push_back(forNode);
-
-	for(int32 n = 0; n < (int32)nodes.size(); ++n)
-	{
-		RenderObject *ro = GetRenderObject(nodes[n]);
-		if(!ro) continue;
-
-		uint32 count = ro->GetRenderBatchCount();
-		for(uint32 b = 0; b < count; ++b)
-		{
-			RenderBatch *renderBatch = ro->GetRenderBatch(b);
-
-			NMaterial *material = renderBatch->GetMaterial();
-			if(NULL != material)
-			{
-				for(int32 t = 0; t < (int32)material->GetTextureCount(); ++t)
-				{
-					DAVA::Texture *texture = material->GetTexture(t);
-					if(NULL != texture)
-					{
-						CollectTexture(textureCollection, texture->GetPathname(), texture);
-					}
-				}
-			}
-		}
-	}
+    SetupToolbar();
+    SetupView();
+    SetupLayout();
 }
 
-void SceneHelper::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
+ConsoleWidget::~ConsoleWidget()
 {
-	if(!name.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
-	{
-		textures[FILEPATH_MAP_KEY(name)] = tex;
-	}
 }
+
+
+void ConsoleWidget::SetupToolbar()
+{
+    toolbar = new QToolBar(this);
+    toolbar->setIconSize(QSize(16, 16));
+    toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolbar->setMovable(false);
+
+    searchFilter = new QLineEdit(toolbar);
+    searchFilter->setToolTip("Enter text to search something");
+    searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+    
+    QIcon clearIcon(QString::fromUtf8(":/QtIcons/reset.png"));
+    QAction *actionClearConsole = new QAction(clearIcon, "Clear Console", toolbar);
+
+    QObject::connect(actionClearConsole, SIGNAL(triggered()), this, SLOT(OnClearConsole()));
+    
+    toolbar->addWidget(searchFilter);
+    toolbar->addSeparator();
+    toolbar->addAction(actionClearConsole);
+}
+
+void ConsoleWidget::SetupView()
+{
+    consoleView = new ConsoleView(this);
+}
+
+void ConsoleWidget::SetupLayout()
+{
+	QVBoxLayout *layout = new QVBoxLayout(this);
+	layout->addWidget(toolbar);
+	layout->addWidget(consoleView);
+	layout->setMargin(0);
+	layout->setSpacing(1);
+    
+    setLayout(layout);
+}
+
+void ConsoleWidget::OnClearConsole()
+{
+    if(Console::Instance())
+    {
+        Console::Instance()->Clear();
+    }
+}
+
+

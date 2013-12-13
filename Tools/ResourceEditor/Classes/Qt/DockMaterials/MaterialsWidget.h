@@ -27,50 +27,78 @@
 =====================================================================================*/
 
 
-#include "SceneHelper.h"
-#include "Deprecated/SceneValidator.h"
-#include "CubemapEditor/MaterialHelper.h"
 
-using namespace DAVA;
+#ifndef __MATERIALS_WIDGET_H__
+#define __MATERIALS_WIDGET_H__
 
-void SceneHelper::EnumerateTextures(Entity *forNode, TexturesMap &textureCollection)
+#include <QWidget>
+#include <QItemSelection>
+
+class QVBoxLayout;
+class QToolBar;
+class QListView;
+class QAction;
+class QLineEdit;
+class QLabel;
+class QSortFilterProxyModel;
+
+class SimpleMaterialModel;
+class SceneEditor2;
+class MaterialsWidget : public QWidget
 {
-	if(!forNode) return;
+	Q_OBJECT
 
-	Vector<Entity *> nodes;
-	forNode->GetChildNodes(nodes);
-	nodes.push_back(forNode);
+public:
+	MaterialsWidget(QWidget *parent = 0);
+	~MaterialsWidget();
 
-	for(int32 n = 0; n < (int32)nodes.size(); ++n)
-	{
-		RenderObject *ro = GetRenderObject(nodes[n]);
-		if(!ro) continue;
+    void SetupSignals();
+    
+protected slots:
 
-		uint32 count = ro->GetRenderBatchCount();
-		for(uint32 b = 0; b < count; ++b)
-		{
-			RenderBatch *renderBatch = ro->GetRenderBatch(b);
+    void SceneActivated(SceneEditor2 *scene);
+    void SceneDeactivated(SceneEditor2 *scene);
+    
+    void ViewAsList();
+    void ViewAsTiles();
+    
+	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void ShowContextMenu(const QPoint & point);
 
-			NMaterial *material = renderBatch->GetMaterial();
-			if(NULL != material)
-			{
-				for(int32 t = 0; t < (int32)material->GetTextureCount(); ++t)
-				{
-					DAVA::Texture *texture = material->GetTexture(t);
-					if(NULL != texture)
-					{
-						CollectTexture(textureCollection, texture->GetPathname(), texture);
-					}
-				}
-			}
-		}
-	}
-}
+	void SetFilter(const QString &filter);
+    void ResetFilter();
+    
+    void OnEdit();
+    void OnAssignToSelection();
+    
+private:
+    
+    void SetupToolbar();
+    void SetupView();
+    void SetupLayout();
+    
+    void SwitchListAndLabel();
+    
+    void Invalidate();
+    
+private:
 
-void SceneHelper::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
-{
-	if(!name.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
-	{
-		textures[FILEPATH_MAP_KEY(name)] = tex;
-	}
-}
+    QVBoxLayout *layout;
+    
+    QToolBar *toolbar;
+    QListView *materialsView;
+    
+    QLineEdit *searchFilter;
+    
+    QLabel * notFoundMessage;
+    
+    QAction *actionViewAsList;
+    QAction *actionViewAsTiles;
+
+    SimpleMaterialModel *materialsModel;
+    QSortFilterProxyModel *proxyModel;
+    
+    SceneEditor2 *curScene;
+};
+
+#endif // __MATERIALS_WIDGET_H__

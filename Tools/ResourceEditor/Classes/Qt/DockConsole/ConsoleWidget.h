@@ -27,50 +27,41 @@
 =====================================================================================*/
 
 
-#include "SceneHelper.h"
-#include "Deprecated/SceneValidator.h"
-#include "CubemapEditor/MaterialHelper.h"
 
-using namespace DAVA;
+#ifndef __CONSOLE_WIDGET_H__
+#define __CONSOLE_WIDGET_H__
 
-void SceneHelper::EnumerateTextures(Entity *forNode, TexturesMap &textureCollection)
+#include <QWidget>
+
+class QToolBar;
+class QAction;
+class QLineEdit;
+
+class ConsoleView;
+class ConsoleWidget : public QWidget
 {
-	if(!forNode) return;
+	Q_OBJECT
 
-	Vector<Entity *> nodes;
-	forNode->GetChildNodes(nodes);
-	nodes.push_back(forNode);
+public:
+	ConsoleWidget(QWidget *parent = 0);
+	~ConsoleWidget();
 
-	for(int32 n = 0; n < (int32)nodes.size(); ++n)
-	{
-		RenderObject *ro = GetRenderObject(nodes[n]);
-		if(!ro) continue;
+protected slots:
 
-		uint32 count = ro->GetRenderBatchCount();
-		for(uint32 b = 0; b < count; ++b)
-		{
-			RenderBatch *renderBatch = ro->GetRenderBatch(b);
+    void OnClearConsole();
+    
+private:
+    
+    void SetupToolbar();
+    void SetupView();
+    void SetupLayout();
+private:
 
-			NMaterial *material = renderBatch->GetMaterial();
-			if(NULL != material)
-			{
-				for(int32 t = 0; t < (int32)material->GetTextureCount(); ++t)
-				{
-					DAVA::Texture *texture = material->GetTexture(t);
-					if(NULL != texture)
-					{
-						CollectTexture(textureCollection, texture->GetPathname(), texture);
-					}
-				}
-			}
-		}
-	}
-}
+    QToolBar *toolbar;
+    QLineEdit *searchFilter;
+    QAction *actionClearConsole;
 
-void SceneHelper::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
-{
-	if(!name.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
-	{
-		textures[FILEPATH_MAP_KEY(name)] = tex;
-	}
-}
+    ConsoleView *consoleView;
+};
+
+#endif // __CONSOLE_WIDGET_H__

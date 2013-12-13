@@ -254,15 +254,15 @@ void SceneInfo::RefreshParticlesInfo()
     SetChild("Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
 }
 
-uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
+uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
     KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
     String projectPath = settings->GetString("ProjectPath");
 
     uint32 textureSize = 0;
     
-    Map<String, Texture *>::const_iterator endIt = textures.end();
-    for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
+    TexturesMap::const_iterator endIt = textures.end();
+    for(TexturesMap::const_iterator it = textures.begin(); it != endIt; ++it)
     {
         FilePath pathname = it->first;
         Texture *tex = it->second;
@@ -461,11 +461,11 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entit
     return triangles;
 }
 
-void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
+void SceneInfo::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
 {
     if(!name.IsEmpty() && tex)
 	{
-		textures[name.GetAbsolutePathname()] = tex;
+		textures[FILEPATH_MAP_KEY(name)] = tex;
 	}
 }
 
