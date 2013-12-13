@@ -33,7 +33,7 @@
 
 using namespace DAVA;
 
-void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textureCollection)
+void SceneHelper::EnumerateTextures(Entity *forNode, TexturesMap &textureCollection)
 {
 	if(!forNode) return;
 
@@ -59,7 +59,7 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 					DAVA::Texture *texture = material->GetTexture(t);
 					if(NULL != texture)
 					{
-						CollectTexture(textureCollection, texture->GetPathname().GetAbsolutePathname(), texture);
+						CollectTexture(textureCollection, texture->GetPathname(), texture);
 					}
 				}
 			}
@@ -67,10 +67,10 @@ void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &tex
 	}
 }
 
-void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void SceneHelper::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
 {
-	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
+	if(!name.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
 	{
-		textures[name] = tex;
+		textures[FILEPATH_MAP_KEY(name)] = tex;
 	}
 }
