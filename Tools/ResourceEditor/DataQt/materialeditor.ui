@@ -37,7 +37,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTreeView" name="materialTree">
+        <widget class="MaterialTree" name="materialTree">
          <property name="dragEnabled">
           <bool>true</bool>
          </property>
@@ -58,12 +58,18 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="QtPropertyEditor" name="materialProperty"/>
+        <widget class="QSplitter" name="splitter_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <widget class="QtPropertyEditor" name="materialProperty"/>
+         <widget class="QtPropertyEditor" name="materialTexture"/>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -76,6 +82,11 @@
    <class>QtPropertyEditor</class>
    <extends>QTreeView</extends>
    <header>Tools/QtPropertyEditor/QtPropertyEditor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaterialTree</class>
+   <extends>QTreeView</extends>
+   <header>MaterialEditor/MaterialTree.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
