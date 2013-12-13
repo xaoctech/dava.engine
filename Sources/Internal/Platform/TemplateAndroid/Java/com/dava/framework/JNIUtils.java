@@ -23,12 +23,4 @@ public class JNIUtils {
 			}
 		});
 	}
-	
-	public static boolean IsFile(String path) {
-		return LocalFileDescriptor.IsFile(path);
-	}
-	
-	public static boolean IsDirectory(String path) {
-		return LocalFileDescriptor.IsDirectory(path);
-	}
 }
