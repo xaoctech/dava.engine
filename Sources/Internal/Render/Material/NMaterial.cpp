@@ -1723,7 +1723,7 @@ namespace DAVA
 	{
 		NMaterialState* matState = NULL;
 		
-		uint32 curIndex = 0;
+		/*uint32 curIndex = 0;
 		HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
 		while(stateIter != states.end() &&
 			  curIndex < index)
@@ -1732,7 +1732,9 @@ namespace DAVA
 			++stateIter;
 		}
 		
-		matState = stateIter->second;
+		matState = stateIter->second;*/
+		
+		matState = states.valueByIndex((int32)index);
 
 		return matState;
 	}
@@ -2005,23 +2007,301 @@ namespace DAVA
 			RenderManager::Instance()->ReleaseTextureStateData(prevHandle);
 		}
 	}
-
-	FastName NMaterialState::NMaterialStateDynamicTexturesInsp::GetFastName(int index) const
+	
+	///////////////////////////////////////////////////////////////////////////
+	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
+	
+	int NMaterialState::NMaterialStateDynamicTexturesInsp::MembersCount(void *object) const
 	{
-		FastName ret;
-
-		switch(index)
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state);
+		
+		return state->texturesArray.size();
+	}
+	
+	InspDesc NMaterialState::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, int index) const
+	{
+		return InspDesc(MemberName(object, index));
+	}
+	
+	const char* NMaterialState::NMaterialStateDynamicTexturesInsp::MemberName(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state && index >= 0 && index < state->textureNamesArray.size());
+		
+		return state->textureNamesArray[index].c_str();
+	}
+	
+	VariantType NMaterialState::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, int index) const
+	{
+		VariantType ret;
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state && index >= 0 && index < state->texturesArray.size());
+		
+		Texture* tex = state->texturesArray[index];
+		if(NULL != tex)
 		{
-		case 0: ret = NMaterial::TEXTURE_ALBEDO; break;
-		case 1: ret = NMaterial::TEXTURE_NORMAL; break;
-		case 2: ret = NMaterial::TEXTURE_DETAIL; break;
-		case 3: ret = NMaterial::TEXTURE_LIGHTMAP; break;
-		case 4: ret = NMaterial::TEXTURE_DECAL; break;
-
-		default:
-			break;
+			ret.SetFilePath(tex->GetPathname());
 		}
-
+		else
+		{
+			ret.SetFilePath(FilePath());
+		}
+		
 		return ret;
+	}
+	
+	void NMaterialState::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, int index, const VariantType &value)
+	{
+		NMaterialState *state = (NMaterialState *)object;
+		DVASSERT(state && index >= 0 && index < state->textureNamesArray.size());
+		
+		if(state && index >= 0 &&
+		   index < state->textureNamesArray.size() &&
+		   value.type == VariantType::TYPE_FILEPATH)
+		{
+			state->SetTexture(state->textureNamesArray[index], Texture::CreateFromFile(value.AsFilePath()));
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	///// NMaterialState::NMaterialStateDynamicPropertiesInsp implementation
+	int NMaterialState::NMaterialStateDynamicPropertiesInsp::MembersCount(void *object) const
+	{
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state);
+		
+		return state->materialProperties.size();
+	}
+	
+	InspDesc NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberDesc(void *object, int index) const
+	{
+		return InspDesc(MemberName(object, index));
+	}
+	
+	const char* NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberName(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state && index >= 0 && index < state->materialProperties.size());
+		
+		const FastName& propName = state->materialProperties.keyByIndex(index);
+		return propName.c_str();
+	}
+	
+	VariantType NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, int index) const
+	{
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state && index >= 0 && index < state->materialProperties.size());
+		
+		VariantType ret;
+		const NMaterialProperty* prop = state->materialProperties.valueByIndex(index);
+		switch(prop->type)
+		{
+			case Shader::UT_FLOAT:
+			{
+				ret.SetFloat(*(float32*)prop->data);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_VEC2:
+			{
+				ret.SetVector2(*(Vector2*)prop->data);
+				break;
+			}
+
+			case Shader::UT_FLOAT_VEC3:
+			{
+				ret.SetVector3(*(Vector3*)prop->data);
+				break;
+			}
+
+			case Shader::UT_FLOAT_VEC4:
+			{
+				ret.SetVector4(*(Vector4*)prop->data);
+				break;
+			}
+
+			case Shader::UT_INT:
+			{
+				ret.SetInt32(*(int32*)prop->data);
+				break;
+			}
+
+			case Shader::UT_INT_VEC2:
+			case Shader::UT_INT_VEC3:
+			case Shader::UT_INT_VEC4:
+			{
+				DVASSERT(false);
+				//TODO: add a way to set int[]
+				break;
+			}
+
+			case Shader::UT_BOOL:
+			{
+				ret.SetBool((*(int32*)prop->data) != 0);
+				break;
+			}
+
+			case Shader::UT_BOOL_VEC2:
+			case Shader::UT_BOOL_VEC3:
+			case Shader::UT_BOOL_VEC4:
+			{
+				DVASSERT(false);
+				//TODO: add a way to set bool[]
+				
+				break;
+			}
+
+			case Shader::UT_FLOAT_MAT2:
+			{
+				ret.SetMatrix2(*(Matrix2*)prop->data);
+				break;
+			}
+
+			case Shader::UT_FLOAT_MAT3:
+			{
+				ret.SetMatrix3(*(Matrix3*)prop->data);
+				break;
+			}
+
+			case Shader::UT_FLOAT_MAT4:
+			{
+				ret.SetMatrix4(*(Matrix4*)prop->data);
+				break;
+			}
+
+			case Shader::UT_SAMPLER_2D:
+			{
+				ret.SetInt32(*(int32*)prop->data);
+				break;
+			}
+
+			case Shader::UT_SAMPLER_CUBE:
+			{
+				ret.SetInt32(*(int32*)prop->data);
+				break;
+			}
+				
+			default:
+			{
+				DVASSERT(false);
+				break;
+			}
+		}
+		
+		return ret;
+	}
+	
+	void NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, int index, const VariantType &value)
+	{
+		NMaterialState *state = (NMaterialState*)object;
+		DVASSERT(state && index >= 0 && index < state->materialProperties.size());
+		
+		//VI: we will only change exisiting properties here
+		
+		const FastName& propName = state->materialProperties.keyByIndex(index);
+		const NMaterialProperty* prop = state->materialProperties.valueByIndex(index);
+		switch(prop->type)
+		{
+			case Shader::UT_FLOAT:
+			{
+				float32 val = value.AsFloat();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_VEC2:
+			{
+				const Vector2& val = value.AsVector2();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_VEC3:
+			{
+				const Vector3& val = value.AsVector3();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_VEC4:
+			{
+				const Vector4& val = value.AsVector4();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_INT:
+			{
+				int32 val = value.AsInt32();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_INT_VEC2:
+			case Shader::UT_INT_VEC3:
+			case Shader::UT_INT_VEC4:
+			{
+				DVASSERT(false);
+				//TODO: add a way to set int[]
+				break;
+			}
+				
+			case Shader::UT_BOOL:
+			{
+				bool val = value.AsBool();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_BOOL_VEC2:
+			case Shader::UT_BOOL_VEC3:
+			case Shader::UT_BOOL_VEC4:
+			{
+				DVASSERT(false);
+				//TODO: add a way to set bool[]
+				
+				break;
+			}
+				
+			case Shader::UT_FLOAT_MAT2:
+			{
+				const Matrix2& val = value.AsMatrix2();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_MAT3:
+			{
+				const Matrix3& val = value.AsMatrix3();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_FLOAT_MAT4:
+			{
+				const Matrix3& val = value.AsMatrix3();
+				state->SetPropertyValue(propName, prop->type, prop->size, &val);
+				break;
+			}
+				
+			case Shader::UT_SAMPLER_2D:
+			{
+				//VI: samplers are set by config materials
+				break;
+			}
+				
+			case Shader::UT_SAMPLER_CUBE:
+			{
+				//VI: samplers are set by config materials
+				break;
+			}
+				
+			default:
+			{
+				DVASSERT(false);
+				break;
+			}
+		}
 	}
 };
