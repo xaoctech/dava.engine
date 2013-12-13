@@ -28,40 +28,24 @@
 
 
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+#ifndef __SIMPLE_MATERIAL_ITEM_H__
+#define __SIMPLE_MATERIAL_ITEM_H__
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+#include "Render/Material/NMaterial.h"
 
-//#define ENABLE_MEMORY_MANAGER
+#include <QStandardItem>
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
-
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
-
-//#define SHOW_FRAME_TIME	// shows milliseconds per fame
-
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
-
-// This flag allow to enable profiling stats 
-#define __DAVAENGINE_ENABLE_DEBUG_STATS__
-
-// Switch on/off messege box in assertion situation. In case this flag is
-// enabled the assertion message will be displayed even in release builds.
-#define ENABLE_ASSERT_MESSAGE
-#include "Autotesting/Config.h"
-
-#define USE_FILEPATH_IN_MAP
-#ifdef USE_FILEPATH_IN_MAP
-	#define FILEPATH_MAP_KEY(key) key
-#else //#ifdef USE_FILEPATH_IN_MAP
-	#define FILEPATH_MAP_KEY(key) key.GetAbsolutePathname()
-#endif //#ifdef USE_FILEPATH_IN_MAP
+class SimpleMaterialItem: public QStandardItem
+{
+public:
+    SimpleMaterialItem(DAVA::NMaterial * material);
+    virtual ~SimpleMaterialItem();
+    
+	DAVA::NMaterial * GetMaterial() const;
+    
+private:
+    DAVA::NMaterial * material;
+};
 
 
-#endif // __DAVAENGINE_CONFIG_H__
-
+#endif // __SIMPLE_MATERIAL_ITEM_H__

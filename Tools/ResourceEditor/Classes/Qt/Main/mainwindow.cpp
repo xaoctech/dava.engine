@@ -156,12 +156,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
-    QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
-
-	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo , SLOT(UpdateInfoByTimer()));
-
-    ui->libraryWidget->SetupSignals();
-
 	LoadGPUFormat();
 
     EnableGlobalTimeout(globalInvalidate);
@@ -288,7 +282,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		EditorSettings::Instance()->SetTextureViewGPU(gpu);
 		DAVA::Texture::SetDefaultGPU(gpu);
 
-		DAVA::Map<DAVA::String, DAVA::Texture *> allScenesTextures;
+		DAVA::TexturesMap allScenesTextures;
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
@@ -300,14 +294,18 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 			int progress = 0;
 			WaitStart("Reloading textures...", "", 0, allScenesTextures.size());
 
-			DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator it = allScenesTextures.begin();
-			DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator end = allScenesTextures.end();
+			DAVA::TexturesMap::const_iterator it = allScenesTextures.begin();
+			DAVA::TexturesMap::const_iterator end = allScenesTextures.end();
 
 			for(; it != end; ++it)
 			{
 				it->second->ReloadAs(gpu);
 
+#if defined(USE_FILEPATH_IN_MAP)
+				WaitSetMessage(it->first.GetAbsolutePathname().c_str());
+#else //#if defined(USE_FILEPATH_IN_MAP)
 				WaitSetMessage(it->first.c_str());
+#endif //#if defined(USE_FILEPATH_IN_MAP)
 				WaitSetValue(progress++);
 			}
 
@@ -389,24 +387,16 @@ void QtMainWindow::SetupTitle()
 
 void QtMainWindow::SetupMainMenu()
 {
-	QAction *actionProperties = ui->dockProperties->toggleViewAction();
-	QAction *actionLibrary = ui->dockLibrary2->toggleViewAction();
-	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
-	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
-	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
-	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
-	QAction *actionConsole = ui->dockConsole->toggleViewAction();
-	QAction *actionLandscapeEditorControls = ui->dockLandscapeEditorControls->toggleViewAction();
-
-	ui->menuView->addAction(actionSceneInfo);
-	ui->menuView->addAction(actionLibrary);
-	ui->menuView->addAction(actionProperties);
-	ui->menuView->addAction(actionParticleEditor);
-	ui->menuView->addAction(actionParticleEditorTimeLine);
-	ui->menuView->addAction(actionSceneTree);
-	ui->menuView->addAction(actionConsole);
+	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
+	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
+	ui->menuView->addAction(ui->dockMaterials->toggleViewAction());
+	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
+	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
+	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
+	ui->menuView->addAction(ui->dockSceneTree->toggleViewAction());
+	ui->menuView->addAction(ui->dockConsole->toggleViewAction());
 	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
-	ui->menuView->addAction(actionLandscapeEditorControls);
+	ui->menuView->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
 	InitRecent();
 }
@@ -515,6 +505,13 @@ void QtMainWindow::SetupDocks()
 	QObject::connect(ui->sceneTreeFilterClear, SIGNAL(pressed()), ui->sceneTreeFilterEdit, SLOT(clear()));
 	QObject::connect(ui->sceneTreeFilterEdit, SIGNAL(textChanged(const QString &)), ui->sceneTree, SLOT(SetFilter(const QString &)));
 
+    QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
+    
+	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo , SLOT(UpdateInfoByTimer()));
+
+    ui->libraryWidget->SetupSignals();
+    ui->materialsWidget->SetupSignals();
+    
 	ui->dockProperties->Init();
 }
 
@@ -762,7 +759,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
-	ui->dockLibrary2->setEnabled(enable);
+	ui->dockLibrary->setEnabled(enable);
     
     auto endIt = recentScenes.end();
     for(auto it = recentScenes.begin(); it != endIt; ++it)
@@ -780,6 +777,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->dockProperties->setEnabled(enable);
 	ui->dockSceneTree->setEnabled(enable);
 	ui->dockSceneInfo->setEnabled(enable);
+    ui->dockMaterials->setEnabled(enable);
 
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveSceneAs->setEnabled(enable);
@@ -866,8 +864,7 @@ void QtMainWindow::OnProjectClose()
 
 void QtMainWindow::OnSceneNew()
 {
-	int index = ui->sceneTabWidget->OpenTab();
-	ui->sceneTabWidget->SetCurrentTab(index);
+	ui->sceneTabWidget->OpenTab();
 }
 
 void QtMainWindow::OnSceneOpen()

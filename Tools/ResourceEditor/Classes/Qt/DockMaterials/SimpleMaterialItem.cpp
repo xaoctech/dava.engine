@@ -26,42 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "SimpleMaterialItem.h"
+
+#include <QSet>
+#include <QIcon>
+
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
 
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+SimpleMaterialItem::SimpleMaterialItem(DAVA::NMaterial * _material)
+    : QStandardItem()
+    , material(_material)
+{
+	DVASSERT(material);
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
+	static QIcon userMaterialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
 
-//#define ENABLE_MEMORY_MANAGER
+	setEditable(false);
+	setText(material->GetMaterialName().c_str());
+    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+    
+    if(material->IsSwitchable())
+    {
+		setIcon(qualityMaterialIcon);
+    }
+    else
+    {
+		setIcon(userMaterialIcon);
+    }
+}
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
-
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
-
-//#define SHOW_FRAME_TIME	// shows milliseconds per fame
-
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
-
-// This flag allow to enable profiling stats 
-#define __DAVAENGINE_ENABLE_DEBUG_STATS__
-
-// Switch on/off messege box in assertion situation. In case this flag is
-// enabled the assertion message will be displayed even in release builds.
-#define ENABLE_ASSERT_MESSAGE
-#include "Autotesting/Config.h"
-
-#define USE_FILEPATH_IN_MAP
-#ifdef USE_FILEPATH_IN_MAP
-	#define FILEPATH_MAP_KEY(key) key
-#else //#ifdef USE_FILEPATH_IN_MAP
-	#define FILEPATH_MAP_KEY(key) key.GetAbsolutePathname()
-#endif //#ifdef USE_FILEPATH_IN_MAP
+SimpleMaterialItem::~SimpleMaterialItem()
+{ }
 
 
-#endif // __DAVAENGINE_CONFIG_H__
+DAVA::NMaterial * SimpleMaterialItem::GetMaterial() const
+{
+	return material;
+}
+
+
+
 

@@ -1086,7 +1086,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                         lastMVPMatrixProjectionCache != projectionMatrixCache)
                     {
                         const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                        SetUniformValueByUniform(currentUniform, modelViewProj);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelViewProj.data));
                         lastMVPMatrixModelViewCache = modelViewMatrixCache;
                         lastMVPMatrixProjectionCache = projectionMatrixCache;
                     }
@@ -1099,7 +1099,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                         lastModelViewMatrixCache != modelViewMatrixCache)
                     {
                         const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        SetUniformValueByUniform(currentUniform, modelView);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelView.data));
                         lastModelViewMatrixCache = modelViewMatrixCache;
                     }
 					break;
@@ -1110,7 +1110,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     if (lastProjectionMatrixCache != projectionMatrixCache)
                     {
                         const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-                        SetUniformValueByUniform(currentUniform, proj);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, proj.data));
                         lastProjectionMatrixCache = projectionMatrixCache;
                     }
 					break;

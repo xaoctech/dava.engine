@@ -120,9 +120,9 @@ protected:
     void CollectLODDataForSelection();
     static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
     
-    void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
+    void CollectTexture(DAVA::TexturesMap &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
     
-    static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+    static DAVA::uint32 CalculateTextureSize(const DAVA::TexturesMap &textures);
 
     static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
     
@@ -138,9 +138,8 @@ protected:
     DAVA::Vector<DAVA::Material *>materialsAtScene;
     DAVA::Vector<DAVA::DataNode *>dataNodesAtScene;
 
-    DAVA::Map<DAVA::String, DAVA::Texture *>sceneTextures;
-    DAVA::Map<DAVA::String, DAVA::Texture *>particleTextures;
-    
+	DAVA::TexturesMap sceneTextures;
+	DAVA::TexturesMap particleTextures;
     
     DAVA::uint32 sceneTexturesSize;
     DAVA::uint32 particleTexturesSize;
