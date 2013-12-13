@@ -36,10 +36,10 @@
 class SceneHelper
 {
 public:
-	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textures);
 
 protected:
-	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
+	static void CollectTexture(DAVA::TexturesMap &textures, const DAVA::FilePath &name, DAVA::Texture *tex);
 };
 
 #endif // __SCENE_HELPER_H__
