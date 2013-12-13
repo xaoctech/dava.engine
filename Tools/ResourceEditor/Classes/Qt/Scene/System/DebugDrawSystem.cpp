@@ -86,7 +86,6 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
 
 void DebugDrawSystem::Draw()
 {
-
 	DAVA::RenderManager::Instance()->SetRenderState(debugDrawState);
 	DAVA::RenderManager::Instance()->FlushState();
 	
