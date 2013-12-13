@@ -864,8 +864,7 @@ void QtMainWindow::OnProjectClose()
 
 void QtMainWindow::OnSceneNew()
 {
-	int index = ui->sceneTabWidget->OpenTab();
-	ui->sceneTabWidget->SetCurrentTab(index);
+	ui->sceneTabWidget->OpenTab();
 }
 
 void QtMainWindow::OnSceneOpen()
