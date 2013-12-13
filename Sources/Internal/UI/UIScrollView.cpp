@@ -428,4 +428,38 @@ ScrollHelper* UIScrollView::GetVerticalScroll()
 	return scrollVertical;
 }
 
+void UIScrollView::SetHorizontalScrollPosition(float32 horzPos)
+{
+    if (!scrollContainer || ! scrollHorizontal)
+    {
+        return;
+    }
+
+    Rect contentRect = scrollContainer->GetRect();
+	contentRect.x = horzPos;
+    scrollContainer->SetRect(contentRect);
+
+    scrollHorizontal->SetPosition(horzPos);
+}
+    
+void UIScrollView::SetVerticalScrollPosition(float32 vertPos)
+{
+    if (!scrollContainer || ! scrollVertical)
+    {
+        return;
+    }
+    
+    Rect contentRect = scrollContainer->GetRect();
+	contentRect.y = vertPos;
+    scrollContainer->SetRect(contentRect);
+    
+    scrollVertical->SetPosition(vertPos);
+}
+
+void UIScrollView::SetScrollPosition(const Vector2& pos)
+{
+    SetHorizontalScrollPosition(pos.x);
+    SetVerticalScrollPosition(pos.y);
+}
+
 };

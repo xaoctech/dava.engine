@@ -57,6 +57,11 @@ public:
 	ScrollHelper* GetHorizontalScroll();
 	ScrollHelper* GetVerticalScroll();
 	
+    // Scroll Position setters.
+    void SetHorizontalScrollPosition(float32 horzPos);
+    void SetVerticalScrollPosition(float32 vertPos);
+    void SetScrollPosition(const Vector2& pos);
+
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
 	
