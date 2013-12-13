@@ -152,7 +152,7 @@ void LibraryWidget::SetupToolbar()
     filesTypeFilter->setCurrentIndex(0);
     
     
-    QIcon resetIcon(QString::fromUtf8(":/QtIcons/reset.png"));
+    QIcon resetIcon(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"));
     QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
 
     QIcon asListIcon(QString::fromUtf8(":/QtIconsTextureDialog/view_list.png"));

@@ -118,11 +118,17 @@ public:
 	void EmitActivated(SceneEditor2 *scene) { emit Activated(scene); }
 	void EmitDeactivated(SceneEditor2 *scene) { emit Deactivated(scene); }
 
-	void EmitCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo) { emit CommandExecuted(scene, command, redo); };
-	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) { emit StructureChanged(scene, parent); }
-	void EmitModifyStatusChanged(SceneEditor2 *scene, bool modified) { emit ModifyStatusChanged(scene, modified); }
+// 	void EmitCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo) { emit CommandExecuted(scene, command, redo); };
+// 	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) { emit StructureChanged(scene, parent); }
+// 	void EmitModifyStatusChanged(SceneEditor2 *scene, bool modified) { emit ModifyStatusChanged(scene, modified); }
+// 
+// 	void EmitSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected) { emit SelectionChanged(scene, selected, deselected); }
 
-	void EmitSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected) { emit SelectionChanged(scene, selected, deselected); }
+	void EmitCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo) { };
+	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) {}
+	void EmitModifyStatusChanged(SceneEditor2 *scene, bool modified) { }
+	void EmitSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected) {  }
+
 
 	void EmitVisibilityToolToggled(SceneEditor2* scene) { emit VisibilityToolToggled(scene); }
 	void EmitCustomColorsToggled(SceneEditor2* scene) { emit CustomColorsToggled(scene); }

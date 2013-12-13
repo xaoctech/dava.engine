@@ -82,7 +82,7 @@ void MaterialsWidget::SetupToolbar()
     searchFilter->setToolTip("Enter text to search material");
     searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     
-    QIcon resetIcon(QString::fromUtf8(":/QtIcons/reset.png"));
+	QIcon resetIcon(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"));
     QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
 
     QIcon asListIcon(QString::fromUtf8(":/QtIconsTextureDialog/view_list.png"));
@@ -127,7 +127,6 @@ void MaterialsWidget::SetupView()
 
 void MaterialsWidget::SetupLayout()
 {
-    // put tab bar and davawidget into vertical layout
 	layout = new QVBoxLayout();
 	layout->addWidget(toolbar);
 	layout->addWidget(notFoundMessage);
@@ -210,12 +209,12 @@ void MaterialsWidget::ResetFilter()
 
 void MaterialsWidget::SceneActivated(SceneEditor2 *scene)
 {
-    curScene = scene;
-    
-    materialsModel->SetScene(curScene);
-    Invalidate();
-    
-    SwitchListAndLabel();
+//     curScene = scene;
+//     
+//     materialsModel->SetScene(curScene);
+//     Invalidate();
+//     
+//     SwitchListAndLabel();
 }
 
 void MaterialsWidget::SceneDeactivated(SceneEditor2 *scene)
