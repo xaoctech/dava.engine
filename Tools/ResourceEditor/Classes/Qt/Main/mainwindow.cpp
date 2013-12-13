@@ -282,7 +282,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		EditorSettings::Instance()->SetTextureViewGPU(gpu);
 		DAVA::Texture::SetDefaultGPU(gpu);
 
-		DAVA::Map<DAVA::String, DAVA::Texture *> allScenesTextures;
+		DAVA::TexturesMap allScenesTextures;
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
@@ -294,14 +294,18 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 			int progress = 0;
 			WaitStart("Reloading textures...", "", 0, allScenesTextures.size());
 
-			DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator it = allScenesTextures.begin();
-			DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator end = allScenesTextures.end();
+			DAVA::TexturesMap::const_iterator it = allScenesTextures.begin();
+			DAVA::TexturesMap::const_iterator end = allScenesTextures.end();
 
 			for(; it != end; ++it)
 			{
 				it->second->ReloadAs(gpu);
 
+#if defined(USE_FILEPATH_IN_MAP)
+				WaitSetMessage(it->first.GetAbsolutePathname().c_str());
+#else //#if defined(USE_FILEPATH_IN_MAP)
 				WaitSetMessage(it->first.c_str());
+#endif //#if defined(USE_FILEPATH_IN_MAP)
 				WaitSetValue(progress++);
 			}
 
