@@ -162,11 +162,7 @@ Scene::~Scene()
     SafeRelease(currentCamera);
     SafeRelease(clipCamera);
     
-#if defined (USE_FILEPATH_IN_MAP)
-    for (Map<FilePath, ProxyNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	for (Map<String, ProxyNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+    for (ProxyNodeMap::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
     {
         SafeRelease(it->second);
     }
@@ -399,24 +395,14 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
     ProxyNode * proxyNode = new ProxyNode();
     proxyNode->SetNode(node);
     
-#if defined (USE_FILEPATH_IN_MAP)
-	rootNodes[rootNodePath] = proxyNode;
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	rootNodes[rootNodePath.GetAbsolutePathname()] = proxyNode;
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	rootNodes[FILEPATH_MAP_KEY(rootNodePath)] = proxyNode;
 
 	proxyNode->SetName(rootNodePath.GetAbsolutePathname());
 }
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 {
-#if defined (USE_FILEPATH_IN_MAP)
-	Map<FilePath, ProxyNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	Map<String, ProxyNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	ProxyNodeMap::const_iterator it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
@@ -442,11 +428,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
-#if defined (USE_FILEPATH_IN_MAP)
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
@@ -458,13 +440,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 
 void Scene::ReleaseRootNode(const FilePath &rootNodePath)
 {
-#if defined (USE_FILEPATH_IN_MAP)
-	Map<FilePath, ProxyNode*>::iterator it;
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	Map<String, ProxyNode*>::iterator it;
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	ProxyNodeMap::iterator it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         it->second->Release();
