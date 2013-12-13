@@ -83,14 +83,12 @@ protected:
     void InitializeInfo();
     void InitializeGeneralSection();
     void Initialize3DDrawSection();
-    void InitializeMaterialsSection();
     void InitializeLODSectionInFrame();
     void InitializeLODSectionForSelection();
     void InitializeParticlesSection();
 
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
-    void RefreshMaterialsInfo();
     void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
     void RefreshParticlesInfo();
@@ -136,7 +134,6 @@ protected:
     DAVA::Landscape *landscape;
     
     DAVA::Vector<DAVA::Material *>materialsAtScene;
-    DAVA::Vector<DAVA::DataNode *>dataNodesAtScene;
 
 	DAVA::TexturesMap sceneTextures;
 	DAVA::TexturesMap particleTextures;
@@ -149,6 +146,8 @@ protected:
     
     LODInfo lodInfoSelection;
     LODInfo lodInfoInFrame;
+
+	bool isUpToDate;
 };
 
 #endif // __SCENE_INFO_H__
