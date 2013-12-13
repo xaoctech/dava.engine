@@ -20,6 +20,8 @@
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A686CAD7185B801A00B5BF36 /* MaterialTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A686CAD5185B801A00B5BF36 /* MaterialTree.cpp */; };
+		A686CAE0185B82B600B5BF36 /* MaterialTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A686CADF185B82B600B5BF36 /* MaterialTree_moc.cpp */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
@@ -631,6 +633,9 @@
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A686CAD5185B801A00B5BF36 /* MaterialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree.cpp; sourceTree = "<group>"; };
+		A686CAD6185B801A00B5BF36 /* MaterialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTree.h; sourceTree = "<group>"; };
+		A686CADF185B82B600B5BF36 /* MaterialTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree_moc.cpp; sourceTree = "<group>"; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
@@ -1719,6 +1724,8 @@
 		E8BAD5CA1859F48600C98C8D /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
+				A686CAD5185B801A00B5BF36 /* MaterialTree.cpp */,
+				A686CAD6185B801A00B5BF36 /* MaterialTree.h */,
 				E8BAD5CB1859F48600C98C8D /* MaterialAssignSystem.cpp */,
 				E8BAD5CC1859F48600C98C8D /* MaterialAssignSystem.h */,
 				E8BAD5CD1859F48600C98C8D /* MaterialEditor.cpp */,
@@ -1875,6 +1882,7 @@
 		E8BAD6161859F50200C98C8D /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
+				A686CADF185B82B600B5BF36 /* MaterialTree_moc.cpp */,
 				E8BAD6171859F50200C98C8D /* MaterialAssignSystem_moc.cpp */,
 				E8BAD6181859F50200C98C8D /* MaterialEditor_moc.cpp */,
 				E8BAD6191859F50200C98C8D /* MaterialItem_moc.cpp */,
@@ -3957,6 +3965,7 @@
 				E8C9925B184CD0EC00AFBF3F /* btAlignedAllocator.cpp in Build Sources */,
 				E8C99334184CD0EC00AFBF3F /* QtPosSaver.cpp in Build Sources */,
 				E8C99256184CD0EC00AFBF3F /* btRigidBody.cpp in Build Sources */,
+				A686CAD7185B801A00B5BF36 /* MaterialTree.cpp in Build Sources */,
 				E8C992A1184CD0EC00AFBF3F /* CameraController.cpp in Build Sources */,
 				E8BAD7241859F50300C98C8D /* LabeledSlider_moc.cpp in Build Sources */,
 				E8C99237184CD0EC00AFBF3F /* btTriangleShapeEx.cpp in Build Sources */,
@@ -4003,6 +4012,7 @@
 				E8C992C0184CD0EC00AFBF3F /* VisibilityToolPanel.cpp in Build Sources */,
 				E8C99343184CD0EC00AFBF3F /* QtWaitDialog.cpp in Build Sources */,
 				E8C99211184CD0EC00AFBF3F /* btCollisionShape.cpp in Build Sources */,
+				A686CAE0185B82B600B5BF36 /* MaterialTree_moc.cpp in Build Sources */,
 				E8C9928B184CD0EC00AFBF3F /* EntityAddCommand.cpp in Build Sources */,
 				E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */,
 				E8C99207184CD0EC00AFBF3F /* btSimulationIslandManager.cpp in Build Sources */,
