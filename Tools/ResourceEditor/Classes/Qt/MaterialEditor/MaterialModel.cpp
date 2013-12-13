@@ -66,6 +66,7 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
 			{
 				MaterialItem *item = new MaterialItem(materials[i]);
+				item->setDragEnabled(false);
 				root->appendRow(item);
 			}
 		}
@@ -105,6 +106,10 @@ QStringList MaterialModel::mimeTypes() const
 	return types;
 }
 
+bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+	return false;
+}
 
 MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /*= NULL*/)
 : QSortFilterProxyModel(parent)
