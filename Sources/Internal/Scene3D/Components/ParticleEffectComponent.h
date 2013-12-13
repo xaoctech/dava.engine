@@ -71,7 +71,7 @@ public:
 
 	void Start();
 	void Stop(bool isDeleteAllParticles = true);
-	void Restart(bool isDeleteAllParticles = true);
+	void Restart(bool isDeleteAllParticles = true); //restart always delete all particles
 	bool IsStopped();	
 	void Pause(bool isPaused = true);
 	bool IsPaused();
@@ -105,6 +105,7 @@ private:
 	float32 effectDuration;       //duration for effect
 	uint32 repeatsCount;			  // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
 	bool clearOnRestart;		  // when effect is restarted (explicitly or by repeatsCount)
+	float32 playbackSpeed;
 	
 	/*state*/
 	float32 time;

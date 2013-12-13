@@ -96,7 +96,9 @@ void ParticleEffectSystem::Process()
 	for(int i=0; i<activeComponents.size(); i++) //we take size in loop as it can actually change
 	{
 		ParticleEffectComponent * component = activeComponents[i];
-		UpdateEffect(component, timeElapsed, shortEffectTime);		
+		if (component->isPaused) 
+			continue;
+		UpdateEffect(component, timeElapsed*component->playbackSpeed, shortEffectTime*component->playbackSpeed);		
 		bool effectEnded = component->stopWhenEmpty?component->effectData.groups.empty():(component->time>component->effectDuration);
 		if (effectEnded)
 		{

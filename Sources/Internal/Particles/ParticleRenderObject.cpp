@@ -122,9 +122,10 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	int32 maxParticlesPerBatch = 0;
 	for (List<ParticleGroup>::iterator it = effectData->groups.begin(), e=effectData->groups.end(); it!=e; ++it)
 	{
-		const ParticleGroup& currGroup = (*it);
-		if (!currGroup.material) continue; //if no material was set up - dont draw
+		const ParticleGroup& currGroup = (*it);		
+		if (!currGroup.material) continue; //if no material was set up - don't draw
 		if (!currGroup.head) continue; //skip empty group
+		if (currGroup.layer->isDisabled) continue; //note - it's just stop it from being rendered, still processing particles
 
 		//start new batch if needed
 		if (currGroup.material!=currMaterial) 
