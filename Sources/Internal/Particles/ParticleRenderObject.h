@@ -66,6 +66,9 @@ public:
 	~ParticleRenderObject();
 	void PrepareRenderData(Camera * camera);
 	
+
+	virtual void RecalcBoundingBox(){}
+	virtual void RecalculateWorldBoundingBox(){worldBBox = bbox;}
 	
 };
 

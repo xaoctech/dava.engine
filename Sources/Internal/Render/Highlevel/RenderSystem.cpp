@@ -44,7 +44,6 @@
 #include "Render/Highlevel/SpatialTree.h"
 
 // TODO: Move class to other place
-#include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Utils/Utils.h"
 #include "Debug/Stats.h"
@@ -79,8 +78,7 @@ RenderSystem::RenderSystem()
 
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
-
-	particleEmitterSystem = new ParticleEmitterSystem();
+	
     renderHierarchy = new QuadTree(10);
 	hierarchyInitialized = false;
     globalBatchArray = new RenderPassBatchArray();
@@ -94,8 +92,7 @@ RenderSystem::RenderSystem()
 RenderSystem::~RenderSystem()
 {
     SafeDelete(globalBatchArray);
-    SafeDelete(renderHierarchy);
-	SafeDelete(particleEmitterSystem);
+    SafeDelete(renderHierarchy);	
     
     FastNameMap<RenderPass*>::iterator endPasses = renderPassesMap.end();
     for(FastNameMap<RenderPass*>::iterator it = renderPassesMap.begin(); it != endPasses; ++it)
@@ -161,15 +158,13 @@ void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
 	renderObject->RecalculateWorldBoundingBox();						
 	renderHierarchy->AddRenderObject(renderObject);
-
-	particleEmitterSystem->AddIfEmitter(renderObject);
+	
 	renderObject->SetRenderSystem(this);	
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
 	renderHierarchy->RemoveRenderObject(renderObject);
-    particleEmitterSystem->RemoveIfEmitter(renderObject);
 	renderObject->SetRenderSystem(0);	
 }
 
@@ -325,11 +320,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	{
 		renderHierarchy->Initialize();
 		hierarchyInitialized = true;
-	}
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS))
-	{
-		particleEmitterSystem->Update(timeElapsed, camera);
-	}
+	}		
 	
     int32 objectBoxesUpdated = 0;
     Vector<RenderObject*>::iterator end = markedObjects.end();
