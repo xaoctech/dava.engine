@@ -428,7 +428,7 @@ ScrollHelper* UIScrollView::GetVerticalScroll()
 	return scrollVertical;
 }
 
-float32 UIScrollView::GetHorizontalScrollPosition()
+float32 UIScrollView::GetHorizontalScrollPosition() const
 {
     if (scrollHorizontal)
     {
@@ -438,7 +438,7 @@ float32 UIScrollView::GetHorizontalScrollPosition()
     return 0.0f;
 }
 
-float32 UIScrollView::GetVerticalScrollPosition()
+float32 UIScrollView::GetVerticalScrollPosition() const
 {
     if (scrollVertical)
     {
@@ -448,7 +448,7 @@ float32 UIScrollView::GetVerticalScrollPosition()
     return 0.0f;
 }
 
-Vector2 UIScrollView::GetScrollPosition()
+Vector2 UIScrollView::GetScrollPosition() const
 {
     return Vector2(GetHorizontalScrollPosition(), GetVerticalScrollPosition());
 }
