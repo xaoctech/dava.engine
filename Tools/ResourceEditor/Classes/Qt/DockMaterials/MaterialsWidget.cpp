@@ -209,12 +209,12 @@ void MaterialsWidget::ResetFilter()
 
 void MaterialsWidget::SceneActivated(SceneEditor2 *scene)
 {
-//     curScene = scene;
-//     
-//     materialsModel->SetScene(curScene);
-//     Invalidate();
-//     
-//     SwitchListAndLabel();
+    curScene = scene;
+    
+    materialsModel->SetScene(curScene);
+    Invalidate();
+    
+    SwitchListAndLabel();
 }
 
 void MaterialsWidget::SceneDeactivated(SceneEditor2 *scene)
