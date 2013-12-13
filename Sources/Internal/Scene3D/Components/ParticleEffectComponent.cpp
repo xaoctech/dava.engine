@@ -43,7 +43,10 @@ ParticleEffectComponent::ParticleEffectComponent()
 {
 	repeatsCount = -1;
 	stopWhenEmpty = true;
-	effectDuration = 0.0f;	
+	effectDuration = 0.0f;
+	playbackSpeed = 1.0f;
+	isPaused = false;
+	state = STATE_STOPPED;
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
@@ -64,22 +67,29 @@ void ParticleEffectComponent::Start()
 
 void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 {
-
+	if (isDeleteAllParticles)
+	{
+		//TODO: clear groups and remove component from active
+	}
+	else
+	{
+		state = STATE_STOPPING;
+	}
 }
 
 void ParticleEffectComponent::Pause(bool isPaused /*= true*/)
 {	
-
+	this->isPaused = isPaused;
 }
 
 bool ParticleEffectComponent::IsStopped()
 {
-	return false;
+	return state == STATE_STOPPED;
 }
 
 bool ParticleEffectComponent::IsPaused()
 {
-	return false;
+	return isPaused;
 }
 
 void ParticleEffectComponent::Step(float32 delta)
@@ -112,12 +122,12 @@ void ParticleEffectComponent::SetPlaybackCompleteMessage(const Message & msg)
 
 float32 ParticleEffectComponent::GetPlaybackSpeed()
 {
-	return 1.0f;
+	return playbackSpeed;
 }
 
 void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 {
-
+	playbackSpeed = value;
 }
 
 

@@ -97,6 +97,8 @@ ParticleLayer::ParticleLayer()
 	particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
     
 	isLooped = false;	
+	
+	isDisabled = false;
 
 	activeLODS.resize(4, true);
 }
@@ -205,6 +207,8 @@ ParticleLayer * ParticleLayer::Clone()
 	dstLayer->loopVariation = loopVariation;
 	dstLayer->loopEndTime = loopEndTime;
 	
+	dstLayer->isDisabled = isDisabled;
+
 	dstLayer->type = type;
 	SafeRelease(dstLayer->sprite);
 	dstLayer->sprite = SafeRetain(sprite);

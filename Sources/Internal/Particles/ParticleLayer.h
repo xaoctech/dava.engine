@@ -114,6 +114,8 @@ struct ParticleLayer : public BaseObject
 	bool enableFog;
 	bool enableFrameBlend;
 	bool inheritPosition;  //for super emitter - if true the whole emitter would be moved, otherwise just emission point	
+	
+	bool isDisabled;	
 
 	
 	Vector<bool> activeLODS;		
