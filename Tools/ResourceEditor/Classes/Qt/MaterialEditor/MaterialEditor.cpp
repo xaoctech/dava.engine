@@ -40,12 +40,6 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
 
-	treeModel = new MaterialModel();
-	treeFilteringModel = new MaterialFilteringModel(treeModel);
-
-	ui->materialTree->setModel(treeFilteringModel);
-	ui->materialTree->setSortingEnabled(true);
-
 	// global scene manager signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
@@ -54,41 +48,45 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// ui signals
 	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
 
+	ui->materialTree->setDragEnabled(true);
+	ui->materialTree->setAcceptDrops(true);
+	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
+
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
+	posSaver.LoadState(ui->splitter_2);
 }
 
 MaterialEditor::~MaterialEditor()
 { 
 	posSaver.SaveState(ui->splitter);
+	posSaver.SaveState(ui->splitter_2);
 }
 
 void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 {
-	treeModel->SetScene(scene);
-	ui->materialTree->sortByColumn(0, Qt::AscendingOrder);
-	ui->materialTree->expandToDepth(0);
+	if(isVisible())
+	{
+		ui->materialTree->SetScene(scene);
+		ui->materialTree->sortByColumn(0, Qt::AscendingOrder);
+		ui->materialTree->expandToDepth(0);
+	}
 }
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
-{
-
-}
+{ }
 
 void MaterialEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
-{
-
-}
+{ }
 
 void MaterialEditor::materialClicked(const QModelIndex &index)
 {
 	ui->materialProperty->RemovePropertyAll();
 
-	DAVA::NMaterial *material = treeModel->GetMaterial(treeFilteringModel->mapToSource(index));
+	DAVA::NMaterial *material = ui->materialTree->GetMaterial(index);
 	if(NULL != material)
 	{
 		const DAVA::InspInfo *info = material->GetTypeInfo();
-
 		QtPropertyDataIntrospection *inspData = new QtPropertyDataIntrospection(material, info);
 
 		while(0 != inspData->ChildCount())

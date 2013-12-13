@@ -26,40 +26,32 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __MATERIAL_EDITOR_H__
-#define __MATERIAL_EDITOR_H__
+#include "MaterialTree.h"
 
-#include <QDialog>
-#include "DAVAEngine.h"
+MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
+: QTreeView(parent)
+{ 
+	treeModel = new MaterialModel();
+	treeFilteringModel = new MaterialFilteringModel(treeModel);
 
-#include "MaterialModel.h"
-#include "Scene/SceneSignals.h"
-#include "Tools/QtPosSaver/QtPosSaver.h"
-
-namespace Ui {
-	class MaterialEditor;
+	setModel(treeFilteringModel);
+	setSortingEnabled(true);
 }
 
-class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
+MaterialTree::~MaterialTree()
+{}
+
+void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 {
-	Q_OBJECT
+	treeModel->SetScene(sceneEditor);
+}
 
-public:
-	MaterialEditor(QWidget *parent = 0);
-	~MaterialEditor();
+DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
+{
+	return treeModel->GetMaterial(treeFilteringModel->mapToSource(index));
+}
 
-public slots:
-	void sceneActivated(SceneEditor2 *scene);
-	void sceneDeactivated(SceneEditor2 *scene);
-	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-	void materialClicked(const QModelIndex &index);
+void MaterialTree::ShowContextMenu(const QPoint &pos)
+{
 
-protected:
-	virtual void showEvent(QShowEvent * event);
-
-private:
-	Ui::MaterialEditor *ui;
-	QtPosSaver posSaver;
-};
-
-#endif
+}

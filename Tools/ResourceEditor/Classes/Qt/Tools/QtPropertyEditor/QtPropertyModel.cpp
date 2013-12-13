@@ -183,6 +183,12 @@ Qt::ItemFlags QtPropertyModel::flags(const QModelIndex & index) const
 	return ret;
 }
 
+QtPropertyData* QtPropertyModel::rootItem() const
+{
+	return root;
+}
+
+
 QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 {
 	QtPropertyData *ret = NULL;
