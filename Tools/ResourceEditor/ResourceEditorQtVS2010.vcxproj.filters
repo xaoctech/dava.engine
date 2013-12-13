@@ -1821,6 +1821,12 @@
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleWidget.cpp">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialTree.cpp">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialTree_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3224,6 +3230,9 @@
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleWidget.h">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTree.h">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
@@ -3260,6 +3269,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\treeimportdialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\materialeditor.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

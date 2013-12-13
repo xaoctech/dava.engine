@@ -55,6 +55,7 @@ public:
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
+	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 };
 
 class MaterialFilteringModel : public QSortFilterProxyModel
@@ -64,7 +65,6 @@ public:
 
 protected:
 	MaterialModel *materialModel;
-
 	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 };
 
