@@ -95,7 +95,7 @@ void MaterialsWidget::SetupToolbar()
     actionViewAsTiles->setCheckable(true);
     actionViewAsTiles->setChecked(false);
 
-    QObject::connect(searchFilter, SIGNAL(editingFinished()), this, SLOT(SetFilter()));
+    QObject::connect(searchFilter, SIGNAL(textChanged(const QString &)), this, SLOT(SetFilter(const QString &)));
     QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
     QObject::connect(actionViewAsTiles, SIGNAL(triggered()), this, SLOT(ViewAsTiles()));
@@ -182,31 +182,30 @@ void MaterialsWidget::ShowContextMenu(const QPoint & point)
     QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEdit()));
     actionEdit->setData(materialAsVariant);
 
-    QAction * actionAssign = contextMenu.addAction("Assign to Selecton", this, SLOT(OnAssignToSelection()));
+    QAction * actionAssign = contextMenu.addAction("Assign to Selection", this, SLOT(OnAssignToSelection()));
     actionAssign->setData(materialAsVariant);
 
     contextMenu.exec(materialsView->mapToGlobal(point));
 }
 
-void MaterialsWidget::SetFilter()
+void MaterialsWidget::SetFilter(const QString &filter)
 {
-    QString filter = searchFilter->text();
-    
-    bool b = proxyModel->blockSignals(true);
-    proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-    proxyModel->blockSignals(b);
+	bool b = proxyModel->blockSignals(true);
+	proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+	proxyModel->blockSignals(b);
 
-    Invalidate();
+	Invalidate();
 
-    SwitchListAndLabel();
+	SwitchListAndLabel();
 }
+
 
 void MaterialsWidget::ResetFilter()
 {
 	if(searchFilter->text().isEmpty()) return;
 
     searchFilter->setText("");
-    SetFilter();
+    SetFilter("");
 }
 
 void MaterialsWidget::SceneActivated(SceneEditor2 *scene)
