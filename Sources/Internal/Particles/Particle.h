@@ -55,6 +55,7 @@ struct Particle
 	int32	frame;
 	float32 animTime;	
 
+	float currRadius; //for bbox computation
 	Vector2 baseSize, currSize;
 
 

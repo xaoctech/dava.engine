@@ -123,7 +123,13 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 
 void ParticleEffectComponent::SetDesiredLodLevel(int32 level)
 {
-
+	desiredLodLevel = level;
+	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
+	{
+		ParticleGroup& group = *it;
+		if (!group.emitter->shortEffect)
+			group.visibleLod = group.layer->IsLodActive(level);
+	}
 }
 
 

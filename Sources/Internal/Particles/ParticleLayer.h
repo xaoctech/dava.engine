@@ -103,9 +103,11 @@ struct ParticleLayer : public BaseObject
 	
 	Sprite 			* sprite;
 	void SetSprite(Sprite * sprite);
+	Vector2		layerPivotPoint;
+	Vector2		layerPivotSizeOffsets; //precached for faster bbox computation
+	void SetPivotPoint(Vector2 pivot);
 
-	FilePath		spritePath;	
-	
+	FilePath		spritePath;		
 	bool isLooped;
 	bool isLong;
 	eBlendMode srcBlendFactor, dstBlendFactor;
@@ -113,7 +115,7 @@ struct ParticleLayer : public BaseObject
 	bool enableFrameBlend;
 	bool inheritPosition;  //for super emitter - if true the whole emitter would be moved, otherwise just emission point	
 
-	Vector2		layerPivotPoint;
+	
 	Vector<bool> activeLODS;		
 
 	String			layerName;

@@ -126,7 +126,7 @@ private:
 		
 	ParticleEffectData effectData;
 	ParticleRenderObject *effectRenderObject;
-	int32 currLodLevel;
+	int32 desiredLodLevel;
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,

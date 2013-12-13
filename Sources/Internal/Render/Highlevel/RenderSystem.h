@@ -149,9 +149,7 @@ private:
     
     //HashMap<Entity*, RenderObject *> entityObjectMap;
     Camera * camera;
-    //Vector<RenderObject*> forRemove;
-    
-	ParticleEmitterSystem * particleEmitterSystem;
+    //Vector<RenderObject*> forRemove;    	
 	
 	MaterialSystem* materialSystem;
     

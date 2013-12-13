@@ -209,6 +209,7 @@ ParticleLayer * ParticleLayer::Clone()
 	SafeRelease(dstLayer->sprite);
 	dstLayer->sprite = SafeRetain(sprite);
 	dstLayer->layerPivotPoint = layerPivotPoint;	
+	dstLayer->layerPivotSizeOffsets = layerPivotSizeOffsets;
 
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
@@ -334,8 +335,13 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 		spritePath = sprite->GetRelativePathname();
 	}
 }
-	
 
+void ParticleLayer::SetPivotPoint(Vector2 pivot)
+{
+	layerPivotPoint = pivot;
+	layerPivotSizeOffsets = Vector2(1+fabs(layerPivotPoint.x), 1+fabs(layerPivotPoint.y));
+	layerPivotSizeOffsets*=0.5f;
+}
 
 
 void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
@@ -356,7 +362,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	const YamlNode * pivotPointNode = node->Get("pivotPoint");
 	if(pivotPointNode)
 	{
-		layerPivotPoint = pivotPointNode->AsPoint();
+		SetPivotPoint(pivotPointNode->AsPoint());		
 	}
 
 	const YamlNode * spriteNode = node->Get("sprite");

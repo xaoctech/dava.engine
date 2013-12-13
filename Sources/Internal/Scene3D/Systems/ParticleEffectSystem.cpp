@@ -82,6 +82,8 @@ ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)
 
 void ParticleEffectSystem::Process()
 {    
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS)) 
+		return;
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	
 	/*shortEffectTime*/
@@ -123,6 +125,8 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 {
 	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();
 	
+
+	AABBox3 bbox;
 	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;++it)
 	{
 		ParticleGroup &group = *it;
@@ -193,7 +197,14 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				}
 				current->speed+=acceleration*dt;
 			}		
-
+			
+			if (group.layer->sizeOverLifeXY)
+			{
+				current->currSize=current->baseSize*group.layer->sizeOverLifeXY->GetValue(current->life);
+				Vector2 pivotSize = current->currSize*group.layer->layerPivotSizeOffsets;
+				current->currRadius = pivotSize.Length();
+			}
+			AddParticleToBBox(current, bbox);
 			
 			//TODO update inner emitter here - rethink it						
 			
@@ -216,13 +227,16 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 		bool allowParticleGeneration = !group.finishingGroup;
 		if (group.layer->isLooped)
 			allowParticleGeneration&=currLoopTime<group.loopDuration;
-		//TODO: add LoD criteria here
+		allowParticleGeneration&=group.visibleLod;
 		if (allowParticleGeneration)
 		{
 			if (group.layer->type == ParticleLayer::TYPE_SINGLE_PARTICLE)
 			{
-				if (!group.head)				
-					GenerateNewParticle(group, currLoopTime, worldTransform);
+				if (!group.head)
+				{
+					current = GenerateNewParticle(group, currLoopTime, worldTransform);																
+					AddParticleToBBox(current, bbox);
+				}
 			}else
 			{
 				float32 newParticles = 0.0f;
@@ -237,7 +251,8 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				while(group.particlesToGenerate >= 1.0f)
 				{
 					group.particlesToGenerate -= 1.0f;					
-					GenerateNewParticle(group, currLoopTime, worldTransform);					
+					current = GenerateNewParticle(group, currLoopTime, worldTransform);																
+					AddParticleToBBox(current, bbox);
 				}
 			}
 			
@@ -249,10 +264,23 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 		else
 			++it;
 	}
+	if (bbox.IsEmpty())
+	{
+		Vector3 pos = worldTransform.GetTranslationVector();
+		bbox = AABBox3(pos, pos);
+	}
+	effect->effectRenderObject->SetAABBox(bbox);
+}
+
+void ParticleEffectSystem::AddParticleToBBox(Particle *particle, AABBox3& bbox)
+{	
+	Vector3 sz = Vector3(particle->currRadius, particle->currRadius, particle->currRadius);			
+	bbox.AddPoint(particle->position-sz);
+	bbox.AddPoint(particle->position+sz);
 }
 
 
-void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform)
+Particle* ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform)
 {
 	Particle *particle = new Particle();		
 	particle->life = 0.0f;	
@@ -282,6 +310,8 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 	particle->currSize = particle->baseSize;
 	if (group.layer->sizeOverLifeXY)
 		particle->currSize*=group.layer->sizeOverLifeXY->GetValue(0);
+	Vector2 pivotSize = particle->currSize*group.layer->layerPivotSizeOffsets;
+	particle->currRadius = pivotSize.Length();
 
 
 	//TODO: superemitter stuff - rethink later
@@ -332,6 +362,7 @@ void ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 cur
 	particle->next = group.head;
 	group.head = particle;	
 	group.activeParticleCount++;
+	return particle;
 }
 
 void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform)
