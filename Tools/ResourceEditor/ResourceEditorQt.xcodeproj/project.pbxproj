@@ -539,6 +539,8 @@
 		E8C9934D184CD0EC00AFBF3F /* ToolButtonWithWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991E4184CD0EC00AFBF3F /* ToolButtonWithWidget.cpp */; };
 		E8C9934E184CD0EC00AFBF3F /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991E7184CD0EC00AFBF3F /* SpritesPacker.cpp */; };
 		E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */; };
+		E8DF2BF7185B5C180087ABFB /* MaterialTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DF2BF5185B5C180087ABFB /* MaterialTree.cpp */; };
+		E8DF2C00185B605C0087ABFB /* MaterialTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DF2BFF185B605C0087ABFB /* MaterialTree_moc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1600,6 +1602,9 @@
 		E8C991E9184CD0EC00AFBF3F /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
 		E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
 		E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
+		E8DF2BF5185B5C180087ABFB /* MaterialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree.cpp; sourceTree = "<group>"; };
+		E8DF2BF6185B5C180087ABFB /* MaterialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTree.h; sourceTree = "<group>"; };
+		E8DF2BFF185B605C0087ABFB /* MaterialTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree_moc.cpp; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1727,6 +1732,8 @@
 				E8BAD5D01859F48600C98C8D /* MaterialItem.h */,
 				E8BAD5D11859F48600C98C8D /* MaterialModel.cpp */,
 				E8BAD5D21859F48600C98C8D /* MaterialModel.h */,
+				E8DF2BF5185B5C180087ABFB /* MaterialTree.cpp */,
+				E8DF2BF6185B5C180087ABFB /* MaterialTree.h */,
 			);
 			path = MaterialEditor;
 			sourceTree = "<group>";
@@ -1875,6 +1882,7 @@
 		E8BAD6161859F50200C98C8D /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E8DF2BFF185B605C0087ABFB /* MaterialTree_moc.cpp */,
 				E8BAD6171859F50200C98C8D /* MaterialAssignSystem_moc.cpp */,
 				E8BAD6181859F50200C98C8D /* MaterialEditor_moc.cpp */,
 				E8BAD6191859F50200C98C8D /* MaterialItem_moc.cpp */,
@@ -3957,6 +3965,7 @@
 				E8C9925B184CD0EC00AFBF3F /* btAlignedAllocator.cpp in Build Sources */,
 				E8C99334184CD0EC00AFBF3F /* QtPosSaver.cpp in Build Sources */,
 				E8C99256184CD0EC00AFBF3F /* btRigidBody.cpp in Build Sources */,
+				E8DF2BF7185B5C180087ABFB /* MaterialTree.cpp in Build Sources */,
 				E8C992A1184CD0EC00AFBF3F /* CameraController.cpp in Build Sources */,
 				E8BAD7241859F50300C98C8D /* LabeledSlider_moc.cpp in Build Sources */,
 				E8C99237184CD0EC00AFBF3F /* btTriangleShapeEx.cpp in Build Sources */,
@@ -4003,6 +4012,7 @@
 				E8C992C0184CD0EC00AFBF3F /* VisibilityToolPanel.cpp in Build Sources */,
 				E8C99343184CD0EC00AFBF3F /* QtWaitDialog.cpp in Build Sources */,
 				E8C99211184CD0EC00AFBF3F /* btCollisionShape.cpp in Build Sources */,
+				E8DF2C00185B605C0087ABFB /* MaterialTree_moc.cpp in Build Sources */,
 				E8C9928B184CD0EC00AFBF3F /* EntityAddCommand.cpp in Build Sources */,
 				E8C99294184CD0EC00AFBF3F /* MaterialSwitchParentCommand.cpp in Build Sources */,
 				E8C99207184CD0EC00AFBF3F /* btSimulationIslandManager.cpp in Build Sources */,
