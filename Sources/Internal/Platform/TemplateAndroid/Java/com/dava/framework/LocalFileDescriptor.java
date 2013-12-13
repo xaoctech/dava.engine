@@ -46,7 +46,7 @@ public class LocalFileDescriptor {
 	}
 	
 	public static boolean IsFile(String path) {
-		if (IsLocal(path)) {
+		/*if (IsLocal(path)) {
 			File file = new File(path);
 			return file.isFile();
 		} else {
@@ -58,12 +58,12 @@ public class LocalFileDescriptor {
 			} catch (IOException e) {
 				return false;
 			}
-		}
+		}*/
 		return false;
 	}
 	
 	public static boolean IsDirectory(String path) {
-		if (path.isEmpty())
+		/*if (path.isEmpty())
 			return false;
 		
 		if (IsLocal(path)) {
@@ -91,7 +91,7 @@ public class LocalFileDescriptor {
 				}
 			} catch (IOException e) {
 			}
-		}
+		}*/
 		return false;
 	}
 	
