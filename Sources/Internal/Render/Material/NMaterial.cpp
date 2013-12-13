@@ -1379,6 +1379,11 @@ namespace DAVA
 		//Logger::FrameworkDebug("Serialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DVASSERT(materialState.parentName.IsValid());
+		DVASSERT(materialState.materialName.IsValid());
+		
+		DVASSERT(materialState.parentName != FastName(""));
+		DVASSERT(materialState.materialName != FastName(""));
+		
 		archive->SetString("parentName", (materialState.parentName.IsValid()) ? materialState.parentName.c_str() : "");
 		archive->SetString("materialName", materialState.materialName.c_str());
 		
@@ -1463,9 +1468,13 @@ namespace DAVA
 								SerializationContext * serializationContext)
 	{
 		materialState.parentName = FastName(archive->GetString("parentName"));
-		DVASSERT(materialState.parentName.IsValid());
 		materialState.materialName = FastName(archive->GetString("materialName"));
 		
+		DVASSERT(materialState.parentName.IsValid());
+		DVASSERT(materialState.materialName.IsValid());
+		DVASSERT(materialState.parentName != FastName(""));
+		DVASSERT(materialState.materialName != FastName(""));
+
 		//Logger::FrameworkDebug("Deserialize: %s - %s", materialName.c_str(), materialState.parentName.c_str());
 		
 		DeserializeFastNameSet(archive->GetArchive("layers"), materialState.layers);
@@ -1696,6 +1705,13 @@ namespace DAVA
     void NMaterial::SetMaterialName(const String& name)
     {
         NMaterialState::SetMaterialName(name);
+		
+		HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
+		while(stateIter != states.end())
+		{
+			stateIter->second->SetMaterialName(name);
+			++stateIter;
+		}
     }
 	
 	uint32 NMaterial::GetStateCount() const
