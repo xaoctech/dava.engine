@@ -64,8 +64,8 @@ protected slots:
     
 	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void ShowContextMenu(const QPoint & point);
-    
-    void SetFilter();
+
+	void SetFilter(const QString &filter);
     void ResetFilter();
     
     void OnEdit();
