@@ -53,7 +53,6 @@ OcclusionQuery::~OcclusionQuery()
 
 void OcclusionQuery::BeginQuery()
 {
-    queryActive = true;
 // Temporarly written, should be refactored and moved to RenderBase.h defines
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glBeginQuery(GL_SAMPLES_PASSED, id));
@@ -72,15 +71,8 @@ void OcclusionQuery::EndQuery()
 #endif
 }
     
-void OcclusionQuery::ResetResult()
-{
-    queryActive = false;
-}
-
-    
 bool OcclusionQuery::IsResultAvailable()
 {
-    if (!queryActive)return false;
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     GLint available;
     RENDER_VERIFY(glGetQueryObjectiv(id,
@@ -104,6 +96,55 @@ void OcclusionQuery::GetQuery(uint32 * resultValue)
     RENDER_VERIFY(glGetQueryObjectuivEXT(id, GL_QUERY_RESULT_EXT, resultValue));
 #endif
 }
+    
+    
+OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
+{
+    nextFree = 0;
+    occlusionQueryCount = _occlusionQueryCount;
+    queries.resize(occlusionQueryCount);
+    for (uint32 k = 0; k < size; ++k)
+    {
+        queries[k].next = (k == size - 1) ? (INVALID_INDEX) : (k + 1);
+        queries[k].salt = 0;
+    }
+}
+    
+OcclusionQueryManager::~OcclusionQueryManager()
+{
+    queries.clear();
+}
+
+OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
+{
+    if (nextFree == INVALID_INDEX)
+    {
+        uint32 oldOcclusionQuerySize = occlusionQuerySize;
+        queries.resize(occlusionQuerySize + 100);
+        occlusionQuerySize += 100;
+        
+        for (uint32 k = occlusionQuerySize - 1; k >= oldOcclusionQuerySize; --k)
+        {
+            queries[k].next = nextFree;
+            nextFree = k;
+        }
+    }else
+    {
+        SmartHandle handle;
+        handle.index = nextFree;
+        handle.salt = ++queries[nextFree].salt;
+        nextFree = queries[nextFree].next;
+        return nextFree;
+    }
+}
+    
+void OcclusionQueryManager::ReleaseQueryObject(OcclusionQueryManagerHandle handle)
+{
+    DVASSERT(handle.salt == queries[handle.index].salt);
+    
+    
+}
+
     
 #endif //#if defined(__DAVA_USE_OCCLUSION_QUERY__)
     

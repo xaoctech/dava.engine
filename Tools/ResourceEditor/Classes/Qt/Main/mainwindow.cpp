@@ -620,6 +620,10 @@ void QtMainWindow::SetupActions()
 	ui->menuScene->removeAction(ui->menuBeast->menuAction());
 #endif //#if defined(__DAVAENGINE_BEAST__)
 
+    
+    QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
+
+    
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
 
@@ -635,7 +639,9 @@ void QtMainWindow::SetupActions()
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
-
+	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
+    
+    
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
@@ -2003,12 +2009,43 @@ void QtMainWindow::OnAddActionComponent()
 
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ActionComponent()));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::ACTION_COMPONENT)));
 		}
 
 		scene->EndBatch();
 	}
 }
+
+void QtMainWindow::OnAddStaticOcclusionComponent()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+	
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
+	{
+		scene->BeginBatch("Add Static Occlusion Component");
+        
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+		{
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
+		}
+		scene->EndBatch();
+	}
+}
+
+void QtMainWindow::OnBuildStaticOcclusion()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    
+    scene->staticOcclusionBuildSystem->BuildOcclusionInformation();
+}
+
+
+
+
 
 bool QtMainWindow::IsSavingAllowed()
 {

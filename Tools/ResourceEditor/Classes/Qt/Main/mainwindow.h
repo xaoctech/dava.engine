@@ -150,6 +150,8 @@ public slots:
 
 	void OnBeast();
 	void OnBeastAndSave();
+    
+    void OnBuildStaticOcclusion();
 
 	void OnConvertToShadow();
 
@@ -168,6 +170,7 @@ public slots:
 	void OnNotPassableTerrain();
 	
 	void OnAddActionComponent();
+    void OnAddStaticOcclusionComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);

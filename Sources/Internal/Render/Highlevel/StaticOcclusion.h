@@ -25,98 +25,72 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef __DAVAENGINE_OCCLUSION_QUERY__
-#define __DAVAENGINE_OCCLUSION_QUERY__
+#ifndef __DAVAENGINE_STATIC_OCCLUSION__
+#define __DAVAENGINE_STATIC_OCCLUSION__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Render/Texture.h"
-	
+#include "Render/OcclusionQuery.h"
+
 namespace DAVA
 {
-
-class OcclusionQuery
+class Camera;
+class StaticOcclusionRenderPass;
+class RenderObject;
+class RenderHierarchy;
+class RenderPassBatchArray;
+class OcclusionQueryManager;
+class RenderBatch;
+    
+class StaticOcclusion
 {
 public:
-    OcclusionQuery();
-    ~OcclusionQuery();
+    StaticOcclusion();
+    ~StaticOcclusion();
     
-    enum eQueryResult
-    {
-        WAIT = 0,
-        RESULT = 1,
-    };
+    void BuildOcclusionInParallel(const AABBox3 & occlusionAreaRect, uint32 xBlockCount, uint32 yBlockCount, uint32 zBlockCount,
+                                  Vector<RenderObject*> & renderObjectArray,
+                                  RenderHierarchy * renderHierarchy);
+    //uint32 CameraToCellIndex(Camera * camera);
+    inline OcclusionQueryManager & GetOcclusionQueryManager();
+    uint32 * GetCellVisibilityData(Camera * camera);
+    uint32 RenderFrame();
     
-    void BeginQuery();
-    void EndQuery();
-
-    bool IsResultAvailable();
-    void GetQuery(uint32 * resultValue);
-
-private:
-    GLuint id;
-};
-
-template<uint32 N, uint32 M>
-class SmartHandle
-{
-public:
-    inline SmartHandle() {}
-    inline SmartHandle(uint32 _index, uint32 _salt)
-    : index(_index)
-    , salt(_salt)
-    {
-    }
-    uint32 index: N;
-    uint32 salt: M;
-};
-    
-typedef SmartHandle<16, 16> OcclusionQueryManagerHandle;
-    
-class OcclusionQueryManager
-{
-public:
-    static const uint32 INVALID_INDEX = 0xFFFF;
-    
-    OcclusionQueryManager(uint32 occlusionQueryCount);
-    ~OcclusionQueryManager();
-    
-    OcclusionQueryManagerHandle CreateQueryObject();
-    OcclusionQuery & Get(OcclusionQueryManagerHandle handle);
-    void ReleaseQueryObject(OcclusionQueryManagerHandle handle);
+    void RecordFrameQuery(RenderBatch * batch, OcclusionQueryManagerHandle handle);
     
 private:
-    uint32 occlusionQueryCount;
-    uint32 nextFree;
-    struct OcclusionQueryItem
-    {
-        OcclusionQuery query;
-        uint32 next;
-        uint32 salt;
-    };
-    Vector<OcclusionQueryItem> queries;
+    AABBox3 GetCellBox(uint32 x, uint32 y, uint32 z);
+    
+    Vector<RenderObject*> renderObjectArray;
+    RenderHierarchy * renderHierarchy;
+    RenderPassBatchArray * renderPassBatchArray;
+    OcclusionQueryManager manager;
+    Vector<std::pair<RenderBatch*, OcclusionQueryManagerHandle> > recordedBatches;
+    Map<RenderObject*, uint32> frameLocalOccludedInfo;
+    Map<RenderObject*, uint32> frameGlobalOccludedInfo;
+    
+    AABBox3  occlusionAreaRect;
+    uint32 xBlockCount;
+    uint32 yBlockCount;
+    uint32 zBlockCount;
+    uint32 objectCount;
+    uint32 currentFrameX;
+    uint32 currentFrameY;
+    uint32 currentFrameZ;
+    Camera * cameras[6];
+    StaticOcclusionRenderPass * staticOcclusionRenderPass;
+    
+    uint32 * visibilityData;
 };
     
-inline OcclusionQuery & OcclusionQueryManager::Get(OcclusionQueryManagerHandle handle)
+inline OcclusionQueryManager & StaticOcclusion::GetOcclusionQueryManager()
 {
-    return queries[handle.index].query;
+    return manager;
 }
-
     
-/*
-    id queryId = occlusionQuery->CreateQueryObject();
-    occlusionQuery->BeginQuery(queryID);
-    
-    occlusionQuery->EndQuery(queryID);
- 
-    occlusionQuery->GetQuery(
- 
- */
-    
-
-
 };
 
-#endif //__DAVAENGINE_OCCLUSION_QUERY__
+#endif //__DAVAENGINE_STATIC_OCCLUSION__

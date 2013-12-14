@@ -25,41 +25,51 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-#ifndef __DAVAENGINE_SCENE3D_RENDERLAYER_H__
-#define	__DAVAENGINE_SCENE3D_RENDERLAYER_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Components/StaticOcclusionComponent.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
 
-class RenderLayerBatchArray;
-class Camera;
-    
-class RenderLayer
+REGISTER_CLASS(StaticOcclusionComponent)
+
+
+StaticOcclusionComponent::StaticOcclusionComponent()
 {
-public:
-    RenderLayer(const FastName & name);
-    virtual ~RenderLayer();
-    
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
-    
-	const FastName & GetName();
-protected:
-    FastName name;
-    uint32 flags;
-public:
-    INTROSPECTION(RenderLayer,
-        MEMBER(name, "Name", I_VIEW )
-        //COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
-    );
-};
-    
-} // ns
+    xSubdivisions = 1;
+    ySubdivisions = 1;
+    zSubdivisions = 1;
+    boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(5.0f, 5.0f, 5.0f));
+}
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
+Component * StaticOcclusionComponent::Clone(Entity * toEntity)
+{
+	StaticOcclusionComponent * newComponent = new StaticOcclusionComponent();
+	newComponent->SetEntity(toEntity);
+	return newComponent;
+}
 
+void StaticOcclusionComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+
+	if(NULL != archive)
+	{
+//		archive->SetInt32("sc.switchindex", newSwitchIndex);
+	}
+}
+
+void StaticOcclusionComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	if(NULL != archive)
+	{
+//		SetSwitchIndex(archive->GetInt32("sc.switchindex"));
+	}
+
+	Component::Deserialize(archive, serializationContext);
+}
+
+
+}

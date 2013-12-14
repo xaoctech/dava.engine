@@ -323,6 +323,7 @@
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
     <addaction name="actionAddActionComponent"/>
+    <addaction name="actionAddStaticOcclusionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -386,6 +387,8 @@
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="actionSkyboxEditor"/>
+    <addaction name="separator"/>
+    <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="separator"/>
     <addaction name="menuBeast"/>
     <addaction name="separator"/>
@@ -1646,6 +1649,16 @@
    </property>
    <property name="toolTip">
     <string>Collapse all.</string>
+   </property>
+  </action>
+  <action name="actionAddStaticOcclusionComponent">
+   <property name="text">
+    <string>Add Static Occlusion Component</string>
+   </property>
+  </action>
+  <action name="actionBuildStaticOcclusion">
+   <property name="text">
+    <string>Build Static Occlusion</string>
    </property>
   </action>
  </widget>
