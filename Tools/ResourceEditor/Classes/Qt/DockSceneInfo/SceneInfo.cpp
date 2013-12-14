@@ -62,6 +62,8 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, curModel)
 	, isUpToDate(false)
 {
+    SetEditTracking(true);
+    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
@@ -282,25 +284,24 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
     if(scene)
     {
         scene->GetChildNodes(nodesAtScene);
-        scene->GetDataNodes(materialsAtScene);
 		//VI: remove skybox materials so they not to appear in the lists
 		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        CollectSceneTextures();
+        SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+        sceneTexturesSize = CalculateTextureSize(sceneTextures);
+
         CollectParticlesData();
+        particleTexturesSize = CalculateTextureSize(particleTextures);
         
         CollectLODDataInFrame();
         CollectLODDataForSelection();
         
-        sceneTexturesSize = CalculateTextureSize(sceneTextures);
-        particleTexturesSize = CalculateTextureSize(particleTextures);
     }
 }
 
 void SceneInfo::ClearData()
 {
     nodesAtScene.clear();
-    materialsAtScene.clear();
     sceneTextures.clear();
     particleTextures.clear();
     
@@ -317,14 +318,6 @@ void SceneInfo::ClearData()
 void SceneInfo::ClearSelectionData()
 {
     lodInfoSelection.Clear();
-}
-
-void SceneInfo::CollectSceneTextures()
-{
-    for(int32 n = 0; n < (int32)nodesAtScene.size(); ++n)
-    {
-		SceneHelper::EnumerateTextures(nodesAtScene[n], sceneTextures);
-    }
 }
 
 void SceneInfo::CollectParticlesData()
@@ -590,4 +583,24 @@ void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
     ClearSelectionData();
     CollectLODDataForSelection();
     RefreshLODInfoForSelection();
+}
+
+void SceneInfo::TexturesReloaded()
+{
+    sceneTextures.clear();
+    SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+    sceneTexturesSize = CalculateTextureSize(sceneTextures);
+    
+    RefreshSceneGeneralInfo();
+}
+
+void SceneInfo::SpritesReloaded()
+{
+    particleTextures.clear();
+
+    CollectParticlesData();
+    particleTexturesSize = CalculateTextureSize(particleTextures);
+    
+    RefreshSceneGeneralInfo();
+    RefreshParticlesInfo();
 }

@@ -81,6 +81,9 @@ public:
 
 signals:
     void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
     
 // qt actions slots
 public slots:
