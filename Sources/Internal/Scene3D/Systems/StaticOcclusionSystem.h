@@ -25,41 +25,38 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-#ifndef __DAVAENGINE_SCENE3D_RENDERLAYER_H__
-#define	__DAVAENGINE_SCENE3D_RENDERLAYER_H__
+#ifndef __DAVAENGINE_SCENE3D_STATIC_OCCLUSION_SYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_STATIC_OCCLUSION_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
 
-class RenderLayerBatchArray;
-class Camera;
-    
-class RenderLayer
+// System that allow to build occlusion information
+class StaticOcclusionBuildSystem : public SceneSystem
 {
 public:
-    RenderLayer(const FastName & name);
-    virtual ~RenderLayer();
+    StaticOcclusionBuildSystem(Scene * scene);
+    virtual ~StaticOcclusionBuildSystem();
     
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
-    
-	const FastName & GetName();
-protected:
-    FastName name;
-    uint32 flags;
-public:
-    INTROSPECTION(RenderLayer,
-        MEMBER(name, "Name", I_VIEW )
-        //COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
-    );
+    void AddE
+    void BakeOcclusionInformation();
+    void Process();
 };
     
+// System that allow to use occlusion information during rendering
+class StaticOcclusionSystem : public SceneSystem
+{
+public:
+    StaticOcclusionSystem(Scene * scene);
+    virtual ~StaticOcclusionSystem();
+    
+    void Process();
+};
+
 } // ns
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
+#endif	/* __DAVAENGINE_SCENE3D_STATIC_OCCLUSION_SYSTEM_H__ */
 

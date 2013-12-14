@@ -102,6 +102,7 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 		DrawLightNode(entity);
 		DrawSoundNode(entity);
 		DrawHangingObjects(entity);
+        DrawStaticOcclusionComponent(entity);
 
 		for(int32 i = 0; i < entity->GetChildrenCount(); ++i)
 		{
@@ -144,6 +145,37 @@ void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0, 0.7f, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, delta));
 
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	}
+}
+
+
+void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
+{
+    StaticOcclusionComponent * staticOcclusionComponent = 0;
+	if((staticOcclusionComponent = (StaticOcclusionComponent*)entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT)) != 0)
+	{
+		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+		Matrix4 finalMatrix = entity->GetWorldTransform() * prevMatrix;
+        
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+        
+		AABBox3 worldBox = staticOcclusionComponent->GetBoundingBox();
+		DAVA::float32 delta = worldBox.GetSize().Length() / 4;
+        
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.5f, 1.0f, 0.3f));
+		DAVA::RenderHelper::Instance()->FillBox(worldBox);
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.2f, 0.8f, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+        
+		// axises
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(delta, 0, 0));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.7f, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, delta, 0));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0, 0.7f, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, delta));
+        
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 }

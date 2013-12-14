@@ -25,41 +25,51 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-#ifndef __DAVAENGINE_SCENE3D_RENDERLAYER_H__
-#define	__DAVAENGINE_SCENE3D_RENDERLAYER_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
-
-class RenderLayerBatchArray;
-class Camera;
-    
-class RenderLayer
+StaticOcclusionBuildSystem::StaticOcclusionBuildSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-public:
-    RenderLayer(const FastName & name);
-    virtual ~RenderLayer();
     
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
+}
+
+StaticOcclusionBuildSystem::~StaticOcclusionBuildSystem()
+{
+}
+
     
-	const FastName & GetName();
-protected:
-    FastName name;
-    uint32 flags;
-public:
-    INTROSPECTION(RenderLayer,
-        MEMBER(name, "Name", I_VIEW )
-        //COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
-    );
+void StaticOcclusionBuildSystem::BakeOcclusionInformation()
+{
+    
+}
+    
+void StaticOcclusionBuildSystem::Process()
+{
+    
+}
+
+    
+StaticOcclusionSystem::StaticOcclusionSystem(Scene * scene)
+:	SceneSystem(scene)
+{
+}
+
+StaticOcclusionSystem::~StaticOcclusionSystem()
+{
+}
+
+void StaticOcclusionSystem::Process()
+{
+    
+}
+    
 };
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
-

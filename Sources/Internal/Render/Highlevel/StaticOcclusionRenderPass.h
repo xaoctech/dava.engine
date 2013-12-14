@@ -25,98 +25,42 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef __DAVAENGINE_OCCLUSION_QUERY__
-#define __DAVAENGINE_OCCLUSION_QUERY__
+#ifndef __DAVAENGINE_STATIC_OCCLUSION_RENDER_PASS__
+#define __DAVAENGINE_STATIC_OCCLUSION_RENDER_PASS__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderPass.h"
 #include "Render/RenderBase.h"
 #include "Render/Texture.h"
-	
+
 namespace DAVA
 {
 
-class OcclusionQuery
+class StaticOcclusion;
+class StaticOcclusionRenderLayer : public RenderLayer
+{
+    StaticOcclusionRenderLayer(const FastName & name, StaticOcclusion * occlusion);
+    ~StaticOcclusionRenderLayer();
+    
+    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
+
+    StaticOcclusion * occlusion;
+};
+
+class StaticOcclusionRenderPass : public RenderPass
 {
 public:
-    OcclusionQuery();
-    ~OcclusionQuery();
-    
-    enum eQueryResult
-    {
-        WAIT = 0,
-        RESULT = 1,
-    };
-    
-    void BeginQuery();
-    void EndQuery();
+    StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * occlusion);
+    ~StaticOcclusionRenderPass();
 
-    bool IsResultAvailable();
-    void GetQuery(uint32 * resultValue);
+    void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
 
-private:
-    GLuint id;
+    StaticOcclusion * occlusion;
+    Set<RenderObject*> visibleObjectSet;
 };
-
-template<uint32 N, uint32 M>
-class SmartHandle
-{
-public:
-    inline SmartHandle() {}
-    inline SmartHandle(uint32 _index, uint32 _salt)
-    : index(_index)
-    , salt(_salt)
-    {
-    }
-    uint32 index: N;
-    uint32 salt: M;
-};
-    
-typedef SmartHandle<16, 16> OcclusionQueryManagerHandle;
-    
-class OcclusionQueryManager
-{
-public:
-    static const uint32 INVALID_INDEX = 0xFFFF;
-    
-    OcclusionQueryManager(uint32 occlusionQueryCount);
-    ~OcclusionQueryManager();
-    
-    OcclusionQueryManagerHandle CreateQueryObject();
-    OcclusionQuery & Get(OcclusionQueryManagerHandle handle);
-    void ReleaseQueryObject(OcclusionQueryManagerHandle handle);
-    
-private:
-    uint32 occlusionQueryCount;
-    uint32 nextFree;
-    struct OcclusionQueryItem
-    {
-        OcclusionQuery query;
-        uint32 next;
-        uint32 salt;
-    };
-    Vector<OcclusionQueryItem> queries;
-};
-    
-inline OcclusionQuery & OcclusionQueryManager::Get(OcclusionQueryManagerHandle handle)
-{
-    return queries[handle.index].query;
-}
-
-    
-/*
-    id queryId = occlusionQuery->CreateQueryObject();
-    occlusionQuery->BeginQuery(queryID);
-    
-    occlusionQuery->EndQuery(queryID);
- 
-    occlusionQuery->GetQuery(
- 
- */
-    
-
 
 };
 
-#endif //__DAVAENGINE_OCCLUSION_QUERY__
+#endif //__DAVAENGINE_STATIC_OCCLUSION_RENDER_PASS__

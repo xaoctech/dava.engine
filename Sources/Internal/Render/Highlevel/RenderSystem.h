@@ -115,6 +115,8 @@ public:
 
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
+    RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
+
 private:
 	void CreateSpatialTree();
     void ProcessClipping();
