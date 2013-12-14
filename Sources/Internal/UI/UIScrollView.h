@@ -57,7 +57,11 @@ public:
 	ScrollHelper* GetHorizontalScroll();
 	ScrollHelper* GetVerticalScroll();
 	
-    // Scroll Position setters.
+    // Scroll Position getter/setters.
+    float32 GetHorizontalScrollPosition() const;
+    float32 GetVerticalScrollPosition() const;
+    Vector2 GetScrollPosition() const;
+
     void SetHorizontalScrollPosition(float32 horzPos);
     void SetVerticalScrollPosition(float32 vertPos);
     void SetScrollPosition(const Vector2& pos);
