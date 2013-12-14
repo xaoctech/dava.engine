@@ -26,55 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "SimpleMaterialItem.h"
+
+#include <QSet>
+#include <QIcon>
+
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
 
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
-
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItemModel>
-#include <QString>
-
-class QMimeData;
-class QStandardItem;
-class SceneEditor2;
-class MaterialsItem;
-class MaterialsModel: public QStandardItemModel
+SimpleMaterialItem::SimpleMaterialItem(DAVA::NMaterial * _material)
+    : QStandardItem()
+    , material(_material)
 {
-    Q_OBJECT
-    
-public:
-    MaterialsModel(QObject *parent = 0);
-    virtual ~MaterialsModel();
-    
-    void SetScene(SceneEditor2 * scene);
-    
-    
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-    
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-    
-protected:
-    
-    void RemoveAllItems();
-    void RetriveMaterials();
-    void RebuildModel();
-    
-    void AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
-    
-protected:
-    
-    DAVA::Vector<DAVA::NMaterial *> switchableMaterials;
+	DVASSERT(material);
 
-    SceneEditor2 *curScene;
-    
-    
-};
+	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
+	static QIcon userMaterialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
 
-Q_DECLARE_METATYPE( DAVA::NMaterial * )
+	setEditable(false);
+	setText(material->GetMaterialName().c_str());
+    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+    
+    if(material->IsSwitchable())
+    {
+		setIcon(qualityMaterialIcon);
+    }
+    else
+    {
+		setIcon(userMaterialIcon);
+    }
+}
+
+SimpleMaterialItem::~SimpleMaterialItem()
+{ }
 
 
-#endif // __MATERIALS_MODEL_H__
+DAVA::NMaterial * SimpleMaterialItem::GetMaterial() const
+{
+	return material;
+}
+
+
+
+

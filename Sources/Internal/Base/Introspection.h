@@ -219,8 +219,10 @@ namespace DAVA
 
 	class InspInfoDynamic
 	{
+		friend class InspMemberDynamic;
+
 	public:
-		InspInfoDynamic() {};
+		InspInfoDynamic() : memberDynamic(NULL) {};
 		virtual ~InspInfoDynamic() {};
 
 		virtual int MembersCount(void *object) const = 0;
@@ -228,6 +230,11 @@ namespace DAVA
 		virtual const char* MemberName(void *object, int index) const = 0;
 		virtual VariantType MemberValueGet(void *object, int index) const = 0;
 		virtual void MemberValueSet(void *object, int index, const VariantType &value) = 0;
+
+		const InspMemberDynamic* GetMember() const { return memberDynamic; };
+
+	protected:
+		const InspMemberDynamic* memberDynamic;
 	};
 };
 

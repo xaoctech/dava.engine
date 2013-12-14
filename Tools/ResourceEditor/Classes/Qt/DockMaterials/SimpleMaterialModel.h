@@ -28,27 +28,35 @@
 
 
 
-#ifndef __MATERIALS_ITEM_H__
-#define __MATERIALS_ITEM_H__
+#ifndef __SIMPLE_MATERIALS_MODEL_H__
+#define __SIMPLE_MATERIALS_MODEL_H__
 
 #include "Render/Material/NMaterial.h"
 
-#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+#include <QString>
 
-class MaterialsModel;
-class MaterialsItem: public QStandardItem
+class QMimeData;
+class QStandardItem;
+class SceneEditor2;
+class SimpleMaterialItem;
+class SimpleMaterialModel: public QStandardItemModel
 {
+    Q_OBJECT
+    
 public:
-    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
-    virtual ~MaterialsItem();
+    SimpleMaterialModel(QObject *parent = 0);
+    virtual ~SimpleMaterialModel();
     
-    QVariant data(int role = Qt::UserRole + 1) const;
+    void SetScene(SceneEditor2 * scene);
+    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     
-private:
-    
-    DAVA::NMaterial * material;
-    MaterialsModel * model;
+    // drag and drop support
+	QMimeData *	mimeData(const QModelIndexList & indexes) const;
+	QStringList	mimeTypes() const;
 };
 
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
 
-#endif // __MATERIALS_ITEM_H__
+#endif // __SIMPLE_MATERIALS_MODEL_H__
