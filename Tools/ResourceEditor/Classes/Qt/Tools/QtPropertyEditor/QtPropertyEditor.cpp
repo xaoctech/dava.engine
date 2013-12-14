@@ -86,6 +86,12 @@ QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 	return curModel->itemFromIndex(index);
 }
 
+QtPropertyData * QtPropertyEditor::GetRootProperty() const
+{
+	return curModel->rootItem();
+}
+
+
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
 	lastHoverIndex = QModelIndex();
