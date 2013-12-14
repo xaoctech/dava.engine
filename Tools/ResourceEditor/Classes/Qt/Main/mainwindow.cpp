@@ -309,6 +309,8 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 				WaitSetValue(progress++);
 			}
 
+            emit TexturesReloaded();
+            
 			WaitStop();
 		}
 	}
@@ -508,6 +510,9 @@ void QtMainWindow::SetupDocks()
     QObject::connect(ui->sceneTabWidget, SIGNAL(CloseTabRequest(int , Request *)), this, SLOT(OnCloseTabRequest(int, Request *)));
     
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo , SLOT(UpdateInfoByTimer()));
+	QObject::connect(this, SIGNAL(TexturesReloaded()), ui->sceneInfo , SLOT(TexturesReloaded()));
+	QObject::connect(this, SIGNAL(SpritesReloaded()), ui->sceneInfo , SLOT(SpritesReloaded()));
+    
 
     ui->libraryWidget->SetupSignals();
     ui->materialsWidget->SetupSignals();
@@ -1084,6 +1089,7 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 void QtMainWindow::OnReloadSprites()
 {
     SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
+    emit SpritesReloaded();
 }
 
 void QtMainWindow::OnSelectMode()
@@ -1218,9 +1224,9 @@ void QtMainWindow::OnTextureBrowser()
 		selectedEntities = sceneEditor->selectionSystem->GetSelection();
 	}
 
+	TextureBrowser::Instance()->show();
 	TextureBrowser::Instance()->sceneActivated(sceneEditor);
 	TextureBrowser::Instance()->sceneSelectionChanged(sceneEditor, &selectedEntities, NULL); 
-	TextureBrowser::Instance()->show();
 }
 
 void QtMainWindow::OnSceneLightMode()

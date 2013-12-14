@@ -66,7 +66,10 @@ public:
 	~SceneInfo();
 
 public slots:
-		void UpdateInfoByTimer();
+    void UpdateInfoByTimer();
+    void TexturesReloaded();
+    void SpritesReloaded();
+
 
 protected slots:
     void SceneActivated(SceneEditor2 *scene);
@@ -111,7 +114,6 @@ protected:
     
     
     void CollectSceneData(SceneEditor2 *scene);
-    void CollectSceneTextures();
     void CollectParticlesData();
     void CollectLODDataInFrame();
     void CollectLODDataInFrameRecursive(DAVA::Entity *entity);
@@ -133,8 +135,6 @@ protected:
     DAVA::Vector<DAVA::Entity *> nodesAtScene;
     DAVA::Landscape *landscape;
     
-    DAVA::Vector<DAVA::Material *>materialsAtScene;
-
 	DAVA::TexturesMap sceneTextures;
 	DAVA::TexturesMap particleTextures;
     

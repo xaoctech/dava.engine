@@ -444,19 +444,19 @@ namespace DAVA
 		return (bucket != NULL) ? bucket->texture : NULL;
 	}
     
-	Texture * NMaterialState::GetTexture(uint32 index)
+	Texture * NMaterialState::GetTexture(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < texturesArray.size());
 		return texturesArray[index];
 	}
 	
-	const FastName& NMaterialState::GetTextureName(uint32 index)
+	const FastName& NMaterialState::GetTextureName(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textureNamesArray.size());
 		return textureNamesArray[index];
 	}
 	
-	uint32 NMaterialState::GetTextureCount()
+	uint32 NMaterialState::GetTextureCount() const
 	{
 		return (uint32)texturesArray.size();
 	}

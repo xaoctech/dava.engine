@@ -163,9 +163,9 @@ public:
 	// Work with textures and properties
     void SetTexture(const FastName & textureFastName, Texture * texture);
     Texture * GetTexture(const FastName & textureFastName) const;
-    Texture * GetTexture(uint32 index);
-	const FastName& GetTextureName(uint32 index);
-    uint32 GetTextureCount();
+    Texture * GetTexture(uint32 index) const;
+	const FastName& GetTextureName(uint32 index) const;
+    uint32 GetTextureCount() const;
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
 	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
