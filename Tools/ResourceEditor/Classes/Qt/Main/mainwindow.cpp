@@ -645,8 +645,8 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-    
-    
+	QObject::connect(ui->actionAddModelTypeComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
@@ -2038,6 +2038,26 @@ void QtMainWindow::OnAddStaticOcclusionComponent()
 		{
 			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
 		}
+        
+		scene->EndBatch();
+	}
+}
+
+void QtMainWindow::OnAddModelTypeComponent()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+	
+	SceneSelectionSystem *ss = scene->selectionSystem;
+	if(ss->GetSelectionCount() > 0)
+	{
+		scene->BeginBatch("Add Model Type Component");
+        
+		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+		{
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ModelTypeComponent()));
+		}
+        
 		scene->EndBatch();
 	}
 }
@@ -2046,13 +2066,9 @@ void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
-
     
     scene->staticOcclusionBuildSystem->BuildOcclusionInformation();
 }
-
-
-
 
 
 bool QtMainWindow::IsSavingAllowed()

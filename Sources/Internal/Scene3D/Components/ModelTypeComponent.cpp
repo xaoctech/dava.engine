@@ -28,44 +28,57 @@
 
 
 
-#ifndef __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
-
-#include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Scene3D/Entity.h"
-#include "Render/Highlevel/Light.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/Components/ModelTypeComponent.h"
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(ModelTypeComponent)
 
-class LightComponent : public Component
+ModelTypeComponent::ModelTypeComponent()
+    : Component()
+    , modelType("")
 {
-protected:
-    ~LightComponent();
-public:
-    LightComponent(Light * _light = 0);
-    
-    IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
-    virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
-	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+}
 
-    void SetLightObject(Light * _light);
-    Light * GetLightObject() const;
+ModelTypeComponent::~ModelTypeComponent()
+{
+}
     
-private:
-    Light * light;
+void ModelTypeComponent::SetModelType(const FastName & type)
+{
+    modelType = type;
+}
     
-public:
+const FastName & ModelTypeComponent::GetModelType() const
+{
+    return modelType;
+}
     
-    INTROSPECTION_EXTEND(LightComponent, Component,
-        MEMBER(light, "Light", I_SAVE | I_VIEW | I_EDIT)
-    );
+Component * ModelTypeComponent::Clone(Entity * toEntity)
+{
+    ModelTypeComponent * component = new ModelTypeComponent();
+	component->SetEntity(toEntity);
+    
+    if (modelType.IsValid())
+    {
+        component->modelType = modelType;
+    }
+
+    return component;
+}
+
+void ModelTypeComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+    archive->SetString("modelType", (modelType.IsValid()) ? modelType.c_str() : "");
+}
+
+void ModelTypeComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    modelType = FastName(archive->GetString("modelType"));
+	Component::Deserialize(archive, serializationContext);
+}
+
+
 };
-
-
-};
-
-#endif //__DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__

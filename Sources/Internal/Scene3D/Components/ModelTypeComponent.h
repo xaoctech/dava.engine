@@ -28,44 +28,47 @@
 
 
 
-#ifndef __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
+#ifndef __DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/FastName.h"
+
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
-#include "Render/Highlevel/Light.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
 
-class LightComponent : public Component
+class ModelTypeComponent : public Component
 {
 protected:
-    ~LightComponent();
+    virtual ~ModelTypeComponent();
 public:
-    LightComponent(Light * _light = 0);
+    ModelTypeComponent();
     
-    IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
+    IMPLEMENT_COMPONENT_TYPE(MODEL_TYPE_COMPONENT);
+    
     virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetLightObject(Light * _light);
-    Light * GetLightObject() const;
+    void SetModelType(const FastName & type);
+    const FastName & GetModelType() const;
     
 private:
-    Light * light;
+
+    FastName modelType;
     
 public:
     
-    INTROSPECTION_EXTEND(LightComponent, Component,
-        MEMBER(light, "Light", I_SAVE | I_VIEW | I_EDIT)
+    INTROSPECTION_EXTEND(ModelTypeComponent, Component,
+        MEMBER(modelType, "Model Type", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 
 
 };
 
-#endif //__DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
+#endif //__DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__

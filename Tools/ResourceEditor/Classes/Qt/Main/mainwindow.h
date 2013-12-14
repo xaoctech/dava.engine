@@ -174,6 +174,7 @@ public slots:
 	
 	void OnAddActionComponent();
     void OnAddStaticOcclusionComponent();
+    void OnAddModelTypeComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
