@@ -30,6 +30,7 @@
 #include "Render/Highlevel/StaticOcclusionRenderPass.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/StaticOcclusion.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -65,6 +66,7 @@ void StaticOcclusionRenderLayer::Draw(const FastName & ownerRenderPass, Camera *
         
         occlusion->RecordFrameQuery(batch, handle);
     }
+    //Logger::FrameworkDebug(Format("Pass: %s Layer: %s - objects: %d", ownerRenderPass.c_str(), name.c_str(), size));
 }
 
 StaticOcclusionRenderPass::StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * _occlusion)

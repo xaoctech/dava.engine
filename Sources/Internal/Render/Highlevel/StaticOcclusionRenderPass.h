@@ -41,6 +41,7 @@ namespace DAVA
 class StaticOcclusion;
 class StaticOcclusionRenderLayer : public RenderLayer
 {
+public:
     StaticOcclusionRenderLayer(const FastName & name, StaticOcclusion * occlusion);
     ~StaticOcclusionRenderLayer();
     
