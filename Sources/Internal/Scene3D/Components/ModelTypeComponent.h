@@ -28,47 +28,47 @@
 
 
 
-#ifndef __DAVAENGINE_COMPONENT_HELPERS_H__
-#define __DAVAENGINE_COMPONENT_HELPERS_H__
+#ifndef __DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/FastName.h"
 
-namespace DAVA
+#include "Entity/Component.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
+
+namespace DAVA 
 {
 
-class ParticleEmitter;
-class ParticleEffectComponent;
-class Entity;
-class RenderObject;
-class Light;
-class Landscape;
-class Camera;
-class LodComponent;
-class SkyboxRenderObject;
-class SwitchComponent;
-class ModelTypeComponent;
-
-ParticleEmitter * GetEmitter(Entity * fromEntity);
-ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
-
-RenderObject * GetRenderObject(const Entity * fromEntity);
-SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
-
-Light *GetLight(Entity * fromEntity);
-Landscape *GetLandscape(Entity * fromEntity);
-
-Camera * GetCamera(Entity * fromEntity);
-
-LodComponent * GetLodComponent(Entity *fromEntity);
-SwitchComponent* GetSwitchComponent(Entity *fromEntity);
-void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
-void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
-
-Entity * FindLandscapeEntity(Entity * rootEntity);
-Landscape * FindLandscape(Entity * rootEntity);
-
-ModelTypeComponent * GetModelTypeComponent(Entity *fromEntity);
+class ModelTypeComponent : public Component
+{
+protected:
+    virtual ~ModelTypeComponent();
+public:
+    ModelTypeComponent();
     
-}
+    IMPLEMENT_COMPONENT_TYPE(MODEL_TYPE_COMPONENT);
+    
+    virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-#endif //__DAVAENGINE_COMPONENT_HELPERS_H__
+    void SetModelType(const FastName & type);
+    const FastName & GetModelType() const;
+    
+private:
+
+    FastName modelType;
+    
+public:
+    
+    INTROSPECTION_EXTEND(ModelTypeComponent, Component,
+        MEMBER(modelType, "Model Type", I_SAVE | I_VIEW | I_EDIT)
+    );
+};
+
+
+};
+
+#endif //__DAVAENGINE_SCENE3D_MODELTYPE_COMPONENT_H__
