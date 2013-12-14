@@ -477,7 +477,8 @@ void LibraryWidget::OnModelLoaded()
 
 void LibraryWidget::SwitchTreeAndLabel()
 {
-    if(proxyModel->rowCount())
+    QModelIndex rootIndex = proxyModel->mapFromSource(filesModel->index(rootPathname));
+    if(proxyModel->rowCount(rootIndex))
     {
 		notFoundMessage->setVisible(false);
 		filesView->setVisible(true);
