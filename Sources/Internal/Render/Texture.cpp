@@ -156,11 +156,7 @@ eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
-#ifdef USE_FILEPATH_IN_MAP
-Map<FilePath, Texture*> Texture::textureMap;
-#else //#ifdef USE_FILEPATH_IN_MAP
-Map<String, Texture*> Texture::textureMap;
-#endif //#ifdef USE_FILEPATH_IN_MAP
+TexturesMap Texture::textureMap;
 
 
 Texture * Texture::pinkPlaceholder = 0;
@@ -170,14 +166,7 @@ static int32 textureFboCounter = 0;
 Texture * Texture::Get(const FilePath & pathName)
 {
 	Texture * texture = NULL;
-#ifdef USE_FILEPATH_IN_MAP
-	Map<FilePath, Texture *>::iterator it;
-	it = textureMap.find(pathName);
-#else //#ifdef USE_FILEPATH_IN_MAP
-	Map<String, Texture *>::iterator it;
-	it = textureMap.find(pathName.GetAbsolutePathname());
-#endif //#ifdef USE_FILEPATH_IN_MAP
-
+	TexturesMap::iterator it = textureMap.find(FILEPATH_MAP_KEY(pathName));
 	if (it != textureMap.end())
 	{
 		texture = it->second;
@@ -191,11 +180,7 @@ void Texture::AddToMap(Texture *tex)
 {
     if(!tex->relativePathname.IsEmpty())
     {
-#ifdef USE_FILEPATH_IN_MAP
-		textureMap[tex->relativePathname] = tex;
-#else //#ifdef USE_FILEPATH_IN_MAP
-		textureMap[tex->relativePathname.GetAbsolutePathname()] = tex;
-#endif //#ifdef USE_FILEPATH_IN_MAP
+		textureMap[FILEPATH_MAP_KEY(tex->relativePathname)] = tex;
     }
 }
 
@@ -790,12 +775,7 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-#ifdef USE_FILEPATH_IN_MAP
-		textureMap.erase(relativePathname);
-#else //#ifdef USE_FILEPATH_IN_MAP
-		textureMap.erase(relativePathname.GetAbsolutePathname());
-#endif //#ifdef USE_FILEPATH_IN_MAP
-
+		textureMap.erase(FILEPATH_MAP_KEY(relativePathname));
 	}
 	return BaseObject::Release();
 }
@@ -897,11 +877,7 @@ void Texture::DumpTextures()
 	int32 cnt = 0;
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
-#ifdef USE_FILEPATH_IN_MAP
-	for(Map<FilePath, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-#else //#ifdef USE_FILEPATH_IN_MAP
-	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-#endif //#ifdef USE_FILEPATH_IN_MAP
+	for(TexturesMap::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
 		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
@@ -1054,11 +1030,7 @@ Image * Texture::CreateImageFromMemory()
     return image;
 }
 	
-#ifdef USE_FILEPATH_IN_MAP
-const Map<FilePath, Texture*> & Texture::GetTextureMap()
-#else //#ifdef USE_FILEPATH_IN_MAP
-const Map<String, Texture*> & Texture::GetTextureMap()
-#endif //#ifdef USE_FILEPATH_IN_MAP
+const TexturesMap & Texture::GetTextureMap()
 {
     return textureMap;
 }

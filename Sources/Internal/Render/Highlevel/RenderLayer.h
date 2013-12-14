@@ -43,12 +43,13 @@ class Camera;
 class RenderLayer
 {
 public:
-    RenderLayer(const FastName & name);
+    RenderLayer(const FastName & name, uint32 sortingFlags);
     virtual ~RenderLayer();
     
     virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
     
 	const FastName & GetName();
+	uint32 GetFlags();
 protected:
     FastName name;
     uint32 flags;

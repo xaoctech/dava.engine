@@ -448,7 +448,9 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 		
 		if(mat->IsSwitchable())
 		{
+			SafeRetain(mat);
 			mat->SwitchState(qualityLevelName, this, forceSwitch);
+			SafeRelease(mat);
 		}
 	}
 	
@@ -496,6 +498,7 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 	{
 		NMaterial* child = MaterialSystem::CreateNamed();
 		uint32 stateCount = parent->GetStateCount();
+		String matName = child->GetMaterialName().c_str();
 		
 		if(stateCount > 0)
 		{
@@ -503,6 +506,7 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 			while(stateIter != parent->states.end())
 			{
 				NMaterialState* matState = stateIter->second->CreateTemplate(parent);
+				matState->SetMaterialName(matName);
 				child->states.insert(stateIter->first, matState);
 				
 				++stateIter;

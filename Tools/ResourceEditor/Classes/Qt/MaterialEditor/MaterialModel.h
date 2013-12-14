@@ -34,47 +34,40 @@
 #include "Render/Material/NMaterial.h"
 
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 #include <QString>
 
 class QMimeData;
 class QStandardItem;
 class SceneEditor2;
-class MaterialsItem;
-class MaterialsModel: public QStandardItemModel
+class MaterialItem;
+class MaterialModel: public QStandardItemModel
 {
     Q_OBJECT
     
 public:
-    MaterialsModel(QObject *parent = 0);
-    virtual ~MaterialsModel();
+    MaterialModel(QObject *parent = 0);
+    virtual ~MaterialModel();
     
     void SetScene(SceneEditor2 * scene);
-    
-    
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
-    
-protected:
-    
-    void RemoveAllItems();
-    void RetriveMaterials();
-    void RebuildModel();
-    
-    void AddMaterialToItem(DAVA::NMaterial * material, MaterialsItem * item);
-    
-protected:
-    
-    DAVA::Vector<DAVA::NMaterial *> switchableMaterials;
-
-    SceneEditor2 *curScene;
-    
-    
+	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 };
 
-Q_DECLARE_METATYPE( DAVA::NMaterial * )
+class MaterialFilteringModel : public QSortFilterProxyModel
+{
+public:
+	MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent = NULL);
 
+protected:
+	MaterialModel *materialModel;
+	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+};
+
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
 
 #endif // __MATERIALS_MODEL_H__

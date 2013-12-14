@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -613,6 +613,9 @@
        <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
     </layout>
@@ -625,43 +628,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_11">
-    <layout class="QVBoxLayout" name="verticalLayout_20">
-     <property name="spacing">
-      <number>1</number>
-     </property>
-     <property name="margin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="ConsoleView" name="consoleView">
-       <property name="font">
-        <font>
-         <pointsize>9</pointsize>
-        </font>
-       </property>
-       <property name="undoRedoEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="lineWrapMode">
-        <enum>QPlainTextEdit::NoWrap</enum>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="backgroundVisible">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="consoleEdit">
-       <property name="frame">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <widget class="ConsoleWidget" name="dockConsoleContents">
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockLODEditor">
@@ -730,7 +697,7 @@
    <addaction name="actionReloadSprites"/>
    <addaction name="actionSetShadowColor"/>
   </widget>
-  <widget class="QDockWidget" name="dockLibrary2">
+  <widget class="QDockWidget" name="dockLibrary">
    <property name="windowTitle">
     <string>Library</string>
    </property>
@@ -738,6 +705,15 @@
     <number>2</number>
    </attribute>
    <widget class="LibraryWidget" name="libraryWidget"/>
+  </widget>
+  <widget class="QDockWidget" name="dockMaterials">
+   <property name="windowTitle">
+    <string>Materials</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="MaterialsWidget" name="materialsWidget"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1698,11 +1674,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ConsoleView</class>
-   <extends>QPlainTextEdit</extends>
-   <header>DockConsole/ConsoleView.h</header>
-  </customwidget>
-  <customwidget>
    <class>LODEditor</class>
    <extends>QWidget</extends>
    <header>DockLODEditor/LODEditor.h</header>
@@ -1728,7 +1699,19 @@
   <customwidget>
    <class>LibraryWidget</class>
    <extends>QWidget</extends>
-   <header>DockLibrary2/LibraryWidget.h</header>
+   <header>DockLibrary/LibraryWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MaterialsWidget</class>
+   <extends>QWidget</extends>
+   <header>DockMaterials/MaterialsWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConsoleWidget</class>
+   <extends>QWidget</extends>
+   <header>DockConsole/ConsoleWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

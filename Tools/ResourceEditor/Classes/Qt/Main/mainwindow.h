@@ -81,6 +81,9 @@ public:
 
 signals:
     void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -178,7 +181,7 @@ public slots:
 
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
-
+    
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);

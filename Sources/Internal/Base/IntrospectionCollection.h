@@ -303,7 +303,7 @@ namespace DAVA
 
 			if(NULL != pos)
 			{
-				p = &(*(pos->curPos));
+				p = &pos->curPos->second;
 			}
 
 			return p;

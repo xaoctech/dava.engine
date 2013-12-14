@@ -89,27 +89,19 @@ QVector<FileType> fileTypeValues;
 
 LibraryWidget::LibraryWidget(QWidget *parent /* = 0 */)
 	: QWidget(parent)
+	, curTypeIndex(-1)
 {
     SetupFileTypes();
     SetupToolbar();
     SetupView();
     SetupLayout();
 
-    
-    spacer = NULL;
-    
-    
     ViewAsList();
     OnFilesTypeChanged(0);
 }
 
 LibraryWidget::~LibraryWidget()
 {
-    if(spacer)
-    {
-        delete spacer;
-        spacer = NULL;
-    }
 }
 
 void LibraryWidget::SetupFileTypes()
@@ -160,7 +152,7 @@ void LibraryWidget::SetupToolbar()
     filesTypeFilter->setCurrentIndex(0);
     
     
-    QIcon resetIcon(QString::fromUtf8(":/QtIcons/reset.png"));
+    QIcon resetIcon(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"));
     QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
 
     QIcon asListIcon(QString::fromUtf8(":/QtIconsTextureDialog/view_list.png"));
@@ -201,18 +193,41 @@ void LibraryWidget::SetupView()
     filesView->setUniformRowHeights(true);
     
     filesView->setModel(NULL);
-    
     QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
     
-    waitBar = new QProgressBar(this);
-    waitBar->setMinimumHeight(20);
-    waitBar->setMinimum(0);
-    waitBar->setMaximum(0);
-    
-    notFoundMessage = new QLabel("Nothing found", this);
-    notFoundMessage->setMinimumHeight(20);
-    notFoundMessage->setMaximumHeight(20);
-    notFoundMessage->setAlignment(Qt::AlignCenter);
+	notFoundMessage = new QLabel("Nothing found", this);
+	notFoundMessage->setMinimumHeight(20);
+	notFoundMessage->setAlignment(Qt::AlignCenter);
+
+	waitBar = new QWidget(this);
+	waitBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	QVBoxLayout *waitBarLayout = new QVBoxLayout(waitBar);
+	waitBar->setLayout(waitBarLayout);
+
+	QWidget *waitHolder = new QWidget(waitBar);
+	waitHolder->setMinimumHeight(50);
+	waitHolder->setMaximumHeight(50);
+	waitHolder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	QVBoxLayout *waitHolderLayout = new QVBoxLayout(waitHolder);
+	waitHolderLayout->setSpacing(2);
+	waitHolder->setLayout(waitHolderLayout);
+
+	QProgressBar *waitProgressBar = new QProgressBar(waitHolder);
+	waitProgressBar->setMinimumHeight(20);
+	waitProgressBar->setMaximumHeight(20);
+	waitProgressBar->setMinimum(0);
+	waitProgressBar->setMaximum(0);
+	waitProgressBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+	QLabel *waitText = new QLabel("Library is loading", waitHolder);
+	waitText->setMinimumHeight(20);
+	waitText->setAlignment(Qt::AlignCenter);
+
+	waitHolderLayout->addWidget(waitProgressBar);
+	waitHolderLayout->addWidget(waitText);
+
+	waitBarLayout->addWidget(waitHolder);
 }
 
 void LibraryWidget::SetupLayout()
@@ -247,7 +262,7 @@ void LibraryWidget::ViewDetailed()
 {
     viewMode = VIEW_DETAILED;
     
-    // Magic trick for MacOS: call funciton twice
+    // Magic trick for MacOS: call function twice
     HideDetailedColumnsAtFilesView(false);
     HideDetailedColumnsAtFilesView(false);
     //EndOftrick
@@ -349,24 +364,33 @@ void LibraryWidget::SetFilter()
 {
     QString filter = searchFilter->text();
     
+    bool b = proxyModel->blockSignals(true);
     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+    proxyModel->blockSignals(b);
 
     if(filesView->model())
     {
-        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-        if(!filter.isEmpty())
-        {
-            for(int i = 0; i < proxyModel->rowCount(); ++i)
-            {
-                ExpandUntilFilterAccepted(proxyModel->index(i, 0));
-            }
-        }
-        SwitchTreeAndLabel();
+		SwitchTreeAndLabel();
+
+		if(filesView->isVisible())
+		{
+			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+
+			if(!filter.isEmpty())
+			{
+				for(int i = 0; i < proxyModel->rowCount(); ++i)
+				{
+					ExpandUntilFilterAccepted(proxyModel->index(i, 0));
+				}
+			}
+		}
     }
 }
 
 void LibraryWidget::ResetFilter()
 {
+	if(searchFilter->text().isEmpty()) return;
+
     searchFilter->setText("");
     SetFilter();
 }
@@ -374,12 +398,27 @@ void LibraryWidget::ResetFilter()
 
 void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 {
-    filesModel->SetExtensionFilter(fileTypeValues[typeIndex].filter);
+	if(curTypeIndex == typeIndex) return;
+
+	curTypeIndex = typeIndex;
+    
+    bool bProxy = proxyModel->blockSignals(true);
+    bool bFiles = filesModel->blockSignals(true);
+
+    filesModel->SetExtensionFilter(fileTypeValues[curTypeIndex].filter);
+	proxyModel->invalidate();
+
+    filesModel->blockSignals(bFiles);
+    proxyModel->blockSignals(bProxy);
     
     if(filesView->model())
     {
-        filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-        SwitchTreeAndLabel();
+		SwitchTreeAndLabel();
+
+		if(filesView->isVisible())
+		{
+			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+		}
     }
 }
 
@@ -391,11 +430,6 @@ void LibraryWidget::ProjectOpened(const QString &path)
     filesView->setModel(NULL);
     proxyModel->SetModel(NULL);
 
-    if(filesView->isVisible())
-    {
-        AddSpacer();
-    }
-    
     waitBar->setVisible(true);
     notFoundMessage->setVisible(false);
     filesView->setVisible(false);
@@ -413,8 +447,6 @@ void LibraryWidget::ProjectClosed()
 
     if(filesView->isVisible() == false)
     {
-        RemoveSpacer();
-        
         waitBar->setVisible(false);
         notFoundMessage->setVisible(false);
         filesView->setVisible(true);
@@ -429,7 +461,6 @@ void LibraryWidget::OnModelLoaded()
     filesView->setModel(proxyModel);
     filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
 
-    RemoveSpacer();
     waitBar->setVisible(false);
     notFoundMessage->setVisible(false);
     filesView->setVisible(true);
@@ -446,23 +477,16 @@ void LibraryWidget::OnModelLoaded()
 
 void LibraryWidget::SwitchTreeAndLabel()
 {
-    if(proxyModel->rowCount())
+    QModelIndex rootIndex = proxyModel->mapFromSource(filesModel->index(rootPathname));
+    if(proxyModel->rowCount(rootIndex))
     {
-        if(filesView->isVisible() == false)
-        {
-            notFoundMessage->setVisible(false);
-            filesView->setVisible(true);
-            RemoveSpacer();
-        }
+		notFoundMessage->setVisible(false);
+		filesView->setVisible(true);
     }
     else
     {
-        if(filesView->isVisible())
-        {
-            notFoundMessage->setVisible(true);
-            filesView->setVisible(false);
-            AddSpacer();
-        }
+		notFoundMessage->setVisible(true);
+		filesView->setVisible(false);
     }
 }
 
@@ -588,19 +612,3 @@ bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
     return wasExpanded;
 }
 
-void LibraryWidget::AddSpacer()
-{
-    DVASSERT(spacer == NULL);
-    
-    spacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout->addSpacerItem(spacer);
-}
-
-void LibraryWidget::RemoveSpacer()
-{
-    DVASSERT(spacer);
-    
-    layout->removeItem(spacer);
-    delete spacer;
-    spacer = NULL;
-}

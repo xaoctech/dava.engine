@@ -35,19 +35,20 @@
 
 #include <QStandardItem>
 
-class MaterialsModel;
-class MaterialsItem: public QStandardItem
+class MaterialModel;
+class MaterialItem: public QStandardItem
 {
 public:
-    MaterialsItem(DAVA::NMaterial * material, MaterialsModel * model);
-    virtual ~MaterialsItem();
+    MaterialItem(DAVA::NMaterial * material);
+    virtual ~MaterialItem();
     
     QVariant data(int role = Qt::UserRole + 1) const;
+
+	DAVA::NMaterial * GetMaterial() const;
+	void Sync();
     
 private:
-    
     DAVA::NMaterial * material;
-    MaterialsModel * model;
 };
 
 

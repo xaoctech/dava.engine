@@ -25,3 +25,32 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+#ifndef __MATERIAL_TREE_H__
+#define __MATERIAL_TREE_H__
+
+#include <QWidget>
+#include <QTreeView>
+
+#include "MaterialModel.h"
+
+class MaterialTree : public QTreeView
+{
+	Q_OBJECT
+
+public:
+	MaterialTree(QWidget *parent = 0);
+	~MaterialTree();
+
+	void SetScene(SceneEditor2 *sceneEditor);
+	DAVA::NMaterial* GetMaterial(const QModelIndex &index) const;
+
+public slots:
+	void ShowContextMenu(const QPoint &pos);
+
+protected:
+	MaterialModel *treeModel;
+	MaterialFilteringModel *treeFilteringModel;
+};
+
+#endif // __MATERIALS_TREE_H__

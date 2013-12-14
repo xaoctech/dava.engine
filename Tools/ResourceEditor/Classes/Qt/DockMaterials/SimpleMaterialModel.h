@@ -28,45 +28,35 @@
 
 
 
-#include "MaterialsItem.h"
-#include "MaterialsModel.h"
+#ifndef __SIMPLE_MATERIALS_MODEL_H__
+#define __SIMPLE_MATERIALS_MODEL_H__
 
-MaterialsItem::MaterialsItem(DAVA::NMaterial * _material, MaterialsModel * _model)
-    : QStandardItem()
-    , material(_material)
-    , model(_model)
+#include "Render/Material/NMaterial.h"
+
+#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+#include <QString>
+
+class QMimeData;
+class QStandardItem;
+class SceneEditor2;
+class SimpleMaterialItem;
+class SimpleMaterialModel: public QStandardItemModel
 {
-    DVASSERT(model);
-    DVASSERT(material);
+    Q_OBJECT
     
-    setText(material->GetMaterialName().c_str());
-    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+public:
+    SimpleMaterialModel(QObject *parent = 0);
+    virtual ~SimpleMaterialModel();
     
-    if(material->IsSwitchable())
-    {
-        setIcon(QIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png")));
-    }
-    else
-    {
-        setIcon(QIcon(QString::fromUtf8(":/QtIcons/materialeditor.png")));
-    }
-    setEditable(false);
-}
-
-MaterialsItem::~MaterialsItem()
-{
-}
-
-QVariant MaterialsItem::data(int role) const
-{
-//    if(role == Qt::BackgroundColorRole)
-//    {
-//        if(model && model->IsMaterialSelected(material))
-//        {
-//            return QColor(235, 215, 210);
-//        }
-//    }
+    void SetScene(SceneEditor2 * scene);
+    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
     
-    return QStandardItem::data(role);
-}
+    // drag and drop support
+	QMimeData *	mimeData(const QModelIndexList & indexes) const;
+	QStringList	mimeTypes() const;
+};
 
+Q_DECLARE_METATYPE(DAVA::NMaterial *)
+
+#endif // __SIMPLE_MATERIALS_MODEL_H__

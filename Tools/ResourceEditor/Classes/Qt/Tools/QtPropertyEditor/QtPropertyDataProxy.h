@@ -29,6 +29,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __QT_PROPERTY_DATA_PROXY_H__
 #define __QT_PROPERTY_DATA_PROXY_H__
 
-#include "../QtPropertyData.h"
+#include "QtPropertyData.h"
+
+class QtPropertyDataProxy : public QtPropertyData
+{
+public:
+	QtPropertyDataProxy(QtPropertyData *_original);
+	~QtPropertyDataProxy();
+
+	virtual QtPropertyData* GetProxyOriginal();
+
+protected:
+	QtPropertyData *original;
+
+	virtual QVariant GetValueInternal() const;
+};
 
 #endif // __QT_PROPERTY_DATA_PROXY_H__

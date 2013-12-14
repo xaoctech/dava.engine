@@ -35,7 +35,7 @@
 
 #include "Deprecated/ScenePreviewDialog.h"
 
-#include "MaterialEditor/MaterialsAssignSystem.h"
+#include "MaterialEditor/MaterialAssignSystem.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -386,7 +386,7 @@ void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
     if(!group || (group->Size() == 0) || (materials->size() != 1)) return;
     
     const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
-    MaterialsAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
+    MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
 }
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
