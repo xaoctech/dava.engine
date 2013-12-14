@@ -33,17 +33,39 @@
 
 namespace DAVA
 {
-
-// System that allow to build occlusion information
+class Camera;
+class RenderObject;
+class StaticOcclusion;
+class StaticOcclusionData;
+    
+// System that allow to build occlusion information. Required only in editor.
 class StaticOcclusionBuildSystem : public SceneSystem
 {
 public:
     StaticOcclusionBuildSystem(Scene * scene);
     virtual ~StaticOcclusionBuildSystem();
     
-    void AddE
-    void BakeOcclusionInformation();
+    void AddEntity(Entity * entity);
+    void RemoveEntity(Entity * entity);
+    void BuildOcclusionInformation();
     void Process();
+    inline void SetCamera(Camera * camera);
+
+private:
+    Camera * camera;
+    
+    // Build system part
+    Vector<Entity*> entities;
+    StaticOcclusion * staticOcclusion;
+    StaticOcclusionData * currentDataInProcess;
+    uint32 activeIndex;
+    bool needSetupNextOcclusion;
+    
+    // Final system part
+    void ProcessStaticOcclusion(Camera * camera);
+    void ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data);
+    Vector<StaticOcclusionData*> computedOcclusionInfo;
+    Vector<RenderObject*> indexedRenderObjects;
 };
     
 // System that allow to use occlusion information during rendering
@@ -53,8 +75,27 @@ public:
     StaticOcclusionSystem(Scene * scene);
     virtual ~StaticOcclusionSystem();
     
+    inline void SetCamera(Camera * camera);
+    void AddEntity(Entity * entity);
+    void RemoveEntity(Entity * entity);
     void Process();
+
+private:
+    Camera * camera;
+    Vector<RenderObject*> renderObjectArray;
+    uint32 occlusionRenderObjectSize;
+    // StaticOcclusionData * data;
 };
+    
+inline void StaticOcclusionBuildSystem::SetCamera(Camera * _camera)
+{
+    camera = _camera;
+}
+
+inline void StaticOcclusionSystem::SetCamera(Camera * _camera)
+{
+    camera = _camera;
+}
 
 } // ns
 

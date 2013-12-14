@@ -48,6 +48,10 @@ Component * StaticOcclusionComponent::Clone(Entity * toEntity)
 {
 	StaticOcclusionComponent * newComponent = new StaticOcclusionComponent();
 	newComponent->SetEntity(toEntity);
+    newComponent->SetSubdivisionsX(xSubdivisions);
+    newComponent->SetSubdivisionsY(ySubdivisions);
+    newComponent->SetSubdivisionsZ(zSubdivisions);
+    newComponent->SetBoundingBox(boundingBox);
 	return newComponent;
 }
 
@@ -57,7 +61,10 @@ void StaticOcclusionComponent::Serialize(KeyedArchive *archive, SerializationCon
 
 	if(NULL != archive)
 	{
-//		archive->SetInt32("sc.switchindex", newSwitchIndex);
+        archive->SetVariant("soc.aabbox", VariantType(boundingBox));
+        archive->SetUInt32("soc.xsub", xSubdivisions);
+        archive->SetUInt32("soc.ysub", ySubdivisions);
+        archive->SetUInt32("soc.zsub", zSubdivisions);
 	}
 }
 
@@ -65,8 +72,11 @@ void StaticOcclusionComponent::Deserialize(KeyedArchive *archive, SerializationC
 {
 	if(NULL != archive)
 	{
-//		SetSwitchIndex(archive->GetInt32("sc.switchindex"));
-	}
+        boundingBox = archive->GetVariant("soc.aabbox")->AsAABBox3();
+        xSubdivisions = archive->GetUInt32("soc.xsub", 1);
+        ySubdivisions = archive->GetUInt32("soc.ysub", 1);
+        zSubdivisions = archive->GetUInt32("soc.zsub", 1);
+    }
 
 	Component::Deserialize(archive, serializationContext);
 }

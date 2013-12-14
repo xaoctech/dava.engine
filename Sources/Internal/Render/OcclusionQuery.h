@@ -48,7 +48,8 @@ public:
         WAIT = 0,
         RESULT = 1,
     };
-    
+    void Init();
+    void Release();
     void BeginQuery();
     void EndQuery();
 
