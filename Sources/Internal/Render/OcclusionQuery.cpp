@@ -31,24 +31,34 @@
 namespace DAVA
 {
 #if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVA_USE_OCCLUSION_QUERY__)
 OcclusionQuery::OcclusionQuery()
 {
-    queryActive = false;
+    id = 0;
+}
+    
+void OcclusionQuery::Init()
+{
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
-    RENDER_VERIFY(glGenQueries(1, &id));
+        RENDER_VERIFY(glGenQueries(1, &id));
 #else
-    RENDER_VERIFY(glGenQueriesEXT(1, &id));
+        RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
+        //Logger::Debug("Init query: %d", id);
+}
+    
+void OcclusionQuery::Release()
+{
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+        RENDER_VERIFY(glDeleteQueries(1, &id));
+#else
+        RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
+#endif
+        //Logger::Debug("Release query: %d", id);
 }
 
 OcclusionQuery::~OcclusionQuery()
 {
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
-    RENDER_VERIFY(glDeleteQueries(1, &id));
-#else
-    RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
-#endif
+    id = 0;
 }
 
 void OcclusionQuery::BeginQuery()
@@ -103,15 +113,20 @@ OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
     nextFree = 0;
     occlusionQueryCount = _occlusionQueryCount;
     queries.resize(occlusionQueryCount);
-    for (uint32 k = 0; k < size; ++k)
+    for (uint32 k = 0; k < occlusionQueryCount; ++k)
     {
-        queries[k].next = (k == size - 1) ? (INVALID_INDEX) : (k + 1);
+        queries[k].query.Init();
+        queries[k].next = (k == occlusionQueryCount - 1) ? (INVALID_INDEX) : (k + 1);
         queries[k].salt = 0;
     }
 }
     
 OcclusionQueryManager::~OcclusionQueryManager()
 {
+    for (uint32 k = 0; k < occlusionQueryCount; ++k)
+    {
+        queries[k].query.Release();
+    }
     queries.clear();
 }
 
@@ -119,35 +134,34 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
 {
     if (nextFree == INVALID_INDEX)
     {
-        uint32 oldOcclusionQuerySize = occlusionQuerySize;
-        queries.resize(occlusionQuerySize + 100);
-        occlusionQuerySize += 100;
+        uint32 oldOcclusionQueryCount = occlusionQueryCount;
+        queries.resize(occlusionQueryCount + 100);
+        occlusionQueryCount += 100;
         
-        for (uint32 k = occlusionQuerySize - 1; k >= oldOcclusionQuerySize; --k)
+        for (uint32 k = occlusionQueryCount - 1; k >= oldOcclusionQueryCount; --k)
         {
+            queries[k].query.Init();
             queries[k].next = nextFree;
             nextFree = k;
         }
-    }else
-    {
-        SmartHandle handle;
-        handle.index = nextFree;
-        handle.salt = ++queries[nextFree].salt;
-        nextFree = queries[nextFree].next;
-        return nextFree;
     }
+    
+    OcclusionQueryManagerHandle handle;
+    handle.index = nextFree;
+    handle.salt = queries[nextFree].salt;
+    nextFree = queries[nextFree].next;
+    return handle;
 }
     
 void OcclusionQueryManager::ReleaseQueryObject(OcclusionQueryManagerHandle handle)
 {
     DVASSERT(handle.salt == queries[handle.index].salt);
-    
-    
+    queries[handle.index].salt++;
+    queries[handle.index].next = nextFree;
+    nextFree = handle.index;
 }
 
-    
-#endif //#if defined(__DAVA_USE_OCCLUSION_QUERY__)
-    
+
 #else
 #error "Require Occlusion Queries Implementation"
 #endif
