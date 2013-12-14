@@ -95,8 +95,12 @@ public:
 	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
 	{
 		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-
-		DVASSERT(layerBatchArray);
+        if (!layerBatchArray)
+        {
+            layerBatchArray = new RenderLayerBatchArray(RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL);
+            layerBatchArrayMap.insert(name, layerBatchArray);
+        }
+		//DVASSERT(layerBatchArray);
 		
 		layerBatchArray->AddRenderBatch(renderBatch);
 	}

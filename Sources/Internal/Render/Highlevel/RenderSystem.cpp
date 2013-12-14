@@ -54,6 +54,8 @@ namespace DAVA
 
 RenderSystem::RenderSystem()
 {
+    camera = 0;
+    clipCamera = 0;
     // Register available passes & layers
     renderPassesMap.Insert(PASS_FORWARD, new RenderPass(PASS_FORWARD));
     renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
@@ -186,17 +188,6 @@ RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
 {
 	return renderPassesMap[passName];
 }
-    
-void RenderSystem::SetCamera(Camera * _camera)
-{
-    camera = _camera;
-}
-
-Camera * RenderSystem::GetCamera()
-{
-	return camera;
-}
-
     
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
@@ -336,7 +327,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	}
 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS))
 	{
-		particleEmitterSystem->Update(timeElapsed, camera);
+		particleEmitterSystem->Update(timeElapsed, clipCamera);
 	}
 	
     int32 objectBoxesUpdated = 0;
@@ -365,12 +356,12 @@ void RenderSystem::Update(float32 timeElapsed)
     movedLights.clear();
     
     globalBatchArray->Clear();
-    renderHierarchy->Clip(camera, globalBatchArray);
+    renderHierarchy->Clip(clipCamera, globalBatchArray);
 	
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
+        objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
     }
 }
 

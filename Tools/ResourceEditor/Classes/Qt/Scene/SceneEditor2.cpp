@@ -370,7 +370,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 
 	particlesSystem->ProcessUIEvent(event);
     
-    staticOcclusionBuildSystem->SetCamera(GetCurrentCamera());
+    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
     staticOcclusionBuildSystem->Process();
 }
 

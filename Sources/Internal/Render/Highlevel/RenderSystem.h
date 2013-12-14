@@ -80,9 +80,10 @@ public:
     /**
         \brief Set main camera
      */
-    void SetCamera(Camera * camera);
-
-	Camera * GetCamera();
+    inline void SetCamera(Camera * camera);
+	inline Camera * GetCamera() const;
+    inline void SetClipCamera(Camera * camera);
+	inline Camera * GetClipCamera() const;
     
     
     void Update(float32 timeElapsed);
@@ -151,6 +152,7 @@ private:
     
     //HashMap<Entity*, RenderObject *> entityObjectMap;
     Camera * camera;
+    Camera * clipCamera;
     //Vector<RenderObject*> forRemove;
     
 	ParticleEmitterSystem * particleEmitterSystem;
@@ -159,6 +161,28 @@ private:
     
     friend class RenderPass;
 };
+    
+    
+    
+inline void RenderSystem::SetCamera(Camera * _camera)
+{
+    camera = _camera;
+}
+
+inline void RenderSystem::SetClipCamera(Camera * _camera)
+{
+    clipCamera = _camera;
+}
+
+inline Camera * RenderSystem::GetCamera() const
+{
+    return camera;
+}
+
+inline Camera * RenderSystem::GetClipCamera() const
+{
+    return clipCamera;
+}
     
 } // ns
 

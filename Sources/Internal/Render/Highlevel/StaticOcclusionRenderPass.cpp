@@ -35,8 +35,8 @@
 namespace DAVA
 {
     
-StaticOcclusionRenderLayer::StaticOcclusionRenderLayer(const FastName & name, StaticOcclusion * _occlusion)
-    : RenderLayer(name)
+StaticOcclusionRenderLayer::StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * _occlusion)
+    : RenderLayer(name, sortingFlags)
     , occlusion(_occlusion)
 {
     

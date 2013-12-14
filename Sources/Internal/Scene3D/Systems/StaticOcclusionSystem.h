@@ -64,6 +64,7 @@ private:
     // Final system part
     void ProcessStaticOcclusion(Camera * camera);
     void ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data);
+    void UndoOcclusionVisibility();
     Vector<StaticOcclusionData*> computedOcclusionInfo;
     Vector<RenderObject*> indexedRenderObjects;
 };
