@@ -224,7 +224,6 @@
 		176DE9AA174B5561007A983B /* RenderResource.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9516BD24E500732C04 /* RenderResource.h */; };
 		176DE9AB174B5561007A983B /* RGBColor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9816BD24E500732C04 /* RGBColor.h */; };
 		176DE9AC174B5561007A983B /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9A16BD24E500732C04 /* Shader.h */; };
-		176DE9AD174B5561007A983B /* ShaderUniformArray.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */; };
 		176DE9AE174B5561007A983B /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9F16BD24E500732C04 /* SharedFBO.h */; };
 		176DE9AF174B5561007A983B /* Texture.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA516BD24E500732C04 /* Texture.h */; };
 		176DE9B0174B5561007A983B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA716BD24E500732C04 /* TextureDescriptor.h */; };
@@ -1370,7 +1369,6 @@
 		E8989F5716BD24E500732C04 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9916BD24E500732C04 /* Shader.cpp */; };
 		E8989F5816BD24E500732C04 /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9A16BD24E500732C04 /* Shader.h */; };
 		E8989F5A16BD24E500732C04 /* ShaderGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9C16BD24E500732C04 /* ShaderGL.cpp */; };
-		E8989F5B16BD24E500732C04 /* ShaderUniformArray.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */; };
 		E8989F5C16BD24E500732C04 /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9E16BD24E500732C04 /* SharedFBO.cpp */; };
 		E8989F5D16BD24E500732C04 /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9F16BD24E500732C04 /* SharedFBO.h */; };
 		E8989F6216BD24E500732C04 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CA416BD24E500732C04 /* Texture.cpp */; };
@@ -1740,7 +1738,6 @@
 		E898A12016BD265400732C04 /* RenderResource.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9516BD24E500732C04 /* RenderResource.h */; };
 		E898A12216BD265400732C04 /* RGBColor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9816BD24E500732C04 /* RGBColor.h */; };
 		E898A12316BD265400732C04 /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9A16BD24E500732C04 /* Shader.h */; };
-		E898A12416BD265400732C04 /* ShaderUniformArray.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */; };
 		E898A12516BD265400732C04 /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9F16BD24E500732C04 /* SharedFBO.h */; };
 		E898A12616BD265400732C04 /* Texture.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA516BD24E500732C04 /* Texture.h */; };
 		E898A12716BD265400732C04 /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA716BD24E500732C04 /* TextureDescriptor.h */; };
@@ -2714,7 +2711,6 @@
 		E8989C9916BD24E500732C04 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E8989C9A16BD24E500732C04 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		E8989C9C16BD24E500732C04 /* ShaderGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderGL.cpp; sourceTree = "<group>"; };
-		E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderUniformArray.h; sourceTree = "<group>"; };
 		E8989C9E16BD24E500732C04 /* SharedFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedFBO.cpp; sourceTree = "<group>"; };
 		E8989C9F16BD24E500732C04 /* SharedFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFBO.h; sourceTree = "<group>"; };
 		E8989CA416BD24E500732C04 /* Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Texture.cpp; sourceTree = "<group>"; };
@@ -3607,7 +3603,6 @@
 				E8989C9916BD24E500732C04 /* Shader.cpp */,
 				E8989C9A16BD24E500732C04 /* Shader.h */,
 				E8989C9C16BD24E500732C04 /* ShaderGL.cpp */,
-				E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */,
 				E8989C9E16BD24E500732C04 /* SharedFBO.cpp */,
 				E8989C9F16BD24E500732C04 /* SharedFBO.h */,
 				E8989CA416BD24E500732C04 /* Texture.cpp */,
@@ -4292,7 +4287,6 @@
 				176DE9AA174B5561007A983B /* RenderResource.h in Headers */,
 				176DE9AB174B5561007A983B /* RGBColor.h in Headers */,
 				176DE9AC174B5561007A983B /* Shader.h in Headers */,
-				176DE9AD174B5561007A983B /* ShaderUniformArray.h in Headers */,
 				176DE9AE174B5561007A983B /* SharedFBO.h in Headers */,
 				176DE9AF174B5561007A983B /* Texture.h in Headers */,
 				176DE9B0174B5561007A983B /* TextureDescriptor.h in Headers */,
@@ -4662,7 +4656,6 @@
 				E8989F5316BD24E500732C04 /* RenderResource.h in Headers */,
 				E8989F5616BD24E500732C04 /* RGBColor.h in Headers */,
 				E8989F5816BD24E500732C04 /* Shader.h in Headers */,
-				E8989F5B16BD24E500732C04 /* ShaderUniformArray.h in Headers */,
 				E8989F5D16BD24E500732C04 /* SharedFBO.h in Headers */,
 				E8989F6316BD24E500732C04 /* Texture.h in Headers */,
 				E8989F6516BD24E500732C04 /* TextureDescriptor.h in Headers */,
@@ -5044,7 +5037,6 @@
 				E898A12016BD265400732C04 /* RenderResource.h in Headers */,
 				E898A12216BD265400732C04 /* RGBColor.h in Headers */,
 				E898A12316BD265400732C04 /* Shader.h in Headers */,
-				E898A12416BD265400732C04 /* ShaderUniformArray.h in Headers */,
 				E898A12516BD265400732C04 /* SharedFBO.h in Headers */,
 				E898A12616BD265400732C04 /* Texture.h in Headers */,
 				E898A12716BD265400732C04 /* TextureDescriptor.h in Headers */,

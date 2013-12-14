@@ -604,6 +604,7 @@ void Scene::Draw()
     
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
+    renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process();
 	actionSystem->Process(); //update action system before particles and render
 	particleEffectSystem->Process();

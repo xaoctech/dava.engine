@@ -105,6 +105,7 @@ void StaticOcclusionBuildSystem::Process()
         currentDataInProcess->Init(occlusionComponent->GetSubdivisionsX(),
                                    occlusionComponent->GetSubdivisionsY(),
                                    occlusionComponent->GetSubdivisionsZ(), size);
+        currentDataInProcess->bbox = worldBox;
         
         staticOcclusion->SetScene(GetScene());
         staticOcclusion->SetRenderSystem(GetScene()->GetRenderSystem());
@@ -147,18 +148,29 @@ void StaticOcclusionBuildSystem::ProcessStaticOcclusion(Camera * camera)
         StaticOcclusionData * data = computedOcclusionInfo[k];
         if (!data)return;
         
-//        const Vector3 & position = camera->GetPosition();
-//        if (data->bbox.IsInside(position))
-//        {
-//            uint32 x = (uint32)(position.x / (float32)data->sizeX);
-//            uint32 y = (uint32)(position.y / (float32)data->sizeY);
-//            uint32 z = (uint32)(position.z / (float32)data->sizeZ);
-//
-//            uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
+        const Vector3 & position = camera->GetPosition();
+        if (data->bbox.IsInside(position))
+        {
+            uint32 x = (uint32)((position.x - data->bbox.min.x) / (data->bbox.max.x - data->bbox.min.x) / (float32)data->sizeX);
+            uint32 y = (uint32)((position.y - data->bbox.min.y) / (data->bbox.max.y - data->bbox.min.y) / (float32)data->sizeY);
+            uint32 z = (uint32)((position.z - data->bbox.min.z) / (data->bbox.max.z - data->bbox.min.z) / (float32)data->sizeZ);
+
+            uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
         
-            ProcessStaticOcclusionForOneDataSet(0, data);
-//        }
+            ProcessStaticOcclusionForOneDataSet(blockIndex, data);
+        }else
+            UndoOcclusionVisibility();
     }
+}
+void StaticOcclusionBuildSystem::UndoOcclusionVisibility()
+{
+    uint32 size = (uint32)indexedRenderObjects.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        RenderObject * ro = indexedRenderObjects[k];
+        ro->SetFlags(ro->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
+    }
+
 }
 
 void StaticOcclusionBuildSystem::ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data)
