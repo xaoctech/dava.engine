@@ -79,6 +79,8 @@ public:
                                   Vector<RenderObject*> & renderObjects,
                                   StaticOcclusionData * currentData,
                                   RenderHierarchy * renderHierarchy);
+    
+    void SetEqualVisibilityVector(Map<RenderObject*, Vector<RenderObject*> > & equalVisibility);
 
     
     inline OcclusionQueryManager & GetOcclusionQueryManager();
@@ -117,6 +119,7 @@ private:
     RenderSystem * renderSystem;
     Scene * scene;
     Vector<RenderObject*> renderObjectsArray;
+    Map<RenderObject*, Vector<RenderObject*> > equalVisibilityArray;
 };
     
 inline OcclusionQueryManager & StaticOcclusion::GetOcclusionQueryManager()

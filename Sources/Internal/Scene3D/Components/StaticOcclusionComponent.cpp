@@ -38,10 +38,10 @@ REGISTER_CLASS(StaticOcclusionComponent)
 
 StaticOcclusionComponent::StaticOcclusionComponent()
 {
-    xSubdivisions = 1;
-    ySubdivisions = 1;
+    xSubdivisions = 2;
+    ySubdivisions = 2;
     zSubdivisions = 1;
-    boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(5.0f, 5.0f, 5.0f));
+    boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
 }
 
 Component * StaticOcclusionComponent::Clone(Entity * toEntity)

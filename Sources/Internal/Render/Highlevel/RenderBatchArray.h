@@ -63,9 +63,10 @@ public:
     {
         SORT_ENABLED = 1 << 0,
         SORT_BY_MATERIAL = 1 << 1,
-        SORT_BY_DISTANCE = 1 << 2,
+        SORT_BY_DISTANCE_BACK_TO_FRONT = 1 << 2,
+        SORT_BY_DISTANCE_FRONT_TO_BACK = 1 << 3,
         
-        SORT_REQUIRED = 1 << 3,
+        SORT_REQUIRED = 1 << 4,
     };
     
     static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
@@ -95,13 +96,7 @@ public:
 	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
 	{
 		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-        if (!layerBatchArray)
-        {
-            layerBatchArray = new RenderLayerBatchArray(RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL);
-            layerBatchArrayMap.insert(name, layerBatchArray);
-        }
-		//DVASSERT(layerBatchArray);
-		
+		DVASSERT(layerBatchArray);
 		layerBatchArray->AddRenderBatch(renderBatch);
 	}
 	

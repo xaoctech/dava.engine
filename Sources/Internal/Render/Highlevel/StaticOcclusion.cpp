@@ -68,15 +68,20 @@ void StaticOcclusion::BuildOcclusionInParallel(const AABBox3 & _occlusionAreaRec
 {
     staticOcclusionRenderPass = new StaticOcclusionRenderPass(PASS_FORWARD, this);
     
-    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL, this), LAST_LAYER);
-    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL, this), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
 
-    
     renderPassBatchArray = new RenderPassBatchArray();
-
+    renderPassBatchArray->InitLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    renderPassBatchArray->InitLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    renderPassBatchArray->InitLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    renderPassBatchArray->InitLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    renderPassBatchArray->InitLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    
+    
     currentData = _currentData;
     renderHierarchy = _renderHierarchy;
     occlusionAreaRect = _occlusionAreaRect;
@@ -106,6 +111,12 @@ void StaticOcclusion::BuildOcclusionInParallel(const AABBox3 & _occlusionAreaRec
     
     renderObjectsArray = renderObjects;
 }
+    
+void StaticOcclusion::SetEqualVisibilityVector(Map<RenderObject*, Vector<RenderObject*> > & equalVisibility)
+{
+    equalVisibilityArray = equalVisibility;
+}
+
     
 //uint32 StaticOcclusion::CameraToCellIndex(Camera * camera)
 //{
@@ -296,7 +307,21 @@ uint32 StaticOcclusion::RenderFrame()
     for (Set<RenderObject*>::iterator it = frameGlobalVisibleInfo.begin(), end = frameGlobalVisibleInfo.end(); it != end; ++it)
     {
         RenderObject * obj = *it;
+        DVASSERT(obj->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
         currentData->SetVisibilityForObject(blockIndex, obj->GetStaticOcclusionIndex(), 1);
+        
+        Map<RenderObject*, Vector<RenderObject*> >::iterator findIt = equalVisibilityArray.find(obj);
+        if (findIt != equalVisibilityArray.end())
+        {
+            Vector<RenderObject*> & equalObjects = findIt->second;
+            uint32 size = equalObjects.size();
+            for (uint32 k = 0; k < size; ++k)
+            {
+                DVASSERT(equalObjects[k]->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
+                currentData->SetVisibilityForObject(blockIndex, equalObjects[k]->GetStaticOcclusionIndex(), 1);
+                invisibleObjectCount --;
+            }
+        }
     }
     
     t1 = SystemTimer::Instance()->GetAbsoluteNano() - t1;
