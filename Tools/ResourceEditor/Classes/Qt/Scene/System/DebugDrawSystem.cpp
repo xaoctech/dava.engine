@@ -167,6 +167,15 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.2f, 0.8f, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
         
+        
+        //
+        for (uint32 xs = 0; xs < staticOcclusionComponent->GetSubdivisionsX(); ++xs)
+            for (uint32 ys = 0; ys < staticOcclusionComponent->GetSubdivisionsY(); ++ys)
+                for (uint32 zs = 0; zs < staticOcclusionComponent->GetSubdivisionsX(); ++zs)
+                {
+                    
+                }
+        
 		// axises
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(delta, 0, 0));

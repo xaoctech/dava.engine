@@ -38,6 +38,8 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Systems/LodSystem.h"
 
 namespace DAVA
 {
@@ -123,10 +125,70 @@ void StaticOcclusionBuildSystem::Process()
             indexedRenderObjects[renderObjectsArray[k]->GetStaticOcclusionIndex()] = renderObjectsArray[k];
         }
         
+        
+        Map<RenderObject*, Vector<RenderObject*> > equalRenderObjects;
+        Vector<Entity*> lodEntities;
+        GetScene()->GetChildEntitiesWithComponent(lodEntities, Component::LOD_COMPONENT);
+        
+        // VB: This code will require changes )))
+        size = (uint32)lodEntities.size();
+        for(uint32 k = 0; k < size; ++k)
+        {
+            LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
+            
+            // VB: Why I hate current lod system starts here.
+            Vector<DAVA::LodComponent::LodData *> retLodLayers;
+            lodComponent->GetLodData(retLodLayers);
+            
+            RenderObject * lod0Object = 0;
+            Vector<RenderObject*> others;
+            for (uint32 lodLayer = 0; lodLayer < (uint32)retLodLayers.size(); ++lodLayer)
+            {
+                if (lodLayer == 0)
+                {
+                    DVASSERT(retLodLayers[lodLayer]->nodes.size() == 1);
+                    lod0Object = GetRenderObject(retLodLayers[lodLayer]->nodes[0]);
+                    DVASSERT(lod0Object != 0);
+                }else
+                {
+                    for (uint32 p = 0; p < retLodLayers[lodLayer]->nodes.size(); ++p)
+                    {
+                        RenderObject * ro = GetRenderObject(retLodLayers[lodLayer]->nodes[p]);
+                        others.push_back(ro);
+                    }
+                }
+            }
+            equalRenderObjects[lod0Object] = others;
+        }
+        staticOcclusion->SetEqualVisibilityVector(equalRenderObjects);
+        
         needSetupNextOcclusion = false;
     }else
     {
+        Map<RenderObject*, Vector<RenderObject*> > equalRenderObjects;
+        Vector<Entity*> lodEntities;
+        GetScene()->GetChildEntitiesWithComponent(lodEntities, Component::LOD_COMPONENT);
+        
+        // VB: This code will require changes )))
+        uint32 size = (uint32)lodEntities.size();
+        for(uint32 k = 0; k < size; ++k)
+        {
+            LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
+            lodComponent->SetForceLodLayer(0);
+        }
+        GetScene()->lodSystem->Process();
+        
         uint32 result = staticOcclusion->RenderFrame();
+        
+        // VB: This code will require changes )))
+        size = (uint32)lodEntities.size();
+        for(uint32 k = 0; k < size; ++k)
+        {
+            LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
+            lodComponent->SetForceLodLayer(LodComponent::INVALID_LOD_LAYER);
+        }
+        GetScene()->lodSystem->Process();
+        
         if (result == 0)
         {
             computedOcclusionInfo[activeIndex] = currentDataInProcess;
@@ -135,7 +197,9 @@ void StaticOcclusionBuildSystem::Process()
             needSetupNextOcclusion = true;
             activeIndex++;
             if (activeIndex == entities.size())
+            {
                 activeIndex = -1;
+            }
         }
     }
 }
@@ -149,17 +213,17 @@ void StaticOcclusionBuildSystem::ProcessStaticOcclusion(Camera * camera)
         if (!data)return;
         
         const Vector3 & position = camera->GetPosition();
-        if (data->bbox.IsInside(position))
-        {
-            uint32 x = (uint32)((position.x - data->bbox.min.x) / (data->bbox.max.x - data->bbox.min.x) / (float32)data->sizeX);
-            uint32 y = (uint32)((position.y - data->bbox.min.y) / (data->bbox.max.y - data->bbox.min.y) / (float32)data->sizeY);
-            uint32 z = (uint32)((position.z - data->bbox.min.z) / (data->bbox.max.z - data->bbox.min.z) / (float32)data->sizeZ);
-
-            uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
+//        if (data->bbox.IsInside(position))
+//        {
+//            uint32 x = (uint32)((position.x - data->bbox.min.x) / (data->bbox.max.x - data->bbox.min.x) / (float32)data->sizeX);
+//            uint32 y = (uint32)((position.y - data->bbox.min.y) / (data->bbox.max.y - data->bbox.min.y) / (float32)data->sizeY);
+//            uint32 z = (uint32)((position.z - data->bbox.min.z) / (data->bbox.max.z - data->bbox.min.z) / (float32)data->sizeZ);
+//
+//            uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
         
-            ProcessStaticOcclusionForOneDataSet(blockIndex, data);
-        }else
-            UndoOcclusionVisibility();
+            ProcessStaticOcclusionForOneDataSet(0, data);
+//        }else
+//            UndoOcclusionVisibility();
     }
 }
 void StaticOcclusionBuildSystem::UndoOcclusionVisibility()
