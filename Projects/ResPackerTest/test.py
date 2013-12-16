@@ -58,8 +58,8 @@ for test in os.listdir(results):
     result['tex_Success'] = True
     result['img_Success'] = True
     
-    expected = os.path.realpath(results + "\\" + test)
-    actual = os.path.realpath(output + "\\" + test)
+    expected = os.path.realpath(results + "/" + test)
+    actual = os.path.realpath(output + "/" + test)
     
     # Check TEXT files
     print "Check TXT files"
@@ -68,7 +68,7 @@ for test in os.listdir(results):
         print files
     
     for file in files:
-        res = utils.compare_txt(expected + "\\" + file, actual + "\\" + file)
+        res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
         if res != None:
             result['txt_Success'] = False
             result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
@@ -81,7 +81,7 @@ for test in os.listdir(results):
         print files
     
     for file in files:
-        res = utils.compare_tex(expected + "\\" + file, actual + "\\" + file)
+        res = utils.compare_tex(expected + "/" + file, actual + "/" + file)
         if res != None:
             result['tex_Success'] = False
             result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
@@ -94,7 +94,7 @@ for test in os.listdir(results):
         print files
     
     for file in files:
-        res = utils.compare_txt(expected + "\\" + file, actual + "\\" + file)
+        res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
         if res != None:
             result['img_Success'] = False
             result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
@@ -105,7 +105,7 @@ for test in os.listdir(results):
         print files
     
     for file in files:
-        res = utils.compare_txt(expected + "\\" + file, actual + "\\" + file)
+        res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
         if res != None:
             result['img_Success'] = False
             result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
@@ -116,7 +116,7 @@ for test in os.listdir(results):
         print files
     
     for file in files:
-        res = utils.compare_txt(expected + "\\" + file, actual + "\\" + file)
+        res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
         if res != None:
             result['img_Success'] = False
             result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
@@ -164,4 +164,4 @@ tests_results["img_failure"] = img_failure
 tests_results['gpu'] = gpu
         
 report_utils.print_result(tests_results)
-report_utils.create_html(tests_results, currentDir + "\\" + gpu + ".html")
+report_utils.create_html(tests_results, currentDir + "/" + gpu + ".html")
