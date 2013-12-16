@@ -151,13 +151,13 @@ int32 CompareCaseInsensitive(const String &str1, const String &str2)
     return 1;
 }
 
-// Yuri Coder, 2013/12/16. STUB to link the project, TO REMOVE when Win32/Android implementation will be added.
-#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_WIN32__)
-    
+// Yuri Coder, 2013/12/16. STUB to link the project, TO REMOVE when Android implementation will be added.
+#if defined(__DAVAENGINE_ANDROID__)
+
 void OpenURL(const String& /*url*/)
 {
 }
 
 #endif
-    
+
 }; // end of namespace DAVA
