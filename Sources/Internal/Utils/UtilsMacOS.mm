@@ -22,6 +22,8 @@
 
 #if defined(__DAVAENGINE_MACOS__)
 #import <Foundation/NSThread.h>
+#import <Foundation/NSURL.h>
+#import <AppKit/AppKit.h>
 #endif //#if defined(__DAVAENGINE_MACOS__)
 
 namespace DAVA
