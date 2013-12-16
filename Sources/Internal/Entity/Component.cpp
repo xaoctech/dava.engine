@@ -31,7 +31,6 @@
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
 #include "Debug/DVAssert.h"
-#include "Sound/SoundSystem.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
@@ -45,6 +44,7 @@
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 
 namespace DAVA
 {
@@ -80,7 +80,7 @@ Component * Component::CreateByType(uint32 componentType)
 		return new UserComponent();
 		break;
 	case SOUND_COMPONENT:
-		return SoundSystem::Instance()->CreateSoundComponent();
+        return new SoundComponent();
 		break;
 	case CUSTOM_PROPERTIES_COMPONENT:
 		return new CustomPropertiesComponent();

@@ -35,7 +35,7 @@
 #include "Base/FastNameMap.h"
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
-#include "Sound/SimpleSoundEvent.h"
+#include "Sound/SoundEvent.h"
 
 #define DEFAULT_SOUNDS_DIRECTORY "~res:/Sfx/"
 
@@ -43,15 +43,13 @@ namespace DAVA
 {
 
 class Component;
-class SoundEvent;
 class SoundSystemInstance
 {
 public:
     virtual ~SoundSystemInstance() {};
     
-    virtual SimpleSoundEvent * CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128) = 0;
-    virtual Component * CreateSoundComponent() = 0;
-    virtual SoundEvent * CreateSoundEvent(const String & eventName) = 0;
+    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName) = 0;
+    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128) = 0;
 
     virtual void Update(float32 timeElapsed);
     virtual void Suspend() = 0;
@@ -62,16 +60,8 @@ public:
     virtual void SetListenerPosition(const Vector3 & position) = 0;
     virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left) = 0;
 
-    virtual void StopGroup(const FastName & groupName) = 0;
-
     virtual void SetGroupVolume(const FastName & groupName, float32 volume) = 0;
     virtual float32 GetGroupVolume(const FastName & groupName) = 0;
-
-    virtual void SetGlobalComponentsVolume(float32 volume) = 0;
-    virtual float32 GetSoundComponentsVolume() = 0;
-
-    virtual void SetMaxDistance(float32 distance) = 0;
-    virtual float32 GetMaxDistance() = 0;
 };
 
 class SoundSystem

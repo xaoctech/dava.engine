@@ -34,6 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/EventDispatcher.h"
+#include "Base/FastNameMap.h"
 #include "Sound/SoundEvent.h"
 
 namespace FMOD
@@ -47,22 +48,50 @@ namespace DAVA
 class FMODSoundEvent : public SoundEvent
 {
 public:
+    struct SoundEventParameterInfo
+    {
+        String name;
+        float32 maxValue;
+        float32 minValue;
+        float32 currentValue;
+    };
+    
 	~FMODSoundEvent();
 
     virtual bool Trigger();
     virtual bool IsActive();
 	virtual void Stop();
-
-    void KeyOffParameter(const String & paramName);
-
-    void PerformCallback(CallbackType callbackType);
-
-private:
+    virtual void Pause();
+    
+    virtual void Serialize(KeyedArchive *archive);
+    virtual void Deserialize(KeyedArchive *archive);
+    
+    virtual void SetVolume(float32 volume);
+    virtual float32	GetVolume();
+    
+    virtual void SetPosition(const Vector3 & position);
+    virtual void UpdateInstancesPosition();
+    
+    virtual void SetParameterValue(const FastName & paramName, float32 value);
+    virtual float32 GetParameterValue(const FastName & paramName);
+    
+    //FMOD only
+    void PerformCallback(FMOD::Event  * event, SoundEventCallback callbackType);
+    
+    bool GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
+    
+protected:
     FMODSoundEvent(const String & eventName);
+    void ApplyParamsToEvent(FMOD::Event * event);
 
-	FMOD::Event * fmodEvent;
+    List<FMOD::Event *> fmodEventInstances;
     String eventName;
-
+    
+    Vector3 position;
+    float32 volume;
+    
+    FastNameMap<float32> paramsValues;
+    
 friend class FMODSoundSystem;
 };
 

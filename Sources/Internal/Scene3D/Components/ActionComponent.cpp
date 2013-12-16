@@ -30,6 +30,7 @@
 
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
+#include "Sound/SoundEvent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
@@ -392,7 +393,7 @@ namespace DAVA
 			SoundComponent* component = static_cast<SoundComponent*>(target->GetComponent(Component::SOUND_COMPONENT));
 			if(component)
 			{
-				component->Trigger();
+				component->GetSoundEvent()->Trigger();
 			}
 
 		}

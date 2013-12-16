@@ -40,16 +40,37 @@ namespace DAVA
 class SoundEvent : public EventDispatcher
 {
 public:
-    enum CallbackType
+    enum SoundEventCallback
     {
         EVENT_END,     /* Called when an event is stopped for any reason. */
 
         EVENT_COUNT
     };
     
+    enum SoundEventCreateFlags
+    {
+        SOUND_EVENT_CREATE_DEFAULT = 0, //2D; static; no loop
+        SOUND_EVENT_CREATE_STREAM = (1 << 1),
+        SOUND_EVENT_CREATE_3D = (1 << 2),
+        SOUND_EVENT_CREATE_LOOP = (1 << 3)
+    };
+    
     virtual bool Trigger() = 0;
     virtual bool IsActive() = 0;
     virtual void Stop() = 0;
+    virtual void Pause() = 0;
+    
+    virtual void Serialize(KeyedArchive *archive) = 0;
+    virtual void Deserialize(KeyedArchive *archive) = 0;
+    
+    virtual void SetVolume(float32 volume) = 0;
+    virtual float32	GetVolume() = 0;
+    
+    virtual void SetPosition(const Vector3 & position) = 0;
+    virtual void UpdateInstancesPosition() = 0;
+    
+    virtual void SetParameterValue(const FastName & paramName, float32 value) = 0;
+    virtual float32 GetParameterValue(const FastName & paramName) = 0;
 };
 
 };

@@ -191,12 +191,10 @@
 #include "Scene2D/Box2DHelper.h"
 
 // Sound & Music
-#include "Sound/SimpleSoundEvent.h"
-#include "Sound/FMODSimpleSoundEvent.h"
+#include "Sound/SoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundSystem.h"
-#include "Sound/FMODSoundGroup.h"
 
 // Particle System
 #include "Particles/ParticleEmitter.h"
@@ -263,7 +261,6 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Components/FMODSoundComponent.h"
 
 // Application core 
 #include "Core/Core.h"
