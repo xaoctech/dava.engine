@@ -275,15 +275,9 @@ namespace DAVA
 
 	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
 	{
-		List<UIControl*>& realChildrenList = GetRealChildren();
-		List<UIControl*> subControlsList = GetSubcontrols();
-
-		// Merge two lists without duplicates.
-		List<UIControl*> resultList = realChildrenList;
-		resultList.insert(resultList.end(), subControlsList.begin(), subControlsList.end());
-		resultList.erase(std::unique(resultList.begin(), resultList.end()), resultList.end());
-		
-		return resultList;
+        // Yuri Coder, 2013/12/16. Return all children, keep their order (see please DF-2817). In case
+        // some specific hanldling is needed for some control, reimplement this function on its level.
+        return this->childs;
 	}
 
 	String UIControl::GetSpriteFrameworkPath( const Sprite* sprite)
@@ -2866,22 +2860,11 @@ namespace DAVA
 		initialState = newState;
 	}
 
-	YamlNode * UIControl::SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control,  YamlNode* rootNode)
+	YamlNode * UIControl::SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control, int32 relativePosition)
 	{
 		YamlNode* controlNode = control->SaveToYamlNode(loader);
-		
-		if (rootNode)
-		{
-			rootNode->AddNodeToMap(control->GetName(), controlNode);
-		}
-		
-		const List<UIControl*>& children = control->GetRealChildren();
-		for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
-		{
-			UIControl* childControl = (*childIter);
-			SaveToYamlNodeRecursive(loader, childControl, controlNode);
-		}
-		
+
+        loader->SaveChildren(control, controlNode, relativePosition);
 		return controlNode;
 	}
 }
