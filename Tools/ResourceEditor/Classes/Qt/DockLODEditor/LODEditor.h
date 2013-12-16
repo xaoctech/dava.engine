@@ -72,10 +72,13 @@ protected slots:
     void LODDistanceChangedBySpinbox(double value);
     void LODDistanceChangedBySlider(const QVector<int> &changedLayers, bool continuous);
     
+    //TODO: remove after lod editing implementation
+    void CopyLODToLod0Clicked();
+
     void ForceLayerActivated(int index);
     
 protected:
-    
+
     void SetupInternalUI();
     void InitCorrectionSpinBox(QDoubleSpinBox *spinbox, int index);
     void InitDistanceSpinBox(QLabel *name, QDoubleSpinBox *spinbox, int index);
