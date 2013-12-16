@@ -1728,14 +1728,12 @@ namespace DAVA
 		
 		switch (currentInput->phase) 
 		{
-#if !defined(__DAVAENGINE_IPHONE__)
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_KEYCHAR:
 			{
 					Input(currentInput);
 			}
 			break;
-#endif
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_MOVE:
 			{
 				if (!currentInput->touchLocker && IsPointInside(currentInput->point))
