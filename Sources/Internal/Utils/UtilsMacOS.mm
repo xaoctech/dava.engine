@@ -51,7 +51,18 @@ namespace DAVA
 	{
 		return [NSThread isMainThread];
 	}
-	
+
+    void OpenURL(const String& url)
+    {
+        NSString* urlString = [NSString stringWithCString:url.c_str() encoding:NSASCIIStringEncoding];
+        NSURL* urlToOpen = [NSURL URLWithString:urlString];
+#if defined(__DAVAENGINE_IPHONE__)
+        [[UIApplication sharedApplication] openURL:urlToOpen];
+#else
+        [[NSWorkspace sharedWorkspace] openURL:urlToOpen];
+#endif
+    }
+
 #endif
 	
 #if defined(__DAVAENGINE_IPHONE__)
@@ -73,5 +84,5 @@ void EnableSleepTimer()
 	}
 	
 #endif
-
+    
 }; // end of namespace DAVA
