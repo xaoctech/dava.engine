@@ -17,7 +17,8 @@ currentDir = os.getcwd();
 
 data = os.path.realpath(currentDir + "/DataSource/")
 input = os.path.realpath(currentDir + "/DataSource/TestData/")
-output =  os.path.realpath(currentDir + "/Data/TestData") 
+output =  os.path.realpath(currentDir + "/Data/TestData")
+data_folder =  os.path.realpath(currentDir + "/Data")
 process = os.path.realpath(currentDir + "/DataSource/$process/")
 results = os.path.realpath(currentDir + "/Results/" + gpu)
 
@@ -32,10 +33,10 @@ if os.path.exists(output):
 if os.path.exists(process):
     print "Remove folder " + process
     shutil.rmtree(process)
-	
-if not os.path.exists(output):
-	print "Create folder " + output
-	os.mkdir(output)
+    
+if not os.path.exists(data_folder):
+    print "Create folder " + data_folder
+    os.mkdir(data_folder)
     
 print "*** DAVA AUTOTEST Run convert_graphics.py script for %s ***" % gpu
 os.chdir(data)
