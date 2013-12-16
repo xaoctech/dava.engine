@@ -2857,12 +2857,4 @@ namespace DAVA
 	{
 		initialState = newState;
 	}
-
-	YamlNode * UIControl::SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control, int32 relativePosition)
-	{
-		YamlNode* controlNode = control->SaveToYamlNode(loader);
-
-        loader->SaveChildren(control, controlNode, relativePosition);
-		return controlNode;
-	}
 }
