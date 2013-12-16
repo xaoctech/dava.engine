@@ -216,12 +216,8 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-	
-    // Control Type
 	SetPreferredNodeType(node, "UIScrollViewContainer");
-	// Save scroll view container childs including all sub-childs
-    loader->SaveChildren(this, node);
-    
+
     return node;
 }
 

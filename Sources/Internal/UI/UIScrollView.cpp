@@ -172,14 +172,6 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 	
 	return maxSize;
 }
-    
-List<UIControl* >& UIScrollView::GetRealChildren()
-{
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(FindByName(UISCROLL_VIEW_CONTAINER_NAME));
-	
-	return realChildren;
-}
 
 List<UIControl* > UIScrollView::GetSubcontrols()
 {
@@ -273,17 +265,14 @@ void UIScrollView::LoadFromYamlNodeCompleted()
 
 YamlNode * UIScrollView::SaveToYamlNode(UIYamlLoader * loader)
 {
+    if (scrollContainer)
+    {
+        scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
+    }
+    
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-    // Control Type
 	SetPreferredNodeType(node, "UIScrollView");
 
-	// Scroll container with all childs have to be saved too.
-	if (scrollContainer)
-	{
-		YamlNode* scrollContainerNode = scrollContainer->SaveToYamlNode(loader);
-		node->AddNodeToMap(UISCROLL_VIEW_CONTAINER_NAME, scrollContainerNode);
-	}
-	
     return node;
 }
 
