@@ -25,3 +25,55 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+#include "SoundSystem.h"
+#include "SoundComponent.h"
+#include "SoundEvent.h"
+
+using namespace DAVA;
+
+SoundComponent::SoundComponent() : event(0) {}
+
+SoundComponent::~SoundComponent()
+{
+    SafeRelease(event);
+}
+
+SoundEvent * SoundComponent::GetSoundEvent()
+{
+    return event;
+}
+
+void SoundComponent::SetSoundEvent(SoundEvent * _event)
+{
+    SafeRelease(event);
+    
+    event = SafeRetain(_event);
+}
+
+Component * SoundComponent::Clone(Entity * toEntity)
+{
+    SoundComponent * soundComponent = new SoundComponent();
+    soundComponent->SetEntity(toEntity);
+    
+    soundComponent->SetSoundEvent(event);
+    
+    return soundComponent;
+}
+
+void SoundComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+    //TODO
+    Component::Serialize(archive, sceneFile);
+    
+    event->Serialize(archive);
+}
+
+void SoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+    //TODO
+    Component::Deserialize(archive, sceneFile);
+    
+    event = SoundSystem::Instance()->CreateSoundEventByID("", "FX");
+    event->Deserialize(archive);
+}

@@ -33,7 +33,6 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Components/FMODSoundComponent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/FMODSoundSystem.h"
@@ -44,7 +43,6 @@ SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
 {
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
-	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_CHANGED);
 }
 
 SoundUpdateSystem::~SoundUpdateSystem()
@@ -58,17 +56,9 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
-		((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->SetPosition(translation);
-	}
-
-	if (event == EventSystem::SOUND_CHANGED)
-	{
-		FMODSoundComponent * soundComponent = (FMODSoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
-        if(soundComponent)
-        {
-            soundComponent->Stop();
-            soundComponent->fmodEvent = 0;
-        }
+        SoundEvent * sound = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
+		sound->SetPosition(translation);
+        sound->UpdateInstancesPosition();
 	}
 }
     

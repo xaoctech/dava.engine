@@ -28,24 +28,14 @@
 		024DF6EC17FDE4C400138748 /* FMODSoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6DE17FDE4C400138748 /* FMODSoundEvent.h */; };
 		024DF6ED17FDE4C400138748 /* FMODSoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6DE17FDE4C400138748 /* FMODSoundEvent.h */; };
 		024DF6EE17FDE4C400138748 /* FMODSoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6DE17FDE4C400138748 /* FMODSoundEvent.h */; };
-		024DF6EF17FDE4C400138748 /* FMODSoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6DF17FDE4C400138748 /* FMODSoundGroup.cpp */; };
-		024DF6F017FDE4C400138748 /* FMODSoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6DF17FDE4C400138748 /* FMODSoundGroup.cpp */; };
-		024DF6F117FDE4C400138748 /* FMODSoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6DF17FDE4C400138748 /* FMODSoundGroup.cpp */; };
-		024DF6F217FDE4C400138748 /* FMODSoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E017FDE4C400138748 /* FMODSoundGroup.h */; };
-		024DF6F317FDE4C400138748 /* FMODSoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E017FDE4C400138748 /* FMODSoundGroup.h */; };
-		024DF6F417FDE4C400138748 /* FMODSoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E017FDE4C400138748 /* FMODSoundGroup.h */; };
 		024DF6F517FDE4C400138748 /* FMODSoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6E117FDE4C400138748 /* FMODSoundSystem.cpp */; };
 		024DF6F617FDE4C400138748 /* FMODSoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6E117FDE4C400138748 /* FMODSoundSystem.cpp */; };
 		024DF6F717FDE4C400138748 /* FMODSoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6E117FDE4C400138748 /* FMODSoundSystem.cpp */; };
 		024DF6F817FDE4C400138748 /* FMODSoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E217FDE4C400138748 /* FMODSoundSystem.h */; };
 		024DF6F917FDE4C400138748 /* FMODSoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E217FDE4C400138748 /* FMODSoundSystem.h */; };
 		024DF6FA17FDE4C400138748 /* FMODSoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6E217FDE4C400138748 /* FMODSoundSystem.h */; };
-		024DF6FE17FDE55F00138748 /* FMODSoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6FC17FDE55F00138748 /* FMODSoundComponent.cpp */; };
-		024DF6FF17FDE55F00138748 /* FMODSoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6FC17FDE55F00138748 /* FMODSoundComponent.cpp */; };
-		024DF70017FDE55F00138748 /* FMODSoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024DF6FC17FDE55F00138748 /* FMODSoundComponent.cpp */; };
-		024DF70117FDE55F00138748 /* FMODSoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6FD17FDE55F00138748 /* FMODSoundComponent.h */; };
-		024DF70217FDE55F00138748 /* FMODSoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6FD17FDE55F00138748 /* FMODSoundComponent.h */; };
-		024DF70317FDE55F00138748 /* FMODSoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 024DF6FD17FDE55F00138748 /* FMODSoundComponent.h */; };
+		0256F3DB185B4CAA00D22ADF /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0256F3D9185B4CAA00D22ADF /* SoundEvent.cpp */; };
+		0256F3DC185B4CAA00D22ADF /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0256F3DA185B4CAA00D22ADF /* SoundEvent.h */; };
 		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
 		02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
 		02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
@@ -304,7 +294,6 @@
 		176DE9E8174B5561007A983B /* SwitchSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2D16BD24E500732C04 /* SwitchSystem.h */; };
 		176DE9E9174B5561007A983B /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		176DE9EA174B5561007A983B /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		176DE9EB174B5561007A983B /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
 		176DE9ED174B5561007A983B /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
 		176DE9EE174B5561007A983B /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		176DE9EF174B5561007A983B /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4E16BD24E500732C04 /* TheoraPlayer.h */; };
@@ -1419,7 +1408,6 @@
 		E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E8989FEC16BD24E500732C04 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
 		E8989FED16BD24E500732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E8989FF216BD24E500732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
 		E8989FFF16BD24E500732C04 /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
 		E898A00016BD24E500732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
 		E898A00316BD24E500732C04 /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
@@ -1727,7 +1715,6 @@
 		E898A16916BD265400732C04 /* SwitchSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2D16BD24E500732C04 /* SwitchSystem.h */; };
 		E898A16A16BD265400732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E898A16C16BD265400732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E898A16E16BD265400732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
 		E898A17516BD265400732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
 		E898A17716BD265400732C04 /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		E898A17816BD265400732C04 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4E16BD24E500732C04 /* TheoraPlayer.h */; };
@@ -2109,12 +2096,10 @@
 		024DF6DC17FDE4C400138748 /* FMODSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSound.h; sourceTree = "<group>"; };
 		024DF6DD17FDE4C400138748 /* FMODSoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundEvent.cpp; sourceTree = "<group>"; };
 		024DF6DE17FDE4C400138748 /* FMODSoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundEvent.h; sourceTree = "<group>"; };
-		024DF6DF17FDE4C400138748 /* FMODSoundGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundGroup.cpp; sourceTree = "<group>"; };
-		024DF6E017FDE4C400138748 /* FMODSoundGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundGroup.h; sourceTree = "<group>"; };
 		024DF6E117FDE4C400138748 /* FMODSoundSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundSystem.cpp; sourceTree = "<group>"; };
 		024DF6E217FDE4C400138748 /* FMODSoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundSystem.h; sourceTree = "<group>"; };
-		024DF6FC17FDE55F00138748 /* FMODSoundComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundComponent.cpp; sourceTree = "<group>"; };
-		024DF6FD17FDE55F00138748 /* FMODSoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundComponent.h; sourceTree = "<group>"; };
+		0256F3D9185B4CAA00D22ADF /* SoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEvent.cpp; sourceTree = "<group>"; };
+		0256F3DA185B4CAA00D22ADF /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
 		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E40817395FDD00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E40917395FDD00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
@@ -2726,7 +2711,6 @@
 		E8989D2F16BD24E500732C04 /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		E8989D3216BD24E500732C04 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		E8989D3316BD24E500732C04 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
-		E8989D3916BD24E500732C04 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
 		E8989D4616BD24E500732C04 /* SoundSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundSystem.cpp; sourceTree = "<group>"; };
 		E8989D4716BD24E500732C04 /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
 		E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollHelper.cpp; sourceTree = "<group>"; };
@@ -2906,8 +2890,6 @@
 				024DF6DC17FDE4C400138748 /* FMODSound.h */,
 				024DF6DD17FDE4C400138748 /* FMODSoundEvent.cpp */,
 				024DF6DE17FDE4C400138748 /* FMODSoundEvent.h */,
-				024DF6DF17FDE4C400138748 /* FMODSoundGroup.cpp */,
-				024DF6E017FDE4C400138748 /* FMODSoundGroup.h */,
 				024DF6E117FDE4C400138748 /* FMODSoundSystem.cpp */,
 				024DF6E217FDE4C400138748 /* FMODSoundSystem.h */,
 				02E9E3AA17296D4200C501BC /* FMODUtils.h */,
@@ -3719,8 +3701,6 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				024DF6FC17FDE55F00138748 /* FMODSoundComponent.cpp */,
-				024DF6FD17FDE55F00138748 /* FMODSoundComponent.h */,
 				A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */,
 				A6E4FE001761D96C00B48E41 /* ActionComponent.h */,
 				A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */,
@@ -3796,7 +3776,8 @@
 			isa = PBXGroup;
 			children = (
 				024DF6FB17FDE4CF00138748 /* FMOD */,
-				E8989D3916BD24E500732C04 /* Sound.h */,
+				0256F3D9185B4CAA00D22ADF /* SoundEvent.cpp */,
+				0256F3DA185B4CAA00D22ADF /* SoundEvent.h */,
 				E8989D4616BD24E500732C04 /* SoundSystem.cpp */,
 				E8989D4716BD24E500732C04 /* SoundSystem.h */,
 			);
@@ -4213,7 +4194,6 @@
 				176DE9E8174B5561007A983B /* SwitchSystem.h in Headers */,
 				176DE9E9174B5561007A983B /* TransformSystem.h in Headers */,
 				176DE9EA174B5561007A983B /* UserNode.h in Headers */,
-				176DE9EB174B5561007A983B /* Sound.h in Headers */,
 				176DE9ED174B5561007A983B /* SoundSystem.h in Headers */,
 				176DE9EE174B5561007A983B /* ScrollHelper.h in Headers */,
 				176DE9EF174B5561007A983B /* TheoraPlayer.h in Headers */,
@@ -4312,9 +4292,7 @@
 				EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */,
 				024DF6E817FDE4C400138748 /* FMODSound.h in Headers */,
 				024DF6EE17FDE4C400138748 /* FMODSoundEvent.h in Headers */,
-				024DF6F417FDE4C400138748 /* FMODSoundGroup.h in Headers */,
 				024DF6FA17FDE4C400138748 /* FMODSoundSystem.h in Headers */,
-				024DF70317FDE55F00138748 /* FMODSoundComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4567,7 +4545,6 @@
 				E8989FE716BD24E500732C04 /* SwitchSystem.h in Headers */,
 				E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */,
 				E8989FED16BD24E500732C04 /* UserNode.h in Headers */,
-				E8989FF216BD24E500732C04 /* Sound.h in Headers */,
 				E898A00016BD24E500732C04 /* SoundSystem.h in Headers */,
 				E898A00416BD24E500732C04 /* ScrollHelper.h in Headers */,
 				E898A00616BD24E500732C04 /* TheoraPlayer.h in Headers */,
@@ -4624,6 +4601,7 @@
 				CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43316F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43516F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
+				0256F3DC185B4CAA00D22ADF /* SoundEvent.h in Headers */,
 				CCC7A43916F1D6170061EA5D /* Landscape.h in Headers */,
 				CCC7A43D16F1D6170061EA5D /* LandscapeChunk.h in Headers */,
 				CCC7A44116F1D6170061EA5D /* LandscapeCursor.h in Headers */,
@@ -4673,9 +4651,7 @@
 				EA84E16F17FAC0B400304C3C /* SpatialTree.h in Headers */,
 				024DF6E617FDE4C400138748 /* FMODSound.h in Headers */,
 				024DF6EC17FDE4C400138748 /* FMODSoundEvent.h in Headers */,
-				024DF6F217FDE4C400138748 /* FMODSoundGroup.h in Headers */,
 				024DF6F817FDE4C400138748 /* FMODSoundSystem.h in Headers */,
-				024DF70117FDE55F00138748 /* FMODSoundComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4927,7 +4903,6 @@
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
 				E898A16A16BD265400732C04 /* TransformSystem.h in Headers */,
 				E898A16C16BD265400732C04 /* UserNode.h in Headers */,
-				E898A16E16BD265400732C04 /* Sound.h in Headers */,
 				E843505A17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
 				E898A17516BD265400732C04 /* SoundSystem.h in Headers */,
 				E898A17716BD265400732C04 /* ScrollHelper.h in Headers */,
@@ -5023,9 +4998,7 @@
 				EA84E17017FAC0B400304C3C /* SpatialTree.h in Headers */,
 				024DF6E717FDE4C400138748 /* FMODSound.h in Headers */,
 				024DF6ED17FDE4C400138748 /* FMODSoundEvent.h in Headers */,
-				024DF6F317FDE4C400138748 /* FMODSoundGroup.h in Headers */,
 				024DF6F917FDE4C400138748 /* FMODSoundSystem.h in Headers */,
-				024DF70217FDE55F00138748 /* FMODSoundComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5447,9 +5420,7 @@
 				EA84E16E17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				024DF6E517FDE4C400138748 /* FMODSound.cpp in Sources */,
 				024DF6EB17FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
-				024DF6F117FDE4C400138748 /* FMODSoundGroup.cpp in Sources */,
 				024DF6F717FDE4C400138748 /* FMODSoundSystem.cpp in Sources */,
-				024DF70017FDE55F00138748 /* FMODSoundComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5463,6 +5434,7 @@
 				E8989DA016BD24E500732C04 /* BezierSplineAnimation.cpp in Sources */,
 				E8989DA216BD24E500732C04 /* Interpolation.cpp in Sources */,
 				E8989DA416BD24E500732C04 /* KeyframeAnimation.cpp in Sources */,
+				0256F3DB185B4CAA00D22ADF /* SoundEvent.cpp in Sources */,
 				E8989DA616BD24E500732C04 /* LinearAnimation.cpp in Sources */,
 				E8989DAD16BD24E500732C04 /* AutotestingSystem.cpp in Sources */,
 				E8989DB016BD24E500732C04 /* MongodbUpdateObject.cpp in Sources */,
@@ -5769,9 +5741,7 @@
 				EA84E16C17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				024DF6E317FDE4C400138748 /* FMODSound.cpp in Sources */,
 				024DF6E917FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
-				024DF6EF17FDE4C400138748 /* FMODSoundGroup.cpp in Sources */,
 				024DF6F517FDE4C400138748 /* FMODSoundSystem.cpp in Sources */,
-				024DF6FE17FDE55F00138748 /* FMODSoundComponent.cpp in Sources */,
 				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
 				1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */,
 			);
@@ -6085,9 +6055,7 @@
 				EA84E16D17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				024DF6E417FDE4C400138748 /* FMODSound.cpp in Sources */,
 				024DF6EA17FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
-				024DF6F017FDE4C400138748 /* FMODSoundGroup.cpp in Sources */,
 				024DF6F617FDE4C400138748 /* FMODSoundSystem.cpp in Sources */,
-				024DF6FF17FDE55F00138748 /* FMODSoundComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,42 +26,75 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_FMOD_SOUND_H__
+#define __DAVAENGINE_FMOD_SOUND_H__
 
-#include "Sound/FMODSoundGroup.h"
-#include "Sound/SimpleSoundEvent.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/FMODUtils.h"
-#include "Sound/FMODSoundSystem.h"
-#include "Scene3D/Entity.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/BaseMath.h"
+#include "FileSystem/FilePath.h"
+#include "Base/EventDispatcher.h"
+#include "Sound/SoundEvent.h"
+
+namespace FMOD
+{
+class Sound;
+class ChannelGroup;
+class Channel;
+};
 
 namespace DAVA
 {
 
-FMODSoundGroup::FMODSoundGroup(FMOD::System * fmodSystem)
+class FMODSoundSystem;
+class FMODSound : public SoundEvent
 {
-	FMOD_VERIFY(fmodSystem->createSoundGroup(0, &fmodSoundGroup));
-}
+public:
+	virtual int32 Release();
 
-FMODSoundGroup::~FMODSoundGroup()
-{
-	FMOD_VERIFY(fmodSoundGroup->release());
-}
+	virtual void SetVolume(float32 volume);
+	virtual float32	GetVolume();
 
-void FMODSoundGroup::SetVolume(float32 volume)
-{
-	FMOD_VERIFY(fmodSoundGroup->setVolume(volume));
-}
+    virtual bool Trigger();
+    virtual bool IsActive();
+    virtual void Stop();
+    virtual void Pause();
 
-float32 FMODSoundGroup::GetVolume()
-{
-	float32 volume;
-	FMOD_VERIFY(fmodSoundGroup->getVolume(&volume));
-	return volume;
-}
+    virtual void Serialize(KeyedArchive *archive) {};
+    virtual void Deserialize(KeyedArchive *archive) {};
+    
+	virtual void SetPosition(const Vector3 & position);
+	virtual void UpdateInstancesPosition();
 
-void FMODSoundGroup::Stop()
-{
-	FMOD_VERIFY(fmodSoundGroup->stop());
-}
+	virtual void SetLoopCount(int32 looping); // -1 = infinity
+	virtual int32 GetLoopCount();
+    
+    virtual void SetParameterValue(const FastName & paramName, float32 value) {};
+    virtual float32 GetParameterValue(const FastName & paramName) { return 0.f; };
+    
+    //FMOD only
+    void PerformCallback(FMOD::Channel * instance);
+
+protected:
+	FMODSound(const FilePath & fileName, int32 priority);
+	virtual ~FMODSound();
+
+	static FMODSound * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
+
+	bool is3d;
+	Vector3 position;
+
+	FilePath fileName;
+	int32 priority;
+
+	FMOD::Sound * fmodSound;
+	FMOD::ChannelGroup * fmodInstanceGroup;
+
+    uint8 * soundData;
+
+friend class FMODSoundSystem;
+};
 
 };
+
+#endif //__DAVAENGINE_SOUND_H__

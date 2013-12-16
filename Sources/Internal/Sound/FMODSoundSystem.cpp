@@ -28,24 +28,21 @@
 
 #include "Base/FastName.h"
 #include "Sound/FMODSoundSystem.h"
-#include "Sound/FMODSoundGroup.h"
-#include "Scene3D/Components/FMODSoundComponent.h"
+#include "Sound/FMODSound.h"
 #include "Sound/FMODUtils.h"
-#include "Sound/FMODSimpleSoundEvent.h"
 #include "FileSystem/FileList.h"
 #include "Scene3D/Entity.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 #include "fmodiphone.h"
+#include "musicios.h"
 #endif
 
 namespace DAVA
 {
 
-FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */) : 
-globalComponentsVolume(1.f),
-maxDistanceSq(150.f * 150.f),
-distanceUpdateTime(.0f)
+FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */) :
+maxDistanceSq(150.f * 150.f)
 {
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
 	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
@@ -59,34 +56,40 @@ distanceUpdateTime(.0f)
 
 FMODSoundSystem::~FMODSoundSystem()
 {
-	for(FastNameMap<FMODSoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
-	{
-        FMODSoundGroup * soundGroup = it.GetValue();
-		SafeRelease(soundGroup);
-	}
-    soundGroups.Clear();
-
 	FMOD_VERIFY(fmodEventSystem->release());
 }
 
-SimpleSoundEvent * FMODSoundSystem::CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D /* = false */, int32 priority /*  = 128 */)
+SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, const FastName & groupName)
 {
-    int32 flags = FMOD_DEFAULT;
-    if(is3D)
-        flags |= FMOD_3D;
-    return FMODSimpleSoundEvent::CreateWithFlags(fileName, type, groupName, flags, priority);
+    SoundEvent * event = new FMODSoundEvent(eventName);
+    AddSoundEventToGroup(groupName, event);
+    
+    return event;
 }
 
-Component * FMODSoundSystem::CreateSoundComponent()
+SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 flags /* = SOUND_EVENT_DEFAULT */, int32 priority /* = 128 */)
 {
-    return new FMODSoundComponent();
+    SoundEvent * event = 0;
+    
+#ifdef __DAVAENGINE_IPHONE__
+    if((flags & SoundEvent::SOUND_EVENT_CREATE_STREAM) && !(flags & SoundEvent::SOUND_EVENT_CREATE_3D))
+    {
+        MusicIOSSoundEvent * musicEvent = MusicIOSSoundEvent::CreateMusicEvent(fileName);
+        if(flags & SoundEvent::SOUND_EVENT_CREATE_LOOP)
+            musicEvent->SetLoopCount(-1);
+    }
+#endif //__DAVAENGINE_IPHONE__
+    
+    if(!event)
+    {
+        event = FMODSound::CreateWithFlags(fileName, flags, priority);
+    }
+    
+    AddSoundEventToGroup(groupName, event);
+    
+    return event;
 }
-
-SoundEvent * FMODSoundSystem::CreateSoundEvent(const String & eventName)
-{
-    return new FMODSoundEvent(eventName);
-}
-
+    
 void FMODSoundSystem::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
 {
     DVASSERT(dirPath.IsDirectoryPathname());
@@ -117,7 +120,7 @@ void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
 }
 
-void FMODSoundSystem::UnloadProjects()
+void FMODSoundSystem::UnloadFMODProjects()
 {
     FMOD_VERIFY(fmodEventSystem->unload());
 }
@@ -134,65 +137,25 @@ void FMODSoundSystem::Update(float32 timeElapsed)
 {
     SoundSystemInstance::Update(timeElapsed);
 
-    int32 size = removeActiveEventsOnUpdate.size();
-    if(size)
-    {
-        for(int32 i = 0; i < size; i++)
-        {
-            Vector<FMOD::Event *>::iterator it = activeEvents.begin();
-            Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
-            for(; it != itEnd; ++it)
-            {
-                if((*it) == removeActiveEventsOnUpdate[i])
-                {
-                    activeEvents.erase(it);
-                    break;
-                }
-            }
-        }
-        removeActiveEventsOnUpdate.clear();
-    }
-
 	fmodEventSystem->update();
-
-    size = soundsToReleaseOnUpdate.size();
+    
+    int32 size = soundsToReleaseOnUpdate.size();
     for(int32 i = 0; i < size; i++)
+    {
+        SoundEvent * event = soundsToReleaseOnUpdate[i];
+        if(event->GetRetainCount() == 1)
+            RemoveSoundEventFromGroups(event);
         SafeRelease(soundsToReleaseOnUpdate[i]);
+    }
     soundsToReleaseOnUpdate.clear();
-
+    
     if(callbackOnUpdate.size())
     {
-        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
-        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator mapIt = callbackOnUpdate.begin();
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator endIt = callbackOnUpdate.end();
         for(; mapIt != endIt; ++mapIt)
             mapIt->first->PerformEvent(mapIt->second);
         callbackOnUpdate.clear();
-    }
-
-    distanceUpdateTime += timeElapsed;
-    if(distanceUpdateTime > SOUND_DISTANCE_UPDATE_TIME_SEC)
-    {
-        distanceUpdateTime = 0.f;
-
-        Vector<FMOD::Event *>::iterator it = activeEvents.begin();
-        while(it != activeEvents.end())
-        {
-            void * userData = 0;
-            FMOD_RESULT result = (*it)->getUserData(&userData);
-            if(result == FMOD_OK && !userData)
-            {
-                FMOD_VECTOR pos;
-                FMOD_VERIFY((*it)->get3DAttributes(&pos, 0));
-                Vector3 soundPosition(pos.x, pos.y, pos.z);
-                if((listenerPosition - soundPosition).SquareLength() > maxDistanceSq)
-                {
-                    FMOD_VERIFY((*it)->stop());
-                    it = activeEvents.erase(it);
-                    continue;
-                }
-            }
-            ++it;
-        }
     }
 }
 
@@ -250,31 +213,7 @@ void FMODSoundSystem::SetListenerOrientation(const Vector3 & forward, const Vect
 	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodForward, &fmodUp));
 }
 
-FMODSoundGroup * FMODSoundSystem::GetSoundGroup(const FastName & groupName)
-{
-	if(soundGroups.IsKey(groupName))
-		return soundGroups[groupName];
-    else
-        return 0;
-}
-
-FMODSoundGroup * FMODSoundSystem::CreateSoundGroup(const FastName & groupName)
-{
-	FMODSoundGroup * group = 0;
-	if(soundGroups.IsKey(groupName))
-	{
-		group = soundGroups[groupName];
-	}
-    else
-    {
-        group = new FMODSoundGroup(fmodSystem);
-        soundGroups.Insert(groupName, group);
-    }
-
-	return group;
-}
-
-void FMODSoundSystem::ReleaseOnUpdate(FMODSimpleSoundEvent * sound)
+void FMODSoundSystem::ReleaseOnUpdate(SoundEvent * sound)
 {
     soundsToReleaseOnUpdate.push_back(sound);
 }
@@ -284,9 +223,9 @@ void FMODSoundSystem::SetMaxDistance(float32 distance)
     maxDistanceSq = distance * distance;
 }
 
-float32 FMODSoundSystem::GetMaxDistance()
+float32 FMODSoundSystem::GetMaxDistanceSquare()
 {
-    return pow(maxDistanceSq, .5f);
+    return maxDistanceSq;
 }
 
 void FMODSoundSystem::GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names)
@@ -357,7 +296,7 @@ void FMODSoundSystem::GetAllEventsNames(Vector<String> & names)
     }
 }
 
-void FMODSoundSystem::PreloadEventGroupData(const String & groupName)
+void FMODSoundSystem::PreloadFMODEventGroupData(const String & groupName)
 {
     FMOD::EventGroup * eventGroup = 0;
     FMOD_VERIFY(fmodEventSystem->getGroup(groupName.c_str(), true, &eventGroup));
@@ -365,7 +304,7 @@ void FMODSoundSystem::PreloadEventGroupData(const String & groupName)
         FMOD_VERIFY(eventGroup->loadEventData());
 }
     
-void FMODSoundSystem::ReleaseEventGroupData(const String & groupName)
+void FMODSoundSystem::ReleaseFMODEventGroupData(const String & groupName)
 {
     FMOD::EventGroup * eventGroup = 0;
     FMOD_VERIFY(fmodEventSystem->getGroup(groupName.c_str(), false, &eventGroup));
@@ -375,75 +314,48 @@ void FMODSoundSystem::ReleaseEventGroupData(const String & groupName)
     
 void FMODSoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
 {
-    FMODSoundGroup * group = GetSoundGroup(groupName);
-    if(group)
-        group->SetVolume(volume);
+    //TODO hashmap operator[]
+    if(groupsVolumes.IsKey(groupName))
+        groupsVolumes.Remove(groupName);
+    groupsVolumes.Insert(groupName, volume);
+    
+    Map<SoundEvent *, FastName>::const_iterator itEnd = soundGroups.end();
+    for(Map<SoundEvent *, FastName>::iterator it = soundGroups.begin(); it != itEnd; ++it)
+        if(it->second == groupName)
+            it->first->SetVolume(volume);
 }
 
 float32 FMODSoundSystem::GetGroupVolume(const FastName & groupName)
 {
-    FMODSoundGroup * group = GetSoundGroup(groupName);
-    if(group)
-        return group->GetVolume();
-    else
-        return 0.f;
-}
-
-void FMODSoundSystem::StopGroup(const FastName & groupName)
-{
-    FMODSoundGroup * group = GetSoundGroup(groupName);
-    if(group)
-        return group->Stop();
-}
-
-void FMODSoundSystem::SetGlobalComponentsVolume(float32 volume)
-{
-    globalComponentsVolume = Clamp(volume, 0.f, 1.f);
+    if(!groupsVolumes.IsKey(groupName))
+        groupsVolumes.Insert(groupName, 1.f);
     
-    Vector<FMOD::Event *>::iterator it = activeEvents.begin();
-    Vector<FMOD::Event *>::iterator itEnd = activeEvents.end();
-    for(; it != itEnd; ++it)
-    {
-        FMOD_VERIFY((*it)->setVolume(globalComponentsVolume));
-    }
+    return groupsVolumes[groupName];
 }
 
-float32 FMODSoundSystem::GetSoundComponentsVolume()
+void FMODSoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * event)
 {
-    return globalComponentsVolume;
+    soundGroups[event] = groupName;
+    event->SetVolume(GetGroupVolume(groupName));
 }
-
-void FMODSoundSystem::AddActiveFMODEvent(FMOD::Event * event)
+    
+void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 {
-    FMOD_VERIFY(event->setVolume(globalComponentsVolume));
-    activeEvents.push_back(event);
+    soundGroups.erase(event);
 }
-
-void FMODSoundSystem::RemoveActiveFMODEvent(FMOD::Event * event)
+    
+void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
-    if(event)
-        removeActiveEventsOnUpdate.push_back(event);
+    callbackOnUpdate.insert(std::pair<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>(event, type));
 }
 
-void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)
-{
-    callbackOnUpdate[event] = type;
-}
-
-void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type)
+void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
     if(callbackOnUpdate.size())
     {
-        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator mapIt = callbackOnUpdate.begin();
-        Map<FMODSoundEvent *, FMODSoundEvent::CallbackType>::iterator endIt = callbackOnUpdate.end();
-        for(; mapIt != endIt; ++mapIt)
-        {
-            if(mapIt->first == event)
-            {
-                callbackOnUpdate.erase(mapIt);
-                break;
-            }
-        }
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator it = callbackOnUpdate.find(event);
+        if(it != callbackOnUpdate.end())
+            callbackOnUpdate.erase(it);
     }
 }
 

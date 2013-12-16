@@ -32,12 +32,9 @@
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastNameMap.h"
-#include "Sound/SimpleSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/SoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
-
-#define SOUND_DISTANCE_UPDATE_TIME_SEC 1.0f
 
 namespace FMOD
 {
@@ -48,18 +45,15 @@ class EventGroup;
 
 namespace DAVA
 {
-class FMODSimpleSoundEvent;
-class FMODSoundGroup;
-class FMODSoundComponent;
+    
 class FMODSoundSystem : public SoundSystemInstance
 {
 public:
 	FMODSoundSystem(int32 maxChannels = 64);
 	virtual ~FMODSoundSystem();
 
-    virtual SimpleSoundEvent * CreateSimpleSoundEvent(const FilePath & fileName, SimpleSoundEvent::eType type, const FastName & groupName, bool is3D = false, int32 priority = 128);
-    virtual Component * CreateSoundComponent();
-    virtual SoundEvent * CreateSoundEvent(const String & eventName);
+    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName);
+    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();
@@ -70,13 +64,8 @@ public:
 	virtual void SetListenerPosition(const Vector3 & position);
 	virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left);
 
-    virtual void StopGroup(const FastName & groupName);
-
     virtual void SetGroupVolume(const FastName & groupName, float32 volume);
     virtual float32 GetGroupVolume(const FastName & groupName);
-
-    virtual void SetGlobalComponentsVolume(float32 volume);
-    virtual float32 GetSoundComponentsVolume();
 
     //FMOD Only
     static FMODSoundSystem * GetFMODSoundSystem();
@@ -84,50 +73,41 @@ public:
     void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
 
 	void LoadFEV(const FilePath & filePath);
-    void UnloadProjects();
+    void UnloadFMODProjects();
 
-    void PreloadEventGroupData(const String & groupName);
-    void ReleaseEventGroupData(const String & groupName);
+    void PreloadFMODEventGroupData(const String & groupName);
+    void ReleaseFMODEventGroupData(const String & groupName);
     
     void GetAllEventsNames(Vector<String> & names);
 
     void SetMaxDistance(float32 distance);
-    float32 GetMaxDistance();
-
-    void AddActiveFMODEvent(FMOD::Event * event);
-    void RemoveActiveFMODEvent(FMOD::Event * event);
+    float32 GetMaxDistanceSquare();
 
     uint32 GetMemoryUsageBytes();
     
 protected:
-    FMODSoundGroup * CreateSoundGroup(const FastName & groupName);
-    FMODSoundGroup * GetSoundGroup(const FastName & groupName);
-
-    void ReleaseOnUpdate(FMODSimpleSoundEvent * sound);
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
+    
+    void ReleaseOnUpdate(SoundEvent * sound);
+    
+    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
+    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
 
-    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
-    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::CallbackType type);
-
-    float32 globalComponentsVolume;
-
+    void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
+    void RemoveSoundEventFromGroups(SoundEvent * event);
+    
 	FMOD::System * fmodSystem;
 	FMOD::EventSystem * fmodEventSystem;
 
-    Vector<FMODSimpleSoundEvent *> soundsToReleaseOnUpdate;
-    FastNameMap<FMODSoundGroup *> soundGroups;
-    Map<FMODSoundEvent *, FMODSoundEvent::CallbackType> callbackOnUpdate;
-    Vector<FMOD::Event *> activeEvents;
-    Vector<FMOD::Event *> removeActiveEventsOnUpdate;
+    Vector<SoundEvent *> soundsToReleaseOnUpdate;
+    MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback> callbackOnUpdate;
+    Map<SoundEvent *, FastName> soundGroups;
+    FastNameMap<float32> groupsVolumes;
 
     float32 maxDistanceSq;
     Vector3 listenerPosition;
-    Vector3 lastListenerPosition;
 
-    float32 distanceUpdateTime;
-
-friend class FMODSoundGroup;
-friend class FMODSimpleSoundEvent;
+friend class FMODSound;
 friend class FMODSoundEvent;
 friend class FMODSoundComponent;
 };
