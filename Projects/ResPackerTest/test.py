@@ -32,6 +32,10 @@ if os.path.exists(output):
 if os.path.exists(process):
     print "Remove folder " + process
     shutil.rmtree(process)
+	
+if not os.path.exists(output):
+	print "Create folder " + output
+	os.mkdir(output)
     
 print "*** DAVA AUTOTEST Run convert_graphics.py script for %s ***" % gpu
 os.chdir(data)
