@@ -4,12 +4,12 @@
 #include "../../Tools/TileTexturePreviewWidget/TileTexturePreviewWidget.h"
 #include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
-#include "TextureBrowser/TextureConvertor.h"
 #include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QLabel>
 
 TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
