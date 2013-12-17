@@ -528,6 +528,8 @@ void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 	Landscape* landscape = GetLandscape(entity);
 	if (landscape != NULL)
 	{
+        entity->SetLocked(true);
+        
 		InitLandscape(entity, landscape);
 	}
 }
