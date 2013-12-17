@@ -90,7 +90,8 @@ Component * Component::CreateByType(uint32 componentType)
 		return new ActionComponent();
     case STATIC_OCCLUSION_COMPONENT:
         return new StaticOcclusionComponent();
-
+    case STATIC_OCCLUSION_DATA_COMPONENT:
+        return new StaticOcclusionDataComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case SCRIPT_COMPONENT:

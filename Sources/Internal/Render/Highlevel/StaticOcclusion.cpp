@@ -58,11 +58,7 @@ StaticOcclusion::~StaticOcclusion()
 }
 
     
-void StaticOcclusion::BuildOcclusionInParallel(const AABBox3 & _occlusionAreaRect,
-                                               uint32 _xBlockCount,
-                                               uint32 _yBlockCount,
-                                               uint32 _zBlockCount,
-                                               Vector<RenderObject*> & renderObjects,
+void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
                                                StaticOcclusionData * _currentData,
                                                RenderHierarchy * _renderHierarchy)
 {
@@ -84,10 +80,10 @@ void StaticOcclusion::BuildOcclusionInParallel(const AABBox3 & _occlusionAreaRec
     
     currentData = _currentData;
     renderHierarchy = _renderHierarchy;
-    occlusionAreaRect = _occlusionAreaRect;
-    xBlockCount = _xBlockCount;
-    yBlockCount = _yBlockCount;
-    zBlockCount = _zBlockCount;
+    occlusionAreaRect = currentData->bbox;
+    xBlockCount = currentData->sizeX;
+    yBlockCount = currentData->sizeY;
+    zBlockCount = currentData->sizeZ;
     
     currentFrameX = 0; //xBlockCount - 1;
     currentFrameY = 0; //yBlockCount - 1;
@@ -296,13 +292,16 @@ uint32 StaticOcclusion::RenderFrame()
     
     // Invisible on every frame
     uint32 invisibleObjectCount =  (uint32)renderObjectsArray.size() - frameGlobalVisibleInfo.size();
+    uint32 visibleCount = frameGlobalVisibleInfo.size();
 //    for (Map<RenderObject*, uint32>::iterator it = frameGlobalOccludedInfo.begin(), end = frameGlobalOccludedInfo.end(); it != end; ++it)
 //    {
 //        if (renderFrameCount == it->second)
 //            invisibleObjectCount++;
 //    }
     
-    uint32 blockIndex = currentFrameX * currentFrameY * currentFrameZ;
+    //uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
+    uint32 blockIndex = currentFrameZ * (currentData->sizeX * currentData->sizeY)
+                        + currentFrameY * (currentData->sizeX) + currentFrameX;
     
     for (Set<RenderObject*>::iterator it = frameGlobalVisibleInfo.begin(), end = frameGlobalVisibleInfo.end(); it != end; ++it)
     {
@@ -320,13 +319,14 @@ uint32 StaticOcclusion::RenderFrame()
                 DVASSERT(equalObjects[k]->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
                 currentData->SetVisibilityForObject(blockIndex, equalObjects[k]->GetStaticOcclusionIndex(), 1);
                 invisibleObjectCount --;
+                visibleCount++;
             }
         }
     }
     
     t1 = SystemTimer::Instance()->GetAbsoluteNano() - t1;
 
-    Logger::FrameworkDebug(Format("Object count:%d Vis Count: %d Invisible Object Count:%d time: %0.9llf", renderObjectsArray.size(), frameGlobalVisibleInfo.size(), invisibleObjectCount, (double)t1 / 1e+9));
+    Logger::FrameworkDebug(Format("Object count:%d Vis Count: %d Invisible Object Count:%d time: %0.9llf", renderObjectsArray.size(), visibleCount, invisibleObjectCount, (double)t1 / 1e+9));
     
     //RenderManager::Instance()->SetRenderTarget((Texture*)0);
     
@@ -360,6 +360,9 @@ StaticOcclusionData::StaticOcclusionData()
     : data(0)
     , objectCount(0)
     , blockCount(0)
+    , sizeX(5)
+    , sizeY(5)
+    , sizeZ(2)
 {
     
 }
@@ -368,14 +371,29 @@ StaticOcclusionData::~StaticOcclusionData()
 {
     SafeDeleteArray(data);
 }
+    
+StaticOcclusionData & StaticOcclusionData::operator= (const StaticOcclusionData & other)
+{
+    sizeX = other.sizeX;
+    sizeY = other.sizeY;
+    sizeZ = other.sizeZ;
+    objectCount = other.objectCount;
+    blockCount = other.blockCount;
+    SafeDeleteArray(data);
+    data = new uint32[(blockCount * objectCount / 32)];
+    memcpy(data, other.data, (blockCount * objectCount / 32) * 4);
+    return *this;
+}
 
-void StaticOcclusionData::Init(uint32 _sizeX, uint32 _sizeY, uint32 _sizeZ, uint32 _objectCount)
+
+void StaticOcclusionData::Init(uint32 _sizeX, uint32 _sizeY, uint32 _sizeZ, uint32 _objectCount, const AABBox3 & _bbox)
 {
     objectCount = _objectCount;
     sizeX = _sizeX;
     sizeY = _sizeY;
     sizeZ = _sizeZ;
     blockCount = sizeX * sizeY * sizeZ;
+    bbox = _bbox;
     
     objectCount += (32 - objectCount & 31);
     

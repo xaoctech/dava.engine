@@ -68,6 +68,7 @@
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
 
 #include "Render/Material/MaterialSystem.h"
 
@@ -144,6 +145,9 @@ void Scene::CreateSystems()
 	
 	skyboxSystem = new SkyboxSystem(this);
 	AddSystem(skyboxSystem, (1 << Component::RENDER_COMPONENT));
+    
+    staticOcclusionSystem = new StaticOcclusionSystem(this);
+	AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT));
 }
 
 Scene::~Scene()
@@ -178,7 +182,18 @@ Scene::~Scene()
 
     transformSystem = 0;
     renderUpdateSystem = 0;
+    lodSystem = 0;
+    debugRenderSystem = 0;
+    particleEffectSystem = 0;
+    updatableSystem = 0;
 	lodSystem = 0;
+    lightUpdateSystem = 0;
+    switchSystem = 0;
+    soundSystem = 0;
+    actionSystem = 0;
+    skyboxSystem = 0;
+    staticOcclusionSystem = 0;
+    
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
         SafeDelete(systems[k]);
@@ -522,6 +537,8 @@ void Scene::Update(float timeElapsed)
     
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
     
+    staticOcclusionSystem->SetCamera(clipCamera);
+    staticOcclusionSystem->Process();
     
 	updatableSystem->UpdatePreTransform();
 
@@ -565,7 +582,6 @@ void Scene::Update(float timeElapsed)
 	//{
 	//	imposterManager->Update(timeElapsed);
 	//}
-    
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
 
