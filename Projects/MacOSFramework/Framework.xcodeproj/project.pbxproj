@@ -862,6 +862,9 @@
 		A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
+		A6D49089186096AE00445262 /* LayerSetUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A6D49088186096AE00445262 /* LayerSetUniqueHandler.h */; };
+		A6D4908A186096AE00445262 /* LayerSetUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A6D49088186096AE00445262 /* LayerSetUniqueHandler.h */; };
+		A6D4908B186096AE00445262 /* LayerSetUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A6D49088186096AE00445262 /* LayerSetUniqueHandler.h */; };
 		A6E4FE031761D96C00B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */; };
 		A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FE001761D96C00B48E41 /* ActionComponent.h */; };
 		A6E4FE051761D96C00B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -2292,6 +2295,7 @@
 		A69B7A471834CD640093AF7F /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
 		A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6B0517F17E886D8000EED68 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
+		A6D49088186096AE00445262 /* LayerSetUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerSetUniqueHandler.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FE001761D96C00B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -3671,6 +3675,7 @@
 		E8989C3F16BD24E400732C04 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				A6D49088186096AE00445262 /* LayerSetUniqueHandler.h */,
 				50A3043718575C370082CA8D /* StaticOcclusion.cpp */,
 				50A3043818575C370082CA8D /* StaticOcclusion.h */,
 				50A3043A18575C370082CA8D /* StaticOcclusionRenderPass.cpp */,
@@ -4364,6 +4369,7 @@
 				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
 				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
 				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
+				A6D4908B186096AE00445262 /* LayerSetUniqueHandler.h in Headers */,
 				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
 				176DE9F5174B5561007A983B /* UIEvent.h in Headers */,
 				176DE9F6174B5561007A983B /* UIFadeTransition.h in Headers */,
@@ -4625,6 +4631,7 @@
 				E8989EEB16BD24E500732C04 /* PolygonGroup.h in Headers */,
 				E8989EED16BD24E500732C04 /* StaticMesh.h in Headers */,
 				E8989EEE16BD24E500732C04 /* Cursor.h in Headers */,
+				A6D49089186096AE00445262 /* LayerSetUniqueHandler.h in Headers */,
 				E8989EF816BD24E500732C04 /* ColorOnlyEffect.h in Headers */,
 				E8989EFA16BD24E500732C04 /* MultiTextureEffect.h in Headers */,
 				E8989EFC16BD24E500732C04 /* TextureMulColorAlphaTestEffect.h in Headers */,
@@ -4957,6 +4964,7 @@
 				E898A0B716BD265400732C04 /* MathDefines.h in Headers */,
 				E898A0B816BD265400732C04 /* MathHelpers.h in Headers */,
 				505EB4121824CEC5009BEA3C /* OcclusionQuery.h in Headers */,
+				A6D4908A186096AE00445262 /* LayerSetUniqueHandler.h in Headers */,
 				E898A0B916BD265400732C04 /* Matrix2.h in Headers */,
 				E898A0BA16BD265400732C04 /* Matrix3.h in Headers */,
 				E898A0BB16BD265400732C04 /* Matrix4.h in Headers */,

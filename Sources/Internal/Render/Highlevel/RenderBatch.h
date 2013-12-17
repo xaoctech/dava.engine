@@ -38,7 +38,6 @@
 
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderDataObject.h"
-#include "Render/Highlevel/RenderObject.h"
 #include "Render/Material.h"
 #include "Render/Material/NMaterial.h"
 
@@ -67,7 +66,7 @@ class RenderBatch;
 class NMaterial;
 class NMaterialInstance;
 class OcclusionQuery;
-
+class RenderSystem;
     
 /*
     Not finished. We'll return to it when we start batching functionality.
@@ -132,6 +131,7 @@ public:
 	virtual void AttachToRenderSystem(RenderSystem* rs);
 
     pointer_size layerSortingKey;
+	
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
