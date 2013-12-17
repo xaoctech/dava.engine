@@ -108,6 +108,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	newObject->flags = flags;
 	newObject->RemoveFlag(MARKED_FOR_UPDATE);
 	newObject->debugFlags = debugFlags;
+    newObject->staticOcclusionIndex = staticOcclusionIndex;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;
 

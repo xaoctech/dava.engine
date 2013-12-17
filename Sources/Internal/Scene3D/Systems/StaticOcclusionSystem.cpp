@@ -170,7 +170,12 @@ void StaticOcclusionBuildSystem::Process()
     }else
     {
         //Logger::FrameworkDebug("start");
-        uint32 result = staticOcclusion->RenderFrame();
+        uint32 result = 0;
+        while(1)
+        {
+            result = staticOcclusion->RenderFrame();
+            if (result == 0)break;
+        }
         //Logger::FrameworkDebug("end");
         if (result == 0)
         {
@@ -209,6 +214,7 @@ void StaticOcclusionSystem::UndoOcclusionVisibility()
     for (uint32 k = 0; k < size; ++k)
     {
         RenderObject * ro = indexedRenderObjects[k];
+        if (!ro)continue;
         ro->SetFlags(ro->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
     }
 
@@ -223,6 +229,7 @@ void StaticOcclusionSystem::ProcessStaticOcclusionForOneDataSet(uint32 blockInde
         uint32 index = k / 32;
         uint32 shift = k & 31;
         RenderObject * ro = indexedRenderObjects[k];
+        if (!ro)continue;
         if (bitdata[index] & (1 << shift))
         {
             ro->SetFlags(ro->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
@@ -251,7 +258,11 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 
 void StaticOcclusionSystem::Process()
 {
+    // Verify that system is initialized
+    if (!camera)return;
+
     uint32 size = (uint32)staticOcclusionComponents.size();
+    if (size == 0)return;
     
     
     bool notInPVS = true;
@@ -314,7 +325,10 @@ void StaticOcclusionSystem::AddEntity(Entity * entity)
     indexedRenderObjects.resize(size);
     for (uint32 k = 0; k < size; ++k)
     {
-        indexedRenderObjects[renderObjectsArray[k]->GetStaticOcclusionIndex()] = renderObjectsArray[k];
+        if (renderObjectsArray[k]->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
+        {
+            indexedRenderObjects[renderObjectsArray[k]->GetStaticOcclusionIndex()] = renderObjectsArray[k];
+        }
     }
 
 }
