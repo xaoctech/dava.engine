@@ -148,6 +148,8 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			currRenderGroup->renderBatch->SetMaterial(currMaterial);
 		}
 
+		AppendParticleGroup(currGroup, currRenderGroup);
+
 	}
 	
 	
@@ -181,7 +183,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 
 
 
-void ParticleRenderObject::AppendParticleGroup(ParticleGroup &group, ParticleRenderGroup *renderGroup)
+void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup)
 {
 	//prepare basis indexes
 	int32 basisCount = 0;
@@ -231,10 +233,13 @@ void ParticleRenderObject::AppendParticleGroup(ParticleGroup &group, ParticleRen
 			top*=0.5f*current->currSize.y*(1+group.layer->layerPivotPoint.y);
 			bot*=0.5f*current->currSize.y*(1-group.layer->layerPivotPoint.y);			
 
-			particlePos[0] = current->position+left+top;
-			particlePos[1] = current->position+right+top;
-			particlePos[2] = current->position+left+bot;			
-			particlePos[3] = current->position+right+bot;
+			Vector3 particlePosition = current->position;
+			if (group.layer->inheritPosition)
+				particlePosition+=effectData->infoSources[group.positionSource].position;
+			particlePos[0] = particlePosition+left+top;
+			particlePos[1] = particlePosition+right+top;
+			particlePos[2] = particlePosition+left+bot;			
+			particlePos[3] = particlePosition+right+bot;
 			
 			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);
 			

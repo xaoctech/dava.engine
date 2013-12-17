@@ -58,7 +58,7 @@ class ParticleRenderObject : public RenderObject
 	ParticleEffectData *effectData;
 	Vector<ParticleRenderGroup*> renderGroupCache;
 
-	void AppendParticleGroup(ParticleGroup &group, ParticleRenderGroup *renderGroup);	
+	void AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup);	
 	
 	Vector<uint16> indices;
 public:

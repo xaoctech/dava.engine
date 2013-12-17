@@ -41,22 +41,30 @@ namespace DAVA
 class Component;
 class ParticleEffectSystem : public SceneSystem
 {
+	friend class ParticleEffectComponent;
 public:
 	ParticleEffectSystem(Scene * scene);
-	virtual void Process();	
+	virtual void Process();		
 
-	void StartEffect(ParticleEffectComponent *effect);	
+
+	virtual void RemoveEntity(Entity * entity);	
+	virtual void RemoveComponent(Entity * entity, Component * component);
 
 	void SetGlobalExtertnalValue(const String& name, float32 value);
 	float32 GetGlobalExternalValue(const String& name);
 	Map<String, float32> GetGlobalExternals();
 	
 protected:
+	void RunEffect(ParticleEffectComponent *effect);	
+	void RemoveFromActive(ParticleEffectComponent *effect);
+
 	void UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime);
-	Particle* GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform);
+	Particle* GenerateNewParticle(ParticleEffectComponent *effect, ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform);
 	
 	void PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform);
 	void AddParticleToBBox(Particle *particle, AABBox3& bbox);
+
+	void RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource = 0);
 	
 
 private:

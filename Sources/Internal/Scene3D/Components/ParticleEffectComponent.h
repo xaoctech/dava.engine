@@ -51,7 +51,7 @@ class ParticleEffectComponent : public Component
 {
 	friend class ParticleEffectSystem;
 protected:
-    ~ParticleEffectComponent(){};
+    ~ParticleEffectComponent();
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 
@@ -99,19 +99,20 @@ public:
 	int32 GetActiveParticlesCount();
 
 private:
+	void ClearCurrentGroups();
 	
 	/*effect playback setup       i bit changed logic*/	
 	bool stopWhenEmpty;			  //if true effect is considered finished when no particles left, otherwise effect is considered finished if time>effectDuration
 	float32 effectDuration;       //duration for effect
 	uint32 repeatsCount;			  // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
-	bool clearOnRestart;		  // when effect is restarted (explicitly or by repeatsCount)
+	bool clearOnRestart;		  // when effect is restarted repeatsCount
 	float32 playbackSpeed;
 	
 	/*state*/
 	float32 time;
-	int32 currRepeatsCont;
-	eState state;
+	int32 currRepeatsCont;	
 	bool isPaused;	
+	eState state;	
 	
 	
 	/*completion message stuff*/	
