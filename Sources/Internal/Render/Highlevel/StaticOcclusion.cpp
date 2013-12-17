@@ -93,14 +93,14 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
     for (uint32 k = 0; k < 6; ++k)
     {
         cameras[k] = new Camera();
-        cameras[k]->SetupPerspective(90.0f, 1.0, 1.0f, 2500.0f);
+        cameras[k]->SetupPerspective(120.0f, 1.0, 1.0f, 2500.0f);
     }
     
     
     if (!renderTargetTexture)
-        renderTargetTexture = Texture::CreateFBO(512, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+        renderTargetTexture = Texture::CreateFBO(1024, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
     if (!renderTargetSprite)
-        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, 512, 512);
+        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, 1024, 512);
     
     for (uint32 k = 0; k < renderObjects.size(); ++k)
         renderObjects[k]->SetStaticOcclusionIndex((uint16)k);
@@ -177,6 +177,10 @@ uint32 StaticOcclusion::RenderFrame()
     // Render One Block (100%)
     frameGlobalVisibleInfo.clear();
 
+    uint32 blockIndex = currentFrameZ * (currentData->sizeX * currentData->sizeY)
+                        + currentFrameY * (currentData->sizeX) + currentFrameX;
+
+    
     for (uint32 side = 0; side < 4; ++side)
     {
         Camera * camera = cameras[side];
@@ -221,7 +225,7 @@ uint32 StaticOcclusion::RenderFrame()
                 // Do Render
                 
                 RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
-                RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
+                RenderManager::Instance()->SetViewport(Rect(0, 0, 1024, 512), false);
                 //RenderManager::Instance()->ClearDepthBuffer();
                 //RenderManager::Instance()->ClearStencilBuffer(0);
                 
@@ -283,7 +287,7 @@ uint32 StaticOcclusion::RenderFrame()
 //                if ((stepX == 0) && (stepY == 0))
 //                {
 //                    Image * image = renderTargetTexture->CreateImageFromMemory();
-//                    ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d.png", side, stepX, stepY));
+//                    ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
 //                    SafeRelease(image);
 //                }
             }
@@ -300,8 +304,6 @@ uint32 StaticOcclusion::RenderFrame()
 //    }
     
     //uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
-    uint32 blockIndex = currentFrameZ * (currentData->sizeX * currentData->sizeY)
-                        + currentFrameY * (currentData->sizeX) + currentFrameX;
     
     for (Set<RenderObject*>::iterator it = frameGlobalVisibleInfo.begin(), end = frameGlobalVisibleInfo.end(); it != end; ++it)
     {
@@ -379,6 +381,8 @@ StaticOcclusionData & StaticOcclusionData::operator= (const StaticOcclusionData 
     sizeZ = other.sizeZ;
     objectCount = other.objectCount;
     blockCount = other.blockCount;
+    bbox = other.bbox;
+    
     SafeDeleteArray(data);
     data = new uint32[(blockCount * objectCount / 32)];
     memcpy(data, other.data, (blockCount * objectCount / 32) * 4);

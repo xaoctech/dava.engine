@@ -88,4 +88,5 @@ REGISTER_CLASS(UIListCell);
 REGISTER_CLASS(UIScrollBar);
 REGISTER_CLASS(UIScrollView);
 REGISTER_CLASS(StaticOcclusionComponent);
+REGISTER_CLASS(StaticOcclusionDataComponent);
 

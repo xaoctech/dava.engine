@@ -108,12 +108,13 @@ void StaticOcclusionDataComponent::Serialize(KeyedArchive *archive, Serializatio
 	if(NULL != archive)
 	{
         // VB:
+        archive->SetVariant("sodc.bbox", VariantType(data.bbox));
         archive->SetUInt32("sodc.blockCount", data.blockCount);
         archive->SetUInt32("sodc.objectCount", data.objectCount);
         archive->SetUInt32("sodc.subX", data.sizeX);
         archive->SetUInt32("sodc.subY", data.sizeY);
         archive->SetUInt32("sodc.subZ", data.sizeZ);
-        archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32);
+        archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32 * 4);
     }
 }
     
@@ -121,16 +122,16 @@ void StaticOcclusionDataComponent::Deserialize(KeyedArchive *archive, Serializat
 {
     if(NULL != archive)
 	{
+        data.bbox = archive->GetVariant("sodc.bbox")->AsAABBox3();
         data.blockCount = archive->GetUInt32("sodc.blockCount", 0);
         data.objectCount = archive->GetUInt32("sodc.objectCount", 0);
         data.sizeX = archive->GetUInt32("sodc.subX", 1);
         data.sizeY = archive->GetUInt32("sodc.subY", 1);
         data.sizeZ = archive->GetUInt32("sodc.subZ", 1);
-        //archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32);
         
         data.data = new uint32[data.blockCount * data.objectCount / 32];
-        DVASSERT(data.blockCount * data.objectCount / 32 == archive->GetByteArraySize("sodc.data"));
-        memcpy(data.data, archive->GetByteArray("sodc.data"), data.blockCount * data.objectCount / 32);
+        DVASSERT(data.blockCount * data.objectCount / 32 * 4 == archive->GetByteArraySize("sodc.data"));
+        memcpy(data.data, archive->GetByteArray("sodc.data"), data.blockCount * data.objectCount / 32 * 4);
     }
     
 	Component::Deserialize(archive, serializationContext);
