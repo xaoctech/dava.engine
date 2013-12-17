@@ -203,8 +203,8 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 		tileModeVariant->AddAllowedValue(DAVA::VariantType((uint32)Landscape::TILED_MODE_TILE_DETAIL_MASK), "Detail mask mode");
 	}
 
-	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("tileColor"));
-	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("textureTiling"));
+//	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("tileColor"));
+//	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("textureTiling"));
 }
 
 void LandscapeDialog::FillWidgetsWithContent()
@@ -309,6 +309,7 @@ void LandscapeDialog::ActionButtonClicked()
 		
 		Entity* entityToProcess = new Entity();
 		entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+        entityToProcess->SetLocked(true);
 		Landscape* newLandscape = new Landscape();
 		
 		for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)

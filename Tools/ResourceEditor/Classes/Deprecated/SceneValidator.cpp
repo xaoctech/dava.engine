@@ -41,6 +41,8 @@
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
+#include "Scene/SceneEditor2.h"
+
 SceneValidator::SceneValidator()
 {
 //    sceneTextureCount = 0;
@@ -189,6 +191,11 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
         if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
         {
             ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
+            if(sc)
+            {
+                sc->MarkAsChanged();
+            }
             errorsLog.insert("Landscape had wrong transform. Please re-save scene.");
         }
         
