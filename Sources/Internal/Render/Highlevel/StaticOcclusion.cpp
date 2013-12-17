@@ -36,6 +36,7 @@
 #include "Render/ImageLoader.h"
 #include "Utils/StringFormat.h"
 #include "Platform/SystemTimer.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {

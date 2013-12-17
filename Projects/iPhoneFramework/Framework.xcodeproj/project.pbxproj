@@ -73,11 +73,14 @@
 		A670F2EA1847A33F0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2E91847A33F0030E075 /* TextureStateDataUniqueHandler.h */; };
 		A679102917B3CF2D000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102A17B3CF2D000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679102817B3CF2D000AA2F2 /* SkyboxRenderObject.h */; };
+		A67F0328185C923B00F8C867 /* StaticOcclusionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A67F0326185C923B00F8C867 /* StaticOcclusionComponent.cpp */; };
+		A67F0329185C923B00F8C867 /* StaticOcclusionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A67F0327185C923B00F8C867 /* StaticOcclusionComponent.h */; };
 		A6919536183A6E9B00D598AE /* RenderStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919533183A6E9B00D598AE /* RenderStateData.h */; };
 		A6919537183A6E9B00D598AE /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919534183A6E9B00D598AE /* RenderStateDataUniqueHandler.h */; };
 		A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919535183A6E9B00D598AE /* UniqueStateSet.h */; };
 		A6919544183A70D600D598AE /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */; };
 		A6919545183A70D600D598AE /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919543183A70D600D598AE /* AutotestingSystemYaml.h */; };
+		A691AF43186088E70058B30B /* LayerSetUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A691AF42186088E70058B30B /* LayerSetUniqueHandler.h */; };
 		A695E5201811317E008A0F20 /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E51D1811317E008A0F20 /* MaterialSystem.cpp */; };
 		A695E5211811317E008A0F20 /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E51E1811317E008A0F20 /* MaterialSystem.h */; };
 		A695E5221811317E008A0F20 /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */; };
@@ -812,11 +815,14 @@
 		A670F2E91847A33F0030E075 /* TextureStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
 		A679102817B3CF2D000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
+		A67F0326185C923B00F8C867 /* StaticOcclusionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionComponent.cpp; sourceTree = "<group>"; };
+		A67F0327185C923B00F8C867 /* StaticOcclusionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusionComponent.h; sourceTree = "<group>"; };
 		A6919533183A6E9B00D598AE /* RenderStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateData.h; sourceTree = "<group>"; };
 		A6919534183A6E9B00D598AE /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6919535183A6E9B00D598AE /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
 		A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
 		A6919543183A70D600D598AE /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
+		A691AF42186088E70058B30B /* LayerSetUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerSetUniqueHandler.h; sourceTree = "<group>"; };
 		A695E51D1811317E008A0F20 /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
 		A695E51E1811317E008A0F20 /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
 		A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
@@ -2122,6 +2128,7 @@
 		E8B3C92316B9326D002BD35F /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				A691AF42186088E70058B30B /* LayerSetUniqueHandler.h */,
 				A695E52718113315008A0F20 /* RenderBatchArray.cpp */,
 				A695E52818113315008A0F20 /* RenderBatchArray.h */,
 				A695E52918113315008A0F20 /* RenderHierarchy.cpp */,
@@ -2291,6 +2298,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A67F0326185C923B00F8C867 /* StaticOcclusionComponent.cpp */,
+				A67F0327185C923B00F8C867 /* StaticOcclusionComponent.h */,
 				A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */,
 				A6E4FDF01761D40200B48E41 /* ActionComponent.h */,
 				A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */,
@@ -2696,6 +2705,7 @@
 				E8B3CBCB16B9326E002BD35F /* AnimatedMesh.h in Headers */,
 				505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */,
 				E8B3CBCD16B9326E002BD35F /* EdgeAdjacency.h in Headers */,
+				A691AF43186088E70058B30B /* LayerSetUniqueHandler.h in Headers */,
 				E8B3CBCF16B9326E002BD35F /* PolygonGroup.h in Headers */,
 				E8B3CBD116B9326E002BD35F /* StaticMesh.h in Headers */,
 				E8B3CBD216B9326E002BD35F /* Cursor.h in Headers */,
@@ -2893,6 +2903,7 @@
 				E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */,
 				E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */,
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
+				A67F0329185C923B00F8C867 /* StaticOcclusionComponent.h in Headers */,
 				A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */,
 				A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */,
@@ -3283,6 +3294,7 @@
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
 				497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */,
 				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
+				A67F0328185C923B00F8C867 /* StaticOcclusionComponent.cpp in Sources */,
 				E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */,
 				E845D4E61732B7C9000DA8E7 /* FilePathObjective.mm in Sources */,
 				02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */,
