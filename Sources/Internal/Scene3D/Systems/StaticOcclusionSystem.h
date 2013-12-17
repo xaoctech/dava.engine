@@ -37,6 +37,7 @@ class Camera;
 class RenderObject;
 class StaticOcclusion;
 class StaticOcclusionData;
+class StaticOcclusionDataComponent;
     
 // System that allow to build occlusion information. Required only in editor.
 class StaticOcclusionBuildSystem : public SceneSystem
@@ -53,20 +54,12 @@ public:
 
 private:
     Camera * camera;
-    
-    // Build system part
     Vector<Entity*> entities;
     StaticOcclusion * staticOcclusion;
-    StaticOcclusionData * currentDataInProcess;
+    StaticOcclusionDataComponent * componentInProgress;
     uint32 activeIndex;
     bool needSetupNextOcclusion;
     
-    // Final system part
-    void ProcessStaticOcclusion(Camera * camera);
-    void ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data);
-    void UndoOcclusionVisibility();
-    Vector<StaticOcclusionData*> computedOcclusionInfo;
-    Vector<RenderObject*> indexedRenderObjects;
 };
     
 // System that allow to use occlusion information during rendering
@@ -83,9 +76,16 @@ public:
 
 private:
     Camera * camera;
-    Vector<RenderObject*> renderObjectArray;
-    uint32 occlusionRenderObjectSize;
-    // StaticOcclusionData * data;
+    StaticOcclusionData * activePVSSet;
+    uint32 activeBlockIndex;
+    
+    // Final system part
+    void ProcessStaticOcclusion(Camera * camera);
+    void ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data);
+    void UndoOcclusionVisibility();
+    Vector<StaticOcclusionDataComponent*> staticOcclusionComponents;
+    Vector<RenderObject*> indexedRenderObjects;
+
 };
     
 inline void StaticOcclusionBuildSystem::SetCamera(Camera * _camera)

@@ -78,6 +78,7 @@ class SoundUpdateSystem;
 class ActionUpdateSystem;
 class SkyboxSystem;
 class MaterialSystem;
+class StaticOcclusionSystem;
     
 /**
     \ingroup scene3d
@@ -124,7 +125,7 @@ public:
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
 	SkyboxSystem* skyboxSystem;
-	
+	StaticOcclusionSystem * staticOcclusionSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -260,11 +261,14 @@ public:
 	RenderSystem * GetRenderSystem() const;
 	virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
 
+    void RemoveModelsByType(const FastName & modelType);
+    Vector<Entity *> FindModelsByType(const FastName & modelType);
     
 protected:	
     
     void UpdateLights();
     
+    void FindModelsByTypeRecursive(const FastName & modelType, Entity * entity, Vector<Entity *> & models);
     
     uint64 updateTime;
     uint64 drawTime;
