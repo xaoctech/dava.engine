@@ -745,6 +745,11 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase *> &modifi
 		forces[i]->GetModifableLines(modifiables);
 	}
 
+	if ((type == TYPE_SUPEREMITTER_PARTICLES)&&innerEmitter)
+	{
+		innerEmitter->GetModifableLines(modifiables);
+	}
+
 }
 
 

@@ -60,6 +60,8 @@ struct Particle
 
 
 	Color color;	
+
+	int32 positionTarget; //superemitter particles only
 };
 
 

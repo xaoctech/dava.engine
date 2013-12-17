@@ -30,6 +30,7 @@
 
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/Random.h"
@@ -80,6 +81,66 @@ ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)
 {
 }
 
+void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource)
+{
+	for (int32 layerId=0, layersCount = emitter->layers.size(); layerId<layersCount; ++layerId)
+	{
+		ParticleLayer *layer = emitter->layers[layerId];
+		bool isLodActive = layer->IsLodActive(effect->desiredLodLevel);
+		if ((!isLodActive)&&emitter->shortEffect) //layer could never become active
+			continue; 
+		ParticleGroup group;
+		group.emitter = emitter;
+		group.layer = layer;
+		group.visibleLod = isLodActive;
+		group.positionSource = positionSource;
+		//TODO: loop layer hell - rethink it!!!!!!!
+		effect->effectData.groups.push_back(group);			
+	}
+}
+
+void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
+{	
+	if (effect->effectData.groups.empty()) //clean position sources
+		effect->effectData.infoSources.resize(1);
+	//create particle groups
+	for (int32 emitterId = 0, emittersCount = effect->emitters.size(); emitterId<emittersCount; ++emitterId)
+	{
+		RunEmitter(effect, effect->emitters[emitterId]);		
+	}
+	
+	if (effect->state==ParticleEffectComponent::STATE_STOPPED)
+	{
+		//add to active effects and to render
+		activeComponents.push_back(effect);
+		effect->GetEntity()->GetScene()->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
+	}
+	effect->state = ParticleEffectComponent::STATE_PLAYING;
+}
+
+void ParticleEffectSystem::RemoveFromActive(ParticleEffectComponent *effect)
+{
+	Vector<ParticleEffectComponent*>::iterator it = std::find(activeComponents.begin(), activeComponents.end(), effect);
+	DVASSERT(it!=activeComponents.end());
+	activeComponents.erase(it);
+	effect->GetEntity()->GetScene()->GetRenderSystem()->RemoveFromRender(effect->effectRenderObject);
+	effect->state = ParticleEffectComponent::STATE_STOPPED;	
+}
+
+void ParticleEffectSystem::RemoveEntity(Entity * entity)
+{
+	ParticleEffectComponent * effect = static_cast<ParticleEffectComponent *>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	if (effect&&effect->state!=ParticleEffectComponent::STATE_STOPPED)
+		RemoveFromActive(effect);
+
+}
+void ParticleEffectSystem::RemoveComponent(Entity * entity, Component * component)
+{
+	ParticleEffectComponent * effect = static_cast<ParticleEffectComponent *>(component);
+	if (effect&&effect->state!=ParticleEffectComponent::STATE_STOPPED)
+		RemoveFromActive(effect);
+}
+
 void ParticleEffectSystem::Process()
 {    
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS)) 
@@ -93,19 +154,23 @@ void ParticleEffectSystem::Process()
 	float32 speedMult = 1.0f+(PerformanceSettings::Instance()->GetPsPerformanceSpeedMult()-1.0f)*(1-currPSValue);
 	float32 shortEffectTime = timeElapsed*speedMult;
 	
-	for(int i=0; i<activeComponents.size(); i++) //we take size in loop as it can actually change
+	int componentsCount = activeComponents.size();
+	for(int i=0; i<componentsCount; i++) 
 	{
 		ParticleEffectComponent * component = activeComponents[i];
 		if (component->isPaused) 
 			continue;
-		UpdateEffect(component, timeElapsed*component->playbackSpeed, shortEffectTime*component->playbackSpeed);		
+		UpdateEffect(component, timeElapsed*component->playbackSpeed, shortEffectTime*component->playbackSpeed);	
+
 		bool effectEnded = component->stopWhenEmpty?component->effectData.groups.empty():(component->time>component->effectDuration);
 		if (effectEnded)
 		{
 			component->currRepeatsCont++;
 			if ((component->repeatsCount==0)||(component->currRepeatsCont<component->repeatsCount)) //0 means infinite repeats
 			{
-				//TODO: restart effect
+				if (component->clearOnRestart)
+					component->ClearCurrentGroups();
+				RunEffect(component);
 			}
 			else
 			{
@@ -115,8 +180,10 @@ void ParticleEffectSystem::Process()
 		/*finish restart criteria*/		
 		if ((component->state == ParticleEffectComponent::STATE_STOPPING)&&component->effectData.groups.empty())
 		{
-			//TODO: effect is moved to stopped state and removed form activeEffects/renderSystem			
-			continue;
+			component->effectData.infoSources.resize(1);
+			RemoveFromActive(component);
+			componentsCount--;
+			i--;
 		}
 		
 		
@@ -125,9 +192,9 @@ void ParticleEffectSystem::Process()
 
 void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime)
 {
-	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();
-	
-
+	effect->time+=time;
+	effect->effectData.infoSources[0].position = ((TransformComponent *)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform().GetTranslationVector();
+	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();	
 	AABBox3 bbox;
 	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;++it)
 	{
@@ -185,7 +252,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			float32 currVelocityOverLife = 1.0f;
 			if (group.layer->velocityOverLife)
 				currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLifeTime);
-			current->position += current->speed * (currVelocityOverLife*dt);			
+			current->position += current->speed * (currVelocityOverLife*dt);				
 			float32 currSpinOverLife = 1;
 			if (group.layer->spinOverLife)
 				currSpinOverLife = group.layer->spinOverLife->GetValue(overLifeTime);
@@ -208,7 +275,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			}
 			AddParticleToBBox(current, bbox);
 			
-			//TODO update inner emitter here - rethink it						
+			if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+			{
+				effect->effectData.infoSources[current->positionTarget].position = current->position;
+				effect->effectData.infoSources[current->positionTarget].size = current->currSize;
+			}
 			
 			if (group.layer->frameOverLifeEnabled)
 			{
@@ -236,7 +307,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			{
 				if (!group.head)
 				{
-					current = GenerateNewParticle(group, currLoopTime, worldTransform);																
+					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
 					AddParticleToBBox(current, bbox);
 				}
 			}else
@@ -253,7 +324,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				while(group.particlesToGenerate >= 1.0f)
 				{
 					group.particlesToGenerate -= 1.0f;					
-					current = GenerateNewParticle(group, currLoopTime, worldTransform);																
+					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
 					AddParticleToBBox(current, bbox);
 				}
 			}
@@ -282,7 +353,7 @@ void ParticleEffectSystem::AddParticleToBBox(Particle *particle, AABBox3& bbox)
 }
 
 
-Particle* ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform)
+Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent *effect, ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform)
 {
 	Particle *particle = new Particle();		
 	particle->life = 0.0f;	
@@ -309,18 +380,14 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float3
 		particle->baseSize = group.layer->size->GetValue(currLoopTime);
 	if (group.layer->sizeVariation)
 		particle->baseSize +=(group.layer->sizeVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
+	particle->baseSize*=effect->effectData.infoSources[group.positionSource].size;
+
 	particle->currSize = particle->baseSize;
 	if (group.layer->sizeOverLifeXY)
 		particle->currSize*=group.layer->sizeOverLifeXY->GetValue(0);
 	Vector2 pivotSize = particle->currSize*group.layer->layerPivotSizeOffsets;
 	particle->currRadius = pivotSize.Length();
-
-
-	//TODO: superemitter stuff - rethink later
-	/*if (emitter->parentParticle){
-		particle->size.x*=emitter->parentParticle->size.x;
-		particle->size.y*=emitter->parentParticle->size.y;
-	}*/	
+	
 
 	particle->angle = 0.0f;
 	particle->spin = 0.0f;
@@ -354,16 +421,26 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleGroup& group, float3
 	if (group.layer->velocityVariation)
 		vel += (group.layer->velocityVariation->GetValue(currLoopTime) * Random::Instance()->RandFloat());
 	particle->speed*=vel;
-	
-	//TODO: superemitter stuff
-	/*if (this->emitter&&!inheritPosition) //just generate at correct position
+		
+	if (!group.layer->inheritPosition) //just generate at correct position
 	{		
-		particle->position += emitter->GetPosition()-emitter->GetInitialTranslationVector();
-	}*/		
+		particle->position += effect->effectData.infoSources[group.positionSource].position;
+	}		
 		
 	particle->next = group.head;
 	group.head = particle;	
 	group.activeParticleCount++;
+	if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+	{
+		ParentInfo info;
+		info.position = particle->position;
+		info.size = particle->currSize; 
+		effect->effectData.infoSources.push_back(info);
+		particle->positionTarget = effect->effectData.infoSources.size()-1;		
+		ParticleEmitter *innerEmitter = group.layer->innerEmitter;
+		if (innerEmitter)
+			RunEmitter(effect, innerEmitter, particle->positionTarget);
+	}
 	return particle;
 }
 
@@ -442,8 +519,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 		newTransform = rotation*newTransform;
 	}
 	TransformPerserveLength(particle->speed, newTransform);
-	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)
-	particle->position+=worldTransform.GetTranslationVector();		
+	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)	
 }
 
 

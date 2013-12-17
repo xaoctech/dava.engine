@@ -31,8 +31,8 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Entity.h"
-#include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
 
 namespace DAVA
 {
@@ -47,6 +47,20 @@ ParticleEffectComponent::ParticleEffectComponent()
 	playbackSpeed = 1.0f;
 	isPaused = false;
 	state = STATE_STOPPED;
+	effectData.infoSources.resize(1);
+	effectData.infoSources[0].size=Vector2(1,1);
+	effectRenderObject = new ParticleRenderObject(&effectData);
+}
+
+ParticleEffectComponent::~ParticleEffectComponent()
+{
+	ClearCurrentGroups();
+	if (state!=STATE_STOPPED)
+		GetEntity()->GetScene()->particleEffectSystem->RemoveFromActive(this);
+	SafeRelease(effectRenderObject);
+	for (int32 i=0, sz = emitters.size(); i<sz; ++i)
+		SafeRelease(emitters[i]);
+	
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
@@ -62,14 +76,19 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 }
 
 void ParticleEffectComponent::Start()
-{		
+{
+	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
+	currRepeatsCont = 0;
 }
 
 void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 {
+	if (state == STATE_STOPPED) return;
 	if (isDeleteAllParticles)
 	{
-		//TODO: clear groups and remove component from active
+		ClearCurrentGroups();		
+		effectData.infoSources.resize(1);
+		GetEntity()->GetScene()->particleEffectSystem->RemoveFromActive(this);	
 	}
 	else
 	{
@@ -99,7 +118,10 @@ void ParticleEffectComponent::Step(float32 delta)
 	
 void ParticleEffectComponent::Restart(bool isDeleteAllParticles)
 {
-	
+	if (isDeleteAllParticles)
+		ClearCurrentGroups();
+	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
+	currRepeatsCont = 0;
 }
 
 void ParticleEffectComponent::StopAfterNRepeats(int32 numberOfRepeats)
@@ -112,7 +134,20 @@ void ParticleEffectComponent::StopWhenEmpty(bool value /*= true*/)
 	stopWhenEmpty = value;
 }
 
-
+void ParticleEffectComponent::ClearCurrentGroups()
+{
+	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+	{
+		Particle * current = (*it).head;
+		while (current)
+		{
+			Particle *next = current->next;
+			delete current;
+			current = next;
+		}
+	}
+	effectData.groups.clear();
+}
 
 void ParticleEffectComponent::SetPlaybackCompleteMessage(const Message & msg)
 {

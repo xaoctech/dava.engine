@@ -54,10 +54,21 @@ struct ParticleGroup
 	float32 time;	
 	float32 loopStartTime, loopDuration, loopRestartDuration; //well - that's how it works
 	float32 particlesToGenerate;	
+
+	int32 positionSource;
+
+  	ParticleGroup() : emitter(0), layer(0), material(0), head(0), activeParticleCount(0), finishingGroup(false), visibleLod(true), time(0), particlesToGenerate(0), positionSource(0){}
+};
+
+struct ParentInfo
+{
+	Vector3 position;
+	Vector2 size;
 };
 
 struct ParticleEffectData
 {
+	Vector<ParentInfo> infoSources;
 	List<ParticleGroup> groups;
 };
 
