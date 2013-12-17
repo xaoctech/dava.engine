@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -323,6 +323,7 @@
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
     <addaction name="actionAddActionComponent"/>
+    <addaction name="actionAddModelTypeComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -628,8 +629,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="ConsoleWidget" name="dockConsoleContents">
-   </widget>
+   <widget class="ConsoleWidget" name="dockConsoleContents"/>
   </widget>
   <widget class="QDockWidget" name="dockLODEditor">
    <property name="windowTitle">
@@ -1635,6 +1635,11 @@
   <action name="actionBuildStaticOcclusion">
    <property name="text">
     <string>Build Static Occlusion</string>
+   </property>
+  </action>
+  <action name="actionAddModelTypeComponent">
+   <property name="text">
+    <string>Add Model Type Component</string>
    </property>
   </action>
  </widget>

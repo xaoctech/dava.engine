@@ -2099,6 +2099,12 @@
 		E8BAD5B3185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B4185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B5185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
+		E8EA8DC4185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
+		E8EA8DC5185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
+		E8EA8DC6185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
+		E8EA8DC7185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
+		E8EA8DC8185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
+		E8EA8DC9185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
@@ -2917,6 +2923,8 @@
 		E8BAD5AE185213F100C98C8D /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionDynamic.h; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
+		E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelTypeComponent.cpp; sourceTree = "<group>"; };
+		E8EA8DC3185C63710064906E /* ModelTypeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelTypeComponent.h; sourceTree = "<group>"; };
 		E9E798A716F0BE7600745AF5 /* UISwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitch.cpp; sourceTree = "<group>"; };
 		E9E798A816F0BE7600745AF5 /* UISwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwitch.h; sourceTree = "<group>"; };
 		E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
@@ -3853,6 +3861,8 @@
 			children = (
 				50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */,
 				50ED33491858B5A200A917D5 /* StaticOcclusionComponent.h */,
+				E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */,
+				E8EA8DC3185C63710064906E /* ModelTypeComponent.h */,
 				A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */,
 				A6E4FE001761D96C00B48E41 /* ActionComponent.h */,
 				A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */,
@@ -4368,6 +4378,7 @@
 				176DE9F0174B5561007A983B /* UI3DView.h in Headers */,
 				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
 				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
+				E8EA8DC9185C63710064906E /* ModelTypeComponent.h in Headers */,
 				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
 				A6D4908B186096AE00445262 /* LayerSetUniqueHandler.h in Headers */,
 				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
@@ -4547,6 +4558,7 @@
 				E8989E0616BD24E500732C04 /* DLCUnpacker.h in Headers */,
 				E8989E0816BD24E500732C04 /* FileDownloader.h in Headers */,
 				E8989E0916BD24E500732C04 /* DoxygenDocumenation.h in Headers */,
+				E8EA8DC7185C63710064906E /* ModelTypeComponent.h in Headers */,
 				E8989E0B16BD24E500732C04 /* Component.h in Headers */,
 				E8989E0D16BD24E500732C04 /* SceneSystem.h in Headers */,
 				E8989E2D16BD24E500732C04 /* Bitstream.h in Headers */,
@@ -5104,6 +5116,7 @@
 				E898A16416BD265400732C04 /* LightUpdateSystem.h in Headers */,
 				E898A16516BD265400732C04 /* LodSystem.h in Headers */,
 				E898A16616BD265400732C04 /* ParticleEffectSystem.h in Headers */,
+				E8EA8DC8185C63710064906E /* ModelTypeComponent.h in Headers */,
 				E898A16716BD265400732C04 /* ParticleEmitterSystem.h in Headers */,
 				E898A16816BD265400732C04 /* RenderUpdateSystem.h in Headers */,
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
@@ -5539,6 +5552,7 @@
 				176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */,
 				176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */,
 				176DEB07174B5561007A983B /* UserNode.cpp in Sources */,
+				E8EA8DC6185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				176DEB08174B5561007A983B /* Sound.cpp in Sources */,
 				02141409181984D600925E51 /* DAVAClassRegistrator.cpp in Sources */,
 				176DEB09174B5561007A983B /* SoundGroup.cpp in Sources */,
@@ -5911,6 +5925,7 @@
 				C7FBCFBE16CD1FE5006F1B3F /* VectorSwig.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
 				840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */,
+				E8EA8DC4185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				7A16934D180EE75A005F1FBC /* AutotestingDB.cpp in Sources */,
 				171F938516CE6F28007038AB /* UIWebView.cpp in Sources */,
 				C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */,
@@ -6037,6 +6052,7 @@
 				E898A1BF16BD265400732C04 /* MemoryManager.cpp in Sources */,
 				E898A1C016BD265400732C04 /* Replay.cpp in Sources */,
 				E898A1C116BD265400732C04 /* Stats.cpp in Sources */,
+				E8EA8DC5185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				E898A1C216BD265400732C04 /* DLCSystem.cpp in Sources */,
 				E898A1C316BD265400732C04 /* DLCUnpacker.cpp in Sources */,
 				E898A1C416BD265400732C04 /* FileDownloader.cpp in Sources */,
