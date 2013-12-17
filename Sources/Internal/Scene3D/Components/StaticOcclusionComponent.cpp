@@ -40,8 +40,8 @@ StaticOcclusionComponent::StaticOcclusionComponent()
 {
     xSubdivisions = 2;
     ySubdivisions = 2;
-    zSubdivisions = 1;
-    boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
+    zSubdivisions = 2;
+    boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(20.0f, 20.0f, 20.0f));
 }
 
 Component * StaticOcclusionComponent::Clone(Entity * toEntity)
@@ -78,6 +78,61 @@ void StaticOcclusionComponent::Deserialize(KeyedArchive *archive, SerializationC
         zSubdivisions = archive->GetUInt32("soc.zsub", 1);
     }
 
+	Component::Deserialize(archive, serializationContext);
+}
+
+    
+    
+    
+    
+StaticOcclusionDataComponent::StaticOcclusionDataComponent()
+{
+}
+
+StaticOcclusionDataComponent::~StaticOcclusionDataComponent()
+{
+}
+
+Component * StaticOcclusionDataComponent::Clone(Entity * toEntity)
+{
+    StaticOcclusionDataComponent * newComponent = new StaticOcclusionDataComponent();
+	newComponent->SetEntity(toEntity);
+    newComponent->data = data;
+    return newComponent;
+}
+    
+void StaticOcclusionDataComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Component::Serialize(archive, serializationContext);
+    
+	if(NULL != archive)
+	{
+        // VB:
+        archive->SetUInt32("sodc.blockCount", data.blockCount);
+        archive->SetUInt32("sodc.objectCount", data.objectCount);
+        archive->SetUInt32("sodc.subX", data.sizeX);
+        archive->SetUInt32("sodc.subY", data.sizeY);
+        archive->SetUInt32("sodc.subZ", data.sizeZ);
+        archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32);
+    }
+}
+    
+void StaticOcclusionDataComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    if(NULL != archive)
+	{
+        data.blockCount = archive->GetUInt32("sodc.blockCount", 0);
+        data.objectCount = archive->GetUInt32("sodc.objectCount", 0);
+        data.sizeX = archive->GetUInt32("sodc.subX", 1);
+        data.sizeY = archive->GetUInt32("sodc.subY", 1);
+        data.sizeZ = archive->GetUInt32("sodc.subZ", 1);
+        //archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32);
+        
+        data.data = new uint32[data.blockCount * data.objectCount / 32];
+        DVASSERT(data.blockCount * data.objectCount / 32 == archive->GetByteArraySize("sodc.data"));
+        memcpy(data.data, archive->GetByteArray("sodc.data"), data.blockCount * data.objectCount / 32);
+    }
+    
 	Component::Deserialize(archive, serializationContext);
 }
 

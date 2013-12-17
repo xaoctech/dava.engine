@@ -46,6 +46,7 @@ class OcclusionQueryManager;
 class RenderBatch;
 class RenderSystem;
 class Scene;
+class Sprite;
     
 class StaticOcclusionData
 {
@@ -53,10 +54,11 @@ public:
     StaticOcclusionData();
     ~StaticOcclusionData();
     
-    void Init(uint32 sizeX, uint32 sizeY, uint32 sizeZ, uint32 objectCount);
+    void Init(uint32 sizeX, uint32 sizeY, uint32 sizeZ, uint32 objectCount, const AABBox3 & bbox);
     void SetVisibilityForObject(uint32 blockIndex, uint32 objectIndex, uint32 visible);
     uint32 * GetBlockVisibilityData(uint32 blockIndex);
-
+    StaticOcclusionData & operator= (const StaticOcclusionData & other);
+    
     AABBox3 bbox;
     uint32 sizeX;
     uint32 sizeY;
@@ -74,9 +76,7 @@ public:
     
     void SetScene(Scene * _scene) { scene = _scene; };
     void SetRenderSystem(RenderSystem * _renderSystem) {renderSystem = _renderSystem; };
-    void BuildOcclusionInParallel(const AABBox3 & occlusionAreaRect,
-                                  uint32 xBlockCount, uint32 yBlockCount, uint32 zBlockCount,
-                                  Vector<RenderObject*> & renderObjects,
+    void BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
                                   StaticOcclusionData * currentData,
                                   RenderHierarchy * renderHierarchy);
     
