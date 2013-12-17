@@ -185,6 +185,13 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     
 	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
+        ownerNode->SetLocked(true);
+        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
+        {
+            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+            errorsLog.insert("Landscape had wrong transform. Please re-save scene.");
+        }
+        
 		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
 
@@ -369,6 +376,7 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
 void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
+    
     
 	if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
 	{
