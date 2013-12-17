@@ -334,7 +334,10 @@ void QuadTree::Initialize()
 
 
 void QuadTree::ObjectUpdated(RenderObject * renderObject)
-{		
+{
+    if (renderObject->GetFlags() & RenderObject::ALWAYS_CLIPPING_VISIBLE)return;
+    
+    
 	DVASSERT(worldInitialized);
 	//remove object from its current tree node
 	uint16 baseIndex = renderObject->GetTreeNodeIndex();
