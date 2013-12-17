@@ -210,7 +210,7 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
     const DAVA::NMaterial *material = GetMaterial(index);
     if(!material) return false;
     
-    if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR) || material->HasDefine(DAVA::NMaterial::PARAM_))
+    if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR))
     {
         return true;
     }
