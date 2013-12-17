@@ -663,6 +663,7 @@ void QtMainWindow::SetupActions()
 	ui->actionFalling->setData(ResourceEditor::ESOT_FALLING);
 	ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
 	ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
+    ui->actionSpeedTree->setData(ResourceEditor::ESOT_SPEED_TREE);
 	QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
 	QObject::connect(ui->menuObjectTypes, SIGNAL(aboutToShow()), this, SLOT(OnObjectsTypeMenuWillShow()));
 
@@ -2129,6 +2130,7 @@ void QtMainWindow::OnObjectsTypeMenuWillShow()
 	ui->actionFalling->setChecked(ResourceEditor::ESOT_FALLING == objectType);
 	ui->actionBuilding->setChecked(ResourceEditor::ESOT_BUILDING == objectType);
 	ui->actionInvisibleWall->setChecked(ResourceEditor::ESOT_INVISIBLE_WALL == objectType);
+	ui->actionSpeedTree->setChecked(ResourceEditor::ESOT_SPEED_TREE == objectType);
 }
 
 void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
