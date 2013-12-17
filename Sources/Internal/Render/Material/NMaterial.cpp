@@ -317,9 +317,9 @@ namespace DAVA
 		memcpy(materialProperty->data, data, dataSize);
 	}
 	
-	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
+	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName) const
 	{
-		NMaterialState * currentMaterial = this;
+		const NMaterialState * currentMaterial = this;
 		NMaterialProperty * property = NULL;
 		while(currentMaterial != 0)
 		{
