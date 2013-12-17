@@ -38,6 +38,7 @@ extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
 #include "Input/InputSystem.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -192,6 +193,7 @@ namespace DAVA
 
 			Logger::Debug("[CorePlatformAndroid::] before create renderer");
 			RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
+			FileSystem::Init();
 
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");

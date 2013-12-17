@@ -944,6 +944,7 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

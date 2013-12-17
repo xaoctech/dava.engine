@@ -2390,5 +2390,8 @@
     <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
       <Filter>Internal\Job</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
