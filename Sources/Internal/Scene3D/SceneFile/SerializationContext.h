@@ -42,6 +42,7 @@ namespace DAVA
 	class Material;
 	class InstanceMaterialState;
 	class NMaterial;
+	class Texture;
 
 	class SerializationContext
 	{
@@ -135,6 +136,8 @@ namespace DAVA
 		NMaterial* GetNewMaterial(const String& name);
 
 		MaterialSystem* GetMaterialSystem();
+		
+		Texture* PrepareTexture(Texture* tx);
 	};
 };
 

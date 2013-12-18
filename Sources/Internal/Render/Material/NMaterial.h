@@ -397,6 +397,8 @@ public:
     IlluminationParams * GetIlluminationParams();
     void ReleaseIlluminationParams();
 
+	inline UniqueHandle GetLayerSetHandle() const {return layerSetHandle;}
+	
 protected:
 	
 	struct TextureParamCacheEntry
@@ -451,6 +453,8 @@ protected:
 	MaterialChangeListener* stateListener;
 	
     IlluminationParams * illuminationParams;
+	
+	UniqueHandle layerSetHandle;
 
 protected:
 	

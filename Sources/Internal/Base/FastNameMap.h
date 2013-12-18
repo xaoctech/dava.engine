@@ -76,6 +76,21 @@ public:
 			++iter;
 		}
 	}
+	
+	inline bool Equals(const FastNameSet & _another) const
+	{
+		if (size() != _another.size())return false;
+		
+		FastNameSet::iterator it = this->begin();
+		const FastNameSet::iterator & endIt = this->end();
+		for (; it !=  endIt; ++it)
+		{
+			const FastName & name = it->first;
+			if (!_another.count(name))return false;
+		}
+		
+		return true;
+	}
     
     inline bool operator == (const FastNameSet & _another) const;
 	
@@ -151,15 +166,7 @@ public:
 // Implementation
 inline bool FastNameSet::operator == (const FastNameSet & _another) const
 {
-    if (size() != _another.size())return false;
-    FastNameSet::iterator it = this->begin();
-    const FastNameSet::iterator & endIt = this->end();
-    for (; it !=  endIt; ++it)
-    {
-        const FastName & name = it->first;
-        if (!_another.count(name))return false;
-    }
-    return true;
+	return Equals(_another);
 }
 
 

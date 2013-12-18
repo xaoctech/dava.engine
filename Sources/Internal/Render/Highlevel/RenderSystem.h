@@ -36,6 +36,7 @@
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Render/Highlevel/SpatialTree.h"
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -117,6 +118,9 @@ public:
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
     RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
+	
+	UniqueHandle AddLayerSet(const FastNameSet& layers);
+	void ReleaseLayerSet(UniqueHandle handle);
 
 private:
 	void CreateSpatialTree();
