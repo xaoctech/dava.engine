@@ -179,7 +179,7 @@ void SceneTree::dropEvent(QDropEvent * event)
 	}
 
 	// after processing don't allow this event to go higher
-	// so no body will decide to remove/insert grag&dropped items into treeview
+	// so no body will decide to remove/insert drag&dropped items into treeview
 	// except our model. Model will do this when scene entity remove/move signals catched
 	event->setDropAction(Qt::IgnoreAction);
 	event->accept();

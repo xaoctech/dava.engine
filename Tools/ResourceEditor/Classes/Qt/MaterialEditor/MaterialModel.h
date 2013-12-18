@@ -51,11 +51,17 @@ public:
     
     void SetScene(SceneEditor2 * scene);
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-    
+	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
+	int GetLevel(DAVA::NMaterial *) const;
+
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+protected:
+	
 };
 
 class MaterialFilteringModel : public QSortFilterProxyModel

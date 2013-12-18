@@ -299,28 +299,21 @@ QStringList SceneTreeModel::mimeTypes() const
 {
 	QStringList types;
 
-	types << MimeDataHelper2<DAVA::Entity>::GetSupportedTypeName();
-	types << MimeDataHelper2<DAVA::ParticleLayer>::GetSupportedTypeName();
-	types << MimeDataHelper2<DAVA::ParticleForce>::GetSupportedTypeName();
+	types << MimeDataHelper2<DAVA::Entity>::GetMimeType();
+	types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
+	types << MimeDataHelper2<DAVA::ParticleForce>::GetMimeType();
 
 	return types;
 }
 
 bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
 {
-	const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(data);
-	if(!mimeData)
-	{
-		Logger::Warning("[SceneTreeModel::dropMimeData] dropped data isn't QtMimeData");
-		return false;
-	}
-
 	bool ret = false;
 
 	SceneTreeItem* parentItem = GetItem(parent);
 	SceneTreeItem *beforeItem = GetItem(index(row, column, parent));
 
-	int dropType = GetDropType(mimeData);
+	int dropType = GetDropType(data);
 	switch (dropType)
 	{
 	case DropingEntity:
@@ -333,22 +326,17 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				parentEntity = curScene;
 			}
 
-			QVector<DAVA::Entity*> *entitiesV = MimeDataHelper2<DAVA::Entity>::DecodeMimeData(mimeData);
-			if(NULL != entitiesV && entitiesV->size() > 0)
+			QVector<DAVA::Entity*> entitiesV = MimeDataHelper2<DAVA::Entity>::DecodeMimeData(data);
+			if(entitiesV.size() > 0)
 			{
 				EntityGroup entityGroup;
-				for (int i = 0; i < entitiesV->size(); ++i)
+				for (int i = 0; i < entitiesV.size(); ++i)
 				{
-					entityGroup.Add((DAVA::Entity*) entitiesV->at(i));
+					entityGroup.Add((DAVA::Entity*) entitiesV[i]);
 				}
 
 				curScene->structureSystem->Move(entityGroup, parentEntity, beforeEntity);
 				ret = true;
-			}
-
-			if(NULL != entitiesV)
-			{
-				delete entitiesV;
 			}
 		}
 		break;
@@ -366,10 +354,8 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				emitter = ((SceneTreeItemParticleInnerEmmiter* )parentItem)->emitter;
 			}
 
-
-			QVector<DAVA::ParticleLayer *> *layersV = MimeDataHelper2<DAVA::ParticleLayer>::DecodeMimeData(mimeData);
-
-			if(NULL != emitter && NULL != layersV && layersV->size() > 0)
+			QVector<DAVA::ParticleLayer *> layersV = MimeDataHelper2<DAVA::ParticleLayer>::DecodeMimeData(data);
+			if(NULL != emitter && layersV.size() > 0)
 			{
 				DAVA::ParticleLayer* beforeLayer = NULL;
 
@@ -379,56 +365,53 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				}
 
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
-				for(int i = 0; i < layersV->size(); ++i)
+				for(int i = 0; i < layersV.size(); ++i)
 				{
-					layersGroup.push_back((DAVA::ParticleLayer *) layersV->at(i));
+					layersGroup.push_back((DAVA::ParticleLayer *) layersV[i]);
 				}
 
 				curScene->structureSystem->MoveLayer(layersGroup, emitter, beforeLayer);
 				ret = true;
-			}
-
-			if(NULL != layersV)
-			{
-				delete layersV;
 			}
 		}
 		break;
 	case DropingForce:
 		{
 			DAVA::ParticleLayer *newLayer = SceneTreeItemParticleLayer::GetLayer(parentItem);
-			QVector<DAVA::ParticleForce*> *forcesV = MimeDataHelper2<DAVA::ParticleForce>::DecodeMimeData(mimeData);
-
-			if(NULL != newLayer && NULL != forcesV && forcesV->size() > 0)
+			
+			QVector<DAVA::ParticleForce*> forcesV = MimeDataHelper2<DAVA::ParticleForce>::DecodeMimeData(data);
+			if(NULL != newLayer && forcesV.size())
 			{
 				DAVA::Vector<DAVA::ParticleForce*> forcesGroup;
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
 
-				for(int i = 0; i < forcesV->size(); ++i)
+				for(int i = 0; i < forcesV.size(); ++i)
 				{
-					QModelIndex forceIndex = GetIndex((DAVA::ParticleForce *) forcesV->at(i));
+					QModelIndex forceIndex = GetIndex((DAVA::ParticleForce *) forcesV[i]);
 					DAVA::ParticleLayer *oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
 
-					forcesGroup.push_back((DAVA::ParticleForce *) forcesV->at(i));
+					forcesGroup.push_back((DAVA::ParticleForce *) forcesV[i]);
 					layersGroup.push_back(oldLayer);
 				}
 
 				curScene->structureSystem->MoveForce(forcesGroup, layersGroup, newLayer);
 				ret = true;
 			}
-
-			if(NULL != forcesV)
-			{
-				delete forcesV;
-			}
 		}
 		break;
             
     case DropingMaterial:
         {
-            DropMaterial(parentItem, mimeData);
-            break;
+			DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+
+			QVector<DAVA::NMaterial*> materialsV = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
+			if(NULL != targetEntity && materialsV.size() == 1)
+			{
+				MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materialsV[0]);
+				ret = true;
+			}
         }
+		break;
 
 	default:
 		break;
@@ -440,18 +423,11 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
 bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const
 {
-	const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(data);
-	if(!mimeData)
-	{
-		Logger::Warning("[SceneTreeModel::DropCanBeAccepted] dropped data isn't QtMimeData");
-		return false;
-	}
-
 	bool ret = false;
 
 	SceneTreeItem* parentItem = GetItem(parent);
 
-	int dropType = GetDropType(mimeData);
+	int dropType = GetDropType(data);
 	switch (dropType)
 	{
 	case DropingEntity:
@@ -471,14 +447,14 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			else
 			{
 				// go thought entities and check them
-				QVector<DAVA::Entity *> *entities = MimeDataHelper2<DAVA::Entity>::DecodeMimeData(mimeData);
-				if(NULL != entities)
+				QVector<DAVA::Entity *> entities = MimeDataHelper2<DAVA::Entity>::DecodeMimeData(data);
+				if(entities.size() > 0)
 				{
 					DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
 
-					for (int i = 0; i < entities->size(); ++i)
+					for (int i = 0; i < entities.size(); ++i)
 					{
-						DAVA::Entity *entity = (DAVA::Entity *) entities->at(i);
+						DAVA::Entity *entity = (DAVA::Entity *) entities[i];
 						QModelIndex entityIndex = GetIndex(entity);
 
 						// 1. we don't accept drops if it has locked items
@@ -513,8 +489,6 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 							break;
 						}
 					}
-
-					delete entities;
 				}
 			}
 		}
@@ -554,16 +528,16 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 		}
 		break;
             
-        case DropingMaterial:
-        {
-            DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
-            if(targetEntity)
-            {
-                MaterialAssignSystem::DropTestResult result = MaterialAssignSystem::TestEntity(targetEntity, true);
-                ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
-            }
-            break;
-        }
+	case DropingMaterial:
+		{
+			DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
+			if(targetEntity)
+			{
+				MaterialAssignSystem::DropTestResult result = MaterialAssignSystem::TestEntity(targetEntity, true);
+				ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
+			}
+		}
+        break;
 
 
 	default:
@@ -695,25 +669,25 @@ bool SceneTreeModel::AreSameType(const QModelIndexList & indexes) const
 	return ret;
 }
 
-int SceneTreeModel::GetDropType(const QtMimeData *data) const
+int SceneTreeModel::GetDropType(const QMimeData *data) const
 {
 	int ret = DropingUnknown;
 
 	if(NULL != data)
 	{
-        if(MimeDataHelper2<DAVA::Entity>::IsDataSupportType(data))
+        if(MimeDataHelper2<DAVA::Entity>::IsValid(data))
         {
 			ret = DropingEntity;
         }
-        else if(MimeDataHelper2<DAVA::ParticleLayer>::IsDataSupportType(data))
+        else if(MimeDataHelper2<DAVA::ParticleLayer>::IsValid(data))
         {
 			ret = DropingLayer;
         }
-        else if(MimeDataHelper2<DAVA::ParticleForce>::IsDataSupportType(data))
+        else if(MimeDataHelper2<DAVA::ParticleForce>::IsValid(data))
         {
 			ret = DropingForce;
         }
-        else if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(data))
+        else if(MimeDataHelper2<DAVA::NMaterial>::IsValid(data))
         {
 			ret = DropingMaterial;
         }
@@ -721,18 +695,6 @@ int SceneTreeModel::GetDropType(const QtMimeData *data) const
 
 	return ret;
 }
-
-void SceneTreeModel::DropMaterial(SceneTreeItem *parentItem, const QtMimeData *mimeData) const
-{
-    DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
-    QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
-    if(curScene && targetEntity && (materials->size() == 1))
-    {
-        MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
-    }
-}
-
-
 
 SceneTreeFilteringModel::SceneTreeFilteringModel(SceneTreeModel *_treeModel, QObject *parent /* = NULL */)
 	: QSortFilterProxyModel(parent)
