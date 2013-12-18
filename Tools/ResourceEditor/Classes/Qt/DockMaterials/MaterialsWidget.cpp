@@ -36,6 +36,9 @@
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
+#include "Commands2/Command2.h"
+#include "Commands2/CommandID.h"
+
 
 #include "MaterialEditor/MaterialAssignSystem.h"
 
@@ -68,6 +71,8 @@ void MaterialsWidget::SetupSignals()
     QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
     
     QObject::connect(materialsView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(SelectionChanged(const QItemSelection &, const QItemSelection &)));
     QObject::connect(materialsView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowContextMenu(const QPoint &)));
@@ -218,31 +223,52 @@ void MaterialsWidget::SceneActivated(SceneEditor2 *scene)
 {
     curScene = scene;
     
-    materialsModel->SetScene(curScene);
-    Invalidate();
-    
-    SwitchListAndLabel();
+    RefreshView();
 }
 
 void MaterialsWidget::SceneDeactivated(SceneEditor2 *scene)
 {
     curScene = NULL;
     
-    materialsModel->SetScene(curScene);
-    Invalidate();
-
-    SwitchListAndLabel();
+    RefreshView();
 }
 
 void MaterialsWidget::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 {
     if(scene == curScene)
     {
-        materialsModel->SetSelection(*selected);
-        materialsView->reset();
+        RefreshView();
     }
 }
 
+void MaterialsWidget::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
+    if(curScene == scene)
+    {
+        RefreshView();
+    }
+}
+
+void MaterialsWidget::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    if((command->GetId() == CMDID_BATCH) && (scene == curScene))
+    {
+		CommandBatch *batch = (CommandBatch *)command;
+		Command2 *firstCommand = batch->GetCommand(0);
+		if(firstCommand && (firstCommand->GetId() == CMDID_MATERIAL_SWITCH_PARENT))
+		{
+            RefreshView();
+		}
+    }
+}
+
+void MaterialsWidget::RefreshView()
+{
+    materialsModel->SetScene(curScene);
+    Invalidate();
+    
+    SwitchListAndLabel();
+}
 
 void MaterialsWidget::Invalidate()
 {
