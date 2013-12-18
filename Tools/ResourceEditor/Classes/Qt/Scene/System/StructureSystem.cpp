@@ -530,11 +530,14 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
         if(rootNode)
         {
             Entity *parentForOptimize = new Entity();
-			parentForOptimize->AddNode(rootNode->Clone());
+
+			Entity *nodeForOptimize = rootNode->Clone();
+			parentForOptimize->AddNode(nodeForOptimize);
+			nodeForOptimize->Release();
 
 			if(optimize)
 			{
-				ScopedPtr<SceneFileV2> sceneFile( new SceneFileV2() );
+				ScopedPtr<SceneFileV2> sceneFile(new SceneFileV2());
 				sceneFile->OptimizeScene(parentForOptimize);
 			}
 
@@ -555,6 +558,7 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 		}
 	}
 
+	if(NULL != loadedEntity) printf("%d\n", loadedEntity->GetRetainCount());
 	return loadedEntity;
 }
 
