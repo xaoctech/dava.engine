@@ -26,6 +26,10 @@ tests_results = {"Tests" : {}}
 
 print "*** DAVA AUTOTEST Cleen up working dirctories ***"
 
+if os.path.exists(currentDir + "/Artifacts/" + gpu):
+    print "Remove folder " + currentDir + "/Artifacts/" + gpu
+    shutil.rmtree(currentDir + "/Artifacts/" + gpu)
+	
 if os.path.exists(output):
     print "Remove folder " + output
     shutil.rmtree(output)
@@ -170,3 +174,7 @@ tests_results['gpu'] = gpu
         
 report_utils.print_result(tests_results)
 report_utils.create_html(tests_results, currentDir + "/" + gpu + ".html")
+
+print "*** DAVA AUTOTEST Copy results for artifact storing ***"
+print "Copy results for storing in TC %s -> %s" % (output, currentDir + "/Artifacts/" + gpu)
+shutil.copytree(output, currentDir + "/Artifacts/" + gpu)
