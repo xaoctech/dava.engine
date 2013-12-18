@@ -124,7 +124,8 @@ void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
 void MaterialDelegate::DrawBackground(QPainter *painter, const QRect &rect, const DAVA::NMaterial * material) const
 {
-    if(bool highligted = false) //need for future selection of material
+    const SimpleMaterialModel *curModel = (SimpleMaterialModel *) proxyModel->sourceModel();
+    if(curModel->IsMaterialSelected(material))
     {
         painter->setBrush(QBrush(HIGHLIGHTED_COLOR));
     }
