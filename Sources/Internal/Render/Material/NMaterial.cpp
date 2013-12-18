@@ -782,6 +782,8 @@ namespace DAVA
 		activeUniformsCacheSize = 0;
 
         illuminationParams = 0;
+		
+		layerSetHandle = InvalidUniqueHandle;
 	}
     
 	NMaterial::~NMaterial()
@@ -803,6 +805,12 @@ namespace DAVA
 		
 		if(materialSystem)
 		{
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+				layerSetHandle = InvalidUniqueHandle;
+			}
+			
 			materialSystem->RemoveMaterial(this);
 		}
 
@@ -1120,6 +1128,18 @@ namespace DAVA
 		UnPropagateParentDefines();
 		
 		SetParentToState(NULL);
+		
+		if(materialSystem)
+		{
+			UniqueHandle tempLayerSetHandle = materialSystem->AddLayerSet(effectiveLayers);
+			
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+			}
+			
+			layerSetHandle = tempLayerSetHandle;
+		}
 	}
 	
 	void NMaterial::PropagateParentDefines()
@@ -1246,6 +1266,18 @@ namespace DAVA
 		{
 			const FastNameSet& parentLayers = parent->GetRenderLayers();
 			effectiveLayers.Combine(parentLayers);
+		}
+		
+		if(materialSystem)
+		{
+			UniqueHandle tempLayerSetHandle = materialSystem->AddLayerSet(effectiveLayers);
+			
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+			}
+			
+			layerSetHandle = tempLayerSetHandle;
 		}
 	}
 		

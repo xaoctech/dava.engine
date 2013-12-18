@@ -49,7 +49,8 @@ namespace DAVA
 		~UniqueStateSet();
 		
 		UniqueHandle MakeUnique(const T* objRef);
-		const T* GetUnique(UniqueHandle handle);
+		const T* GetUnique(UniqueHandle handle) const;
+		T* GetUniqueEditable(UniqueHandle handle);
 		bool IsUnique(const T* objRef);
 		
 		void ReleaseUnique(UniqueHandle handle);
@@ -129,7 +130,13 @@ namespace DAVA
 	}
 	
 	template<typename T, typename V>
-	const T* UniqueStateSet<T, V>::GetUnique(UniqueHandle handle)
+	const T* UniqueStateSet<T, V>::GetUnique(UniqueHandle handle) const
+	{
+		return &values[handle];
+	}
+	
+	template<typename T, typename V>
+	T* UniqueStateSet<T, V>::GetUniqueEditable(UniqueHandle handle)
 	{
 		return &values[handle];
 	}

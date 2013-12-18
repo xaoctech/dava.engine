@@ -28,6 +28,9 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderBatchArray.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderObject.h"
+
 #include "Debug/Stats.h"
 
 namespace DAVA
@@ -108,6 +111,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+				//Vector3 position = renderObject->GetWorldTransformPtr()->GetTranslationVector();
                 float32 distance = (position - cameraPosition).Length();
                 uint32 distanceBits = 0xFFFF - ((uint32)distance) & 0xFFFF;
                 uint32 materialIndex = (batch->GetMaterial()->GetParent()->GetMaterialName().Index() & 0xFFF);
@@ -127,6 +131,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+				//Vector3 position = renderObject->GetWorldTransformPtr()->GetTranslationVector();
                 float32 distance = (position - cameraPosition).Length();
                 batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
