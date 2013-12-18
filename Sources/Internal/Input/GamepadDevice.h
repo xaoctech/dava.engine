@@ -27,65 +27,66 @@
 =====================================================================================*/
 
 
+#ifndef __GamepadDevice_H_
+#define __GamepadDevice_H_
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#include "Base/BaseObject.h"
+#include "UI/UIEvent.h"
 
-#include "DAVAEngine.h"
-
-namespace DAVA 
+namespace DAVA
 {
+    class GamepadDevice;
 
-class UIScrollViewContainer : public UIControl
-{
-protected:
-	virtual ~UIScrollViewContainer();
-public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	virtual bool SystemInput(UIEvent *currentInput);
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-
-	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
-	void SetTouchTreshold(int32 holdDelta);
-	int32 GetTouchTreshold();
+    enum eDavaGamepadProfile
+    {
+        eDavaGamepadProfile_None,              // No device
+        eDavaGamepadProfile_SimpleProfile,     // Logitech for iPhone 5/5s/5c
+        eDavaGamepadProfile_ExtendedProfile    // Moga for iPhone 5/5s/5c, Moga for Android
+    };
 
 
-protected:
+    enum eDavaGamepadElement
+    {
+        eDavaGamepadElement_LShoulderButton,
+        eDavaGamepadElement_RShoulderButton,
+        eDavaGamepadElement_LTrigger,
+        eDavaGamepadElement_RTrigger,
+        eDavaGamepadElement_ButtonA,
+        eDavaGamepadElement_ButtonB,
+        eDavaGamepadElement_ButtonX,
+        eDavaGamepadElement_ButtonY,
+        eDavaGamepadElement_LThumbstickX,
+        eDavaGamepadElement_LThumbstickY,
+        eDavaGamepadElement_RThumbstickX,
+        eDavaGamepadElement_RThumbstickY,
+        eDavaGamepadElement_DPadX,
+        eDavaGamepadElement_DPadY
+    };
 
-	enum
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
 
-	int32		state;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	int32		touchTreshold;
-	
-	int 		mainTouch;	
-	UIEvent		scrollTouch;
-	
-	Vector2 	oldPos;
-	Vector2		newPos;
+    class GamepadDevice : public BaseObject
+    {
+    public:
+#if defined(__DAVAENGINE_IPHONE__)
+        GamepadDevice(void *gameController);
+#elif defined(__DAVAENGINE_ANDROID__)
+        GamepadDevice();
+#else
+        GamepadDevice();
+#endif
+        ~GamepadDevice();
+        eDavaGamepadProfile GetProfile();
+        float32 GetElementState(eDavaGamepadElement element);
 
-	// All boolean variables are grouped together because of DF-2149.
-	bool 		lockTouch : 1;
-	bool 		scrollStartMovement : 1;
-	bool		enableHorizontalScroll : 1;
-	bool		enableVerticalScroll : 1;
-};
-};
+    private:
+        void ProcessElementStateChange(eDavaGamepadElement element, float32 value);
+#if defined(__DAVAENGINE_IPHONE__)
+        void *m_gameController;
+#elif defined(__DAVAENGINE_ANDROID__)
+        // not implemented
+#endif
+    };
 
-#endif /* defined(__Framework__UIScrollViewContainer__) */
+}
+
+#endif //__GamepadDevice_H_
