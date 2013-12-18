@@ -118,8 +118,10 @@ InputTest::InputTest() :
 	textField = NULL;
 	passwordTextField = NULL;
 	staticText = NULL;
+    
 	testButton = NULL;
 	removeFromParentButton = NULL;
+    disableInEventButton = NULL;
 	
 	onScreenTime = 0.0f;
 	testFinished = false;
@@ -206,6 +208,13 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
+    disableInEventButton = new UIButton(Rect(0, 340, 300, 30));
+	disableInEventButton->SetStateFont(0xFF, font);
+	disableInEventButton->SetStateFontColor(0xFF, Color::White());
+	disableInEventButton->SetStateText(0xFF, L"Disable and check input");
+	disableInEventButton->SetDebugDraw(true);
+	disableInEventButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
+
 	staticText = new UIStaticText(Rect(0, 0, 512, 20));
 	font->SetSize(10);
 	staticText->SetFont(font);
@@ -255,6 +264,7 @@ void InputTest::LoadResources()
 
 	AddControl(testButton);
 	AddControl(removeFromParentButton);
+    AddControl(disableInEventButton);
 
     SafeRelease(spr);
     SafeRelease(texture);
@@ -278,6 +288,8 @@ void InputTest::UnloadResources()
 
 	SafeRelease(testButton);
 	SafeRelease(removeFromParentButton);
+	SafeRelease(disableInEventButton);
+    
 	SafeRelease(textField);
 	SafeRelease(passwordTextField);
 	SafeRelease(staticText);
@@ -365,6 +377,12 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 	{
 		removeFromParentButton->RemoveFromParent();
 	}
+    else if (obj == disableInEventButton)
+    {
+        DVASSERT(!disableInEventButton->GetDisabled());
+        disableInEventButton->SetStateText(0xFF, L"Disabled");
+        disableInEventButton->SetDisabled(true);
+    }
 }
 
 bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
