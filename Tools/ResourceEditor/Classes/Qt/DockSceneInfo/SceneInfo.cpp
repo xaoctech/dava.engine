@@ -97,7 +97,6 @@ void SceneInfo::InitializeInfo()
     Initialize3DDrawSection();
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
-    InitializeParticlesSection();
 }
 
 void SceneInfo::InitializeGeneralSection()
@@ -105,8 +104,14 @@ void SceneInfo::InitializeGeneralSection()
     QtPropertyData* header = CreateInfoHeader("General Scene Info");
   
     AddChild("Entities Count", header);
+    AddChild("Emitters Count", header);
+
     AddChild("All Textures Size", header);
 	AddChild("Material Textures Size", header);
+    AddChild("Particles Textures Size", header);
+    
+    AddChild("Sprites Count", header);
+    AddChild("Textures Count", header);
 }
 
 void SceneInfo::RefreshSceneGeneralInfo()
@@ -114,8 +119,14 @@ void SceneInfo::RefreshSceneGeneralInfo()
     QtPropertyData* header = GetInfoHeader("General Scene Info");
 
     SetChild("Entities Count", (uint32)nodesAtScene.size(), header);
+    SetChild("Emitters Count", emittersCount, header);
+
     SetChild("All Textures Size", QString::fromStdString(SizeInBytesToString((float32)(sceneTexturesSize + particleTexturesSize))), header);
 	SetChild("Material Textures Size", QString::fromStdString(SizeInBytesToString((float32)sceneTexturesSize)), header);
+    SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
+    
+    SetChild("Sprites Count", spritesCount, header);
+    SetChild("Textures Count", (uint32)particleTextures.size(), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()
@@ -219,26 +230,6 @@ void SceneInfo::RefreshLODInfoForSelection()
     SetChild("All Triangles", lodInfoSelection.trianglesOnObjects + lodTriangles, header);
 }
 
-
-void SceneInfo::InitializeParticlesSection()
-{
-    QtPropertyData* header = CreateInfoHeader("Particles");
-
-    AddChild("Emitters Count", header);
-    AddChild("Sprites Count", header);
-    AddChild("Textures Count", header);
-    AddChild("Textures Size", header);
-}
-
-void SceneInfo::RefreshParticlesInfo()
-{
-    QtPropertyData* header = GetInfoHeader("Particles");
-
-    SetChild("Emitters Count", emittersCount, header);
-    SetChild("Sprites Count", spritesCount, header);
-    SetChild("Textures Count", (uint32)particleTextures.size(), header);
-    SetChild("Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
-}
 
 uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
@@ -536,7 +527,6 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 	Refresh3DDrawInfo();
 	RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
-	RefreshParticlesInfo();
 
 	RestoreTreeState();
 }
@@ -602,5 +592,4 @@ void SceneInfo::SpritesReloaded()
     particleTexturesSize = CalculateTextureSize(particleTextures);
     
     RefreshSceneGeneralInfo();
-    RefreshParticlesInfo();
 }
