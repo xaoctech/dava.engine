@@ -516,7 +516,7 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 			}
 		}
 		
-		child->SetParent(parent);
+		child->SwitchParentForAllStates(parent->GetMaterialName());
 		
 		return child;
 	}

@@ -345,9 +345,9 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			if(mat)
 			{
 				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
-				MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
+				//MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
 				
-				matSystem->BindMaterial(newMaterial);
+				//matSystem->BindMaterial(newMaterial);
 			}
 			
 			SafeRelease(oldMaterialInstance);
