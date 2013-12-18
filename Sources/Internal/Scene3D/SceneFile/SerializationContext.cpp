@@ -312,26 +312,23 @@ namespace DAVA
 			
 				if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
 				{
-					targetState->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
+					targetState->SetTexture(NMaterial::TEXTURE_DECAL, PrepareTexture(oldMaterial->textures[Material::TEXTURE_DECAL]));
 				}
 				else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
 				{
-					targetState->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
+					targetState->SetTexture(NMaterial::TEXTURE_DETAIL, PrepareTexture(oldMaterial->textures[Material::TEXTURE_DETAIL]));
 				}
 				
-				if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
+				if (Material::MATERIAL_FLAT_COLOR != oldMaterial->type)
 				{
-					targetState->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+					targetState->SetTexture(NMaterial::TEXTURE_ALBEDO, PrepareTexture(oldMaterial->textures[Material::TEXTURE_DIFFUSE]));
 				}
 				
 				if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
 				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
 				   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
 				{
-					if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
-					{
-						targetState->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
-					}
+					targetState->SetTexture(NMaterial::TEXTURE_NORMAL, PrepareTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP]));
 				}
 				
 				if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
@@ -365,9 +362,10 @@ namespace DAVA
 			{
 				if(oldMaterialState)
 				{
-                    targetState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
                     resultMaterial->GetIlluminationParams()->lightmapSize = oldMaterialState->GetLightmapSize();
 				}
+				
+				targetState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, PrepareTexture(oldMaterialState ? oldMaterialState->GetLightmap() : NULL));
 			}
 						
 			if(oldMaterial->isFlatColorEnabled)
@@ -401,5 +399,10 @@ namespace DAVA
 	MaterialSystem* SerializationContext::GetMaterialSystem()
 	{
 		return scene->renderSystem->GetMaterialSystem();
+	}
+	
+	Texture* SerializationContext::PrepareTexture(Texture* tx)
+	{
+		return (tx) ? tx : Texture::CreatePink();
 	}
 }
