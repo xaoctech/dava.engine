@@ -105,7 +105,11 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 	{
 		// we can select only if mouse isn't over hood axis
-		if(ST_AXIS_NONE == hoodSystem->GetPassingAxis())
+		// or if hood is invisible now
+		// or if current mode is NORMAL (no modification)
+		if(!hoodSystem->IsVisible() ||
+			ST_MODIF_OFF == hoodSystem->GetModifMode() ||
+			ST_AXIS_NONE == hoodSystem->GetPassingAxis())
 		{
 			if(event->tid == DAVA::UIEvent::BUTTON_1)
 			{
