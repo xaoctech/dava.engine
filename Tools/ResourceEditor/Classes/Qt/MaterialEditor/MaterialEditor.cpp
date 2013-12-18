@@ -82,26 +82,115 @@ void MaterialEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
 void MaterialEditor::materialClicked(const QModelIndex &index)
 {
 	ui->materialProperty->RemovePropertyAll();
+	ui->materialTexture->RemovePropertyAll();
 
 	DAVA::NMaterial *material = ui->materialTree->GetMaterial(index);
 	if(NULL != material)
 	{
-		const DAVA::InspInfo *info = material->GetTypeInfo();
-		QtPropertyDataIntrospection *inspData = new QtPropertyDataIntrospection(material, info);
-
-		while(0 != inspData->ChildCount())
-		{
-			QtPropertyData *c = inspData->ChildGet(0);
-			inspData->ChildExtract(c);
-
-			ui->materialProperty->AppendProperty(c->GetName(), c);
-		}
-
-		delete inspData;
+		FillMaterialProperties(material);
+		FillMaterialTextures(material);
 	}
 }
 
 void MaterialEditor::showEvent(QShowEvent * event)
 {
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
+}
+
+void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
+{
+	const DAVA::InspInfo *info = material->GetTypeInfo();
+	const DAVA::InspMember *materialProperties = info->BaseInfo()->Member("materialProperties");
+
+	// fill own material properties
+	if(NULL != materialProperties)
+	{
+		QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialProperties);
+		while(0 != data->ChildCount())
+		{
+			QtPropertyData *c = data->ChildGet(0);
+			data->ChildExtract(c);
+
+			ui->materialProperty->AppendProperty(c->GetName(), c);
+		}
+
+		delete data;
+	}
+
+	// fill parent material properties
+	material = material->GetParent();
+	while(NULL != material)
+	{
+		info = material->GetTypeInfo();
+		materialProperties = info->BaseInfo()->Member("materialProperties");
+
+		if(NULL != materialProperties)
+		{
+			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialProperties);
+			while(0 != data->ChildCount())
+			{
+				QtPropertyData *c = data->ChildGet(0);
+				data->ChildExtract(c);
+				
+				c->SetEnabled(false);
+				c->SetBackground(QBrush(QColor(0, 0, 0, 15)));
+
+				ui->materialProperty->AppendProperty(c->GetName(), c);
+			}
+
+			delete data;
+		}
+
+		material = material->GetParent();
+	}
+
+}
+
+void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
+{
+	const DAVA::InspInfo *info = material->GetTypeInfo();
+	const DAVA::InspMember *materialTextures = info->BaseInfo()->Member("textures");
+
+	// fill own material textures
+	if(NULL != materialTextures)
+	{
+		QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialTextures);
+		while(0 != data->ChildCount())
+		{
+			QtPropertyData *c = data->ChildGet(0);
+			data->ChildExtract(c);
+
+			ui->materialTexture->AppendProperty(c->GetName(), c);
+		}
+
+		delete data;
+	}
+
+	// fill parent material textures
+	material = material->GetParent();
+	while(NULL != material)
+	{
+		info = material->GetTypeInfo();
+		materialTextures = info->BaseInfo()->Member("textures");
+
+		if(NULL != materialTextures)
+		{
+			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialTextures);
+			while(0 != data->ChildCount())
+			{
+				QtPropertyData *c = data->ChildGet(0);
+				data->ChildExtract(c);
+				
+				c->SetEnabled(false);
+				c->SetBackground(QBrush(QColor(0, 0, 0, 15)));
+
+				ui->materialTexture->AppendProperty(c->GetName(), c);
+			}
+
+			delete data;
+		}
+
+		material = material->GetParent();
+	}
+
 }
