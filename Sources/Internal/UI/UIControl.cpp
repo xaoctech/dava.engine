@@ -994,6 +994,9 @@ namespace DAVA
 		if(isDisabled)
 		{
 			controlState |= STATE_DISABLED;
+            
+            // Cancel all inputs because of DF-2943.
+            UIControlSystem::Instance()->CancelInputs(this);
 		}
 		else
 		{
@@ -1767,15 +1770,17 @@ namespace DAVA
 						++touchesInside;
 						++totalTouches;
 						currentInput->controlState = UIEvent::CONTROL_STATE_INSIDE;
-						
-						
-						PerformEventWithData(EVENT_TOUCH_DOWN, currentInput);
+
+                        // Yuri Coder, 2013/12/18. Set the touch lockers before the EVENT_TOUCH_DOWN handler
+                        // to have possibility disable control inside the EVENT_TOUCH_DOWN. See also DF-2943.
 						currentInput->touchLocker = this;
 						if(exclusiveInput)
 						{
 							UIControlSystem::Instance()->SetExclusiveInputLocker(this);
 						}
-						
+
+   						PerformEventWithData(EVENT_TOUCH_DOWN, currentInput);
+
 						if(!multiInput)
 						{
 							currentInputID = currentInput->tid;
