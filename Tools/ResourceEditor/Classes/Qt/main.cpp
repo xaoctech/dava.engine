@@ -43,6 +43,7 @@
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "FileSystem/ResourceArchive.h"
+#include "TextureBrowser/TextureCache.h"
 
 #include "Deprecated/EditorSettings.h"
 #include "Deprecated/EditorConfig.h"
@@ -124,6 +125,7 @@ int main(int argc, char *argv[])
 		new EditorConfig();
 		new SceneValidator();
 		new TextureSquarenessChecker();
+        new TextureCache();
 
 		LocalizationSystem::Instance()->SetCurrentLocale("en");
 		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
@@ -151,6 +153,7 @@ int main(int argc, char *argv[])
 		SceneValidator::Instance()->Release();
 		EditorConfig::Instance()->Release();
 		EditorSettings::Instance()->Release();
+        TextureCache::Instance()->Release();
 	}
 
 	BeastProxy::Instance()->Release();

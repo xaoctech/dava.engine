@@ -88,8 +88,8 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	// convertor signals
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)));
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, DAVA::Vector<QImage>&)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)));
 
 	setupStatusBar();
 	setupTexturesList();
@@ -139,7 +139,7 @@ void TextureBrowser::Close()
 	DAVA::SafeRelease(curScene);
 
 	// clear cache
-	TextureCache::Instance()->clearAll();
+	TextureCache::Instance()->clearInsteadThumbnails();
 }
 
 void TextureBrowser::Update()
@@ -228,7 +228,6 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, bool forceConvert /* 
 	if(forceConvert)
 	{
 		TextureCache::Instance()->clearConverted(curDescriptor, view);
-		TextureCache::Instance()->clearConverted(curDescriptor, view);
 	}
 
 	curTextureView = view;
@@ -257,8 +256,8 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, bool forceConvert /* 
 			{
 				// image already in cache, just draw it
 				updateConvertedImageAndInfo(images, *curDescriptor);
-				
-				needConvert = false;
+
+                needConvert = false;
 				infoConvertedIsUpToDate = true;
 			}
 		}
@@ -724,13 +723,10 @@ void TextureBrowser::texturePropertyChanged(int type)
 	updatePropertiesWarning();
 }
 
-void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images)
+void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
-		// put this image into cache
-		TextureCache::Instance()->setOriginal(descriptor, images);
-
 		if(curDescriptor == descriptor)
 		{
 			if(descriptor->IsCubeMap())
@@ -753,12 +749,10 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 	}
 }
 
-void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& images)
+void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
-		// put this image into cache
-		TextureCache::Instance()->setConverted(descriptor, gpu, images);
 		if(curDescriptor == descriptor && curTextureView == gpu)
 		{
 			updateConvertedImageAndInfo(images, *curDescriptor);

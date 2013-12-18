@@ -62,6 +62,9 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 		{
 			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
 			{
+                if(materials[i]->GetMaterialName() == DAVA::FastName("LodShadowVolume"))
+                    continue;
+                
                 for(DAVA::int32 m = 0; m < materials[i]->GetChildrenCount(); ++m)
                 {
                     SimpleMaterialItem *item = new SimpleMaterialItem(materials[i]->GetChild(m));

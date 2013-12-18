@@ -30,6 +30,7 @@
 
 #include "MaterialsWidget.h"
 #include "SimpleMaterialModel.h"
+#include "MaterialDelegate.h"
 
 #include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
@@ -55,7 +56,7 @@ MaterialsWidget::MaterialsWidget(QWidget *parent /* = 0 */)
     SetupView();
     SetupLayout();
 
-    ViewAsList();
+    ViewAsTiles();
 }
 
 MaterialsWidget::~MaterialsWidget()
@@ -114,11 +115,14 @@ void MaterialsWidget::SetupView()
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(materialsModel);
 
+    materialDelegate = new MaterialDelegate(proxyModel, this);
+
     materialsView = new QListView(this);
     materialsView->setContextMenuPolicy(Qt::CustomContextMenu);
     materialsView->setDragDropMode(QAbstractItemView::DragOnly);
 	materialsView->setDragEnabled(true);
     materialsView->setModel(proxyModel);
+    materialsView->setItemDelegate(materialDelegate);
     
 	notFoundMessage = new QLabel("Nothing found", this);
 	notFoundMessage->setMinimumHeight(20);
@@ -143,7 +147,8 @@ void MaterialsWidget::SetupLayout()
 void MaterialsWidget::ViewAsList()
 {
     materialsView->setViewMode(QListView::ListMode);
-    materialsView->setIconSize(QSize());
+    materialDelegate->SetDrawRule(MaterialDelegate::DRAW_TEXT);
+    materialsView->reset();
     
     actionViewAsList->setChecked(true);
     actionViewAsTiles->setChecked(false);
@@ -151,8 +156,9 @@ void MaterialsWidget::ViewAsList()
 
 void MaterialsWidget::ViewAsTiles()
 {
-    materialsView->setViewMode(QListView::IconMode);
-    materialsView->setIconSize(QSize(50, 50));
+    materialsView->setViewMode(QListView::ListMode);
+    materialDelegate->SetDrawRule(MaterialDelegate::DRAW_PREVIEW);
+    materialsView->reset();
     
     actionViewAsList->setChecked(false);
     actionViewAsTiles->setChecked(true);
