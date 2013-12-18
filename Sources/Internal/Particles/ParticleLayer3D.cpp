@@ -47,19 +47,25 @@ namespace DAVA
 static const uint32 BLEND_KEYS[] =
 {
 	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA)
+	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA),
+	MAKE_BLEND_KEY(BLEND_ONE, BLEND_ONE),
+	MAKE_BLEND_KEY(BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE),
 };
 	
 static const FastName BLEND_MATERIAL_NAMES[] =
 {
 	FastName("Global.Textured.VertexColor.Particles0"),
-	FastName("Global.Textured.VertexColor.Particles1")
+	FastName("Global.Textured.VertexColor.Particles1"),
+	FastName("Global.Textured.VertexColor.Particles2"),
+	FastName("Global.Textured.VertexColor.Particles3")
 };
 
 static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
 {
 	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1")
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1"),
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend2"),
+	FastName("Global.Textured.VertexColor.ParticlesFrameBlend3")
 };
 	
 
