@@ -57,6 +57,9 @@ public slots:
 protected:
 	virtual void showEvent(QShowEvent * event);
 
+	void FillMaterialProperties(DAVA::NMaterial *material);
+	void FillMaterialTextures(DAVA::NMaterial *material);
+
 private:
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;

@@ -58,7 +58,6 @@ class ScenePreviewDialog;
 Q_DECLARE_METATYPE(SceneEditor2 *);
 
 class Request;
-class QtMimeData;
 class SceneTabWidget : public QWidget
 {
 	Q_OBJECT
@@ -131,8 +130,6 @@ protected:
 
 	int FindTab(const DAVA::FilePath & scenePath);
 
-    void DropMaterial(const QtMimeData *mimeData);
-    
 private:
 	int newSceneCounter;
 	SceneEditor2 *curScene;

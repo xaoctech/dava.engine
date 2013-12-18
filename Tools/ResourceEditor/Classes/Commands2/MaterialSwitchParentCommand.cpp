@@ -30,10 +30,10 @@
 
 #include "MaterialSwitchParentCommand.h"
 
-MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, const DAVA::NMaterial *newMat)
+MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, const DAVA::NMaterial *newParent)
 	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
     , oldMaterialParent(oldMat->GetParentName())
-    , newMaterialParent(newMat->GetParentName())
+    , newMaterialParent(newParent->GetMaterialName())
     , currentMaterial(oldMat)
 {
     DVASSERT(currentMaterial);

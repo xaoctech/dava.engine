@@ -31,6 +31,8 @@
 #ifndef __MATERIALS_WIDGET_H__
 #define __MATERIALS_WIDGET_H__
 
+#include "Scene3D/Entity.h"
+
 #include <QWidget>
 #include <QItemSelection>
 
@@ -46,6 +48,7 @@ class SimpleMaterialModel;
 class MaterialDelegate;
 class SceneEditor2;
 class EntityGroup;
+class Command2;
 class MaterialsWidget : public QWidget
 {
 	Q_OBJECT
@@ -61,6 +64,8 @@ protected slots:
     void SceneActivated(SceneEditor2 *scene);
     void SceneDeactivated(SceneEditor2 *scene);
     void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+    void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 
     
     void ViewAsList();
@@ -83,6 +88,7 @@ private:
     
     void SwitchListAndLabel();
     
+    void RefreshView();
     void Invalidate();
     
 private:

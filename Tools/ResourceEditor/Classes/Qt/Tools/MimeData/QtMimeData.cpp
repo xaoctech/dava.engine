@@ -29,17 +29,9 @@
 
 
 #include "QtMimeData.h"
-
 #include <QUrl>
 
-QtMimeData::QtMimeData()
-	: QMimeData()
-{
-
-
-}
-
-bool QtMimeData::ContainsFilepathWithExtension( const QMimeData * data, const DAVA::String & extension )
+bool QtMimeData::ContainsFilepathWithExtension(const QMimeData * data, const DAVA::String & extension )
 {
 	if(!data || !data->hasUrls()) return false;
 
@@ -55,7 +47,7 @@ bool QtMimeData::ContainsFilepathWithExtension( const QMimeData * data, const DA
 	return false;
 }
 
-bool QtMimeData::IsURLEqualToExtension( const QUrl &url, const DAVA::String & extension )
+bool QtMimeData::IsURLEqualToExtension(const QUrl &url, const DAVA::String & extension)
 {
 	DAVA::FilePath path = url.toLocalFile().toStdString();
 	return (path.IsEqualToExtension(extension));

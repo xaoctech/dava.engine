@@ -27,6 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "MaterialTree.h"
+#include <QDragMoveEvent>
+#include <QDragEnterEvent>
 
 MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 : QTreeView(parent)
@@ -54,4 +56,67 @@ DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
 void MaterialTree::ShowContextMenu(const QPoint &pos)
 {
 
+
+}
+
+void MaterialTree::dragEnterEvent(QDragEnterEvent * event)
+{
+	QTreeView::dragEnterEvent(event);
+	dragTryAccepted(event);
+}
+
+void MaterialTree::dragMoveEvent(QDragMoveEvent * event)
+{
+	QTreeView::dragMoveEvent(event);
+	dragTryAccepted(event);
+}
+
+void MaterialTree::dropEvent(QDropEvent * event)
+{
+	QTreeView::dropEvent(event);
+
+	event->setDropAction(Qt::IgnoreAction);
+	event->accept();
+}
+
+void MaterialTree::dragTryAccepted(QDragMoveEvent *event)
+{
+	int row, col;
+	QModelIndex parent;
+
+	GetDropParams(event->pos(), parent, row, col);
+	if(treeModel->dropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, treeFilteringModel->mapToSource(parent)))
+	{
+		event->setDropAction(Qt::MoveAction);
+		event->accept();
+	}
+	else
+	{
+		event->setDropAction(Qt::IgnoreAction);
+		event->accept();
+	}
+}
+
+void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
+{
+	row = -1;
+	col = -1;
+	index = indexAt(pos);
+
+	switch(dropIndicatorPosition())
+	{
+	case QAbstractItemView::AboveItem:
+		row = index.row();
+		col = index.column();
+		index = index.parent();
+		break;
+	case QAbstractItemView::BelowItem:
+		row = index.row() + 1;
+		col = index.column();
+		index = index.parent();
+		break;
+	case QAbstractItemView::OnItem:
+	case QAbstractItemView::OnViewport:
+		break;
+	}
 }

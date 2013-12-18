@@ -107,7 +107,7 @@ QStringList SimpleMaterialModel::mimeTypes() const
 {
 	QStringList types;
     
-	types << MimeDataHelper2<DAVA::NMaterial>::GetSupportedTypeName();
+	types << MimeDataHelper2<DAVA::NMaterial>::GetMimeType();
     
 	return types;
 }
