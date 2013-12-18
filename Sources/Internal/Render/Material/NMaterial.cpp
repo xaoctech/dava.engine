@@ -1720,7 +1720,7 @@ namespace DAVA
 			}
 		}
 		
-		clonedMaterial->SetMaterialSystem(materialSystem);
+		/*clonedMaterial->SetMaterialSystem(materialSystem);
 		
 		if(clonedMaterial->materialSystem)
 		{
@@ -1738,7 +1738,7 @@ namespace DAVA
 					clonedMaterial->SetParent(newParent);
 				}
 			}
-		}
+		}*/
 		
         if(illuminationParams)
         {
