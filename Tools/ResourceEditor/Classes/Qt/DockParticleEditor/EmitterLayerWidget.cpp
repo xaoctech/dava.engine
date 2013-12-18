@@ -56,9 +56,9 @@ const EmitterLayerWidget::BlendPreset EmitterLayerWidget::blendPresetsMap[]=
 	{BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA, "Alpha blend"},
 	{BLEND_ONE, BLEND_ONE, "Additive"},
 	{BLEND_SRC_ALPHA, BLEND_ONE, "Alpha additive"},
-	{BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE, "Soft additive"},
-	{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
-	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}
+	{BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE, "Soft additive"}
+	/*{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
+	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}*/
 };
 
 
@@ -246,7 +246,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	dstFactorLabel = new QLabel("DST Factor");	
 	presetComboBox = new QComboBox();
 	srcFactorComboBox = new QComboBox();
-	dstFactorComboBox = new QComboBox();	
+	dstFactorComboBox = new QComboBox();
+	srcFactorComboBox->setEnabled(false);
+	dstFactorComboBox->setEnabled(false);
 	FillBlendCombos();
 	
 	QHBoxLayout *blendLayout = new QHBoxLayout();
