@@ -41,6 +41,7 @@ class QMimeData;
 class QStandardItem;
 class SceneEditor2;
 class SimpleMaterialItem;
+class EntityGroup;
 class SimpleMaterialModel: public QStandardItemModel
 {
     Q_OBJECT
@@ -55,6 +56,17 @@ public:
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
+
+    void SetSelection(const EntityGroup & selection);
+
+    bool IsMaterialSelected(const DAVA::NMaterial *material) const;
+    
+protected:
+    
+    bool IsMaterialValidForModel(const DAVA::NMaterial * material) const;
+    bool IsFastNameContains(const DAVA::FastName & name, const DAVA::String & partOfName) const;
+    
+    DAVA::Set<const DAVA::NMaterial *> selectedMaterials;
 };
 
 Q_DECLARE_METATYPE(DAVA::NMaterial *)

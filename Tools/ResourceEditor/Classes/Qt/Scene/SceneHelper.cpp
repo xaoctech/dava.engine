@@ -80,6 +80,14 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
 
 void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
 {
+    String materialName = material->GetMaterialName().c_str();
+    String parentName = material->GetParentName().c_str();
+    if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
+    {
+        return;
+    }
+    
+    
     DAVA::uint32 texCount = material->GetTextureCount();
     for(DAVA::uint32 t = 0; t < texCount; ++t)
     {

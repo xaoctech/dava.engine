@@ -36,6 +36,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "FileSystem/FilePath.h"
 #include "Render/Material/MaterialSystem.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {

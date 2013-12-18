@@ -32,6 +32,7 @@
 #include "SimpleMaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
+#include "Scene/EntityGroup.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Scene3D/Scene.h"
@@ -49,7 +50,8 @@ SimpleMaterialModel::~SimpleMaterialModel()
 void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 {
 	removeRows(0, rowCount());
-
+    selectedMaterials.clear();
+    
 	if(NULL != scene)
 	{
 		QStandardItem *root = invisibleRootItem();
@@ -62,6 +64,9 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 		{
 			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
 			{
+                if(IsMaterialValidForModel(materials[i]) == false)
+                    continue;
+                
                 for(DAVA::int32 m = 0; m < materials[i]->GetChildrenCount(); ++m)
                 {
                     SimpleMaterialItem *item = new SimpleMaterialItem(materials[i]->GetChild(m));
@@ -69,6 +74,8 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
                 }
 			}
 		}
+        
+        SetSelection(scene->selectionSystem->GetSelection());
 	}
 }
 
@@ -103,6 +110,65 @@ QStringList SimpleMaterialModel::mimeTypes() const
 	types << MimeDataHelper2<DAVA::NMaterial>::GetMimeType();
     
 	return types;
+}
+
+bool SimpleMaterialModel::IsMaterialValidForModel(const DAVA::NMaterial * material) const
+{
+    const DAVA::FastName & name = material->GetMaterialName();
+    
+    bool invalid =
+        IsFastNameContains(name, "ShadowVolume")   ||
+        IsFastNameContains(name, "Silhouette");
+    
+    return !invalid;
+}
+
+
+bool SimpleMaterialModel::IsFastNameContains(const DAVA::FastName & name, const DAVA::String & partOfName) const
+{
+    const DAVA::String materialName = name.c_str();
+    return (materialName.find(partOfName) != DAVA::String::npos);
+}
+
+void SimpleMaterialModel::SetSelection(const EntityGroup & selection)
+{
+    selectedMaterials.clear();
+    
+    DAVA::Vector<DAVA::Entity *> entitiesWithRenderComponent;
+
+    size_t count = selection.Size();
+    for(size_t i = 0; i < count; ++i)
+    {
+        DAVA::Entity *entity = selection.GetEntity(i);
+        
+        entity->GetChildEntitiesWithComponent(entitiesWithRenderComponent, DAVA::Component::RENDER_COMPONENT);
+        if(GetRenderObject(entity))
+        {
+            entitiesWithRenderComponent.push_back(entity);
+        }
+    }
+    
+    count = entitiesWithRenderComponent.size();
+    for(size_t i = 0; i < count; ++i)
+    {
+        RenderObject *ro = GetRenderObject(entitiesWithRenderComponent[i]);
+        if(!ro) continue;
+        
+        DAVA::uint32 rbCount = ro->GetRenderBatchCount();
+        for(DAVA::uint32 r = 0; r < rbCount; ++r)
+        {
+            DAVA::NMaterial * mat = ro->GetRenderBatch(r)->GetMaterial();
+            if(mat)
+            {
+                selectedMaterials.insert(mat->GetParent());
+            }
+        }
+    }
+}
+
+bool SimpleMaterialModel::IsMaterialSelected(const DAVA::NMaterial *material) const
+{
+    return (selectedMaterials.find(material) != selectedMaterials.end());
 }
 
 

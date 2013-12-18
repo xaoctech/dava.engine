@@ -32,12 +32,15 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
 
 class RenderLayerBatchArray;
+class RenderBatch;
+	class Camera;
+	
 class RenderPassBatchArray
 {
 public:
@@ -50,7 +53,8 @@ public:
 	void InitLayer(const FastName& layerName, uint32 sortingFlags);
 
 private:
-    HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
+    
+	HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
 };
 
 class RenderLayerBatchArray
@@ -63,9 +67,10 @@ public:
     {
         SORT_ENABLED = 1 << 0,
         SORT_BY_MATERIAL = 1 << 1,
-        SORT_BY_DISTANCE = 1 << 2,
+        SORT_BY_DISTANCE_BACK_TO_FRONT = 1 << 2,
+        SORT_BY_DISTANCE_FRONT_TO_BACK = 1 << 3,
         
-        SORT_REQUIRED = 1 << 3,
+        SORT_REQUIRED = 1 << 4,
     };
     
     static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
@@ -86,22 +91,12 @@ private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 flags;
     static bool MaterialCompareFunction(const RenderBatch * a, const RenderBatch * b);
-public:
-    INTROSPECTION(RenderLayerBatchArray,
-        COLLECTION(renderBatchArray, "Render Batch Array", I_EDIT)
-    );
 };
 	
 	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
 	{
 		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-        if (!layerBatchArray)
-        {
-            layerBatchArray = new RenderLayerBatchArray(RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL);
-            layerBatchArrayMap.insert(name, layerBatchArray);
-        }
-		//DVASSERT(layerBatchArray);
-		
+		DVASSERT(layerBatchArray);
 		layerBatchArray->AddRenderBatch(renderBatch);
 	}
 	

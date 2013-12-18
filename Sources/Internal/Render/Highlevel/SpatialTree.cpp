@@ -334,7 +334,10 @@ void QuadTree::Initialize()
 
 
 void QuadTree::ObjectUpdated(RenderObject * renderObject)
-{		
+{
+    if (renderObject->GetFlags() & RenderObject::ALWAYS_CLIPPING_VISIBLE)return;
+    
+    
 	DVASSERT(worldInitialized);
 	//remove object from its current tree node
 	uint16 baseIndex = renderObject->GetTreeNodeIndex();
@@ -475,11 +478,12 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 void QuadTree::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
 {
 	DVASSERT(worldInitialized);
+	
+	ClearDeffered();
+	
 	currFrustum = camera->GetFrustum();	
 	currRenderPassBatchArray = renderPassBatchArray;
-	ProcessNodeClipping(0, 0x3f); 
-
-	
+	ProcessNodeClipping(0, 0x3f);
 }
 void QuadTree::Update()
 {		

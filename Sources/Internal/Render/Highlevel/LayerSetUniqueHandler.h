@@ -27,69 +27,77 @@
  =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_TEXTURESTATEDATA_H__
-#define __DAVAENGINE_TEXTURESTATEDATA_H__
+#ifndef __DAVAENGINE_LAYERSET_UNIQUE_HANDLER_H__
+#define __DAVAENGINE_LAYERSET_UNIQUE_HANDLER_H__
 
-#define MAX_TEXTURE_COUNT 8
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
-	class Texture;
-	class TextureStateData
+	class RenderBatch;
+	class RenderLayerBatchArray;
+	
+	struct LayerData
 	{
-		friend class TextureStateDataUniqueHandler;
-		friend class Vector<TextureStateData>;
+		FastNameSet nameSet;
+		RenderLayerBatchArray** layer;
 		
-	public:
-		
-		Texture* textures[MAX_TEXTURE_COUNT];
-		
-	public:
-		
-		TextureStateData()
+		LayerData()
 		{
-			memset(textures, 0, sizeof(textures));
+			layer = NULL;
 		}
 		
-		TextureStateData(const TextureStateData& src)
+		LayerData(const LayerData& data)
 		{
-			memcpy(textures, src.textures, sizeof(textures));
-			
-			RetainAll();
+			nameSet.Combine(data.nameSet);
+			layer = data.layer;
 		}
 		
-		TextureStateData& operator=(const TextureStateData& src)
+		LayerData& operator=(const LayerData& data)
 		{
-			DVASSERT(this != &src);
-			
-			if(this != &src)
-			{
-				ReleaseAll();
-				
-				memcpy(textures, src.textures, sizeof(textures));
-				
-				RetainAll();
-			}
-			
+			nameSet.clear();
+			nameSet.Combine(data.nameSet);
+			layer = data.layer;
+
 			return *this;
 		}
-
-	private:
-				
-		void ReleaseAll()
+	};
+	
+	class LayerSetUniqueHandler
+	{
+	public:
+		
+		void Assign(LayerData* to, const LayerData* from)
 		{
-			for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+			Release(to);
+			
+			to->nameSet.Combine(from->nameSet);
+			if(to->nameSet.size() > 0)
 			{
-				SafeRelease(textures[i]);
+				to->layer = new RenderLayerBatchArray*[to->nameSet.size()];
+				memcpy(to->layer, from->layer, to->nameSet.size() * sizeof(RenderLayerBatchArray*));
 			}
 		}
 		
-		void RetainAll()
+		void Release(LayerData* data)
 		{
-			for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+			//do nothing here
+		}
+		
+		void Clear(LayerData* data)
+		{
+			if(data->layer)
 			{
-				SafeRetain(textures[i]);
+				SafeDeleteArray(data->layer);
 			}
+			
+			data->nameSet.clear();
+
+		}
+		
+		bool Equals(const LayerData* a, const LayerData* b)
+		{
+			return a->nameSet.Equals(b->nameSet);
 		}
 	};
 };
