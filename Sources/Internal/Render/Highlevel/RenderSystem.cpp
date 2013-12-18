@@ -263,7 +263,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
 	
 	if(1 == size)
 	{
-		nearestLight = lights[0];
+		nearestLight = (lights[0] && lights[0]->IsDynamic()) ? lights[0] : NULL;
 	}
 	else
 	{
