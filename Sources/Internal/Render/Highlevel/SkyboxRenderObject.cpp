@@ -44,6 +44,9 @@ namespace DAVA
 	rotationZ(0.0f),
 	nonClippingDistance(0.0f)
 	{
+		bbox.AddPoint(Vector3(0, 0, 0));
+		bbox.AddPoint(Vector3(1, 1, 1));
+		
 		type = RenderObject::TYPE_SKYBOX;
 		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
 	}
