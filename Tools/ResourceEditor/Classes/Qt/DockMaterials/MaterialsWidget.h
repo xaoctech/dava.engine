@@ -45,6 +45,7 @@ class QSortFilterProxyModel;
 class SimpleMaterialModel;
 class MaterialDelegate;
 class SceneEditor2;
+class EntityGroup;
 class MaterialsWidget : public QWidget
 {
 	Q_OBJECT
@@ -59,6 +60,8 @@ protected slots:
 
     void SceneActivated(SceneEditor2 *scene);
     void SceneDeactivated(SceneEditor2 *scene);
+    void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+
     
     void ViewAsList();
     void ViewAsTiles();
