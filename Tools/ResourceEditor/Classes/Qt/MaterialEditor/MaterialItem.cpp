@@ -32,16 +32,17 @@
 #include "MaterialItem.h"
 #include "MaterialModel.h"
 
-MaterialItem::MaterialItem(DAVA::NMaterial * _material)
+MaterialItem::MaterialItem(DAVA::NMaterial * _material, int level)
     : QStandardItem()
     , material(_material)
+	, materialLevel(level)
 {
 	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
 	static QIcon userMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
 	static QIcon instanceMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
 
 	DVASSERT(material);
-    
+	
 	setEditable(false);
 	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
@@ -71,6 +72,11 @@ DAVA::NMaterial * MaterialItem::GetMaterial() const
 	return material;
 }
 
+int MaterialItem::GetLevel() const
+{
+	return materialLevel;
+}
+
 void MaterialItem::Sync()
 {
 	QSet<DAVA::NMaterial *> materialsSet;
@@ -84,7 +90,7 @@ void MaterialItem::Sync()
 	// remove items, that are not in set
 	for(int i = 0; i < rowCount(); ++i)
 	{
-		MaterialItem *childItem = (MaterialItem *) child(i);
+		MaterialItem *childItem = (MaterialItem *)child(i);
 		if(!materialsSet.contains(childItem->GetMaterial()))
 		{
 			removeRow(i);
@@ -102,9 +108,9 @@ void MaterialItem::Sync()
 
 		do
 		{
-			MaterialItem *item = (MaterialItem *) child(i);
+			MaterialItem *item = (MaterialItem *)child(i);
 			DAVA::NMaterial *itemMaterial = NULL;
-			
+
 			if(NULL != item)
 			{
 				item->GetMaterial();
@@ -117,14 +123,14 @@ void MaterialItem::Sync()
 			{
 				removeRow(row);
 
-				item = (MaterialItem *) child(row);
+				item = (MaterialItem *)child(row);
 				itemMaterial = item->GetMaterial();
 			}
 
 			// append entity that isn't in child items list
 			if(NULL == item)
 			{
-				appendRow(new MaterialItem(childMaterial));
+				appendRow(new MaterialItem(childMaterial, materialLevel + 1));
 			}
 			else if(childMaterial != itemMaterial)
 			{
@@ -145,7 +151,7 @@ void MaterialItem::Sync()
 				int lenUntilItem = 0;
 				for(int j = i; j < rowCount(); ++j)
 				{
-					MaterialItem *itm = (MaterialItem *) child(j);
+					MaterialItem *itm = (MaterialItem *)child(j);
 
 					if(NULL != itm && childMaterial == itm->GetMaterial())
 					{
@@ -161,15 +167,14 @@ void MaterialItem::Sync()
 				}
 				else
 				{
-					insertRow(row, new MaterialItem(childMaterial));
+					insertRow(row, new MaterialItem(childMaterial, materialLevel + 1));
 				}
 			}
 			else
 			{
 				item->Sync();
 			}
-		} 
-		while(repeatStep);
+		} while(repeatStep);
 
 		// remember that we add that entity
 		materialsSet.insert(childMaterial);
@@ -181,7 +186,3 @@ void MaterialItem::Sync()
 		setEnabled(rowCount() > 0);
 	}
 }
-
-
-
-

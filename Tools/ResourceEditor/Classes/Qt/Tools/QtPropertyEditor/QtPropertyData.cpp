@@ -317,6 +317,11 @@ bool QtPropertyData::IsEditable() const
 void QtPropertyData::SetEnabled(bool enabled)
 {
 	(enabled) ? (curFlags |= Qt::ItemIsEnabled) : (curFlags &= ~Qt::ItemIsEnabled);
+
+	for(int i = 0; i < optionalButtons.size(); ++i)
+	{
+		optionalButtons[i]->setEnabled(enabled);
+	}
 }
 
 void QtPropertyData::SetUserData(UserData *data)

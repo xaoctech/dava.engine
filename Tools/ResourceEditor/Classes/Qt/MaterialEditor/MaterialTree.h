@@ -51,6 +51,13 @@ public slots:
 protected:
 	MaterialModel *treeModel;
 	MaterialFilteringModel *treeFilteringModel;
+
+	void dragEnterEvent(QDragEnterEvent * event);
+	void dragMoveEvent(QDragMoveEvent * event);
+	void dropEvent(QDropEvent * event);
+
+	void dragTryAccepted(QDragMoveEvent *event);
+	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
 };
 
 #endif // __MATERIALS_TREE_H__
