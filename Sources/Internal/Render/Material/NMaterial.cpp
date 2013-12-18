@@ -409,6 +409,8 @@ namespace DAVA
 				texturesArray[bucket->index] = texture;
 				
 				texturesDirty = true;
+				
+				PropagateDirtyTextures();
 			}
 		}
 		else
@@ -422,6 +424,8 @@ namespace DAVA
 			textureNamesArray.push_back(textureFastName);
 			
 			texturesDirty = true;
+			
+			PropagateDirtyTextures();
 		}
 	}
     
@@ -712,6 +716,7 @@ namespace DAVA
 			++it)
 		{
 			targetState->SetTexture(it->first, it->second->texture);
+			//no need to release texture - new object owns it too
 		}
 		
 		for(Vector<NMaterial*>::iterator it = children.begin();
@@ -756,6 +761,16 @@ namespace DAVA
 				
 		return templateState;
 
+	}
+	
+	void NMaterialState::PropagateDirtyTextures()
+	{
+		for(size_t i = 0; i < children.size(); ++i)
+		{
+			NMaterial* child = children[i];
+			child->texturesDirty = true;
+			child->PropagateDirtyTextures();
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1280,7 +1295,6 @@ namespace DAVA
 			layerSetHandle = tempLayerSetHandle;
 		}
 	}
-		
 	
 	static const FastName PARAM_LIGHT_POSITION0;
 	static const FastName PARAM_PROP_AMBIENT_COLOR;
@@ -1575,8 +1589,13 @@ namespace DAVA
 				
 				tex = Texture::CreateFromFile(texturePath);
 			}
+			else
+			{
+				tex = Texture::CreatePink();
+			}
 			
 			materialState.SetTexture(FastName(it->first), tex);
+			SafeRelease(tex);
 		}
 		
 		const Map<String, VariantType*>& techniquesMap = archive->GetArchive("techniques")->GetArchieveData();
@@ -2109,14 +2128,29 @@ namespace DAVA
 	
 	void NMaterialState::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, int index, const VariantType &value)
 	{
-		NMaterialState *state = (NMaterialState *)object;
+		//VI: TODO: correct this after editing of separate states were implemented
+		NMaterial *state = (NMaterial*)object;
 		DVASSERT(state && index >= 0 && index < state->textureNamesArray.size());
 		
 		if(state && index >= 0 &&
 		   index < state->textureNamesArray.size() &&
 		   value.type == VariantType::TYPE_FILEPATH)
 		{
-			state->SetTexture(state->textureNamesArray[index], Texture::CreateFromFile(value.AsFilePath()));
+			Texture* tex = Texture::CreateFromFile(value.AsFilePath());
+			
+			state->SetTexture(state->textureNamesArray[index], tex);
+			
+			uint32 stateCount = state->GetStateCount();
+			if(stateCount)
+			{
+				for(uint32 i = 0; i < stateCount; ++i)
+				{
+					NMaterialState* separateState = state->GetState(i);
+					separateState->SetTexture(separateState->textureNamesArray[index], tex);
+				}
+			}
+			
+			SafeRelease(tex);
 		}
 	}
 	
@@ -2247,14 +2281,31 @@ namespace DAVA
 		
 		return ret;
 	}
-	
+		
 	void NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, int index, const VariantType &value)
 	{
-		NMaterialState *state = (NMaterialState*)object;
+		//VI: TODO: correct this after editing of separate states were implemented
+		NMaterial* state = (NMaterial*)object;
 		DVASSERT(state && index >= 0 && index < state->materialProperties.size());
 		
-		//VI: we will only change exisiting properties here
+		MemberValueSetInternal(state, index, value);
 		
+		uint32 stateCount = state->GetStateCount();
+		if(stateCount)
+		{
+			for(uint32 i = 0; i < stateCount; ++i)
+			{
+				NMaterialState* separateState = state->GetState(i);
+				MemberValueSetInternal(separateState, index, value);
+			}
+		}
+
+	}
+	
+	void NMaterialState::NMaterialStateDynamicPropertiesInsp::MemberValueSetInternal(NMaterialState* state, int index, const VariantType &value)
+	{
+		//VI: we will only change exisiting properties here
+				
 		const FastName& propName = state->materialProperties.keyByIndex(index);
 		const NMaterialProperty* prop = state->materialProperties.valueByIndex(index);
 		switch(prop->type)
@@ -2360,4 +2411,5 @@ namespace DAVA
 			}
 		}
 	}
+
 };

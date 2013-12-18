@@ -258,6 +258,8 @@ protected:
 	
 	void CopyTechniquesTo(NMaterialState* targetState);
 
+	void PropagateDirtyTextures();
+	
 protected:
 	
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
@@ -272,12 +274,18 @@ protected:
 	
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
+	private:
+		
+		void MemberValueSetInternal(NMaterialState* state, int index, const VariantType &value);
+		
 	public:
 		int MembersCount(void *object) const;
 		InspDesc MemberDesc(void *object, int index) const;
 		const char* MemberName(void *object, int index) const;
 		VariantType MemberValueGet(void *object, int index) const;
 		void MemberValueSet(void *object, int index, const VariantType &value);
+		
+		
 	};
 
 
