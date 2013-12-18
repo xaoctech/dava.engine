@@ -67,7 +67,8 @@ void MaterialsWidget::SetupSignals()
 {
     QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
-
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+    
     QObject::connect(materialsView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(SelectionChanged(const QItemSelection &, const QItemSelection &)));
     QObject::connect(materialsView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowContextMenu(const QPoint &)));
 }
@@ -232,6 +233,16 @@ void MaterialsWidget::SceneDeactivated(SceneEditor2 *scene)
 
     SwitchListAndLabel();
 }
+
+void MaterialsWidget::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+    if(scene == curScene)
+    {
+        materialsModel->SetSelection(*selected);
+        materialsView->reset();
+    }
+}
+
 
 void MaterialsWidget::Invalidate()
 {
