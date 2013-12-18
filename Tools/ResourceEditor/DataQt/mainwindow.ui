@@ -371,6 +371,7 @@
      <addaction name="actionFalling"/>
      <addaction name="actionBuilding"/>
      <addaction name="actionInvisibleWall"/>
+     <addaction name="actionSpeedTree"/>
     </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
@@ -1640,6 +1641,14 @@
   <action name="actionAddModelTypeComponent">
    <property name="text">
     <string>Add Model Type Component</string>
+   </property>
+  </action>
+  <action name="actionSpeedTree">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Speed Tree</string>
    </property>
   </action>
  </widget>

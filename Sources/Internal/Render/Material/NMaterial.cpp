@@ -317,9 +317,9 @@ namespace DAVA
 		memcpy(materialProperty->data, data, dataSize);
 	}
 	
-	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName)
+	NMaterialProperty* NMaterialState::GetMaterialProperty(const FastName & keyName) const
 	{
-		NMaterialState * currentMaterial = this;
+		const NMaterialState * currentMaterial = this;
 		NMaterialProperty * property = NULL;
 		while(currentMaterial != 0)
 		{
@@ -782,6 +782,8 @@ namespace DAVA
 		activeUniformsCacheSize = 0;
 
         illuminationParams = 0;
+		
+		layerSetHandle = InvalidUniqueHandle;
 	}
     
 	NMaterial::~NMaterial()
@@ -803,6 +805,12 @@ namespace DAVA
 		
 		if(materialSystem)
 		{
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+				layerSetHandle = InvalidUniqueHandle;
+			}
+			
 			materialSystem->RemoveMaterial(this);
 		}
 
@@ -1120,6 +1128,18 @@ namespace DAVA
 		UnPropagateParentDefines();
 		
 		SetParentToState(NULL);
+		
+		if(materialSystem)
+		{
+			UniqueHandle tempLayerSetHandle = materialSystem->AddLayerSet(effectiveLayers);
+			
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+			}
+			
+			layerSetHandle = tempLayerSetHandle;
+		}
 	}
 	
 	void NMaterial::PropagateParentDefines()
@@ -1247,6 +1267,18 @@ namespace DAVA
 			const FastNameSet& parentLayers = parent->GetRenderLayers();
 			effectiveLayers.Combine(parentLayers);
 		}
+		
+		if(materialSystem)
+		{
+			UniqueHandle tempLayerSetHandle = materialSystem->AddLayerSet(effectiveLayers);
+			
+			if(InvalidUniqueHandle != layerSetHandle)
+			{
+				materialSystem->ReleaseLayerSet(layerSetHandle);
+			}
+			
+			layerSetHandle = tempLayerSetHandle;
+		}
 	}
 		
 	
@@ -1278,25 +1310,49 @@ namespace DAVA
 		bool changed = (light != lights[index]);
 		lights[index] = light;
 		
-		if(changed && materialDynamicLit && lights[0])
+		if(changed && materialDynamicLit)
 		{
-			NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-			NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-			NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-			
-			Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color(1, 1, 1, 1);
-			Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color(1, 1, 1, 1);
-			Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color(1, 1, 1, 1);
-			float32 intensity = lights[0]->GetIntensity();
-			
-			materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();
-			materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
-			materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
-			
-			SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-			SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-			SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-			SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+			if(lights[0])
+			{
+				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+				
+				Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color(1, 1, 1, 1);
+				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color(1, 1, 1, 1);
+				Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color(1, 1, 1, 1);
+				float32 intensity = lights[0]->GetIntensity();
+				
+				materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();
+				materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
+				materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
+				
+				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+			}
+			else
+			{
+				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+				
+				Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color(1, 1, 1, 1);
+				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color(1, 1, 1, 1);
+				Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color(1, 1, 1, 1);
+				float32 intensity = 0;
+				
+				materialAmbientColor = materialAmbientColor * Color(0, 0, 0, 0);
+				materialDiffuseColor = materialDiffuseColor * Color(0, 0, 0, 0);
+				materialSpecularColor = materialSpecularColor * Color(0, 0, 0, 0);
+				
+				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+
+			}
 		}
 		
 	}

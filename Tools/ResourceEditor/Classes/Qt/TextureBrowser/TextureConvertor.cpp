@@ -52,6 +52,7 @@ TextureConvertor::TextureConvertor()
 	, jobIdCounter(1)
 	, convertJobQueueSize(0)
 	, waitingComletion(0)
+    , waitDialog(NULL)
 {
 	// slots will be called in connector(this) thread
 	QObject::connect(&originalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
@@ -66,6 +67,11 @@ TextureConvertor::~TextureConvertor()
 	convertedWatcher.waitForFinished();
 }
 
+int TextureConvertor::GetThumbnail(const DAVA::TextureDescriptor *descriptor)
+{
+    return GetOriginal(descriptor);
+}
+
 int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 {
 	int ret = 0;
@@ -75,9 +81,6 @@ int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 		// check if requested texture isn't the same that is loading now
 		if(NULL == curJobOriginal || curJobOriginal->identity != descriptor)
 		{
-// 			DAVA::Vector<DAVA::TextureDescriptor> *textures = new DAVA::Vector<DAVA::TextureDescriptor>(); TODO: WTF? unusable code?
-// 			textures->push_back(*descriptor);
-
 			JobItem newJob;
 			newJob.id = jobIdCounter++;
 			newJob.data = new TextureDescriptor(*descriptor);
@@ -382,15 +385,15 @@ DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);
 			if(outExtension == ".pvr")
 			{
-				DAVA::Logger::FrameworkDebug("Starting PVR conversion (%s), id %d...",
-					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
+				DAVA::Logger::FrameworkDebug("Starting PVR conversion (%s), id %d..., (%s)",
+					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id, descriptor->pathname.GetAbsolutePathname().c_str());
 				convertedImages = ConvertFormat(descriptor, gpu, item->force);
 				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}
 			else if(outExtension == ".dds")
 			{
-				DAVA::Logger::FrameworkDebug("Starting DXT conversion (%s), id %d...",
-					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
+				DAVA::Logger::FrameworkDebug("Starting DXT conversion (%s), id %d..., (%s)",
+					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id, descriptor->pathname.GetAbsolutePathname().c_str());
 				convertedImages = ConvertFormat(descriptor, gpu, item->force);
 				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}

@@ -88,13 +88,11 @@ protected:
     void Initialize3DDrawSection();
     void InitializeLODSectionInFrame();
     void InitializeLODSectionForSelection();
-    void InitializeParticlesSection();
 
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
     void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
-    void RefreshParticlesInfo();
 
     
 	void RefreshAllData(SceneEditor2 *scene);

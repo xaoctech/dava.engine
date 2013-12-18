@@ -34,9 +34,33 @@
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Base/BaseMath.h"
+#include "Render/Highlevel/StaticOcclusion.h"
 
 namespace DAVA
 {
+    
+class StaticOcclusionDataComponent: public Component
+{
+protected:
+    ~StaticOcclusionDataComponent();
+public:
+	IMPLEMENT_COMPONENT_TYPE(STATIC_OCCLUSION_DATA_COMPONENT);
+
+    StaticOcclusionDataComponent();
+	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+  
+    inline StaticOcclusionData & GetData();
+    
+    uint32 member;
+protected:
+    StaticOcclusionData data;
+public:
+	INTROSPECTION_EXTEND(StaticOcclusionDataComponent, Component,
+                         MEMBER(member, "member", I_VIEW | I_EDIT));
+};
+
 
 class StaticOcclusionComponent : public Component
 {
@@ -66,7 +90,7 @@ private:
     uint32 xSubdivisions;
     uint32 ySubdivisions;
     uint32 zSubdivisions;
-
+    
 	friend class StaticOcclusionUpdateSystem;
 
 public:
@@ -117,6 +141,12 @@ inline uint32 StaticOcclusionComponent::GetSubdivisionsZ()
 {
     return zSubdivisions;
 }
+    
+inline StaticOcclusionData & StaticOcclusionDataComponent::GetData()
+{
+    return data;
+}
+
 
 }
 #endif //__DAVAENGINE_SWITCH_COMPONENT_H__

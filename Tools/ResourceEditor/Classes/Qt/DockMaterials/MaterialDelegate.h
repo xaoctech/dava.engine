@@ -28,82 +28,61 @@
 
 
 
-#ifndef __MATERIALS_WIDGET_H__
-#define __MATERIALS_WIDGET_H__
+#ifndef __MATERIAL_DELEGATE_H__
+#define __MATERIAL_DELEGATE_H__
 
-#include <QWidget>
-#include <QItemSelection>
+#include "Render/Material/NMaterial.h"
+#include "Render/TextureDescriptor.h"
 
-class QVBoxLayout;
-class QToolBar;
-class QListView;
-class QAction;
-class QLineEdit;
-class QLabel;
+#include <QAbstractItemDelegate>
+
 class QSortFilterProxyModel;
-
-class SimpleMaterialModel;
-class MaterialDelegate;
-class SceneEditor2;
-class EntityGroup;
-class MaterialsWidget : public QWidget
+class QPainter;
+class MaterialDelegate: public QAbstractItemDelegate
 {
 	Q_OBJECT
+    
+    static const int TEXT_HEIGHT = 24;
+    static const int BORDER_MARGIN = 1;
 
 public:
-	MaterialsWidget(QWidget *parent = 0);
-	~MaterialsWidget();
 
-    void SetupSignals();
-    
-protected slots:
+	enum DrawRule
+	{
+		DRAW_PREVIEW,
+		DRAW_TEXT
+	};
 
-    void SceneActivated(SceneEditor2 *scene);
-    void SceneDeactivated(SceneEditor2 *scene);
-    void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+	MaterialDelegate(QSortFilterProxyModel * model, QObject *parent = 0);
 
-    
-    void ViewAsList();
-    void ViewAsTiles();
-    
-	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void ShowContextMenu(const QPoint & point);
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-	void SetFilter(const QString &filter);
-    void ResetFilter();
+	void SetDrawRule(DrawRule rule);
+
+private slots:
+
+    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image);
+
+private:
+    QRect GetBackgroundRect(const QStyleOptionViewItem & option) const;
     
-    void OnEdit();
-    void OnAssignToSelection();
+    void DrawBackground(QPainter *painter, const QRect &rect, const DAVA::NMaterial * material) const;
+	void DrawText(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect,  const DAVA::NMaterial * material) const;
+    void DrawSelection(QPainter *painter, const QStyleOptionViewItem &option, const DAVA::NMaterial * material) const;
+    
+    DAVA::NMaterial * GetMaterial(const QModelIndex &index) const;
+    bool HasPreview(const QModelIndex &index) const;
+    QImage GetPreview(const QStyleOptionViewItem & option, const DAVA::NMaterial * material) const;
+    
+    QModelIndex FindItemIndex(const DAVA::TextureDescriptor *descriptor) const;
+    QModelIndex FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const;
     
 private:
     
-    void SetupToolbar();
-    void SetupView();
-    void SetupLayout();
+	DrawRule drawRule;
     
-    void SwitchListAndLabel();
-    
-    void Invalidate();
-    
-private:
-
-    QVBoxLayout *layout;
-    
-    QToolBar *toolbar;
-    QListView *materialsView;
-    
-    QLineEdit *searchFilter;
-    
-    QLabel * notFoundMessage;
-    
-    QAction *actionViewAsList;
-    QAction *actionViewAsTiles;
-
-    SimpleMaterialModel *materialsModel;
     QSortFilterProxyModel *proxyModel;
-    MaterialDelegate *materialDelegate;
-    
-    SceneEditor2 *curScene;
 };
 
-#endif // __MATERIALS_WIDGET_H__
+#endif // __MATERIAL_DELEGATE_H__

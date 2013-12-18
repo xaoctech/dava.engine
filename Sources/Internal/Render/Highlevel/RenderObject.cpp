@@ -108,6 +108,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	newObject->flags = flags;
 	newObject->RemoveFlag(MARKED_FOR_UPDATE);
 	newObject->debugFlags = debugFlags;
+    newObject->staticOcclusionIndex = staticOcclusionIndex;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;
 
@@ -165,7 +166,7 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 	if(NULL != archive)
 	{
 		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
-		flags = DEFAULT_FLAGS;
+		
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
 

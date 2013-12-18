@@ -78,6 +78,7 @@ class SoundUpdateSystem;
 class ActionUpdateSystem;
 class SkyboxSystem;
 class MaterialSystem;
+class StaticOcclusionSystem;
     
 /**
     \ingroup scene3d
@@ -124,7 +125,7 @@ public:
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
 	SkyboxSystem* skyboxSystem;
-	
+	StaticOcclusionSystem * staticOcclusionSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */

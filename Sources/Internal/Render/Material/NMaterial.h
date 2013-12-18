@@ -167,7 +167,7 @@ public:
     uint32 GetTextureCount() const;
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
-	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
 	
 	virtual void SetMaterialName(const String& name);
 	const FastName& GetMaterialName() const;
@@ -397,6 +397,8 @@ public:
     IlluminationParams * GetIlluminationParams();
     void ReleaseIlluminationParams();
 
+	inline UniqueHandle GetLayerSetHandle() const {return layerSetHandle;}
+	
 protected:
 	
 	struct TextureParamCacheEntry
@@ -451,6 +453,8 @@ protected:
 	MaterialChangeListener* stateListener;
 	
     IlluminationParams * illuminationParams;
+	
+	UniqueHandle layerSetHandle;
 
 protected:
 	

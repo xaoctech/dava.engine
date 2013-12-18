@@ -31,11 +31,114 @@
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Frustum.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
+	void RenderHierarchy::AddToRenderDeffered(RenderPassBatchArray * renderPassBatchArray)
+	{
+		/*size_t count = defferedAddObjectsArray.size();
+		if(count > 0)
+		{
+			RenderObject** arrayPtr = &defferedAddObjectsArray[0];
+			for(size_t i = 0; i < count; ++i)
+			{
+				RenderObject* renderObject = arrayPtr[i];
+				
+				uint32 batchCount = renderObject->GetRenderBatchCount();
+				for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
+				{
+					RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+					NMaterial * material = batch->GetMaterial();
+					//if (material)
+					{
+						const FastNameSet & layers = material->GetRenderLayers();
+						FastNameSet::iterator layerEnd = layers.end();
+						for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
+						{
+							renderPassBatchArray->AddRenderBatch(layerIt->first, batch);
+						}
+					}
+				}
+			}
+		}*/
 		
+		size_t count = defferedRenderBatches.size();
+		if(count > 0)
+		{
+			RenderBatch** batchesPtr = &defferedRenderBatches[0];
+			UniqueHandle* handlesPtr = &defferendBatchesLayers[0];
+			
+			for(size_t i = 0; i < count; ++i)
+			{
+				LayerData* layerData = uniqueLayerSets.GetUniqueEditable(handlesPtr[i]);
+				if(layerData->nameSet.size() > 1)
+				{
+					size_t layerCount = layerData->nameSet.size();
+					for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+					{
+						layerData->layer[layerIndex]->AddRenderBatch(batchesPtr[i]);
+					}
+				}
+				else
+				{
+					layerData->layer[0]->AddRenderBatch(batchesPtr[i]);
+				}
+			}
+		}
+	}
+	
+	void RenderHierarchy::ClearDeffered()
+	{
+		//defferedAddObjectsArray.clear();
+		defferedRenderBatches.clear();
+		defferendBatchesLayers.clear();
+	}
+	
 	void RenderHierarchy::AddToRender(RenderObject * renderObject)
+	{
+		//defferedAddObjectsArray.push_back(renderObject);
+		
+		uint32 size = renderObject->GetRenderBatchCount();
+		for(uint32 i = 0; i < size; ++i)
+		{
+			RenderBatch* rb = renderObject->GetRenderBatch(i);
+			defferedRenderBatches.push_back(rb);
+			defferendBatchesLayers.push_back(rb->GetMaterial()->GetLayerSetHandle());
+		}
+	}
+	
+	UniqueHandle RenderHierarchy::AddLayerSet(const FastNameSet& layers,
+											  RenderPassBatchArray * renderPassBatchArray)
+	{
+		UniqueHandle layerSetHandle = InvalidUniqueHandle;
+		
+		if(layers.size() > 0)
+		{
+			LayerData layerData;
+			layerData.nameSet.Combine(layers);
+
+			uint32 layerCount = layerData.nameSet.size();
+			layerData.layer = new RenderLayerBatchArray*[layerCount];
+			for(uint32 i = 0; i < layerCount; ++i)
+			{
+				layerData.layer[i] = renderPassBatchArray->Get(layers.keyByIndex(i));
+			}
+			
+			layerSetHandle = uniqueLayerSets.MakeUnique(&layerData);
+			
+			SafeDeleteArray(layerData.layer);
+		}
+		
+		return layerSetHandle;
+	}
+	
+	void RenderHierarchy::ReleaseLayerSet(UniqueHandle handle)
+	{
+		uniqueLayerSets.ReleaseUnique(handle);
+	}
+		
+	/*void RenderHierarchy::AddToRender(RenderObject * renderObject)
 	{
 		uint32 batchCount = renderObject->GetRenderBatchCount();
 		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
@@ -52,7 +155,7 @@ namespace DAVA
 				}
 			}
 		}
-	}
+	}*/
     
 	void LinearRenderHierarchy::AddRenderObject(RenderObject * object)
 	{		
@@ -79,7 +182,9 @@ namespace DAVA
 	}		
     
 	void LinearRenderHierarchy::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
-	{				
+	{
+		ClearDeffered();
+		
 		currRenderPassBatchArray = renderPassBatchArray;
 		Frustum * frustum = camera->GetFrustum();
 		int32 objectsToClip = 0;
