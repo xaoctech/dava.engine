@@ -161,28 +161,28 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 	AddMetaObject(&landscapeSize.x, DAVA::MetaInfo::Instance<float>(), "Size");
 	AddMetaObject(&landscapeSize.z, DAVA::MetaInfo::Instance<float>(), "Height");
 
-	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
-	if(!propertyList->IsKeyExists("lightmap.size"))
-	{
-		propertyList->SetInt32("lightmap.size", 1024);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.enable"))
-	{
-		propertyList->SetBool("editor.staticlight.enable", false);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.castshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.castshadows", false);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.receiveshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.receiveshadows", false);
-	}
+	//DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
+	//if(!propertyList->IsKeyExists("lightmap.size"))
+	//{
+	//	propertyList->SetInt32("lightmap.size", 1024);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.enable"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.enable", false);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.castshadows"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.castshadows", false);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.receiveshadows"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.receiveshadows", false);
+	//}
 
-	AddKeyedArchiveMember(propertyList, "lightmap.size", "Lightmap size");
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.enable", "Staticlight enable");
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.castshadows", "Cast shadows"); 
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.receiveshadows", "Receive shadows");
+	//AddKeyedArchiveMember(propertyList, "lightmap.size", "Lightmap size");
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.enable", "Staticlight enable");
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.castshadows", "Cast shadows"); 
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.receiveshadows", "Receive shadows");
 
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("isFogEnabled"));
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("fogDensity"));

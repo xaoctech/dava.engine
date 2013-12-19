@@ -95,7 +95,7 @@ private:
     {
         OcclusionQuery query;
         uint32 next;
-        uint32 salt;
+        uint16 salt;
     };
     Vector<OcclusionQueryItem> queries;
 };

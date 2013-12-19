@@ -478,13 +478,55 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 void QuadTree::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
 {
 	DVASSERT(worldInitialized);
-	
-	ClearDeffered();
-	
 	currFrustum = camera->GetFrustum();	
 	currRenderPassBatchArray = renderPassBatchArray;
-	ProcessNodeClipping(0, 0x3f);
+	ProcessNodeClipping(0, 0x3f); 
+
+	
 }
+    
+void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray)
+{
+    QuadTreeNode& currNode = nodes[nodeId];
+    int32 objectsSize = currNode.objects.size();
+
+    
+//    if (!clippingFlags) //node is fully inside frustum - no need to clip anymore
+//	{
+    for (int32 i = 0; i < objectsSize; ++i)
+    {
+        RenderObject * renderObject = currNode.objects[i];
+        if (bbox.IntersectsWithBox(renderObject->GetWorldBoundingBox()))
+        {
+            renderObjectArray.push_back(renderObject);
+        }
+    }
+//	}else
+//    {
+//        
+//    }
+    
+    
+    //process children
+	for (int32 i = 0; i < QuadTreeNode::NODE_NONE; ++i)
+	{
+		uint16 childNodeId = currNode.children[i];
+		if (childNodeId != INVALID_TREE_NODE_INDEX)
+		{
+			GetObjects(childNodeId, clippingFlags, bbox, renderObjectArray);
+		}
+	}
+}
+
+    
+void QuadTree::GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray)
+{
+    
+}
+
+    
+    
+    
 void QuadTree::Update()
 {		
 	DVASSERT(worldInitialized);		

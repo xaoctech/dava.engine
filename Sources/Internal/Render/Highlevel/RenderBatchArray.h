@@ -32,15 +32,12 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/FastNameMap.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
 
 class RenderLayerBatchArray;
-class RenderBatch;
-	class Camera;
-	
 class RenderPassBatchArray
 {
 public:
@@ -53,8 +50,7 @@ public:
 	void InitLayer(const FastName& layerName, uint32 sortingFlags);
 
 private:
-    
-	HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
+    HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
 };
 
 class RenderLayerBatchArray
@@ -91,6 +87,10 @@ private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 flags;
     static bool MaterialCompareFunction(const RenderBatch * a, const RenderBatch * b);
+public:
+    INTROSPECTION(RenderLayerBatchArray,
+        COLLECTION(renderBatchArray, "Render Batch Array", I_EDIT)
+    );
 };
 	
 	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)

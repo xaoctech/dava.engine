@@ -166,9 +166,21 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
+        ValidateNodeCustomProperties(node);
     }
 }
 
+
+void SceneValidator::ValidateNodeCustomProperties(Entity * sceneNode)
+{
+    KeyedArchive * props = sceneNode->GetCustomProperties();
+
+    props->DeleteKey("editor.staticlight.used");
+    props->DeleteKey("editor.staticlight.enable");
+    props->DeleteKey("editor.staticlight.castshadows");
+    props->DeleteKey("editor.staticlight.receiveshadows");
+    props->DeleteKey("lightmap.size");
+}
 
 void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
@@ -446,15 +458,36 @@ void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NM
 {
 	KeyedArchive * props = ownerNode->GetCustomProperties();
 
-    if(props->IsKeyExists("editor.staticlight.enable"))
+    if(GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.used"))
     {
         IlluminationParams * params = material->GetIlluminationParams();
 
-        params->isUsed = props->GetBool("editor.staticlight.enable", params->isUsed);
-        params->castShadow = props->GetBool("editor.staticlight.castshadows", params->castShadow);
-        params->receiveShadow = props->GetBool("editor.staticlight.receiveshadows", params->receiveShadow);
-        params->lightmapSize = props->GetInt32("lightmap.size", params->lightmapSize);
+        VariantType * variant = 0;
+        variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.enable");
+        if(variant) params->isUsed = variant->AsBool();
+        variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.castshadows");
+        if(variant) params->castShadow = variant->AsBool();
+        variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.receiveshadows");
+        if(variant) params->receiveShadow = variant->AsBool();
+        variant = GetCustomPropertyFromParentsTree(ownerNode, "lightmap.size");
+        if(variant) params->lightmapSize = variant->AsInt32();
     }
+}
+
+VariantType* SceneValidator::GetCustomPropertyFromParentsTree(Entity *ownerNode, const String & key)
+{
+    if(!ownerNode)
+        return 0;
+
+    KeyedArchive * props = ownerNode->GetCustomProperties();
+
+    if(!props)
+        return 0;
+
+    if(props->IsKeyExists(key))
+        return props->GetVariant(key);
+    else
+        return GetCustomPropertyFromParentsTree(ownerNode->GetParent(), key);
 }
 
 bool SceneValidator::NodeRemovingDisabled(Entity *node)
