@@ -35,6 +35,7 @@
 #include "Base/FastNameMap.h"
 #include "Render/UniqueStateSet.h"
 #include "Render/Highlevel/LayerSetUniqueHandler.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
@@ -51,6 +52,8 @@ public:
     virtual void RemoveRenderObject(RenderObject * renderObject) = 0;
 	virtual void ObjectUpdated(RenderObject * renderObject) = 0;
     virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray) = 0;
+    
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray) = 0;
 	
 	virtual void Initialize(){};
 	virtual void Update(){};
@@ -83,7 +86,9 @@ class LinearRenderHierarchy : public RenderHierarchy
 	virtual void AddRenderObject(RenderObject * renderObject);
 	virtual void RemoveRenderObject(RenderObject * renderObject);
 	virtual void ObjectUpdated(RenderObject * renderObject);
-	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);	
+	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & objects);
+
 private:
     Vector<RenderObject*> renderObjectArray;
 };

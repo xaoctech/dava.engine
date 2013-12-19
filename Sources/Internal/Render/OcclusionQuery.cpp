@@ -142,6 +142,7 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
         {
             queries[k].query.Init();
             queries[k].next = nextFree;
+            queries[k].salt = 0;
             nextFree = k;
         }
     }
