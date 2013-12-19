@@ -33,8 +33,8 @@
 
 #include "Base/Singleton.h"
 #include "Render/TextureDescriptor.h"
+#include "FileSystem/FilePath.h"
 
-#include <QMap>
 #include <QImage>
 
 class TextureCache : public QObject, public DAVA::Singleton<TextureCache>
@@ -78,6 +78,8 @@ signals:
     
 protected slots:
     
+    void TexturesReloaded();
+    
     void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
 	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image);
 
@@ -91,7 +93,9 @@ protected:
 	void clearOriginal(const DAVA::TextureDescriptor *descriptor);
 
     
-    void ClearCacheTail(QMap<const DAVA::TextureDescriptor*, CacheEntity> & cache, const size_t currentWeight, const size_t maxWeight);
+    void ClearCacheTail(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const size_t currentWeight, const size_t maxWeight);
+    
+    void RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const DAVA::TextureDescriptor *descriptor);
     
 private:
 
@@ -103,9 +107,9 @@ private:
 	static const size_t maxOrigCount = 20;
 	static const size_t maxConvertedCount = 7; // per gpu
 
-	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheThumbnail;
-	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheOriginal;
-	QMap<const DAVA::TextureDescriptor*, CacheEntity> cacheConverted[DAVA::GPU_FAMILY_COUNT];
+    DAVA::Map<const DAVA::FilePath, CacheEntity> cacheThumbnail;
+	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheOriginal;
+	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheConverted[DAVA::GPU_FAMILY_COUNT];
 };
 
 #endif // __TEXTURE_CACHE_H__
