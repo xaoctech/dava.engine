@@ -163,6 +163,9 @@ protected:
     
     void ConvertIlluminationParamsFromProperty(Entity *ownerNode, NMaterial *material);
 
+    VariantType* GetCustomPropertyFromParentsTree(Entity *ownerNode, const String & key);
+    bool VariantTypeToBool();
+
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
