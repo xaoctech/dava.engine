@@ -81,6 +81,13 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
 void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
 {
     String materialName = material->GetMaterialName().c_str();
+	
+	//VI: do not check root materials
+	if(!material->GetParentName().IsValid())
+	{
+		return;
+	}
+	
     String parentName = material->GetParentName().c_str();
     if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
     {
