@@ -2043,6 +2043,91 @@ namespace DAVA
 		}
 	}
 	
+	void NMaterial::OnChildMaterialSystemChanged(NMaterial* child, MaterialSystem* matSystem)
+	{
+		if(!IsConfigMaterial())
+		{
+			int32 materializedChildCount = 0;
+			for(size_t i = 0; i < children.size(); ++i)
+			{
+				if(children[i]->materialSystem != NULL)
+				{
+					materializedChildCount++;
+				}
+			}
+			
+			bool selfSystemChanged = false;
+			if(NULL == materialSystem &&
+			   materializedChildCount != 0)
+			{
+				matSystem->AddMaterial(this);
+				selfSystemChanged = true;
+			}
+			else if(NULL != materialSystem &&
+					0 == materializedChildCount)
+			{
+				FastName curParent;
+				if(parent && parent->IsConfigMaterial())
+				{
+					curParent = GetParentName();
+					SetParent(NULL);
+				}
+				
+				materialSystem->RemoveMaterial(this);
+				SetMaterialSystem(NULL);
+				
+				if(curParent.IsValid())
+				{
+					SwitchParent(curParent);
+				}
+				
+				selfSystemChanged = true;
+			}
+			
+			if(parent && !parent->IsConfigMaterial())
+			{
+				parent->OnChildMaterialSystemChanged(this, matSystem);
+			}
+		}
+	}
+	
+	void NMaterial::UpdateMaterialSystem(MaterialSystem* matSystem)
+	{
+		if(NULL == matSystem)
+		{
+			FastName curParent;
+			if(parent)
+			{
+				curParent = GetParentName();
+				SetParent(NULL);
+			}
+			
+			materialSystem->RemoveMaterial(this);
+			SetMaterialSystem(NULL);
+			
+			if(curParent.IsValid())
+			{
+				SwitchParent(curParent);
+			}
+		}
+		else
+		{
+			MaterialSystem* prevSystem = materialSystem;
+			
+			matSystem->BindMaterial(this);
+			
+			if(prevSystem)
+			{
+				prevSystem->RemoveMaterial(this);
+			}
+		}
+
+		if(parent)
+		{
+			parent->OnChildMaterialSystemChanged(this, materialSystem);
+		}
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
 	
