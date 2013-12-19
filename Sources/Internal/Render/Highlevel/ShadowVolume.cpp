@@ -58,6 +58,8 @@ ShadowVolume::ShadowVolume()
 	mat->SwitchParent(FastName("LodShadowVolume"));
 	
 	SetMaterial(mat);
+    
+    mat->Release();
 }
 
 ShadowVolume::~ShadowVolume()
