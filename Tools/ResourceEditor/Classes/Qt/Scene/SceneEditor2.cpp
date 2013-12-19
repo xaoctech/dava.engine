@@ -46,6 +46,8 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
+const FastName MATERIAL_FOR_REBIND = FastName("Global");
+
 SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
@@ -383,6 +385,15 @@ void SceneEditor2::Draw()
 {
 
     RenderManager::Instance()->ClearStats();
+	
+	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(MATERIAL_FOR_REBIND);
+	DVASSERT(global);
+	
+	if(global)
+	{
+		global->Rebind();
+	}
+	
 	Scene::Draw();
     
     renderStats = RenderManager::Instance()->GetStats();
