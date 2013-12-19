@@ -71,6 +71,7 @@ void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
 		Logger::Error("[SpritePackerHelper::Pack] inputDir is not directory (%s)", inputDir.GetAbsolutePathname().c_str());
+        DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 		return;
 	}
 
@@ -81,6 +82,7 @@ void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 	SafeDelete(resourcePacker);
 	if(!isChanged)
 	{
+        DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 		return;
 	}
 	

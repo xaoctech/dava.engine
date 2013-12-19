@@ -43,15 +43,10 @@
 
 #include "Deprecated/SceneValidator.h"
 
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
-
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, structureChanged(false)
 {
-    new DAVA::SwitchComponent();
-    new DAVA::ActionComponent();
 }
 
 StructureSystem::~StructureSystem()
@@ -387,7 +382,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
 			// 
-			// Ïåðåíåñòè â Load è çàâàëèäåéòèòü òîëüêî ïîäãðóæåííóþ Entity
+			// Å“Ã‚ï£¿Ã‚ÃŒÃ‚Ã’ÃšÃ‹ â€š Load Ã‹ Ãâ€¡â€šâ€¡ÃŽÃ‹â€°Ã‚ÃˆÃšÃ‹ÃšÂ¸ ÃšÃ“ÃŽÂ¸ÃÃ“ Ã”Ã“â€°â€žï£¿Ã›ÃŠÃ‚ÃŒÃŒÃ›Ë› Entity
 			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
             SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());

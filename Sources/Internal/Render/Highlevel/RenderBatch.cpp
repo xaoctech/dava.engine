@@ -268,7 +268,10 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
     if (!rb)
         rb = new RenderBatch();
 
+    SafeRelease(rb->dataSource);
 	rb->dataSource = SafeRetain(dataSource);
+    
+    SafeRelease(rb->renderDataObject);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	
 	if(material)
