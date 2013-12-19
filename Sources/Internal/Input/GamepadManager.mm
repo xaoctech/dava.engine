@@ -48,12 +48,22 @@ namespace DAVA
 
     GamepadManager::GamepadManager()
     {
-        m_gamepadManagerIOS = [[GamepadManagerIOS alloc] initWithParent:this];
+        if(NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1)
+        {
+            m_gamepadManagerIOS = [[GamepadManagerIOS alloc] initWithParent:this];
+        }
     }
 
     GamepadDevice *GamepadManager::GetCurrentGamepad()
     {
-        return [(GamepadManagerIOS *)m_gamepadManagerIOS getCurrentGamepad];
+        if(NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1)
+        {
+            return [(GamepadManagerIOS *)m_gamepadManagerIOS getCurrentGamepad];
+        }
+        else
+        {
+            return NULL;
+        }
     }
 }
 
