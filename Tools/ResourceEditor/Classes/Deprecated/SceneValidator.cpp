@@ -166,9 +166,21 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
+        ValidateNodeCustomProperties(node);
     }
 }
 
+
+void SceneValidator::ValidateNodeCustomProperties(Entity * sceneNode)
+{
+    KeyedArchive * props = sceneNode->GetCustomProperties();
+
+    props->DeleteKey("editor.staticlight.used");
+    props->DeleteKey("editor.staticlight.enable");
+    props->DeleteKey("editor.staticlight.castshadows");
+    props->DeleteKey("editor.staticlight.receiveshadows");
+    props->DeleteKey("lightmap.size");
+}
 
 void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
@@ -446,7 +458,7 @@ void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NM
 {
 	KeyedArchive * props = ownerNode->GetCustomProperties();
 
-    if(props->IsKeyExists("editor.staticlight.enable"))
+    if(props->IsKeyExists("editor.staticlight.used"))
     {
         IlluminationParams * params = material->GetIlluminationParams();
 

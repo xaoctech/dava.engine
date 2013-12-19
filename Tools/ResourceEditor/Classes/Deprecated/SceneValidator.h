@@ -115,6 +115,9 @@ public:
      \param[in] pathname path to DataSource/3d folder
      \return old path for checking
 	 */
+
+    void ValidateNodeCustomProperties(Entity * sceneNode);
+
     FilePath SetPathForChecking(const FilePath &pathname);
     
 //    void EnumerateSceneTextures();
