@@ -38,8 +38,6 @@ namespace DAVA
 	class TextureStateData
 	{
 		friend class TextureStateDataUniqueHandler;
-		friend class Vector<TextureStateData>;
-		
 	public:
 		
 		Texture* textures[MAX_TEXTURE_COUNT];
@@ -50,7 +48,7 @@ namespace DAVA
 		{
 			memset(textures, 0, sizeof(textures));
 		}
-		
+
 		TextureStateData(const TextureStateData& src)
 		{
 			memcpy(textures, src.textures, sizeof(textures));
@@ -60,22 +58,17 @@ namespace DAVA
 		
 		TextureStateData& operator=(const TextureStateData& src)
 		{
-			DVASSERT(this != &src);
+			ReleaseAll();
+
+			memcpy(textures, src.textures, sizeof(textures));
 			
-			if(this != &src)
-			{
-				ReleaseAll();
-				
-				memcpy(textures, src.textures, sizeof(textures));
-				
-				RetainAll();
-			}
+			RetainAll();
 			
 			return *this;
 		}
 
 	private:
-				
+		
 		void ReleaseAll()
 		{
 			for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)

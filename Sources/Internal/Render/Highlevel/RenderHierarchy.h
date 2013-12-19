@@ -34,7 +34,7 @@
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
 #include "Render/UniqueStateSet.h"
-#include "Render/Highlevel/LayerSetUniqueHandler.h"
+//#include "Render/Highlevel/LayerSetUniqueHandler.h"
 #include "Base/BaseMath.h"
 
 namespace DAVA
@@ -59,26 +59,9 @@ public:
 	virtual void Update(){};
 	virtual void DebugDraw(const Matrix4& cameraMatrix){};
 
+protected:
 	void AddToRender(RenderObject * renderObject);
-	void AddToRenderDeffered(RenderPassBatchArray * renderPassBatchArray);
-	
-	UniqueHandle AddLayerSet(const FastNameSet& layers, RenderPassBatchArray * renderPassBatchArray);
-	void ReleaseLayerSet(UniqueHandle handle);
-	
-protected:
-	
-	void ClearDeffered();
-	
-protected:
-	
 	RenderPassBatchArray * currRenderPassBatchArray;
-	
-	Vector<RenderObject*> defferedAddObjectsArray;
-	
-	Vector<RenderBatch*> defferedRenderBatches;
-	Vector<UniqueHandle> defferendBatchesLayers;
-	
-	UniqueStateSet<LayerData, LayerSetUniqueHandler> uniqueLayerSets;
 };
 
 class LinearRenderHierarchy : public RenderHierarchy
@@ -90,7 +73,7 @@ class LinearRenderHierarchy : public RenderHierarchy
     virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & objects);
 
 private:
-    Vector<RenderObject*> renderObjectArray;
+    Vector<RenderObject*> renderObjectArray;    
 };
     
 } // ns
