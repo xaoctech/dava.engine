@@ -562,6 +562,34 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 	return loadedEntity;
 }
 
+void StructureSystem::CopyLightmapSettings(DAVA::NMaterialState *fromState, DAVA::NMaterialState *toState) const
+{
+	Texture* lightmap = fromState->GetTexture(NMaterial::TEXTURE_LIGHTMAP);
+	if(!lightmap)
+	{
+		lightmap = Texture::CreatePink();
+	}
+	
+	toState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, lightmap);
+	
+	if(lightmap->isPink)
+	{
+		SafeRelease(lightmap);
+	}
+	
+	NMaterialProperty* uvScale = fromState->GetMaterialProperty(NMaterial::PARAM_UV_SCALE);
+	if(uvScale)
+	{
+		toState->SetPropertyValue(NMaterial::PARAM_UV_SCALE, uvScale->type, uvScale->size, uvScale->data);
+	}
+	
+	NMaterialProperty* uvOffset = fromState->GetMaterialProperty(NMaterial::PARAM_UV_OFFSET);
+	if(uvScale)
+	{
+		toState->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, uvOffset->type, uvOffset->size, uvOffset->data);
+	}
+}
+
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
 {
     DAVA::Vector<DAVA::RenderObject *> fromMeshes;
@@ -586,17 +614,23 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
                 DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
                 DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
 
-				DVASSERT(0 && "Need reimplement for new materials");
-
-				/*
-                DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
-                DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
-                
-                if(fromState && toState)
-                {
-                    toState->InitFromState(fromState);
-                }
-				*/
+				NMaterial* fromMat = fromBatch->GetMaterial();
+				NMaterial* toMat = toBatch->GetMaterial();
+				
+				DVASSERT(fromMat->GetStateCount() == toMat->GetStateCount());
+				if(fromMat->GetStateCount() == toMat->GetStateCount())
+				{
+					uint32 stateCount = fromMat->GetStateCount();
+					for(uint32 stateIndex = 0; stateIndex < stateCount; ++stateIndex)
+					{
+						NMaterialState* fromState = fromMat->GetState(stateIndex);
+						NMaterialState* toState = toMat->GetState(stateIndex);
+						
+						CopyLightmapSettings(fromState, toState);
+					}
+				}
+				
+				CopyLightmapSettings(fromMat, toMat);
             }
         }
         
