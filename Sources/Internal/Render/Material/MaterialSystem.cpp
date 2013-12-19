@@ -365,7 +365,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 			
 			if(material->IsSwitchable())
 			{
-				material->SwitchState(currentMaterialQuality, this);
+				material->SwitchState(currentMaterialQuality, this, true);
 			}
 			else
 			{

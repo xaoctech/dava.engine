@@ -399,7 +399,7 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 	if(material &&
 	   prevSystem != matSystem)
 	{
-		if(NULL == matSystem)
+		/*if(NULL == matSystem)
 		{
 			if(prevSystem)
 			{
@@ -416,7 +416,9 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 			{
 				prevSystem->RemoveMaterial(material);
 			}
-		}
-	}
+		}*/
+		
+		material->UpdateMaterialSystem(matSystem);
+	}	
 }
 };
