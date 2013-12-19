@@ -61,6 +61,7 @@ namespace DAVA
 	MaterialTechnique::~MaterialTechnique()
 	{
 		SafeRelease(shader);
+        SafeDelete(renderState);
 	}
 	
 	void MaterialTechnique::RecompileShader(const FastNameSet& materialDefines)
@@ -815,6 +816,18 @@ namespace DAVA
 				delete i->second;
 			}
 		}
+        
+        if(IsSwitchable())
+		{
+			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
+			while(stateIter != states.end())
+			{
+                SafeRelease(stateIter->second);
+				++stateIter;
+			}
+            states.clear();
+		}
+
 		
 		if(InvalidUniqueHandle != textureStateHandle)
 		{
