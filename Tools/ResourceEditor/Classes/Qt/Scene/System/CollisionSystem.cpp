@@ -90,10 +90,12 @@ SceneCollisionSystem::~SceneCollisionSystem()
 
 	DAVA::SafeDelete(objectsCollWorld);
 	DAVA::SafeDelete(objectsBroadphase);
+    DAVA::SafeDelete(objectsDebugDrawer);
 	DAVA::SafeDelete(objectsCollDisp);
 	DAVA::SafeDelete(objectsCollConf);
 
 	DAVA::SafeDelete(landCollWorld); 
+	DAVA::SafeDelete(landDebugDrawer);
 	DAVA::SafeDelete(landBroadphase);
 	DAVA::SafeDelete(landCollDisp);
 	DAVA::SafeDelete(landCollConf);
