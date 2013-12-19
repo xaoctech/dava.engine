@@ -43,7 +43,7 @@ LibraryFileSystemModel::LibraryFileSystemModel(QObject *parent /* = NULL */)
 {
     SetExtensionFilter(QStringList());
     
-    connect(this, SIGNAL(directoryLoaded(const QString &)), this, SLOT(DirectoryLoaded(const QString &)));
+	connect(this, SIGNAL(directoryLoaded(const QString &)), this, SLOT(DirectoryLoaded(const QString &)));
 }
 
 
@@ -60,28 +60,29 @@ void LibraryFileSystemModel::SetExtensionFilter(const QStringList & extensionFil
 
 void LibraryFileSystemModel::DirectoryLoaded(const QString &path)
 {
-    QDir dir(path);
-    QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    auto endIt = entries.end();
-    for (auto it = entries.begin(); it != endIt; ++it)
-    {
-        QModelIndex ind = index(it->absoluteFilePath());
-        if(ind.isValid())
-        {
-            if(canFetchMore(ind))
-            {
-                ++loadingCounter;
-                fetchMore(ind);
-            }
-        }
-    }
-    
-    --loadingCounter;
-    if(loadingCounter == 0)
-    {
-        emit ModelLoaded();
-    }
+//disabled for future
+//     QDir dir(path);
+//     QFileInfoList entries = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+// 
+//     auto endIt = entries.end();
+//     for (auto it = entries.begin(); it != endIt; ++it)
+//     {
+//         QModelIndex ind = index(it->absoluteFilePath());
+//         if(ind.isValid())
+//         {
+//             if(canFetchMore(ind))
+//             {
+//                 ++loadingCounter;
+//                 fetchMore(ind);
+//             }
+//         }
+//     }
+//     
+//     --loadingCounter;
+//     if(loadingCounter == 0)
+//     {
+//         emit ModelLoaded();
+//     }
 }
 
 void LibraryFileSystemModel::Load(const QString & pathname)
@@ -90,6 +91,7 @@ void LibraryFileSystemModel::Load(const QString & pathname)
 	reset();
     
 	loadingCounter = 1;
+	
 	setRootPath(pathname);
 }
 

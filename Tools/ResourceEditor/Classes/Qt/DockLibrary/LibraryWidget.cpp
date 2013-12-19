@@ -29,7 +29,7 @@
 
 
 #include "LibraryWidget.h"
-#include "LibraryFilteringModel.h"
+//#include "LibraryFilteringModel.h"
 #include "LibraryFileSystemModel.h"
 
 #include "Main/mainwindow.h"
@@ -137,9 +137,9 @@ void LibraryWidget::SetupToolbar()
     toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     toolbar->setMovable(false);
 
-    searchFilter = new QLineEdit(toolbar);
-    searchFilter->setToolTip("Enter text to search something at tree");
-    searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+//     searchFilter = new QLineEdit(toolbar);
+//     searchFilter->setToolTip("Enter text to search something at tree");
+//     searchFilter->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     
     filesTypeFilter = new QComboBox(toolbar);
     filesTypeFilter->setEditable(false);
@@ -152,8 +152,8 @@ void LibraryWidget::SetupToolbar()
     filesTypeFilter->setCurrentIndex(0);
     
     
-    QIcon resetIcon(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"));
-    QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
+//     QIcon resetIcon(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"));
+//     QAction *actionResetFilter = new QAction(resetIcon, "Reset search filter", toolbar);
 
     QIcon asListIcon(QString::fromUtf8(":/QtIconsTextureDialog/view_list.png"));
     actionViewAsList = new QAction(asListIcon, "View as list", toolbar);
@@ -165,15 +165,15 @@ void LibraryWidget::SetupToolbar()
     actionViewDetailed->setCheckable(true);
     actionViewDetailed->setChecked(false);
 
-    QObject::connect(searchFilter, SIGNAL(editingFinished()), this, SLOT(SetFilter()));
-    QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
+//     QObject::connect(searchFilter, SIGNAL(editingFinished()), this, SLOT(SetFilter()));
+//     QObject::connect(actionResetFilter, SIGNAL(triggered()), this, SLOT(ResetFilter()));
     QObject::connect(filesTypeFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(OnFilesTypeChanged(int)));
     QObject::connect(actionViewAsList, SIGNAL(triggered()), this, SLOT(ViewAsList()));
     QObject::connect(actionViewDetailed, SIGNAL(triggered()), this, SLOT(ViewDetailed()));
     
-    toolbar->addWidget(searchFilter);
-    toolbar->addAction(actionResetFilter);
-    toolbar->addSeparator();
+//    toolbar->addWidget(searchFilter); //for future
+//    toolbar->addAction(actionResetFilter);
+//    toolbar->addSeparator();
     toolbar->addWidget(filesTypeFilter);
     
     toolbar->addAction(actionViewAsList);
@@ -183,7 +183,7 @@ void LibraryWidget::SetupToolbar()
 void LibraryWidget::SetupView()
 {
     filesModel = new LibraryFileSystemModel(this);
-    proxyModel = new LibraryFilteringModel(this);
+//    proxyModel = new LibraryFilteringModel(this);
 
     filesView = new QTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -192,42 +192,42 @@ void LibraryWidget::SetupView()
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
     
-    filesView->setModel(NULL);
-    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
+    filesView->setModel(filesModel);
+//    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
     
-	notFoundMessage = new QLabel("Nothing found", this);
-	notFoundMessage->setMinimumHeight(20);
-	notFoundMessage->setAlignment(Qt::AlignCenter);
+// 	notFoundMessage = new QLabel("Nothing found", this);
+// 	notFoundMessage->setMinimumHeight(20);
+// 	notFoundMessage->setAlignment(Qt::AlignCenter);
 
-	waitBar = new QWidget(this);
-	waitBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	QVBoxLayout *waitBarLayout = new QVBoxLayout(waitBar);
-	waitBar->setLayout(waitBarLayout);
-
-	QWidget *waitHolder = new QWidget(waitBar);
-	waitHolder->setMinimumHeight(50);
-	waitHolder->setMaximumHeight(50);
-	waitHolder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-	QVBoxLayout *waitHolderLayout = new QVBoxLayout(waitHolder);
-	waitHolderLayout->setSpacing(2);
-	waitHolder->setLayout(waitHolderLayout);
-
-	QProgressBar *waitProgressBar = new QProgressBar(waitHolder);
-	waitProgressBar->setMinimumHeight(20);
-	waitProgressBar->setMaximumHeight(20);
-	waitProgressBar->setMinimum(0);
-	waitProgressBar->setMaximum(0);
-	waitProgressBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-
-	QLabel *waitText = new QLabel("Library is loading", waitHolder);
-	waitText->setMinimumHeight(20);
-	waitText->setAlignment(Qt::AlignCenter);
-
-	waitHolderLayout->addWidget(waitProgressBar);
-	waitHolderLayout->addWidget(waitText);
-
-	waitBarLayout->addWidget(waitHolder);
+// 	waitBar = new QWidget(this);
+// 	waitBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+// 	QVBoxLayout *waitBarLayout = new QVBoxLayout(waitBar);
+// 	waitBar->setLayout(waitBarLayout);
+// 
+// 	QWidget *waitHolder = new QWidget(waitBar);
+// 	waitHolder->setMinimumHeight(50);
+// 	waitHolder->setMaximumHeight(50);
+// 	waitHolder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+// 
+// 	QVBoxLayout *waitHolderLayout = new QVBoxLayout(waitHolder);
+// 	waitHolderLayout->setSpacing(2);
+// 	waitHolder->setLayout(waitHolderLayout);
+// 
+// 	QProgressBar *waitProgressBar = new QProgressBar(waitHolder);
+// 	waitProgressBar->setMinimumHeight(20);
+// 	waitProgressBar->setMaximumHeight(20);
+// 	waitProgressBar->setMinimum(0);
+// 	waitProgressBar->setMaximum(0);
+// 	waitProgressBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+// 
+// 	QLabel *waitText = new QLabel("Library is loading", waitHolder);
+// 	waitText->setMinimumHeight(20);
+// 	waitText->setAlignment(Qt::AlignCenter);
+// 
+// 	waitHolderLayout->addWidget(waitProgressBar);
+// 	waitHolderLayout->addWidget(waitText);
+// 
+// 	waitBarLayout->addWidget(waitHolder);
 }
 
 void LibraryWidget::SetupLayout()
@@ -235,16 +235,16 @@ void LibraryWidget::SetupLayout()
     // put tab bar and davawidget into vertical layout
 	layout = new QVBoxLayout();
 	layout->addWidget(toolbar);
-	layout->addWidget(waitBar);
-	layout->addWidget(notFoundMessage);
+// 	layout->addWidget(waitBar);
+// 	layout->addWidget(notFoundMessage);
 	layout->addWidget(filesView);
 	layout->setMargin(0);
 	layout->setSpacing(1);
 	setLayout(layout);
     
-    waitBar->setVisible(false);
-    notFoundMessage->setVisible(false);
-    filesView->setVisible(true);
+//     waitBar->setVisible(false);
+//     notFoundMessage->setVisible(false);
+//    filesView->setVisible(true);
 }
 
 
@@ -273,7 +273,7 @@ void LibraryWidget::ViewDetailed()
 
 void LibraryWidget::HideDetailedColumnsAtFilesView(bool hide)
 {
-    int columns = (hide) ? 1 : proxyModel->columnCount();
+    int columns = (hide) ? 1 : filesModel->columnCount();
     int width = filesView->geometry().width() / columns;
     
     if(!hide)
@@ -281,7 +281,7 @@ void LibraryWidget::HideDetailedColumnsAtFilesView(bool hide)
         filesView->setColumnWidth(0, width);
     }
     
-    for(int i = 1; i < proxyModel->columnCount(); ++i)
+    for(int i = 1; i < filesModel->columnCount(); ++i)
 	{
         filesView->setColumnHidden(i, hide);
         filesView->setColumnWidth(i, width);
@@ -293,10 +293,11 @@ void LibraryWidget::SelectionChanged(const QItemSelection &selected, const QItem
 {
     if(0 == selected.count()) return;
 
-    const QItemSelection realSelection = proxyModel->mapSelectionToSource(selected);
-    const QModelIndex index = realSelection.indexes().first();
+//     const QItemSelection realSelection = proxyModel->mapSelectionToSource(selected);
+//     const QModelIndex index = realSelection.indexes().first();
+	const QModelIndex index = selected.indexes().first();
 
-    QFileInfo fileInfo = filesModel->fileInfo(index);
+	QFileInfo fileInfo = filesModel->fileInfo(index);
 
     if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
     {
@@ -313,7 +314,8 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
 {
     HidePreview();
 
-    const QModelIndex index = proxyModel->mapToSource(filesView->indexAt(point));
+//    const QModelIndex index = proxyModel->mapToSource(filesView->indexAt(point));
+	const QModelIndex index = filesView->indexAt(point);
     
 	if(!index.isValid()) return;
     
@@ -360,40 +362,40 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
     contextMenu.exec(filesView->mapToGlobal(point));
 }
 
-void LibraryWidget::SetFilter()
-{
-    QString filter = searchFilter->text();
-    
-    bool b = proxyModel->blockSignals(true);
-    proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
-    proxyModel->blockSignals(b);
-
-    if(filesView->model())
-    {
-		SwitchTreeAndLabel();
-
-		if(filesView->isVisible())
-		{
-			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-
-			if(!filter.isEmpty())
-			{
-				for(int i = 0; i < proxyModel->rowCount(); ++i)
-				{
-					ExpandUntilFilterAccepted(proxyModel->index(i, 0));
-				}
-			}
-		}
-    }
-}
-
-void LibraryWidget::ResetFilter()
-{
-	if(searchFilter->text().isEmpty()) return;
-
-    searchFilter->setText("");
-    SetFilter();
-}
+// void LibraryWidget::SetFilter()
+// {
+//     QString filter = searchFilter->text();
+//     
+//     bool b = proxyModel->blockSignals(true);
+//     proxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+//     proxyModel->blockSignals(b);
+// 
+//     if(filesView->model())
+//     {
+// 		SwitchTreeAndLabel();
+// 
+// 		if(filesView->isVisible())
+// 		{
+// 			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+// 
+// 			if(!filter.isEmpty())
+// 			{
+// 				for(int i = 0; i < proxyModel->rowCount(); ++i)
+// 				{
+// 					ExpandUntilFilterAccepted(proxyModel->index(i, 0));
+// 				}
+// 			}
+// 		}
+//     }
+// }
+// 
+// void LibraryWidget::ResetFilter()
+// {
+// 	if(searchFilter->text().isEmpty()) return;
+// 
+//     searchFilter->setText("");
+//     SetFilter();
+// }
 
 
 void LibraryWidget::OnFilesTypeChanged(int typeIndex)
@@ -402,24 +404,25 @@ void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 
 	curTypeIndex = typeIndex;
     
-    bool bProxy = proxyModel->blockSignals(true);
-    bool bFiles = filesModel->blockSignals(true);
+//    bool bProxy = proxyModel->blockSignals(true);
+//    bool bFiles = filesModel->blockSignals(true);
 
     filesModel->SetExtensionFilter(fileTypeValues[curTypeIndex].filter);
-	proxyModel->invalidate();
+//	proxyModel->invalidate();
 
-    filesModel->blockSignals(bFiles);
-    proxyModel->blockSignals(bProxy);
+//     filesModel->blockSignals(bFiles);
+//     proxyModel->blockSignals(bProxy);
     
-    if(filesView->model())
-    {
-		SwitchTreeAndLabel();
-
-		if(filesView->isVisible())
-		{
-			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
-		}
-    }
+	filesView->setRootIndex(filesModel->index(rootPathname));
+//     if(filesView->model())
+//     {
+// 		SwitchTreeAndLabel();
+// 
+// 		if(filesView->isVisible())
+// 		{
+// 			filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+// 		}
+//     }
 }
 
 
@@ -427,68 +430,70 @@ void LibraryWidget::ProjectOpened(const QString &path)
 {
     rootPathname = path + "/DataSource/3d/";
     
-    filesView->setModel(NULL);
-    proxyModel->SetModel(NULL);
-
-    waitBar->setVisible(true);
-    notFoundMessage->setVisible(false);
-    filesView->setVisible(false);
+//     filesView->setModel(NULL);
+//     proxyModel->SetModel(NULL);
+// 
+//     waitBar->setVisible(true);
+//     notFoundMessage->setVisible(false);
+//     filesView->setVisible(false);
     
     filesModel->Load(rootPathname);
+	filesView->setRootIndex(filesModel->index(rootPathname));
 }
 
 void LibraryWidget::ProjectClosed()
 {
-    ResetFilter();
-    
+//     ResetFilter();
+//     
     rootPathname = "";
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+//    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+	filesView->setRootIndex(filesModel->index(rootPathname));
     filesView->collapseAll();
 
-    if(filesView->isVisible() == false)
-    {
-        waitBar->setVisible(false);
-        notFoundMessage->setVisible(false);
-        filesView->setVisible(true);
-    }
+//     if(filesView->isVisible() == false)
+//     {
+//         waitBar->setVisible(false);
+//         notFoundMessage->setVisible(false);
+//         filesView->setVisible(true);
+//     }
 }
 
-void LibraryWidget::OnModelLoaded()
-{
-    QDir rootDir(rootPathname);
-    
-    proxyModel->SetModel(filesModel);
-    filesView->setModel(proxyModel);
-    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+// void LibraryWidget::OnModelLoaded()
+// {
+//     QDir rootDir(rootPathname);
+//     
+//     proxyModel->SetModel(filesModel);
+//     filesView->setModel(proxyModel);
+//     filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
+// 
+//     waitBar->setVisible(false);
+//     notFoundMessage->setVisible(false);
+//     filesView->setVisible(true);
+//     
+//     if(VIEW_AS_LIST == viewMode)
+//     {
+//         ViewAsList();
+//     }
+//     else
+//     {
+//         ViewDetailed();
+//     }
+//}
 
-    waitBar->setVisible(false);
-    notFoundMessage->setVisible(false);
-    filesView->setVisible(true);
-    
-    if(VIEW_AS_LIST == viewMode)
-    {
-        ViewAsList();
-    }
-    else
-    {
-        ViewDetailed();
-    }
-}
-
-void LibraryWidget::SwitchTreeAndLabel()
-{
-    QModelIndex rootIndex = proxyModel->mapFromSource(filesModel->index(rootPathname));
-    if(proxyModel->rowCount(rootIndex))
-    {
-		notFoundMessage->setVisible(false);
-		filesView->setVisible(true);
-    }
-    else
-    {
-		notFoundMessage->setVisible(true);
-		filesView->setVisible(false);
-    }
-}
+// void LibraryWidget::SwitchTreeAndLabel()
+// {
+//     QModelIndex rootIndex = proxyModel->mapFromSource(filesModel->index(rootPathname));
+//     if(proxyModel->rowCount(rootIndex))
+//     {
+// 		notFoundMessage->setVisible(false);
+// 		filesView->setVisible(true);
+//     }
+//     else
+//     {
+// 		notFoundMessage->setVisible(true);
+// 		filesView->setVisible(false);
+//     }
+// }
 
 void LibraryWidget::OnAddModel()
 {
@@ -583,32 +588,32 @@ void LibraryWidget::ShowPreview(const QString & pathname) const
     widget->ShowScenePreview(pathname.toStdString());
 }
 
-bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
-{
-    bool childExpanded = false;
-    for(int i = 0; i < proxyModel->rowCount(proxyIndex); ++i)
-    {
-        childExpanded |= ExpandUntilFilterAccepted(proxyModel->index(i, 0, proxyIndex));
-    }
-
-    bool wasExpanded = childExpanded;
-    if(filesModel->IsAccepted(proxyModel->mapToSource(proxyIndex)))
-    {
-        QModelIndex index = proxyIndex.parent();
-        while(index.isValid())
-        {
-            filesView->expand(index);
-            
-            index = index.parent();
-        }
-        
-        wasExpanded = true;
-    }
-    if(!childExpanded)
-    {
-        filesView->collapse(proxyIndex);
-    }
-    
-    return wasExpanded;
-}
+// bool LibraryWidget::ExpandUntilFilterAccepted(const QModelIndex &proxyIndex)
+// {
+//     bool childExpanded = false;
+//     for(int i = 0; i < proxyModel->rowCount(proxyIndex); ++i)
+//     {
+//         childExpanded |= ExpandUntilFilterAccepted(proxyModel->index(i, 0, proxyIndex));
+//     }
+// 
+//     bool wasExpanded = childExpanded;
+//     if(filesModel->IsAccepted(proxyModel->mapToSource(proxyIndex)))
+//     {
+//         QModelIndex index = proxyIndex.parent();
+//         while(index.isValid())
+//         {
+//             filesView->expand(index);
+//             
+//             index = index.parent();
+//         }
+//         
+//         wasExpanded = true;
+//     }
+//     if(!childExpanded)
+//     {
+//         filesView->collapse(proxyIndex);
+//     }
+//     
+//     return wasExpanded;
+// }
 

@@ -38,6 +38,7 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
+#include "TextureBrowser/TextureCache.h"
 #include "MaterialEditor/MaterialEditor.h"
 
 #include "Deprecated/EditorSettings.h"
@@ -109,6 +110,7 @@
 
 #include "Classes/Constants.h"
 
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -156,6 +158,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
+    QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(TexturesReloaded()));
+
+    
 	LoadGPUFormat();
 
     EnableGlobalTimeout(globalInvalidate);
