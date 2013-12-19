@@ -73,6 +73,10 @@ void MaterialsWidget::SetupSignals()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
+
+    QObject::connect(QtMainWindow::Instance(), SIGNAL(TexturesReloaded()), this, SLOT(TexturesReloaded()));
+
+    
     
     QObject::connect(materialsView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(SelectionChanged(const QItemSelection &, const QItemSelection &)));
     QObject::connect(materialsView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowContextMenu(const QPoint &)));
@@ -260,6 +264,11 @@ void MaterialsWidget::SceneCommandExecuted(SceneEditor2 *scene, const Command2* 
             RefreshView();
 		}
     }
+}
+
+void MaterialsWidget::TexturesReloaded()
+{
+    RefreshView();
 }
 
 void MaterialsWidget::RefreshView()
