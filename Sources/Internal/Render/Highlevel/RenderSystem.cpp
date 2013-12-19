@@ -49,8 +49,6 @@
 #include "Utils/Utils.h"
 #include "Debug/Stats.h"
 
-#include "Platform/SystemTimer.h"
-
 namespace DAVA
 {
 
@@ -96,7 +94,7 @@ RenderSystem::RenderSystem()
 		globalBatchArray->InitLayer(it->first, it->second->GetFlags());
 	}
 	
-	materialSystem = new MaterialSystem(this);
+	materialSystem = new MaterialSystem();
 	materialSystem->SetDefaultMaterialQuality(FastName("Normal")); //TODO: add code setting material quality based on device specs
 	materialSystem->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
 
@@ -356,49 +354,9 @@ void RenderSystem::Update(float32 timeElapsed)
         FindNearestLights();
     }
     movedLights.clear();
-	
-	
     
     globalBatchArray->Clear();
     renderHierarchy->Clip(clipCamera, globalBatchArray);
-	renderHierarchy->AddToRenderDeffered(globalBatchArray);
-	
-	
-	/*Vector<RenderObject*> ros;
-	Map<RenderObject*, RenderObject*> roMap;
-	for(FastNameMap<RenderLayer*>::iterator it = renderLayersMap.begin();
-		it != renderLayersMap.end();
-		++it)
-	{
-		RenderLayerBatchArray* renderLayerBatches = globalBatchArray->Get(it->first);
-		int batchesCount = renderLayerBatches->GetRenderBatchCount();
-		for(int i = 0; i < batchesCount; ++i)
-		{
-			RenderBatch* bt = renderLayerBatches->Get(i);
-			roMap[bt->GetRenderObject()] = bt->GetRenderObject();
-		}
-	}
-
-	for(Map<RenderObject*, RenderObject*>::iterator it = roMap.begin();
-		it != roMap.end();
-		++it)
-	{
-		ros.push_back(it->second);
-	}
-	
-	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-	for(int i = 0; i < 1000; ++i)
-	{
-		globalBatchArray->Clear();
-		
-		for(int obj = 0; obj < ros.size(); ++obj)
-		{
-			renderHierarchy->AddToRender(ros[obj]);
-		}
-	}
-	uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-	Logger::FrameworkDebug("[RenderSystem::Update] AddToRender test result: %ld, total batchCount = %ld", endTime - startTime, ros.size());
-*/
 	
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
@@ -459,15 +417,4 @@ const Color & RenderSystem::GetShadowRectColor()
     
     return shadowRect->GetColor();
 }
-	
-UniqueHandle RenderSystem::AddLayerSet(const FastNameSet& layers)
-{
-	return renderHierarchy->AddLayerSet(layers, globalBatchArray);
-}
-	
-void RenderSystem::ReleaseLayerSet(UniqueHandle handle)
-{
-	renderHierarchy->ReleaseLayerSet(handle);
-}
-
 };

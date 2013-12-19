@@ -38,14 +38,11 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/RenderManager.h"
-#include "Render/Highlevel/RenderSystem.h"
 
 namespace DAVA
 {
 	
-MaterialSystem::MaterialSystem(RenderSystem* parentRenderSystem) :
-	materials(8192),
-	renderSystem(parentRenderSystem)
+	MaterialSystem::MaterialSystem() : materials(8192)
 {
 	defaultMaterial = NULL;
 }
@@ -534,16 +531,5 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 		
 		return mat;
 	}
-	
-	UniqueHandle MaterialSystem::AddLayerSet(const FastNameSet& layers)
-	{
-		return renderSystem->AddLayerSet(layers);
-	}
-	
-	void MaterialSystem::ReleaseLayerSet(UniqueHandle layerSetHandle)
-	{
-		renderSystem->ReleaseLayerSet(layerSetHandle);
-	}
-
 };
 

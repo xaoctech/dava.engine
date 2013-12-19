@@ -37,7 +37,6 @@
 #include "Scene3D/DataNode.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/Shader.h"
-#include "Render/UniqueStateSet.h"
 
 
 namespace DAVA
@@ -47,13 +46,12 @@ class MaterialGraph;
 class MaterialGraphNode;
 class NMaterial;
 class PolygonGroup;
-class RenderSystem;
 
 class MaterialSystem
 {
 public:
 	
-	MaterialSystem(RenderSystem* parentRenderSystem);
+	MaterialSystem();
 	~MaterialSystem();
 	
 	bool LoadMaterialConfig(const FilePath& filePath);
@@ -92,9 +90,6 @@ public:
 	
 	static NMaterial* CreateNamed();
 	
-	UniqueHandle AddLayerSet(const FastNameSet& layers);
-	void ReleaseLayerSet(UniqueHandle layerSetHandle);
-	
 private:
 	
 	friend class NMaterial;
@@ -125,8 +120,6 @@ private:
 	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;
-	
-	RenderSystem* renderSystem;
 };
 
 };

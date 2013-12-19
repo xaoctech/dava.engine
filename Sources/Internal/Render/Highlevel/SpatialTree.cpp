@@ -478,12 +478,11 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 void QuadTree::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
 {
 	DVASSERT(worldInitialized);
-	
-	ClearDeffered();
-	
 	currFrustum = camera->GetFrustum();	
 	currRenderPassBatchArray = renderPassBatchArray;
-	ProcessNodeClipping(0, 0x3f);
+	ProcessNodeClipping(0, 0x3f); 
+
+	
 }
     
 void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray)
