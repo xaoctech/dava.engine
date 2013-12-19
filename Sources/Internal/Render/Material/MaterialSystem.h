@@ -75,10 +75,10 @@ public:
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName, bool forceSwitch = false);
 	
-	NMaterial* CreateInstanceChild(NMaterial* parent);
+	static NMaterial* CreateInstanceChild(NMaterial* parent);
 	NMaterial* CreateInstanceChild(const FastName& parentName);
 	
-	NMaterial* CreateSwitchableChild(NMaterial* parent);
+	static NMaterial* CreateSwitchableChild(NMaterial* parent);
 	NMaterial* CreateSwitchableChild(const FastName& parentName);
 	
 	//NMaterial* CreateChild(NMaterial* parent);
