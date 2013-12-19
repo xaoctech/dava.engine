@@ -209,4 +209,17 @@ namespace DAVA
 		       
 	}
     
+    void LinearRenderHierarchy::GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & objects)
+    {
+        uint32 size = renderObjectArray.size();
+		for (uint32 pos = 0; pos < size; ++pos)
+		{
+			RenderObject * node = renderObjectArray[pos];
+            if (bbox.IntersectsWithBox(node->GetWorldBoundingBox()))
+            {
+                objects.push_back(node);
+            }
+        }
+    }
+
 };
