@@ -29,7 +29,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 #include "SpeedTreeLeafBatch.h"
 #include "Render/Shader.h"
 #include "Scene3D/SceneFileV2.h"
-#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {

@@ -36,7 +36,6 @@
 #include "Render/ImageLoader.h"
 #include "Utils/StringFormat.h"
 #include "Platform/SystemTimer.h"
-#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
@@ -157,6 +156,18 @@ AABBox3 StaticOcclusion::GetCellBox(uint32 x, uint32 y, uint32 z)
 
 uint32 StaticOcclusion::RenderFrame()
 {
+//    for (uint32 k = 0; k < 1000; ++k)
+//    {
+//        for (uint32 m = 0; m < 3000; ++m)
+//        {
+//            OcclusionQueryManagerHandle handle = manager.CreateQueryObject();
+//            manager.ReleaseQueryObject(handle);
+//        }
+//    }
+//    
+    
+    
+    
     uint64 t1 = SystemTimer::Instance()->GetAbsoluteNano();
     const uint32 stepCount = 10;
     //uint32 renderFrameCount = xBlockCount * yBlockCount * zBlockCount * 4 * (stepSizeX * stepSizeY);
