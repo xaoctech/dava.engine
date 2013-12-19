@@ -621,6 +621,9 @@ void MainWindow::InitMenu()
 	// Undo/Redo.
 	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
 	connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedoRequested()));
+	
+	// Adjust controls size
+	connect(ui->actionAdjustControlSize, SIGNAL(triggered()), this, SLOT(OnAdjustSize()));
 
 	// Align.
 	connect(ui->actionAlign_Left, SIGNAL(triggered()), this, SLOT(OnAlignLeft()));
@@ -670,6 +673,8 @@ void MainWindow::UpdateMenu()
 	ui->actionAlign_Top->setEnabled(projectNotEmpty);
     ui->actionAlign_Vert_Center->setEnabled(projectNotEmpty);
 	ui->actionAlign_Bottom->setEnabled(projectNotEmpty);
+	
+	ui->actionAdjustControlSize->setEnabled(projectNotEmpty);
 
 	// Distribute.
 	ui->actionEqualBetweenLeftEdges->setEnabled(projectNotEmpty);
@@ -1081,6 +1086,11 @@ void MainWindow::ScrollToScenePositionAndPoint(const Vector2& scenePosition, con
 	
 	ui->horizontalScrollBar->setValue(newHScrollValue);
 	ui->verticalScrollBar->setValue(newVScrollValue);
+}
+
+void MainWindow::OnAdjustSize()
+{
+	HierarchyTreeController::Instance()->AdjustSelectedControlsSize();
 }
 
 void MainWindow::OnAlignLeft()
