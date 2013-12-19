@@ -48,6 +48,8 @@
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		176395A91863373800EADDA2 /* GamepadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A0114540185567784808C54 /* GamepadManager.cpp */; };
+		176395AA1863373D00EADDA2 /* GamepadDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A011951C57E3EEDBCB3EF43 /* GamepadDevice.cpp */; };
 		176DE8F9174B5561007A983B /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ABF16BD24E400732C04 /* AnimatedObject.h */; };
 		176DE8FA174B5561007A983B /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC116BD24E400732C04 /* Animation.h */; };
 		176DE8FB174B5561007A983B /* AnimationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC316BD24E400732C04 /* AnimationManager.h */; };
@@ -5814,6 +5816,7 @@
 				E898A1B816BD265400732C04 /* CoreMacOS.cpp in Sources */,
 				E898A1B916BD265400732C04 /* CoreMacOS_CarbonWindow.cpp in Sources */,
 				E898A1BA16BD265400732C04 /* CoreMacOS_OpenGL.cpp in Sources */,
+				176395A91863373800EADDA2 /* GamepadManager.cpp in Sources */,
 				E898A1BB16BD265400732C04 /* MongodbClient.cpp in Sources */,
 				E898A1BC16BD265400732C04 /* MongodbObject.cpp in Sources */,
 				E898A1BD16BD265400732C04 /* DAVAEngine.cpp in Sources */,
@@ -6020,6 +6023,7 @@
 				E898A2A616BD265400732C04 /* UISlider.cpp in Sources */,
 				E898A2A716BD265400732C04 /* UIStaticText.cpp in Sources */,
 				E898A2A816BD265400732C04 /* UITextField.cpp in Sources */,
+				176395AA1863373D00EADDA2 /* GamepadDevice.cpp in Sources */,
 				E898A2A916BD265400732C04 /* UIYamlLoader.cpp in Sources */,
 				E898A2AA16BD265400732C04 /* HTTPDownloader.mm in Sources */,
 				E898A2AB16BD265400732C04 /* MD5.cpp in Sources */,
