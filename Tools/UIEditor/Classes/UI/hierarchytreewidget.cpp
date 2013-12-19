@@ -335,8 +335,10 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 			// Only one control is selected, reset the previous selection and continue.
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 		}
-        
-        if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+
+		// Yuri Coder, 2012/12/19. The focus is on Hierarchy Tree here, so can't ask InputSystem
+		// whether Shift is pressed. Use Qt functions instead.
+		if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
         {
             // Yuri Coder, 2013/12/05. See please DF-2839 to get the details of this method.
             SelectMultipleTreeWidgetItems(ui->treeWidget->selectedItems());
