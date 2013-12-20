@@ -677,7 +677,7 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 
     if((TEXTURE_TILE_FULL == level) && ((tiledShaderMode == TILED_MODE_MIXED) || (tiledShaderMode == TILED_MODE_TEXTURE)))
     {
-        UpdateFullTiledTexture();
+//        UpdateFullTiledTexture();
     }
 	
 	if(TEXTURE_TILE_FULL != level)
@@ -1316,6 +1316,8 @@ void Landscape::Draw(Camera * camera)
 	{
 		//TODO: setup appropriate cursor state and set it
 		//TODO: RenderManager::Instance()->SetRenderState(cursorStateHandle);
+		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
+		RenderManager::Instance()->FlushState();
 		
 		/*RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
@@ -1622,7 +1624,7 @@ void Landscape::SetHeightmap(DAVA::Heightmap *height)
 }
     
     
-Texture * Landscape::CreateFullTiledTexture()
+Texture * Landscape::CreateLandscapeTexture()
 {
     bool savedIsFogEnabled = isFogEnabled;
     SetFog(false);
@@ -1671,7 +1673,10 @@ Texture * Landscape::CreateFullTiledTexture()
     ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
     ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
 
+	float32 fD = fogDensity;
+	fogDensity = 0.f;
 	SetupMaterialProperties();
+	fogDensity = fD;
 	
     //Draw landscape to texture
     Rect oldViewport = RenderManager::Instance()->GetViewport();
@@ -1693,10 +1698,11 @@ Texture * Landscape::CreateFullTiledTexture()
     
     prevLodLayer = -1;
 
+	BindMaterial(0, NULL);
+
 	RenderManager::Instance()->SetRenderData(ftRenderData);
 	RenderManager::Instance()->AttachRenderData();
 
-    BindMaterial(0, NULL);
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     UnbindMaterial();
 
@@ -1712,44 +1718,44 @@ Texture * Landscape::CreateFullTiledTexture()
     return fullTiled;
 }
     
-FilePath Landscape::SaveFullTiledTexture()
-{
-    FilePath pathToSave;
-    
-    if(textures[TEXTURE_TILE_FULL])
-    {
-        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
-        {
-            pathToSave = GetTextureName(TEXTURE_COLOR);
-            pathToSave.ReplaceExtension(".thumbnail.png");
-            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-            if(image)
-            {
-                ImageLoader::Save(image, pathToSave);
-                SafeRelease(image);
-            }
-        }
-        else
-        {
-            pathToSave = textureNames[TEXTURE_TILE_FULL];
-        }
-    }
-    
-    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
-    return pathToSave;
-}
-    
-void Landscape::UpdateFullTiledTexture()
-{
-	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
-    if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
-    {
-        Texture *t = CreateFullTiledTexture();
-        t->GenerateMipmaps();
-        SetTexture(TEXTURE_TILE_FULL, t);
-        SafeRelease(t);
-    }
-}
+//FilePath Landscape::SaveFullTiledTexture()
+//{
+//    FilePath pathToSave;
+//    
+//    if(textures[TEXTURE_TILE_FULL])
+//    {
+//        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
+//        {
+//            pathToSave = GetTextureName(TEXTURE_COLOR);
+//            pathToSave.ReplaceExtension(".thumbnail.png");
+//            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+//            if(image)
+//            {
+//                ImageLoader::Save(image, pathToSave);
+//                SafeRelease(image);
+//            }
+//        }
+//        else
+//        {
+//            pathToSave = textureNames[TEXTURE_TILE_FULL];
+//        }
+//    }
+//    
+//    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
+//    return pathToSave;
+//}
+//    
+//void Landscape::UpdateFullTiledTexture()
+//{
+//	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
+//    if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
+//    {
+//        Texture *t = CreateFullTiledTexture();
+//        t->GenerateMipmaps();
+//        SetTexture(TEXTURE_TILE_FULL, t);
+//        SafeRelease(t);
+//    }
+//}
     
 void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShaderMode)
 {

@@ -36,6 +36,7 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 
 TilemaskEditorPanel::~TilemaskEditorPanel()
 {
+	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
 }
 
 bool TilemaskEditorPanel::GetEditorEnabled()

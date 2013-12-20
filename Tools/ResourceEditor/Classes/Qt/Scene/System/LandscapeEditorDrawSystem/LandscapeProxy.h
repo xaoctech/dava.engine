@@ -137,7 +137,8 @@ protected:
 	Sprite* tilemaskSprites[TILEMASK_SPRITES_COUNT];
 
 	int32 tilemaskWasChanged;
-	
+
+	Texture* fullTiledTexture;
 	Texture* displayingTexture;
 	Landscape* baseLandscape;
 	CustomLandscape* customLandscape;
@@ -147,6 +148,8 @@ protected:
 	void UpdateDisplayedTexture();
 	
 	UniqueHandle noBlendDrawState;
+	UniqueHandle fullTiledTextureState;
+	UniqueHandle cursorTextureState;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEPROXY__) */
