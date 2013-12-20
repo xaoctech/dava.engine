@@ -1,13 +1,13 @@
 Material:
     MaterialState:
         Name: "Low"
-        Parent: "Global.Textured.VertexLit.AlphatestSiluette"
+        Parent: "Global.Fog.Textured.VertexLit.AlphatestSilhouette"
         MaterialDefines: ["LOD_LOW"]
     MaterialState:
         Name: "Normal"
-        Parent: "Global.Textured.VertexLit.AlphatestSiluette"
+        Parent: "Global.Fog.Textured.VertexLit.AlphatestSilhouette"
         MaterialDefines: ["LOD_NORMAL"]
     MaterialState:
         Name: "High"
-        Parent: "Global.Textured.VertexLit.AlphatestSiluette"
+        Parent: "Global.Fog.Textured.VertexLit.AlphatestSilhouette"
         MaterialDefines: ["LOD_HIGH"]
