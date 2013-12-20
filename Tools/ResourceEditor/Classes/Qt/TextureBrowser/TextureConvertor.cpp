@@ -162,19 +162,28 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 
 			for(; begin != end; begin++)
 			{
-				DAVA::TextureDescriptor *descriptor = begin->second->GetDescritor();
+				DAVA::TextureDescriptor *descriptor = begin->second->GetDescriptor();
 
 				if(NULL != descriptor)
 				{
 					for(int gpu = DAVA::GPU_UNKNOWN + 1; gpu < DAVA::GPU_FAMILY_COUNT; ++gpu)
 					{
+						if( ! GPUFamilyDescriptor::IsFormatSupported((eGPUFamily)gpu, (PixelFormat)descriptor->compression[gpu].format))
+						{
+							continue;
+						}
+
 						JobItem newJob;
 						newJob.id = jobIdCounter++;
 						newJob.data = new DAVA::TextureDescriptor(*descriptor);
 						newJob.force = forceConvert;
 						newJob.type = gpu;
 
-						jobStackConverted.push(newJob);
+						if(jobStackConverted.push(newJob))
+						{
+							convertJobQueueSize++;
+						}
+
 						jobRunNextConvert();
 
 						ret = newJob.id;
