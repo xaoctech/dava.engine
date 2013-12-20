@@ -55,8 +55,6 @@ public:
 	~TextureConvertor();
 
 	static QImage FromDavaImage(DAVA::Image *image);
-	//static DAVA::Vector<DAVA::Image*> ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
-	//static DAVA::Vector<DAVA::Image*> ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
 
 	static DAVA::Vector<DAVA::Image*> ConvertFormat(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
 	
@@ -69,6 +67,7 @@ public:
 	void CancelConvert();
 
 signals:
+	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
 	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
 	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image);
 	void ReadyReconvert();
@@ -85,12 +84,15 @@ private:
 	bool waitingComletion;
 	QString waitStatusText;
 
+	QFutureWatcher< DAVA::Vector<QImage> > thumbnailWatcher;
 	QFutureWatcher< DAVA::Vector<QImage> > originalWatcher;
 	QFutureWatcher< DAVA::Vector<QImage> > convertedWatcher;
 
+	JobStack jobStackThumbnail;
 	JobStack jobStackOriginal;
 	JobStack jobStackConverted;
 
+	JobItem *curJobThumbnail;
 	JobItem *curJobOriginal;
 	JobItem *curJobConverted;
 
@@ -98,13 +100,16 @@ private:
 
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
+	void jobRunNextThumbnail();
 
+	DAVA::Vector<QImage> GetThumbnailThread(JobItem *item);
 	DAVA::Vector<QImage> GetOriginalThread(JobItem *item);
 	DAVA::Vector<QImage> GetConvertedThread(JobItem *item);
 
 private slots:
 	
 	void waitCanceled();
+	void threadThumbnailFinished();
 	void threadOriginalFinished();
 	void threadConvertedFinished();
 
