@@ -59,12 +59,15 @@ class ParticleRenderObject : public RenderObject
 	Vector<ParticleRenderGroup*> renderGroupCache;
 
 	void AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection);	
-	
+	void PrepareRenderData(Camera * camera);
+
 	Vector<uint16> indices;
 public:
 	ParticleRenderObject(ParticleEffectData *effect);
 	~ParticleRenderObject();
-	void PrepareRenderData(Camera * camera);
+	
+
+	virtual void PrepareToRender(Camera *camera);
 	
 
 	virtual void RecalcBoundingBox(){}

@@ -85,6 +85,12 @@ void ParticleRenderGroup::ClearArrays()
 }
 
 
+void ParticleRenderObject::PrepareToRender(Camera *camera)
+{
+	finalMatrix = camera->GetMatrix();
+	PrepareRenderData(camera);
+}
+
 
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
 {
