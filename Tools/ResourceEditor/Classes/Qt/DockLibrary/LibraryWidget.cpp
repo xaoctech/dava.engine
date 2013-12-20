@@ -264,7 +264,6 @@ void LibraryWidget::ViewDetailed()
     viewMode = VIEW_DETAILED;
 	filesView->header()->setVisible(true);
 
-    
     // Magic trick for MacOS: call function twice
     HideDetailedColumnsAtFilesView(false);
     HideDetailedColumnsAtFilesView(false);
