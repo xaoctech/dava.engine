@@ -184,7 +184,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		return;
 	}
 	
-	UIScrollView *scrollView = dynamic_cast<UIScrollView*>(this->GetParent());
+	UIScrollView *scrollView = cast_if_equal<UIScrollView*>(this->GetParent());
 	if (scrollView)
 	{
 		Rect contentRect = this->GetRect();
