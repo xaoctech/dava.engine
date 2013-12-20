@@ -140,6 +140,11 @@ void BaseAddEntityDialog::AddButton( QWidget* widget, eButtonAlign orientation)
 	}
 }
 
+void BaseAddEntityDialog::AddButton( QWidget* widget, int32 position)
+{
+	ui->lowerLayOut->insertWidget(position, widget);
+}
+
 DAVA::Entity* BaseAddEntityDialog::GetEntity()
 {
 	return entity;
