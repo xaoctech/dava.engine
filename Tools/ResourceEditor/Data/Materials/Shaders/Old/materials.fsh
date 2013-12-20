@@ -88,7 +88,7 @@ void main()
     // FETCH PHASE
 #if defined(MATERIAL_TEXTURE)
 	
-#if defined(GLOSS) || defined(ALPHATEST) || defined(ALPHABLEND)
+#if defined(GLOSS) || defined(ALPHATEST) || defined(ALPHABLEND) || defined(VERTEX_LIT)
     lowp vec4 textureColor0 = texture2D(albedo, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
@@ -161,7 +161,7 @@ void main()
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-        vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0.rgb + varSpecularColor * materialLightSpecularColor;
+        vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0.rgb + varSpecularColor * textureColor0.a * materialLightSpecularColor;
 #elif defined(PIXEL_LIT)
         // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
@@ -171,8 +171,10 @@ void main()
     float finalAtt = lightIntensity0 / (varPerPixelAttenuation * varPerPixelAttenuation);
 
     // compute diffuse lighting
-    float lambertFactor = max (dot (varLightVec, normal), 0.0) * finalAtt;
+    float lambertFactor = max (dot (varLightVec, normal), 0.0);// * finalAtt;
+#if defined(DISTANCE_ATTENUATION)
 
+#endif
     // compute ambient
     vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor;        
         color *= textureColor0.rgb;
@@ -181,7 +183,7 @@ void main()
         //if (lambertFactor > 0.0)
         {
                 // In doom3, specular value comes from a texture 
-                float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess) * finalAtt;
+                float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);// * finalAtt;
                 #if defined(GLOSS)
                     color += materialLightSpecularColor * (shininess * textureColor0.a);
             #else 

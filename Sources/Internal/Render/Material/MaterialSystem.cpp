@@ -171,6 +171,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 							
 							if(data.isLod)
 							{
+                                Logger::Debug("Lod Mat: %s", data.name.c_str());
 								lodNodes.push_back(data);
 							}
 							else

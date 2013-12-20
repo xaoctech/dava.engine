@@ -77,7 +77,7 @@ namespace DAVA
 	}
     
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
-	const FastName NMaterial::TEXTURE_NORMAL("normal");
+	const FastName NMaterial::TEXTURE_NORMAL("normalmap");
 	const FastName NMaterial::TEXTURE_DETAIL("detail");
 	const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 	const FastName NMaterial::TEXTURE_DECAL("decal");
