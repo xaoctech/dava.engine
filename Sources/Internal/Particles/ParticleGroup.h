@@ -52,7 +52,7 @@ struct ParticleGroup
 	bool visibleLod;
 
 	float32 time;	
-	float32 loopStartTime, loopDuration, loopRestartDuration; //well - that's how it works
+	float32 loopStartTime, loopLyaerStartTime, loopDuration;
 	float32 particlesToGenerate;	
 
 	int32 positionSource;
