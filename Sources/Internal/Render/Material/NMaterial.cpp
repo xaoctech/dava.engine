@@ -1085,7 +1085,7 @@ namespace DAVA
     
 	void NMaterial::SetParent(NMaterial* material)
 	{
-		if(parent != material)
+		if(NULL == parent || parent != material)
 		{
 			if(parent)
 			{

@@ -64,7 +64,7 @@ LODEditor::LODEditor(QWidget* parent)
     
     editedLODData = new EditorLODData();
     connect(editedLODData, SIGNAL(DataChanged()), SLOT(LODDataChanged()));
-    
+
     SetupInternalUI();
     SetupSceneSignals();
     
@@ -117,6 +117,9 @@ void LODEditor::SetupInternalUI()
     
     SetForceLayerValues(DAVA::LodComponent::MAX_LOD_LAYERS);
     connect(ui->forceLayer, SIGNAL(activated(int)), SLOT(ForceLayerActivated(int)));
+
+    //TODO: remove after lod editing implementation
+    connect(ui->lastLodToFrontButton, SIGNAL(clicked()), this, SLOT(CopyLODToLod0Clicked()));
 }
 
 void LODEditor::SetupSceneSignals()
@@ -355,3 +358,7 @@ void LODEditor::UpdateWidgetVisibility()
     ui->frameEditLOD->setVisible(visible);
 }
 
+void LODEditor::CopyLODToLod0Clicked()
+{
+    editedLODData->CopyLastLodToLod0();
+}
