@@ -349,7 +349,9 @@ void SceneEditor2::Update(float timeElapsed)
 	
 	if(editorLightSystem)
 		editorLightSystem->Process();
-    
+
+    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
+    staticOcclusionBuildSystem->Process(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -371,9 +373,6 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 		structureSystem->ProcessUIEvent(event);
 
 	particlesSystem->ProcessUIEvent(event);
-    
-    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
-    staticOcclusionBuildSystem->Process();
 }
 
 void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)

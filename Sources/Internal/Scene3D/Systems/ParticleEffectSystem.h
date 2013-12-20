@@ -42,7 +42,7 @@ class ParticleEffectSystem : public BaseProcessSystem
 {
 public:
 	ParticleEffectSystem(Scene * scene);
-	virtual void Process();
+	virtual void Process(float32 timeElapsed);
 
 	virtual void AddComponent(Entity * entity, Component * component);
 	virtual void RemoveComponent(Entity * entity, Component * component);

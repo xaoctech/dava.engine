@@ -60,8 +60,6 @@ public:
 
 protected:
 
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
-
 	enum
 	{
 		STATE_NONE = 0,
