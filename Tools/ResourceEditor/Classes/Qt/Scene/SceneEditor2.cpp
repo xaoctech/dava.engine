@@ -150,6 +150,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
     SceneValidator::Instance()->ValidateSceneAndShowErrors(this, path);
     
 	SceneSignals::Instance()->EmitLoaded(this);
+
 	return ret;
 }
 
