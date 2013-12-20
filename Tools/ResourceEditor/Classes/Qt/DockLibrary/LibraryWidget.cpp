@@ -445,7 +445,7 @@ void LibraryWidget::ProjectClosed()
 {
 //     ResetFilter();
 //     
-    rootPathname = "";
+    rootPathname = QDir::rootPath();
 //    filesView->setRootIndex(proxyModel->mapFromSource(filesModel->index(rootPathname)));
 	filesView->setRootIndex(filesModel->index(rootPathname));
     filesView->collapseAll();
