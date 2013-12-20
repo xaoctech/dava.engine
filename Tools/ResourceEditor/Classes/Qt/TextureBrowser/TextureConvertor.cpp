@@ -49,6 +49,7 @@
 
 TextureConvertor::TextureConvertor()
 	: curJobOriginal(NULL)
+	, curJobConverted(NULL)
 	, jobIdCounter(1)
 	, convertJobQueueSize(0)
 	, waitingComletion(0)
