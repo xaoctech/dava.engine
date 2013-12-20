@@ -254,7 +254,7 @@ void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 		// make sure that WorldTransform is up to date
 		if(NULL != entity->GetScene())
 		{
-			entity->GetScene()->transformSystem->Process();
+			entity->GetScene()->transformSystem->Process(.001f);
 		}
 	}
 

@@ -93,8 +93,6 @@ Scene::Scene()
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
 	,	imposterManager(0)
-	,	entityManager(0)
-	,	referenceNodeSuffixChanged(false)
 {   
 
 //	entityManager = new EntityManager();
@@ -538,50 +536,46 @@ void Scene::Update(float timeElapsed)
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
     
     staticOcclusionSystem->SetCamera(clipCamera);
-    staticOcclusionSystem->Process();
+    staticOcclusionSystem->Process(timeElapsed);
     
-	updatableSystem->UpdatePreTransform();
+	updatableSystem->UpdatePreTransform(timeElapsed);
 
-    transformSystem->Process();
-
-	updatableSystem->UpdatePostTransform();
+	updatableSystem->UpdatePreTransform(timeElapsed);
+    transformSystem->Process(timeElapsed);
+	updatableSystem->UpdatePostTransform(timeElapsed);
 
 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
 	{
 		lodSystem->SetCamera(currentCamera);
-		lodSystem->Process();
+		lodSystem->Process(timeElapsed);
 	}
 	
-
-	switchSystem->Process();
+	switchSystem->Process(timeElapsed);
     
-//	entityManager->Flush();
-	int32 size;
-	
-	size = (int32)animations.size();
-	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
-	{
-		SceneNodeAnimationList * anim = animations[animationIndex];
-		anim->Update(timeElapsed);
-	}
-	
-
-	referenceNodeSuffixChanged = false;
-
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
-	{
-		size = (int32)animatedMeshes.size();
-		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
-		{
-			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
-			mesh->Update(timeElapsed);
-		}
-	}
+// 	int32 size;
+// 	
+// 	size = (int32)animations.size();
+// 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
+// 	{
+// 		SceneNodeAnimationList * anim = animations[animationIndex];
+// 		anim->Update(timeElapsed);
+// 	}
+// 
+// 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
+// 	{
+// 		size = (int32)animatedMeshes.size();
+// 		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
+// 		{
+// 			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
+// 			mesh->Update(timeElapsed);
+// 		}
+// 	}
 
 	//if(imposterManager)
 	//{
 	//	imposterManager->Update(timeElapsed);
 	//}
+
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
 
@@ -589,14 +583,12 @@ void Scene::Draw()
 {
     TIME_PROFILE("Scene::Draw");
 
-    //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
-	//RenderManager::Instance()->SetRenderTarget(fboSprite);
-	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
-    nodeCounter = 0;
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+	float timeElapsed = SystemTimer::Instance()->FrameDelta();
 
 	shadowVolumes.clear();
     
+    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
     //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
     //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
     //glDepthMask(GL_TRUE);
@@ -612,8 +604,6 @@ void Scene::Draw()
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
-    //glDepthMask(GL_TRUE);
-    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
     
 	
     if (currentCamera)
@@ -624,22 +614,22 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
-    renderUpdateSystem->Process();
-	actionSystem->Process(); //update action system before particles and render
-	particleEffectSystem->Process();
-	skyboxSystem->Process();
+    renderUpdateSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render
+	particleEffectSystem->Process(timeElapsed);
+	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
-    debugRenderSystem->Process();
+    debugRenderSystem->Process(timeElapsed);
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
-    if(imposterManager)
-	{
-		imposterManager->Draw();
-	}
+//     if(imposterManager)
+// 	{
+// 		imposterManager->Draw();
+// 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
@@ -825,22 +815,6 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	{
 		SafeRelease(imposterManager);
 	}
-}
-
-void Scene::SetReferenceNodeSuffix(const String & suffix)
-{
-	referenceNodeSuffix = suffix;
-	referenceNodeSuffixChanged = true;
-}
-
-const String & Scene::GetReferenceNodeSuffix()
-{
-	return referenceNodeSuffix;
-}
-
-bool Scene::IsReferenceNodeSuffixChanged()
-{
-	return referenceNodeSuffixChanged;
 }
 
 EventSystem * Scene::GetEventSystem()

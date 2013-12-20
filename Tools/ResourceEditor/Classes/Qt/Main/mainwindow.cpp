@@ -110,6 +110,7 @@
 
 #include "Classes/Constants.h"
 
+#include "TextureCompression/TextureConverter.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -622,6 +623,8 @@ void QtMainWindow::SetupActions()
     
 	QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
 	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
+	
+	QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
     
 #if defined(__DAVAENGINE_BEAST__)
 	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
@@ -849,6 +852,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuScene->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
+	ui->actionConvertModifiedTextures->setEnabled(enable);
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -1633,6 +1637,47 @@ void QtMainWindow::OnSaveTiledTexture()
     }
     
     SafeRelease(descriptor);
+}
+
+void QtMainWindow::OnConvertModifiedTextures()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene)
+	{
+		return;
+	}
+	
+	WaitStart("Conversion of modified textures.","Checking for modified textures.");
+	Map<Texture *, Vector<eGPUFamily> > textures;
+	int filesToUpdate = SceneHelper::EnumerateModifiedTextures(scene, textures);
+	
+	if(filesToUpdate == 0)
+	{
+		WaitStop();
+		return;
+	}
+	
+	int convretedNumber = 0;
+	waitDialog->SetRange(convretedNumber, filesToUpdate);
+	WaitSetValue(convretedNumber);
+	for(Map<Texture *, Vector<eGPUFamily> >::iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		DAVA::TextureDescriptor *descriptor = it->first->GetDescriptor();
+		
+		if(NULL == descriptor)
+		{
+			continue;
+		}
+		
+		Vector<eGPUFamily> updatedGPUs = it->second;
+		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+		foreach(eGPUFamily gpu, updatedGPUs)
+		{
+			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
+			WaitSetValue(++convretedNumber);
+		}
+	}
+	WaitStop();
 }
 
 void QtMainWindow::OnGlobalInvalidateTimeout()
