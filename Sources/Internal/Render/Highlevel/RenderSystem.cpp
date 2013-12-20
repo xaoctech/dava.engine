@@ -347,14 +347,16 @@ void RenderSystem::Update(float32 timeElapsed)
     }
     movedLights.clear();
     
-    globalBatchArray->Clear();
-    renderHierarchy->Clip(camera, globalBatchArray);
-	
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
-    }
+		objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
+	}
+
+    globalBatchArray->Clear();
+    renderHierarchy->Clip(camera, globalBatchArray);
+	
+	
 }
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
