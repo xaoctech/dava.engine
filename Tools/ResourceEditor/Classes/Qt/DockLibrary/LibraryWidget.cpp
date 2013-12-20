@@ -187,7 +187,6 @@ void LibraryWidget::SetupView()
 
     filesView = new QTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
-    filesView->header()->setVisible(false);
     filesView->setDragDropMode(QAbstractItemView::DragOnly);
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
@@ -251,6 +250,8 @@ void LibraryWidget::SetupLayout()
 void LibraryWidget::ViewAsList()
 {
     viewMode = VIEW_AS_LIST;
+	filesView->header()->setVisible(false);
+
     
     HideDetailedColumnsAtFilesView(true);
     
@@ -261,6 +262,8 @@ void LibraryWidget::ViewAsList()
 void LibraryWidget::ViewDetailed()
 {
     viewMode = VIEW_DETAILED;
+	filesView->header()->setVisible(true);
+
     
     // Magic trick for MacOS: call function twice
     HideDetailedColumnsAtFilesView(false);
