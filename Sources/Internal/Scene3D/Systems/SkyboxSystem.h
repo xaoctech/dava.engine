@@ -53,16 +53,17 @@ namespace DAVA
 	public:
 		SkyboxSystem(Scene* scene);
 		~SkyboxSystem();
-		virtual void Process();
-		
+
 		virtual void AddEntity(Entity * entity);
 		virtual void RemoveEntity(Entity * entity);
 		
 		//this method used by editor to add new skybox
 		//returns pointer to skybox (newly added or already present)
 		Entity* AddSkybox();
+		Entity* GetSkyboxEntity() const;
 		
 		bool IsSkyboxPresent();
+		void Reload();
 	};
 };
 

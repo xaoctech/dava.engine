@@ -110,6 +110,37 @@ public:
 		unrotatedRect.dy = size.y * scale.y;
 	}
 
+	void BuildTransformMatrix( Matrix3 &transformMatr ) const
+	{
+		Matrix3 pivotMatr;
+		pivotMatr.BuildTranslation( -pivotPoint );
+
+		Matrix3 translateMatr;
+		translateMatr.BuildTranslation( position );
+
+		Matrix3 rotateMatr;
+		rotateMatr.BuildRotation( cosA, sinA );
+
+		Matrix3 scaleMatr;
+		scaleMatr.BuildScale( scale );
+
+		transformMatr = pivotMatr * scaleMatr * rotateMatr * translateMatr;
+	}
+
+	void GetPolygon( Polygon2 &polygon ) const
+	{
+		polygon.Clear();
+		polygon.points.reserve( 4 );
+		polygon.AddPoint( Vector2() );
+		polygon.AddPoint( Vector2( size.x, 0 ) );
+		polygon.AddPoint( size );
+		polygon.AddPoint( Vector2( 0, size.y ) );
+
+		Matrix3 transformMtx;
+		BuildTransformMatrix( transformMtx );
+		polygon.Transform( transformMtx );
+	}
+
 	const Rect &GetUnrotatedRect() const
 	{
 		return unrotatedRect;
@@ -646,7 +677,7 @@ public:
 	 \param[in] recursive use true if you want fro recursive search.
 	 \returns first control with given name.
 	 */
-	UIControl * FindByName(const String & name, bool recursive = true);
+	UIControl * FindByName(const String & name, bool recursive = true) const;
 	
 	/**
 	 \brief Returns control state bit mask.
@@ -1160,7 +1191,7 @@ public:
 
 	// Get/set visible flag for UI editor. Should not be serialized.
 	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
-	void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+	virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
 
 public:
 
@@ -1172,8 +1203,6 @@ public:
 	float32	angle;//!<control rotation angle. Rotation around pivot point.
 	
 protected:
-	// Save the control to YAML including all the child controls and return it.
-	virtual YamlNode* SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control,  YamlNode* rootNode = NULL);
 
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
 
@@ -1186,33 +1215,41 @@ protected:
 	UIControlBackground *background;
 //	Rect absoluteRect;
 	int32 controlState;
-	bool visible;
-	bool visibleForUIEditor;
-	bool inputEnabled;
-	bool clipContents;
 
-	bool multiInput;
-	bool exclusiveInput;
+	// boolean flags are grouped here to pack them together (see please DF-2149).
+	bool inputEnabled : 1;
+	bool exclusiveInput : 1;
+	bool visible : 1;
+	bool clipContents : 1;
+	bool debugDrawEnabled : 1;
+	bool multiInput : 1;
+
+	bool visibleForUIEditor : 1;
+
+	// Enable align options
+	bool leftAlignEnabled : 1;
+	bool hcenterAlignEnabled : 1;
+	bool rightAlignEnabled : 1;
+	bool topAlignEnabled : 1;
+	bool vcenterAlignEnabled : 1;
+	bool bottomAlignEnabled : 1;
+	
+	bool isUpdated : 1;
+	bool isIteratorCorrupted : 1;
+
+
 	int32 currentInputID;
 	int32 touchesInside;
 	int32 totalTouches;
 	
 	// Align options
-	int32 _leftAlign;
-	int32 _hcenterAlign;
-	int32 _rightAlign;
-	int32 _topAlign;
-	int32 _vcenterAlign;
-	int32 _bottomAlign;
+	int32 leftAlign;
+	int32 hcenterAlign;
+	int32 rightAlign;
+	int32 topAlign;
+	int32 vcenterAlign;
+	int32 bottomAlign;
 
-	// Enable align options
-	bool _leftAlignEnabled;
-	bool _hcenterAlignEnabled;
-	bool _rightAlignEnabled;
-	bool _topAlignEnabled;
-	bool _vcenterAlignEnabled;
-	bool _bottomAlignEnabled;
-	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
 
@@ -1220,7 +1257,6 @@ protected:
 	
 	bool needToRecalcFromAbsoluteCoordinates;
 	
-	bool debugDrawEnabled;
 	Color debugDrawColor;
 
 	eDebugDrawPivotMode drawPivotPointMode;
@@ -1244,8 +1280,6 @@ protected:
 #endif
 	
 private:
-	bool isUpdated;
-	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
 
@@ -1253,9 +1287,9 @@ private:
 	void RecalculateChildsSize();
 	void RecalculatePivotPoint(const Rect &newRect);
 
-	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
+	void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
-
+	
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
 	

@@ -33,6 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 
 namespace DAVA
@@ -42,14 +43,24 @@ namespace DAVA
 	{
 	public:
 		ActionUpdateSystem(Scene * scene);
-		virtual void Process();
+		virtual void Process(float32 timeElapsed);
 		
+		virtual void AddEntity(Entity * entity);
+		virtual void RemoveEntity(Entity * entity);
+
 		void Watch(ActionComponent* component);
 		void UnWatch(ActionComponent* component);
+
+		void SetBlockEvent(ActionComponent::Action::eEvent eventType, bool block);
+		bool IsBlockEvent(ActionComponent::Action::eEvent eventType);
+		void UnblockAllEvents();
 		
 	protected:
-		
+		bool eventBlocked[ActionComponent::Action::EVENTS_COUNT];
 		Vector<ActionComponent*> activeActions;
+
+		void DelayedDeleteActions();
+		Vector<ActionComponent*> deleteActions;
 	};
 	
 }

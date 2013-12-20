@@ -36,6 +36,8 @@
 //
 
 #include "InputTest.h"
+#include "UI/UIMovieView.h"
+#include "UI/UIScrollView.h"
 
 using namespace DAVA;
 
@@ -116,12 +118,17 @@ InputTest::InputTest() :
 	textField = NULL;
 	passwordTextField = NULL;
 	staticText = NULL;
+    
 	testButton = NULL;
 	removeFromParentButton = NULL;
+    disableInEventButton = NULL;
 	
 	onScreenTime = 0.0f;
 	testFinished = false;
-	
+
+    cursorUpdateTime = 0.0f;
+    cursorMoveForward = false;
+
 	RegisterFunction(this, &InputTest::TestFunction, Format("InputTest"), NULL);
 }
 
@@ -201,6 +208,13 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
+    disableInEventButton = new UIButton(Rect(0, 340, 300, 30));
+	disableInEventButton->SetStateFont(0xFF, font);
+	disableInEventButton->SetStateFontColor(0xFF, Color::White());
+	disableInEventButton->SetStateText(0xFF, L"Disable and check input");
+	disableInEventButton->SetDebugDraw(true);
+	disableInEventButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
+
 	staticText = new UIStaticText(Rect(0, 0, 512, 20));
 	font->SetSize(10);
 	staticText->SetFont(font);
@@ -209,6 +223,14 @@ void InputTest::LoadResources()
 	staticText->SetText(L"Type password in the field below");
 	staticText->SetDebugDraw(true);
 	AddControl(staticText);
+
+    cursorPositionStaticText = new UIStaticText(Rect(0, 82, 100, 20));
+	font->SetSize(10);
+	cursorPositionStaticText->SetFont(font);
+    cursorPositionStaticText->SetTextColor(Color::White());
+	cursorPositionStaticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+	cursorPositionStaticText->SetDebugDraw(true);
+	AddControl(cursorPositionStaticText);
 
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
 	webView1->SetVisible(false);
@@ -242,9 +264,11 @@ void InputTest::LoadResources()
 
 	AddControl(testButton);
 	AddControl(removeFromParentButton);
+    AddControl(disableInEventButton);
 
     SafeRelease(spr);
     SafeRelease(texture);
+	SafeRelease(font);
 
 	/*
 	staticText->SetShadowColor(DAVA::Color(0xFF/255.f, 0xC4/255.f, 0xC3/255.f, 1.f));
@@ -254,6 +278,8 @@ void InputTest::LoadResources()
 	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	 */
+
+	DisplayUIControlsSize();
 }
 
 void InputTest::UnloadResources()
@@ -262,9 +288,14 @@ void InputTest::UnloadResources()
 
 	SafeRelease(testButton);
 	SafeRelease(removeFromParentButton);
+	SafeRelease(disableInEventButton);
+    
 	SafeRelease(textField);
+	SafeRelease(passwordTextField);
 	SafeRelease(staticText);
-	
+
+    SafeRelease(cursorPositionStaticText);
+
 	SafeRelease(webView1);
 	SafeRelease(webView2);
 	SafeRelease(webView3);
@@ -285,6 +316,41 @@ void InputTest::DidAppear()
 
 void InputTest::Update(float32 timeElapsed)
 {
+    std::wstringstream cursorPosStream;
+    cursorPosStream << "Cursor Position: " << passwordTextField->GetCursorPos();
+    cursorPositionStaticText->SetText(cursorPosStream.str());
+
+    cursorUpdateTime += timeElapsed;
+    if (cursorUpdateTime > 0.5f)
+    {
+        int32 cursorPos = passwordTextField->GetCursorPos();
+        if (cursorMoveForward)
+        {
+            if (cursorPos < passwordTextField->GetText().length())
+            {
+                cursorPos ++;
+            }
+            else
+            {
+                cursorMoveForward = !cursorMoveForward;
+            }
+        }
+        else
+        {
+            if (cursorPos > 0)
+            {
+                cursorPos --;
+            }
+            else
+            {
+                cursorMoveForward = !cursorMoveForward;
+            }
+        }
+
+        passwordTextField->SetCursorPos(cursorPos);
+        cursorUpdateTime = 0.0f;
+    }
+
     onScreenTime += timeElapsed;
     if(onScreenTime > INPUT_TEST_AUTO_CLOSE_TIME)
     {
@@ -311,6 +377,12 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 	{
 		removeFromParentButton->RemoveFromParent();
 	}
+    else if (obj == disableInEventButton)
+    {
+        DVASSERT(!disableInEventButton->GetDisabled());
+        disableInEventButton->SetStateText(0xFF, L"Disabled");
+        disableInEventButton->SetDisabled(true);
+    }
 }
 
 bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
@@ -337,4 +409,24 @@ void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *call
 	}
 	
 	webView->SetVisible(true);
+}
+
+void InputTest::DisplayUIControlsSize()
+{
+	Logger::Info("Sizeof UIControl is\t%i", sizeof(UIControl));
+	Logger::Info("Sizeof UIMovieView is\t%i", sizeof(UIMovieView));
+	Logger::Info("Sizeof UIScrollView is\t%i", sizeof(UIScrollView));
+	Logger::Info("Sizeof UIAggregatorControl is\t%i", sizeof(UIAggregatorControl));
+	Logger::Info("Sizeof UIWebView is\t%i", sizeof(UIWebView));
+	Logger::Info("Sizeof UIButton is\t%i", sizeof(UIButton));
+	Logger::Info("Sizeof UIControlBackground is\t%i", sizeof(UIControlBackground));
+	Logger::Info("Sizeof UIList is\t%i", sizeof(UIList));
+	Logger::Info("Sizeof UIPopup is\t%i", sizeof(UIPopup));
+	Logger::Info("Sizeof UIScreen is\t%i", sizeof(UIScreen));
+	Logger::Info("Sizeof UIScrollBar is\t%i", sizeof(UIScrollBar));
+	Logger::Info("Sizeof UISlider is\t%i", sizeof(UISlider));
+	Logger::Info("Sizeof UISpinner is\t%i", sizeof(UISpinner));
+	Logger::Info("Sizeof UIStaticText is\t%i", sizeof(UIStaticText));
+	Logger::Info("Sizeof UISwitch is\t%i", sizeof(UISwitch));
+	Logger::Info("Sizeof UITextField is\t%i", sizeof(UITextField));
 }
