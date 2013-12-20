@@ -332,21 +332,6 @@ namespace DAVA
 			{
 				targetState->SetTexture(NMaterial::TEXTURE_NORMAL, PrepareTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP]));
 			}
-			
-			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-			{
-				targetState->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
-				
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-				targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
-			}
 		}
 		
 		NMaterial* resultMaterial = matSystem->CreateSwitchableChild(commonNodeMaterial);
@@ -384,6 +369,21 @@ namespace DAVA
 					targetState->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
 					targetState->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
 				}
+			}
+			
+			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				targetState->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+				
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+				targetState->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
 			}
 		}
 		
