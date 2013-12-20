@@ -45,7 +45,8 @@ TextureCache::TextureCache()
     
     new TextureConvertor();
     
-    QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyThumbnail(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(ReadyThumbnail(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
     QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)), this, SLOT(ReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)));
 }
 
@@ -108,6 +109,11 @@ void TextureCache::TexturesReloaded()
 {
     clearInsteadThumbnails();
     cacheThumbnail.clear();
+}
+
+void TextureCache::ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image)
+{
+	setThumbnail(descriptor, image);
 }
 
 
