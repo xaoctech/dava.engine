@@ -507,6 +507,8 @@ RenderBatch * ShadowVolume::Clone(RenderBatch * dstNode /*= NULL*/)
 
 	RenderBatch::Clone(dstNode);
 	ShadowVolume *nd = (ShadowVolume *)dstNode;
+
+    SafeRelease(nd->shadowPolygonGroup);
 	nd->shadowPolygonGroup = SafeRetain(shadowPolygonGroup);
 
 	return nd;
