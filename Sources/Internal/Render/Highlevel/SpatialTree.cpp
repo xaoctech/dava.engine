@@ -441,7 +441,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 
 			currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-				AddToRender(currNode.objects[i]);
+				AddToRender(currNode.objects[i], currCamera);
 		}
 	}
 	else
@@ -455,7 +455,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 				{
 					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 					if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-						AddToRender(currNode.objects[i]);
+						AddToRender(currNode.objects[i], currCamera);
 				}
 			}				
 		}
@@ -475,6 +475,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 void QuadTree::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
 {
 	DVASSERT(worldInitialized);
+	currCamera = camera;
 	currFrustum = camera->GetFrustum();	
 	currRenderPassBatchArray = renderPassBatchArray;
 	ProcessNodeClipping(0, 0x3f); 

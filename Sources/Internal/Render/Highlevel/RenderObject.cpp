@@ -215,4 +215,9 @@ void RenderObject::RecalculateWorldBoundingBox()
 	bbox.GetTransformedBox(*worldTransform, worldBBox);
 }
 
+void RenderObject::PrepareToRender(Camera *camera)
+{
+	finalMatrix = (*worldTransform) * camera->GetMatrix();
+}
+
 };

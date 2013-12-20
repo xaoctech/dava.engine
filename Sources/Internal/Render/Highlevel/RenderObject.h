@@ -128,6 +128,7 @@ public:
     
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
+	inline const Matrix4 * GetFinalMatrix() const;
     
     inline eType GetType() { return (eType)type; }
 
@@ -144,6 +145,7 @@ public:
 	virtual ShadowVolume * CreateShadow() {return 0;}
 
 	virtual void RecalculateWorldBoundingBox();
+	virtual void PrepareToRender(Camera *camera); //objects passed all tests and is going to be rendered this frame - by default calculates final matrix	
 
 	uint8 startClippingPlane;
     
@@ -159,6 +161,7 @@ protected:
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
+	Matrix4 finalMatrix;
     String ownerDebugInfo;
 //    Sphere bsphere;
     
@@ -229,6 +232,12 @@ inline Matrix4 * RenderObject::GetWorldTransformPtr() const
 {
     return worldTransform;
 }
+
+inline const Matrix4 * RenderObject::GetFinalMatrix() const
+{
+	return &finalMatrix;
+}
+
 
 	inline uint32 RenderObject::GetRenderBatchCount()
 	{

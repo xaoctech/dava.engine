@@ -55,7 +55,7 @@ public:
 	virtual void DebugDraw(const Matrix4& cameraMatrix){};
 
 protected:
-	void AddToRender(RenderObject * renderObject);
+	void AddToRender(RenderObject * renderObject, Camera *camera);
 	RenderPassBatchArray * currRenderPassBatchArray;
 };
 
