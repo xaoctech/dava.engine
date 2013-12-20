@@ -274,14 +274,11 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
     SafeRelease(rb->renderDataObject);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	
+    SafeRelease(rb->material);
 	if(material)
 	{
 		rb->material = material->Clone();
 		//rb->material->SetMaterialSystem(NULL);
-	}
-	else
-	{
-		SafeRelease(rb->material);
 	}
 
 	rb->startIndex = startIndex;
