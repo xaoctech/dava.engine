@@ -193,6 +193,10 @@ namespace DAVA
                     {
                         name = FastName(mat->IsFogEnabled() ? "LodDecalAlphatestFog" : "LodDecalAlphatest");
                     }
+					else
+					{
+						name = FastName(mat->IsFogEnabled() ? "LodDecalOpaqueFog" : "LodDecalOpaque");
+					}
 
 					break;
 				}
@@ -275,7 +279,8 @@ namespace DAVA
 	}
 
 	NMaterial* SerializationContext::ConvertOldMaterialToNewMaterial(Material* oldMaterial,
-											   InstanceMaterialState* oldMaterialState)
+											   InstanceMaterialState* oldMaterialState,
+																	 uint64 oldMaterialId)
 	{
 		MaterialSystem* matSystem = scene->renderSystem->GetMaterialSystem();
 		
@@ -291,7 +296,7 @@ namespace DAVA
 		//VI:                                                   properties set)
 		
 		//VI: try to find INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES by old material name
-		String oldMaterialNameStr = Format("%s[%d]", oldMaterial->GetName().c_str(), (pointer_size)oldMaterial);
+		String oldMaterialNameStr = Format("%s[%ld]", oldMaterial->GetName().c_str(), oldMaterialId);
 		FastName oldMaterialName(oldMaterialNameStr);
 
 		FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);

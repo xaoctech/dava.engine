@@ -336,7 +336,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		bool shouldConvertMaterial = archive->IsKeyExists("rb.material");
 		if(shouldConvertMaterial)
 		{
-			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
+			uint64 materialId = archive->GetVariant("rb.material")->AsUInt64();
+			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(materialId));
 			
 			InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
 			KeyedArchive *mia = archive->GetArchive("rb.matinst");
@@ -347,7 +348,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			
 			if(mat)
 			{
-				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
+				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, materialId);
 				//MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
 				
 				//matSystem->BindMaterial(newMaterial);
@@ -367,6 +368,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		if(newMaterial)
 		{
 			SetMaterial(newMaterial);
+			SafeRelease(newMaterial);
 		}
 	}
 
