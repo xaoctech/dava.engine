@@ -363,7 +363,7 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 		RenderManager::Instance()->SetDefault2DState();
 		RenderManager::Instance()->SetDefaultTextureState();
 		RenderManager::Instance()->FlushState();
-		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
+//		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
 
 		fullTiledTexture = baseLandscape->CreateLandscapeTexture();
 
