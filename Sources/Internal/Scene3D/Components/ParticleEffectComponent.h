@@ -110,7 +110,7 @@ private:
 	
 	/*state*/
 	float32 time;
-	int32 currRepeatsCont;	
+	uint32 currRepeatsCont;	
 	bool isPaused;	
 	eState state;	
 	

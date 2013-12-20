@@ -43,8 +43,6 @@ static Vector3 basisVectors[7*2] = {Vector3(), Vector3(),
 									Vector3(0,0,1), Vector3(1,0,0), 
 									Vector3(0,1,0), Vector3(1,0,0)};
 
-static Vector3 currCamDirection = Vector3(0,0,1);
-
 
 void ParticleRenderGroup::UpdateRenderBatch()
 {
@@ -98,7 +96,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	if (!transformPtr)
 		return;
 
-	currCamDirection = camera->GetDirection();
+	Vector3 currCamDirection = camera->GetDirection();
 
 	/*prepare effect basises*/
 	const Matrix4 &mv = camera->GetMatrix();
@@ -148,7 +146,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			currRenderGroup->renderBatch->SetMaterial(currMaterial);
 		}
 
-		AppendParticleGroup(currGroup, currRenderGroup);
+		AppendParticleGroup(currGroup, currRenderGroup, currCamDirection);
 
 	}
 	
@@ -183,7 +181,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 
 
 
-void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup)
+void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection)
 {
 	//prepare basis indexes
 	int32 basisCount = 0;
@@ -206,6 +204,18 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 	Vector3 particlePos[4];
 	while (current)
 	{
+		float32 *pT = group.layer->sprite->GetTextureVerts(current->frame);
+		Color currColor = current->color;
+		if (group.layer->colorOverLife)
+			currColor = group.layer->colorOverLife->GetValue(current->life/current->lifeTime);
+		if (group.layer->alphaOverLife)
+			currColor.a = group.layer->alphaOverLife->GetValue(current->life/current->lifeTime);
+		uint32 color = (((uint32)(currColor.a*255.f))<<24) |  (((uint32)(currColor.b*255.f))<<16) |
+			(((uint32)(currColor.g*255.f))<<8) | ((uint32)(currColor.r*255.f));
+		float32 sin_angle;
+		float32 cos_angle;
+		SinCosFast(current->angle, sin_angle, cos_angle);
+
 		for (int32 i=0; i<basisCount; i++)
 		{
 			Vector3 ex = basisVectors[basises[i]*2];
@@ -215,14 +225,12 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			{
 				ex = current->speed;
 				float32 vel = ex.Length();
-				ey = ex.CrossProduct(currCamDirection);
+				ey = ex.CrossProduct(cameraDirection);
 				ey.Normalize();				
 				ex *=(group.layer->scaleVelocityBase/vel+group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
 			}			
 
-			float32 sin_angle;
-			float32 cos_angle;
-			SinCosFast(current->angle, sin_angle, cos_angle);
+			
 			Vector3 left = ex*cos_angle+ey*sin_angle;
 			Vector3 right = -left;
 			Vector3 top = ey*cos_angle + ex*sin_angle;
@@ -241,19 +249,8 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			particlePos[2] = particlePosition+left+bot;			
 			particlePos[3] = particlePosition+right+bot;
 			
-			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);
-			
-			float32 *pT = group.layer->sprite->GetTextureVerts(current->frame);
-			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);
-			
-			Color currColor = current->color;
-			if (group.layer->colorOverLife)
-				currColor = group.layer->colorOverLife->GetValue(current->life/current->lifeTime);
-			if (group.layer->alphaOverLife)
-				currColor.a = group.layer->alphaOverLife->GetValue(current->life/current->lifeTime);
-
-			uint32 color = (((uint32)(currColor.a*255.f))<<24) |  (((uint32)(currColor.b*255.f))<<16) |
-				(((uint32)(currColor.g*255.f))<<8) | ((uint32)(currColor.r*255.f));
+			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);						
+			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);						
 			
 			renderGroup->colors[currVerticesCount] = color;
 			renderGroup->colors[currVerticesCount+1] = color;
