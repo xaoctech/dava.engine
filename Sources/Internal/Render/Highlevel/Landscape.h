@@ -307,7 +307,7 @@ public:
 
 	int32 GetDrawIndices() const;
 	
-	//virtual void SetRenderSystem(RenderSystem * _renderSystem);
+	virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 protected:
 	

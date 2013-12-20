@@ -39,6 +39,7 @@
 #include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "Main/QtUtils.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "MaterialEditor/MaterialEditor.h"
 
 #define TEXTURE_TITLE "Open texture"
 #define HEIGHTMAP_TITLE "Open height map"
@@ -51,7 +52,7 @@
 
 #define CREATE_TITLE "Create"
 #define DELETE_TITLE "Delete"
-
+#define OPEN_MAT_EDITOR_TITLE "Edit material"
 
 #define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
 #define DEFAULT_LANDSCAPE_HEIGHT		50.0f
@@ -98,7 +99,8 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	AddControlToUserContainer(tileMaskWidget, "Tile mask:");
 	
 	QString btnTitle = CREATE_TITLE;
-	if(innerLandscape != NULL)
+	bool isLandscapePresent = innerLandscape != NULL;
+	if(isLandscapePresent)
 	{
 		TileModeChanged((int)innerLandscape->GetTiledShaderMode());
 		btnTitle = DELETE_TITLE;
@@ -106,7 +108,12 @@ LandscapeDialog::LandscapeDialog(Entity* _landscapeEntity,  QWidget* parent)
 	actionButton = new QPushButton(btnTitle, this);
 	connect(actionButton, SIGNAL(clicked()), this, SLOT(ActionButtonClicked()));
 	AddButton(actionButton);
-	
+
+	openMaterEditorBtn = new QPushButton(OPEN_MAT_EDITOR_TITLE, this);
+	connect(openMaterEditorBtn, SIGNAL(clicked()), this, SLOT(MaterialEditorButtonClicked()));
+	AddButton(openMaterEditorBtn, 1);
+	openMaterEditorBtn->setVisible(isLandscapePresent);
+
 	landscapeSize = Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_SIDE_LENGTH, DEFAULT_LANDSCAPE_HEIGHT);
 }
 
@@ -118,7 +125,7 @@ LandscapeDialog::~LandscapeDialog()
 	{
 		delete it->first;
 	}
-
+	delete openMaterEditorBtn;
 	delete actionButton;
 }
 
@@ -161,28 +168,28 @@ void LandscapeDialog::FillPropertyEditorWithContent()
 	AddMetaObject(&landscapeSize.x, DAVA::MetaInfo::Instance<float>(), "Size");
 	AddMetaObject(&landscapeSize.z, DAVA::MetaInfo::Instance<float>(), "Height");
 
-	DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
-	if(!propertyList->IsKeyExists("lightmap.size"))
-	{
-		propertyList->SetInt32("lightmap.size", 1024);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.enable"))
-	{
-		propertyList->SetBool("editor.staticlight.enable", false);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.castshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.castshadows", false);
-	}
-	if(!propertyList->IsKeyExists("editor.staticlight.receiveshadows"))
-	{
-		propertyList->SetBool("editor.staticlight.receiveshadows", false);
-	}
+	//DAVA::KeyedArchive* propertyList = entity->GetCustomProperties();
+	//if(!propertyList->IsKeyExists("lightmap.size"))
+	//{
+	//	propertyList->SetInt32("lightmap.size", 1024);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.enable"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.enable", false);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.castshadows"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.castshadows", false);
+	//}
+	//if(!propertyList->IsKeyExists("editor.staticlight.receiveshadows"))
+	//{
+	//	propertyList->SetBool("editor.staticlight.receiveshadows", false);
+	//}
 
-	AddKeyedArchiveMember(propertyList, "lightmap.size", "Lightmap size");
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.enable", "Staticlight enable");
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.castshadows", "Cast shadows"); 
-	AddKeyedArchiveMember(propertyList, "editor.staticlight.receiveshadows", "Receive shadows");
+	//AddKeyedArchiveMember(propertyList, "lightmap.size", "Lightmap size");
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.enable", "Staticlight enable");
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.castshadows", "Cast shadows"); 
+	//AddKeyedArchiveMember(propertyList, "editor.staticlight.receiveshadows", "Receive shadows");
 
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("isFogEnabled"));
 	AddInspMemberToEditor( innerLandscape, innerLandscape->GetTypeInfo()->Member("fogDensity"));
@@ -346,6 +353,12 @@ void LandscapeDialog::ActionButtonClicked()
 
 		SetLandscapeEntity(NULL);
 	}
+	openMaterEditorBtn->setVisible( innerLandscape != NULL);
+}
+
+void LandscapeDialog::MaterialEditorButtonClicked()
+{
+	MaterialEditor::Instance()->show();
 }
 
 void LandscapeDialog::OnItemEdited(const QString &name, QtPropertyData *data)

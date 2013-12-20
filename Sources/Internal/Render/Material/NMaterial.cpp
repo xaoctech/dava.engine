@@ -61,6 +61,7 @@ namespace DAVA
 	MaterialTechnique::~MaterialTechnique()
 	{
 		SafeRelease(shader);
+        SafeDelete(renderState);
 	}
 	
 	void MaterialTechnique::RecompileShader(const FastNameSet& materialDefines)
@@ -177,10 +178,12 @@ namespace DAVA
 	
 	NMaterialState::~NMaterialState()
 	{
-		for(size_t i = 0; i < children.size(); ++i)
-		{
-			children[i]->SetParent(NULL);
-		}
+		//VI: do not notify children on delete. Rather assert here: NMaterial cannot be deleted when it has children
+		DVASSERT(children.size() == 0);
+		//for(size_t i = 0; i < children.size(); ++i)
+		//{
+		//	children[i]->SetParent(NULL);
+		//}
 		
 		for(HashMap<FastName, TextureBucket*>::iterator i = textures.begin();
 			i != textures.end();
@@ -472,7 +475,9 @@ namespace DAVA
 	
 	void NMaterialState::SetParentToState(NMaterial* material)
 	{
+		NMaterial* oldParent = parent;
 		parent = SafeRetain(material);
+		SafeRelease(oldParent);
 		parentName = (NULL == parent) ? FastName("") : parent->GetMaterialName();
 		
 		DVASSERT(parentName.IsValid());
@@ -480,7 +485,7 @@ namespace DAVA
 	
 	void NMaterialState::AddChildToState(NMaterial* material)
 	{
-		SafeRetain(material);
+		//SafeRetain(material);
 		children.push_back(material);
 	}
 	
@@ -489,7 +494,7 @@ namespace DAVA
 		Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
 		if(children.end() != child)
 		{
-			SafeRelease(material);
+			//SafeRelease(material);
 			children.erase(child);
 		}
 	}
@@ -719,12 +724,13 @@ namespace DAVA
 			//no need to release texture - new object owns it too
 		}
 		
-		for(Vector<NMaterial*>::iterator it = children.begin();
+		//VI: don't copy children
+		/*for(Vector<NMaterial*>::iterator it = children.begin();
 			it != children.end();
 			++it)
 		{
 			targetState->children.push_back(SafeRetain(*it));
-		}
+		}*/
 		
 		CopyTechniquesTo(targetState);
 		
@@ -810,6 +816,18 @@ namespace DAVA
 				delete i->second;
 			}
 		}
+        
+        if(IsSwitchable())
+		{
+			HashMap<FastName, NMaterialState*>::iterator stateIter = states.begin();
+			while(stateIter != states.end())
+			{
+                SafeRelease(stateIter->second);
+				++stateIter;
+			}
+            states.clear();
+		}
+
 		
 		if(InvalidUniqueHandle != textureStateHandle)
 		{
@@ -1067,17 +1085,20 @@ namespace DAVA
     
 	void NMaterial::SetParent(NMaterial* material)
 	{
-		if(parent)
+		if(NULL == parent || parent != material)
 		{
-			parent->RemoveChild(this);
-		}
-		
-		ResetParent();
-		SetParentToState(material);
-		
-		if(parent)
-		{
-			parent->AddChild(this);
+			if(parent)
+			{
+				parent->RemoveChild(this);
+			}
+			
+			ResetParent();
+			SetParentToState(material);
+			
+			if(parent)
+			{
+				parent->AddChild(this);
+			}
 		}
 	}
 	
@@ -1105,9 +1126,8 @@ namespace DAVA
 		Vector<NMaterial*>::iterator child = std::find(NMaterialState::children.begin(), NMaterialState::children.end(), material);
 		if(NMaterialState::children.end() != child)
 		{
-			material->ResetParent();
-			
 			RemoveChildFromState(material);
+			material->ResetParent();
 		}
 	}
 	
@@ -1622,6 +1642,8 @@ namespace DAVA
 		
 		if(state != NULL)
 		{
+			NMaterial* oldParent = SafeRetain(parent);
+			
 			SetParent(NULL);
 			
 			inheritedDefines.clear();
@@ -1650,13 +1672,10 @@ namespace DAVA
 			state->ShallowCopyTo(this);
 			
 			NMaterial* newParent = materialSystem->GetMaterial(parentName);
-			DVASSERT(newParent);
-			if(NULL == newParent)
-			{
-				newParent = materialSystem->GetDefaultMaterial();
-			}
 			
 			SetParent(newParent);
+			
+			SafeRelease(oldParent);
 			
 			currentStateName = stateName;			
 			texturesDirty = true;
@@ -1686,10 +1705,8 @@ namespace DAVA
 				++stateIter;
 			}
 		}
-		else
-		{
-			DeepCopyTo(clonedMaterial);
-		}
+
+		DeepCopyTo(clonedMaterial);
 		
 		if(newName.length())
 		{
@@ -1707,25 +1724,13 @@ namespace DAVA
 			}
 		}
 		
-		/*clonedMaterial->SetMaterialSystem(materialSystem);
-		
-		if(clonedMaterial->materialSystem)
+		if(parent &&
+		   !parent->IsConfigMaterial())
 		{
-			clonedMaterial->materialSystem->AddMaterial(clonedMaterial);
-			
-			if(clonedMaterial->IsSwitchable())
-			{
-				clonedMaterial->SwitchState(clonedMaterial->currentStateName, clonedMaterial->materialSystem, true);
-			}
-			else if(clonedMaterial->parentName.IsValid())
-			{
-				NMaterial* newParent = clonedMaterial->materialSystem->GetMaterial(clonedMaterial->parentName);
-				if(newParent)
-				{
-					clonedMaterial->SetParent(newParent);
-				}
-			}
-		}*/
+			NMaterial* clonedParent = parent->Clone(parent->GetMaterialName().c_str());
+			clonedMaterial->SetParent(clonedParent);
+			SafeRelease(clonedParent);
+		}
 		
         if(illuminationParams)
         {
@@ -2048,6 +2053,91 @@ namespace DAVA
 		if(InvalidUniqueHandle != prevHandle)
 		{
 			RenderManager::Instance()->ReleaseTextureStateData(prevHandle);
+		}
+	}
+	
+	void NMaterial::OnChildMaterialSystemChanged(NMaterial* child, MaterialSystem* matSystem)
+	{
+		if(!IsConfigMaterial())
+		{
+			int32 materializedChildCount = 0;
+			for(size_t i = 0; i < children.size(); ++i)
+			{
+				if(children[i]->materialSystem != NULL)
+				{
+					materializedChildCount++;
+				}
+			}
+			
+			bool selfSystemChanged = false;
+			if(NULL == materialSystem &&
+			   materializedChildCount != 0)
+			{
+				matSystem->AddMaterial(this);
+				selfSystemChanged = true;
+			}
+			else if(NULL != materialSystem &&
+					0 == materializedChildCount)
+			{
+				FastName curParent;
+				if(parent && parent->IsConfigMaterial())
+				{
+					curParent = GetParentName();
+					SetParent(NULL);
+				}
+				
+				materialSystem->RemoveMaterial(this);
+				SetMaterialSystem(NULL);
+				
+				if(curParent.IsValid())
+				{
+					SwitchParent(curParent);
+				}
+				
+				selfSystemChanged = true;
+			}
+			
+			if(parent && !parent->IsConfigMaterial())
+			{
+				parent->OnChildMaterialSystemChanged(this, matSystem);
+			}
+		}
+	}
+	
+	void NMaterial::UpdateMaterialSystem(MaterialSystem* matSystem)
+	{
+		if(NULL == matSystem)
+		{
+			FastName curParent;
+			if(parent)
+			{
+				curParent = GetParentName();
+				SetParent(NULL);
+			}
+			
+			materialSystem->RemoveMaterial(this);
+			SetMaterialSystem(NULL);
+			
+			if(curParent.IsValid())
+			{
+				SwitchParent(curParent);
+			}
+		}
+		else
+		{
+			MaterialSystem* prevSystem = materialSystem;
+			
+			matSystem->BindMaterial(this);
+			
+			if(prevSystem)
+			{
+				prevSystem->RemoveMaterial(this);
+			}
+		}
+
+		if(parent)
+		{
+			parent->OnChildMaterialSystemChanged(this, materialSystem);
 		}
 	}
 	

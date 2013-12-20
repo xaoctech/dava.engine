@@ -404,6 +404,8 @@ public:
 	
     IlluminationParams * GetIlluminationParams();
     void ReleaseIlluminationParams();
+	
+	void UpdateMaterialSystem(MaterialSystem* matSystem);
 
 protected:
 	
@@ -488,6 +490,8 @@ protected:
 	void BindMaterialProperties(Shader * shader);
 	
 	void OnDirtyTextures();
+	
+	void OnChildMaterialSystemChanged(NMaterial* child, MaterialSystem* matSystem);
 
 public:
     INTROSPECTION_EXTEND(NMaterial, NMaterialState,
