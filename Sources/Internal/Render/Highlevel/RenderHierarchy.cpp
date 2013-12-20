@@ -35,8 +35,9 @@
 namespace DAVA
 {
 		
-	void RenderHierarchy::AddToRender(RenderObject * renderObject)
+	void RenderHierarchy::AddToRender(RenderObject * renderObject, Camera *camera)
 	{
+		renderObject->PrepareToRender(camera);
 		uint32 batchCount = renderObject->GetRenderBatchCount();
 		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 		{
@@ -93,7 +94,7 @@ namespace DAVA
 			if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
 			{
 				node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-				AddToRender(node);
+				AddToRender(node, camera);
 			}
 			else
 			{

@@ -130,8 +130,10 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //    if(!GetVisible())
 //        return;
 	
-    Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
+    //Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
+	const Matrix4 *finalMatrixPtr = renderObject->GetFinalMatrix();
+	DVASSERT(finalMatrixPtr != 0);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, *finalMatrixPtr, (pointer_size)finalMatrixPtr);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 
@@ -147,7 +149,11 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         else queryRequested++;
     }
 #endif
-    material->Draw(dataSource);
+
+	if (dataSource)
+		material->Draw(dataSource);
+	else
+		material->Draw(renderDataObject);
     
 #if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
     lastFraemDrawn = globalFrameIndex;
