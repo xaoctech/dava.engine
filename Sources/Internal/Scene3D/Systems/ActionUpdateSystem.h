@@ -42,7 +42,7 @@ namespace DAVA
 	{
 	public:
 		ActionUpdateSystem(Scene * scene);
-		virtual void Process();
+		virtual void Process(float32 timeElapsed);
 		
 		virtual void AddEntity(Entity * entity);
 		virtual void RemoveEntity(Entity * entity);
@@ -57,6 +57,9 @@ namespace DAVA
 	protected:
 		bool eventBlocked[ActionComponent::Action::EVENTS_COUNT];
 		Vector<ActionComponent*> activeActions;
+
+		void DelayedDeleteActions();
+		Vector<ActionComponent*> deleteActions;
 	};
 	
 }

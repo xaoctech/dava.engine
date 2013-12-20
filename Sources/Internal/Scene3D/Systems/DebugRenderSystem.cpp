@@ -62,7 +62,7 @@ DebugRenderSystem::~DebugRenderSystem()
     
 }
 
-void DebugRenderSystem::Process()
+void DebugRenderSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("DebugRenderSystem::Process");
     uint32 size = entities.size();

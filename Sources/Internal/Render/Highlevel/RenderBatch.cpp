@@ -268,17 +268,17 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
     if (!rb)
         rb = new RenderBatch();
 
+    SafeRelease(rb->dataSource);
 	rb->dataSource = SafeRetain(dataSource);
+    
+    SafeRelease(rb->renderDataObject);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	
+    SafeRelease(rb->material);
 	if(material)
 	{
 		rb->material = material->Clone();
 		//rb->material->SetMaterialSystem(NULL);
-	}
-	else
-	{
-		SafeRelease(rb->material);
 	}
 
 	rb->startIndex = startIndex;
@@ -333,7 +333,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		bool shouldConvertMaterial = archive->IsKeyExists("rb.material");
 		if(shouldConvertMaterial)
 		{
-			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
+			uint64 materialId = archive->GetVariant("rb.material")->AsUInt64();
+			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(materialId));
 			
 			InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
 			KeyedArchive *mia = archive->GetArchive("rb.matinst");
@@ -344,7 +345,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			
 			if(mat)
 			{
-				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
+				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, materialId);
 				//MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
 				
 				//matSystem->BindMaterial(newMaterial);
@@ -364,6 +365,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		if(newMaterial)
 		{
 			SetMaterial(newMaterial);
+			SafeRelease(newMaterial);
 		}
 	}
 
@@ -399,7 +401,7 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 	if(material &&
 	   prevSystem != matSystem)
 	{
-		if(NULL == matSystem)
+		/*if(NULL == matSystem)
 		{
 			if(prevSystem)
 			{
@@ -416,7 +418,9 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 			{
 				prevSystem->RemoveMaterial(material);
 			}
-		}
-	}
+		}*/
+		
+		material->UpdateMaterialSystem(matSystem);
+	}	
 }
 };

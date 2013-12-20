@@ -43,15 +43,10 @@
 
 #include "Deprecated/SceneValidator.h"
 
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
-
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, structureChanged(false)
 {
-    new DAVA::SwitchComponent();
-    new DAVA::ActionComponent();
 }
 
 StructureSystem::~StructureSystem()
@@ -387,7 +382,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 
 			// TODO: move this code to some another place (into command itself or into ProcessCommand function)
 			// 
-			// Ïåðåíåñòè â Load è çàâàëèäåéòèòü òîëüêî ïîäãðóæåííóþ Entity
+			// Å“Ã‚ï£¿Ã‚ÃŒÃ‚Ã’ÃšÃ‹ â€š Load Ã‹ Ãâ€¡â€šâ€¡ÃŽÃ‹â€°Ã‚ÃˆÃšÃ‹ÃšÂ¸ ÃšÃ“ÃŽÂ¸ÃÃ“ Ã”Ã“â€°â€žï£¿Ã›ÃŠÃ‚ÃŒÃŒÃ›Ë› Entity
 			// -->
 			sceneEditor->UpdateShadowColorFromLandscape();
             SceneValidator::Instance()->ValidateSceneAndShowErrors(sceneEditor, sceneEditor->GetScenePath());
@@ -562,6 +557,34 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 	return loadedEntity;
 }
 
+void StructureSystem::CopyLightmapSettings(DAVA::NMaterialState *fromState, DAVA::NMaterialState *toState) const
+{
+	Texture* lightmap = fromState->GetTexture(NMaterial::TEXTURE_LIGHTMAP);
+	if(!lightmap)
+	{
+		lightmap = Texture::CreatePink();
+	}
+	
+	toState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, lightmap);
+	
+	if(lightmap->isPink)
+	{
+		SafeRelease(lightmap);
+	}
+	
+	NMaterialProperty* uvScale = fromState->GetMaterialProperty(NMaterial::PARAM_UV_SCALE);
+	if(uvScale)
+	{
+		toState->SetPropertyValue(NMaterial::PARAM_UV_SCALE, uvScale->type, uvScale->size, uvScale->data);
+	}
+	
+	NMaterialProperty* uvOffset = fromState->GetMaterialProperty(NMaterial::PARAM_UV_OFFSET);
+	if(uvScale)
+	{
+		toState->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, uvOffset->type, uvOffset->size, uvOffset->data);
+	}
+}
+
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
 {
     DAVA::Vector<DAVA::RenderObject *> fromMeshes;
@@ -586,17 +609,23 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
                 DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
                 DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
 
-				DVASSERT(0 && "Need reimplement for new materials");
-
-				/*
-                DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
-                DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
-                
-                if(fromState && toState)
-                {
-                    toState->InitFromState(fromState);
-                }
-				*/
+				NMaterial* fromMat = fromBatch->GetMaterial();
+				NMaterial* toMat = toBatch->GetMaterial();
+				
+				DVASSERT(fromMat->GetStateCount() == toMat->GetStateCount());
+				if(fromMat->GetStateCount() == toMat->GetStateCount())
+				{
+					uint32 stateCount = fromMat->GetStateCount();
+					for(uint32 stateIndex = 0; stateIndex < stateCount; ++stateIndex)
+					{
+						NMaterialState* fromState = fromMat->GetState(stateIndex);
+						NMaterialState* toState = toMat->GetState(stateIndex);
+						
+						CopyLightmapSettings(fromState, toState);
+					}
+				}
+				
+				CopyLightmapSettings(fromMat, toMat);
             }
         }
         

@@ -73,8 +73,8 @@ protected slots:
 	void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void ShowContextMenu(const QPoint & point);
     
-    void SetFilter();
-    void ResetFilter();
+//     void SetFilter();
+//     void ResetFilter();
     
     void OnFilesTypeChanged(int typeIndex);
     
@@ -85,7 +85,7 @@ protected slots:
     void OnEditTextureDescriptor();
     void OnRevealAtFolder();
 
-    void OnModelLoaded();
+//    void OnModelLoaded();
     
 private:
     
@@ -99,9 +99,8 @@ private:
     void HidePreview() const;
     void ShowPreview(const QString & pathname) const;
     
-	bool ExpandUntilFilterAccepted(const QModelIndex &proxyIndex);
-
-    void SwitchTreeAndLabel();
+//	bool ExpandUntilFilterAccepted(const QModelIndex &proxyIndex);
+//	void SwitchTreeAndLabel();
     
 private:
 
@@ -110,12 +109,11 @@ private:
     QToolBar *toolbar;
     QTreeView *filesView;
     
-    QLineEdit *searchFilter;
-    QComboBox *filesTypeFilter;
-    
-	QWidget *waitBar;
-//     QProgressBar *waitBar;
-    QLabel * notFoundMessage;
+//disabled for future
+//	QLineEdit *searchFilter;
+//	QWidget *waitBar;
+//	QLabel * notFoundMessage;
+	QComboBox *filesTypeFilter;
     
     QAction *actionViewAsList;
     QAction *actionViewDetailed;
@@ -123,7 +121,7 @@ private:
     
     QString rootPathname;
     LibraryFileSystemModel *filesModel;
-    LibraryFilteringModel *proxyModel;
+//    LibraryFilteringModel *proxyModel;
     
     eViewMode viewMode;
 	int curTypeIndex;

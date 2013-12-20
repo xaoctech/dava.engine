@@ -66,7 +66,7 @@ protected slots:
     void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 	void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
     void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
-
+    void TexturesReloaded();
     
     void ViewAsList();
     void ViewAsTiles();

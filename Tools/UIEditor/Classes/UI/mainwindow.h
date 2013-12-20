@@ -99,7 +99,10 @@ private slots:
 	void OnChangePropertySucceeded();
 
 	void OnUnsavedChangesNumberChanged();
-
+	
+	// Adjust size
+	void OnAdjustSize();
+	
 	// Align block.
 	void OnAlignLeft();
 	void OnAlignHorzCenter();
@@ -118,6 +121,9 @@ private slots:
 	void OnDistributeEqualDistanceBetweenYCenters();
 	void OnDistributeEqualDistanceBetweenBottomEdges();
 	void OnDistributeEqualDistanceBetweenY();
+
+    // Repack and Reload.
+    void OnRepackAndReloadSprites();
 
 private:
 	bool CloseProject();

@@ -46,6 +46,8 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
+const FastName MATERIAL_FOR_REBIND = FastName("Global");
+
 SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
@@ -148,6 +150,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
     SceneValidator::Instance()->ValidateSceneAndShowErrors(this, path);
     
 	SceneSignals::Instance()->EmitLoaded(this);
+
 	return ret;
 }
 
@@ -347,7 +350,9 @@ void SceneEditor2::Update(float timeElapsed)
 	
 	if(editorLightSystem)
 		editorLightSystem->Process();
-    
+
+    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
+    staticOcclusionBuildSystem->Process(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -369,9 +374,6 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 		structureSystem->ProcessUIEvent(event);
 
 	particlesSystem->ProcessUIEvent(event);
-    
-    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
-    staticOcclusionBuildSystem->Process();
 }
 
 void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
@@ -383,6 +385,15 @@ void SceneEditor2::Draw()
 {
 
     RenderManager::Instance()->ClearStats();
+	
+	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(MATERIAL_FOR_REBIND);
+	DVASSERT(global);
+	
+	if(global)
+	{
+		global->Rebind();
+	}
+	
 	Scene::Draw();
     
     renderStats = RenderManager::Instance()->GetStats();
