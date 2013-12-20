@@ -40,5 +40,7 @@
         <file>Icons/distribute_vertical_center.png</file>
         <file>Icons/distribute_vertical_gaps.png</file>
         <file>Icons/distribute_vertical_top.png</file>
+        <file>Icons/reloadtextures.png</file>
+        <file>Icons/adjust_size.png</file>
     </qresource>
 </RCC>

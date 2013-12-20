@@ -75,7 +75,7 @@ void StaticOcclusionBuildSystem::BuildOcclusionInformation()
         staticOcclusion = new StaticOcclusion();
 }
     
-void StaticOcclusionBuildSystem::Process()
+void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
 {
     //ProcessStaticOcclusion(camera);
     
@@ -161,7 +161,7 @@ void StaticOcclusionBuildSystem::Process()
             LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
             lodComponent->SetForceLodLayer(0);
         }
-        GetScene()->lodSystem->Process();
+        GetScene()->lodSystem->Process(timeElapsed);
 
         
         staticOcclusion->SetEqualVisibilityVector(equalRenderObjects);
@@ -201,7 +201,7 @@ void StaticOcclusionBuildSystem::Process()
                 LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
                 lodComponent->SetForceLodLayer(LodComponent::INVALID_LOD_LAYER);
             }
-            GetScene()->lodSystem->Process();
+            GetScene()->lodSystem->Process(timeElapsed);
         }
     }
 }
@@ -256,7 +256,7 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 {
 }
 
-void StaticOcclusionSystem::Process()
+void StaticOcclusionSystem::Process(float32 timeElapsed)
 {
     // Verify that system is initialized
     if (!camera)return;
