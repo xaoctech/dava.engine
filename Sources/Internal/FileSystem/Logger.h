@@ -79,6 +79,11 @@ public:
 	//! \param[in] filename: name of log file. Empty string disables logging to file, 
 	//! non-empty creates log file in working directory.
 	virtual void SetLogFilename(const String & filename);
+
+	//! Enables/disables logging to file. Disabled by default.
+	//! \param[in] filepath: path to log file. Empty string disables logging to file, 
+	//! non-empty creates log file described by filepath.
+	virtual void SetLogPathname(const FilePath & filepath);
 	
 	//! Returns the current set log level.
 	virtual eLogLevel GetLogLevel();
@@ -125,6 +130,7 @@ public:
 	static void Error(const char16 * text, ...);
 
 	static void AddCustomOutput(DAVA::LoggerOutput *lo);
+	static void RemoveCustomOutput(DAVA::LoggerOutput *lo);
 
 #if defined(__DAVAENGINE_ANDROID__)
     static void SetTag(const char8 *logTag);

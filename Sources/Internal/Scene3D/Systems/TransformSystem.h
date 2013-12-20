@@ -52,13 +52,14 @@ public:
     Transform * CreateTransform();
 
 	virtual void ImmediateEvent(Entity * entity, uint32 event);
+	virtual void AddEntity(Entity * entity);
 	virtual void RemoveEntity(Entity * entity);
 
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
 	void UnlinkTransform(int32 childIndex);
     
-    virtual void Process();
+    virtual void Process(float32 timeElapsed);
 
 private:
     void SortAndThreadSplit();

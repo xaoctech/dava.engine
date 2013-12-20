@@ -34,8 +34,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(UISwitch);
-
 //use these names for children controls to define UISwitch in .yaml
 static const String UISWITCH_BUTTON_LEFT_NAME = "buttonLeft";
 static const String UISWITCH_BUTTON_RIGHT_NAME = "buttonRight";
@@ -44,6 +42,11 @@ static const float32 SWITCH_ANIMATION_TIME = 0.1f;
 
 class TogglePositionAnimation : public LinearAnimation<float32>
 {
+protected:
+    virtual ~TogglePositionAnimation()
+    {
+        SafeRelease(uiSwitch);
+    }
 public:
     TogglePositionAnimation(bool _isCausedByTap, UISwitch * _uiSwitch, float32 * _var, float32 _endValue, float32 _animationTimeLength, Interpolation::FuncType _iType)
         : LinearAnimation(_uiSwitch->GetToggle(), _var, _endValue, _animationTimeLength, _iType)
@@ -59,11 +62,6 @@ public:
         }
     }
     
-    virtual ~TogglePositionAnimation()
-    {
-        SafeRelease(uiSwitch);
-    }
-
     virtual void Update(float32 timeElapsed)
     {
         LinearAnimation::Update(timeElapsed);
@@ -142,19 +140,12 @@ void UISwitch::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 
 YamlNode * UISwitch::SaveToYamlNode(UIYamlLoader * loader)
 {
+    buttonLeft->SetName(UISWITCH_BUTTON_LEFT_NAME);
+	toggle->SetName(UISWITCH_BUTTON_TOGGLE_NAME);
+	buttonRight->SetName(UISWITCH_BUTTON_RIGHT_NAME);
+
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
-
-	//Control Type
 	SetPreferredNodeType(node, "UISwitch");
-		
-	// All the buttons have to be saved too.
-	YamlNode* leftButtonNode = SaveToYamlNodeRecursive(loader, buttonLeft);
-	YamlNode* toggleButtonNode = SaveToYamlNodeRecursive(loader, toggle);
-	YamlNode* rightButtonNode = SaveToYamlNodeRecursive(loader, buttonRight);
-
-	node->AddNodeToMap(UISWITCH_BUTTON_LEFT_NAME, leftButtonNode);
-	node->AddNodeToMap(UISWITCH_BUTTON_TOGGLE_NAME, toggleButtonNode);
-	node->AddNodeToMap(UISWITCH_BUTTON_RIGHT_NAME, rightButtonNode);
 
 	return node;
 }
@@ -200,17 +191,6 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
 	AddControl(toggle);
 
     InitControls();
-}
-
-List<UIControl* >& UISwitch::GetRealChildren()
-{
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	
-	realChildren.remove(FindByName(UISWITCH_BUTTON_LEFT_NAME));
-	realChildren.remove(FindByName(UISWITCH_BUTTON_TOGGLE_NAME));
-	realChildren.remove(FindByName(UISWITCH_BUTTON_RIGHT_NAME));
-
-	return realChildren;
 }
 
 List<UIControl* > UISwitch::GetSubcontrols()

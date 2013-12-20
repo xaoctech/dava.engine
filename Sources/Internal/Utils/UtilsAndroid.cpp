@@ -67,6 +67,17 @@ bool JniUtils::EnableSleepTimer()
 	return true;
 }
 
+void JniUtils::OpenURL(const String& url)
+{
+	jmethodID mid = GetMethodID("OpenURL", "(Ljava/lang/String;)V");
+	if (mid)
+	{
+		jstring jUrl = GetEnvironment()->NewStringUTF(url.c_str());
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, jUrl);
+		GetEnvironment()->DeleteLocalRef(jUrl);
+	}
+}
+
 void DAVA::DisableSleepTimer()
 {
 	JniUtils jniUtils;
@@ -77,6 +88,22 @@ void DAVA::EnableSleepTimer()
 {
 	JniUtils jniUtils;
 	jniUtils.EnableSleepTimer();
+}
+
+uint64 DAVA::EglGetCurrentContext()
+{
+	//TODO: in case if context checking will ever be needed on Android,
+	//TODO: implement this method similar to any other platform
+	//TODO: it should return uint64 representation of the current OpenGL context
+	//TDOD: see iOS implementation for example
+	DVASSERT(false && "Implement this method for Android if needed");
+	return 0;
+}
+
+void DAVA::OpenURL(const String& url)
+{
+	JniUtils jniUtils;
+	jniUtils.OpenURL(url);
 }
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)

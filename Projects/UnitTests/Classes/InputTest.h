@@ -47,6 +47,8 @@ using namespace DAVA;
 
 class InputTest: public TestTemplate<InputTest>, public UITextFieldDelegate
 {
+protected:
+    ~InputTest(){}
 public:
 	InputTest();
 
@@ -64,23 +66,31 @@ public:
 	
 private:
 	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
-	
+	void DisplayUIControlsSize();
+
 private:
 	UITextField* textField;
 	UITextField* passwordTextField;
 
 	UIStaticText* staticText;
+    
 	UIButton* testButton;
 	UIButton* removeFromParentButton;
+    UIButton* disableInEventButton;
 	
 	UIWebView* webView1;
 	UIWebView* webView2;
 	UIWebView* webView3;
 	
+    UIStaticText* cursorPositionStaticText;
+
 	void* delegate;
 
 	bool testFinished;
 	float onScreenTime;
+    
+    float cursorUpdateTime;
+    bool cursorMoveForward;
 };
 
 #endif /* defined(__TemplateProjectMacOS__InputTest__) */

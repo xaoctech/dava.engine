@@ -318,6 +318,22 @@ void JniTextField::CloseKeyboard()
 	}
 }
 
+uint32 JniTextField::GetCursorPos()
+{
+	jmethodID mid = GetMethodID("GetCursorPos", "(I)I");
+	if (!mid)
+		return 0;
+
+	return GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid, id);
+}
+
+void JniTextField::SetCursorPos(uint32 pos)
+{
+	jmethodID mid = GetMethodID("SetCursorPos", "(II)V");
+	if (!mid)
+		return;
+	GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, pos);
+}
 
 uint32_t UITextFieldAndroid::sId = 0;
 DAVA::Map<uint32_t, UITextFieldAndroid*> UITextFieldAndroid::controls;
@@ -470,6 +486,18 @@ void UITextFieldAndroid::SetEnableReturnKeyAutomatically(bool value)
 	jniTextField.SetEnableReturnKeyAutomatically(value);
 }
 
+uint32 UITextFieldAndroid::GetCursorPos()
+{
+	JniTextField jniTextField(id);
+	return jniTextField.GetCursorPos();
+}
+
+void UITextFieldAndroid::SetCursorPos(uint32 pos)
+{
+	JniTextField jniTextField(id);
+	return jniTextField.SetCursorPos(pos);
+}
+
 bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const WideString &text)
 {
 	bool res = true;
@@ -480,8 +508,11 @@ bool UITextFieldAndroid::TextFieldKeyPressed(int32 replacementLocation, int32 re
 	if (res)
 	{
 		WideString curText = textField->GetText();
-		curText.replace(replacementLocation, replacementLength, text);
-		this->text = curText;
+		if (curText.length() >= replacementLocation)
+		{
+			curText.replace(replacementLocation, replacementLength, text);
+			this->text = curText;
+		}
 	}
 	return res;
 }

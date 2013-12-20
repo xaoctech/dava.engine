@@ -621,6 +621,9 @@ void MainWindow::InitMenu()
 	// Undo/Redo.
 	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
 	connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedoRequested()));
+	
+	// Adjust controls size
+	connect(ui->actionAdjustControlSize, SIGNAL(triggered()), this, SLOT(OnAdjustSize()));
 
 	// Align.
 	connect(ui->actionAlign_Left, SIGNAL(triggered()), this, SLOT(OnAlignLeft()));
@@ -642,20 +645,50 @@ void MainWindow::InitMenu()
 	connect(ui->actionEqualBetweenBottomEdges, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenBottomEdges()));
 	connect(ui->actionEqualBetweenYObjects, SIGNAL(triggered()),this, SLOT(OnDistributeEqualDistanceBetweenY()));
 
+    // Reload.
+    connect(ui->actionRepack_And_Reload, SIGNAL(triggered()), this, SLOT(OnRepackAndReloadSprites()));
+
 	UpdateMenu();
 }
 
 void MainWindow::UpdateMenu()
 {
-	//ui->actionNew
-	ui->actionSave_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->actionSave_All->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->actionClose_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->menuProject->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->actionNew_screen->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
-	ui->actionNew_aggregator->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
-	ui->actionImport_Platform->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
+    bool projectCreated = HierarchyTreeController::Instance()->GetTree().IsProjectCreated();
+    bool projectNotEmpty = (HierarchyTreeController::Instance()->GetTree().GetPlatforms().size() > 0);
+
+	ui->actionSave_project->setEnabled(projectCreated);
+	ui->actionSave_All->setEnabled(projectCreated);
+	ui->actionClose_project->setEnabled(projectCreated);
+	ui->menuProject->setEnabled(projectCreated);
+	ui->actionNew_platform->setEnabled(projectCreated);
+
+	ui->actionNew_screen->setEnabled(projectNotEmpty);
+	ui->actionNew_aggregator->setEnabled(projectNotEmpty);
+	ui->actionImport_Platform->setEnabled(projectNotEmpty);
+
+    ui->actionAlign_Left->setEnabled(projectNotEmpty);
+	ui->actionAlign_Horz_Center->setEnabled(projectNotEmpty);
+	ui->actionAlign_Right->setEnabled(projectNotEmpty);
+
+	ui->actionAlign_Top->setEnabled(projectNotEmpty);
+    ui->actionAlign_Vert_Center->setEnabled(projectNotEmpty);
+	ui->actionAlign_Bottom->setEnabled(projectNotEmpty);
+	
+	ui->actionAdjustControlSize->setEnabled(projectNotEmpty);
+
+	// Distribute.
+	ui->actionEqualBetweenLeftEdges->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenXCenters->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenRightEdges->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenXObjects->setEnabled(projectNotEmpty);
+
+	ui->actionEqualBetweenTopEdges->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenYCenters->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenBottomEdges->setEnabled(projectNotEmpty);
+	ui->actionEqualBetweenYObjects->setEnabled(projectNotEmpty);
+
+    // Reload.
+    ui->actionRepack_And_Reload->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -1055,6 +1088,11 @@ void MainWindow::ScrollToScenePositionAndPoint(const Vector2& scenePosition, con
 	ui->verticalScrollBar->setValue(newVScrollValue);
 }
 
+void MainWindow::OnAdjustSize()
+{
+	HierarchyTreeController::Instance()->AdjustSelectedControlsSize();
+}
+
 void MainWindow::OnAlignLeft()
 {
 	HierarchyTreeController::Instance()->AlignSelectedControls(ALIGN_CONTROLS_LEFT);
@@ -1123,4 +1161,11 @@ void MainWindow::OnDistributeEqualDistanceBetweenBottomEdges()
 void MainWindow::OnDistributeEqualDistanceBetweenY()
 {
 	HierarchyTreeController::Instance()->DistributeSelectedControls(DISTRIBUTE_CONTROLS_EQUAL_DISTANCE_BETWEEN_Y);
+}
+
+void MainWindow::OnRepackAndReloadSprites()
+{
+    ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
+    HierarchyTreeController::Instance()->RepackAndReloadSprites();
+    ScreenWrapper::Instance()->RestoreApplicationCursor();
 }

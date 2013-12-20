@@ -262,6 +262,22 @@ void Logger::AddCustomOutput(DAVA::LoggerOutput *lo)
 		Logger::Instance()->customOutputs.push_back(lo);
 }
 
+void Logger::RemoveCustomOutput(DAVA::LoggerOutput *lo)
+{
+	if(Logger::Instance() && lo)
+	{
+		Vector<LoggerOutput *>::const_iterator endIt = Logger::Instance()->customOutputs.end();
+		for(Vector<LoggerOutput *>::iterator it = Logger::Instance()->customOutputs.begin(); it != endIt; ++it)
+		{
+			if((*it) == lo)
+			{
+				Logger::Instance()->customOutputs.erase(it);
+				break;
+			}
+		}
+	}
+}
+
 void Logger::SetLogFilename(const String & filename)
 {
 	if(filename.empty())
@@ -273,6 +289,12 @@ void Logger::SetLogFilename(const String & filename)
 		logFilename = FileSystem::Instance()->GetCurrentDocumentsDirectory() + filename;
 	}
 }
+
+void Logger::SetLogPathname(const FilePath & filepath)
+{
+	logFilename = filepath;
+}
+
 
 void Logger::FileLog(eLogLevel ll, const char8* text)
 {

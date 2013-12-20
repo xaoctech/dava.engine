@@ -49,9 +49,8 @@ LodSystem::LodSystem(Scene * scene)
 	UpdatePartialUpdateIndices();
 }
 
-void LodSystem::Process()
+void LodSystem::Process(float32 timeElapsed)
 {
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	float32 currFps = 1.0f/timeElapsed;
 
 	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
@@ -191,20 +190,32 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
 	LodComponent * lodComponent = GetLodComponent(entity);
+	bool usePsSettings = (GetEmitter(entity) != NULL);
+
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
-		lodComponent->SetForceLayerAsCurrent();
+		if (usePsSettings)
+			lodComponent->currentLod = lodComponent->forceLodLayer;
+		else if(lodComponent->lodLayers.size())
+		{
+			lodComponent->currentLod = Min((int32)lodComponent->lodLayers.size() - 1, lodComponent->forceLodLayer);
+		}
+		else
+		{
+			lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
+		}
 		return true;
 	}
 
 	int32 layersCount = lodComponent->GetLodLayersCount();	
 	float32 dst = CalculateDistanceToCamera(entity, lodComponent);
 
-	bool usePsSettings = (GetEmitter(entity) != NULL);
+	
 	if (usePsSettings)
 	{
 		layersCount = LodComponent::MAX_LOD_LAYERS;
-		dst = dst*psLodMultSq+psLodOffsetSq;
+		if (dst>lodComponent->GetLodLayerFarSquare(0)) //preserv lod 0 from degrade
+			dst = dst*psLodMultSq+psLodOffsetSq;
 	}
 
 	int32 layer = FindProperLayer(dst, lodComponent, layersCount);
@@ -327,7 +338,8 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 	if(fromEntity != toEntity)
 	{
 		LodComponent * lod = GetLodComponent(fromEntity);
-		if(lod)
+		ParticleEmitter *emitter = GetEmitter(fromEntity);
+		if(lod&&(!emitter)) //as emitters have separate LOD logic
 		{
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{

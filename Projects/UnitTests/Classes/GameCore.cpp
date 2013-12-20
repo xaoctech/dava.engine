@@ -85,7 +85,7 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-    
+
 	new UIMovieTest();
 	
 	new InputTest();
@@ -114,7 +114,6 @@ void GameCore::OnAppStarted()
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
-	new SplitTest();
 	new KeyedArchiveYamlTest();
 	new DLCTest();
 	new UIListTest();

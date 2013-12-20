@@ -40,11 +40,12 @@ namespace DAVA
 class UIButton;
 class UISlider : public UIControl
 {
+protected:
+	virtual ~UISlider();
 public:
 	UISlider();
 	
 	UISlider(const Rect & rect);
-	virtual ~UISlider();
 
 	virtual void AddControl(DAVA::UIControl *control);
 
@@ -60,7 +61,9 @@ public:
 	virtual void SetMaxSprite(const FilePath & spriteName, int32 frame);
     virtual void SetMaxDrawType(UIControlBackground::eDrawType drawType);
     virtual void SetMaxLeftRightStretchCap(float32 stretchCap);
-	
+
+    virtual void SetSize(const DAVA::Vector2 &newSize);
+
 	inline float32 GetMinValue();
 	inline float32 GetMaxValue();
 	void SetMinMaxValue(float32 _minValue, float32 _maxValue);
@@ -88,12 +91,16 @@ public:
 
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
-	virtual List<UIControl* >& GetRealChildren();
 	virtual List<UIControl*> GetSubcontrols();
 
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
-	
+
+	virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+
+    // Synchronize thumb size/position according to the thumb sprite.
+    void SyncThumbWithSprite();
+
 protected:
 	bool isEventsContinuos;
 	
@@ -119,6 +126,9 @@ protected:
 	UIControlBackground::eDrawType minDrawType;
 	UIControlBackground::eDrawType maxDrawType;
 
+    bool needSetMinDrawType;
+    bool needSetMaxDrawType;
+
 	void InitThumb();
 	void InitMinBackground();
 	void InitMaxBackground();
@@ -129,6 +139,7 @@ protected:
 	void InitInactiveParts(Sprite* spr);
 
 	void PostInitBackground(UIControl* backgroundControl);
+    void RemoveAndReleaseControl(UIControl* &control);
 };
     
     

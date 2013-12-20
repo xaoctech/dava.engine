@@ -46,7 +46,7 @@ SwitchSystem::SwitchSystem(Scene * scene)
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
 }
 
-void SwitchSystem::Process()
+void SwitchSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("SwitchSystem::Process");
 	Set<Entity*>::iterator it;
@@ -71,7 +71,7 @@ void SwitchSystem::Process()
 			ActionComponent* actionComponent = cast_if_equal<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));
 			if(NULL != actionComponent)
 			{
-				actionComponent->Start(sw->newSwitchIndex);
+				actionComponent->StartSwitch(sw->newSwitchIndex);
 			}
 		}
 	}
