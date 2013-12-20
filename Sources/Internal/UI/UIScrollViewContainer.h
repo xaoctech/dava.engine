@@ -80,6 +80,8 @@ protected:
 	Vector2 	oldPos;
 	Vector2		newPos;
 
+    ScrollHelper *currentScroll;
+
 	// All boolean variables are grouped together because of DF-2149.
 	bool 		lockTouch : 1;
 	bool 		scrollStartMovement : 1;
