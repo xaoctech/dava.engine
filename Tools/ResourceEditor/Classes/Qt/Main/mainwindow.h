@@ -148,6 +148,8 @@ public slots:
 
 	void OnSaveHeightmapToPNG();
 	void OnSaveTiledTexture();
+
+	void OnConvertModifiedTextures();
     
 	void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 

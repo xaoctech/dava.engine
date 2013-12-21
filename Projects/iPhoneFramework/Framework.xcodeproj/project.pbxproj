@@ -83,6 +83,11 @@
 		A611714A1860C24D00E18F8C /* StaticOcclusionRenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = A61171441860C24D00E18F8C /* StaticOcclusionRenderPass.h */; };
 		A611714D1860C2A500E18F8C /* StaticOcclusionSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A611714B1860C2A500E18F8C /* StaticOcclusionSystem.cpp */; };
 		A611714E1860C2A500E18F8C /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A611714C1860C2A500E18F8C /* StaticOcclusionSystem.h */; };
+		9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A011B491A9F000929E1677C /* GamepadDevice.mm */; };
+		9A011C77BA90F38DCDB7F4E6 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A0118E18AC6866222998E4C /* GameController.framework */; };
+		9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011711EF06ABD979FD9B39 /* GamepadManager.h */; };
+		9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */; };
+		9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011D1A54C2070D923E1061 /* GamepadDevice.h */; };
 		A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */; };
 		A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A66BC2F017AB98E800B6252E /* SkyboxSystem.h */; };
 		A670F2E818479DD20030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2E718479DD20030E075 /* TextureStateData.h */; };
@@ -839,6 +844,11 @@
 		A61171441860C24D00E18F8C /* StaticOcclusionRenderPass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusionRenderPass.h; sourceTree = "<group>"; };
 		A611714B1860C2A500E18F8C /* StaticOcclusionSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionSystem.cpp; sourceTree = "<group>"; };
 		A611714C1860C2A500E18F8C /* StaticOcclusionSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusionSystem.h; sourceTree = "<group>"; };
+		9A011711EF06ABD979FD9B39 /* GamepadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadManager.h; sourceTree = "<group>"; };
+		9A0118E18AC6866222998E4C /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		9A011B491A9F000929E1677C /* GamepadDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadDevice.mm; sourceTree = "<group>"; };
+		9A011D1A54C2070D923E1061 /* GamepadDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadDevice.h; sourceTree = "<group>"; };
+		9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadManager.mm; sourceTree = "<group>"; };
 		A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A66BC2F017AB98E800B6252E /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
 		A670F2E718479DD20030E075 /* TextureStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateData.h; sourceTree = "<group>"; };
@@ -1527,6 +1537,7 @@
 				5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */,
 				FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */,
 				EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */,
+				9A011C77BA90F38DCDB7F4E6 /* GameController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1577,6 +1588,7 @@
 			isa = PBXGroup;
 			children = (
 				EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */,
+				9A0118E18AC6866222998E4C /* GameController.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1869,6 +1881,10 @@
 				E8B3C86F16B9326D002BD35F /* InputSystem.h */,
 				E8B3C87016B9326D002BD35F /* KeyboardDevice.cpp */,
 				E8B3C87116B9326D002BD35F /* KeyboardDevice.h */,
+				9A011B491A9F000929E1677C /* GamepadDevice.mm */,
+				9A011D1A54C2070D923E1061 /* GamepadDevice.h */,
+				9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */,
+				9A011711EF06ABD979FD9B39 /* GamepadManager.h */,
 			);
 			path = Input;
 			sourceTree = "<group>";
@@ -2985,6 +3001,8 @@
 				A6919545183A70D600D598AE /* AutotestingSystemYaml.h in Headers */,
 				A670F2E818479DD20030E075 /* TextureStateData.h in Headers */,
 				A670F2EA1847A33F0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
+				9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */,
+				9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3394,6 +3412,8 @@
 				A695E53218113327008A0F20 /* SerializationContext.cpp in Sources */,
 				A6919544183A70D600D598AE /* AutotestingSystemYaml.cpp in Sources */,
 				CC84B03E18211BCE00934482 /* Job.cpp in Sources */,
+				9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */,
+				9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

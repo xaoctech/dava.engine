@@ -36,7 +36,7 @@
 
 void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
 {
-	if(!forNode) return;
+    if(!forNode) return;
 
     DAVA::RenderObject *ro = GetRenderObject(forNode);
     if(ro)
@@ -46,19 +46,60 @@ void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &te
         {
             DAVA::RenderBatch *renderBatch = ro->GetRenderBatch(b);
             DAVA::NMaterial *material = renderBatch->GetMaterial();
-            
+
             CollectTextures(material, textureCollection);
         }
     }
-    
-    
+
+
     DAVA::int32 count = forNode->GetChildrenCount();
-	for(DAVA::int32 c = 0; c < count; ++c)
-	{
+    for(DAVA::int32 c = 0; c < count; ++c)
+    {
         EnumerateTextures(forNode->GetChild(c), textureCollection);
-	}
+    }
 }
 
+int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
+{
+	int32 retValue = 0;
+	textures.clear();
+	TexturesMap allTextures;
+	EnumerateTextures(forNode, allTextures);
+	for(TexturesMap::iterator it = allTextures.begin(); it != allTextures.end(); ++it)
+	{
+		DAVA::Texture * texture = it->second;
+		if(NULL == texture)
+		{
+			continue;
+		}
+		
+		DAVA::TextureDescriptor *descriptor = texture->GetDescriptor();
+		if(NULL == descriptor)
+		{
+			continue;
+		}
+				
+		DAVA::Vector< DAVA::eGPUFamily> markedGPUs;
+		for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
+		{
+			eGPUFamily gpu = (eGPUFamily)i;
+			if(GPUFamilyDescriptor::IsFormatSupported(gpu, (PixelFormat)descriptor->compression[gpu].format))
+			{
+				FilePath texPath = descriptor->GetSourceTexturePathname();
+				if(texPath.Exists() && !descriptor->IsCompressedTextureActual(gpu))
+				{
+					markedGPUs.push_back(gpu);
+					retValue++;
+				}
+			}
+		}
+		if(markedGPUs.size() > 0)
+		{
+			textures[texture] = markedGPUs;
+		}
+	}
+	return retValue;
+}
 
 void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
 {
@@ -81,6 +122,13 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
 void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
 {
     String materialName = material->GetMaterialName().c_str();
+	
+	//VI: do not check root materials
+	if(!material->GetParentName().IsValid())
+	{
+		return;
+	}
+	
     String parentName = material->GetParentName().c_str();
     if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
     {

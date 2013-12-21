@@ -650,7 +650,7 @@ void Landscape::SetTileColor(eTextureLevel level, const Color & color)
 {
     tileColor[level] = color;
 	
-	tileMaskMaterial->SetPropertyValue(TILEMASK_COLOR_PROPS_NAMES[level], Shader::UT_FLOAT_VEC4, 1, &tileColor[level]);
+	tileMaskMaterial->SetPropertyValue(TILEMASK_COLOR_PROPS_NAMES[level], Shader::UT_FLOAT_VEC3, 1, &tileColor[level]);
 }
 
 const Color & Landscape::GetTileColor(eTextureLevel level)

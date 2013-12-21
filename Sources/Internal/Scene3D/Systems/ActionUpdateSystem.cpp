@@ -75,11 +75,11 @@ void ActionUpdateSystem::RemoveEntity(Entity * entity)
 	SceneSystem::RemoveEntity(entity);
 }
 		
-void ActionUpdateSystem::Process()
+void ActionUpdateSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("ActionUpdateSystem::Process");
 
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+	DelayedDeleteActions();
 	
 	uint32 size = activeActions.size();
 	for(uint32 index = 0; index < size; ++index)
@@ -87,6 +87,22 @@ void ActionUpdateSystem::Process()
 		ActionComponent* component = activeActions[index];
 		component->Update(timeElapsed);
 	}
+}
+
+void ActionUpdateSystem::DelayedDeleteActions()
+{
+	Vector<ActionComponent*>::iterator end = deleteActions.end();
+	for(Vector<ActionComponent*>::iterator it = deleteActions.begin(); it != end; ++it)
+	{
+		Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), *it);
+
+		if(i != activeActions.end())
+		{
+			activeActions.erase(i);
+		}
+	}
+
+	deleteActions.clear();
 }
 	
 void ActionUpdateSystem::Watch(ActionComponent* component)
@@ -96,12 +112,7 @@ void ActionUpdateSystem::Watch(ActionComponent* component)
 
 void ActionUpdateSystem::UnWatch(ActionComponent* component)
 {
-	Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), component);
-	
-	if(i != activeActions.end())
-	{
-		activeActions.erase(i);
-	}
+	deleteActions.push_back(component);
 }
 	
 }
