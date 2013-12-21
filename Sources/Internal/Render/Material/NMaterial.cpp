@@ -2154,12 +2154,12 @@ namespace DAVA
 					data.source |= source;
 
 					staticData.Insert(it->first, data);
-					printf("insert %s, %d\n", it->first.c_str(), source);
+					//printf("insert %s, %d\n", it->first.c_str(), source);
 				}
 				else
 				{
 					staticData[it->first].source |= source;
-					printf("update %s, %d\n", it->first.c_str(), source);
+					//printf("update %s, %d\n", it->first.c_str(), source);
 				}
 			}
 
@@ -2206,12 +2206,12 @@ namespace DAVA
 							data.source |= source;
 
 							staticData.Insert(propName, data);
-							printf("insert %s, %d\n", propName.c_str(), source);
+							//printf("insert %s, %d\n", propName.c_str(), source);
 						}
 						else
 						{
 							staticData[propName].source |= source;
-							printf("update %s, %d\n", propName.c_str(), source);
+							//printf("update %s, %d\n", propName.c_str(), source);
 						}
 					}
 				}
