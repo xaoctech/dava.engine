@@ -602,7 +602,7 @@ QtPropertyToolButton* QtPropertyData::GetButton(int index)
 
 QtPropertyToolButton* QtPropertyData::AddButton()
 {
-	QtPropertyToolButton *button = new QtPropertyToolButton(optionalButtonsViewport);
+	QtPropertyToolButton *button = new QtPropertyToolButton(this, optionalButtonsViewport);
 
 	optionalButtons.append(button);
 	button->setGeometry(0, 0, 18, 18);

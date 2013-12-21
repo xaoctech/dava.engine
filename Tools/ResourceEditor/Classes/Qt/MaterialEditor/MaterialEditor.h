@@ -48,11 +48,19 @@ public:
 	MaterialEditor(QWidget *parent = 0);
 	~MaterialEditor();
 
+	void SetCurMaterial(DAVA::NMaterial *material);
+
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
 	void sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 	void materialClicked(const QModelIndex &index);
+
+protected slots:
+	void OnAddProperty();
+	void OnRemProperty();
+	void OnAddTexture();
+	void OnRemTexture();
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -63,6 +71,8 @@ protected:
 private:
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
+
+	DAVA::NMaterial *curMaterial;
 };
 
 #endif
