@@ -73,11 +73,11 @@ public:
 	inline iterator begin() const;
 	inline iterator end() const;
 	
-	V& valueByIndex(int32 index);
-	const V& valueByIndex(int32 index) const;
+	V& valueByIndex(size_t index);
+	const V& valueByIndex(size_t index) const;
 	
-	const K& keyByIndex(int32 index);
-	const K& keyByIndex(int32 index) const;
+	const K& keyByIndex(size_t index);
+	const K& keyByIndex(size_t index) const;
     
 public:
 	struct HashMapItem
@@ -422,11 +422,11 @@ inline size_t HashMap<K, V>::InsertItem(typename HashMap<K, V>::HashMapItem* ite
 	return index;
 }
 template <typename K, typename V>
-V& HashMap<K, V>::valueByIndex(int32 index)
+V& HashMap<K, V>::valueByIndex(size_t index)
 {
 	DVASSERT(index >= 0 && index < size());
 	
-	int32 curIndex = 0;
+	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
 	if(index >= 0 && index < size())
 	{
@@ -444,11 +444,11 @@ V& HashMap<K, V>::valueByIndex(int32 index)
 }
 	
 template <typename K, typename V>
-const V& HashMap<K, V>::valueByIndex(int32 index) const
+const V& HashMap<K, V>::valueByIndex(size_t index) const
 {
 	DVASSERT(index >= 0 && index < size());
 	
-	int32 curIndex = 0;
+	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
 	if(index >= 0 && index < size())
 	{
@@ -466,11 +466,11 @@ const V& HashMap<K, V>::valueByIndex(int32 index) const
 }
 
 template <typename K, typename V>
-const K& HashMap<K, V>::keyByIndex(int32 index)
+const K& HashMap<K, V>::keyByIndex(size_t index)
 {
 	DVASSERT(index >= 0 && index < size());
 	
-	int32 curIndex = 0;
+	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
 	if(index >= 0 && index < size())
 	{
@@ -488,11 +488,11 @@ const K& HashMap<K, V>::keyByIndex(int32 index)
 }
 
 template <typename K, typename V>
-const K& HashMap<K, V>::keyByIndex(int32 index) const
+const K& HashMap<K, V>::keyByIndex(size_t index) const
 {
 	DVASSERT(index >= 0 && index < size());
 	
-	int32 curIndex = 0;
+	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
 	if(index >= 0 && index < size())
 	{
@@ -507,7 +507,6 @@ const K& HashMap<K, V>::keyByIndex(int32 index) const
 	}
 	
 	return (curIndex == index) ? stateIter->first : defaultK;
-	
 }
 
 
