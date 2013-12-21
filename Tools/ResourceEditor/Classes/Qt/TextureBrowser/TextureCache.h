@@ -69,7 +69,9 @@ public:
 
 	void clearInsteadThumbnails();
 	void clearConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
-    
+	void clearOriginal(const DAVA::TextureDescriptor *descriptor);
+	void clearThumbnail(const DAVA::TextureDescriptor *descriptor);
+
 signals:
 
     void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image);
@@ -80,6 +82,7 @@ protected slots:
     
     void TexturesReloaded();
     
+	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
     void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
 	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image);
 
@@ -89,10 +92,6 @@ protected:
 	void setOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images);
 	void setConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& images);
 
-    void clearThumbnail(const DAVA::TextureDescriptor *descriptor);
-	void clearOriginal(const DAVA::TextureDescriptor *descriptor);
-
-    
     void ClearCacheTail(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const size_t currentWeight, const size_t maxWeight);
     
     void RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const DAVA::TextureDescriptor *descriptor);
@@ -103,7 +102,7 @@ private:
 	size_t curOriginalWeight;
 	size_t curConvertedWeight[DAVA::GPU_FAMILY_COUNT];
 
-    static const size_t maxThumbnailCount = 200;
+    static const size_t maxThumbnailCount = 100;
 	static const size_t maxOrigCount = 20;
 	static const size_t maxConvertedCount = 7; // per gpu
 

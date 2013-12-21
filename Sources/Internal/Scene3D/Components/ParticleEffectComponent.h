@@ -147,6 +147,9 @@ private:
 	// Playback complete message.
 	Message playbackComplete;
 
+    // Playback complete message.
+    bool isStopped;
+
 	// Effect duration - common for all emitters.
 	float32 effectDuration;
 

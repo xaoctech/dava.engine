@@ -186,7 +186,7 @@ QModelIndex MaterialDelegate::FindItemIndex(const QModelIndex &parent, const DAV
     if(material)
     {
         DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-        if(t && t->GetDescritor() == descriptor)
+        if(t && t->GetDescriptor() == descriptor)
         {
             return parent;
         }
@@ -220,14 +220,14 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
         DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
         if(t)
         {
-            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescritor());
+            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
             if((images.size() > 0) && (images[0].isNull() == false))
             {
                 return true;
             }
             else
             {
-                TextureConvertor::Instance()->GetThumbnail(t->GetDescritor());
+                TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
             }
         }
     }
@@ -255,7 +255,7 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
         DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
         if(t)
         {
-            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescritor());
+            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
             if((images.size() > 0) && (images[0].isNull() == false))
             {
                 return images[0];

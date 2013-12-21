@@ -90,10 +90,12 @@ SceneCollisionSystem::~SceneCollisionSystem()
 
 	DAVA::SafeDelete(objectsCollWorld);
 	DAVA::SafeDelete(objectsBroadphase);
+    DAVA::SafeDelete(objectsDebugDrawer);
 	DAVA::SafeDelete(objectsCollDisp);
 	DAVA::SafeDelete(objectsCollConf);
 
 	DAVA::SafeDelete(landCollWorld); 
+	DAVA::SafeDelete(landDebugDrawer);
 	DAVA::SafeDelete(landBroadphase);
 	DAVA::SafeDelete(landCollDisp);
 	DAVA::SafeDelete(landCollConf);
@@ -252,7 +254,7 @@ void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 		// make sure that WorldTransform is up to date
 		if(NULL != entity->GetScene())
 		{
-			entity->GetScene()->transformSystem->Process();
+			entity->GetScene()->transformSystem->Process(.001f);
 		}
 	}
 

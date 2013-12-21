@@ -60,10 +60,10 @@ public:
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
 	void UnlinkTransform(int32 childIndex);
-    
-    virtual void Process();
-    
+
     //void AllocateMatrix();
+
+    virtual void Process(float32 timeElapsed);
 
 private:
     void SortAndThreadSplit();

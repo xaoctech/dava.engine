@@ -279,8 +279,27 @@ bool SceneExporter::ExportTexture(const TextureDescriptor * descriptor, Set<Stri
     
     if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN)
     {
-        FilePath sourceTexturePathname =  FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
-        return sceneUtils.CopyFile(sourceTexturePathname, errorLog);
+		bool copyResult = true;
+		
+		if(descriptor->IsCubeMap())
+		{
+			Vector<FilePath> faceNames;
+			Texture::GenerateCubeFaceNames(descriptor->pathname.GetAbsolutePathname().c_str(), faceNames);
+			for(Vector<FilePath>::iterator it = faceNames.begin();
+				it != faceNames.end();
+				++it)
+			{
+				bool result = sceneUtils.CopyFile(*it, errorLog);
+				copyResult = copyResult && result;
+			}
+		}
+		else
+		{
+			FilePath sourceTexturePathname =  FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
+			copyResult = sceneUtils.CopyFile(sourceTexturePathname, errorLog);
+		}
+		
+		return copyResult;
     }
 
     FilePath compressedTexureName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);

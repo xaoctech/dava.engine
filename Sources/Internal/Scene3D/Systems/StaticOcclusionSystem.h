@@ -46,11 +46,12 @@ public:
     StaticOcclusionBuildSystem(Scene * scene);
     virtual ~StaticOcclusionBuildSystem();
     
-    void AddEntity(Entity * entity);
-    void RemoveEntity(Entity * entity);
-    void BuildOcclusionInformation();
-    void Process();
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void Process(float32 timeElapsed);
+    
     inline void SetCamera(Camera * camera);
+    void BuildOcclusionInformation();
 
 private:
     Camera * camera;
@@ -70,9 +71,9 @@ public:
     virtual ~StaticOcclusionSystem();
     
     inline void SetCamera(Camera * camera);
-    void AddEntity(Entity * entity);
-    void RemoveEntity(Entity * entity);
-    void Process();
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void Process(float32 timeElapsed);
 
 private:
     Camera * camera;
