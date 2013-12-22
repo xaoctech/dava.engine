@@ -29,7 +29,7 @@
 
 
 #include "SceneValidator.h"
-#include "EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
@@ -439,7 +439,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
-        String path = landscape->GetHeightmapPathname().GetRelativePathname(EditorSettings::Instance()->GetDataSourcePath());
+        String path = landscape->GetHeightmapPathname().GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL)->AsString()));
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }

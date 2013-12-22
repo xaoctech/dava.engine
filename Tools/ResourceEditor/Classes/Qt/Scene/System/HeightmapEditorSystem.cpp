@@ -39,7 +39,6 @@
 #include "Commands2/HeightmapEditorCommands2.h"
 #include "Commands2/TilemaskEditorCommands.h"
 #include "Main/QtUtils.h"
-#include "Deprecated/EditorSettings.h"
 #include "HoodSystem.h"
 
 #include <QApplication>

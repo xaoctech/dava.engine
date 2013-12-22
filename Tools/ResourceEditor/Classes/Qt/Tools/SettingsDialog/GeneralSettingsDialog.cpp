@@ -28,61 +28,86 @@
 
 
 
-#include "SettingsDialogQt.h"
-#include "../QtPropertyEditor/QtPropertyEditor.h"
+#include "GeneralSettingsDialog.h"
 #include "Main/mainwindow.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
 
-#define TAB_CONTENT_WIDTH 500
-#define TAB_CONTENT_HEIGHT 400
 
+#define EDITOR_TAB_WIDTH 400
 
-SettingsDialogQt::SettingsDialogQt( QWidget* parent)
+const SettingsManager::eSettingsGroups GeneralSettingsDialog::groupsTodisplay[] =
+{
+	SettingsManager::GENERAL,
+	SettingsManager::DEFAULT
+};
+
+GeneralSettingsDialog::GeneralSettingsDialog( QWidget* parent)
 		:QDialog(parent)
 {
 	setWindowTitle("Settings");
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	tabWidget = new QTabWidget;
-	
-	
-	generalSettingsTab = new GeneralSettingsEditor(this);
-	generalSettingsTab->setMinimumSize(QSize(TAB_CONTENT_WIDTH,TAB_CONTENT_HEIGHT));
-	tabWidget->addTab(generalSettingsTab, "General");
-	
 	btnBox = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);;
 	connect(btnBox, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(btnBox, SIGNAL(rejected()), this, SLOT(reject()));
-		
+
 	mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);
-
-	systemsSettingsTab = NULL;
-	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-	if (NULL !=sceneEditor)
-	{
-		systemsSettingsTab = new SystemsSettingsEditor(this);
-		tabWidget->addTab(systemsSettingsTab, "Systems");
-	}
 	mainLayout->addWidget(btnBox);
 	setLayout(mainLayout);
+	InitSettings();
 }
 
-SettingsDialogQt::~SettingsDialogQt()
+GeneralSettingsDialog::~GeneralSettingsDialog()
 {
-	if(systemsSettingsTab)
+	foreach (QtPropertyEditor* editor, settingGroupsEditors)
 	{
-		delete systemsSettingsTab;
+		SafeDelete(editor);
 	}
-	delete generalSettingsTab;
 	delete btnBox;
 	delete tabWidget;
 }
 
-
-void SettingsDialogQt::reject()
+void GeneralSettingsDialog::InitSettings()
 {
-	generalSettingsTab->RestoreInitialSettings();
-	if(systemsSettingsTab)
+	SettingsManager* manager = SettingsManager::Instance();
+	for (uint32 groupID = 0; groupID < (sizeof(groupsTodisplay) / sizeof(SettingsManager::eSettingsGroups)) ; ++groupID)
 	{
-		systemsSettingsTab->RestoreInitialSettings();
+		KeyedArchive* settingsGroup = manager->GetSettingsGroup(groupsTodisplay[groupID]);
+		if(NULL == settingsGroup)
+		{
+			continue;
+		}
+		String groupName = manager->GetNameOfGroup(groupsTodisplay[groupID]);
+		
+		QtPropertyEditor* groupEditor = new QtPropertyEditor(this);
+		settingGroupsEditors.push_back(groupEditor);
+		
+		DAVA::Map<DAVA::String, DAVA::VariantType*> data = settingsGroup->GetArchieveData();
+		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator it = data.begin();
+
+		for(; it != data.end(); ++it)
+		{
+			QtPropertyData*  propData = new QtPropertyKeyedArchiveMember(settingsGroup, it->first);
+			groupEditor->AppendProperty( it->first.c_str(), propData);
+		}
+
+		groupEditor->expandAll();
+		groupEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
+		tabWidget->addTab(groupEditor, groupName.c_str());
 	}
+}
+
+void GeneralSettingsDialog::reject()
+{
+	SettingsManager::Instance()->Initialize();
 	QDialog::reject();
 }
+
+void GeneralSettingsDialog::accept()
+{
+	SettingsManager::Instance()->SaveSettings();
+	QDialog::accept();
+}
+

@@ -34,74 +34,84 @@
 #include <QObject>
 #include "DAVAEngine.h"
 #include "FileSystem/VariantType.h"
+#include "../StringConstants.h"
 
-class SettingsManager: public QObject, public DAVA::Singleton<SettingsManager>
+struct SettingRow
 {
-	Q_OBJECT
-	
-public:
-	
-	enum eDefaultSettings
+	DAVA::String key;
+	DAVA::VariantType defValue;
+
+	SettingRow(const char* _key, DAVA::VariantType& _defaultValue)
 	{
-		LOD_LEVELS_COUNT = 8,
-		RESENT_FILES_COUNT = 5,
+		key = _key;
+		defValue  = _defaultValue;
+	}
+};
+
+static const SettingRow SETTINGS_GROUP_GENERAL_MAP[] = 
+{
+	SettingRow(ResourceEditor::SETTINGS_DESIGNER_NAME, DAVA::VariantType(DAVA::String("nobody"))),
+	SettingRow(ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, DAVA::VariantType(false)),
+};
+
+static const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] = 
+{
+	SettingRow(ResourceEditor::SETTINGS_GRID_STEP, DAVA::VariantType(10.0f)),
+	SettingRow("CameraSpeedValue_0", DAVA::VariantType(35.0f)),
+	SettingRow("CameraSpeedValue_1", DAVA::VariantType(100.0f)),
+	SettingRow("CameraSpeedValue_2", DAVA::VariantType(250.0f)),
+	SettingRow("CameraSpeedValue_3", DAVA::VariantType(400.0f)),
+	SettingRow(ResourceEditor::SETTINGS_DEFAULT_FOV, DAVA::VariantType(70.0f)),
+	
+};
+
+static const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] = 
+{
+	SettingRow(ResourceEditor::SETTINGS_3D_DATA_SOURCEPATH, DAVA::VariantType(DAVA::String("/"))),
+	SettingRow(ResourceEditor::SETTINGS_PROJECT_PATH, DAVA::VariantType(DAVA::String(""))),
+	SettingRow(ResourceEditor::SETTINGS_LAST_OPENED_FILES_COUNT, DAVA::VariantType(0)),//?!
+	SettingRow(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, DAVA::VariantType(GPU_UNKNOWN)),
+	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
+	SettingRow(ResourceEditor::SETTINGS_CUBEMAP_LAST_FACE_DIR, DAVA::VariantType(DAVA::String(""))),
+	SettingRow(ResourceEditor::SETTINGS_CUBEMAP_LAST_PROJECT_DIR, DAVA::VariantType(DAVA::String(""))),
+};
+
+class SettingsManager: public DAVA::Singleton<SettingsManager>
+{
+public:
+
+	static enum eSettingsGroups
+	{
+		GENERAL = 0,
+		DEFAULT,
+		INTERNAL,
+
+		GROUPS_COUNT
 	};
 	
 	SettingsManager();
-	
+
 	~SettingsManager();
-	
-	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, DAVA::List<DAVA::VariantType>& additionalArguments);
-	
-	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value);
 
-	DAVA::VariantType GetValue(const DAVA::String& _name, const DAVA::List<DAVA::VariantType>& additionalArguments);
-	
-	DAVA::VariantType GetValue(const DAVA::String& _name);
+	DAVA::KeyedArchive* GetSettingsGroup(eSettingsGroups group);
 
-	DAVA::KeyedArchive* GetSettings();
-	
-	DAVA::FilePath GetParticlesConfigsPath();
-	
-	float GetCameraSpeed();
-	
-	void SetMaterialsColor(const DAVA::Color &ambient, const DAVA::Color &diffuse, const DAVA::Color &specular);
+	DAVA::VariantType* GetValue(const DAVA::String& _name, eSettingsGroups group);
 
-	void Save();
-		
-signals:
-	
-	void ConfigurationChanged(const DAVA::String& key);
+	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group);
 
-protected:
+	void SaveSettings();
 
-	void ApplyOptions();
-	
-	/* For Getters  */
+	DAVA::String GetNameOfGroup(eSettingsGroups group);
 
-	void ResolveCameraSpeedValueKeyDefault(const DAVA::List<DAVA::VariantType>& additionalArguments, DAVA::VariantType& newDefValue, DAVA::String& newKey);
-	
-	void ResolveLastOpenedFileKeyDefault(const DAVA::List<DAVA::VariantType>& additionalArguments, DAVA::VariantType& newDefValue, DAVA::String& newKey);
-	
-	void ResolveLodLevelKeyDefault(const DAVA::List<DAVA::VariantType>& additionalArguments, DAVA::VariantType& newDefValue, DAVA::String& newKey);
-	
-	/* For Setters  */
-	void ResolveCameraSpeedValueKey(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	void ResolveLastOpenedFileKey(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	void AddLastOpenedFile(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	void CameraSpeedIndexCheck(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	void ResolveLodLevelKey(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	void SetImposterOption(const DAVA::List<DAVA::VariantType>& additionalArguments, const DAVA::VariantType& newConfigurationValue, DAVA::String& newKey);
-	
-	
-	DAVA::KeyedArchive *settings;
+	void Initialize();
+
+private:
+
+	DAVA::KeyedArchive* settings;
+
+	void LoadSettings();
+
 };
-
 /*
 class SettingsManager2: public QObject, public DAVA::Singleton<SettingsManager2>
 {

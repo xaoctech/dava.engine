@@ -28,50 +28,42 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__
-#define __RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__
+#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
+#define __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
 
+#include <QDialog.h>
+#include <QTabWidget.h>
+#include <QVBoxLayout>
+#include <QPushButton.h>
+#include <QDialogButtonBox>
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Settings/SettingsManager.h"
 
-class GeneralSettingsEditor: public QtPropertyEditor
+class GeneralSettingsDialog: public QDialog
 {
 	Q_OBJECT
-	
-public:
-	explicit GeneralSettingsEditor(QWidget* parent = 0);
-	
-	~GeneralSettingsEditor();
-	
-	void InitializeProperties();
-	
-	void RestoreInitialSettings();
 
-protected slots:
+public:
+
+	explicit GeneralSettingsDialog(QWidget* parent = 0);
 	
-void	OnValueChanged(QtPropertyData::ValueChangeReason reason);
-	
+	~GeneralSettingsDialog();
+
+public	slots:
+
+	void reject();
+
+	void accept();
+
 protected:
 	
-	struct PropertyData
-	{
-		DAVA::String					configName;
-		DAVA::List<DAVA::VariantType>	argumentList;
-		DAVA::VariantType				initialValue;
-		PropertyData()
-		{
-		}
-		PropertyData(const DAVA::String& _configName, const DAVA::List<DAVA::VariantType>& _argumentList, const DAVA::VariantType& _initialValue)
-		{
-			configName = _configName;
-			argumentList = _argumentList;
-			initialValue = _initialValue;
-		}
-	};
+	void InitSettings();
 
-	DAVA::Map<QtPropertyDataDavaVariant* , PropertyData > propertiesMap;
-		
+	QTabWidget*						tabWidget;
+	QVBoxLayout*					mainLayout;
+	QDialogButtonBox*				btnBox;
+	DAVA::Vector<QtPropertyEditor*>	settingGroupsEditors;
+	static const SettingsManager::eSettingsGroups groupsTodisplay[]; 
 };
-#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__) */
+#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__) */
