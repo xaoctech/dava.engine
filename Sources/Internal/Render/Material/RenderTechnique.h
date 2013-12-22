@@ -78,8 +78,8 @@ public:
     void AddRenderTechniquePass(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
 
     inline const FastName & GetName() { return name; };
-    inline uint32 GetIndexByName(const FastName & fastName);
-    inline RenderTechniquePass * GetPassByIndex(uint32 index);
+    inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
+    inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; };
     
 protected:
     FastName name;
