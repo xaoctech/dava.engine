@@ -58,6 +58,31 @@ typedef char             GLchar;
 
 namespace DAVA
 {
+
+template<class AutobindType>
+class AutobindVariable
+{
+public:
+    inline void SetValue(uint32 _semantic, const AutobindType & _value){ if (semantic != _semantic)value = _value; }
+    inline void ClearSemantic() { semantic = 0; }
+    
+    uint32 semantic;
+    AutobindType value;
+};
+
+class AutobindManager
+{
+public:
+    template<class T>
+    AutobindVariable<T> * AllocateVariable(const FastName & name);
+    
+    template<class T>
+    AutobindVariable<T> * GetVariable(const FastName & name);
+    
+    HashMap<FastName, uint32> manager;
+    Vector<uint32> bytes;
+    
+};
     
 class Data;
     
@@ -78,7 +103,13 @@ public:
         UNIFORM_GLOBAL_TIME,
         UNIFORM_COUNT,
     };
-    
+    enum eUpdateFreq
+    {
+        UPDATE_ALWAYS = 0,
+        UPDATE_ONCE = 1,
+        UPDATE_PER_FRAME = 2,
+    };
+
     enum eUniformType
     {
         UT_FLOAT = GL_FLOAT,
@@ -107,6 +138,7 @@ public:
     struct Uniform
     {
         eUniform        id;
+        //eUpdateFreq     updateFreq;
         FastName        name;
         GLint           location;
         GLint           size;
@@ -158,7 +190,13 @@ public:
     // TODO: OLD FUNCTIONS: NEED TO REMOVE THEM 
     Shader * RecompileNewInstance(const String & combination);
     
-    static Shader * CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet);
+    static Shader * CompileShader(Data * vertexShaderData,
+                                  Data * fragmentShaderData,
+                                  uint8 * vertexShaderDataStart,
+                                  uint32 vertexShaderDataSize,
+                                  uint8 * fragmentShaderDataStart,
+                                  uint32 fragmentShaderDataSize,
+                                  const FastNameSet & definesSet);
     bool Recompile(bool silentDelete = false);
 	bool IsReady();
     
@@ -288,11 +326,12 @@ private:
     Data * vertexShaderData;
     Data * fragmentShaderData;
     FilePath vertexShaderPath, fragmentShaderPath;
-/*  uint8 * vertexShaderBytes;
-    uint32 vertexShaderSize;
-    uint8 * fragmentShaderBytes;
-    uint32 fragmentShaderSize;*/
 #endif
+        
+    uint8 * vertexShaderDataStart;
+    uint8 * fragmentShaderDataStart;
+    uint32 vertexShaderDataSize;
+    uint32 fragmentShaderDataSize;
     
     uint32 lastProjectionMatrixCache;
     uint32 lastModelViewMatrixCache;

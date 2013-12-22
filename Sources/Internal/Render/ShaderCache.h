@@ -44,21 +44,38 @@ class Shader;
 class ShaderAsset
 {
 public:
-    ShaderAsset(Data * vertexShaderData, Data * fragmentShaderData);
+    ShaderAsset(Data * _vertexShaderData,
+                Data * _fragmentShaderData);
+    
     ~ShaderAsset();
     
     Shader * Compile(const FastNameSet & defines);
     void Remove(const FastNameSet & defines);
     Shader * Get(const FastNameSet & defines);
+    void BindShaderDefaults(Shader * shader);
     
 protected:
+    //FastName name;
     Data * vertexShaderData;
     Data * fragmentShaderData;
+    uint8 * vertexShaderDataStart;
+    uint32 vertexShaderDataSize;
+    uint8 * fragmentShaderDataStart;
+    uint32 fragmentShaderDataSize;
+    
+    void BindDefaultValues();
+    struct DefaultValue
+    {
+        union
+        {
+            int32 int32Value;
+            float32 float32Value;
+        };
+    };
+    HashMap<FastName, DefaultValue> defaultValues;
+    
     HashMap < FastNameSet, Shader *> compiledShaders;
-	
-	
-	//DEBUG
-	//Map<String, int> dbgMap;
+    friend class ShaderCache;
 };
     
 class ShaderCache : public Singleton<ShaderCache>
@@ -72,7 +89,8 @@ public:
     Shader * Get(const FastName & shader, const FastNameSet & definesSet);
 
 private:
-    
+    ShaderAsset * ParseShader(Data * vertexShaderData, Data * fragmentShaderData);
+
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
 };
