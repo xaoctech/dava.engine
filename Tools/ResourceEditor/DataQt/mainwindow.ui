@@ -396,6 +396,8 @@
     <addaction name="separator"/>
     <addaction name="menuObjectTypes"/>
     <addaction name="actionHangingObjects"/>
+    <addaction name="separator"/>
+    <addaction name="actionCurrentSceneSettings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -698,6 +700,7 @@
    <addaction name="actionReloadSprites"/>
    <addaction name="actionSetShadowColor"/>
    <addaction name="actionConvertModifiedTextures"/>
+   <addaction name="actionCurrentSceneSettings"/>
   </widget>
   <widget class="QDockWidget" name="dockLibrary">
    <property name="windowTitle">
@@ -1659,6 +1662,15 @@
    </property>
    <property name="text">
     <string>Convert Modified texture's PNGs.</string>
+   </property>
+  </action>
+  <action name="actionCurrentSceneSettings">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Current scene settings...</string>
    </property>
   </action>
  </widget>

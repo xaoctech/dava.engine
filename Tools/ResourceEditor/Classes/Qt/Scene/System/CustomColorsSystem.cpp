@@ -38,7 +38,7 @@
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Scene/SceneSignals.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
@@ -464,7 +464,7 @@ String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolute
 	if(absolutePath.IsEmpty())
 		return String();
 
-	return absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+	return absolutePath.GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString()));
 }
 
 FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
@@ -472,7 +472,7 @@ FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relati
 	if(relativePath.empty())
 		return FilePath();
 	
-	return (EditorSettings::Instance()->GetProjectPath() + relativePath);
+	return (FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString()) + relativePath);
 }
 
 int32 CustomColorsSystem::GetBrushSize()

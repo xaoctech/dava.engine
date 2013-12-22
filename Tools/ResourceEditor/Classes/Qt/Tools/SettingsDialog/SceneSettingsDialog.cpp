@@ -28,78 +28,56 @@
 
 
 
-#include "BeastCommandLineTool.h"
+#include "SceneSettingsDialog.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
+#include "Main/mainwindow.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 
-#include "TexturePacker/CommandLineParser.h"
-
-#include "Scene/SceneEditor2.h"
-#include "Scene/SceneHelper.h"
-#include "Commands2/BeastAction.h"
-#include "Qt/Settings/SettingsManager.h"
-
-using namespace DAVA;
-
-#if defined (__DAVAENGINE_BEAST__)
-
-BeastCommandLineTool::BeastCommandLineTool()
-	:	CommandLineTool()
+SceneSettingsDialog::SceneSettingsDialog( QWidget* parent)
+		:QDialog(parent)
 {
+	setWindowTitle("Scene Settings");
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+	sceneSettingsEditor = new QtPropertyEditor(this);
+	InitSceneSettingsEditor();
+
+	btnOk = new QPushButton("OK", this);
+	btnOk->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	connect(btnOk, SIGNAL(clicked()), this, SLOT(close()));
+
+	mainLayout = new QVBoxLayout;
+	mainLayout->addWidget(sceneSettingsEditor);
+	mainLayout->addWidget(btnOk, 0, Qt::AlignRight);
+	setLayout(mainLayout);
 }
 
-void BeastCommandLineTool::PrintUsage()
+SceneSettingsDialog::~SceneSettingsDialog()
 {
-    printf("\n");
-    printf("-beast [-file [file]]\n");
-    printf("\twill beast scene file\n");
-    printf("\t-file - full pathname of scene for beasting \n");
-    
-    printf("\n");
-    printf("Samples:\n");
-    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
-
+	SafeDelete(sceneSettingsEditor);
+	SafeDelete(btnOk);
 }
 
-DAVA::String BeastCommandLineTool::GetCommandLineKey()
+void SceneSettingsDialog::InitSceneSettingsEditor()
 {
-    return "-beast";
-}
-
-bool BeastCommandLineTool::InitializeFromCommandLine()
-{
-    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
-    if(scenePathname.IsEmpty())
-    {
-        errors.insert(String("Incorrect params for beasting of the scene"));
-        return false;
-    }
-    
-    if(!scenePathname.IsEqualToExtension(".sc2"))
-    {
-        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
-        return false;
-    }
-    
-    return true;
-}
-
-void BeastCommandLineTool::Process()
-{
-	SceneEditor2 *scene = new SceneEditor2();
-	if(scene->Load(scenePathname))
+	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+	if(!sceneEditor)
 	{
-		scene->Update(0.1f);
-
-		scene->Exec(new BeastAction(scene, NULL));
-
-		scene->Save();
+		return;
 	}
-	SafeRelease(scene);
-}
+	const InspInfo* inspInfo = sceneEditor->GetTypeInfo();
 
-const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
-{
-    return scenePathname;
+	uint32 membCount = inspInfo->MembersCount();
+	for(uint32 i = 0; i < membCount; i++)
+	{
+		const InspMember* member = inspInfo->Member(i);//get to systems layer
+		const MetaInfo* memberInfo = member->Type();
+		if(NULL != memberInfo->GetIntrospection())
+		{
+			QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(sceneEditor, member);
+			sceneSettingsEditor->AppendProperty(member->Desc().text, propData);
+		}
+	}
+	
+	sceneSettingsEditor->expandAll();
 }
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
 

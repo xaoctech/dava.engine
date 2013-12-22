@@ -138,8 +138,9 @@ public slots:
 
 	void OnSetSkyboxNode();
 	
-	void OnShowSettings();
+	void OnShowGeneralSettings();
 	void OnOpenHelp();
+	void OnShowCurrentSceneSettings();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();

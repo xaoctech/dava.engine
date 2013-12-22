@@ -29,6 +29,7 @@
 
 
 #include "Scene/System/GridSystem.h"
+#include "Qt/Settings/SettingsManager.h"
 
 // framework
 #include "Render/RenderManager.h"
@@ -38,7 +39,7 @@ SceneGridSystem::SceneGridSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 {
 	gridMax = 500.0f;
-	gridStep = 10.0f;
+	gridStep = SettingsManager::Instance()->GetValue("GridStep", SettingsManager::DEFAULT)->AsFloat();
 	
 	renderState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
 																	   DAVA::RenderStateData::STATE_DEPTH_WRITE |
