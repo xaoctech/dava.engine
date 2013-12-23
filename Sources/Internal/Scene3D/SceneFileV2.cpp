@@ -334,9 +334,11 @@ void SceneFileV2::SwitchMaterialQualityOnMainThread(BaseObject * caller,
 														void * param,
 														void *callerData)
 {
-	const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
-	MaterialSystem* matSystem = serializationContext.GetScene()->renderSystem->GetMaterialSystem();
-	matSystem->SwitchMaterialQuality(qualityLod, true);
+	DVASSERT(false);
+	
+	//const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
+	//MaterialSystem* matSystem = serializationContext.GetScene()->renderSystem->GetMaterialSystem();
+	//matSystem->SwitchMaterialQuality(qualityLod, true);
 }	
 	
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
@@ -1081,69 +1083,10 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	
 void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializationContext)
 {
-	MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
-	Vector<NMaterial*> materials;
-	matSystem->BuildMaterialList(NULL, materials);
-	
-	KeyedArchive* matSystemArchive = new KeyedArchive();
-	
-	size_t materialCount = materials.size();
-	uint32 savedMaterials = 0;
-	for(size_t i = 0; i < materialCount; ++i)
-	{
-		NMaterial* mat = materials[i];
-		
-        if(isSaveForGame)
-            mat->ReleaseIlluminationParams();
-
-		if(!mat->IsConfigMaterial())
-		{
-			KeyedArchive* materialArchive = new KeyedArchive();
-			mat->Save(materialArchive, serializationContext);
-			matSystemArchive->SetArchive(Format("material.%d", savedMaterials), materialArchive);
-			SafeRelease(materialArchive);
-			
-			savedMaterials++;
-		}
-	}
-	matSystemArchive->SetUInt32("materialCount", savedMaterials);
-	matSystemArchive->Save(file);
-	
-	SafeRelease(matSystemArchive);
 }
 
 void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializationContext)
 {
-	MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
-
-	KeyedArchive* matSystemArchive = new KeyedArchive();
-	matSystemArchive->Load(file);
-	
-	uint32 materialCount = matSystemArchive->GetUInt32("materialCount");
-	for(uint32 i = 0; i < materialCount; ++i)
-	{
-		NMaterial* material = new NMaterial();
-		KeyedArchive* materialArchive = matSystemArchive->GetArchive(Format("material.%d", i));
-		
-		DVASSERT(materialArchive->Count() > 0);
-		material->Load(materialArchive, serializationContext);
-		
-		matSystem->AddMaterial(material);
-		
-		FastName parentName = material->GetParentName();
-		NMaterial* parentMaterial = matSystem->GetMaterial(parentName);
-		
-		if(NULL == parentMaterial)
-		{
-			parentMaterial = matSystem->GetDefaultMaterial();
-		}
-		
-		material->SetParent(parentMaterial);
-		
-		SafeRelease(material);
-	}
-	
-	SafeRelease(matSystemArchive);
 }
 			
 };

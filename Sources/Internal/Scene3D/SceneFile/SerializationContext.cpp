@@ -276,27 +276,147 @@ namespace DAVA
 		{
 			SafeRelease(it->second);
 		}
+
+		for(Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.begin();
+			it != serializationMaterialMap.end();
+			++it)
+		{
+			SafeRelease(it->second);
+			//VI: TODO: make sure there's only 1 reference to the material at this point
+		}
 	}
 
 	NMaterial* SerializationContext::ConvertOldMaterialToNewMaterial(Material* oldMaterial,
-											   InstanceMaterialState* oldMaterialState,
+																	 InstanceMaterialState* oldMaterialState,
 																	 uint64 oldMaterialId)
 	{
-		MaterialSystem* matSystem = scene->renderSystem->GetMaterialSystem();
-		
 		//VI: need to build the following material structure:
-		//VI: CONFIG_MATERIAL ->
-		//VI:                    INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES
-		//VI:                    (this instance has
-		//VI:                     same name as old material) ->
-		//VI:                                                   OBJECT_INSTANCE
-		//VI:                                                  (this instance is
-		//VI:                                                   assigned to object
-		//VI:                                                   and has specific
-		//VI:                                                   properties set)
+		//VI:     INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES
+		//VI:     (this instance has
+		//VI:     same name as old material) ->
+		//VI:                                  OBJECT_INSTANCE
+		//VI:                                  (this instance is
+		//VI:                                  assigned to object
+		//VI:                                  and has specific
+		//VI:                                  properties set)
+		
+		NMaterial* material = GetMaterial(oldMaterialId);
+		if(NULL == material)
+		{
+			FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
+			
+			material = MaterialSystem::CreateMaterial(FastName(oldMaterial->GetName()),
+													  newMaterialName);
+			
+			
+			if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
+			{
+				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DECAL]);
+				material->SetTexture(NMaterial::TEXTURE_DECAL, tex);
+				
+				if(tex->isPink)
+				{
+					SafeRelease(tex);
+				}
+			}
+			else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
+			{
+				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DETAIL]);
+				material->SetTexture(NMaterial::TEXTURE_DETAIL, tex);
+				
+				if(tex->isPink)
+				{
+					SafeRelease(tex);
+				}
+			}
+			
+			if (Material::MATERIAL_FLAT_COLOR != oldMaterial->type)
+			{
+				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+				material->SetTexture(NMaterial::TEXTURE_ALBEDO, tex);
+				
+				if(tex->isPink)
+				{
+					SafeRelease(tex);
+				}
+			}
+			
+			if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
+				material->SetTexture(NMaterial::TEXTURE_NORMAL, tex);
+				
+				if(tex->isPink)
+				{
+					SafeRelease(tex);
+				}
+			}
+
+			SetMaterial(oldMaterialId, material);
+		}
+		
+		NMaterial* instanceMaterial = MaterialSystem::CreateMaterialInstance();
+		
+		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+		{
+			if(oldMaterialState)
+			{
+				instanceMaterial->GetIlluminationParams()->lightmapSize = oldMaterialState->GetLightmapSize();
+			}
+			
+			Texture* tex = PrepareTexture(oldMaterialState ? oldMaterialState->GetLightmap() : NULL);
+			instanceMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, tex);
+			
+			if(tex->isPink)
+			{
+				SafeRelease(tex);
+			}
+		}
+		
+		if(oldMaterial->isFlatColorEnabled)
+		{
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
+		}
+		
+		if(oldMaterial->isTexture0ShiftEnabled)
+		{
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+		}
+		
+		if(oldMaterialState)
+		{
+			if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+			{
+				instanceMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+				instanceMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+			}
+		}
+		
+		if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+		   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+		   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+		   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+		{
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+			
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
+		}
+
+		
+		material->AddChild(instanceMaterial);
+		SetMaterial(instanceMaterial->GetMaterialKey(), instanceMaterial);
+		
+		return instanceMaterial;
 		
 		//VI: try to find INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES by old material name
-		String oldMaterialNameStr = Format("%s[%ld]", oldMaterial->GetName().c_str(), oldMaterialId);
+		/*String oldMaterialNameStr = Format("%s[%ld]", oldMaterial->GetName().c_str(), oldMaterialId);
 		FastName oldMaterialName(oldMaterialNameStr);
 
 		FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
@@ -390,19 +510,9 @@ namespace DAVA
 		//VI: common node material should be retained in the child only
 		SafeRelease(commonNodeMaterial);
 		
-		return resultMaterial;
+		return resultMaterial;*/
 	}
-	
-	NMaterial* SerializationContext::GetNewMaterial(const String& name)
-	{
-		return scene->renderSystem->GetMaterialSystem()->GetMaterial(FastName(name));
-	}
-	
-	MaterialSystem* SerializationContext::GetMaterialSystem()
-	{
-		return scene->renderSystem->GetMaterialSystem();
-	}
-	
+			
 	Texture* SerializationContext::PrepareTexture(Texture* tx)
 	{
 		return (tx) ? tx : Texture::CreatePink();

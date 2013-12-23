@@ -88,29 +88,19 @@ namespace DAVA
 		if(renderBatchArray.size() == 0)
 		{
 			RenderDataObject* renderDataObj = new RenderDataObject();
+				
+			DVASSERT(false);
+			//NMaterial* skyboxMaterial = MaterialSystem::CreateNamed();
+			//skyboxMaterial->SwitchParent(FastName("Skybox"));
 			
-			/*Material* skyboxMaterial = new Material();
-			skyboxMaterial->SetType(Material::MATERIAL_SKYBOX);
-			skyboxMaterial->SetAlphablend(false);
-			skyboxMaterial->SetName("SkyBox_material");
-			skyboxMaterial->GetRenderState()->SetDepthFunc(CMP_LEQUAL);
-			skyboxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
-			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;*/
+			//RenderBatch* skyboxRenderBatch = new RenderBatch();
+			//skyboxRenderBatch->SetRenderDataObject(renderDataObj);
+			//skyboxRenderBatch->SetMaterial(skyboxMaterial);
+			//SafeRelease(renderDataObj);
+			//SafeRelease(skyboxMaterial);
 			
-//			MaterialSystem* matSystem = renderSystem->GetMaterialSystem();
-//			NMaterial* skyboxMaterial = matSystem->CreateInstanceChild(FastName("Skybox"));
-			
-			NMaterial* skyboxMaterial = MaterialSystem::CreateNamed();
-			skyboxMaterial->SwitchParent(FastName("Skybox"));
-			
-			RenderBatch* skyboxRenderBatch = new RenderBatch();
-			skyboxRenderBatch->SetRenderDataObject(renderDataObj);
-			skyboxRenderBatch->SetMaterial(skyboxMaterial);
-			SafeRelease(renderDataObj);
-			SafeRelease(skyboxMaterial);
-			
-			RenderObject::AddRenderBatch(skyboxRenderBatch);
-			SafeRelease(skyboxRenderBatch);			
+			//RenderObject::AddRenderBatch(skyboxRenderBatch);
+			//SafeRelease(skyboxRenderBatch);
 		}
 	}
 	

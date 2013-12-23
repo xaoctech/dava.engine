@@ -54,12 +54,13 @@ ShadowVolume::ShadowVolume()
     
     aabbox = AABBox3(Vector3(), Vector3());
 	
-	NMaterial* mat = MaterialSystem::CreateNamed();
-	mat->SwitchParent(FastName("LodShadowVolume"));
+	DVASSERT(false);
+	//NMaterial* mat = MaterialSystem::CreateNamed();
+	//mat->SwitchParent(FastName("LodShadowVolume"));
 	
-	SetMaterial(mat);
+	//SetMaterial(mat);
     
-    mat->Release();
+    //mat->Release();
 }
 
 ShadowVolume::~ShadowVolume()

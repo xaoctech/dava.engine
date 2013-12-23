@@ -43,6 +43,7 @@ namespace DAVA
 	class InstanceMaterialState;
 	class NMaterial;
 	class Texture;
+	class NMaterial;
 
 	class SerializationContext
 	{
@@ -55,6 +56,7 @@ namespace DAVA
 		uint32 lastError;
 		uint32 version;
 		Map<uint64, DataNode*> dataBlocks;
+		Map<uint64, NMaterial*> serializationMaterialMap;
 	
 	public:
 		
@@ -121,6 +123,17 @@ namespace DAVA
 			return (it != dataBlocks.end()) ? it->second : NULL;
 		}
 		
+		inline void SetMaterial(uint64 materialId, NMaterial* material)
+		{
+			serializationMaterialMap[materialId] = material;
+		}
+		
+		inline NMaterial* GetMaterial(uint64 materialId)
+		{
+			Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.find(materialId);
+			return (it != serializationMaterialMap.end()) ? it->second : NULL;
+		}
+		
 		inline void SetLastError(uint32 error)
 		{
 			lastError = error;
@@ -134,9 +147,6 @@ namespace DAVA
 		NMaterial* ConvertOldMaterialToNewMaterial(Material* oldMaterial,
 											InstanceMaterialState* oldMaterialState,
 												   uint64 oldMaterialId);
-		NMaterial* GetNewMaterial(const String& name);
-
-		MaterialSystem* GetMaterialSystem();
 		
 		Texture* PrepareTexture(Texture* tx);
 	};
