@@ -226,7 +226,7 @@ public:
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize, uint32 cubeFaceId);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
-	
+	void SetMinMagFilter(TextureFilter minFilter, TextureFilter magFilter);
     /**
         \brief This function can enable / disable autosave for render targets.
         It's actual only for DX9 and for other systems is does nothing
