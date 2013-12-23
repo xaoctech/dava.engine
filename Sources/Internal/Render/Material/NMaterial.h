@@ -40,6 +40,7 @@
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Render/Material/RenderTechnique.h"
 
 namespace DAVA
 {
@@ -118,8 +119,8 @@ public:
 		return MEMMANAGER::Clone(this);
 	}
 };
-		    
-class MaterialTechnique
+		  
+/*class MaterialTechnique
 {
 		
 public:
@@ -140,7 +141,8 @@ protected:
     RenderState * renderState;
     FastNameSet uniqueDefines;
 	};
-
+*/
+	
 class Camera;
 class SerializationContext;
 class MaterialSystem;
@@ -210,8 +212,6 @@ public:
 	bool IsFlagBlocked(const FastName& flag);
     
 	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);
-    MaterialTechnique * GetTechnique(const FastName & techniqueName);
-	void SubclassRenderState(const FastName & techniqueName, UniqueHandle renderStateHandle);
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
 		
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -221,7 +221,6 @@ public:
 	
 	NMaterial* Clone();
 	NMaterial* Clone(const String& newName);
-    
 		
     IlluminationParams * GetIlluminationParams();
     void ReleaseIlluminationParams();
@@ -274,6 +273,11 @@ protected:
 	typedef NManagedMaterialProperty<GenericPropertyManager> GenericMaterialProperty;
 	typedef NManagedMaterialProperty<UniformPropertyManager> UniformMaterialProperty;
 
+	struct TextureBucket
+	{
+		Texture* texture; //VI: can be NULL
+		FilePath path;
+	};
 	
 	struct TextureParamCacheEntry
 	{
@@ -288,12 +292,34 @@ protected:
 		int32 index;
 		void* propData;
 	};
-	
-	struct TextureBucket
+		
+	struct RenderPassInstance
 	{
-		Texture* texture; //VI: can be NULL
-		int32 index;
-		FilePath path;
+		Shader* shader;
+		UniqueHandle renderState;
+		
+		bool dirtyState;
+		
+		Vector<TextureParamCacheEntry> textureParamsCache;
+		Vector<UniformCacheEntry> activeUniformsCache;
+		
+		TextureParamCacheEntry* textureParamsCachePtr;
+		UniformCacheEntry* activeUniformsCachePtr;
+		size_t textureParamsCacheSize;
+		size_t activeUniformsCacheSize;
+		
+		bool ContainsTexture(const FastName& name)
+		{
+			for(size_t i = 0; i < textureParamsCacheSize; ++i)
+			{
+				if(textureParamsCachePtr[i].textureName == name)
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
 	};
 	
 protected:
@@ -321,25 +347,24 @@ protected:
 	bool materialDynamicLit;
 	//}END TODO
 
-    FastName activeTechniqueName;
-    MaterialTechnique * activeTechnique;
+    //FastName activeTechniqueName;
+    //MaterialTechnique * activeTechnique;
+	
+	RenderTechnique* baseTechnique;
+	HashMap<FastName, RenderPassInstance*> instancePasses;
+	
+	RenderPassInstance* activePassInstance;
+	RenderTechniquePass* activeRenderPass;
+	
 	bool ready;
 	
 	FastName currentQuality;
-	
-	//TODO: these should be stored per technique
-	Vector<TextureParamCacheEntry> textureParamsCache;
-	Vector<UniformCacheEntry> activeUniformsCache;
-	Vector<uint8> uniformDataStorage;
-	
-	TextureParamCacheEntry* textureParamsCachePtr;
-	UniformCacheEntry* activeUniformsCachePtr;
-	size_t textureParamsCacheSize;
-	size_t activeUniformsCacheSize;
-		
+			
     IlluminationParams * illuminationParams;
 	
 	const NMaterialTemplate* materialTemplate;
+	
+	Vector<uint8> uniformDataStorage;
 	
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	FastNameSet materialSetFlags; //VI: flags set in the current material only
@@ -360,6 +385,16 @@ protected:
 	void SerializeFastNameSet(const FastNameSet& srcSet,
 							  KeyedArchive* targetArchive);
 	
+	void ReleaseInstancePasses();
+	
+	void UpdateMaterialTemplate();
+	void UpdateRenderPass(const FastName& passName,
+						  const FastNameSet& instanceDefines,
+						  RenderTechniquePass* pass);
+	void BuildTextureParamsCache(RenderPassInstance* passInstance);
+	void BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance);
+	TextureBucket* GetTextureBucketRecursive(const FastName& textureFastName) const;
+		
 protected:
 	
 	void OnParentChanged(NMaterial* newParent);

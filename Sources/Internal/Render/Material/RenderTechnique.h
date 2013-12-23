@@ -78,6 +78,22 @@ public:
     inline const FastName & GetName() { return name; };
     inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
     inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; };
+	
+	inline const FastName& GetPassName(uint32 index)
+	{
+		return nameIndexMap.keyByIndex(index);
+	}
+	
+	inline RenderTechniquePass* GetPassByName(const FastName & fastName)
+	{
+		uint32 index = GetIndexByName(fastName);
+		return GetPassByIndex(index);
+	}
+	
+	inline uint32 GetPassCount()
+	{
+		return renderTechniqueArray.size();
+	}
     
 protected:
     FastName name;
