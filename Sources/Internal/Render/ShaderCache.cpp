@@ -31,15 +31,23 @@
 #include "FileSystem/FileSystem.h"
 #include "Base/Data.h"
 #include "Render/Shader.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
     
     
-ShaderAsset::ShaderAsset(Data * _vertexShaderData, Data * _fragmentShaderData)
+ShaderAsset::ShaderAsset(Data * _vertexShaderData,
+                         Data * _fragmentShaderData)
 {
     vertexShaderData = SafeRetain(_vertexShaderData);
     fragmentShaderData = SafeRetain(_fragmentShaderData);
+    
+    vertexShaderDataStart = 0;
+    vertexShaderDataSize = 0;
+    
+    fragmentShaderDataStart = 0;
+    fragmentShaderDataSize = 0;
 }
 
 ShaderAsset::~ShaderAsset()
@@ -50,7 +58,6 @@ ShaderAsset::~ShaderAsset()
 		Shader * shader = it->second;
         SafeRelease(shader);
     }
-    
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
 }
@@ -60,11 +67,38 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
     Shader * checkShader = compiledShaders.at(defines);
     if (checkShader)return checkShader;
     
-    Shader * shader = Shader::CompileShader(vertexShaderData, fragmentShaderData, defines);
+    Shader * shader = Shader::CompileShader(vertexShaderData,
+                                            fragmentShaderData,
+                                            vertexShaderDataStart,
+                                            vertexShaderDataSize,
+                                            fragmentShaderDataStart,
+                                            fragmentShaderDataSize,
+                                            defines);
+    BindShaderDefaults(shader);
 
     compiledShaders.insert(defines, shader);
     return shader;
 }
+
+void ShaderAsset::BindShaderDefaults(Shader * shader)
+{
+    shader->Bind();
+    uint32 count = shader->GetUniformCount(); // TODO: Fix shader get uniform count type to uint32
+    //uint32 defaultCount = (uint32)defaultValues.size();
+    for (uint32 ui = 0; ui < count; ++ui)
+    {
+        Shader::Uniform * uniform = shader->GetUniform(ui);
+      
+        if (defaultValues.count(uniform->name) > 0)
+        {
+            const DefaultValue & value = defaultValues.at(uniform->name);
+            shader->SetUniformValueByIndex(ui, value.int32Value);
+            Logger::Debug("Assign: %s = %d", uniform->name.c_str(), value.int32Value);
+        }
+    }
+    shader->Unbind();
+}
+
     
 void ShaderAsset::Remove(const FastNameSet & defines)
 {
@@ -85,6 +119,12 @@ Shader * ShaderAsset::Get(const FastNameSet & defines)
 		DVASSERT(compiledShaders.GetValue(defines));
 	}*/
 	
+//    String definesToDraw;
+//    for (FastNameSet::iterator it = defines.begin(), end = defines.end(); it != end; ++it)
+//    {
+//        
+//    }
+    
     Shader * shader = compiledShaders.at(defines);
     
     if (!shader)
@@ -112,6 +152,180 @@ ShaderCache::~ShaderCache()
 }
 
     
+ShaderAsset * ShaderCache::ParseShader(Data * vertexShaderData, Data * fragmentShaderData)
+{
+    ShaderAsset * asset = new ShaderAsset(vertexShaderData, fragmentShaderData);
+    
+    static const char * TOKEN_CONFIG = "<CONFIG>";
+    static const char * TOKEN_VERTEX_SHADER = "<VERTEX_SHADER>";
+    static const char * TOKEN_FRAGMENT_SHADER = "<FRAGMENT_SHADER>";
+    
+    uint8 * vertexShaderStartPosition = vertexShaderData->GetPtr();
+    
+    String sourceFile((char8*)vertexShaderData->GetPtr(), vertexShaderData->GetSize());
+    //size_t size = sourceFile.size();
+    
+    size_t lineBegin	= 0;
+    size_t lineComment	= 0;
+    size_t lineEnd		= 0;
+    
+    bool lastLine = false;
+    
+    //Vector<String> includesList;		// used to prevent double or recursive includes
+    //includesList.push_back(vertexShaderPath.GetFilename());
+    
+    bool configStarted = false;
+    
+    while(1)
+    {
+        if(lastLine)
+        {
+            break;
+        }
+        
+        // get next line
+        lineEnd = sourceFile.find("\n", lineBegin);
+        if(String::npos == lineEnd)
+        {
+            lastLine = true;
+            lineEnd = sourceFile.size();
+        }
+        
+        // skip comment
+        lineComment = sourceFile.find("//", lineBegin);
+        size_t lineLen = 0;
+        if(String::npos == lineComment || lineComment > lineEnd)
+        {
+            lineLen = lineEnd - lineBegin;
+        }else
+        {
+            lineLen = lineComment - lineBegin;
+        }
+        
+        String line = sourceFile.substr(lineBegin, lineLen);
+        if (line == TOKEN_VERTEX_SHADER)
+        {
+            vertexShaderStartPosition = (uint8*)vertexShaderData->GetPtr() + lineBegin + lineLen + 1;
+            configStarted = false;
+        }
+        else if (line == TOKEN_CONFIG)
+        {
+            configStarted = true;
+        }
+        else if (configStarted)
+        {
+            // GetToken();
+            Vector<String> tokens;
+            Split(line, " \t", tokens);
+            
+            if ((tokens.size() == 3) && (tokens[1] == "=") && (tokens[2].size() > 0))
+            {
+                ShaderAsset::DefaultValue value;
+                if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
+                    value.float32Value = atof(tokens[2].c_str());
+                else
+                    value.int32Value = atoi(tokens[2].c_str());
+                FastName fastName = FastName(tokens[0]);
+                asset->defaultValues.insert(fastName, value);
+                
+                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+            }
+        }
+        //Logger::Debug("%s", line.c_str());
+        lineBegin = lineEnd + 1;
+    }
+    
+    asset->vertexShaderDataStart = vertexShaderStartPosition;
+    asset->vertexShaderDataSize = vertexShaderData->GetSize() - (vertexShaderStartPosition - vertexShaderData->GetPtr());
+
+//    includesList.clear();
+//    includesList.push_back(fragmentShaderPath.GetFilename());
+    uint8 * fragmentShaderStartPosition = fragmentShaderData->GetPtr();
+    sourceFile = String((char8*)fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
+    configStarted = false;
+    
+    lineBegin	= 0;
+    lineComment	= 0;
+    lineEnd		= 0;
+    
+    lastLine = false;
+    
+    while(1)
+    {
+        if(lastLine)
+        {
+            break;
+        }
+        
+        // get next line
+        lineEnd = sourceFile.find("\n", lineBegin);
+        if(String::npos == lineEnd)
+        {
+            lastLine = true;
+            lineEnd = sourceFile.size();
+        }
+        
+        // skip comment
+        lineComment = sourceFile.find("//", lineBegin);
+        size_t lineLen = 0;
+        if(String::npos == lineComment || lineComment > lineEnd)
+        {
+            lineLen = lineEnd - lineBegin;
+        }else
+        {
+            lineLen = lineComment - lineBegin;
+        }
+        
+        String line = sourceFile.substr(lineBegin, lineLen);
+        if (line == TOKEN_FRAGMENT_SHADER)
+        {
+            fragmentShaderStartPosition = (uint8*)fragmentShaderData->GetPtr() + lineBegin + lineLen + 1;
+            configStarted = false;
+        }else if (line == TOKEN_CONFIG)
+        {
+            configStarted = true;
+        }
+        else if (configStarted)
+        {
+            // GetToken();
+            Vector<String> tokens;
+            Split(line, " \t", tokens);
+            
+            if ((tokens.size() == 3) && (tokens[1] == "=") && (tokens[2].size() > 0))
+            {
+                ShaderAsset::DefaultValue value;
+                if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
+                    value.float32Value = atof(tokens[2].c_str());
+                else
+                    value.int32Value = atoi(tokens[2].c_str());
+                FastName fastName = FastName(tokens[0]);
+                asset->defaultValues.insert(fastName, value);
+                
+                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+            }
+        }
+        
+        //Logger::Debug("%s", line.c_str());
+
+        lineBegin = lineEnd + 1;
+    }
+    asset->fragmentShaderDataStart = fragmentShaderStartPosition;
+    asset->fragmentShaderDataSize = fragmentShaderData->GetSize() - (fragmentShaderStartPosition - fragmentShaderData->GetPtr());
+    
+    
+    //        curData = strtok((char*)fragmentShaderData, "\n");
+    //        while(curData != NULL)
+    //        {
+    //            if (strcmp(curData, TOKEN_FRAGMENT_SHADER) == 0)
+    //            {
+    //                fragmentShaderStartPosition = (uint8*)curData + sizeof(TOKEN_FRAGMENT_SHADER);
+    //            }
+    //            curData = strtok(NULL, "\n");
+    //        }
+    return asset;
+}
+
+    
 ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
 {
     ShaderAsset * checkAsset = shaderAssetMap.at(shaderFastName);
@@ -129,7 +343,8 @@ ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
     uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
     Data * fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
     
-    ShaderAsset * asset = new ShaderAsset(vertexShaderData, fragmentShaderData);
+    ShaderAsset * asset = ParseShader(vertexShaderData, fragmentShaderData);
+    //new ShaderAsset(vertexShaderData, fragmentShaderData);
 
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
