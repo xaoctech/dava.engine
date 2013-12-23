@@ -1172,7 +1172,8 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 	}
     
-	Shader * Shader::CompileShader(Data * vertexShaderData,
+	Shader * Shader::CompileShader(const FastName & assetName,
+                                   Data * vertexShaderData,
                                    Data * fragmentShaderData,
                                    uint8 * vertexShaderDataStart,
                                    uint32 vertexShaderDataSize,
@@ -1181,6 +1182,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                                    const FastNameSet & definesSet)
 	{
 		Shader * shader = new Shader();
+        shader->assetName = assetName;
 		shader->vertexShaderData = SafeRetain(vertexShaderData);
 		shader->fragmentShaderData = SafeRetain(fragmentShaderData);
         shader->vertexShaderDataStart = vertexShaderDataStart;

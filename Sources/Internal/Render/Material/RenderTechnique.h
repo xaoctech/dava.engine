@@ -88,7 +88,7 @@ protected:
 class RenderTechniqueSingleton : public StaticSingleton<RenderTechniqueSingleton>
 {
 public:
-    RenderTechnique * RetainRenderTechniqueByName(const FilePath & renderTechniquePathname);
+    RenderTechnique * RetainRenderTechniqueByName(const FastName & renderTechniquePathname);
     void ReleaseRenderTechnique(RenderTechnique * renderTechnique);
 
     bool PreloadRenderTechnique(const FastName & fastName);
