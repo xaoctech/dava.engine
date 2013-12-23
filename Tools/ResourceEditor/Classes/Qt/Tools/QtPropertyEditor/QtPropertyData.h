@@ -195,14 +195,20 @@ class QtPropertyToolButton : public QToolButton
 	friend class QtPropertyData;
 
 public:
-	QtPropertyToolButton(QWidget * parent = 0) 
+	QtPropertyToolButton(QtPropertyData* data, QWidget * parent = 0) 
 		: QToolButton(parent)
+		, propertyData(data)
 		, eventsPassThrought(false) 
 		, overlayed(false)
 	{}
 
 	~QtPropertyToolButton() 
 	{}
+
+	QtPropertyData* GetPropertyData() const
+	{
+		return propertyData;
+	}
 
 	virtual bool event(QEvent * event)
 	{
@@ -226,6 +232,9 @@ public:
 	QModelIndex activeIndex;
 	bool eventsPassThrought;
 	bool overlayed;
+
+protected:
+	QtPropertyData* propertyData;
 };
 
 #endif // __QT_PROPERTY_DATA_H__
