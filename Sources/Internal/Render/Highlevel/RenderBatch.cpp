@@ -75,10 +75,11 @@ RenderBatch::~RenderBatch()
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	
-	if(material)
-	{
-		material->SetParent(NULL);
-	}
+	DVASSERT(false);
+	//if(material)
+	//{
+	//	material->SetParent(NULL);
+	//}
 	
 	SafeRelease(material);
 }
@@ -101,13 +102,14 @@ void RenderBatch::SetMaterial(NMaterial * _material)
 	SafeRelease(material);
     material = SafeRetain(_material);
 	
+	DVASSERT(false);
 	//VI: material should be ready after it has been set to render batch
 	//VI: so render system will be able to determine different materials-related renderbatch properties
 	//VI: such as if renderbatch receives dynamic light etc
-	if(material && !material->IsReady())
-	{
-		material->Rebuild();
-	}	
+	//if(material && !material->IsReady())
+	//{
+	//	material->Rebuild();
+	//}
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
@@ -240,11 +242,12 @@ void RenderBatch::SetSortingKey(uint32 _key)
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	//VI: NMaterial is not a DataNode anymore
-	/*if(material)
+	if(material)
 	{
 		InsertDataNode(material, dataNodes);
-	}*/
+		if (material->GetParent() != 0)
+			InsertDataNode(material->GetParent(), dataNodes);
+	}
 
 	if(dataSource)
 	{
@@ -396,31 +399,5 @@ bool RenderBatch::GetVisible() const
     
 void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 {
-	MaterialSystem* matSystem = (rs) ? rs->GetMaterialSystem() : NULL;
-	MaterialSystem* prevSystem = (material) ? material->GetMaterialSystem() : NULL;
-	if(material &&
-	   prevSystem != matSystem)
-	{
-		/*if(NULL == matSystem)
-		{
-			if(prevSystem)
-			{
-				prevSystem->RemoveMaterial(material);
-			}
-			
-			material->SetMaterialSystem(NULL);
-		}
-		else
-		{
-			matSystem->BindMaterial(material);
-			
-			if(prevSystem)
-			{
-				prevSystem->RemoveMaterial(material);
-			}
-		}*/
-		
-		material->UpdateMaterialSystem(matSystem);
-	}	
 }
 };

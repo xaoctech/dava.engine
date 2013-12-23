@@ -93,8 +93,9 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	renderData = new RenderDataObject();
 	this->emitter = parent;
 	
-	material = MaterialSystem::CreateNamed();
-	material->SwitchParent(FindParticleMaterial(BLEND_SRC_ALPHA, BLEND_ONE, false));
+	DVASSERT(false);
+	//material = MaterialSystem::CreateNamed();
+	//material->SwitchParent(FindParticleMaterial(BLEND_SRC_ALPHA, BLEND_ONE, false));
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
@@ -642,8 +643,9 @@ void ParticleLayer3D::UpdateBlendState()
 	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
 
 		
-		const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
-		material->SwitchParent(parentName);
+		DVASSERT(false);
+		//const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
+		//material->SwitchParent(parentName);
 	}
 	
 	/*if(material &&

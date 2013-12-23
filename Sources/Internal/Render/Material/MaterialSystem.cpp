@@ -38,396 +38,48 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/RenderManager.h"
+#include "Render/Material/NMaterialTemplate.h"
 
 namespace DAVA
 {
 	
-	MaterialSystem::MaterialSystem() : materials(8192)
-{
-	defaultMaterial = NULL;
-}
+	FastName MaterialSystem::GLOBAL_NAME = FastName("Global");
+	NMaterial::NMaterialKey MaterialSystem::GLOBAL_KEY = 0;
 	
-MaterialSystem::~MaterialSystem()
-{
-	SafeRelease(defaultMaterial);
-	
-	Clear();
-}
-    
-NMaterial * MaterialSystem::GetMaterial(const FastName & name)
-{
-	NMaterial* material = materials.at(name);
-		
-	//DVASSERT(material);
-	if(NULL == material)
+	MaterialSystem::MaterialSystem()
 	{
-		Logger::FrameworkDebug("[MaterialSystem::GetMaterial] Couldn't find material %s! Returning default material.", name.c_str());
-		material = defaultMaterial;
 	}
 	
-	return material;
-}
-	
-NMaterial* MaterialSystem::GetSpecificMaterial(const FastName & name)
-{
-	NMaterial* material = materials.at(name);
-		
-	return material;
-}
-	
-void MaterialSystem::BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const
-{
-	if(NULL == parent)
+	MaterialSystem::~MaterialSystem()
 	{
-		HashMap<FastName, NMaterial*>::iterator mapIter = materials.begin();
-		while(mapIter != materials.end())
-		{
-			NMaterial* material = mapIter->second;
-			if(NULL == material->parent)
-			{
-				materialList.push_back(material);
-				BuildMaterialList(material, materialList);
-			}
-			
-			++mapIter;
-		}
-	}
-	else
-	{
-		for(size_t i = 0; i < parent->NMaterialState::children.size(); ++i)
-		{
-			NMaterial* material = parent->NMaterialState::children[i];
-			materialList.push_back(material);
-			BuildMaterialList(material, materialList);
-		}
-	}
-}
-
-bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
-{
-	if(!currentMaterialQuality.IsValid())
-	{
-		Logger::Error("[MaterialSystem::LoadMaterialConfig] Material quality was not set prior loading material system description. Cannot load the material system!");
-		DVASSERT(false);
-		
-		return false;
 	}
 	
-	YamlParser * parser = YamlParser::Create(filePath);
-    if (!parser)
-    {
-        Logger::Error("[MaterialSystem::LoadMaterialConfig] Can't load material tree configuration: %s", filePath.GetAbsolutePathname().c_str());
-        return false;
-    }
-	
-    YamlNode * rootNode = parser->GetRootNode();
-    
-    if (!rootNode)
-    {
-		SafeRelease(parser);
-        return false;
-    }
-
-	String defaultParentName = "";
-	Map<String, Vector<MaterialData> > nodes;
-	Vector<MaterialData> lodNodes;
-	int32 nodeCount = rootNode->GetCount();
-	for(int32 i = 0; i < nodeCount; ++i)
+	//VI: material names can be duplicate. Returns first material found
+    NMaterial* MaterialSystem::GetMaterial(const FastName& name)
 	{
-		const YamlNode* materialNode = rootNode->Get(i);
-		String nodeName = materialNode->AsString();
-		if(nodeName == "Material" ||
-		   nodeName == "LodMaterial")
-		{
-			MaterialData data;
-			data.isLod = (nodeName == "LodMaterial");
-			
-			const YamlNode* nameNode = materialNode->Get("Name");
-			DVASSERT(nameNode);
-			
-			if(nameNode)
-			{
-				data.name = nameNode->AsString();
+		return NULL;
+	}
 				
-				DVASSERT(data.name.size() > 0);
-				if(data.name.size() > 0)
-				{
-					const YamlNode* pathNode = materialNode->Get("Path");
-					DVASSERT(pathNode);
-					
-					if(pathNode)
-					{
-						data.path = pathNode->AsString();
-						
-						DVASSERT(data.path.size() > 0);
-						if(data.path.size() > 0)
-						{
-							//only parent node is optional
-							const YamlNode* parentNode = materialNode->Get("Parent");
-							if(parentNode)
-							{
-								data.parent = parentNode->AsString();
-							}
-							
-							if(data.isLod)
-							{
-								lodNodes.push_back(data);
-							}
-							else
-							{
-								Map<String, Vector<MaterialData> >::iterator iter = nodes.find(data.parent);
-								if(iter != nodes.end())
-								{
-									Vector<MaterialData>& dataList = iter->second;
-									dataList.push_back(data);
-								}
-								else
-								{
-									Vector<MaterialData> dataList;
-									dataList.push_back(data);
-									nodes[data.parent] = dataList;
-								}
-							}
-						}
-						else
-						{
-							Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %s in the material configuration has empty Path. Skipping...", data.name.c_str());
-						}
-					}
-					else
-					{
-						Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %s in the material configuration doesn't contain Path. Skipping...", data.name.c_str());
-					}
-				}
-				else
-				{
-					Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %d in the material configuration has empty Name. Skipping...", i);
-				}
-			}
-			else
-			{
-				Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %d in the material configuration doesn't contain Name. Skipping...", i);
-			}
-		}
-		else if(materialNode->AsString() == "DefaultParent")
-		{
-			DVASSERT(defaultParentName.size() == 0);
+	NMaterial* MaterialSystem::GetMaterial(NMaterial::NMaterialKey materialKey)
+	{
+		return NULL;
+	}
 			
-			if(defaultParentName.size() == 0)
-			{
-				const YamlNode* nameNode = materialNode->Get("Name");
-				DVASSERT(nameNode);
-				
-				if(nameNode)
-				{
-					defaultParentName = nameNode->AsString();
-				}
-				else
-				{
-					Logger::Error("[MaterialSystem::LoadMaterialConfig] Default material has no name specified! Skipping...");
-				}
-			}
-			else
-			{
-				Logger::Error("[MaterialSystem::LoadMaterialConfig] Multiple default material names detected! Skipping...");
-			}
-		}
+	void MaterialSystem::BuildMaterialList(Vector<NMaterial*>& materialList) const
+	{
 	}
 	
-	SafeRelease(parser);
-	
-	//TODO: validate material tree structure. It shouldn't contain loops or nodes belonging to several roots
-	
-	//fetch root nodes
-	Map<String, Vector<MaterialData> >::iterator rootsIter = nodes.find("");
-	DVASSERT(rootsIter != nodes.end());
-	if(rootsIter != nodes.end())
+	void MaterialSystem::BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const
 	{
-		Vector<MaterialData>& roots = rootsIter->second;
-		size_t rootCount = roots.size();
-		for(size_t i = 0; i < rootCount; ++i)
-		{
-			MaterialData& currentData = roots[i];
-			LoadMaterial(FastName(currentData.name),
-						 currentData.path,
-						 NULL,
-						 currentData.isLod,
-						 nodes);
-		}
+	}
 		
-		for(size_t i = 0; i < lodNodes.size(); ++i)
-		{
-			MaterialData& currentData = lodNodes[i];
-			LoadMaterial(FastName(currentData.name),
-						 currentData.path,
-						 NULL,
-						 currentData.isLod,
-						 nodes);
-		}
-		
-		for(size_t i = 0; i < rootCount; ++i)
-		{
-			MaterialData& currentData = roots[i];
-			NMaterial* rootMaterial = GetMaterial(FastName(currentData.name));
-			DVASSERT(rootMaterial);
-			
-			//rootMaterial->Rebuild();
-			//rootMaterial->Rebind();
-			
-			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
-																   Message(this, &MaterialSystem::BuildAndBindOnMainThread,
-																		   rootMaterial));
-			JobInstanceWaiter waiter(job);
-			waiter.Wait();
-		}
-	}
-	else
+	void MaterialSystem::BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const
 	{
-		Logger::Error("[MaterialSystem::LoadMaterialConfig] Material config %s contains no root material(s). Skipping...", filePath.GetAbsolutePathname().c_str());
-		return false;
 	}
-	
-	defaultMaterial = SafeRetain(GetMaterial(FastName(defaultParentName)));
-	DVASSERT(defaultMaterial);
-	
-	return true;
-}
-	
-void MaterialSystem::BuildAndBindOnMainThread(BaseObject * caller,
-											  void * param,
-											  void *callerData)
-{
-	NMaterial* rootMaterial = static_cast<NMaterial*>(param);
-	
-	rootMaterial->Rebuild();
-	rootMaterial->Rebind();
-}
-	
-NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
-										const FilePath& filePath,
-										NMaterial* parentMaterial,
-										bool isLod,
-										Map<String, Vector<MaterialData> >& nodes)
-{
-	NMaterial* material = new NMaterial();
-	material->configMaterial = true;
-	bool result = material->LoadFromFile(filePath);
-	
-	DVASSERT(result);
-	if(result)
-	{
-		material->SetMaterialName(name.c_str());
-		AddMaterial(material);
-		
-		if(!isLod)
-		{
-			//VI: LOD materials have parent set up during LOD switch process
-			material->SetParent(parentMaterial);
-		}
-		
-		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
-		if(childrenIter != nodes.end())
-		{
-			Vector<MaterialData>& materials = childrenIter->second;
-			size_t materialCount = materials.size();
-			for(size_t i = 0; i < materialCount; ++i)
-			{
-				MaterialData& currentData = materials[i];
-				LoadMaterial(FastName(currentData.name),
-							 currentData.path,
-							 material,
-							 currentData.isLod,
-							 nodes);
-			}
-		}
-	}
-	else
-	{
-		Logger::Error("[MaterialSystem::LoadMaterialConfig] Failed to load material %s", filePath.GetAbsolutePathname().c_str());
-		SafeRelease(material);
-	}
-	
-	return material;
-}
-	
-	void MaterialSystem::AddMaterial(NMaterial* material)
-	{
-		DVASSERT(material);
-		//SafeRetain(material);
-		
-		material->SetMaterialSystem(this);
-		
-		NMaterial* collisionMaterial = materials.at(material->GetMaterialName());
-		DVASSERT(NULL == collisionMaterial); //should not add same material several times
-		if(NULL == collisionMaterial)
-		{
-			materials.insert(material->GetMaterialName(), material);
-			
-			if(material->IsSwitchable())
-			{
-				material->SwitchState(currentMaterialQuality, this, true);
-			}
-			else
-			{
-				const FastName& parentName = material->GetParentName();
-				
-				if(parentName.IsValid())
-				{
-					material->SwitchParent(parentName);
-				}
-			}
-		}
-	}
-
-void MaterialSystem::RemoveMaterial(NMaterial* material)
-{
-	DVASSERT(material);
-	materials.erase(material->GetMaterialName());
-	//SafeRelease(material);
-}
-	
-void MaterialSystem::Clear()
-{
-	//remove all materials in correct order - from leaves to root
-	
-	Vector<NMaterial*> materialList;
-	BuildMaterialList(NULL, materialList);
-	
-	//VI: make sure materials stay valid until everything removed
-	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
-		it != materialList.rend();
-		++it)
-	{
-		(*it)->Retain();
-	}
-	
-	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
-		it != materialList.rend();
-		++it)
-	{
-		RemoveMaterial(*it);
-		SafeRelease(*it);
-	}
-	
-	//VI: final release materials. They should have refCount = 1 by now
-	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
-		it != materialList.rend();
-		++it)
-	{
-		(*it)->Release();
-	}
-
-	DVASSERT(materials.size() == 0);
-}
 	
 	void MaterialSystem::SetDefaultMaterialQuality(const FastName& qualityLevelName)
 	{
 		defaultMaterialQuality = qualityLevelName;
-		
-		if(!currentMaterialQuality.IsValid())
-		{
-			currentMaterialQuality = defaultMaterialQuality;
-		}
 	}
 	
 	const FastName& MaterialSystem::GetDefaultMaterialQuality() const
@@ -439,108 +91,39 @@ void MaterialSystem::Clear()
 	{
 		return currentMaterialQuality;
 	}
-
 	
-void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
-										   bool forceSwitch)
-{
-	Vector<NMaterial*> materialList;
-	BuildMaterialList(NULL, materialList);
-	
-	currentMaterialQuality = qualityLevelName;
-	
-	for(Vector<NMaterial*>::iterator it = materialList.begin();
-		it != materialList.end();
-		++it)
+	void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 	{
-		NMaterial* mat = *it;
+	}
+	
+	//VI: creates material of type MATERIALTYPE_INSTANCE
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* MaterialSystem::CreateMaterialInstance()
+	{
+		static int32 instanceCounter = 0;
+		instanceCounter++;
 		
-		if(mat->IsSwitchable())
-		{
-			SafeRetain(mat);
-			mat->SwitchState(qualityLevelName, this, forceSwitch);
-			SafeRelease(mat);
-		}
-	}
-	
-	for(Vector<NMaterial*>::iterator it = materialList.begin();
-		it != materialList.end();
-		++it)
-	{
-		NMaterial* mat = *it;
-		if(mat->GetParent() == NULL) //parent == NULL means it's root material
-		{
-			mat->Rebuild();
-			mat->Rebind();
-		}
-	}
-}
-	
-NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
-{
-	NMaterial* child = MaterialSystem::CreateNamed();
-	
-	child->SetParent(parent);
-	
-	return child;
-}
-	
-	NMaterial* MaterialSystem::CreateInstanceChild(const FastName& parentName)
-	{
-		NMaterial* parent = GetMaterial(parentName);
-		return CreateInstanceChild(parent);
-	}
-	
-	void MaterialSystem::BindMaterial(NMaterial* newMaterial)
-	{
-		FastName parentName = newMaterial->GetParentName();
-		NMaterial* newParent = GetSpecificMaterial(parentName);
-		if(NULL == newParent)
-		{
-			newParent = newMaterial->GetParent();
-			DVASSERT(newParent);
-			
-			BindMaterial(newParent);
-		}
+		NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
+		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
 		
-		AddMaterial(newMaterial);
+		return mat;
 	}
 	
-	NMaterial* MaterialSystem::CreateSwitchableChild(NMaterial* parent)
-	{
-		NMaterial* child = MaterialSystem::CreateNamed();
-		uint32 stateCount = parent->GetStateCount();
-		String matName = child->GetMaterialName().c_str();
-		
-		if(stateCount > 0)
-		{
-			HashMap<FastName, NMaterialState*>::iterator stateIter = parent->states.begin();
-			while(stateIter != parent->states.end())
-			{
-				NMaterialState* matState = stateIter->second->CreateTemplate(parent);
-				matState->SetMaterialName(matName);
-				child->states.insert(stateIter->first, matState);
-				
-				++stateIter;
-			}
-		}
-		
-		child->SwitchParentForAllStates(parent->GetMaterialName());
-		child->SetParent(parent);
-		
-		return child;
-	}
-	
-	NMaterial* MaterialSystem::CreateSwitchableChild(const FastName& parentName)
-	{
-		NMaterial* parent = GetMaterial(parentName);
-		return CreateSwitchableChild(parent);
-	}
-	
-	NMaterial* MaterialSystem::CreateNamed()
+	//VI: creates material of type MATERIALTYPE_MATERIAL
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* MaterialSystem::CreateMaterial(const FastName& materialName,
+											  const FastName& templateName)
 	{
 		NMaterial* mat = new NMaterial();
-		mat->GenerateName();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
+		mat->SetMaterialName(materialName.c_str());
+		
+		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		mat->SetMaterialTemplate(matTemplate);
 		
 		return mat;
 	}
