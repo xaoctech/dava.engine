@@ -99,6 +99,17 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
     const YamlNode * stateNode = rootNode->Get("RenderTechnique");
     if (!stateNode)return false;
     
+    const YamlNode * layersNode = stateNode->Get("Layers");
+    if (layersNode)
+    {
+        int32 count = layersNode->GetCount();
+        for (int32 k = 0; k < count; ++k)
+        {
+            const YamlNode * singleLayerNode = layersNode->Get(k);
+            targetTechnique->layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
+        }
+    }
+    
     uint32 techniqueCount = 0;
     for (int32 k = 0; k < stateNode->GetCount(); ++k)
     {
@@ -140,6 +151,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
                     definesSet.Insert(FastName(singleDefineNode->AsString().c_str()));
                 }
             }
+            
             
             RenderState * renderState = new RenderState();
             if (renderStepNode)

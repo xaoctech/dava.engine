@@ -75,14 +75,17 @@ public:
 
     void AddRenderTechniquePass(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
 
-    inline const FastName & GetName() { return name; };
-    inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
-    inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; };
-    
+    inline const FastName & GetName() const { return name; };
+    inline uint32 GetIndexByName(const FastName & fastName) const { return nameIndexMap.at(fastName); };
+    inline RenderTechniquePass * GetPassByIndex(uint32 index) const { return renderTechniqueArray[index]; };
+    inline const FastNameSet & GetLayersSet() const { return layersSet; };
 protected:
     FastName name;
     Vector<RenderTechniquePass*> renderTechniqueArray;
     HashMap<FastName, uint32> nameIndexMap;
+    FastNameSet layersSet;
+    
+    friend class RenderTechniqueSingleton;
 };
 
 class RenderTechniqueSingleton : public StaticSingleton<RenderTechniqueSingleton>
