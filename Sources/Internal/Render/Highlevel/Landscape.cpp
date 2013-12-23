@@ -152,8 +152,9 @@ Landscape::Landscape()
 	//tileMaskMaterial = NULL;
 	//fullTiledMaterial = NULL;
 	
-	tileMaskMaterial = MaterialSystem::CreateNamed();
-	tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
+	DVASSERT(false);
+	//tileMaskMaterial = MaterialSystem::CreateNamed();
+	//tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
@@ -183,10 +184,11 @@ Landscape::~Landscape()
     SafeRelease(heightmap);
 	SafeDelete(cursor);
 	
-	if(tileMaskMaterial)
-	{
-		tileMaskMaterial->SetParent(NULL);
-	}
+	DVASSERT(false);
+	//if(tileMaskMaterial)
+	//{
+	//	tileMaskMaterial->SetParent(NULL);
+	//}
 	
 	//if(fullTiledMaterial)
 	//{
@@ -1789,7 +1791,8 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
     }
 	
-	if(prevContainsDetailMask != curContainsDetailMask)
+	DVASSERT(false);
+	/*if(prevContainsDetailMask != curContainsDetailMask)
 	{
 		if(curContainsDetailMask)
 		{
@@ -1801,12 +1804,13 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 		}
 		
 		tileMaskMaterial->Rebuild();
-	}
+	}*/
 }
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
 {
-	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
+	DVASSERT(false);
+/*	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
 	DVASSERT(global);
 	
 	if(isFogEnabled)
@@ -1823,6 +1827,7 @@ void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerDa
 	
 	global->Rebuild();
 	global->Rebind();	
+ */
 }
 	
     
