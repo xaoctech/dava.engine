@@ -44,6 +44,7 @@ class ParticleEffectSystem : public SceneSystem
 	friend class ParticleEffectComponent;
 public:
 	ParticleEffectSystem(Scene * scene);
+	~ParticleEffectSystem();
 	virtual void Process();		
 
 
@@ -71,6 +72,11 @@ private:
 	Map<String, float32> globalExternalValues;
 	
 	Vector<ParticleEffectComponent *> activeComponents;
+
+
+private: //materials stuff
+	Map<uint32, NMaterial *> materialMap;
+	NMaterial *GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor);
 };
 
 }
