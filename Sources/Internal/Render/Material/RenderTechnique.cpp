@@ -37,7 +37,6 @@ namespace DAVA
     
 RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
 {
-    shader = 0;
     shaderName = _shaderName;
     uniqueDefines = _uniqueDefines;
     renderState = _renderState;
@@ -45,20 +44,19 @@ RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName, const Fas
 
 RenderTechniquePass::~RenderTechniquePass()
 {
-    SafeRelease(shader);
     SafeDelete(renderState);
 }
 
-void RenderTechniquePass::RecompileShader(const FastNameSet & materialDefines)
+Shader * RenderTechniquePass::RetainShader(const FastNameSet & materialDefines)
 {
     FastNameSet combinedDefines = materialDefines;
     if(uniqueDefines.size() > 0)
     {
         combinedDefines.Combine(uniqueDefines);
     }
-    SafeRelease(shader);
-    shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, combinedDefines));
-}
+    Shader * shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, combinedDefines));
+    return shader;
+};
     
     
 RenderTechnique::RenderTechnique(const FastName & _name)

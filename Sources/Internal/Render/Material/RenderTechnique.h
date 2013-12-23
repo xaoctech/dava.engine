@@ -53,16 +53,14 @@ public:
     RenderTechniquePass(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
     ~RenderTechniquePass();
     
-    void RecompileShader(const FastNameSet& materialDefines);
+    Shader * RetainShader(const FastNameSet& materialDefines);
     
     const FastName & GetShaderName() const { return shaderName; }
-    inline Shader * GetShader() const { return shader; }
     inline RenderState * GetRenderState() const { return renderState; }
     const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
     
 protected:
     FastName shaderName;
-    Shader * shader;
     RenderState * renderState;
     FastNameSet uniqueDefines;
 };
