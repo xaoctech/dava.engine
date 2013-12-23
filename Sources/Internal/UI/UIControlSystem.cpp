@@ -450,8 +450,7 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 		{
 			if((*it).activeState == UIEvent::ACTIVITY_STATE_INACTIVE || (*it).phase == UIEvent::PHASE_CANCELLED)
 			{
-				if ((*it).phase == UIEvent::PHASE_CANCELLED)
-					CancelInput(&(*it));
+				CancelInput(&(*it));
 				totalInputs.erase(it);
 				it = totalInputs.begin();
 				if(it == totalInputs.end())
