@@ -416,6 +416,28 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	
 #endif //#if defined(__DAVAENGINE_OPENGL__) 
 }
+
+void Texture::SetMinMagFilter(TextureFilter minFilter, TextureFilter magFilter)
+{
+#if defined(__DAVAENGINE_OPENGL__)
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID(textureType);
+
+	RenderManager::Instance()->HWglBindTexture(id, textureType);
+
+	GLint glMinFilter = HWglFilterToGLFilter(minFilter);
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glMinFilter));
+
+	GLint glMagFilter = HWglFilterToGLFilter(magFilter);
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glMagFilter));
+
+	if (saveId != 0)
+	{
+		RenderManager::Instance()->HWglBindTexture(saveId, textureType);
+	}
+#elif defined(__DAVAENGINE_DIRECTX9____)
+	
+#endif //#if defined(__DAVAENGINE_OPENGL__) 
+}
 	
 void Texture::GenerateMipmaps()
 {

@@ -102,7 +102,7 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
 
-	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+	landscapeSize = drawSystem->GetTextureSize(Landscape::TEXTURE_TILE_FULL);
 
 	FilePath filePath = GetCurrentSaveFileName();
 	if (!filePath.IsEmpty())
@@ -266,13 +266,9 @@ Image* CustomColorsSystem::CreateToolImage(int32 sideSize, const FilePath& fileP
 
 void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 {
-	//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-	
 	Sprite* colorSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	
 	RenderManager::Instance()->SetRenderTarget(colorSprite);
-	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	RenderManager::Instance()->SetDefault2DState();
 	RenderManager::Instance()->FlushState();
 	
@@ -286,7 +282,6 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 	toolImageSprite->Draw();
 	
 	RenderManager::Instance()->RestoreRenderTarget();
-	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 	RenderManager::Instance()->SetColor(Color::White());
 	
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTexture(colorSprite->GetTexture());

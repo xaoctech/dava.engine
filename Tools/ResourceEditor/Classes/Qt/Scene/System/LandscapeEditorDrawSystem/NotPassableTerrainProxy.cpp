@@ -166,7 +166,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	renderManager->SetClip(drawRect);
 	
 	renderManager->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	
+
 	int32 lastY = (int32)(forRect.y + forRect.dy);
 	int32 lastX = (int32)(forRect.x + forRect.dx);
 	for (int32 y = (int32)forRect.y; y < lastY; ++y)
@@ -188,7 +188,10 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 			float32 xdx = x * dx;
 			
 			Color color;
-			
+
+			RenderManager::Instance()->SetDefault2DNoTextureState();
+			RenderManager::Instance()->FlushState();
+
 			if(PickColor(tanRight, color))
 			{
 				renderManager->SetColor(color);
