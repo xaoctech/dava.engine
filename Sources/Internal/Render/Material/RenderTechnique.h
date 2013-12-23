@@ -78,7 +78,8 @@ public:
     inline const FastName & GetName() { return name; };
     inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
     inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; };
-	
+	inline const FastNameSet & GetLayersSet() const { return layersSet; };
+
 	inline const FastName& GetPassName(uint32 index)
 	{
 		return nameIndexMap.keyByIndex(index);
@@ -99,12 +100,15 @@ protected:
     FastName name;
     Vector<RenderTechniquePass*> renderTechniqueArray;
     HashMap<FastName, uint32> nameIndexMap;
+    FastNameSet layersSet;
+    
+    friend class RenderTechniqueSingleton;
 };
 
 class RenderTechniqueSingleton : public StaticSingleton<RenderTechniqueSingleton>
 {
 public:
-    RenderTechnique * RetainRenderTechniqueByName(const FilePath & renderTechniquePathname);
+    RenderTechnique * RetainRenderTechniqueByName(const FastName & renderTechniquePathname);
     void ReleaseRenderTechnique(RenderTechnique * renderTechnique);
 
     bool PreloadRenderTechnique(const FastName & fastName);

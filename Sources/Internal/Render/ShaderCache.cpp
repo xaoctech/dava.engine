@@ -37,9 +37,11 @@ namespace DAVA
 {
     
     
-ShaderAsset::ShaderAsset(Data * _vertexShaderData,
+ShaderAsset::ShaderAsset(const FastName & _name,
+                         Data * _vertexShaderData,
                          Data * _fragmentShaderData)
 {
+    name = _name;
     vertexShaderData = SafeRetain(_vertexShaderData);
     fragmentShaderData = SafeRetain(_fragmentShaderData);
     
@@ -67,7 +69,8 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
     Shader * checkShader = compiledShaders.at(defines);
     if (checkShader)return checkShader;
     
-    Shader * shader = Shader::CompileShader(vertexShaderData,
+    Shader * shader = Shader::CompileShader(name,
+                                            vertexShaderData,
                                             fragmentShaderData,
                                             vertexShaderDataStart,
                                             vertexShaderDataSize,
@@ -152,9 +155,9 @@ ShaderCache::~ShaderCache()
 }
 
     
-ShaderAsset * ShaderCache::ParseShader(Data * vertexShaderData, Data * fragmentShaderData)
+ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData)
 {
-    ShaderAsset * asset = new ShaderAsset(vertexShaderData, fragmentShaderData);
+    ShaderAsset * asset = new ShaderAsset(name, vertexShaderData, fragmentShaderData);
     
     static const char * TOKEN_CONFIG = "<CONFIG>";
     static const char * TOKEN_VERTEX_SHADER = "<VERTEX_SHADER>";
@@ -343,7 +346,7 @@ ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
     uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
     Data * fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
     
-    ShaderAsset * asset = ParseShader(vertexShaderData, fragmentShaderData);
+    ShaderAsset * asset = ParseShader(shaderFastName, vertexShaderData, fragmentShaderData);
     //new ShaderAsset(vertexShaderData, fragmentShaderData);
 
     SafeRelease(vertexShaderData);
