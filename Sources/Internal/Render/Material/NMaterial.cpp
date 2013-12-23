@@ -51,7 +51,7 @@ namespace DAVA
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
     static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
 		
-	MaterialTechnique::MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
+	/*MaterialTechnique::MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
 	{
 		shader = 0;
 		shaderName = _shaderName;
@@ -76,7 +76,7 @@ namespace DAVA
 		
 		SafeRelease(shader);
 		shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, combinedDefines));
-	}
+	}*/
     
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 	const FastName NMaterial::TEXTURE_NORMAL("normal");
@@ -174,15 +174,13 @@ namespace DAVA
 	parent(NULL),
 	requiredVertexFormat(EVF_FORCE_DWORD),
 	lightCount(0),
-	activeTechnique(NULL),
 	ready(false),
-	textureParamsCachePtr(NULL),
-	activeUniformsCachePtr(NULL),
-	textureParamsCacheSize(0),
-	activeUniformsCacheSize(0),
 	illuminationParams(NULL),
 	materialSetFlags(4),
-	materialBlockedFlags(4)
+	materialBlockedFlags(4),
+	baseTechnique(NULL),
+	activePassInstance(NULL),
+	activeRenderPass(NULL)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -203,6 +201,8 @@ namespace DAVA
 			SafeRelease(it->second->texture);
 			SafeDelete(it->second);
 		}
+
+		ReleaseInstancePasses();
 		
 		if(InvalidUniqueHandle != textureStateHandle)
 		{
@@ -213,6 +213,8 @@ namespace DAVA
 		{
 			SafeDelete(illuminationParams);
 		}
+		
+		SafeRelease(baseTechnique);
 		
 		if(parent)
 		{
@@ -735,18 +737,17 @@ namespace DAVA
 		for(size_t i = 0; i < childrenCount; ++i)
 		{
 			children[i]->SetMaterialTemplate(matTemplate);
-			children[i]->OnMaterialTemplateChanged();
 		}
 	}
 	
 	const FastNameSet& GetRenderLayers()
 	{
-		DVASSERT(false);
+		DVASSERT(false && "Implement render layers!")
 	}
 	
 	void NMaterial::OnMaterialTemplateChanged()
 	{
-		
+		UpdateMaterialTemplate();
 	}
 
 	void NMaterial::OnParentChanged(NMaterial* newParent)
@@ -756,19 +757,16 @@ namespace DAVA
 		SafeRelease(oldParent);
 		
 		SetMaterialTemplate(newParent->materialTemplate);
-		
-		//VI: TODO: update technique from parent
-		//VI: TODO: updating technique will unload unneeded textures
 	}
 	
 	void NMaterial::OnParentFlagsChanged()
 	{
-		
+		UpdateMaterialTemplate();
 	}
 	
 	void NMaterial::OnInstanceQualityChanged()
 	{
-		
+		UpdateMaterialTemplate();
 	}
 	
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet effectiveFlagSet)
@@ -794,5 +792,136 @@ namespace DAVA
 				effectiveFlagSet.erase(it->first);
 			}
 		}
+	}
+	
+	void NMaterial::ReleaseInstancePasses()
+	{
+		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
+			it != instancePasses.end();
+			++it)
+		{
+			RenderPassInstance* passInstance = it->second;
+			
+			SafeRelease(passInstance->shader);
+			
+			if(passInstance->dirtyState &&
+			   passInstance->renderState != InvalidUniqueHandle)
+			{
+				RenderManager::Instance()->ReleaseRenderStateData(passInstance->renderState);
+			}
+			
+			if(passInstance->textureParamsCachePtr)
+			{
+				for(size_t i = 0; i < passInstance->textureParamsCacheSize; ++i)
+				{
+					SafeRelease(passInstance->textureParamsCachePtr[i].tx);
+				}
+			}
+			
+			SafeDelete(it->second);
+		}
+	}
+	
+	void NMaterial::UpdateMaterialTemplate()
+	{
+		DVASSERT(materialTemplate);
+		
+		ReleaseInstancePasses();
+		
+		FastNameSet effectiveFlags;
+		BuildEffectiveFlagSet(effectiveFlags);
+		
+		FastName techniqueName;
+		if(currentQuality.IsValid())
+		{
+			techniqueName = materialTemplate->techniqueStateMap.at(currentQuality);
+		}
+		
+		if(!techniqueName.IsValid())
+		{
+			techniqueName = materialTemplate->techniqueStateMap.valueByIndex(0);
+		}
+		
+		DVASSERT(techniqueName.IsValid());
+		
+		SafeRelease(baseTechnique);
+		baseTechnique = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(techniqueName.c_str());
+		
+		DVASSERT(baseTechnique);
+		
+		uint32 passCount = baseTechnique->GetPassCount();
+		for(uint32 i = 0; i < passCount; ++i)
+		{
+			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
+			UpdateRenderPass(baseTechnique->GetPassName(i), effectiveFlags, pass);
+		}
+	}
+	
+	void NMaterial::UpdateRenderPass(const FastName& passName,
+									 const FastNameSet& instanceDefines,
+									 RenderTechniquePass* pass)
+	{
+		RenderPassInstance* passInstance = new RenderPassInstance();
+		passInstance->dirtyState = false;
+		passInstance->shader = pass->RetainShader(instanceDefines);
+		passInstance->renderState = pass->GetRenderState()->stateHandle;
+		
+		instancePasses.insert(passName, passInstance);
+		
+		//VI: BuildTextureParamsCache will add textures that are required for the shader
+		//VI: but has not been set up yet. Also it will add reference for all active textures
+		BuildTextureParamsCache(passInstance);
+	}
+	
+	void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
+	{
+		Shader * shader = passInstance->shader;
+		
+		uint32 uniformCount = shader->GetUniformCount();
+		for(uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+		{
+			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+			if(uniform->id == Shader::UNIFORM_NONE)
+			{
+				if(uniform->type == Shader::UT_SAMPLER_2D ||
+				   uniform->type == Shader::UT_SAMPLER_CUBE)
+				{
+					TextureParamCacheEntry entry;
+					entry.textureName = uniform->name;
+					DVASSERT(false && "Implement slot taking from shader!");
+					entry.slot = 0;
+					entry.tx = NULL;
+										
+					passInstance->textureParamsCache.push_back(entry);
+				}
+			}
+		}
+		
+		passInstance->textureParamsCachePtr = NULL;
+		passInstance->textureParamsCacheSize = 0;
+		if(passInstance->textureParamsCache.size())
+		{
+			passInstance->textureParamsCachePtr = &passInstance->textureParamsCache[0];
+			passInstance->textureParamsCacheSize = passInstance->textureParamsCache.size();
+		}
+	}
+	
+	void NMaterial::BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance)
+	{
+		
+	}
+
+	NMaterial::TextureBucket* NMaterial::GetTextureBucketRecursive(const FastName& textureFastName) const
+	{
+		TextureBucket* bucket = NULL;
+		const NMaterial* currentMaterial = this;
+		while(currentMaterial)
+		{
+			bucket = currentMaterial->textures.at(textureFastName);
+			
+			currentMaterial = currentMaterial->parent;
+		}
+		
+		return bucket;
 	}
 };

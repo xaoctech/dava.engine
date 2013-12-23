@@ -42,10 +42,7 @@
 
 namespace DAVA
 {
-	
-	FastName MaterialSystem::GLOBAL_NAME = FastName("Global");
-	NMaterial::NMaterialKey MaterialSystem::GLOBAL_KEY = 0;
-	
+		
 	MaterialSystem::MaterialSystem()
 	{
 	}
