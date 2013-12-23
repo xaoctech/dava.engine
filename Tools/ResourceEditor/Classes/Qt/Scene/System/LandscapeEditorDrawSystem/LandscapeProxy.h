@@ -61,7 +61,7 @@ public:
 protected:
 	virtual ~LandscapeProxy();
 public:
-	LandscapeProxy(Landscape* landscape);
+	LandscapeProxy(Landscape* landscape, Entity* node);
 
 	void SetMode(LandscapeProxy::eLandscapeMode mode);
 	void SetDisplayingTexture(Texture* texture);
@@ -142,6 +142,7 @@ protected:
 	Texture* displayingTexture;
 	Landscape* baseLandscape;
 	CustomLandscape* customLandscape;
+	Entity* landscapeNode;
 
 	eLandscapeMode mode;
 	

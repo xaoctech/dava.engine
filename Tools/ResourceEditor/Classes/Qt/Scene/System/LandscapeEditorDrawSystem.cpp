@@ -117,18 +117,15 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableCustomDra
 		return initError;
 	}
 
+	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
 	landscapeProxy->SetHeightmap(heightmapProxy);
-	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	landscapeRenderer->Release();
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
-	
 	++customDrawRequestCount;
 
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
@@ -145,9 +142,7 @@ void LandscapeEditorDrawSystem::DisableCustomDraw()
 	
 	if (customDrawRequestCount == 0)
 	{
-		landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-		landscapeNode->AddComponent(new RenderComponent(baseLandscape));
-		
+		landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 		UpdateBaseLandscapeHeightmap();
 	}
 }
@@ -459,9 +454,6 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableTilemaskE
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
-	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
-
 	fogWasEnabled = landscapeProxy->IsFogEnabled();
 	landscapeProxy->SetFogEnabled(false);
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
@@ -510,7 +502,7 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::InitLandscape(E
 
 	landscapeNode = landscapeEntity;
 	baseLandscape = SafeRetain(landscape);
-	landscapeProxy = new LandscapeProxy(baseLandscape);
+	landscapeProxy = new LandscapeProxy(baseLandscape, landscapeNode);
 
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
