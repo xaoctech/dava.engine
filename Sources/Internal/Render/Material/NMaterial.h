@@ -141,39 +141,6 @@ protected:
     FastNameSet uniqueDefines;
 	};
 
-class NMaterial;
-class NMaterialState : public BaseObject
-{
-	friend class NMaterial;
-	friend class NMaterialStateDynamicPropertiesInsp;
-	friend class NMaterialStateDynamicTexturesInsp;
-	
-public:
-			
-	NMaterialState();
-	virtual ~NMaterialState();
-	
-	
-protected:
-	
-	
-protected:
-	
-	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
-		
-	void ShallowCopyTo(NMaterialState* targetState, bool copyNames = true);
-	void DeepCopyTo(NMaterialState* targetState);
-	
-	void MapTextureNameToSlot(const FastName& textureName);
-	
-	void CopyTechniquesTo(NMaterialState* targetState);
-
-	void PropagateDirtyTextures();
-	
-protected:
-	
-};
-
 class Camera;
 class SerializationContext;
 class MaterialSystem;
@@ -416,7 +383,7 @@ public:
 	{
 	private:
 		
-		void MemberValueSetInternal(NMaterialState* state, int index, const VariantType &value);
+		void MemberValueSetInternal(NMaterial* state, int index, const VariantType &value);
 		
 	public:
 		int MembersCount(void *object) const;

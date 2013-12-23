@@ -311,7 +311,8 @@ void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializati
 		NMaterial* material = GetMaterial();
 		if(material)
 		{
-			archive->SetString("rb.nmatname", material->GetMaterialName().c_str());
+			int64 matKey = (int64)material->GetMaterialKey();
+			archive->SetInt64("rb.nmatname", matKey);
 		}
 		
 		//archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
@@ -358,9 +359,9 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		}
 		else
 		{
-			String matName = archive->GetString("rb.nmatname");
+			int64 matKey = archive->GetInt64("rb.nmatname");
 			
-			newMaterial = serializationContext->GetNewMaterial(matName);
+			newMaterial = serializationContext->GetMaterial(matKey);
 		}
 
 		SetPolygonGroup(pg);

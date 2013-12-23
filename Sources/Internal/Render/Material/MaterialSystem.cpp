@@ -54,17 +54,6 @@ namespace DAVA
 	{
 	}
 	
-	//VI: material names can be duplicate. Returns first material found
-    NMaterial* MaterialSystem::GetMaterial(const FastName& name)
-	{
-		return NULL;
-	}
-				
-	NMaterial* MaterialSystem::GetMaterial(NMaterial::NMaterialKey materialKey)
-	{
-		return NULL;
-	}
-			
 	void MaterialSystem::BuildMaterialList(Vector<NMaterial*>& materialList) const
 	{
 	}
@@ -107,6 +96,7 @@ namespace DAVA
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
 		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
+		mat->SetName(mat->GetMaterialName().c_str());
 		
 		return mat;
 	}
@@ -120,6 +110,7 @@ namespace DAVA
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
 		mat->SetMaterialName(materialName.c_str());
+		mat->SetName(mat->GetMaterialName().c_str());
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
 		DVASSERT(matTemplate);

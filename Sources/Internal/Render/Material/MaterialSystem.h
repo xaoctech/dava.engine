@@ -58,11 +58,7 @@ public:
 	
 	MaterialSystem();
 	~MaterialSystem();
-	
-	//VI: material names can be duplicate. Returns first material found
-    NMaterial* GetMaterial(const FastName& name);
-	NMaterial* GetMaterial(NMaterial::NMaterialKey materialKey);
-	
+		
 	void BuildMaterialList(Vector<NMaterial*>& materialList) const;
 	void BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const;
 	void BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
