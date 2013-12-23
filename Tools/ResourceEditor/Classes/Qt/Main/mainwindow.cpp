@@ -1639,9 +1639,9 @@ void QtMainWindow::OnSaveTiledTexture()
 
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
-	landscape->UpdateFullTiledTexture();
+//	landscape->UpdateFullTiledTexture();
     
-    FilePath texPathname = landscape->SaveFullTiledTexture();
+    FilePath texPathname;// = landscape->SaveFullTiledTexture();
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
     
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
