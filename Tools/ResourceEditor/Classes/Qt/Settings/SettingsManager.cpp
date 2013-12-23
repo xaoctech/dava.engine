@@ -33,9 +33,10 @@
 #include "Render/RenderManager.h"
 #include <QHeaderView>
 
-#define CONFIG_FILE				"~doc:/ResourceEditorOptions.archive"
-#define SETTINGS_VERSION_NUMBER	1
-#define SETTINGS_VERSION_KEY	"SETTINGS_VERSION"
+#define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
+#define SETTINGS_VERSION_NUMBER			1
+#define SETTINGS_VERSION_KEY			"SETTINGS_VERSION"
+#define MUTABLE_LENGTH_PLURALITY_SUFFIX	"sCount"
 
 SettingsManager::SettingsManager()
 {
@@ -70,6 +71,7 @@ void SettingsManager::Initialize()
 	KeyedArchive* generalSettings = new KeyedArchive();
 	KeyedArchive* defaultSettings = new KeyedArchive();
 	KeyedArchive* internalSettings = new KeyedArchive();
+	KeyedArchive* mutableLengthSettings = new KeyedArchive();
 	
 	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_GENERAL_MAP) / sizeof(SettingRow)); ++i )
 	{
@@ -85,9 +87,16 @@ void SettingsManager::Initialize()
 	{
 		internalSettings->SetVariant( SETTINGS_GROUP_INTERNAL_MAP[i].key, DAVA::VariantType(SETTINGS_GROUP_INTERNAL_MAP[i].defValue) );
 	}
+	
+	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_MUTABLE_LENGHT_MAP) / sizeof(SettingRow)); ++i )
+	{
+		mutableLengthSettings->SetVariant( SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_PLURALITY_SUFFIX, DAVA::VariantType(SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].defValue) );
+	}
+	
 	settings->SetArchive(GetNameOfGroup(GENERAL), generalSettings);
 	settings->SetArchive(GetNameOfGroup(DEFAULT), defaultSettings);
 	settings->SetArchive(GetNameOfGroup(INTERNAL), internalSettings);
+	settings->SetArchive(GetNameOfGroup(MUTABLE_LENGTH), mutableLengthSettings);
 	settings->SetUInt32(SETTINGS_VERSION_KEY, SETTINGS_VERSION_NUMBER);
 
 	LoadSettings();
@@ -96,9 +105,10 @@ void SettingsManager::Initialize()
 void SettingsManager::LoadSettings()
 {
 	KeyedArchive* loadedArchive = new KeyedArchive();
-	bool success = loadedArchive->Load(CONFIG_FILE);
-	DVASSERT(success);
-
+	if(!loadedArchive->Load(CONFIG_FILE))
+	{
+		return;
+	}
 	bool isSettingsFileVersionActual = loadedArchive->IsKeyExists(SETTINGS_VERSION_KEY);
 	// perform synchronization: update present in settings elements from file
 	for (uint32 i = 0; i < GROUPS_COUNT; ++i)
@@ -111,7 +121,7 @@ void SettingsManager::LoadSettings()
 		{
 			continue;
 		}
-
+		
 		Map<String, VariantType*> predefinedSettingsGroupMap = presentSettingsGroup->GetArchieveData();
 		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator it = predefinedSettingsGroupMap.begin();
 		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator end = predefinedSettingsGroupMap.end();
@@ -122,7 +132,31 @@ void SettingsManager::LoadSettings()
 			{
 				presentSettingsGroup->SetVariant(it->first, *archiveFromFile->GetVariant(it->first));
 			}
-		}	
+		}
+		//in case of mutable section, presentSettingsGroup contain only counter rows like "LastOpenedFilesCount"
+		if(MUTABLE_LENGTH == (eSettingsGroups)i && presentSettingsGroup->Count())
+		{
+			Map<String, VariantType*> predefinedMapUpdated = presentSettingsGroup->GetArchieveData();
+			it = predefinedMapUpdated.begin();
+			end = predefinedMapUpdated.end();
+			Vector<std::pair<String, VariantType> > setToInsert;
+			for(; it != end; ++it)
+			{
+				int32 subsectionLength = it->second->AsInt32();
+				String subSectionName = it->first.substr(0, it->first.size() - strlen(MUTABLE_LENGTH_PLURALITY_SUFFIX));
+				for (uint32 j = 0; j < subsectionLength; ++j)
+				{
+					String keyToInsert(Format((subSectionName + "_%d").c_str(), j));
+					setToInsert.push_back(std::make_pair(keyToInsert, *archiveFromFile->GetVariant(keyToInsert)));
+				}
+			}
+			Vector<std::pair<String, VariantType> >::iterator iterToInsert = setToInsert.begin();
+			Vector<std::pair<String, VariantType> >::iterator endToInsert = setToInsert.end();
+			for(; iterToInsert != endToInsert; ++iterToInsert)
+			{
+				presentSettingsGroup->SetVariant(iterToInsert->first, iterToInsert->second);
+			}
+		}
 	}
 
 	SafeRelease(loadedArchive);
@@ -141,7 +175,6 @@ DAVA::KeyedArchive* SettingsManager::GetSettingsGroup(eSettingsGroups group)
 
 DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group)
 {
-	//todo wrap into map
 	String retValue;
 	switch (group)
 	{
@@ -153,6 +186,9 @@ DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group)
 		break;
 	case SettingsManager::INTERNAL:
 		retValue = "Internal";
+		break;
+	case SettingsManager::MUTABLE_LENGTH:
+		retValue = "Mutable length";
 		break;
 	default:
 		DVASSERT(0);

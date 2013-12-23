@@ -51,7 +51,7 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 	Q_OBJECT
 
 protected:
-    
+    static const int RESENT_FILES_MAX_COUNT = 5;
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
 
 public:
