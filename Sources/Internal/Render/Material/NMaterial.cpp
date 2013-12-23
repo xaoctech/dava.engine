@@ -393,6 +393,8 @@ namespace DAVA
 		materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
 		materialKey = (NMaterial::NMaterialKey)archive->GetInt64("materialKey");
 		
+		DataNode::SetName(materialName.c_str());
+		
 		const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
 		for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
 			it != propsMap.end();
@@ -432,11 +434,9 @@ namespace DAVA
 			illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
 		}
 		
-		if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
-		{
-			serializationContext->SetMaterial((uint64)materialKey, this);
-		}
-		else if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		serializationContext->SetMaterial((uint64)materialKey, this);
+		
+		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			NMaterial::NMaterialKey parentKey = (NMaterial::NMaterialKey)archive->GetInt64("parentMaterialKey");
 			NMaterial* parent = serializationContext->GetMaterial((uint64)parentKey);
@@ -493,7 +493,7 @@ namespace DAVA
 		}
 		else
 		{
-			DVASSERT(false && "Material is not iniailized propely!");
+			DVASSERT(false && "Material is not initialized propely!");
 		}
 		
 		return result;
@@ -511,13 +511,8 @@ namespace DAVA
 		else if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			clonedMaterial = MaterialSystem::CreateMaterialInstance();
-			
-			if(parent)
-			{
-				NMaterial* clonedParent = parent->Clone();
-				clonedParent->AddChild(clonedMaterial);
-				SafeRelease(clonedParent);
-			}
+
+			SafeRetain(parent);
 		}
 		else
 		{
@@ -557,6 +552,7 @@ namespace DAVA
 	NMaterial* NMaterial::Clone(const String& newName)
 	{
 		NMaterial* clonedMaterial = Clone();
+		clonedMaterial->SetName(newName);
 		clonedMaterial->SetMaterialName(newName);
 		clonedMaterial->SetMaterialKey((NMaterial::NMaterialKey)clonedMaterial);
 		

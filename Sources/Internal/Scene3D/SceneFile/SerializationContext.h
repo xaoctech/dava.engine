@@ -147,9 +147,6 @@ namespace DAVA
 		NMaterial* ConvertOldMaterialToNewMaterial(Material* oldMaterial,
 											InstanceMaterialState* oldMaterialState,
 												   uint64 oldMaterialId);
-		NMaterial* GetNewMaterial(const String& name);
-
-		MaterialSystem* GetMaterialSystem();
 		
 		Texture* PrepareTexture(Texture* tx);
 	};
