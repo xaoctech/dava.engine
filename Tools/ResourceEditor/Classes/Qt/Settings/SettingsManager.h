@@ -41,7 +41,7 @@ struct SettingRow
 	DAVA::String key;
 	DAVA::VariantType defValue;
 
-	SettingRow(const char* _key, DAVA::VariantType& _defaultValue)
+	SettingRow(const char* _key,const DAVA::VariantType& _defaultValue)
 	{
 		key = _key;
 		defValue  = _defaultValue;
@@ -50,41 +50,46 @@ struct SettingRow
 
 static const SettingRow SETTINGS_GROUP_GENERAL_MAP[] = 
 {
-	SettingRow(ResourceEditor::SETTINGS_DESIGNER_NAME, DAVA::VariantType(DAVA::String("nobody"))),
-	SettingRow(ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, DAVA::VariantType(false)),
+	SettingRow("DesignerName", DAVA::VariantType(DAVA::String("nobody"))),
+	SettingRow("PreviewDialogEnabled", DAVA::VariantType(false)),
 };
 
 static const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] = 
 {
-	SettingRow(ResourceEditor::SETTINGS_GRID_STEP, DAVA::VariantType(10.0f)),
+	SettingRow("GridStep", DAVA::VariantType(10.0f)),
 	SettingRow("CameraSpeedValue_0", DAVA::VariantType(35.0f)),
 	SettingRow("CameraSpeedValue_1", DAVA::VariantType(100.0f)),
 	SettingRow("CameraSpeedValue_2", DAVA::VariantType(250.0f)),
 	SettingRow("CameraSpeedValue_3", DAVA::VariantType(400.0f)),
-	SettingRow(ResourceEditor::SETTINGS_DEFAULT_FOV, DAVA::VariantType(70.0f)),
+	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
 	
 };
 
 static const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] = 
 {
-	SettingRow(ResourceEditor::SETTINGS_3D_DATA_SOURCEPATH, DAVA::VariantType(DAVA::String("/"))),
-	SettingRow(ResourceEditor::SETTINGS_PROJECT_PATH, DAVA::VariantType(DAVA::String(""))),
-	SettingRow(ResourceEditor::SETTINGS_LAST_OPENED_FILES_COUNT, DAVA::VariantType(0)),//?!
-	SettingRow(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, DAVA::VariantType(GPU_UNKNOWN)),
+	SettingRow("3dDataSourcePath", DAVA::VariantType(DAVA::String("/"))),
+	SettingRow("ProjectPath", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN)),
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
-	SettingRow(ResourceEditor::SETTINGS_CUBEMAP_LAST_FACE_DIR, DAVA::VariantType(DAVA::String(""))),
-	SettingRow(ResourceEditor::SETTINGS_CUBEMAP_LAST_PROJECT_DIR, DAVA::VariantType(DAVA::String(""))),
+	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
+};
+
+static const SettingRow SETTINGS_GROUP_MUTABLE_LENGHT_MAP[] =
+{
+	SettingRow("LastOpenedFile", DAVA::VariantType(int32(0))),
 };
 
 class SettingsManager: public DAVA::Singleton<SettingsManager>
 {
 public:
 
-	static enum eSettingsGroups
+	enum eSettingsGroups
 	{
 		GENERAL = 0,
 		DEFAULT,
 		INTERNAL,
+		MUTABLE_LENGTH,
 
 		GROUPS_COUNT
 	};
@@ -108,7 +113,7 @@ public:
 private:
 
 	DAVA::KeyedArchive* settings;
-
+	
 	void LoadSettings();
 
 };

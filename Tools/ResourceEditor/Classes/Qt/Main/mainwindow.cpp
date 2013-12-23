@@ -713,10 +713,11 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	int count = SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_LAST_OPENED_FILES_COUNT, SettingsManager::INTERNAL)->AsInt32();
-	for(int i = 0; i < count; ++i)
+	int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::MUTABLE_LENGTH)->AsInt32();
+	for(int i = 0; i < lastOpenedCount; ++i)
 	{
-		DAVA::String path = "";//EditorSettings::Instance()->GetLastOpenedFile(i);
+		DVASSERT((0 <= i) && (i < lastOpenedCount));
+		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::MUTABLE_LENGTH)->AsString();
 		if (path.empty())
 		{
 			continue;
@@ -728,7 +729,7 @@ void QtMainWindow::InitRecent()
 	}
 }
 
-void QtMainWindow::AddRecent(const QString &path)
+void QtMainWindow::AddRecent(const QString &pathString)
 {
     while(recentScenes.size())
     {
@@ -736,9 +737,34 @@ void QtMainWindow::AddRecent(const QString &path)
         recentScenes.removeAt(0);
     }
     
-    //EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
+	DAVA::FilePath pathToFile(pathString.toStdString());
+	Vector<String> filesList;
 
-    InitRecent();
+	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::MUTABLE_LENGTH)->AsInt32();
+	for(int32 i = 0; i < count; ++i)
+	{
+		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::MUTABLE_LENGTH)->AsString();
+		if(path != pathToFile.GetAbsolutePathname())
+		{
+			filesList.push_back(path);
+		}
+	}
+	
+	filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
+	count = 0;
+	for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_MAX_COUNT); ++count)
+	{
+		SettingsManager::Instance()->SetValue(Format("LastOpenedFile_%d", count),
+											  VariantType(filesList[count]),
+											  SettingsManager::MUTABLE_LENGTH);
+	}
+	SettingsManager::Instance()->SetValue("LastOpenedFilesCount",
+										  VariantType(count),
+										  SettingsManager::MUTABLE_LENGTH);
+	
+
+	SettingsManager::Instance()->SaveSettings();
+	InitRecent();
 }
 
 // ###################################################################################################
