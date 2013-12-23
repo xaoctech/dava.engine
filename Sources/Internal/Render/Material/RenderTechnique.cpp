@@ -157,8 +157,9 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
 }
 
     
-RenderTechnique * RenderTechniqueSingleton::RetainRenderTechniqueByName(const FilePath & renderTechniquePathname)
+RenderTechnique * RenderTechniqueSingleton::RetainRenderTechniqueByName(const FastName & renderTechniquePathInFastName)
 {
+    FilePath renderTechniquePathname(renderTechniquePathInFastName.c_str());
     FastName renderTechniqueFastName(renderTechniquePathname.GetRelativePathname().c_str());
     //Logger::Debug("Get render technique: %s %d", renderTechniquePathname.GetRelativePathname().c_str(), renderTechniqueFastName.Index());
     

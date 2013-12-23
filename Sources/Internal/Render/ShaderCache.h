@@ -44,26 +44,6 @@ class Shader;
 class ShaderAsset
 {
 public:
-    ShaderAsset(Data * _vertexShaderData,
-                Data * _fragmentShaderData);
-    
-    ~ShaderAsset();
-    
-    Shader * Compile(const FastNameSet & defines);
-    void Remove(const FastNameSet & defines);
-    Shader * Get(const FastNameSet & defines);
-    void BindShaderDefaults(Shader * shader);
-    
-protected:
-    //FastName name;
-    Data * vertexShaderData;
-    Data * fragmentShaderData;
-    uint8 * vertexShaderDataStart;
-    uint32 vertexShaderDataSize;
-    uint8 * fragmentShaderDataStart;
-    uint32 fragmentShaderDataSize;
-    
-    void BindDefaultValues();
     struct DefaultValue
     {
         union
@@ -72,6 +52,30 @@ protected:
             float32 float32Value;
         };
     };
+    
+    ShaderAsset(const FastName & name,
+                Data * _vertexShaderData,
+                Data * _fragmentShaderData);
+    
+    ~ShaderAsset();
+    
+    Shader * Compile(const FastNameSet & defines);
+    void Remove(const FastNameSet & defines);
+    Shader * Get(const FastNameSet & defines);
+    void BindShaderDefaults(Shader * shader);
+    const DefaultValue & GetDefaultValue(const FastName & name) { return defaultValues[name]; };
+    
+protected:
+    FastName name;
+    Data * vertexShaderData;
+    Data * fragmentShaderData;
+    uint8 * vertexShaderDataStart;
+    uint32 vertexShaderDataSize;
+    uint8 * fragmentShaderDataStart;
+    uint32 fragmentShaderDataSize;
+    
+    void BindDefaultValues();
+
     HashMap<FastName, DefaultValue> defaultValues;
     
     HashMap < FastNameSet, Shader *> compiledShaders;
@@ -89,7 +93,7 @@ public:
     Shader * Get(const FastName & shader, const FastNameSet & definesSet);
 
 private:
-    ShaderAsset * ParseShader(Data * vertexShaderData, Data * fragmentShaderData);
+    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
 
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };

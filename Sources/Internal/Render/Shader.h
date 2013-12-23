@@ -81,7 +81,6 @@ public:
     
     HashMap<FastName, uint32> manager;
     Vector<uint32> bytes;
-    
 };
     
 class Data;
@@ -190,13 +189,17 @@ public:
     // TODO: OLD FUNCTIONS: NEED TO REMOVE THEM 
     Shader * RecompileNewInstance(const String & combination);
     
-    static Shader * CompileShader(Data * vertexShaderData,
+    static Shader * CompileShader(const FastName & assetName,
+                                  Data * vertexShaderData,
                                   Data * fragmentShaderData,
                                   uint8 * vertexShaderDataStart,
                                   uint32 vertexShaderDataSize,
                                   uint8 * fragmentShaderDataStart,
                                   uint32 fragmentShaderDataSize,
                                   const FastNameSet & definesSet);
+    
+    const FastName & GetAssetName() { return assetName; };
+    
     bool Recompile(bool silentDelete = false);
 	bool IsReady();
     
@@ -252,7 +255,6 @@ public:
     void SetUniformValueByUniform(Uniform* uniform, const Vector4 & vector);
     void SetUniformValueByUniform(Uniform* uniform, const Matrix4 & matrix);
 	void SetUniformValueByUniform(Uniform* uniform, const Matrix3 & matrix);
-
     
     void Dump();
     
@@ -287,8 +289,7 @@ private:
     FastName *attributeNames;
     GLint activeAttributes;
     GLint activeUniforms;
-    
-    
+
 //    eUniform *uniformIDs;
 //    String * uniformNames;
 //    GLint * uniformLocations;
@@ -326,6 +327,7 @@ private:
     Data * vertexShaderData;
     Data * fragmentShaderData;
     FilePath vertexShaderPath, fragmentShaderPath;
+    FastName assetName;
 #endif
         
     uint8 * vertexShaderDataStart;
