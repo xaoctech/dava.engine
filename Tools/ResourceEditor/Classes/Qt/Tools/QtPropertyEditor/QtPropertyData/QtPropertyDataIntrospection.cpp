@@ -110,14 +110,25 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
 			else if(NULL != member->Dynamic())
 			{
 				retData = new QtPropertyData("Dynamic data");
+				retData->SetEnabled(false);
 
 				DAVA::InspInfoDynamic *dynamicInfo = member->Dynamic()->GetDynamicInfo();
 				if(NULL != dynamicInfo)
 				{
-					for(int i = 0; i < dynamicInfo->MembersCount(_object); ++i)
+					size_t count = dynamicInfo->MembersCount(_object); // this function can be slow
+					for(size_t i = 0; i < count; ++i)
 					{
-						QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(_object, dynamicInfo, i);
-						retData->ChildAdd(dynamicInfo->MemberName(_object, i), dynamicMember);
+						int memberFlags = dynamicInfo->MemberFlags(_object, i);
+						if(memberFlags & DAVA::I_VIEW)
+						{
+							QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(_object, dynamicInfo, i);
+							if(!(memberFlags & DAVA::I_EDIT))
+							{
+								dynamicMember->SetEnabled(false);
+							}
+
+							retData->ChildAdd(dynamicInfo->MemberName(_object, i), dynamicMember);
+						}
 					}
 				}
 			}

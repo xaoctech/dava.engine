@@ -46,16 +46,6 @@ namespace DAVA
 #if defined(__DAVAENGINE_OPENGL__)
 	GLuint Shader::activeProgram = 0;
 	
-	bool IsAutobindUniform(Shader::eUniform uniformId)
-	{
-		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-				uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-				uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-				uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-				uniformId == Shader::UNIFORM_COLOR ||
-				uniformId == Shader::UNIFORM_GLOBAL_TIME);
-	}
-	
 	Shader::Shader()
     : RenderResource()
 	{
@@ -1057,6 +1047,16 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			RENDER_VERIFY(glUseProgram(0));
 			activeProgram = 0;
 		}
+	}
+
+	bool Shader::IsAutobindUniform(Shader::eUniform uniformId)
+	{
+		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+		uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+		uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+		uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+		uniformId == Shader::UNIFORM_COLOR ||
+		uniformId == Shader::UNIFORM_GLOBAL_TIME);
 	}
     
 	void Shader::Bind()

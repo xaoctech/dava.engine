@@ -32,10 +32,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
+, curMaterial()
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -63,6 +65,20 @@ MaterialEditor::~MaterialEditor()
 	posSaver.SaveState(ui->splitter_2);
 }
 
+void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
+{
+	curMaterial = material;
+
+	ui->materialProperty->RemovePropertyAll();
+	ui->materialTexture->RemovePropertyAll();
+
+	if(NULL != material)
+	{
+		FillMaterialProperties(material);
+		FillMaterialTextures(material);
+	}
+}
+
 void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(isVisible())
@@ -74,22 +90,17 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 }
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
-{ }
+{ 
+	SetCurMaterial(NULL);
+}
 
 void MaterialEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
 { }
 
 void MaterialEditor::materialClicked(const QModelIndex &index)
 {
-	ui->materialProperty->RemovePropertyAll();
-	ui->materialTexture->RemovePropertyAll();
-
 	DAVA::NMaterial *material = ui->materialTree->GetMaterial(index);
-	if(NULL != material)
-	{
-		FillMaterialProperties(material);
-		FillMaterialTextures(material);
-	}
+	SetCurMaterial(material);
 }
 
 void MaterialEditor::showEvent(QShowEvent * event)
@@ -102,48 +113,60 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 	const DAVA::InspInfo *info = material->GetTypeInfo();
 	const DAVA::InspMember *materialProperties = info->BaseInfo()->Member("materialProperties");
 
-	// fill own material properties
+	// fill material properties
 	if(NULL != materialProperties)
 	{
-		QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialProperties);
-		while(0 != data->ChildCount())
+		const DAVA::InspMemberDynamic* dynamicMember = materialProperties->Dynamic();
+
+		if(NULL != dynamicMember)
 		{
-			QtPropertyData *c = data->ChildGet(0);
-			data->ChildExtract(c);
+			DAVA::InspInfoDynamic *dynamicInfo = dynamicMember->GetDynamicInfo();
 
-			ui->materialProperty->AppendProperty(c->GetName(), c);
-		}
-
-		delete data;
-	}
-
-	// fill parent material properties
-	material = material->GetParent();
-	while(NULL != material)
-	{
-		info = material->GetTypeInfo();
-		materialProperties = info->BaseInfo()->Member("materialProperties");
-
-		if(NULL != materialProperties)
-		{
-			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialProperties);
-			while(0 != data->ChildCount())
+			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
+			for(size_t i = 0; i < count; ++i)
 			{
-				QtPropertyData *c = data->ChildGet(0);
-				data->ChildExtract(c);
-				
-				c->SetEnabled(false);
-				c->SetBackground(QBrush(QColor(0, 0, 0, 15)));
+				int memberFlags = dynamicInfo->MemberFlags(material, i);
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
 
-				ui->materialProperty->AppendProperty(c->GetName(), c);
+				// self property
+				if(memberFlags & DAVA::I_EDIT)
+				{
+					QtPropertyToolButton* btn = dynamicMember->AddButton();
+					btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+					btn->setIconSize(QSize(14, 14));
+					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
+
+					// isn't set in parent or shader
+					if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+					{
+						dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+					}
+				}
+				// not self property (is set in parent or shader)
+				else
+				{
+					dynamicMember->SetEnabled(false);
+
+					QtPropertyToolButton* btn = dynamicMember->AddButton();
+					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+					btn->setIconSize(QSize(14, 14));
+					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
+
+					// shader param
+					if(memberFlags & DAVA::I_SAVE)
+					{
+						dynamicMember->SetBackground(QBrush(QColor(0, 0, 255, 10)));
+					}
+					else
+					{
+						dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+					}
+				}
+
+				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
 			}
-
-			delete data;
 		}
-
-		material = material->GetParent();
 	}
-
 }
 
 void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
@@ -165,32 +188,34 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 
 		delete data;
 	}
+}
 
-	// fill parent material textures
-	material = material->GetParent();
-	while(NULL != material)
+void MaterialEditor::OnAddProperty()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+	
+	if(NULL != btn)
 	{
-		info = material->GetTypeInfo();
-		materialTextures = info->BaseInfo()->Member("textures");
-
-		if(NULL != materialTextures)
-		{
-			QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialTextures);
-			while(0 != data->ChildCount())
-			{
-				QtPropertyData *c = data->ChildGet(0);
-				data->ChildExtract(c);
-				
-				c->SetEnabled(false);
-				c->SetBackground(QBrush(QColor(0, 0, 0, 15)));
-
-				ui->materialTexture->AppendProperty(c->GetName(), c);
-			}
-
-			delete data;
-		}
-
-		material = material->GetParent();
+		QtPropertyData *data = btn->GetPropertyData();
 	}
+}
+
+void MaterialEditor::OnRemProperty()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyData *data = btn->GetPropertyData();
+	}
+}
+
+void MaterialEditor::OnAddTexture()
+{
+
+}
+
+void MaterialEditor::OnRemTexture()
+{
 
 }
