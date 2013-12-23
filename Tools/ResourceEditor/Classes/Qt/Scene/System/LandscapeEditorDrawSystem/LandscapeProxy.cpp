@@ -31,7 +31,7 @@
 #include "LandscapeProxy.h"
 #include "CustomLandscape.h"
 
-LandscapeProxy::LandscapeProxy(Landscape* landscape)
+LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 :	displayingTexture(0)
 ,	mode(MODE_ORIGINAL_LANDSCAPE)
 ,	tilemaskWasChanged(0)
@@ -46,6 +46,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 	tilemaskSprites[TILEMASK_SPRITE_DESTINATION] = NULL;
 
 	baseLandscape = SafeRetain(landscape);
+	landscapeNode = SafeRetain(node);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
 	{
 		texturesToBlend[i] = NULL;
@@ -68,6 +69,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 
 LandscapeProxy::~LandscapeProxy()
 {
+	SafeRelease(landscapeNode);
 	SafeRelease(baseLandscape);
 	SafeRelease(displayingTexture);
 	SafeRelease(customLandscape);
@@ -97,6 +99,9 @@ void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode mode)
 	}
 
 	this->mode = mode;
+
+	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
+	landscapeNode->AddComponent(new RenderComponent(GetRenderObject()));
 }
 
 void LandscapeProxy::SetRenderer(LandscapeRenderer *renderer)
@@ -365,7 +370,10 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 		RenderManager::Instance()->FlushState();
 //		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
 
+		eLandscapeMode oldMode = mode;
+		SetMode(MODE_ORIGINAL_LANDSCAPE);
 		fullTiledTexture = baseLandscape->CreateLandscapeTexture();
+		SetMode(oldMode);
 
 		TextureStateData textureStateData;
 		textureStateData.textures[0] = fullTiledTexture;

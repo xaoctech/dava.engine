@@ -564,9 +564,8 @@ void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
 
 	if (GetTileColor(index) != color)
 	{
-		MetaObjModifyCommand* command = CreateTileColorCommand((Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index),
-															   color);
-		((SceneEditor2*)GetScene())->Exec(command);
+		Landscape* landscape = drawSystem->GetBaseLandscape();
+		landscape->SetTileColor((Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index), color);
 	}
 }
 

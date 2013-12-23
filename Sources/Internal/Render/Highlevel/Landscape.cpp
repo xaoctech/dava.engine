@@ -1673,10 +1673,7 @@ Texture * Landscape::CreateLandscapeTexture()
     ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
     ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
 
-	float32 fD = fogDensity;
-	fogDensity = 0.f;
 	SetupMaterialProperties();
-	fogDensity = fD;
 	
     //Draw landscape to texture
     Rect oldViewport = RenderManager::Instance()->GetViewport();
