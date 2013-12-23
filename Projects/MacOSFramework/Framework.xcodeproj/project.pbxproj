@@ -826,6 +826,12 @@
 		A63BCD6D17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
 		A63BCD6E17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
 		A63BCD6F17EB26E300EA4811 /* Process.h in Headers */ = {isa = PBXBuildFile; fileRef = A63BCD6917EB26E300EA4811 /* Process.h */; };
+		A650F4B81864A10100D3278D /* NMaterialTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A650F4B61864A10100D3278D /* NMaterialTemplate.cpp */; };
+		A650F4B91864A10100D3278D /* NMaterialTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A650F4B61864A10100D3278D /* NMaterialTemplate.cpp */; };
+		A650F4BA1864A10100D3278D /* NMaterialTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A650F4B61864A10100D3278D /* NMaterialTemplate.cpp */; };
+		A650F4BB1864A10100D3278D /* NMaterialTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = A650F4B71864A10100D3278D /* NMaterialTemplate.h */; };
+		A650F4BC1864A10100D3278D /* NMaterialTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = A650F4B71864A10100D3278D /* NMaterialTemplate.h */; };
+		A650F4BD1864A10100D3278D /* NMaterialTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = A650F4B71864A10100D3278D /* NMaterialTemplate.h */; };
 		A66533E817F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
 		A66533E917F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
 		A66533EA17F98EC100B8906A /* Serializable.h in Headers */ = {isa = PBXBuildFile; fileRef = A66533E717F98EC100B8906A /* Serializable.h */; };
@@ -2294,6 +2300,8 @@
 		9A011951C57E3EEDBCB3EF43 /* GamepadDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GamepadDevice.cpp; sourceTree = "<group>"; };
 		A63BCD6817EB26E300EA4811 /* Process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Process.cpp; sourceTree = "<group>"; };
 		A63BCD6917EB26E300EA4811 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
+		A650F4B61864A10100D3278D /* NMaterialTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialTemplate.cpp; sourceTree = "<group>"; };
+		A650F4B71864A10100D3278D /* NMaterialTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterialTemplate.h; sourceTree = "<group>"; };
 		A66533E717F98EC100B8906A /* Serializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serializable.h; sourceTree = "<group>"; };
 		A670F2C5184773B40030E075 /* SpeedTreeLeafBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeLeafBatch.cpp; sourceTree = "<group>"; };
 		A670F2C6184773B40030E075 /* SpeedTreeLeafBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeLeafBatch.h; sourceTree = "<group>"; };
@@ -3771,6 +3779,8 @@
 				1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */,
 				C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */,
 				C18577ED17A16DA800331A95 /* MaterialOptimazer.h */,
+				A650F4B61864A10100D3278D /* NMaterialTemplate.cpp */,
+				A650F4B71864A10100D3278D /* NMaterialTemplate.h */,
 			);
 			path = Material;
 			sourceTree = "<group>";
@@ -4327,6 +4337,7 @@
 				176DE9BA174B5561007A983B /* GameObjectManager.h in Headers */,
 				176DE9BB174B5561007A983B /* TextGameObject.h in Headers */,
 				176DE9BC174B5561007A983B /* BillboardNode.h in Headers */,
+				A650F4BD1864A10100D3278D /* NMaterialTemplate.h in Headers */,
 				176DE9BD174B5561007A983B /* BoneNode.h in Headers */,
 				176DE9BE174B5561007A983B /* BulletComponent.h in Headers */,
 				176DE9BF174B5561007A983B /* CameraComponent.h in Headers */,
@@ -4577,6 +4588,7 @@
 				E8989E3716BD24E500732C04 /* FileSystem.h in Headers */,
 				E8989E3A16BD24E500732C04 /* KeyedArchive.h in Headers */,
 				E8989E3C16BD24E500732C04 /* KeyedArchiver.h in Headers */,
+				A650F4BB1864A10100D3278D /* NMaterialTemplate.h in Headers */,
 				E8989E3E16BD24E500732C04 /* KeyedUnarchiver.h in Headers */,
 				E8989E4216BD24E500732C04 /* LocalizationSystem.h in Headers */,
 				E8989E4416BD24E500732C04 /* Logger.h in Headers */,
@@ -5150,6 +5162,7 @@
 				E898A18316BD265400732C04 /* UIHierarchyNode.h in Headers */,
 				E898A18416BD265400732C04 /* UIHoleTransition.h in Headers */,
 				E898A18516BD265400732C04 /* UIJoypad.h in Headers */,
+				A650F4BC1864A10100D3278D /* NMaterialTemplate.h in Headers */,
 				E898A18616BD265400732C04 /* UIList.h in Headers */,
 				E898A18716BD265400732C04 /* UIListCell.h in Headers */,
 				E898A18816BD265400732C04 /* UILoadingTransition.h in Headers */,
@@ -5484,6 +5497,7 @@
 				176DEABE174B5561007A983B /* NMaterial.cpp in Sources */,
 				176DEABF174B5561007A983B /* Material.cpp in Sources */,
 				176DEAC0174B5561007A983B /* RenderBase.cpp in Sources */,
+				A650F4BA1864A10100D3278D /* NMaterialTemplate.cpp in Sources */,
 				176DEAC1174B5561007A983B /* RenderDataObject.cpp in Sources */,
 				176DEAC2174B5561007A983B /* RenderEffect.cpp in Sources */,
 				176DEAC3174B5561007A983B /* RenderGrayscaleEffect.cpp in Sources */,
@@ -5806,6 +5820,7 @@
 				E8989F3416BD24E500732C04 /* MaterialGraph.cpp in Sources */,
 				E8989F3616BD24E500732C04 /* MaterialGraphNode.cpp in Sources */,
 				E8989F3816BD24E500732C04 /* NMaterial.cpp in Sources */,
+				A650F4B81864A10100D3278D /* NMaterialTemplate.cpp in Sources */,
 				E8989F3B16BD24E500732C04 /* Material.cpp in Sources */,
 				E8989F3F16BD24E500732C04 /* RenderBase.cpp in Sources */,
 				E8989F4116BD24E500732C04 /* RenderDataObject.cpp in Sources */,
@@ -6241,6 +6256,7 @@
 				E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */,
 				E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */,
 				E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */,
+				A650F4B91864A10100D3278D /* NMaterialTemplate.cpp in Sources */,
 				E898A29016BD265400732C04 /* UI3DView.cpp in Sources */,
 				E898A29116BD265400732C04 /* UIButton.cpp in Sources */,
 				E898A29216BD265400732C04 /* UIControl.cpp in Sources */,

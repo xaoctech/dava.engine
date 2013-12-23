@@ -55,13 +55,8 @@ class MaterialCompiler;
 class MaterialGraph;
 	
 class NMaterial;
-class MaterialChangeListener
-{
-public:
-	virtual void ParentChanged(NMaterial* material) = 0;
-	virtual void SystemChanged(NMaterial* material) = 0;
-};
-
+class NMaterialTemplate;
+	
 struct IlluminationParams : public InspBase
 {
     static const int32 LIGHTMAP_SIZE_DEFAULT = 128;
@@ -100,7 +95,6 @@ public:
 	{
 		return NULL;
 	}
-
 };
 	
 template<typename MEMMANAGER>
@@ -159,35 +153,139 @@ public:
 	NMaterialState();
 	virtual ~NMaterialState();
 	
-	// Work with textures and properties
-    void SetTexture(const FastName & textureFastName, Texture * texture);
-    Texture * GetTexture(const FastName & textureFastName) const;
-    Texture * GetTexture(uint32 index) const;
-	const FastName& GetTextureName(uint32 index) const;
-    uint32 GetTextureCount() const;
-    
-    void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
-	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
 	
-	virtual void SetMaterialName(const String& name);
-	const FastName& GetMaterialName() const;
-	virtual void SetParentName(const String& name);
-	const FastName& GetParentName() const;
+protected:
 	
-	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
-    MaterialTechnique * GetTechnique(const FastName & techniqueName);
 	
-	bool LoadFromYamlNode(const YamlNode* stateNode);
+protected:
 	
-	NMaterialState* CloneState();
+	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
+		
+	void ShallowCopyTo(NMaterialState* targetState, bool copyNames = true);
+	void DeepCopyTo(NMaterialState* targetState);
 	
-	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
+	void MapTextureNameToSlot(const FastName& textureName);
+	
+	void CopyTechniquesTo(NMaterialState* targetState);
+
+	void PropagateDirtyTextures();
+	
+protected:
+	
+};
+
+class Camera;
+class SerializationContext;
+class MaterialSystem;
+class NMaterial : public DataNode
+{
+	friend class MaterialSystem;
+	friend class MaterialCompiler;
+	
+public:
+	
+	typedef uint64 NMaterialKey;
+
+    static const FastName TEXTURE_ALBEDO;
+    static const FastName TEXTURE_NORMAL;
+    static const FastName TEXTURE_DETAIL;
+    static const FastName TEXTURE_LIGHTMAP;
+	static const FastName TEXTURE_DECAL;
+	
+	static const FastName PARAM_LIGHT_POSITION0;
+	static const FastName PARAM_PROP_AMBIENT_COLOR;
+	static const FastName PARAM_PROP_DIFFUSE_COLOR;
+	static const FastName PARAM_PROP_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_AMBIENT_COLOR;
+	static const FastName PARAM_LIGHT_DIFFUSE_COLOR;
+	static const FastName PARAM_LIGHT_SPECULAR_COLOR;
+	static const FastName PARAM_LIGHT_INTENSITY0;
+	static const FastName PARAM_MATERIAL_SPECULAR_SHININESS;
+	static const FastName PARAM_FOG_COLOR;
+	static const FastName PARAM_FOG_DENSITY;
+	static const FastName PARAM_FLAT_COLOR;
+	static const FastName PARAM_TEXTURE0_SHIFT;
+	static const FastName PARAM_UV_OFFSET;
+	static const FastName PARAM_UV_SCALE;
+	
+	enum eMaterialType
+	{
+		MATERIALTYPE_NONE = 0,
+		MATERIALTYPE_MATERIAL = 1,
+		MATERIALTYPE_INSTANCE = 2
+	};
+	
+public:
+	
+	NMaterial();
+	
 	inline NMaterial* GetParent() {return parent;}
 	
-	NMaterialState* CreateTemplate(NMaterial* templateParent);
+	void AddChild(NMaterial* material);
+	void RemoveChild(NMaterial* material);
+    int32 GetChildrenCount() const;
+    NMaterial *GetChild(int32 index) const;
+		
+	//{TODO: these should be removed and changed to a generic system
+	//setting properties via special setters
+    uint32 GetLightCount() { return lightCount; };
+    void SetLight(uint32 index, Light * light);
+    Light * GetLight(uint32 index) { return lights[index]; };
+	inline bool IsDynamicLit() {return materialDynamicLit;}
+	//}END TODO
 	
-	void SetParentToState(NMaterial* material);
-			
+    void Draw(PolygonGroup * polygonGroup);
+	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
+	
+	void SetFlag(const FastName& flag, bool flagValue);
+	void SetBlockFlag(const FastName& flag, bool blockState);
+	bool GetFlagValue(const FastName& flag);
+	bool IsFlagBlocked(const FastName& flag);
+    
+	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);
+    MaterialTechnique * GetTechnique(const FastName & techniqueName);
+	void SubclassRenderState(const FastName & techniqueName, UniqueHandle renderStateHandle);
+	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
+		
+	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
+	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+	
+	bool SwitchQuality(const FastName& stateName);
+	
+	NMaterial* Clone();
+	NMaterial* Clone(const String& newName);
+    
+		
+    IlluminationParams * GetIlluminationParams();
+    void ReleaseIlluminationParams();
+	
+	// Work with textures and properties
+    void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
+	void SetTexture(const FastName& textureFastName, Texture* texture);
+    Texture * GetTexture(const FastName& textureFastName) const;
+	const FilePath& GetTexturePath(const FastName& textureFastName) const;
+    Texture * GetTexture(int32 index) const;
+	const FilePath& GetTexturePath(int32 index) const;
+	const FastName& GetTextureName(int32 index) const;
+    uint32 GetTextureCount() const;
+    
+    void SetPropertyValue(const FastName & keyName,
+						  Shader::eUniformType type,
+						  uint32 size,
+						  const void * data);
+	NMaterialProperty* GetPropertyValue(const FastName & keyName) const;
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
+	void RemoveMaterialProperty(const FastName & keyName);
+	
+	void SetMaterialName(const String& name);
+	inline const FastName& GetMaterialName() const {return materialName;}
+	
+	inline eMaterialType GetMaterialType() const {return materialType;}
+	
+	inline NMaterialKey GetMaterialKey() {return materialKey;}
+	
+	const FastNameSet& GetRenderLayers();
+	
 protected:
 	
 	class GenericPropertyManager
@@ -206,61 +304,103 @@ protected:
 		static NMaterialProperty* Clone(NMaterialProperty* prop);
 	};
 	
-	typedef NManagedMaterialProperty<NMaterialState::GenericPropertyManager> GenericMaterialProperty;
-	typedef NManagedMaterialProperty<NMaterialState::UniformPropertyManager> UniformMaterialProperty;
+	typedef NManagedMaterialProperty<GenericPropertyManager> GenericMaterialProperty;
+	typedef NManagedMaterialProperty<UniformPropertyManager> UniformMaterialProperty;
+
 	
-protected:
+	struct TextureParamCacheEntry
+	{
+		FastName textureName;
+		int32 slot;
+		Texture* tx;
+	};
+	
+	struct UniformCacheEntry
+	{
+		Shader::Uniform* uniform;
+		int32 index;
+		void* propData;
+	};
 	
 	struct TextureBucket
 	{
-		Texture* texture;
+		Texture* texture; //VI: can be NULL
 		int32 index;
+		FilePath path;
 	};
 	
-	FastName parentName;
+protected:
+		
 	FastName materialName;
+	eMaterialType materialType;
+	NMaterialKey materialKey;
+
+	HashMap<FastName, NMaterialProperty*> materialProperties;
 	
-	FastNameSet layers;
-    
-	HashMap<FastName, MaterialTechnique *> techniqueForRenderPass;
-	FastNameSet nativeDefines;
-    
-	HashMap<FastName, NMaterialProperty* > materialProperties;
-    
 	HashMap<FastName, TextureBucket*> textures;
-	Vector<Texture*> texturesArray;
-    Vector<FastName> textureNamesArray;
 	UniqueHandle textureStateHandle;
-	//Vector<int32> textureSlotArray;
+	bool texturesDirty;
 	
 	NMaterial* parent;
 	Vector<NMaterial*> children;
 	
 	//TODO: fill it from configuration
 	uint32 requiredVertexFormat;
-	
-	bool texturesDirty;
-	
-protected:
-	
-	void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
-	
-	void AddMaterialDefineToState(const FastName& defineName);
-	void RemoveMaterialDefineFromState(const FastName& defineName);
-	
-	void AddChildToState(NMaterial* material);
-	void RemoveChildFromState(NMaterial* material);
-	
-	void ShallowCopyTo(NMaterialState* targetState, bool copyNames = true);
-	void DeepCopyTo(NMaterialState* targetState);
-	
-	void MapTextureNameToSlot(const FastName& textureName);
-	
-	void CopyTechniquesTo(NMaterialState* targetState);
 
-	void PropagateDirtyTextures();
+ 	//{TODO: these should be removed and changed to a generic system
+	//setting properties via special setters
+    uint32 lightCount;
+    Light * lights[8];
+	bool materialDynamicLit;
+	//}END TODO
+
+    FastName activeTechniqueName;
+    MaterialTechnique * activeTechnique;
+	bool ready;
+	
+	FastName currentQuality;
+	
+	//TODO: these should be stored per technique
+	Vector<TextureParamCacheEntry> textureParamsCache;
+	Vector<UniformCacheEntry> activeUniformsCache;
+	Vector<uint8> uniformDataStorage;
+	
+	TextureParamCacheEntry* textureParamsCachePtr;
+	UniformCacheEntry* activeUniformsCachePtr;
+	size_t textureParamsCacheSize;
+	size_t activeUniformsCacheSize;
+		
+    IlluminationParams * illuminationParams;
+	
+	const NMaterialTemplate* materialTemplate;
+	
+	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
+	FastNameSet materialSetFlags; //VI: flags set in the current material only
+	FastNameSet materialBlockedFlags; //VI: flags blocked in the current material only
 	
 protected:
+	
+	virtual ~NMaterial();
+	
+	inline void SetMaterialType(eMaterialType matType) {materialType = matType;}
+	inline void SetMaterialKey(NMaterialKey key) {materialKey = key;}
+	void SetMaterialTemplate(const NMaterialTemplate* matTemplate);
+	
+	void BuildEffectiveFlagSet(FastNameSet effectiveFlagSet);
+	
+	void DeserializeFastNameSet(const KeyedArchive* srcArchive,
+								FastNameSet& targetSet);
+	void SerializeFastNameSet(const FastNameSet& srcSet,
+							  KeyedArchive* targetArchive);
+	
+protected:
+	
+	void OnParentChanged(NMaterial* newParent);
+	void OnMaterialTemplateChanged();
+	void OnParentFlagsChanged();
+	void OnInstanceQualityChanged();
+	
+public:
 	
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
@@ -284,226 +424,16 @@ protected:
 		const char* MemberName(void *object, int index) const;
 		VariantType MemberValueGet(void *object, int index) const;
 		void MemberValueSet(void *object, int index, const VariantType &value);
-		
-		
-	};
-
-
-public:
-	INTROSPECTION(NMaterialState,
-		DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
-		DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
-		);
-};
-
-class Camera;
-class SerializationContext;
-class MaterialSystem;
-class NMaterial : public NMaterialState
-{
-	friend class MaterialSystem;
-
-protected:
-	virtual ~NMaterial();
-
-public:
-    static const FastName TEXTURE_ALBEDO;
-    static const FastName TEXTURE_NORMAL;
-    static const FastName TEXTURE_DETAIL;
-    static const FastName TEXTURE_LIGHTMAP;
-	static const FastName TEXTURE_DECAL;
-	
-	static const FastName PARAM_LIGHT_POSITION0;
-	static const FastName PARAM_PROP_AMBIENT_COLOR;
-	static const FastName PARAM_PROP_DIFFUSE_COLOR;
-	static const FastName PARAM_PROP_SPECULAR_COLOR;
-	static const FastName PARAM_LIGHT_AMBIENT_COLOR;
-	static const FastName PARAM_LIGHT_DIFFUSE_COLOR;
-	static const FastName PARAM_LIGHT_SPECULAR_COLOR;
-	static const FastName PARAM_LIGHT_INTENSITY0;
-	static const FastName PARAM_MATERIAL_SPECULAR_SHININESS;
-	static const FastName PARAM_FOG_COLOR;
-	static const FastName PARAM_FOG_DENSITY;
-	static const FastName PARAM_FLAT_COLOR;
-	static const FastName PARAM_TEXTURE0_SHIFT;
-	static const FastName PARAM_UV_OFFSET;
-	static const FastName PARAM_UV_SCALE;
-    
-	NMaterial();
-	
-	void SetParent(NMaterial* material);
-	void AddChild(NMaterial* material);
-	void RemoveChild(NMaterial* material);
-    
-    int32 GetChildrenCount() const;
-    NMaterial *GetChild(int32 index) const;
-	
-	//VI: you need to manually rebuild material after defines have been changed
-	//this is done in order to be able change defines serially without autorebuild
-	void AddMaterialDefine(const FastName& defineName);
-	void RemoveMaterialDefine(const FastName& defineName);
-
-	inline const FastNameSet & GetRenderLayers();
-	
-	//{TODO: these should be removed and changed to a generic system
-	//setting properties via special setters
-    uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light);
-    Light * GetLight(uint32 index) { return lights[index]; };
-	inline bool IsDynamicLit() {return materialDynamicLit;}
-	//}END TODO
-	
-    void Draw(PolygonGroup * polygonGroup);
-	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
-    
-	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);    
-	
-	void Rebuild(bool recursive = true);
-	void Rebind(bool recursive = true);
-	inline bool IsReady() {return ready;}
-	inline bool IsConfigMaterial() {return configMaterial;}
-	
-	bool LoadFromFile(const FilePath & pathname);
-	
-	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
-	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
-	
-	bool SwitchState(const FastName& stateName, MaterialSystem* materialSystem,
-					 bool forceSwitch = false);
-	
-	bool IsSwitchable() const;
-	
-	NMaterial* Clone();
-	NMaterial* Clone(const String& newName);
-    
-    virtual void SetMaterialName(const String& name);
-	
-	//VI: these 2 methods are used for old material conversion and for setting lightmap props during lightmap generation
-	//VI: need to multiplex single old state to LOD states
-	uint32 GetStateCount() const;
-	NMaterialState* GetState(uint32 index);
-	
-	inline void SetMaterialSystem(MaterialSystem* system)
-	{
-		bool changed = (materialSystem != system);
-		materialSystem = system;
-		
-		if(stateListener && changed)
-		{
-			stateListener->SystemChanged(this);
-		}
-	}
-	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
-	inline bool HasDefine(const FastName& defineName) const {return (inheritedDefines.count(defineName) > 0);}
-		
-	void SwitchParent(const FastName& newParent);
-	void SwitchParentForAllStates(const FastName& newParent);
-	
-	inline MaterialChangeListener* GetChangeListener() {return stateListener;}
-	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}
-	
-    IlluminationParams * GetIlluminationParams();
-    void ReleaseIlluminationParams();
-	
-	void UpdateMaterialSystem(MaterialSystem* matSystem);
-
-protected:
-	
-	struct TextureParamCacheEntry
-	{
-		FastName textureName;
-		int32 slot;
-		Texture* tx;
 	};
 	
-	struct UniformCacheEntry
-	{
-		Shader::Uniform* uniform;
-		int32 index;
-		//NMaterialProperty* prop;
-		void* propData;
-	};
-
-    
- 	FastNameSet inheritedDefines;
- 	FastNameSet effectiveLayers;
-	
-	//{TODO: these should be removed and changed to a generic system
-	//setting properties via special setters
-    uint32 lightCount;
-    Light * lights[8];
-	bool materialDynamicLit;
-	//}END TODO
-
-    FastName activeTechniqueName;
-    MaterialTechnique * activeTechnique;
-	bool ready;
-	
-	bool configMaterial;
-	
-	FastName  currentStateName;
- 	HashMap<FastName, NMaterialState*> states;
-	
-	//TODO: therse should be stored per technique
-	Vector<TextureParamCacheEntry> textureParamsCache;
-	Vector<UniformCacheEntry> activeUniformsCache;
-	Vector<uint8> uniformDataStorage;
-	
-	TextureParamCacheEntry* textureParamsCachePtr;
-	UniformCacheEntry* activeUniformsCachePtr;
-	size_t textureParamsCacheSize;
-	size_t activeUniformsCacheSize;
-	
-	static uint64 uniqueIdSequence;
-	
-	MaterialSystem* materialSystem;
-	
-	MaterialChangeListener* stateListener;
-	
-    IlluminationParams * illuminationParams;
-
-protected:
-	
-	void ResetParent();
-	
-	void OnParentChanged();
-	void NotifyChildrenOnChange();
-	
-	void PropagateParentLayers();
-	void PropagateParentDefines();
-	void UnPropagateParentDefines();
-	
-//	void BindTextures(NMaterial* curMaterial, RenderState* rs);
-	void SetupPerFrameProperties(Camera* camera);
-	
-	void Serialize(const NMaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
-	void Deserialize(NMaterialState& materialState, KeyedArchive * archive, SerializationContext * serializationContext);
-	
-	void SerializeFastNameSet(const FastNameSet& srcSet, KeyedArchive* targetArchive);
-	void DeserializeFastNameSet(const KeyedArchive* srcArchive, FastNameSet& targetSet);
-		
-	void GenerateName();
-	
-	void BuildTextureParamsCache(const MaterialTechnique& technique);
-	void BuildActiveUniformsCache(const MaterialTechnique& technique);
-	void BindMaterialTextures(RenderState* renderState);
-	void BindMaterialProperties(Shader * shader);
-	
-	void OnDirtyTextures();
-	
-	void OnChildMaterialSystemChanged(NMaterial* child, MaterialSystem* matSystem);
-
 public:
-    INTROSPECTION_EXTEND(NMaterial, NMaterialState,
-        MEMBER(illuminationParams, "Illumination Parameters", I_SAVE | I_VIEW | I_EDIT)
-	);
+	
+	INTROSPECTION(NMaterial,
+				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
+				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
+				  );
 
 };
-
-inline const FastNameSet& NMaterial::GetRenderLayers()
-{
-	return effectiveLayers;
-}
 
 };
 

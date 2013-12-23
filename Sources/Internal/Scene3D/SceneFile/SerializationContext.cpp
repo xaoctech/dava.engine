@@ -276,6 +276,14 @@ namespace DAVA
 		{
 			SafeRelease(it->second);
 		}
+
+		for(Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.begin();
+			it != serializationMaterialMap.end();
+			++it)
+		{
+			SafeRelease(it->second);
+			//VI: TODO: make sure there's only 1 reference to the material at this point
+		}
 	}
 
 	NMaterial* SerializationContext::ConvertOldMaterialToNewMaterial(Material* oldMaterial,
@@ -296,7 +304,7 @@ namespace DAVA
 		//VI:                                                   properties set)
 		
 		//VI: try to find INSTANCE_WITH_COMMON_PROPS_AND_TEXTURES by old material name
-		String oldMaterialNameStr = Format("%s[%ld]", oldMaterial->GetName().c_str(), oldMaterialId);
+		/*String oldMaterialNameStr = Format("%s[%ld]", oldMaterial->GetName().c_str(), oldMaterialId);
 		FastName oldMaterialName(oldMaterialNameStr);
 
 		FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
@@ -390,7 +398,7 @@ namespace DAVA
 		//VI: common node material should be retained in the child only
 		SafeRelease(commonNodeMaterial);
 		
-		return resultMaterial;
+		return resultMaterial;*/
 	}
 	
 	NMaterial* SerializationContext::GetNewMaterial(const String& name)

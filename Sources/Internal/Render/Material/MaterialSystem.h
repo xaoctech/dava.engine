@@ -37,7 +37,7 @@
 #include "Scene3D/DataNode.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/Shader.h"
-
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
@@ -51,72 +51,33 @@ class MaterialSystem
 {
 public:
 	
+	static FastName GLOBAL_NAME;
+	static NMaterial::NMaterialKey GLOBAL_KEY;
+	
+public:
+	
 	MaterialSystem();
 	~MaterialSystem();
 	
-	bool LoadMaterialConfig(const FilePath& filePath);
+	//VI: material names can be duplicate. Returns first material found
+    NMaterial* GetMaterial(const FastName& name);
+	NMaterial* GetMaterial(NMaterial::NMaterialKey materialKey);
 	
-    NMaterial* GetMaterial(const FastName & name); //returns substitute material if there were no requested one
-	NMaterial* GetSpecificMaterial(const FastName & name); //returns NULL if there were no requested one
-
-	//MaterialSystem will take ownership on the added material so release it after adding
-	void AddMaterial(NMaterial* material);
-	
-	//MaterialSystem will call Release() on the material after removing it from its state
-	void RemoveMaterial(NMaterial* material);
-	void Clear();
-	
-	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const;
-	
-	inline NMaterial* GetDefaultMaterial() const {return defaultMaterial;}
+	void BuildMaterialList(Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
 	
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
-	void SwitchMaterialQuality(const FastName& qualityLevelName, bool forceSwitch = false);
+	void SwitchMaterialQuality(const FastName& qualityLevelName);
 	
-	static NMaterial* CreateInstanceChild(NMaterial* parent);
-	NMaterial* CreateInstanceChild(const FastName& parentName);
-	
-	static NMaterial* CreateSwitchableChild(NMaterial* parent);
-	NMaterial* CreateSwitchableChild(const FastName& parentName);
-	
-	//NMaterial* CreateChild(NMaterial* parent);
-	//NMaterial* CreateChild(const FastName& parentName);
-	
-	bool Contains(NMaterial* material);
-	
-	void BindMaterial(NMaterial* material);
-	
-	static NMaterial* CreateNamed();
-	
-private:
-	
-	friend class NMaterial;
-	
-	struct MaterialData
-	{
-		String name;
-		String path;
-		String parent;
-		bool isLod;
-	};
-	
-private:
+	static NMaterial* CreateMaterialInstance();
 		
-	NMaterial* LoadMaterial(const FastName& name,
-							const FilePath& filePath,
-							NMaterial* parentMaterial,
-							bool isLod,
-							Map<String, Vector<MaterialData> >& nodes);
-	
-	void BuildAndBindOnMainThread(BaseObject * caller, void * param, void *callerData);
-	
+	static NMaterial* CreateMaterial(const FastName& materialName,
+									 const FastName& templateName);
+		
 private:
-	
-    HashMap<FastName, NMaterial*> materials;
-	//HashMap<FastName, NMaterial*> switchableTemplates;
-	NMaterial* defaultMaterial;
 	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;
