@@ -35,13 +35,13 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/Random.h"
 #include "Core/PerformanceSettings.h"
+#include "Render/Material/MaterialSystem.h"
 
-#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 16)
 
 namespace DAVA
 {
 
-
+#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 4)
 static const uint32 BLEND_KEYS[] =
 {
 	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
@@ -77,8 +77,43 @@ const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameB
 }
 
 
+NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor)
+{
+	if (!texture) //for superemmiter particles eg
+		return NULL;
+
+	uint32 materialKey = MAKE_BLEND_KEY(srcFactor, dstFactor);
+	if (enableFog)
+		materialKey+=1<<8;
+	if (enableFrameBlend)
+		materialKey+=1<<9;
+	materialKey+=texture->id<<10;
+
+	Map<uint32, NMaterial *>::iterator it = materialMap.find(materialKey);
+	if (it!=materialMap.end()) //return existing
+	{
+		return (*it).second;  
+	}
+	else //create new
+	{
+		NMaterial *material = MaterialSystem::CreateNamed();
+		material->SwitchParent(FindParticleMaterial(srcFactor, dstFactor, enableFrameBlend));
+		material->SetTexture(NMaterial::TEXTURE_ALBEDO, texture);
+		materialMap[materialKey] = material;
+		return material;
+	}
+}
+
+
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
 {
+}
+ParticleEffectSystem::~ParticleEffectSystem()
+{
+	for (Map<uint32, NMaterial *>::iterator it = materialMap.begin(), e = materialMap.end(); it!=e; ++it)
+	{
+		SafeRelease(it->second);
+	}
 }
 
 void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource)
@@ -97,7 +132,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleE
 		//prepare 1st loop info - so even not looped layers will follow common logic
 		group.loopStartTime = 0;
 		group.loopLyaerStartTime = group.layer->startTime;
-		group.loopDuration = group.layer->endTime;			
+		group.loopDuration = group.layer->endTime;		
+
+		group.material = GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->srcBlendFactor, layer->dstBlendFactor);
 		
 		effect->effectData.groups.push_back(group);			
 	}
