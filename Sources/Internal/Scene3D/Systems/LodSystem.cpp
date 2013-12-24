@@ -341,8 +341,8 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 	if(fromEntity != toEntity)
 	{
 		LodComponent * lod = GetLodComponent(fromEntity);
-		ParticleEmitter *emitter = GetEmitter(fromEntity);
-		if(lod&&(!emitter)) //as emitters have separate LOD logic
+		ParticleEffectComponent *effect = GetEffectComponent(fromEntity);
+		if(lod&&(!effect)) //as emitters have separate LOD logic
 		{
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{

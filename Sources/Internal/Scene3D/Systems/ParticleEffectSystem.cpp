@@ -187,9 +187,7 @@ void ParticleEffectSystem::RemoveComponent(Entity * entity, Component * componen
 void ParticleEffectSystem::Process(float32 timeElapsed)
 {    
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS)) 
-		return;
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-	
+		return;		
 	/*shortEffectTime*/
 	float32 currFps = 1.0f/timeElapsed;
 	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
