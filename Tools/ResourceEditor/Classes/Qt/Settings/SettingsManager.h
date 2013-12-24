@@ -111,10 +111,12 @@ public:
 	void Initialize();
 
 private:
-
+	
 	DAVA::KeyedArchive* settings;
 	
 	void LoadSettings();
+
+	void UpdateMutableSectionIfNeeded(const String& _name, const DAVA::VariantType& _value);
 
 };
 /*

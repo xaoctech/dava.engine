@@ -36,7 +36,7 @@
 #define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
 #define SETTINGS_VERSION_NUMBER			1
 #define SETTINGS_VERSION_KEY			"SETTINGS_VERSION"
-#define MUTABLE_LENGTH_PLURALITY_SUFFIX	"sCount"
+#define MUTABLE_LENGTH_COUNT_SUFFIX		"sCount"
 
 SettingsManager::SettingsManager()
 {
@@ -62,7 +62,50 @@ void SettingsManager::SetValue(const DAVA::String& _name, const DAVA::VariantTyp
 {
 	KeyedArchive* foundedGroupSettings = settings->GetArchive(GetNameOfGroup(group));
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
+	if(MUTABLE_LENGTH == group)
+	{
+		UpdateMutableSectionIfNeeded(_name, _value);
+	}
 	foundedGroupSettings->SetVariant(_name, _value);
+}
+
+void SettingsManager::UpdateMutableSectionIfNeeded(const String& name,  const DAVA::VariantType& value)
+{
+	if(name.size() < strlen(MUTABLE_LENGTH_COUNT_SUFFIX))
+	{
+		return;
+	}
+	String key_part = name.substr(0, name.size() - strlen(MUTABLE_LENGTH_COUNT_SUFFIX));
+	String suffix = name.substr(key_part.size(), name.size());
+	if(suffix != MUTABLE_LENGTH_COUNT_SUFFIX)
+	{
+		return;
+	}
+	
+	int32 presentSize = GetValue(name, MUTABLE_LENGTH)->AsInt32();
+	int32 newSize = value.AsInt32();
+	if(presentSize == newSize)
+	{
+		return;
+	}
+
+	KeyedArchive* mutableSection = GetSettingsGroup(MUTABLE_LENGTH);
+	if(newSize > presentSize)
+	{
+		for (int32 j = presentSize; j < newSize; ++j)
+		{
+			String keyToInsert(Format((key_part + "_%d").c_str(), j));
+			mutableSection->SetVariant(keyToInsert, VariantType());
+		}
+	}
+	else
+	{
+		for (int32 j = newSize; j < presentSize; ++j)
+		{
+			String keyToDelete(Format((key_part + "_%d").c_str(), j));
+			mutableSection->DeleteKey(keyToDelete);
+		}
+	}
 }
 
 void SettingsManager::Initialize()
@@ -90,7 +133,8 @@ void SettingsManager::Initialize()
 	
 	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_MUTABLE_LENGHT_MAP) / sizeof(SettingRow)); ++i )
 	{
-		mutableLengthSettings->SetVariant( SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_PLURALITY_SUFFIX, DAVA::VariantType(SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].defValue) );
+		mutableLengthSettings->SetVariant( SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_COUNT_SUFFIX, 
+			DAVA::VariantType(SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].defValue) );
 	}
 	
 	settings->SetArchive(GetNameOfGroup(GENERAL), generalSettings);
@@ -143,7 +187,7 @@ void SettingsManager::LoadSettings()
 			for(; it != end; ++it)
 			{
 				int32 subsectionLength = it->second->AsInt32();
-				String subSectionName = it->first.substr(0, it->first.size() - strlen(MUTABLE_LENGTH_PLURALITY_SUFFIX));
+				String subSectionName = it->first.substr(0, it->first.size() - strlen(MUTABLE_LENGTH_COUNT_SUFFIX));
 				for (uint32 j = 0; j < subsectionLength; ++j)
 				{
 					String keyToInsert(Format((subSectionName + "_%d").c_str(), j));
