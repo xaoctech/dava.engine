@@ -183,6 +183,8 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	//0, 0
 	float32 *pT = sprite->GetTextureVerts(frameToGen);
 
+    verts.reserve(3 * 4);
+
 	verts.push_back(x0);
 	verts.push_back(y0);
 	verts.push_back(0);
@@ -212,7 +214,7 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	//textures.push_back(pT[1 * 2 + 0]);
 	//textures.push_back(pT[1 * 2 + 1]);
 
-
+    textures.reserve(2*4);
 	for (int32 i = 0; i < 2*4; i++) 
 	{
 		textures.push_back(*pT);

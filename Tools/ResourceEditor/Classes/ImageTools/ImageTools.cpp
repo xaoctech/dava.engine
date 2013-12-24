@@ -51,6 +51,8 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 	{
 		Vector<FilePath> faceNames;
 		Texture::GenerateCubeFaceNames(descriptor->pathname.GetAbsolutePathname().c_str(), faceNames);
+        
+        files.reserve(faceNames.size());
 		for(size_t i = 0 ; i < faceNames.size(); ++i)
 		{
 			files.push_back(FilePath(faceNames[i]));

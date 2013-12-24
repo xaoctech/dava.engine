@@ -116,6 +116,7 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	DVASSERT(newObject->GetRenderBatchCount() == 0);
 
 	uint32 size = GetRenderBatchCount();
+    newObject->renderBatchArray.reserve(size);
 	for(uint32 i = 0; i < size; ++i)
 	{
         RenderBatch *batch = GetRenderBatch(i)->Clone();
