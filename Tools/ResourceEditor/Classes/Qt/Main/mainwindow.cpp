@@ -1623,20 +1623,35 @@ void QtMainWindow::OnSaveTiledTexture()
 
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
-//	landscape->UpdateFullTiledTexture();
-    
-    FilePath texPathname;// = landscape->SaveFullTiledTexture();
-    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
-    
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-    if(!descriptor)
-    {
-        descriptor = new TextureDescriptor();
-        descriptor->pathname = descriptorPathname;
-        descriptor->Save();
-    }
-    
-    SafeRelease(descriptor);
+
+	Texture* landscapeTexture = landscape->CreateLandscapeTexture();
+
+	if (landscapeTexture)
+	{
+		FilePath pathToSave;
+		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
+		pathToSave.ReplaceExtension(".thumbnail.png");
+
+		Image *image = landscapeTexture->CreateImageFromMemory();
+		if(image)
+		{
+			ImageLoader::Save(image, pathToSave);
+			SafeRelease(image);
+
+			FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToSave);
+			TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+			if(!descriptor)
+			{
+				descriptor = new TextureDescriptor();
+				descriptor->pathname = descriptorPathname;
+				descriptor->Save();
+			}
+
+			SafeRelease(descriptor);
+		}
+
+		SafeRelease(landscapeTexture);
+	}
 }
 
 void QtMainWindow::OnConvertModifiedTextures()
@@ -2328,7 +2343,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	//-->
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
-	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
 }
 
