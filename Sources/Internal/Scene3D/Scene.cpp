@@ -73,7 +73,6 @@
 #include "Render/Material/MaterialSystem.h"
 
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/ModelTypeComponent.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -851,53 +850,6 @@ SceneFileV2::eError Scene::Save(const DAVA::FilePath & pathname, bool saveForGam
 	file->EnableSaveForGame(saveForGame);
 	return file->SaveScene(pathname, this);
 }
-    
-    
-void Scene::RemoveModelsByType(const FastName & modelType)
-{
-    Vector<Entity *> models = FindModelsByType(modelType);
-    
-    uint32 count = (uint32)models.size();
-    for(uint32 m = 0; m < count; ++m)
-    {
-        RemoveNode(models[m]);
-    }
-}
-    
-Vector<Entity *> Scene::FindModelsByType(const FastName & modelType)
-{
-    Vector<Entity *> models;
-    uint32 count = (uint32)children.size();
-    for(uint32 c = 0; c < count; ++c)
-    {
-        FindModelsByTypeRecursive(modelType, children[c], models);
-    }
-    
-    return models;
-}
-
-void Scene::FindModelsByTypeRecursive(const FastName & modelType, Entity * entity, Vector<Entity *> & models)
-{
-    ModelTypeComponent *model = GetModelTypeComponent(entity);
-    if(model)
-    {
-        if(model->GetModelType() == modelType)
-        {
-            models.push_back(entity);
-        }
-        
-        return;
-    }
-    
-    int32 count = entity->GetChildrenCount();
-    for(uint32 c = 0; c < count; ++c)
-    {
-        FindModelsByTypeRecursive(modelType, entity->GetChild(c), models);
-    }
-}
-
-
-    
     
     
 };
