@@ -31,22 +31,23 @@
 #ifndef __DAVAENGINE_SCENE3D_QUALITYSETTINGSSYSTEM_H__
 #define __DAVAENGINE_SCENE3D_QUALITYSETTINGSSYSTEM_H__
 
-#include "Entity/SceneSystem.h"
+#include "Base/StaticSingleton.h"
 #include "Base/FastNameMap.h"
 
 namespace DAVA
 {
 
 class QualitySettingsComponent;
-class QualitySettingsSystem: public SceneSystem
+class QualitySettingsSystem: public StaticSingleton<QualitySettingsSystem>
 {
 public:
-	QualitySettingsSystem(Scene * scene);
 
 	void EnableOption(const FastName & option, bool enabled);
 	bool IsOptionEnabled(const FastName & option) const;
 
-	void UpdateSceneAfterLoad();
+    bool NeedLoadEntity(const Entity *entity);
+    
+	void UpdateEntityAfterLoad(Entity *entity);
 
 protected:
 
