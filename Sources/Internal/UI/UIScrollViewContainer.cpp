@@ -1,38 +1,51 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIScrollViewContainer.h"
 
 namespace DAVA 
 {
 	
-REGISTER_CLASS(UIScrollViewContainer);
-
-const float32 SCROLL_BEGIN_PIXELS = 8.0f;
-const int32	DEFAULT_RETURN_TO_BOUNDS_SPEED = 200; // in pixels per second.
 const int32 DEFAULT_TOUCH_TRESHOLD = 15;  // Default value for finger touch tresshold
 
 UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
-	scrollOrigin(0, 0),
-	returnToBoundsSpeed(DEFAULT_RETURN_TO_BOUNDS_SPEED),
 	mainTouch(-1),
 	touchTreshold(DEFAULT_TOUCH_TRESHOLD),
 	enableHorizontalScroll(true),
-	enableVerticalScroll(true)
+	enableVerticalScroll(true),
+	newPos(0.f, 0.f),
+	oldPos(0.f, 0.f),
+	lockTouch(false),
+	state(STATE_NONE),
+    currentScroll(NULL)
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
@@ -52,10 +65,6 @@ UIControl* UIScrollViewContainer::Clone()
 void UIScrollViewContainer::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
-	
-	UIScrollViewContainer* t = (UIScrollViewContainer*) srcControl;
-		
-	scrollOrigin = t->scrollOrigin;
 }
 
 void UIScrollViewContainer::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
@@ -72,11 +81,6 @@ void UIScrollViewContainer::SetRect(const Rect &rect, bool rectInAbsoluteCoordin
 	}
 }
 
-void UIScrollViewContainer::SetReturnSpeed(int32 speedInPixelsPerSec)
-{
-	this->returnToBoundsSpeed = speedInPixelsPerSec;
-}
-
 void UIScrollViewContainer::SetTouchTreshold(int32 holdDelta)
 {
 	touchTreshold = holdDelta;
@@ -86,80 +90,24 @@ int32 UIScrollViewContainer::GetTouchTreshold()
 	return touchTreshold;
 }
 
-void UIScrollViewContainer::StartScroll(Vector2 _startScrollPosition)
-{
-	scrollStartInitialPosition = _startScrollPosition;
-	scrollStartPosition = _startScrollPosition;
-	scrollCurrentPosition = _startScrollPosition;
-	scrollStartMovement = false;
-
-	scrollOutboundsOfset = CalculateOutboundsOffset();
-}
-
-void UIScrollViewContainer::ProcessScroll(Vector2 _currentScrollPosition)
-{
-	scrollCurrentPosition = _currentScrollPosition;
-
-	scrollOutboundsOfset = CalculateOutboundsOffset();
-
-	//	This check is required on iPhone, to avoid bugs in movement.	
-#if defined(__DAVAENGINE_IPHONE__)
-	Vector2 lineLenght = scrollCurrentPosition - scrollStartInitialPosition;
-
-	if (lineLenght.Length() >= SCROLL_BEGIN_PIXELS)
-#endif
-	{
-		//touchStartTime = 0;
-		if (!scrollStartMovement) scrollStartPosition = scrollCurrentPosition;
-		scrollCurrentShift = Vector2((scrollCurrentPosition.x - scrollStartPosition.x),  (scrollCurrentPosition.y - scrollStartPosition.y));
-		scrollStartMovement = true;
-	}
-
-	ScrollToPosition(scrollCurrentShift);
-}
-
-void UIScrollViewContainer::EndScroll()
-{
-	if (scrollStartMovement)
-	{
-		scrollOrigin.x = scrollCurrentShift.x;
-		scrollOrigin.y = scrollCurrentShift.y;
-	}
-
-	scrollCurrentShift.x = 0;
-	scrollCurrentShift.y = 0;
-}
-
-void UIScrollViewContainer::ScrollToPosition(const DAVA::Vector2 &position)
-{
-	Rect rect = this->GetRect();	
-	// Disable scrolling for inactive scrollbars
-	if (enableHorizontalScroll)
-	{
-		rect.x = scrollOrigin.x + position.x;
-	}
-	if (enableVerticalScroll)
-	{
-		rect.y = scrollOrigin.y + position.y;
-	}
-	this->SetRect(rect);
-}
-
 void UIScrollViewContainer::Input(UIEvent *currentTouch)
 {
 	Vector<UIEvent> touches = UIControlSystem::Instance()->GetAllInputs();
 	
 	if(1 == touches.size())
 	{
+		newPos = currentTouch->point;
+		
 		switch(currentTouch->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
 			{
 				scrollTouch = *currentTouch;
-				
-				Vector2 start = currentTouch->point;
-				StartScroll(start);
+				scrollStartInitialPosition = currentTouch->point;
+				scrollStartMovement = false;
 				state = STATE_SCROLL;
+				lockTouch = true;
+				oldPos = newPos;
 			}
 			break;
 			case UIEvent::PHASE_DRAG:
@@ -168,24 +116,17 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				{
 					if(currentTouch->tid == scrollTouch.tid)
 					{
-						// perform scrolling
-						ProcessScroll(currentTouch->point);
+						scrollStartMovement = true;
 					}
 				}
 			}
-				break;
+			break;
 			case UIEvent::PHASE_ENDED:
 			{
-				if(state == STATE_SCROLL)
-				{
-					if(currentTouch->tid == scrollTouch.tid)
-					{
-						EndScroll();
-						state = STATE_DECCELERATION;
-					}
-				}
+				lockTouch = false;
+				state = STATE_DECCELERATION;
 			}
-				break;
+			break;
 		}
 	}
 }
@@ -196,11 +137,19 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	{
 		return false;
 	}
-	
+
+	bool systemInput = UIControl::SystemInput(currentTouch);
+	if (currentTouch->GetInputHandledType() == UIEvent::INPUT_HANDLED_HARD)
+	{
+		// Can't scroll - some child control already processed this input.
+		return systemInput;
+	}
+
 	if(currentTouch->phase == UIEvent::PHASE_BEGAN)
 	{
 		if(IsPointInside(currentTouch->point))
 		{
+            currentScroll = NULL;
 			mainTouch = currentTouch->tid;
 			PerformEvent(EVENT_TOUCH_DOWN);
 			Input(currentTouch);
@@ -212,6 +161,18 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		if ((abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
 			(abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
 		{
+            UIScrollView *scrollView = DynamicTypeCheck<UIScrollView*>(this->GetParent());
+            DVASSERT(scrollView);
+            if(abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold
+                && (!currentScroll || currentScroll == scrollView->GetHorizontalScroll()))
+            {
+                currentScroll = scrollView->GetHorizontalScroll();
+            }
+            else if((abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold)
+                && (!currentScroll || currentScroll == scrollView->GetVerticalScroll()))
+            {
+                currentScroll = scrollView->GetVerticalScroll();
+            }
 			UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
 			Input(currentTouch);
 		}
@@ -227,7 +188,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		return true;
 	}
 	
-	return UIControl::SystemInput(currentTouch);
+	return systemInput;
 }
 
 void UIScrollViewContainer::Update(float32 timeElapsed)
@@ -236,141 +197,40 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	{
 		return;
 	}
-
-	if(state == STATE_DECCELERATION)
-	{
-		Rect contentRect = this->GetRect();
-		scrollOrigin = Vector2(contentRect.x, contentRect.y);
-	}
 	
-	if(state != STATE_ZOOM && state != STATE_SCROLL) 
+	UIScrollView *scrollView = DynamicTypeCheck<UIScrollView*>(this->GetParent());
+	if (scrollView)
 	{
 		Rect contentRect = this->GetRect();
-		Rect parentRect = this->GetParent()->GetRect();
-
-		Vector2 curOutboundOffset = CalculateOutboundsOffset();
-		if (FLOAT_EQUAL(curOutboundOffset.x, 0.0f) && FLOAT_EQUAL(curOutboundOffset.y, 0.0f))
+	
+		Vector2 posDelta = newPos - oldPos;
+		oldPos = newPos;
+	
+		// Get scrolls positions and change scroll container relative position
+		if (scrollView->GetHorizontalScroll() == currentScroll && enableHorizontalScroll)
 		{
-			// Returned back to the bounds.
-			state = STATE_NONE;
-			return;
+			contentRect.x = currentScroll->GetPosition(posDelta.x, timeElapsed, lockTouch);
+		}
+		if (scrollView->GetVerticalScroll() == currentScroll && enableVerticalScroll)
+		{
+			contentRect.y = currentScroll->GetPosition(posDelta.y, timeElapsed, lockTouch);
 		}
 
-		// Calculate the new position and clamp it to avoid overscrolling and flickering.
-		float32 curOffset = (timeElapsed * returnToBoundsSpeed);
-		
-		// Position and clamp X axis.
-		const float32 SCROLLING_EPSILON = 1.0f;
-		if (FLOAT_EQUAL(scrollOutboundsOfset.x, 0.0f))
-		{
-			// Do nothing in this case.
-		}
-		else if (scrollOutboundsOfset.x > 0)
-		{
-			contentRect.x -= curOffset;
-			// Clamp "too right".
-			if (contentRect.x < SCROLLING_EPSILON)
-			{
-				contentRect.x = 0.0f;
-			}
-		}
-		else if (scrollOutboundsOfset.x < 0)
-		{
-			contentRect.x += curOffset;
-			// Clamp "too left".
-			if (contentRect.x + contentRect.dx > parentRect.dx)
-			{
-				contentRect.x = parentRect.dx - contentRect.dx;
-			}
-		}
-		
-		// The same with Y.
-		if (FLOAT_EQUAL(scrollOutboundsOfset.y, 0.0f))
-		{
-			// Do nothing in this case.
-		}
-		if (scrollOutboundsOfset.y > 0)
-		{
-			contentRect.y -= curOffset;
-			// Clamp "too top".
-			if (contentRect.y < SCROLLING_EPSILON)
-			{
-				contentRect.y = 0.0f;
-			}
-		}
-		else if (scrollOutboundsOfset.y < 0)
-		{
-			contentRect.y += curOffset;
-			// Clamp "too bottom".
-			if (contentRect.y + contentRect.dy > parentRect.dy)
-			{
-				contentRect.y = parentRect.dy - contentRect.dy;
-			}
-		}
-
-		// Done calculations.
 		this->SetRect(contentRect);
+		// Change state when scrolling is not active
+		if (!lockTouch && (scrollView->GetHorizontalScroll()->GetCurrentSpeed() == 0) && (scrollView->GetVerticalScroll()->GetCurrentSpeed() == 0))
+		{
+			state = STATE_NONE;
+		}
 	}
 }
 
 YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-	
-    // Control Type
 	SetPreferredNodeType(node, "UIScrollViewContainer");
-	// Save scroll view container childs including all sub-childs
-	SaveChildren(this, loader, node);
-    
+
     return node;
-}
-
-void UIScrollViewContainer::SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
-{
-	List<UIControl*> childslist = parent->GetRealChildren();
-	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
-    {
-       	UIControl *childControl = (UIControl*)(*it);
-
-		YamlNode* childNode = childControl->SaveToYamlNode(loader);
-		parentNode->AddNodeToMap(childControl->GetName(), childNode);
-		// Save sub-childs
-		SaveChildren(childControl, loader, childNode);
-	}
-}
-
-Vector2 UIScrollViewContainer::CalculateOutboundsOffset()
-{
-	Rect contentRect = this->GetRect();
-	Rect parentRect = this->GetParent()->GetRect();
-	
-	float32 shiftSizeX = abs(contentRect.x) + parentRect.dx;
-	float32 shiftSizeY = abs(contentRect.y) + parentRect.dy;
-
-	Vector2 outboundsOffset;
-	if (contentRect.x > 0.0f)
-	{
-		// Scrolled too right.
-		outboundsOffset.x = contentRect.x;
-	}
-	else if (shiftSizeX > contentRect.dx)
-	{
-		// Scrolled too left (the offset is negative).
-		outboundsOffset.x = contentRect.dx - shiftSizeX;
-	}
-	
-	if (contentRect.y > 0.0f)
-	{
-		// Scrolled too bottom.
-		outboundsOffset.y = contentRect.y;
-	}
-	else if (shiftSizeY > contentRect.dy)
-	{
-		// Scrolled too top (the offset is negative).
-		outboundsOffset.y = contentRect.dy - shiftSizeY;
-	}
-
-	return outboundsOffset;
 }
 
 };

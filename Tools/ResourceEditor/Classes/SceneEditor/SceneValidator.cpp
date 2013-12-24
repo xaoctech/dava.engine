@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "SceneValidator.h"
 #include "EditorSettings.h"
@@ -45,21 +59,28 @@ SceneValidator::~SceneValidator()
 {
 }
 
-bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
+bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene, const DAVA::FilePath &scenePath)
 {
     errorMessages.clear();
 
-    ValidateScene(scene, errorMessages);
+    ValidateScene(scene, scenePath, errorMessages);
 
     ShowErrorDialog(errorMessages);
     return (!errorMessages.empty());
 }
 
 
-void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
+void SceneValidator::ValidateScene(Scene *scene, const DAVA::FilePath &scenePath, Set<String> &errorsLog)
 {
     if(scene) 
     {
+		DAVA::String tmp = scenePath.GetAbsolutePathname();
+		size_t pos = tmp.find("/Data");
+		if(pos != String::npos)
+		{
+			SetPathForChecking(tmp.substr(0, pos + 1));
+		}
+
         ValidateSceneNode(scene, errorsLog);
 
         for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
@@ -168,10 +189,12 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
         ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
     }
     
-    Landscape *landscape = dynamic_cast<Landscape *>(ro);
-    if(landscape)
+	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
+		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
+
+		ValidateCustomColorsTexture(ownerNode, errorsLog);
     }
 }
 
@@ -181,8 +204,15 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
     LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
 
-
     int32 layersCount = lodComponent->GetLodLayersCount();
+	if (GetEmitter(ownerNode))
+		layersCount = LodComponent::MAX_LOD_LAYERS;
+    
+    if(layersCount == 0)
+    {
+        errorsLog.insert(Format("Node %s: Count of layers is 0", ownerNode->GetName().c_str()));
+    }
+    
     for(int32 layer = 0; layer < layersCount; ++layer)
     {
         float32 distance = lodComponent->GetLodLayerDistance(layer);
@@ -214,17 +244,60 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
 void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
 	ParticleEmitter * emitter = GetEmitter(ownerNode);
-    if(!emitter) 
+    if(!emitter)
+	{
 		return;
+	}
 
-    String validationMsg;
-    if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
-    {
-        errorsLog.insert(validationMsg);
-    }
+	if (GetLodComponent(ownerNode) == NULL)
+	{
+		ownerNode->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));		
+	}
+
+	ValidateParticleEmitter(emitter, errorsLog);
+	
 }
 
+bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog)
+{
+	
 
+	if (!emitter)
+	{
+		return true;
+	}
+
+	//validate layers
+	bool validationResult = true;
+	for (int32 i = 0; i<emitter->GetLayers().size(); ++i)
+	{
+		if (emitter->GetLayers()[i]->IsFrameBlendEnabled()&&(emitter->GetLayers()[i]->GetSprite()->GetFrameCount()==1))
+		{
+			String validationMsg = emitter->GetConfigPath().GetAbsolutePathname().c_str();			
+			validationMsg += " - layer ";
+			validationMsg += emitter->GetLayers()[i]->layerName;
+			validationMsg += " have \"Enable frame blending\" checked while sprite have only 1 frame. Frame blending would just waste time";
+			errorsLog.insert(validationMsg);
+			validationResult = false;
+		}
+	}
+	
+	if (!emitter->Is3DFlagCorrect())
+	{
+		// Don't use Format() helper here - the string with path might be too long for Format().
+		String validationMsg = ("\"3d\" flag value is wrong for Particle Emitter Configuration file ");
+		validationMsg += emitter->GetConfigPath().GetAbsolutePathname().c_str();
+		validationMsg += ". Please verify whether you are using the correct configuration file.\n\"3d\" flag for this Particle Emitter will be reset to TRUE.";
+		errorsLog.insert(validationMsg);
+
+		// Yuri Coder, 2013/05/08. Since Particle Editor works with 3D Particles only - have to set this flag
+		// manually.
+		emitter->Set3D(true);
+		validationResult = false;
+	}
+			
+	return validationResult;
+}
 
 void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
 {
@@ -270,7 +343,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
             ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
             FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-            if(!IsTextureDescriptorPath(matTexName))
+            if(!matTexName.IsEmpty() && !IsTextureDescriptorPath(matTexName))
             {
                 material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
             }
@@ -321,6 +394,12 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			{
 				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 			}
+
+			Color color = landscape->GetTileColor(texLevel);
+			if (!ValidateColor(color))
+			{
+				landscape->SetTileColor(texLevel, color);
+			}
 		}
 	}
 	else
@@ -339,7 +418,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
 		}
 	}
-
+    
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -398,24 +477,16 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 {
 	if(!texture) return;
 	
-	String path = texturePathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+	String path = texturePathname.GetRelativePathname(pathForChecking);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
-	if(texture == Texture::GetPinkPlaceholder())
+	if(texture->IsPinkPlaceholder())
 	{
 		errorsLog.insert("Can't load texture: " + textureInfo);
 	}
 
 	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
-	if(pathIsCorrect)
-	{
-		if(!IsFBOTexture(texture))
-		{
-			// if there is no descriptor file for this texture - generate it
-			TextureDescriptorUtils::CreateDescriptorIfNeed(texturePathname);
-		}
-	}
-	else
+	if(!pathIsCorrect)
 	{
 		errorsLog.insert("Wrong path of: " + textureInfo);
 	}
@@ -531,8 +602,6 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.GetAbsolutePathname().c_str()));
 			return false;
 		}
-
-        TextureDescriptorUtils::CreateDescriptorIfNeed(pathForValidation);
 	}
 	else
 	{
@@ -677,7 +746,39 @@ bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 	return path.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension());
 }
 
+void SceneValidator::ValidateCustomColorsTexture(Entity *landscapeEntity, Set<String> &errorsLog)
+{
+	KeyedArchive* customProps = landscapeEntity->GetCustomProperties();
+	if(customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
+	{
+		String currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+		FilePath path = "/" + currentSaveName;
+		if(!path.IsEqualToExtension(".png"))
+		{
+			errorsLog.insert("Custom colors texture has to have .png extension.");
+		}
+        
+        String::size_type foundPos = currentSaveName.find("DataSource/3d/");
+        if(String::npos == foundPos)
+        {
+			errorsLog.insert("Custom colors texture has to begin from DataSource/3d/.");
+        }
+	}
+}
 
+bool SceneValidator::ValidateColor(Color& color)
+{
+	bool ok = true;
+	for(int32 i = 0; i < 4; ++i)
+	{
+		if (color.color[i] < 0.f || color.color[i] > 1.f)
+		{
+			color.color[i] = Clamp(color.color[i], 0.f, 1.f);
+			ok = false;
+		}
+	}
+	return ok;
+}
 
 
 

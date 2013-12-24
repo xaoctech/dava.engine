@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/2D/Sprite.h"
 #include "Render/RenderManager.h"
 #include "Particles/Particle.h"
@@ -32,7 +46,7 @@ ForceData::ForceData(float32 forceValue, const Vector3& forceDirection, float32 
 
 Particle::Particle()
 {
-    frameLastUpdateTime = 0.0f;
+    animTime = 0.0f;
 	innerParticleEmitter = NULL;
 }
 
@@ -49,7 +63,7 @@ void Particle::AddForce(float32 value, const Vector3& direction, float32 overlif
 
 void Particle::UpdateForceOverlife(int32 index, float32 overlife)
 {
-	if (index <= (int32)this->forces.size())
+	if (index < (int32)this->forces.size())
 	{
 		this->forces[index].overlife = overlife;
 		this->forces[index].overlifeEnabled = true;
@@ -70,27 +84,22 @@ bool Particle::Update(float32 timeElapsed)
 		return false;
 	}
 
-	position += direction * speed * timeElapsed * velocityOverLife;
+	position += speed * timeElapsed * velocityOverLife;
 	angle += spin * timeElapsed * spinOverLife;
 	
 	int32 forcesCount = (int32)forces.size();
-	if(forcesCount > 0)
+	
+	for(int i = 0; i < forcesCount; i++)
 	{
-		Vector3 velocity = direction*speed;
-		for(int i = 0; i < forcesCount; i++)
+		Vector3 newVelocity = forces[i].direction * forces[i].value;
+		if (forces[i].overlifeEnabled)
 		{
-			Vector3 newVelocity = forces[i].direction * forces[i].value;
-			if (forces[i].overlifeEnabled)
-			{
-				newVelocity *= forces[i].overlife;
-			}
-
-			velocity += (newVelocity  * timeElapsed);
+			newVelocity *= forces[i].overlife;
 		}
-		float32 invSqrt = InvSqrtFast(velocity.SquareLength());
-		speed = 1.f/invSqrt;
-		direction = velocity*invSqrt;
+
+		speed += (newVelocity  * timeElapsed);
 	}
+	
 	
 	// In case the particle contains inner emitter - update it too.
 	UpdateInnerEmitter(timeElapsed);
@@ -132,7 +141,9 @@ void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEm
 	innerParticleEmitter->SetRenderSystem(parentEmitter->GetRenderSystem());
 	innerParticleEmitter->SetWorldTransformPtr(parentEmitter->GetWorldTransformPtr());
 	innerParticleEmitter->RememberInitialTranslationVector();
-	innerParticleEmitter->SetParentParticle(this);
+	innerParticleEmitter->SetParentParticle(this);		
+	innerParticleEmitter->SetAutoRestart(false);
+	innerParticleEmitter->Play();
 
 	RegisterInnerEmitterInRenderSystem(true);
 }

@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "SceneDataManager.h"
 
@@ -25,8 +39,11 @@
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
 #include "../Main/QtMainWindowHandler.h"
-#include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
+
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 using namespace DAVA;
 
@@ -56,247 +73,7 @@ SceneData* SceneDataManager::CreateNewScene()
 	return levelScene;	
 }
 
-Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
-{
-    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 
-	SceneData* sceneData = SceneGetActive();
-	if (!sceneData)
-	{
-		DVASSERT(false && "No way to add the scene when SceneGetActive() returns NULL!");
-		return NULL;
-	}
-	
-	EditorScene* scene = sceneData->GetScene();
-	if (!scene)
-	{
-		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return NULL;
-	}
-
-    Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
-
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
-    
-    rootNode->SetSolid(true);
-    scene->AddNode(rootNode);
-    
-    Camera *currCamera = scene->GetCurrentCamera();
-    if(currCamera)
-    {
-        Vector3 pos = currCamera->GetPosition();
-        Vector3 direction  = currCamera->GetDirection();
-        
-        Vector3 nodePos = pos + 10 * direction;
-        nodePos.z = 0;
-        
-        Landscape * ls = scene->GetLandscape(scene);
-        if(ls)
-        {
-            Vector3 result;
-            bool res = ls->PlacePoint(nodePos, result);
-            if(res)
-            {
-                nodePos = result;
-            }
-        }
-        
-        Matrix4 mod;
-        mod.CreateTranslation(nodePos);
-        rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
-    }
-
-	
-    Landscape *landscape = scene->GetLandscape(scene);
-    bool needUpdateLandscapeController = (landscape != NULL);
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-//    SceneValidator::Instance()->EnumerateSceneTextures();
-	
-	if(needUpdateLandscapeController)
-	{
-		sceneData->SetLandscapesControllerScene(scene);
-	}
-
-    scene->UpdateCameraLightOnScene();
-	scene->UpdateShadowColorFromLandscape();
-    SceneHidePreview();
-	UpdateParticleSprites();
-	emit SceneGraphNeedRebuild();
-
-	return rootNode;
-}
-
-void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
-{
-	SceneData* sceneData = SceneGetLevel();
-	if (!sceneData)
-	{
-		DVASSERT(false && "No way to edit the scene when SceneGetLevel() returns NULL!");
-		return;
-	}
-
-	EditScene(sceneData, scenePathname);
-}
-
-void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
-{
-	SceneData* sceneData = SceneGetActive();
-	if (!sceneData)
-	{
-		DVASSERT(false && "No way to edit the scene when SceneGetActive() returns NULL!");
-		return;
-	}
-	
-	EditScene(sceneData, scenePathname);
-}
-
-void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePathname)
-{
-	EditorScene* scene = sceneData->GetScene();
-	if (!scene)
-	{
-		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return;
-	}
-
-    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
-	
-    Entity * rootNode = scene->GetRootNode(scenePathname);
-    if(rootNode)
-    {
-        sceneData->SetScenePathname(scenePathname);
-		Vector<Entity*> tempV;
-		tempV.reserve(rootNode->GetChildrenCount());
-		
-		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-		{
-			tempV.push_back(rootNode->GetChild(ci));
-		}
-        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
-        {
-            //рут нода это сама сцена в данном случае
-            scene->AddNode(tempV[ci]);
-        }
-    }
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-//    SceneValidator::Instance()->EnumerateSceneTextures();
-
-    sceneData->SetLandscapesControllerScene(scene);
-	
-	scene->Update(0);
-	sceneData->EmitSceneChanged();
-    scene->UpdateCameraLightOnScene();
-	scene->UpdateShadowColorFromLandscape();
-	UpdateParticleSprites();
-    emit SceneGraphNeedRebuild();
-
-	emit SceneCreated(sceneData);
-}
-
-void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
-{
-	SceneData* sceneData = SceneGetActive();
-	if (!sceneData)
-	{
-		DVASSERT(false && "No way to add reference scene when SceneGetActive() returns NULL!");
-		return;
-	}
-	
-	EditorScene* scene = sceneData->GetScene();
-	if (!scene)
-	{
-		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return;
-	}
-    
-	sceneData->SelectNode(NULL);
-    scene->ReleaseRootNode(scenePathname);
-    
-	nodesToAdd.clear();
-    
-    Set<String> errors;
-    ReloadNode(scene, scene, scenePathname, fromScenePathname, errors);
-    if(!errors.empty())
-    {
-        ShowErrorDialog(errors);
-        
-        nodesToAdd.clear();
-        return;
-    }
-
-    Landscape* landscape = EditorScene::GetLandscape(currentScene->GetScene());
-    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
-    {
-        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
-		ApplyDefaultFogSettings(landscape, nodesToAdd[i].nodeToAdd);
-
-        SafeRelease(nodesToAdd[i].nodeToAdd);
-    }
-    nodesToAdd.clear();
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->OnReloadRootNodesQt();
-    }
-    
-    
-    scene->UpdateCameraLightOnScene();
-	scene->UpdateShadowColorFromLandscape();
-
-	UpdateParticleSprites();
-    emit SceneGraphNeedRebuild();
-	sceneData->SetLandscapesControllerScene(scene);
-}
-
-void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
-{
-	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
-	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
-    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
-    {
-        Entity *loadedNode = scene->GetRootNode(fromPathname);
-        if(loadedNode)
-        {
-            Entity *newNode = loadedNode->Clone();
-            newNode->SetLocalTransform(node->GetLocalTransform());
-            newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER,
-															fromPathname.GetAbsolutePathname());
-            newNode->SetSolid(true);
-            
-            Entity *parent = node->GetParent();
-            AddedNode addN;
-            addN.nodeToAdd = newNode;
-            addN.nodeToRemove = node;
-            addN.parent = parent;
-            
-            nodesToAdd.push_back(addN);
-        }
-        else
-        {
-            errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
-        }
-        
-        scene->UpdateCameraLightOnScene();
-		scene->UpdateShadowColorFromLandscape();
-        return;
-    }
-    
-    int32 csz = node->GetChildrenCount();
-    for (int ci = 0; ci < csz; ++ci)
-    {
-        Entity * child = node->GetChild(ci);
-        ReloadNode(scene, child, nodePathname, fromPathname, errors);
-    }
-}
 
 void SceneDataManager::SetActiveScene(EditorScene *scene)
 {
@@ -310,7 +87,8 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene->RebuildSceneGraph();
 
     
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
@@ -485,6 +263,8 @@ void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity* 
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneGraphNeedSelectNode(sceneData, node);
 }
+
+/*
 
 void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
 {
@@ -752,9 +532,11 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
-
+*/
 void SceneDataManager::SceneNodeSelectedInSceneGraph(Entity* node)
 {
 	SceneData *activeScene = SceneGetActive();
@@ -770,7 +552,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)
@@ -783,6 +564,9 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)
 	{
@@ -794,40 +578,4 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	}
 }
 
-void SceneDataManager::UpdateCameraLightOnScene(bool show)
-{
- 	List<SceneData *>::const_iterator endIt = scenes.end();
-	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
-	{
-        (*it)->GetScene()->UpdateCameraLightOnScene(show);
-	}
-    
-    emit SceneGraphNeedRebuild();
-}
 
-
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-    if(screen)
-    {
-        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-        {
-            screen->ShowScenePreview(path);
-        }
-        else
-        {
-            SceneHidePreview();
-        }
-    }
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HideScenePreview();
-    }
-}

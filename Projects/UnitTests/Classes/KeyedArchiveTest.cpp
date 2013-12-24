@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "KeyedArchiveTest.h"
 #include "Math/Math2D.h"
 
@@ -59,6 +88,8 @@
 
 KeyedArchiveTest::KeyedArchiveTest()
 : TestTemplate<KeyedArchiveTest>("KeyedArchiveTest")
+, archiveToSave( new KeyedArchive() )
+, loadedArchive( new KeyedArchive() )
 {
 	//RegisterFunction(this, &KeyedArchiveTest::WriteArchive, "WriteArchive", NULL);
 	RegisterFunction(this, &KeyedArchiveTest::LoadOldArchive, "LoadOldArchive", NULL);
@@ -69,7 +100,7 @@ KeyedArchiveTest::KeyedArchiveTest()
 
 void KeyedArchiveTest::LoadResources()
 {
-    FillArchive(&archiveToSave);
+    FillArchive(archiveToSave.Get());
 }
 
 
@@ -81,7 +112,7 @@ void KeyedArchiveTest::WriteArchive(PerfFuncData * data)
 {
     bool written = false;
 
-    written = archiveToSave.Save(FILEPATHNEWFORMAT);
+    written = archiveToSave->Save(FILEPATHNEWFORMAT);
 
     TEST_VERIFY(false != written);
 }
@@ -90,9 +121,9 @@ void KeyedArchiveTest::LoadOldArchive(PerfFuncData * data)
 {
     bool loaded = false;
     
-    loadedArchive.DeleteAllKeys();
+    loadedArchive->DeleteAllKeys();
 
-    loaded = loadedArchive.Load(FILEPATHOLDFORMAT);
+    loaded = loadedArchive->Load(FILEPATHOLDFORMAT);
     
     TEST_VERIFY(false != loaded);
 }
@@ -101,16 +132,16 @@ void KeyedArchiveTest::LoadNewArchive(PerfFuncData * data)
 {
     bool loaded = false;
     
-    loadedArchive.DeleteAllKeys();
+    loadedArchive->DeleteAllKeys();
        
-    loaded = loadedArchive.Load(FILEPATHNEWFORMAT);
+    loaded = loadedArchive->Load(FILEPATHNEWFORMAT);
     
     TEST_VERIFY(false != loaded);
 }
 
 void KeyedArchiveTest::TestArchiveAccordingDefines(PerfFuncData * data)
 {
-    KeyedArchive* pWorkingKA = &loadedArchive;
+    KeyedArchive* pWorkingKA = loadedArchive.Get();
     
     TEST_VERIFY(pWorkingKA->GetBool (BOOLMAPID)==BOOLVALUE);
     TEST_VERIFY(pWorkingKA->GetInt32(INT32MAPID)==INT32VALUE);

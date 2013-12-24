@@ -1,24 +1,38 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_RENDER_HELPER_H__
 #define __DAVAENGINE_RENDER_HELPER_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/StaticSingleton.h"
+#include "Base/Singleton.h"
 #include "Render/RenderBase.h"
 
 #include "Render/Texture.h"
@@ -37,7 +51,7 @@ class RenderDataStream;
     Keep in mind that output of all line-drawing functions can depend on hardware and look differently on different systems
  */
 
-class RenderHelper : public StaticSingleton<RenderHelper>
+class RenderHelper : public Singleton<RenderHelper>
 {
 public:
 	RenderHelper();
@@ -48,8 +62,17 @@ public:
         \param pt1 starting point 
         \param pt2 ending point
 	 */
-    void DrawLine(const Vector2 & pt1, const Vector2 & pt2); 
+    void DrawLine(const Vector2 & pt1, const Vector2 & pt2);
+	
+	
     /**
+	 \brief Draws line from pt1 to pt2
+	 \param pt1 starting point
+	 \param pt2 ending point
+	 */
+	void DrawLine(const Vector2 &start, const Vector2 &end, float32 lineWidth);
+    
+	/**
         \brief Draws line in 3D from pt1 to pt2
         \param pt1 starting point 
         \param pt2 ending point
@@ -101,8 +124,25 @@ public:
      */
 	void DrawCircle(const Vector3 & center, float32 radius);
 	
-	// polygon & line helper functions
+	/**
+        \brief Draws circle in 3D space on XYZ plane
+        \param center center of the circle
+		\param emVector direction vector of the circle
+        \param radius radius of the circle
+		\param useFilling flag that indicates if figure have to be filled with current color
+		
+     */	 
+	void DrawCircle3D(const Vector3 & center, const Vector3 &directionVector, float32 radius, bool useFilling = false);
 
+	/**
+        \brief Draws cylinder in 3D space on XY plane
+        \param center center of the cylinder
+        \param radius radius of the cylinder
+		\param useFilling flag that indicates if figure have to be filled with current color
+     */
+	void DrawCylinder(const Vector3 & center, float32 radius, bool useFilling = false);
+	
+	// polygon & line helper functions
 	
     /**
         \brief Draws all concecutive lines from given polygon
@@ -187,6 +227,10 @@ public:
 	void DrawInterpolationFunc(Interpolation::Func func, const Rect & destRect);
     //static void DrawLineWithEndPoints(const Vector3 & pt1, const Vector3 & pt2); 
 	//static void DrawStrippedLine(Polygon2 & polygon, float lineLen, float spaceLen, float halfWidth, Texture * texture, float initialPos);
+
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+	void GetLineWidthRange(int32& rangeMin, int32& rangeMax);
+#endif
 
 private:
     RenderDataObject * renderDataObject;

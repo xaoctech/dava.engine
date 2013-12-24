@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "TexturePacker/DefinitionFile.h"
 #include "TexturePacker/CommandLineParser.h"
 #include "TexturePacker/PngImage.h"
@@ -53,7 +82,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 {
     DVASSERT(pathToProcess.IsDirectoryPathname());
 
-	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("* Load PNG Definition: %s", _filename.GetAbsolutePathname().c_str());
 	
 	FILE * fp = fopen(_filename.GetAbsolutePathname().c_str(), "rt");
 	fscanf(fp, "%d", &frameCount);
@@ -70,7 +99,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 	
 //	String dirWrite = path + String("/$process/"); 
 //	mkdir(dirWrite.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if (CommandLineParser::Instance()->GetVerbose())printf("* frameCount: %d spriteWidth: %d spriteHeight: %d\n", frameCount, spriteWidth, spriteHeight); 
+	Logger::FrameworkDebug("* frameCount: %d spriteWidth: %d spriteHeight: %d", frameCount, spriteWidth, spriteHeight);
 
 
 	frameRects = new Rect2i[frameCount];
@@ -83,8 +112,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 		
 		Rect2i reducedRect;
 		frameX.FindNonOpaqueRect(reducedRect);
-		if (CommandLineParser::Instance()->GetVerbose())printf("%s - reduced_rect(%d %d %d %d)\n", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
-		
+		Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 		
 		PngImageExt frameX2;
 		frameX2.Create(reducedRect.dx, reducedRect.dy);
@@ -134,7 +162,7 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	FILE * fp = fopen(filename.GetAbsolutePathname().c_str(), "rt");
 	if (!fp)
 	{
-		printf("*** ERROR: Can't open definition file: %s\n",filename.GetAbsolutePathname().c_str());
+		Logger::Error("*** ERROR: Can't open definition file: %s",filename.GetAbsolutePathname().c_str());
 		return false;
 	}
 	fscanf(fp, "%d %d", &spriteWidth, &spriteHeight);
@@ -145,7 +173,7 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	for (int i = 0; i < frameCount; ++i)
 	{
 		fscanf(fp, "%d %d %d %d\n", &frameRects[i].x, &frameRects[i].y, &frameRects[i].dx, &frameRects[i].dy);
-		printf("[DefinitionFile] frame: %d w: %d h: %d\n", i, frameRects[i].dx, frameRects[i].dy);
+		Logger::FrameworkDebug("[DefinitionFile] frame: %d w: %d h: %d", i, frameRects[i].dx, frameRects[i].dy);
 		
 		if (CommandLineParser::Instance()->IsFlagSet("--add0pixel"))
 		{
@@ -182,9 +210,41 @@ bool DefinitionFile::Load(const FilePath & _filename)
 	
 	
 	fclose(fp);
-	printf("Loaded definition: %s frames: %d\n",filename.GetAbsolutePathname().c_str(), frameCount);
+	Logger::FrameworkDebug("Loaded definition: %s frames: %d",filename.GetAbsolutePathname().c_str(), frameCount);
 	
 	return true;
+}
+
+
+DAVA::Size2i DefinitionFile::GetFrameSize(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return Size2i(spriteWidth, spriteHeight);
+	}
+
+	return Size2i(frameRects[frame].dx, frameRects[frame].dy);
+}
+
+
+int DefinitionFile::GetFrameWidth(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return spriteWidth;
+	}
+
+	return frameRects[frame].dx;
+}
+
+int DefinitionFile::GetFrameHeight(int frame) const
+{
+	if(CommandLineParser::Instance()->IsFlagSet("--disableCropAlpha"))
+	{
+		return spriteHeight;
+	}
+
+	return frameRects[frame].dy;
 }
 
 

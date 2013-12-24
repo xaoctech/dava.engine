@@ -74,6 +74,8 @@
 	GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 	
+	DAVA::RenderManager::Instance()->SetRenderContextId((uint64)CGLGetCurrentContext());
+	
 //	activeCursor = 0;
     
     //RenderManager::Create(Core::RENDERER_OPENGL);
@@ -141,8 +143,13 @@
 	NSRect rect = self.frame;
 	RenderManager::Instance()->Init(rect.size.width, rect.size.height);
 	UIControlSystem::Instance()->SetInputScreenAreaSize(rect.size.width, rect.size.height);
+    
+    Core::Instance()->UnregisterAllAvailableResourceSizes();
+    Core::Instance()->RegisterAvailableResourceSize(rect.size.width, rect.size.height, "Gfx");
+    
 	Core::Instance()->SetPhysicalScreenSize(rect.size.width, rect.size.height);
     Core::Instance()->SetVirtualScreenSize(rect.size.width, rect.size.height);
+	Core::Instance()->CalculateScaleMultipliers();
 	
     isFirstDraw = true;
     
@@ -185,7 +192,7 @@
         [[self openGLContext] flushBuffer];
     }
 	DAVA::RenderManager::Instance()->Unlock();
-//	Logger::Debug("drawRect ended");
+//	Logger::FrameworkDebug("drawRect ended");
 
 }
 
@@ -370,7 +377,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSPoint p = theEvent.locationInWindow;
+//    NSPoint p = theEvent.locationInWindow;
 //    printf("click [%f, %f]\n", p.x, p.y);
     
     [self CalcOffset:theEvent];
@@ -456,7 +463,7 @@ static int32 oldModifersFlags = 0;
     if(keyboardLocked)
     {
         {
-            //		Logger::Debug("glview keypress!");
+            //		Logger::FrameworkDebug("glview keypress!");
             unichar c = [[event characters] characterAtIndex:0];
             
             Vector<DAVA::UIEvent> touches;
@@ -487,10 +494,8 @@ static int32 oldModifersFlags = 0;
             InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
         }
     }
-    else
-    {
-        [super keyDown:event];
-    }
+
+	[super keyDown:event];
 }
 
 - (void) keyUp:(NSEvent *)event
@@ -499,10 +504,8 @@ static int32 oldModifersFlags = 0;
     {
         InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
     }
-    else
-    {
-        [super keyUp:event];
-    }
+
+	[super keyUp:event];
 }
 
 - (void) flagsChanged :(NSEvent *)event

@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "FileSystem/File.h"
 #include "FileSystem/VariantType.h"
 #include "FileSystem/KeyedArchive.h"
@@ -340,6 +354,8 @@ void VariantType::SetFilePath(const FilePath & value)
 
 void VariantType::SetVariant(const VariantType& var)
 {
+	type = TYPE_NONE;
+
 	switch(var.type)
 	{
 	case TYPE_BOOLEAN:
@@ -1207,6 +1223,57 @@ const MetaInfo* VariantType::Meta()
 	return NULL;
 }
 
+void* VariantType::MetaObject()
+{
+	const void *ret = NULL;
+
+	switch(type)
+	{
+	case TYPE_BOOLEAN:
+		ret = &boolValue;
+		break;
+	case TYPE_INT32:
+		ret = &int32Value;
+		break;	
+	case TYPE_UINT32:
+		ret = &uint32Value;
+		break;	
+	case TYPE_FLOAT:
+		ret = &floatValue;
+		break;	
+	case TYPE_STRING:
+		ret = stringValue;
+		break;	
+	case TYPE_WIDE_STRING:
+		ret = wideStringValue;
+		break;
+	case TYPE_INT64:
+	case TYPE_UINT64:
+	case TYPE_VECTOR2:
+	case TYPE_BYTE_ARRAY:
+	case TYPE_VECTOR3:
+	case TYPE_VECTOR4:
+	case TYPE_MATRIX2:
+	case TYPE_MATRIX3:
+	case TYPE_MATRIX4:
+	case TYPE_COLOR:
+	case TYPE_FASTNAME:
+	case TYPE_AABBOX3:
+	case TYPE_FILEPATH:
+		ret = pointerValue;
+		break;
+	case TYPE_KEYED_ARCHIVE:
+		ret = &pointerValue;
+		break;
+	default:
+		{
+			//DVASSERT(0 && "Something went wrong with VariantType");
+		}
+	}
+
+	return (void *) ret;
+}
+
 VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 {
 	VariantType v;
@@ -1513,6 +1580,74 @@ VariantType VariantType::FromType(int type)
 	}
 
 	return v;
+}
+
+VariantType VariantType::Convert(const VariantType &val, int type)
+{
+	VariantType ret;
+
+	if(val.type == type)
+	{
+		ret = val;
+	}
+	else
+	{
+		switch (type)
+		{
+		case TYPE_INT32:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt32((DAVA::int32) val.AsUInt32()); break;
+				case TYPE_UINT64: ret.SetInt32((DAVA::int32) val.AsUInt64()); break;
+				case TYPE_INT64: ret.SetInt32((DAVA::int32) val.AsUInt64()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_UINT32:
+			{
+				switch (val.type)
+				{
+				case TYPE_INT32: ret.SetUInt32((DAVA::uint32) val.AsInt32()); break;
+				case TYPE_UINT64: ret.SetUInt32((DAVA::uint32) val.AsUInt64()); break;
+				case TYPE_INT64: ret.SetUInt32((DAVA::uint32) val.AsUInt64()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_INT64:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt64((DAVA::int64) val.AsUInt32()); break;
+				case TYPE_UINT64: ret.SetInt64((DAVA::int64) val.AsUInt64()); break;
+				case TYPE_INT32: ret.SetInt64((DAVA::int64) val.AsInt32()); break;
+				default: break;
+				}
+			}
+			break;
+
+		case TYPE_UINT64:
+			{
+				switch (val.type)
+				{
+				case TYPE_UINT32: ret.SetInt64((DAVA::uint64) val.AsUInt32()); break;
+				case TYPE_INT64: ret.SetInt64((DAVA::uint64) val.AsInt64()); break;
+				case TYPE_INT32: ret.SetInt64((DAVA::uint64) val.AsInt32()); break;
+				default: break;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return ret;
 }
 
 };

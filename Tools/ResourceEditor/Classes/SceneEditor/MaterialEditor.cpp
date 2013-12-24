@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 
 
@@ -24,12 +38,15 @@
 #include "EditorSettings.h"
 #include "../EditorScene.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
 
 
-MaterialEditor::MaterialEditor()
-: DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
+MaterialEditor::MaterialEditor(const Rect &rect)
+: DraggableDialog(rect)
 {//todo: create draggable dealog
     
     ControlsFactory::CustomizeDialog(this);
@@ -101,7 +118,7 @@ MaterialEditor::MaterialEditor()
     {
         v.push_back(Material::GetTypeName((Material::eType)i));
     }
-    
+
     materialProps = new MaterialPropertyControl(Rect(size.x * materialListPart, 
                                                       size.y * previewHeightPart, 
                                                       size.x - size.x * materialListPart, 
@@ -113,26 +130,26 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
-    SafeRelease(btnSetupFog);
-	SafeRelease(btnSetupColor);
-    SafeRelease(line);
-
 	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
-    materials.clear();
+	materials.clear();
 
 	for_each(workingNodeMaterials.begin(), workingNodeMaterials.end(),  SafeRelease<Material>);
-    workingNodeMaterials.clear();
+	workingNodeMaterials.clear();
 
-    SafeRelease(workingMaterial);
-    SafeRelease(workingSceneNode);
-    SafeRelease(workingScene);
-    
-    SafeRelease(noMaterials);
-    SafeRelease(btnSelected);
-    SafeRelease(btnAll);
-    SafeRelease(materialsList);
-    
-    SafeRelease(materialProps);
+	SafeRelease(workingMaterial);
+	SafeRelease(workingSceneNode);
+	SafeRelease(workingScene);
+
+	SafeRelease(btnAll);
+	SafeRelease(btnSelected);
+	SafeRelease(btnSetupFog);
+	SafeRelease(btnSetupColor);
+	SafeRelease(line);
+	SafeRelease(fogControl);
+	SafeRelease(colorControl);
+	SafeRelease(materialsList);
+	SafeRelease(noMaterials);
+	SafeRelease(materialProps);
 }
 
 void MaterialEditor::UpdateInternalMaterialsVector()
@@ -141,6 +158,8 @@ void MaterialEditor::UpdateInternalMaterialsVector()
     materials.clear();
     
     workingScene->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
     
     for (int32 k = 0; k < (int32)materials.size(); ++k)
     {
@@ -155,6 +174,9 @@ void MaterialEditor::UpdateNodeMaterialsVector()
     if(workingSceneNode)
     {
         workingSceneNode->GetDataNodes(workingNodeMaterials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(workingNodeMaterials, DAVA::Material::MATERIAL_SKYBOX);
+
     }
     else if(workingMaterial)
     {
@@ -508,6 +530,15 @@ void MaterialEditor::OnSetupColor(BaseObject * object, void * userData, void * c
 
 void MaterialEditor::NodesPropertyChanged(const String &)
 {
+	if(workingScene)
+	{
+		SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(workingScene);
+		if(sc)
+		{
+			sc->MarkAsChanged();
+		}
+	}
+
     RefreshList();
 }
 
@@ -522,16 +553,12 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
     
     if(workingScene)
     {
-        EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
-        if(editorScene)
+        Landscape *landscape = FindLandscape(workingScene);
+        if (landscape)
         {
-            Landscape *landscape = editorScene->GetLandscape(editorScene);
-            if (landscape)
-            {
-                landscape->SetFog(enabled);
-                landscape->SetFogDensity(dencity);
-                landscape->SetFogColor(newColor);
-            }
+            landscape->SetFog(enabled);
+            landscape->SetFogDensity(dencity);
+            landscape->SetFogColor(newColor);
         }
     }
 }
@@ -587,4 +614,3 @@ void MaterialEditor::SetSize(const Vector2 &newSize)
     
     SelectMaterial(selectedMaterial);
 }
-

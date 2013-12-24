@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIScrollBar.h"
 #include "Base/ObjectFactory.h"
@@ -20,7 +34,6 @@
 namespace DAVA 
 {
 
-REGISTER_CLASS(UIScrollBar);
 
 //use these names for children controls to define UIScrollBar in .yaml
 static const String UISCROLLBAR_SLIDER_NAME = "slider";
@@ -119,14 +132,14 @@ void UIScrollBar::LoadFromYamlNodeCompleted()
 	}
 }
 
-void UIScrollBar::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	RemoveControl(slider);
 	SafeRelease(slider);
 
 	UIControl::LoadFromYamlNode(node, loader);
 		
-	YamlNode * orientNode = node->Get("orientation");
+	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
 	{
 		if (orientNode->AsString() == "ORIENTATION_VERTICAL")
@@ -203,10 +216,11 @@ void UIScrollBar::Input(UIEvent *currentInput)
 		}
 
 		// Clamp.
-        newPos = Min(Max(0.0f, newPos), delegate->TotalAreaSize(this) - delegate->VisibleAreaSize(this));
-        
-        delegate->OnViewPositionChanged(this, newPos);
-    }
+		newPos = Min(Max(0.0f, newPos), delegate->TotalAreaSize(this) - delegate->VisibleAreaSize(this));
+		delegate->OnViewPositionChanged(this, newPos);
+
+		currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
+	}
 }
 
 void UIScrollBar::CalculateStartOffset(const Vector2& inputPoint)
@@ -269,10 +283,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.y = size.y * (visibleArea / totalSize);
-                    if (slider->size.y < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.y = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.y = GetValidSliderSize(slider->size.y);
                     if (slider->size.y >= size.y) 
                     {
                         slider->SetVisible(false, true);
@@ -287,13 +298,18 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (slider->relativePosition.y < 0) 
                 {
                     slider->size.y += slider->relativePosition.y;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					slider->size.y = GetValidSliderSize(slider->size.y);
                     slider->relativePosition.y = 0;
                 }
                 else if(slider->relativePosition.y + slider->size.y > size.y)
                 {
                     slider->size.y = size.y - slider->relativePosition.y;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.y = GetValidSliderSize(slider->size.y);
+					slider->relativePosition.y = size.y - slider->size.y;
                 }
-
             }
                 break;
             case ORIENTATION_HORIZONTAL:
@@ -301,10 +317,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (resizeSliderProportionally)
                 {
                     slider->size.x = size.x * (visibleArea / totalSize);
-                    if (slider->size.x < MINIMUM_SLIDER_SIZE) 
-                    {
-                        slider->size.x = MINIMUM_SLIDER_SIZE;
-                    }
+					slider->size.x = GetValidSliderSize(slider->size.x);
                     if (slider->size.x >= size.x) 
                     {
                         slider->SetVisible(false, true);
@@ -318,11 +331,17 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 if (slider->relativePosition.x < 0) 
                 {
                     slider->size.x += slider->relativePosition.x;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					slider->size.x = GetValidSliderSize(slider->size.x);
                     slider->relativePosition.x = 0;
                 }
                 else if(slider->relativePosition.x + slider->size.x > size.x)
                 {
                     slider->size.x = size.x - slider->relativePosition.x;
+					// DF-1998 - Don't allow to set size of slider less than minimum size
+					// Also keep slider inside control's rect
+					slider->size.x = GetValidSliderSize(slider->size.x);
+					slider->relativePosition.x = size.x - slider->size.x;
                 }
             }
                 break;
@@ -339,6 +358,11 @@ UIScrollBar::eScrollOrientation UIScrollBar::GetOrientation() const
 void UIScrollBar::SetOrientation(eScrollOrientation value)
 {
 	orientation = value;
+}
+
+float32 UIScrollBar::GetValidSliderSize(float32 size)
+{
+	return (size < MINIMUM_SLIDER_SIZE) ? MINIMUM_SLIDER_SIZE : size;
 }
 
 };

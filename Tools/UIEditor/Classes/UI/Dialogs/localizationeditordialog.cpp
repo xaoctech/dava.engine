@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "localizationeditordialog.h"
 #include "ui_localizationeditordialog.h"
 #include "LocalizationSystemHelper.h"
@@ -21,10 +35,11 @@
 #include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
 
+#include "regexpinputdialog.h"
+
 #include <QFileDialog>
 #include <QMenu>
 #include <QMessageBox>
-#include <QInputDialog>
 
 using namespace DAVA;
 
@@ -109,6 +124,10 @@ void LocalizationEditorDialog::ConnectToSignals()
 	
 	connect(ui->addStringButton, SIGNAL(clicked()), this, SLOT(OnAddNewLocalizationString()));
 	connect(ui->removeStringButton, SIGNAL(clicked()), this, SLOT(OnRemoveSelectedLocalizationString()));
+    
+    // Filter behaviour.
+    connect(ui->filterTextBox, SIGNAL(textChanged(const QString&)), this, SLOT(OnFilterTextChanged(const QString&)));
+    connect(ui->clearFilterButton, SIGNAL(clicked()), this, SLOT(OnFilterTextCleared()));
 }
 
 void LocalizationEditorDialog::SetLocalizationDirectoryPath()
@@ -187,8 +206,11 @@ void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& loc
     
     if (!localizationDirectory.isEmpty())
     {
+        FilePath localizationFilePath(localizationDirectory.toStdString());
+        localizationFilePath.MakeDirectoryPathname();
+
         LocalizationSystem::Instance()->SetCurrentLocale(languageId);
-        LocalizationSystem::Instance()->InitWithDirectory(localizationDirectory.toStdString());
+        LocalizationSystem::Instance()->InitWithDirectory(localizationFilePath);
     }
     
 	ReloadLocalizationTable();
@@ -242,11 +264,15 @@ void LocalizationEditorDialog::ReloadLocalizationTable()
 	// Fill the values.
 	for (Map<WideString, WideString>::iterator iter = localizationTable.begin(); iter != localizationTable.end(); iter ++)
 	{
-        QList<QStandardItem *> itemsList;
-		itemsList.append(new QStandardItem(WideStringToQString(iter->first)));
-		itemsList.append(new QStandardItem(WideStringToQString(iter->second)));
-        
-        tableModel->appendRow(itemsList);
+        // Add only strings which pass filter (or all strings if filter is not defined).
+        QString keyValue = WideStringToQString(iter->first);
+        if (filterValue.isEmpty() || keyValue.contains(filterValue, Qt::CaseInsensitive))
+        {
+            QList<QStandardItem *> itemsList;
+            itemsList.append(new QStandardItem(keyValue));
+            itemsList.append(new QStandardItem(WideStringToQString(iter->second)));
+            tableModel->appendRow(itemsList);
+        }
     }
 	
 	// Restore the selection if possible.
@@ -420,9 +446,10 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 	QString newLocalizationValue = QString(DEFAULT_LOCALIZATION_VALUE).arg(addedStringsCount);
 
 	bool isOK = false;
-	QString text = QInputDialog::getText(this, "Localization Key",
-										 "New Localization Key", QLineEdit::Normal,
-										 newLocalizationKey, &isOK);
+	QRegExp asciiRegExp("[ -~]+");
+	QString text = RegExpInputDialog::getText(this, "Localization Key",
+										 "New Localization Key (ASCII characters only)",
+										 newLocalizationKey, asciiRegExp, &isOK);
 	if (isOK && !text.isEmpty())
 	{
 		newLocalizationKey = text;
@@ -517,3 +544,16 @@ void LocalizationEditorDialog::OnRemoveSelectedLocalizationString()
 {
 	RemoveSelectedLocalizationString();
 }
+
+void LocalizationEditorDialog::OnFilterTextChanged(const QString& value)
+{
+    filterValue = value;
+    ReloadLocalizationTable();
+}
+
+void LocalizationEditorDialog::OnFilterTextCleared()
+{
+    filterValue.clear();
+    ui->filterTextBox->clear();
+}
+
