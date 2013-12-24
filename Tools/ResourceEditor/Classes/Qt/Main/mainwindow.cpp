@@ -2106,7 +2106,7 @@ void QtMainWindow::OnAddModelTypeComponent()
         
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ModelTypeComponent()));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new QualitySettingsComponent()));
 		}
         
 		scene->EndBatch();
