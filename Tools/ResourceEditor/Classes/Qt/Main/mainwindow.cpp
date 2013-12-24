@@ -751,18 +751,18 @@ void QtMainWindow::AddRecent(const QString &pathString)
 	}
 	
 	filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
-	count = 0;
-	for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_MAX_COUNT); ++count)
+	count =  filesList.size() > RESENT_FILES_MAX_COUNT ? RESENT_FILES_MAX_COUNT : filesList.size();
+	SettingsManager::Instance()->SetValue("LastOpenedFilesCount",
+		VariantType(count),
+		SettingsManager::MUTABLE_LENGTH);
+
+	for(int i = 0; i < count; ++i)
 	{
-		SettingsManager::Instance()->SetValue(Format("LastOpenedFile_%d", count),
-											  VariantType(filesList[count]),
+		SettingsManager::Instance()->SetValue(Format("LastOpenedFile_%d", i),
+											  VariantType(filesList[i]),
 											  SettingsManager::MUTABLE_LENGTH);
 	}
-	SettingsManager::Instance()->SetValue("LastOpenedFilesCount",
-										  VariantType(count),
-										  SettingsManager::MUTABLE_LENGTH);
 	
-
 	SettingsManager::Instance()->SaveSettings();
 	InitRecent();
 }
