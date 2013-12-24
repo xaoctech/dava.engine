@@ -650,7 +650,7 @@ void Landscape::SetTileColor(eTextureLevel level, const Color & color)
 {
     tileColor[level] = color;
 	
-	tileMaskMaterial->SetPropertyValue(TILEMASK_COLOR_PROPS_NAMES[level], Shader::UT_FLOAT_VEC4, 1, &tileColor[level]);
+	tileMaskMaterial->SetPropertyValue(TILEMASK_COLOR_PROPS_NAMES[level], Shader::UT_FLOAT_VEC3, 1, &tileColor[level]);
 }
 
 const Color & Landscape::GetTileColor(eTextureLevel level)
@@ -677,7 +677,7 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 
     if((TEXTURE_TILE_FULL == level) && ((tiledShaderMode == TILED_MODE_MIXED) || (tiledShaderMode == TILED_MODE_TEXTURE)))
     {
-        UpdateFullTiledTexture();
+//        UpdateFullTiledTexture();
     }
 	
 	if(TEXTURE_TILE_FULL != level)
@@ -1316,6 +1316,8 @@ void Landscape::Draw(Camera * camera)
 	{
 		//TODO: setup appropriate cursor state and set it
 		//TODO: RenderManager::Instance()->SetRenderState(cursorStateHandle);
+		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
+		RenderManager::Instance()->FlushState();
 		
 		/*RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
@@ -1486,7 +1488,7 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 	RenderObject::Load(archive, serializationContext);
 	
 	//MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
-	SetRenderSystem(serializationContext->GetScene()->renderSystem);
+	//SetRenderSystem(serializationContext->GetScene()->renderSystem);
 		
 	//fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
 		
@@ -1505,8 +1507,8 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 	isFogEnabled = archive->GetBool("isFogEnabled", isFogEnabled);
     fogDensity = archive->GetFloat("fogdencity", fogDensity);
 	
-	isFogEnabled = !isFogEnabled;
-	SetFog(!isFogEnabled);
+	//isFogEnabled = !isFogEnabled;
+	//SetFog(!isFogEnabled);
 
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
@@ -1622,7 +1624,7 @@ void Landscape::SetHeightmap(DAVA::Heightmap *height)
 }
     
     
-Texture * Landscape::CreateFullTiledTexture()
+Texture * Landscape::CreateLandscapeTexture()
 {
     bool savedIsFogEnabled = isFogEnabled;
     SetFog(false);
@@ -1693,10 +1695,11 @@ Texture * Landscape::CreateFullTiledTexture()
     
     prevLodLayer = -1;
 
+	BindMaterial(0, NULL);
+
 	RenderManager::Instance()->SetRenderData(ftRenderData);
 	RenderManager::Instance()->AttachRenderData();
 
-    BindMaterial(0, NULL);
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     UnbindMaterial();
 
@@ -1712,44 +1715,44 @@ Texture * Landscape::CreateFullTiledTexture()
     return fullTiled;
 }
     
-FilePath Landscape::SaveFullTiledTexture()
-{
-    FilePath pathToSave;
-    
-    if(textures[TEXTURE_TILE_FULL])
-    {
-        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
-        {
-            pathToSave = GetTextureName(TEXTURE_COLOR);
-            pathToSave.ReplaceExtension(".thumbnail.png");
-            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-            if(image)
-            {
-                ImageLoader::Save(image, pathToSave);
-                SafeRelease(image);
-            }
-        }
-        else
-        {
-            pathToSave = textureNames[TEXTURE_TILE_FULL];
-        }
-    }
-    
-    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
-    return pathToSave;
-}
-    
-void Landscape::UpdateFullTiledTexture()
-{
-	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
-    if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
-    {
-        Texture *t = CreateFullTiledTexture();
-        t->GenerateMipmaps();
-        SetTexture(TEXTURE_TILE_FULL, t);
-        SafeRelease(t);
-    }
-}
+//FilePath Landscape::SaveFullTiledTexture()
+//{
+//    FilePath pathToSave;
+//    
+//    if(textures[TEXTURE_TILE_FULL])
+//    {
+//        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
+//        {
+//            pathToSave = GetTextureName(TEXTURE_COLOR);
+//            pathToSave.ReplaceExtension(".thumbnail.png");
+//            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+//            if(image)
+//            {
+//                ImageLoader::Save(image, pathToSave);
+//                SafeRelease(image);
+//            }
+//        }
+//        else
+//        {
+//            pathToSave = textureNames[TEXTURE_TILE_FULL];
+//        }
+//    }
+//    
+//    Logger::FrameworkDebug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
+//    return pathToSave;
+//}
+//    
+//void Landscape::UpdateFullTiledTexture()
+//{
+//	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
+//    if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
+//    {
+//        Texture *t = CreateFullTiledTexture();
+//        t->GenerateMipmaps();
+//        SetTexture(TEXTURE_TILE_FULL, t);
+//        SafeRelease(t);
+//    }
+//}
     
 void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShaderMode)
 {
@@ -1909,7 +1912,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     
     Landscape *newLandscape = static_cast<Landscape *>(newObject);
 	
-	newLandscape->SetRenderSystem(renderSystem);
+	//newLandscape->SetRenderSystem(renderSystem);
 
     newLandscape->SetTiledShaderMode((eTiledShaderMode)tiledShaderMode);
     
@@ -1959,8 +1962,8 @@ void Landscape::SetupMaterialProperties()
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE2]);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE3]);
 		
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
-		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+		//tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
+		//tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
 		
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	}
@@ -1973,70 +1976,17 @@ void Landscape::SetupMaterialProperties()
 	}*/
 }
 	
-/*void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
+void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 {
-	RenderSystem* curRenderSystem = renderSystem;
-	bool renderSystemChanged = _renderSystem != curRenderSystem;
 	RenderObject::SetRenderSystem(_renderSystem);
 	
-	if(NULL == _renderSystem ||
-	   renderSystemChanged)
-	{
-		SafeRelease(tileMaskMaterial);
-		//SafeRelease(fullTiledMaterial);
-	}
-
 	if(_renderSystem)
 	{
-		if(NULL == tileMaskMaterial)
-		{
-			MaterialSystem* matSystem = _renderSystem->GetMaterialSystem();
-			
-			tileMaskMaterial = matSystem->CreateChild("Global.Landscape.TileMask");
-			//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
-			
-#ifdef LANDSCAPE_SPECULAR_LIT
-			tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
-			fullTiledMaterial->AddMaterialDefine("SPECULAR_LAND");
-#endif
-			
-		}
-		
-		LandscapeChunk * chunk = new LandscapeChunk(this);
-		chunk->SetMaterial(tileMaskMaterial);
-		AddRenderBatch(chunk);
-		SafeRelease(chunk);
-		
-		bool curContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode);
-		NMaterial* globalLandscape = renderSystem->GetMaterialSystem()->GetMaterial("Global.Landscape");
-		DVASSERT(globalLandscape);
-		
-		if(curContainsDetailMask)
-		{
-			globalLandscape->AddMaterialDefine("DETAILMASK");
-		}
-		else
-		{
-			globalLandscape->RemoveMaterialDefine("DETAILMASK");
-		}
-		
-		//NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial("Global");
-		//DVASSERT(global);
-		
-		//if(isFogEnabled)
-		//{
-		//	global->AddMaterialDefine("VERTEX_FOG");
-		//}
-		//else
-		//{
-		//	global->RemoveMaterialDefine("VERTEX_FOG");
-		//}
-		
-		//global->Rebuild();
-		
-		SetupMaterialProperties();
+		//VI: TODO: managing fog via landscape is a temporary solution that became part of an architecture
+		isFogEnabled = !isFogEnabled;
+		SetFog(!isFogEnabled);
 	}
-}*/
+}
 
 #ifdef LANDSCAPE_SPECULAR_LIT
 	

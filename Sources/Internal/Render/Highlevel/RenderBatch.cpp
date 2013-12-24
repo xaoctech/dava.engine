@@ -117,8 +117,32 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     DVASSERT(renderObject != 0);
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
     DVASSERT(worldTransformPtr != 0);
+    
 #if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
     uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
+    
+    if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
+    {
+        if ((queryRequested >= 0) && occlusionQuery->IsResultAvailable())
+        {
+            uint32 result = 0;
+            occlusionQuery->GetQuery(&result);
+            if (result == 0 && ((globalFrameIndex - queryRequestFrame) < 3) && (lastFraemDrawn == globalFrameIndex - 1))
+            {
+                //RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
+                occlusionQuery->ResetResult();
+                queryRequested = -2;
+            }
+            else queryRequested = -1;
+        }
+    }
+    
+    if (queryRequested < -1)
+    {
+        queryRequested++;
+        RenderManager::Instance()->GetStats().occludedRenderBatchCount++;
+        return;
+    }
 #endif
 //    if (!worldTransformPtr)
 //    {
@@ -250,17 +274,17 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
     if (!rb)
         rb = new RenderBatch();
 
+    SafeRelease(rb->dataSource);
 	rb->dataSource = SafeRetain(dataSource);
+    
+    SafeRelease(rb->renderDataObject);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	
+    SafeRelease(rb->material);
 	if(material)
 	{
 		rb->material = material->Clone();
 		//rb->material->SetMaterialSystem(NULL);
-	}
-	else
-	{
-		SafeRelease(rb->material);
 	}
 
 	rb->startIndex = startIndex;
@@ -315,7 +339,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		bool shouldConvertMaterial = archive->IsKeyExists("rb.material");
 		if(shouldConvertMaterial)
 		{
-			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(archive->GetVariant("rb.material")->AsUInt64()));
+			uint64 materialId = archive->GetVariant("rb.material")->AsUInt64();
+			Material *mat = static_cast<Material*>(serializationContext->GetDataBlock(materialId));
 			
 			InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
 			KeyedArchive *mia = archive->GetArchive("rb.matinst");
@@ -326,10 +351,10 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			
 			if(mat)
 			{
-				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance);
-				MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
+				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, materialId);
+				//MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
 				
-				matSystem->BindMaterial(newMaterial);
+				//matSystem->BindMaterial(newMaterial);
 			}
 			
 			SafeRelease(oldMaterialInstance);
@@ -346,6 +371,7 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		if(newMaterial)
 		{
 			SetMaterial(newMaterial);
+			SafeRelease(newMaterial);
 		}
 	}
 
@@ -381,7 +407,7 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 	if(material &&
 	   prevSystem != matSystem)
 	{
-		if(NULL == matSystem)
+		/*if(NULL == matSystem)
 		{
 			if(prevSystem)
 			{
@@ -398,7 +424,9 @@ void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 			{
 				prevSystem->RemoveMaterial(material);
 			}
-		}
-	}
+		}*/
+		
+		material->UpdateMaterialSystem(matSystem);
+	}	
 }
 };

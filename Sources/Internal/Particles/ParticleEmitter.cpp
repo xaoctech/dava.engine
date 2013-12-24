@@ -39,11 +39,7 @@ namespace DAVA
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
 
 
-#if defined (USE_FILEPATH_IN_MAP)
-	Map<FilePath, ParticleEmitter::EmitterYamlCacheEntry> ParticleEmitter::emitterYamlCache;
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	Map<String, ParticleEmitter::EmitterYamlCacheEntry> ParticleEmitter::emitterYamlCache;
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+ParticleEmitter::YamlCacheMap ParticleEmitter::emitterYamlCache;
 
 
 void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -244,10 +240,9 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLay
 }
 
 
-#if defined (USE_FILEPATH_IN_MAP)
 void ParticleEmitter::RetainInCache(const FilePath& name)
 {
-	Map<FilePath, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
+	YamlCacheMap::iterator it = emitterYamlCache.find(FILEPATH_MAP_KEY(name));
 	if (it!=emitterYamlCache.end())
 	{
 		(*it).second.refCount++;
@@ -256,7 +251,7 @@ void ParticleEmitter::RetainInCache(const FilePath& name)
 
 void ParticleEmitter::ReleaseFromCache(const FilePath& name)
 {
-	Map<FilePath, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
+	YamlCacheMap::iterator it = emitterYamlCache.find(FILEPATH_MAP_KEY(name));
 	if (it!=emitterYamlCache.end())
 	{
 		(*it).second.refCount--;
@@ -271,7 +266,7 @@ void ParticleEmitter::ReleaseFromCache(const FilePath& name)
 YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
 {
 	YamlParser *res = NULL;
-	Map<FilePath, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(filename);
+	YamlCacheMap::iterator it = emitterYamlCache.find(FILEPATH_MAP_KEY(filename));
 	if (it!=emitterYamlCache.end())
 	{
 		(*it).second.refCount++;
@@ -283,62 +278,13 @@ YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
 		EmitterYamlCacheEntry entry;
 		entry.parser = res;
 		entry.refCount = 1;
-		emitterYamlCache[filename] = entry;
+		emitterYamlCache[FILEPATH_MAP_KEY(filename)] = entry;
 	}
 	ReleaseFromCache(emitterFileName);
 	emitterFileName = filename;
 	return res;
 }
 
-#else //#if defined (USE_FILEPATH_IN_MAP)
-
-void ParticleEmitter::RetainInCache(const String& name)
-{
-	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
-	if (it!=emitterYamlCache.end())
-	{
-		(*it).second.refCount++;
-	}
-}
-
-void ParticleEmitter::ReleaseFromCache(const String& name)
-{
-	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
-	if (it!=emitterYamlCache.end())
-	{
-		(*it).second.refCount--;
-		if (!(*it).second.refCount)
-		{
-			SafeRelease((*it).second.parser);
-			emitterYamlCache.erase(it);
-		}
-	}
-}
-
-YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
-{
-	YamlParser *res = NULL;
-	String name = filename.GetAbsolutePathname();
-	Map<String, EmitterYamlCacheEntry>::iterator it = emitterYamlCache.find(name);
-	if (it!=emitterYamlCache.end())
-	{
-		(*it).second.refCount++;
-		res = (*it).second.parser;
-	}
-	else
-	{
-		res = YamlParser::Create(filename);
-		EmitterYamlCacheEntry entry;
-		entry.parser = res;
-		entry.refCount = 1;
-		emitterYamlCache[name] = entry;
-	}
-	ReleaseFromCache(emitterFileName);
-	emitterFileName = name;
-	return res;
-}
-
-#endif //#if defined (USE_FILEPATH_IN_MAP)
 
 void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {

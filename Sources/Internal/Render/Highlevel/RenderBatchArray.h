@@ -47,6 +47,7 @@ public:
     void Clear();
     inline void AddRenderBatch(const FastName & name, RenderBatch * renderBatch);
     RenderLayerBatchArray * Get(const FastName & name);
+	void InitLayer(const FastName& layerName, uint32 sortingFlags);
 
 private:
     HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
@@ -55,16 +56,17 @@ private:
 class RenderLayerBatchArray
 {
 public:
-    RenderLayerBatchArray();
+    RenderLayerBatchArray(uint32 sortingFlags);
     virtual ~RenderLayerBatchArray();
     
     enum
     {
         SORT_ENABLED = 1 << 0,
         SORT_BY_MATERIAL = 1 << 1,
-        SORT_BY_DISTANCE = 1 << 2,
+        SORT_BY_DISTANCE_BACK_TO_FRONT = 1 << 2,
+        SORT_BY_DISTANCE_FRONT_TO_BACK = 1 << 3,
         
-        SORT_REQUIRED = 1 << 3,
+        SORT_REQUIRED = 1 << 4,
     };
     
     static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
@@ -94,12 +96,7 @@ public:
 	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
 	{
 		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-		if (!layerBatchArray)
-		{
-			layerBatchArray = new RenderLayerBatchArray();
-			layerBatchArrayMap.insert(name, layerBatchArray);
-		}
-		
+		DVASSERT(layerBatchArray);
 		layerBatchArray->AddRenderBatch(renderBatch);
 	}
 	

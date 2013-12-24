@@ -31,46 +31,122 @@
 #include "Deprecated/SceneValidator.h"
 #include "CubemapEditor/MaterialHelper.h"
 
-using namespace DAVA;
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Material/MaterialSystem.h"
 
-void SceneHelper::EnumerateTextures(Entity *forNode, Map<String, Texture *> &textureCollection)
+void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
 {
-	if(!forNode) return;
+    if(!forNode) return;
 
-	Vector<Entity *> nodes;
-	forNode->GetChildNodes(nodes);
-	nodes.push_back(forNode);
+    DAVA::RenderObject *ro = GetRenderObject(forNode);
+    if(ro)
+    {
+        DAVA::uint32 count = ro->GetRenderBatchCount();
+        for(DAVA::uint32 b = 0; b < count; ++b)
+        {
+            DAVA::RenderBatch *renderBatch = ro->GetRenderBatch(b);
+            DAVA::NMaterial *material = renderBatch->GetMaterial();
 
-	for(int32 n = 0; n < (int32)nodes.size(); ++n)
+            CollectTextures(material, textureCollection);
+        }
+    }
+
+
+    DAVA::int32 count = forNode->GetChildrenCount();
+    for(DAVA::int32 c = 0; c < count; ++c)
+    {
+        EnumerateTextures(forNode->GetChild(c), textureCollection);
+    }
+}
+
+int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
+{
+	int32 retValue = 0;
+	textures.clear();
+	TexturesMap allTextures;
+	EnumerateTextures(forNode, allTextures);
+	for(TexturesMap::iterator it = allTextures.begin(); it != allTextures.end(); ++it)
 	{
-		RenderObject *ro = GetRenderObject(nodes[n]);
-		if(!ro) continue;
-
-		uint32 count = ro->GetRenderBatchCount();
-		for(uint32 b = 0; b < count; ++b)
+		DAVA::Texture * texture = it->second;
+		if(NULL == texture)
 		{
-			RenderBatch *renderBatch = ro->GetRenderBatch(b);
-
-			NMaterial *material = renderBatch->GetMaterial();
-			if(NULL != material)
+			continue;
+		}
+		
+		DAVA::TextureDescriptor *descriptor = texture->GetDescriptor();
+		if(NULL == descriptor)
+		{
+			continue;
+		}
+				
+		DAVA::Vector< DAVA::eGPUFamily> markedGPUs;
+		for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
+		{
+			eGPUFamily gpu = (eGPUFamily)i;
+			if(GPUFamilyDescriptor::IsFormatSupported(gpu, (PixelFormat)descriptor->compression[gpu].format))
 			{
-				for(int32 t = 0; t < (int32)material->GetTextureCount(); ++t)
+				FilePath texPath = descriptor->GetSourceTexturePathname();
+				if(texPath.Exists() && !descriptor->IsCompressedTextureActual(gpu))
 				{
-					DAVA::Texture *texture = material->GetTexture(t);
-					if(NULL != texture)
-					{
-						CollectTexture(textureCollection, texture->GetPathname().GetAbsolutePathname(), texture);
-					}
+					markedGPUs.push_back(gpu);
+					retValue++;
 				}
 			}
 		}
+		if(markedGPUs.size() > 0)
+		{
+			textures[texture] = markedGPUs;
+		}
 	}
+	return retValue;
 }
 
-void SceneHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
 {
-	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
+    if(!forScene) return;
+    
+    DAVA::Vector<DAVA::NMaterial *> materials;
+    
+    DAVA::RenderSystem *rSystem = forScene->GetRenderSystem();
+    DAVA::MaterialSystem *matSystem = rSystem->GetMaterialSystem();
+    
+    matSystem->BuildMaterialList(NULL, materials);
+
+    DAVA::uint32 count = (DAVA::uint32)materials.size();
+    for(DAVA::uint32 m = 0; m < count; ++m)
+    {
+        CollectTextures(materials[m], textureCollection);
+    }
+}
+
+void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
+{
+    String materialName = material->GetMaterialName().c_str();
+	
+	//VI: do not check root materials
+	if(!material->GetParentName().IsValid())
 	{
-		textures[name] = tex;
+		return;
 	}
+	
+    String parentName = material->GetParentName().c_str();
+    if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
+    {
+        return;
+    }
+    
+    
+    DAVA::uint32 texCount = material->GetTextureCount();
+    for(DAVA::uint32 t = 0; t < texCount; ++t)
+    {
+        DAVA::Texture *texture = material->GetTexture(t);
+        if(texture)
+        {
+            const DAVA::FilePath & path = texture->relativePathname;
+            if(!path.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(path))
+            {
+                textures[FILEPATH_MAP_KEY(path)] = texture;
+            }
+        }
+    }
 }

@@ -803,7 +803,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             PolygonGroupWithMaterial * group = polygroups[k];
             
 			Material* oldMaterial = group->GetMaterial();
-            NMaterial* nMaterial = serializationContext.ConvertOldMaterialToNewMaterial(oldMaterial, 0);
+            NMaterial* nMaterial = serializationContext.ConvertOldMaterialToNewMaterial(oldMaterial, 0, (uint64)oldMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             

@@ -290,9 +290,9 @@ public:
     Heightmap *GetHeightmap();
     virtual void SetHeightmap(Heightmap *height);
     
-    virtual void UpdateFullTiledTexture();
-    FilePath SaveFullTiledTexture();
-    Texture *CreateFullTiledTexture();
+//    virtual void UpdateFullTiledTexture();
+//    FilePath SaveFullTiledTexture();
+    Texture *CreateLandscapeTexture();
     
     void SetFog(const bool& fogState);
     bool IsFogEnabled() const;
@@ -307,7 +307,7 @@ public:
 
 	int32 GetDrawIndices() const;
 	
-	//virtual void SetRenderSystem(RenderSystem * _renderSystem);
+	virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 protected:
 	

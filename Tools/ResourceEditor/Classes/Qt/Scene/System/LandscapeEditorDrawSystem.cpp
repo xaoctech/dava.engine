@@ -74,6 +74,8 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 	SafeRelease(cursorTexture);
 
 	SafeDelete(notPassableTerrainProxy);
+
+	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
 }
 
 LandscapeProxy* LandscapeEditorDrawSystem::GetLandscapeProxy()
@@ -115,17 +117,15 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableCustomDra
 		return initError;
 	}
 
+	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
 	landscapeProxy->SetHeightmap(heightmapProxy);
-	GetLandscapeProxy()->UpdateFullTiledTexture(true);
 
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	landscapeRenderer->Release();
 
-	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
-	
 	++customDrawRequestCount;
 
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
@@ -142,8 +142,7 @@ void LandscapeEditorDrawSystem::DisableCustomDraw()
 	
 	if (customDrawRequestCount == 0)
 	{
-		landscapeNode->AddComponent(new RenderComponent(baseLandscape));
-		
+		landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 		UpdateBaseLandscapeHeightmap();
 	}
 }
@@ -323,6 +322,10 @@ void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
 float32 LandscapeEditorDrawSystem::GetTextureSize(Landscape::eTextureLevel level)
 {
 	float32 size = 0.f;
+	if (level == Landscape::TEXTURE_TILE_FULL)
+	{
+		level = Landscape::TEXTURE_TILE_MASK;
+	}
 	Texture* texture = baseLandscape->GetTexture(level);
 	if (texture)
 	{
@@ -451,8 +454,6 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableTilemaskE
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
-	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
-
 	fogWasEnabled = landscapeProxy->IsFogEnabled();
 	landscapeProxy->SetFogEnabled(false);
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
@@ -501,7 +502,7 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::InitLandscape(E
 
 	landscapeNode = landscapeEntity;
 	baseLandscape = SafeRetain(landscape);
-	landscapeProxy = new LandscapeProxy(baseLandscape);
+	landscapeProxy = new LandscapeProxy(baseLandscape, landscapeNode);
 
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
@@ -528,6 +529,8 @@ void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity * entity)
 	Landscape* landscape = GetLandscape(entity);
 	if (landscape != NULL)
 	{
+        entity->SetLocked(true);
+        
 		InitLandscape(entity, landscape);
 	}
 }
@@ -636,11 +639,11 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape
 		return LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT;
 	}
 
-	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
-	if (t == NULL || t->IsPinkPlaceholder())
-	{
-		landscapeProxy->UpdateFullTiledTexture(true);
-	}
+//	Texture* t = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+//	if (t == NULL || t->IsPinkPlaceholder())
+//	{
+//		landscapeProxy->UpdateFullTiledTexture(true);
+//	}
 
 	Texture* tileMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 	if (tileMask == NULL || tileMask->IsPinkPlaceholder())
@@ -648,11 +651,11 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape
 		return LANDSCAPE_EDITOR_SYSTEM_TILE_MASK_TEXTURE_ABSENT;
 	}
 	
-	Texture* fullTiled = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
-	if (fullTiled == NULL || fullTiled->IsPinkPlaceholder())
-	{
-		return LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSENT;
-	}
+//	Texture* fullTiled = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
+//	if (fullTiled == NULL || fullTiled->IsPinkPlaceholder())
+//	{
+//		return LANDSCAPE_EDITOR_SYSTEM_FULL_TILED_TEXTURE_ABSENT;
+//	}
 
 	Texture* texTile0 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE0);
 	

@@ -57,6 +57,13 @@ public:
 	virtual void InvalidateTexture(Texture * texure) = 0;
 };
 	
+#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<FilePath, Texture *> TexturesMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<String, Texture *> TexturesMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+
+
 class Texture : public RenderResource
 {
 public:
@@ -219,7 +226,7 @@ public:
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize, uint32 cubeFaceId);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
-	
+	void SetMinMagFilter(TextureFilter minFilter, TextureFilter magFilter);
     /**
         \brief This function can enable / disable autosave for render targets.
         It's actual only for DX9 and for other systems is does nothing
@@ -292,11 +299,7 @@ public:							// properties for fast access
 
 	void SetDebugInfo(const String & _debugInfo);
 
-#ifdef USE_FILEPATH_IN_MAP
-	static const Map<FilePath, Texture*> & GetTextureMap();
-#else //#ifdef USE_FILEPATH_IN_MAP
-	static const Map<String, Texture*> & GetTextureMap();
-#endif //#ifdef USE_FILEPATH_IN_MAP
+	static const TexturesMap & GetTextureMap();
     
     int32 GetDataSize() const;
     
@@ -316,16 +319,11 @@ public:							// properties for fast access
     
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
-    inline TextureDescriptor * GetDescritor() const;
+    inline TextureDescriptor * GetDescriptor() const;
     
 private:
-    
-#ifdef USE_FILEPATH_IN_MAP
-	static Map<FilePath, Texture*> textureMap;
-#else //#ifdef USE_FILEPATH_IN_MAP
-	static Map<String, Texture*> textureMap;
-#endif //#ifdef USE_FILEPATH_IN_MAP
 
+    static TexturesMap textureMap;
 
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex);
@@ -405,7 +403,7 @@ inline Texture::TextureState Texture::GetState() const
 	return state;
 }
 
-inline TextureDescriptor * Texture::GetDescritor() const
+inline TextureDescriptor * Texture::GetDescriptor() const
 {
     return texDescriptor;
 }

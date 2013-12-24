@@ -82,6 +82,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 
 void ParticleEffectComponent::Start()
 {
+
 	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
 	currRepeatsCont = 0;
 }

@@ -34,7 +34,7 @@ namespace DAVA
 {
     
 RenderPassBatchArray::RenderPassBatchArray()
-    : layerBatchArrayMap(8)
+    :	layerBatchArrayMap(8)
 {
 }
     
@@ -62,12 +62,16 @@ RenderLayerBatchArray * RenderPassBatchArray::Get(const FastName & name)
     return layerBatchArrayMap.at(name);
 }
 
-    
-    
-RenderLayerBatchArray::RenderLayerBatchArray()
-    : flags(0)
+void RenderPassBatchArray::InitLayer(const FastName& layerName, uint32 sortingFlags)
 {
-    flags = SORT_ENABLED | SORT_BY_MATERIAL;
+	RenderLayerBatchArray* batchArray = new RenderLayerBatchArray(sortingFlags);
+	layerBatchArrayMap.insert(layerName, batchArray);
+}
+    
+RenderLayerBatchArray::RenderLayerBatchArray(uint32 sortingFlags)
+    : flags(sortingFlags)
+{
+    //flags = SORT_ENABLED | SORT_BY_MATERIAL | SORT_BY_DISTANCE;
 	//renderBatchArray.reserve(4096);
 }
     
@@ -114,8 +118,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
             
             flags &= ~SORT_REQUIRED;
         }
-        
-        if (flags & SORT_BY_DISTANCE)
+        else if (flags & SORT_BY_DISTANCE_BACK_TO_FRONT)
         {
             Vector3 cameraPosition = camera->GetPosition();
             
@@ -126,6 +129,24 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
                 float32 distance = (position - cameraPosition).Length();
                 batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
+            }
+            
+            std::sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
+            
+            flags |= SORT_REQUIRED;
+        }else if (flags & SORT_BY_DISTANCE_FRONT_TO_BACK)
+        {
+            Vector3 cameraPosition = camera->GetPosition();
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatch * batch = renderBatchArray[k];
+                RenderObject * renderObject = batch->GetRenderObject();
+                Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+                float32 distance = (position - cameraPosition).Length();
+                uint32 distanceBits = 0x0fffffff - ((uint32)distance) & 0x0fffffff;
+
+                batch->layerSortingKey = distanceBits | (batch->GetSortingKey() << 28);
             }
             
             std::sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);

@@ -10,6 +10,7 @@ namespace DAVA
 {
 
 const static uint16 INVALID_TREE_NODE_INDEX = (uint16)(-1);
+    
 class RenderObject;
 class Frustum;
 
@@ -60,7 +61,9 @@ class QuadTree : public RenderHierarchy
 	
 	
 	void ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags);	
-
+    void GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray);
+    
+    
 	uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
 	
 	static const int32 RECALCULATE_Z_PER_FRAME = 10;
@@ -86,7 +89,9 @@ public:
 	virtual void AddRenderObject(RenderObject * renderObject);
 	virtual void RemoveRenderObject(RenderObject * renderObject);
 	virtual void ObjectUpdated(RenderObject * renderObject);
-	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);	
+	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray);
+
 	virtual void Initialize();
 
 	virtual void Update();

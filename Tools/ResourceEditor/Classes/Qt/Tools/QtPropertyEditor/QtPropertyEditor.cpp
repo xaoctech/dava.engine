@@ -50,6 +50,8 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
 	QObject::connect(curModel, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnItemEdited(const QModelIndex &)));
 	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
+
+	setMouseTracking(true);
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -62,6 +64,7 @@ QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData
 
 QModelIndex QtPropertyEditor::InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent)
 {
+
 	return curModel->InsertProperty(name, data, row, parent);
 }
 
@@ -86,18 +89,21 @@ QtPropertyData* QtPropertyEditor::GetProperty(const QModelIndex &index) const
 	return curModel->itemFromIndex(index);
 }
 
+QtPropertyData * QtPropertyEditor::GetRootProperty() const
+{
+	return curModel->rootItem();
+}
+
+
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
+	lastHoverIndex = QModelIndex();
 	curModel->RemoveProperty(index);
 }
 
 void QtPropertyEditor::RemoveProperty(QtPropertyData *data)
 {
-	if(GetProperty(lastHoverIndex) == data)
-	{
-		lastHoverIndex = QModelIndex();
-	}
-
+	lastHoverIndex = QModelIndex();
 	curModel->RemoveProperty(curModel->indexFromItem(data));
 }
 

@@ -35,7 +35,7 @@
 
 #include "Deprecated/ScenePreviewDialog.h"
 
-#include "MaterialEditor/MaterialsAssignSystem.h"
+#include "MaterialEditor/MaterialAssignSystem.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -150,6 +150,7 @@ void SceneTabWidget::ReleaseDAVAUI()
 
 int SceneTabWidget::OpenTab()
 {
+	QtMainWindow::Instance()->WaitStart("Opening scene...", "Creating new scene.");
 	SceneEditor2 *scene = new SceneEditor2();
 
 	DAVA::FilePath newScenePath = (QString("newscene") + QString::number(++newSceneCounter)).toStdString();
@@ -161,6 +162,8 @@ int SceneTabWidget::OpenTab()
 	SetTabScene(tabIndex, scene);
 
 	SetCurrentTab(tabIndex);
+
+	QtMainWindow::Instance()->WaitStop();
 	return tabIndex;
 }
 
@@ -175,10 +178,9 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		return tabIndex;
 	}
 
-	SceneEditor2 *scene = new SceneEditor2();
-
 	QtMainWindow::Instance()->WaitStart("Opening scene...", scenePapth.GetAbsolutePathname().c_str());
 
+	SceneEditor2 *scene = new SceneEditor2();
 	if(scene->Load(scenePapth))
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
@@ -319,16 +321,14 @@ void SceneTabWidget::TabBarCloseCurrentRequest()
 
 void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
 {
-    if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
+	QList<QUrl> urls = data->urls();
+	for(int i = 0; i < urls.size(); ++i)
 	{
-		QList<QUrl> urls = data->urls();
-		for(int i = 0; i < urls.size(); ++i)
-		{
-            if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
-            {
-                QtMainWindow::Instance()->OpenScene(urls[i].toLocalFile());
-            }
-		}
+		QString path = urls[i].toLocalFile();
+        if(QFileInfo(path).suffix() == "sc2")
+        {
+            QtMainWindow::Instance()->OpenScene(path);
+        }
 	}
 }
 
@@ -336,17 +336,29 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 {
 	if(NULL != curScene)
 	{
-        const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(data);
-        if(MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
+        if(MimeDataHelper2<DAVA::NMaterial>::IsValid(data))
         {
-            DropMaterial(mimeData);
-        }
-        else if(QtMimeData::ContainsFilepathWithExtension(data, ".sc2"))
+			QVector<DAVA::NMaterial*> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
+
+			// assing only when single material is dropped
+			if(materials.size() == 1)
+			{
+				const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
+
+				if(NULL != group && group->Size() > 0)
+				{
+					const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
+					MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials[0]);
+				}
+			}
+		}
+        else
 		{
             QList<QUrl> urls = data->urls();
             for(int i = 0; i < urls.size(); ++i)
             {
-                if(QtMimeData::IsURLEqualToExtension(urls[i], ".sc2"))
+				QString path = urls[i].toLocalFile();
+				if(QFileInfo(path).suffix() == "sc2")
                 {
                     DAVA::Vector3 pos;
                     
@@ -361,10 +373,8 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
                         }
                     }
                     
-                    QString sc2path = urls[i].toLocalFile();
-                    
-                    QtMainWindow::Instance()->WaitStart("Adding object to scene", sc2path);
-                    curScene->structureSystem->Add(sc2path.toStdString(), pos);
+                    QtMainWindow::Instance()->WaitStart("Adding object to scene", path);
+					curScene->structureSystem->Add(path.toStdString(), pos);
                     QtMainWindow::Instance()->WaitStop();
                 }
             }
@@ -374,19 +384,6 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 	{
 		TabBarDataDropped(data);
 	}
-}
-
-void SceneTabWidget::DropMaterial(const QtMimeData *mimeData)
-{
-    if(!curScene) return;
-    
-    QVector<DAVA::NMaterial*> *materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(mimeData);
-
-    const EntityGroup* group = curScene->collisionSystem->ObjectsRayTestFromCamera();
-    if(!group || (group->Size() == 0) || (materials->size() != 1)) return;
-    
-    const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
-    MaterialsAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials->at(0));
 }
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
@@ -472,8 +469,8 @@ bool SceneTabWidget::eventFilter(QObject *object, QEvent *event)
 
 void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    const QtMimeData *mimeData = dynamic_cast<const QtMimeData *>(event->mimeData());
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2") || MimeDataHelper2<DAVA::NMaterial>::IsDataSupportType(mimeData))
+	if(MimeDataHelper2<DAVA::NMaterial>::IsValid(event->mimeData()) ||
+		event->mimeData()->hasUrls())
 	{
 		event->acceptProposedAction();
 	}
@@ -486,10 +483,7 @@ void SceneTabWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void SceneTabWidget::dropEvent(QDropEvent *event)
 {
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
-	{
-		TabBarDataDropped(event->mimeData());
-	}
+	TabBarDataDropped(event->mimeData());
 }
 
 void SceneTabWidget::keyReleaseEvent(QKeyEvent * event)
@@ -598,7 +592,7 @@ MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
 
 void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
+	if(event->mimeData()->hasUrls())
 	{
 		event->acceptProposedAction();
 	}
@@ -611,10 +605,8 @@ void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
 
 void MainTabBar::dropEvent(QDropEvent *event)
 {
-	if(QtMimeData::ContainsFilepathWithExtension(event->mimeData(), ".sc2"))
+	if(event->mimeData()->hasUrls())
 	{
 		emit OnDrop(event->mimeData());
 	}
 }
-
-

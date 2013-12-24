@@ -41,6 +41,8 @@
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
+#include "Scene/SceneEditor2.h"
+
 SceneValidator::SceneValidator()
 {
 //    sceneTextureCount = 0;
@@ -164,9 +166,24 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
+        ValidateNodeCustomProperties(node);
     }
 }
 
+
+void SceneValidator::ValidateNodeCustomProperties(Entity * sceneNode)
+{
+    if(!GetLight(sceneNode))
+    {
+        KeyedArchive * props = sceneNode->GetCustomProperties();
+
+        props->DeleteKey("editor.staticlight.used");
+        props->DeleteKey("editor.staticlight.enable");
+        props->DeleteKey("editor.staticlight.castshadows");
+        props->DeleteKey("editor.staticlight.receiveshadows");
+        props->DeleteKey("lightmap.size");
+    }
+}
 
 void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
@@ -185,6 +202,18 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     
 	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
+        ownerNode->SetLocked(true);
+        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
+        {
+            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
+            if(sc)
+            {
+                sc->MarkAsChanged();
+            }
+            errorsLog.insert("Landscape had wrong transform. Please re-save scene.");
+        }
+        
 		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
 
@@ -370,6 +399,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 {
     if(!landscape) return;
     
+    
 	if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
 	{
 		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
@@ -431,15 +461,37 @@ void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NM
 {
 	KeyedArchive * props = ownerNode->GetCustomProperties();
 
-    if(props->IsKeyExists("editor.staticlight.enable"))
-    {
-        IlluminationParams * params = material->GetIlluminationParams();
+    IlluminationParams * params = material->GetIlluminationParams();
 
-        params->isUsed = props->GetBool("editor.staticlight.enable", params->isUsed);
-        params->castShadow = props->GetBool("editor.staticlight.castshadows", params->castShadow);
-        params->receiveShadow = props->GetBool("editor.staticlight.receiveshadows", params->receiveShadow);
-        params->lightmapSize = props->GetInt32("lightmap.size", params->lightmapSize);
-    }
+    VariantType * variant = 0;
+    variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.used");
+    if(variant) params->isUsed = variant->AsBool();
+    variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.castshadows");
+    if(variant) params->castShadow = variant->AsBool();
+    variant = GetCustomPropertyFromParentsTree(ownerNode, "editor.staticlight.receiveshadows");
+    if(variant) params->receiveShadow = variant->AsBool();
+
+    variant = GetCustomPropertyFromParentsTree(ownerNode, "lightmap.size");
+    if(variant)
+        params->lightmapSize = variant->AsInt32();
+    else if(IsPointerToExactClass<Landscape>(GetRenderObject(ownerNode)))
+        params->lightmapSize = 1024;
+}
+
+VariantType* SceneValidator::GetCustomPropertyFromParentsTree(Entity *ownerNode, const String & key)
+{
+    if(!ownerNode)
+        return 0;
+
+    KeyedArchive * props = ownerNode->GetCustomProperties();
+
+    if(!props)
+        return 0;
+
+    if(props->IsKeyExists(key))
+        return props->GetVariant(key);
+    else
+        return GetCustomPropertyFromParentsTree(ownerNode->GetParent(), key);
 }
 
 bool SceneValidator::NodeRemovingDisabled(Entity *node)

@@ -77,6 +77,8 @@
 
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "Input/GamepadManager.h"
+#include "Input/GamepadDevice.h"
 
 // Localization
 #include "FileSystem/LocalizationSystem.h"
@@ -263,6 +265,8 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/StaticOcclusionComponent.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
 
 // Application core 
 #include "Core/Core.h"

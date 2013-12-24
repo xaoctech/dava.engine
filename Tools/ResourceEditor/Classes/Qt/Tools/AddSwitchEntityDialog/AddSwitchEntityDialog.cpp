@@ -35,6 +35,7 @@
 #include "Deprecated/EditorSettings.h"
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Qt/Main/QtUtils.h"
+#include "Commands2/EntityParentChangeCommand.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -112,9 +113,6 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 void AddSwitchEntityDialog::accept()
 {
 	SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
-	
-	Entity* switchEntity = entity;
-	
 	if( NULL == scene)
 	{
 		CleanupPathWidgets();
@@ -131,14 +129,27 @@ void AddSwitchEntityDialog::accept()
 	}
 	
 	CleanupPathWidgets();
+
+	scene->BeginBatch("Unite entities into switch entity.");
+	
+	Entity* switchEntity = new Entity();
+	switchEntity->SetName(ResourceEditor::SWITCH_NODE_NAME);
+	scene->Exec(new EntityAddCommand(switchEntity, scene));
+	
+	SwitchComponent* component = new SwitchComponent();
+	switchEntity->AddComponent(component);
+
+    //TODO AMakovii
+	//SafeRelease(component);
+
+	KeyedArchive *customProperties = switchEntity->GetCustomProperties();
+	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	
 	Q_FOREACH(Entity* item, vector)
 	{
 		if(item)
 		{
-			Entity *e = item->Clone();
-			switchEntity->AddNode(e);
-			e->Release();
+			scene->Exec(new EntityParentChangeCommand(item, switchEntity));
 		}
 	}
 
@@ -152,6 +163,13 @@ void AddSwitchEntityDialog::accept()
 		swComponent->SetSwitchIndex(swComponent->GetSwitchIndex());
 	}
 		
+    //TODO AMAkovii
+	//scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
+	scene->EndBatch();
+
+	scene->selectionSystem->SetSelection(switchEntity);
+	SafeRelease(switchEntity);
+	
 	BaseAddEntityDialog::accept();
 }
 

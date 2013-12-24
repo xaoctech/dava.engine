@@ -171,6 +171,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 							
 							if(data.isLod)
 							{
+                                Logger::Debug("Lod Mat: %s", data.name.c_str());
 								lodNodes.push_back(data);
 							}
 							else
@@ -318,8 +319,12 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	{
 		material->SetMaterialName(name.c_str());
 		AddMaterial(material);
-		//material->Release(); //need to release material since material system took ownership
-		material->SetParent(parentMaterial);
+		
+		if(!isLod)
+		{
+			//VI: LOD materials have parent set up during LOD switch process
+			material->SetParent(parentMaterial);
+		}
 		
 		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetMaterialName().c_str());
 		if(childrenIter != nodes.end())
@@ -354,34 +359,24 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 		material->SetMaterialSystem(this);
 		
 		NMaterial* collisionMaterial = materials.at(material->GetMaterialName());
-		DVASSERT(material != collisionMaterial); //should not add same material several times
-		if(collisionMaterial != NULL &&
-		   collisionMaterial != material)
+		DVASSERT(NULL == collisionMaterial); //should not add same material several times
+		if(NULL == collisionMaterial)
 		{
-			//need to resolve name collision
-			//just add some number to the end
-			uint32 i = 0;
-			String baseName = material->GetMaterialName().c_str();
-			while(true)
+			materials.insert(material->GetMaterialName(), material);
+			
+			if(material->IsSwitchable())
 			{
-				String uniqueName = Format("%s.%d", baseName.c_str(), i);
-				if(!materials.count(FastName(uniqueName.c_str())))
-				{
-					material->SetMaterialName(uniqueName);
-					break;
-				}
-				
-				i++;
-				
-				DVASSERT(i <= 65536);//something is wrong when there's no unique name after 64K steps
+				material->SwitchState(currentMaterialQuality, this, true);
 			}
-		}
-		
-		materials.insert(material->GetMaterialName(), material);
-		
-		if(material->IsSwitchable())
-		{
-			material->SwitchState(currentMaterialQuality, this);
+			else
+			{
+				const FastName& parentName = material->GetParentName();
+				
+				if(parentName.IsValid())
+				{
+					material->SwitchParent(parentName);
+				}
+			}
 		}
 	}
 
@@ -399,15 +394,30 @@ void MaterialSystem::Clear()
 	Vector<NMaterial*> materialList;
 	BuildMaterialList(NULL, materialList);
 	
+	//VI: make sure materials stay valid until everything removed
+	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
+		it != materialList.rend();
+		++it)
+	{
+		(*it)->Retain();
+	}
+	
 	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
 		it != materialList.rend();
 		++it)
 	{
 		RemoveMaterial(*it);
+		SafeRelease(*it);
 	}
 	
-	
-	
+	//VI: final release materials. They should have refCount = 1 by now
+	for(Vector<NMaterial*>::reverse_iterator it = materialList.rbegin();
+		it != materialList.rend();
+		++it)
+	{
+		(*it)->Release();
+	}
+
 	DVASSERT(materials.size() == 0);
 }
 	
@@ -448,7 +458,9 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName,
 		
 		if(mat->IsSwitchable())
 		{
+			SafeRetain(mat);
 			mat->SwitchState(qualityLevelName, this, forceSwitch);
+			SafeRelease(mat);
 		}
 	}
 	
@@ -482,20 +494,24 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 	
 	void MaterialSystem::BindMaterial(NMaterial* newMaterial)
 	{
-		AddMaterial(newMaterial);
-		
 		FastName parentName = newMaterial->GetParentName();
-		NMaterial* newParent = GetMaterial(parentName);
-		if(newParent)
+		NMaterial* newParent = GetSpecificMaterial(parentName);
+		if(NULL == newParent)
 		{
-			newMaterial->SetParent(newParent);
+			newParent = newMaterial->GetParent();
+			DVASSERT(newParent);
+			
+			BindMaterial(newParent);
 		}
+		
+		AddMaterial(newMaterial);
 	}
 	
 	NMaterial* MaterialSystem::CreateSwitchableChild(NMaterial* parent)
 	{
 		NMaterial* child = MaterialSystem::CreateNamed();
 		uint32 stateCount = parent->GetStateCount();
+		String matName = child->GetMaterialName().c_str();
 		
 		if(stateCount > 0)
 		{
@@ -503,12 +519,14 @@ NMaterial* MaterialSystem::CreateInstanceChild(NMaterial* parent)
 			while(stateIter != parent->states.end())
 			{
 				NMaterialState* matState = stateIter->second->CreateTemplate(parent);
+				matState->SetMaterialName(matName);
 				child->states.insert(stateIter->first, matState);
 				
 				++stateIter;
 			}
 		}
 		
+		child->SwitchParentForAllStates(parent->GetMaterialName());
 		child->SetParent(parent);
 		
 		return child;

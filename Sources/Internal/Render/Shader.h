@@ -164,6 +164,8 @@ public:
     
     void Bind();
     static void Unbind();
+	static bool IsAutobindUniform(Shader::eUniform uniformId);
+
     inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
     inline int32 GetAttributeCount();
     

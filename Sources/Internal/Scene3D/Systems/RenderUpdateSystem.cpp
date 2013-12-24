@@ -98,10 +98,9 @@ void RenderUpdateSystem::RemoveEntity(Entity * entity)
 	entityObjectMap.erase(entity);
 }
     
-void RenderUpdateSystem::Process()
+void RenderUpdateSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("RenderUpdateSystem::Process");
-    float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
     GetScene()->GetRenderSystem()->Update(timeElapsed);
 }
     

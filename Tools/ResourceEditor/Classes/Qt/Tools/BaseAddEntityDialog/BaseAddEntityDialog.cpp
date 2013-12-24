@@ -100,7 +100,7 @@ void BaseAddEntityDialog::PerformResize()
 QtPropertyData* BaseAddEntityDialog::AddInspMemberToEditor(void *object, const DAVA::InspMember * member)
 {
 	int flags = DAVA::I_VIEW | DAVA::I_EDIT;
-	QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(object, member, flags);
+	QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(object, member);
 	propEditor->AppendProperty(member->Name(), propData);
 	return propData;
 }
@@ -138,6 +138,11 @@ void BaseAddEntityDialog::AddButton( QWidget* widget, eButtonAlign orientation)
 		default:
 			break;
 	}
+}
+
+void BaseAddEntityDialog::AddButton( QWidget* widget, int32 position)
+{
+	ui->lowerLayOut->insertWidget(position, widget);
 }
 
 DAVA::Entity* BaseAddEntityDialog::GetEntity()

@@ -219,15 +219,23 @@ namespace DAVA
 
 	class InspInfoDynamic
 	{
+		friend class InspMemberDynamic;
+
 	public:
-		InspInfoDynamic() {};
+		InspInfoDynamic() : memberDynamic(NULL) {};
 		virtual ~InspInfoDynamic() {};
 
-		virtual int MembersCount(void *object) const = 0;
-		virtual InspDesc MemberDesc(void *object, int index) const = 0;
-		virtual const char* MemberName(void *object, int index) const = 0;
-		virtual VariantType MemberValueGet(void *object, int index) const = 0;
-		virtual void MemberValueSet(void *object, int index, const VariantType &value) = 0;
+		virtual size_t MembersCount(void *object) const = 0;
+		virtual InspDesc MemberDesc(void *object, size_t index) const = 0;
+		virtual const char* MemberName(void *object, size_t index) const = 0;
+		virtual int MemberFlags(void *object, size_t index) const = 0;
+		virtual VariantType MemberValueGet(void *object, size_t index) const = 0;
+		virtual void MemberValueSet(void *object, size_t index, const VariantType &value) = 0;
+
+		const InspMemberDynamic* GetMember() const { return memberDynamic; };
+
+	protected:
+		const InspMemberDynamic* memberDynamic;
 	};
 };
 
