@@ -98,6 +98,7 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 		NMaterial *material = MaterialSystem::CreateNamed();
 		material->SwitchParent(FindParticleMaterial(srcFactor, dstFactor, enableFrameBlend));
 		material->SetTexture(NMaterial::TEXTURE_ALBEDO, texture);
+		material->UpdateMaterialSystem(GetScene()->renderSystem->GetMaterialSystem());		
 		materialMap[materialKey] = material;
 		return material;
 	}
@@ -153,7 +154,10 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 	{
 		//add to active effects and to render
 		activeComponents.push_back(effect);
-		Vector3 pos = effect->GetEntity()->GetWorldTransform().GetTranslationVector();
+		Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
+		
+		Vector3 pos = worldTransformPointer->GetTranslationVector();
 		effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
 		effect->GetEntity()->GetScene()->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
 	}
@@ -237,7 +241,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 	effect->effectData.infoSources[0].position = ((TransformComponent *)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform().GetTranslationVector();
 	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();	
 	AABBox3 bbox;
-	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;++it)
+	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
 	{
 		ParticleGroup &group = *it;
 		group.activeParticleCount = 0;
@@ -537,7 +541,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 
 	//now transform position and speed by emissionVector and worldTransfrom rotations - preserving length	
 	Matrix3 newTransform(worldTransform);
-	if ((fabs(currEmissionVector.x)<EPSILON)&&(fabs(currEmissionVector.z)<EPSILON))
+	if ((fabs(currEmissionVector.x)<EPSILON)&&(fabs(currEmissionVector.y)<EPSILON))
 	{
 		if (currEmissionVector.z<0)
 		{
