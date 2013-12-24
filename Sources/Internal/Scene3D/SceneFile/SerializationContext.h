@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
 
 namespace DAVA
@@ -55,6 +56,7 @@ namespace DAVA
 		Scene* scene;
 		uint32 lastError;
 		uint32 version;
+		FastName defaultMaterialQuality;
 		Map<uint64, DataNode*> dataBlocks;
 		Map<uint64, NMaterial*> serializationMaterialMap;
 	
@@ -142,6 +144,16 @@ namespace DAVA
 		inline uint32 GetLastError()
 		{
 			return lastError;
+		}
+		
+		inline void SetDefaultMaterialQuality(const FastName& quality)
+		{
+			defaultMaterialQuality = quality;
+		}
+		
+		inline const FastName& GetDefaultMaterialQuality() const
+		{
+			return defaultMaterialQuality;
 		}
 		
 		NMaterial* ConvertOldMaterialToNewMaterial(Material* oldMaterial,
