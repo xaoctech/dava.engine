@@ -32,6 +32,7 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 
 namespace DAVA
@@ -50,6 +51,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 	effectData.infoSources.resize(1);
 	effectData.infoSources[0].size=Vector2(1,1);
 	effectRenderObject = new ParticleRenderObject(&effectData);
+	time = 0;
 }
 
 ParticleEffectComponent::~ParticleEffectComponent()
@@ -64,14 +66,17 @@ ParticleEffectComponent::~ParticleEffectComponent()
 }
 
 Component * ParticleEffectComponent::Clone(Entity * toEntity)
-{
-	DVASSERT(0);
+{	
 	ParticleEffectComponent * newComponent = new ParticleEffectComponent();
 	newComponent->SetEntity(toEntity);
 	newComponent->repeatsCount = repeatsCount;
 	newComponent->stopWhenEmpty = stopWhenEmpty;	
 	newComponent->playbackComplete = playbackComplete;
 	newComponent->effectDuration = effectDuration;
+	int emittersCount = emitters.size();
+	newComponent->emitters.resize(emittersCount);
+	for (int32 i=0; i<emittersCount; ++i)
+		newComponent->emitters[i] = emitters[i]->Clone();
 	return newComponent;
 }
 
@@ -254,11 +259,78 @@ int32 ParticleEffectComponent::GetActiveParticlesCount()
 void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Serialize(archive, serializationContext);
+	archive->SetUInt32("pe.version", 1);
+	archive->SetBool("pe.stopWhenEmpty", stopWhenEmpty);
+	archive->SetFloat("pe.effectDuration", effectDuration);
+	archive->SetUInt32("pe.repeatsCount", repeatsCount);
+	archive->SetBool("pe.clearOnRestart", clearOnRestart);
+	archive->SetUInt32("pe.emittersCount", emitters.size());
+	KeyedArchive *emittersArch = new KeyedArchive();	
+	for (uint32 i=0; i<emitters.size(); ++i)
+	{		
+		KeyedArchive *emitterArch = new KeyedArchive();
+		String filename = emitters[i]->configPath.GetRelativePathname(serializationContext->GetScenePath());
+		emitterArch->SetString("emitter.filename", filename);
+		emittersArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), emitterArch);
+		emitterArch->Release();
+	} 
+	archive->SetArchive("pe.emitters", emittersArch);
+	emittersArch->Release();
 }
+	
 
 void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Deserialize(archive, serializationContext);
+	loadedVersion = archive->GetUInt32("pe.version", 0);
+	
+	if (loadedVersion==1) //new effect - load everything here
+	{
+		stopWhenEmpty = archive->GetBool("pe.stopWhenEmpty");
+		effectDuration = archive->GetFloat("pe.effectDuration");
+		repeatsCount = archive->GetUInt32("pe.repeatsCount");
+		clearOnRestart = archive->GetBool("pe.clearOnRestart");
+		uint32 emittersCount = archive->GetUInt32("pe.emittersCount");		
+		KeyedArchive *emittersArch = archive->GetArchive("pe.emitters");
+		emitters.resize(emittersCount);
+		for (uint32 i=0; i<emittersCount; ++i)
+		{		
+			emitters[i]=new ParticleEmitter();
+			String filename = emittersArch->GetArchive(KeyedArchive::GenKeyFromIndex(i))->GetString("emitter.filename");
+			if (!filename.empty())
+				emitters[i]->LoadFromYaml(serializationContext->GetScenePath()+filename);			
+		} 		
+	}
+}
+
+void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializationContext)
+{
+	Entity *entity = GetEntity();
+	bool lodDefined = false;
+	for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
+	{
+		Entity *child = entity->GetChild(i);
+		PartilceEmitterLoadProxy *emitterProxy = NULL;
+		RenderComponent *renderComponent = static_cast<RenderComponent*>(child->GetComponent(Component::RENDER_COMPONENT));
+		if (renderComponent)
+			emitterProxy = static_cast<PartilceEmitterLoadProxy *>(renderComponent->GetRenderObject());
+		if (!emitterProxy) continue;
+		ParticleEmitter *emitter = new ParticleEmitter();
+		if (!emitterProxy->emitterFilename.empty())
+			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename);
+		emitters.push_back(emitter);
+		if (!lodDefined)
+		{
+			LodComponent *lodComponent = static_cast<LodComponent *>(child->GetComponent(Component::LOD_COMPONENT));
+			if (lodComponent)
+			{
+				lodComponent->Clone(entity);
+				lodDefined = true;
+			}
+		}
+	}
+
+	entity->RemoveAllChildren();
 }
 
 

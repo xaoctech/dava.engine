@@ -239,6 +239,7 @@ void QuadTree::AddRenderObject(RenderObject * renderObject)
 	}
 
 	const AABBox3& objBox = renderObject->GetWorldBoundingBox();
+	DVASSERT(!objBox.IsEmpty());
 	
 	//ALWAYS_CLIPPING_VISIBLE should be added to root to prevent being clipped by tree
 	//special treatment for root - as it can contain objects outside the world

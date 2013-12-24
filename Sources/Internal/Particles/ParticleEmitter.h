@@ -51,6 +51,15 @@ namespace DAVA
 #define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
 #define PARTICLE_EMITTER_MAX_PLAYBACK_SPEED 4.0f
 
+/*this class is proxy to load old effect hierarchy
+  */
+class PartilceEmitterLoadProxy : public RenderObject
+{
+public:
+	String emitterFilename;
+	void Load(KeyedArchive *archive, SerializationContext *serializationContext); 
+};
+
 class ParticleEmitter : public BaseObject
 {
 public:

@@ -154,9 +154,12 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 	{
 		//add to active effects and to render
 		activeComponents.push_back(effect);
+		Vector3 pos = effect->GetEntity()->GetWorldTransform().GetTranslationVector();
+		effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
 		effect->GetEntity()->GetScene()->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
 	}
 	effect->state = ParticleEffectComponent::STATE_PLAYING;
+	effect->time = 0;
 }
 
 void ParticleEffectSystem::RemoveFromActive(ParticleEffectComponent *effect)

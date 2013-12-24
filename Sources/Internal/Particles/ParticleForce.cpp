@@ -39,8 +39,10 @@ ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3> > force_, RefPtr<Prope
 ParticleForce* ParticleForce::Clone()
 {
 	ParticleForce *dst = new ParticleForce();
-	dst->force = force->Clone();
-	dst->forceOverLife = forceOverLife->Clone();
+	if (force)
+		dst->force = force->Clone();
+	if (forceOverLife)
+		dst->forceOverLife = forceOverLife->Clone();
 	return dst;
 }
 
