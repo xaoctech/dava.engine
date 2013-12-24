@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #ifndef __DAVAENGINE_UI_EVENT_H__
 #define __DAVAENGINE_UI_EVENT_H__
@@ -33,6 +47,16 @@ class UIControl;
 class UIEvent
 {
 public:
+
+    enum eInputSource
+    {
+        INPUT_UNDEFINED,
+        INPUT_SOURCE_TOUCHSCREEN,
+        INPUT_SOURCE_MOUSE,
+        INPUT_SOURCE_KEYBOARD,
+        INPUT_SOURCE_GAMEPAD
+    };
+
 	/**
 	 \enum Control state bits.
 	 */
@@ -43,10 +67,11 @@ public:
 		,	PHASE_ENDED		//!<Screen touch or mouse button press is ended.
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 		,	PHASE_MOVE		//!<Mouse move event. Mouse moves without pressing any buttons. Works only with mouse controller.
+        ,   PHASE_WHEEL     //!<Mouse wheel event. MacOS & Win32 only
 #endif //#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) 
 		,	PHASE_CANCELLED	//!<Event was cancelled by the platform or by the control system for the some reason.  
 
-		,	PHASE_KEYCHAR	//!<Event is a keyboard key pressing event.                                     
+		,	PHASE_KEYCHAR	//!<Event is a keyboard key pressing event.
 		,	PHASE_JOYSTICK
 	};
 	
@@ -70,6 +95,18 @@ public:
 		,	CONTROL_STATE_OUTSIDE			//!<Input processed outside of the control rerct for now
 	};
 	
+	/**
+	 \ Input can be handled in the different ways.
+	 */
+	enum eInputHandledType
+	{
+		INPUT_NOT_HANDLED		= 0,//!<Input is not handled at all.
+		INPUT_HANDLED_SOFT		= 1,//!<Input is handled, but input control can be changed by UIControlSystem::Instance()->SwitchInputToControl() method.
+		INPUT_HANDLED_HARD		= 2,//!<Input is handled completely, input control can't be changed.
+	};
+
+	friend class UIControlSystem;
+
 	enum eButtonID 
 	{
 			BUTTON_NONE	= 0
@@ -92,6 +129,7 @@ public:
 		,	JOYSTICK_AXIS_HAT_Y
 	};
 
+
 	int32 tid;//!< event id, for the platforms with mouse this id means mouse button id, key codes for keys, axis id for joystick
 	Vector2 point;//!< point of pressure in virtual coordinates
 	Vector2 physPoint;//!< point of pressure in physical coordinates
@@ -103,6 +141,18 @@ public:
 	int32 tapCount;//!< count of the continuous inputs (clicks for mouse)
 	char16 keyChar;//!< unicode/translated character produced by key using current language, caps etc. Used only with PHASE_KEYCHAR.
 
+    inline void SetInputHandledType(eInputHandledType value)
+    {
+        // Input Handled Type can be only increased.
+        if (inputHandledType < value)
+        {
+            inputHandledType = value;
+        }
+    }
+
+    eInputHandledType GetInputHandledType() { return inputHandledType; };
+    void ResetInputHandledType() { inputHandledType = INPUT_NOT_HANDLED; };
+
 	UIEvent() :
         tid(0),
         timestamp(0.f),
@@ -111,8 +161,35 @@ public:
         activeState(ACTIVITY_STATE_INACTIVE),
         controlState(CONTROL_STATE_RELEASED),
         tapCount(0),
-        keyChar(0)
+        keyChar(0),
+        inputHandledType(INPUT_NOT_HANDLED)
 	{ }
+
+    eInputSource GetInputSource()
+    {
+        switch (phase)
+        {
+            case PHASE_BEGAN:
+            case PHASE_DRAG:
+            case PHASE_ENDED:
+            case PHASE_CANCELLED:
+                return INPUT_SOURCE_TOUCHSCREEN;
+            case PHASE_KEYCHAR:
+                return INPUT_SOURCE_KEYBOARD;
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
+			case PHASE_MOVE:
+            case PHASE_WHEEL:
+                return INPUT_SOURCE_MOUSE;
+#endif
+            case PHASE_JOYSTICK:
+                return INPUT_SOURCE_GAMEPAD;
+            default:
+                return INPUT_UNDEFINED;
+        }
+    }
+
+protected:
+	eInputHandledType inputHandledType;//!< input handled type, INPUT_NOT_HANDLED by default. 
 };
 };
 

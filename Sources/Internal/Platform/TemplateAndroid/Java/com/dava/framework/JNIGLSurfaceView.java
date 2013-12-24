@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 import com.bda.controller.ControllerListener;
 import com.bda.controller.StateEvent;
-
-import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.ViewGroup.LayoutParams;
 
 public class JNIGLSurfaceView extends GLSurfaceView
 {
@@ -45,7 +43,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 
 		//setPreserveEGLContextOnPause(true);
 		setEGLContextFactory(new JNIContextFactory());
-		setEGLConfigChooser(new JNIConfigChooser(8, 8, 8, 8, 16, 8));
+		setEGLConfigChooser(new JNIConfigChooser());
 
 		mRenderer = new JNIRenderer();
 		setRenderer(mRenderer);
@@ -57,6 +55,15 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		{
 			setPreserveEGLContextOnPause(true);
 		}
+	}
+	
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		//YZ rewrite size parameter from fill parent to fixed size
+		LayoutParams params = getLayoutParams();
+		params.height = h;
+		params.width = w;
+		super.onSizeChanged(w, h, oldw, oldh);
 	}
 	
 	@Override
@@ -165,7 +172,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		{
 			for (int i = 0; i < events.size(); ++i)
 			{
-				nativeOnInput(action, events.get(i).id, events.get(i).x, events.get(i).y, time, events.get(i).source);
+				nativeOnInput(action, events.get(i).id + 1, events.get(i).x, events.get(i).y, time, events.get(i).source);
 			}
 		}
     }

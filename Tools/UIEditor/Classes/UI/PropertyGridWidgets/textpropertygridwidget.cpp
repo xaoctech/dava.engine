@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "textpropertygridwidget.h"
 #include "ui_uitextfieldpropertygridwidget.h"
 
@@ -54,6 +68,7 @@ TextPropertyGridWidget::~TextPropertyGridWidget()
 	delete localizationKeyNameLabel;
 	delete localizationKeyTextLabel;
 	delete multilineCheckBox;
+	delete multilineBySymbolCheckBox;
 }
 
 void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
@@ -67,6 +82,7 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
     RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
+
     // Shadow properties are also state-aware
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
@@ -79,8 +95,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
-	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 
+	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
+	
 	bool isUITextField = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
 	ui->isPasswordCheckbox->setVisible(isUITextField);
 	ui->autoCapitalizationTypeLabel->setVisible(isUITextField);
@@ -97,15 +114,23 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	ui->returnKeyTypeComboBox->setVisible(isUITextField);
 	ui->isReturnKeyAutomatically->setVisible(isUITextField);
 		
-	bool enableMultilineCheckBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+	bool enableMultilineContols = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+
+	multilineCheckBox->setEnabled(enableMultilineContols);
+	multilineCheckBox->setVisible(enableMultilineContols);
+	multilineBySymbolCheckBox->setEnabled(false); // false by default - this checkbox depends on multilineCheckBox one.
+	multilineBySymbolCheckBox->setVisible(enableMultilineContols);
+
 	// Register checkbox widget for property Multiline only for UIStaticText
-	if (enableMultilineCheckBox)
+	if (enableMultilineContols)
 	{
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
+		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE_BY_SYMBOL, multilineBySymbolCheckBox, false, true);
 	}
-	multilineCheckBox->setEnabled(enableMultilineCheckBox);
-	multilineCheckBox->setVisible(enableMultilineCheckBox);
-		
+
+	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
+	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();
@@ -117,11 +142,11 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	ui->textLineEdit->setVisible(false);
 	ui->textLabel->setVisible(false);
 	
-	this->resize(300, 322);
-    this->setMinimumSize(QSize(300, 322));
+	this->resize(300, 342);
+    this->setMinimumSize(QSize(300, 342));
 
-	ui->groupBox->resize(300, 322);
-    ui->groupBox->setMinimumSize(QSize(300, 322));
+	ui->groupBox->resize(300, 342);
+    ui->groupBox->setMinimumSize(QSize(300, 342));
 	
 	localizationKeyNameLabel = new QLabel(ui->groupBox);
 	localizationKeyNameLabel->setObjectName(QString::fromUtf8("localizationKeyNameLabel"));
@@ -143,35 +168,43 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	
 	multilineCheckBox = new QCheckBox(ui->groupBox);
 	multilineCheckBox->setObjectName(QString::fromUtf8("multilineCheckBox"));
-	multilineCheckBox->setGeometry(QRect(200, 125, 91, 20));
-	multilineCheckBox->setText(QString::fromUtf8("Wrap text:"));
-	multilineCheckBox->setLayoutDirection(Qt::RightToLeft);
-	
-	ui->fontNameLabel->setGeometry(QRect(10, 155, 31, 16));
-	ui->fontSizeSpinBox->setGeometry(QRect(234, 151, 57, 25));
-	ui->fontSelectButton->setGeometry(QRect(50, 146, 181, 38));
-	ui->fontColorLabel->setGeometry(QRect(10, 200, 71, 16));
-	ui->textColorPushButton->setGeometry(QRect(85, 198, 205, 21));
-	ui->shadowOffsetLabel->setGeometry(QRect(10, 232, 91, 16));
-	ui->offsetYLabel->setGeometry(QRect(210, 232, 16, 16));
-	ui->shadowColorLabel->setGeometry(QRect(10, 262, 91, 16));
-	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 228, 57, 25));
-	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 228, 57, 25));
-	ui->shadowColorButton->setGeometry(QRect(105, 260, 185, 21));
-	ui->offsetXLabel->setGeometry(QRect(120, 232, 16, 16));
-	ui->AlignLabel->setGeometry(QRect(10, 296, 62, 16));
-	ui->alignComboBox->setGeometry(QRect(80, 290, 209, 26));
+	multilineCheckBox->setGeometry(QRect(10, 125, 200, 20));
+	multilineCheckBox->setText(QString::fromUtf8("Multiline"));
+
+	multilineBySymbolCheckBox = new QCheckBox(ui->groupBox);
+	multilineBySymbolCheckBox->setObjectName(QString::fromUtf8("multilineBySymbolCheckBox"));
+	multilineBySymbolCheckBox->setGeometry(QRect(10, 145, 200, 20));
+	multilineBySymbolCheckBox->setText(QString::fromUtf8("Multiline by Symbol"));
+	multilineBySymbolCheckBox->setEnabled(false);
+
+	ui->fontNameLabel->setGeometry(QRect(10, 175, 31, 16));
+	ui->fontSizeSpinBox->setGeometry(QRect(234, 171, 57, 25));
+	ui->fontSelectButton->setGeometry(QRect(50, 166, 181, 38));
+	ui->fontColorLabel->setGeometry(QRect(10, 220, 71, 16));
+	ui->textColorPushButton->setGeometry(QRect(85, 218, 205, 21));
+	ui->shadowOffsetLabel->setGeometry(QRect(10, 252, 91, 16));
+	ui->offsetYLabel->setGeometry(QRect(210, 252, 36, 16));
+	ui->shadowColorLabel->setGeometry(QRect(10, 282, 91, 16));
+	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 248, 57, 25));
+	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 248, 57, 25));
+	ui->shadowColorButton->setGeometry(QRect(105, 280, 185, 21));
+	ui->offsetXLabel->setGeometry(QRect(120, 252, 16, 16));
+	ui->AlignLabel->setGeometry(QRect(10, 316, 62, 16));
+	ui->alignComboBox->setGeometry(QRect(80, 310, 209, 26));
 }
 
 void TextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
     UnregisterLineEditWidget(localizationKeyNameLineEdit);
-	// Don't unregister multiline property for UIButton and UITextField
-	if (dynamic_cast<UIStaticTextMetadata*>(this->activeMetadata) != NULL)
-	{
-		UnregisterCheckBoxWidget(multilineCheckBox);
-	}
+
+    // Don't unregister multiline property for UIButton and UITextField
+    if (dynamic_cast<UIStaticTextMetadata*>(this->activeMetadata) != NULL)
+    {
+        UnregisterCheckBoxWidget(multilineCheckBox);
+        UnregisterCheckBoxWidget(multilineBySymbolCheckBox);
+    }
+
     UITextFieldPropertyGridWidget::Cleanup();
 }
 
@@ -222,4 +255,22 @@ void TextPropertyGridWidget::HandleChangePropertyFailed(const QString& propertyN
         // Localization Key is updated - update the value.
         UpdateLocalizationValue();
     }
+}
+
+void TextPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty)
+{
+    // Yuri Coder, 2013/10/24. "Multiline By Symbol" checkbox should be unchecked and disabled if
+    // "Multiline" one is unchecked - see please DF-2393.
+    if (checkBoxWidget && multilineCheckBox && checkBoxWidget == multilineCheckBox)
+    {
+        bool multilineChecked = (checkBoxWidget->checkState() == Qt::Checked);
+        multilineBySymbolCheckBox->setEnabled(multilineChecked);
+
+        if (!multilineChecked)
+        {
+            multilineBySymbolCheckBox->setCheckState(Qt::Unchecked);
+        }
+    }
+
+    UITextFieldPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
 }

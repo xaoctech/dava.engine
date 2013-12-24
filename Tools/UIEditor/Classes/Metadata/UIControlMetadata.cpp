@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 
 #include "UIControlMetadata.h"
@@ -191,7 +205,7 @@ void UIControlMetadata::SetSizeX(float value)
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dx = value;
 	
-	SetActiveControlRect(rect);
+	SetActiveControlRect(rect, true);
 }
 
 float UIControlMetadata::GetSizeY() const
@@ -214,7 +228,7 @@ void UIControlMetadata::SetSizeY(float value)
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dy = value;
 	
-	SetActiveControlRect(rect);
+	SetActiveControlRect(rect, true);
 }
 
 float UIControlMetadata::GetPivotX() const
@@ -235,6 +249,8 @@ void UIControlMetadata::SetPivotX(float value)
     }
     
     GetActiveUIControl()->pivotPoint.x = value;
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
 }
 
 float UIControlMetadata::GetPivotY() const
@@ -255,6 +271,39 @@ void UIControlMetadata::SetPivotY(float value)
     }
     
     GetActiveUIControl()->pivotPoint.y = value;
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
+}
+
+QPointF UIControlMetadata::GetPivot() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return QPointF();
+    }
+
+    return QPointF(GetActiveUIControl()->pivotPoint.x, GetActiveUIControl()->pivotPoint.y);
+}
+
+void UIControlMetadata::SetPivot(const QPointF& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    GetActiveUIControl()->pivotPoint.x = value.x();
+    GetActiveUIControl()->pivotPoint.y = value.y();
+
+    // DF-2009 - Re-set align properties if pivot point was changed
+    RefreshAlign();
+}
+
+void UIControlMetadata::RefreshAlign()
+{
+    SetTopAlign(GetTopAlign());
+    SetVCenterAlign(GetVCenterAlign());
+    SetBottomAlign(GetBottomAlign());
 }
 
 float UIControlMetadata::GetAngle() const
@@ -280,27 +329,6 @@ void UIControlMetadata::SetAngle(float value)
     GetActiveUIControl()->SetAngle(DegToRad(value));
 }
 
-//Boolean getters/setters
-bool UIControlMetadata::GetSelected() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-
-    return GetActiveUIControl()->GetSelected();
-}
-
-void UIControlMetadata::SetSelected(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    GetActiveUIControl()->SetSelected(value);
-}
-
 bool UIControlMetadata::GetVisible() const
 {
     if (!VerifyActiveParamID())
@@ -319,27 +347,8 @@ void UIControlMetadata::SetVisible(const bool value)
         return;
     }
     
-    GetActiveUIControl()->SetVisible(value);
-}
-
-bool UIControlMetadata::GetEnabled() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-    
-    return !GetActiveUIControl()->GetDisabled();
-}
-
-void UIControlMetadata::SetEnabled(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    GetActiveUIControl()->SetDisabled(!value);
+	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
+    GetActiveUIControl()->SetVisible(value, false);
 }
 
 bool UIControlMetadata::GetInput() const
@@ -358,8 +367,9 @@ void UIControlMetadata::SetInput(const bool value)
     {
         return;
     }
-    
-    GetActiveUIControl()->SetInputEnabled(value);
+
+   	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
+    GetActiveUIControl()->SetInputEnabled(value, false);
 }
 
 bool UIControlMetadata::GetClipContents() const
@@ -401,7 +411,7 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 	rect.x -= pivotPoint.x;
 	rect.y -= pivotPoint.y;
 	
-	SetActiveControlRect(rect);
+	SetActiveControlRect(rect, false);
 }
 
 void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& newRect)
@@ -411,7 +421,7 @@ void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& ne
         return;
     }
     
-	SetActiveControlRect(newRect);
+	SetActiveControlRect(newRect, false);
 }
                  
 QColor UIControlMetadata::GetColor()
@@ -553,6 +563,22 @@ void UIControlMetadata::SetSprite(const QString& value)
         {
             GetActiveUIControl()->GetBackground()->SetSprite(sprite, 0);
             SafeRelease(sprite);
+
+            // Specific case if the sprite is set to UISlider thumbSprite (see please DF-2834).
+            UpdateThumbSizeForUIControlThumb();
+        }
+    }
+}
+
+void UIControlMetadata::UpdateThumbSizeForUIControlThumb()
+{
+    UIControl* activeUIControl = GetActiveUIControl();
+    if (activeUIControl && activeUIControl->GetParent())
+    {
+        UISlider* parentIsSlider = dynamic_cast<UISlider*>(activeUIControl->GetParent());
+        if (parentIsSlider && parentIsSlider->GetThumb() == activeUIControl)
+        {
+            parentIsSlider->SyncThumbWithSprite();
         }
     }
 }
@@ -882,10 +908,24 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
 	GetActiveUIControl()->SetBottomAlignEnabled(value);
 }
 
-void UIControlMetadata::SetActiveControlRect(const Rect& rect)
+void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign)
 {
-	GetActiveUIControl()->SetRect(rect);
-	
+	// Save/restore Align Data before changing the Control Rect, if requested.
+	UIControl* activeControl = GetActiveUIControl();
+
+	HierarchyTreeNode::AlignData alignData;
+	if (restoreAlign)
+	{
+		alignData = HierarchyTreeNode::SaveAlignData(activeControl);
+	}
+
+	activeControl->SetRect(rect);
+
+	if (restoreAlign)
+	{
+		HierarchyTreeNode::RestoreAlignData(activeControl, alignData);
+	}
+
 	ResizeScrollViewContent(GetActiveUIControl());
 }
 
@@ -914,6 +954,26 @@ void UIControlMetadata::SetCustomControlName(const QString& value)
 	{
 		GetActiveUIControl()->SetCustomControlType(value.toStdString());
 	}
+}
+
+int UIControlMetadata::GetInitialState() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return -1;
+	}
+	
+	return (int)GetActiveUIControl()->GetInitialState();
+}
+
+void UIControlMetadata::SetInitialState(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	GetActiveUIControl()->SetInitialState((int)value);
 }
 
 void UIControlMetadata::ResizeScrollViewContent(UIControl * control)

@@ -1,18 +1,32 @@
 /*==================================================================================
- Copyright (c) 2008, DAVA, INC
- All rights reserved.
- 
- Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
- 
- THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- =====================================================================================*/
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
@@ -20,6 +34,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
 #include "Sound/SoundEvent.h"
+#include "Scene3D/Systems/ActionUpdateSystem.h"
 
 namespace DAVA
 {
@@ -31,6 +46,11 @@ namespace DAVA
 	
 	ActionComponent::~ActionComponent()
 	{
+		if(entity &&
+		   entity->GetScene())
+		{
+			entity->GetScene()->actionSystem->UnWatch(this);
+		}
 	}
 	
 	ActionComponent::Action ActionComponent::MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay)
@@ -57,15 +77,17 @@ namespace DAVA
 	}
 
 	
-	void ActionComponent::Start(int32 switchIndex)
+	void ActionComponent::StartSwitch(int32 switchIndex)
 	{
-		Stop(switchIndex);
-		
+		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
+			return;
+
+		StopSwitch(switchIndex);		
 		uint32 markedCount = 0;
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if(actions[i].action.switchIndex == switchIndex)
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].markedForUpdate = true;
 				markedCount++;
@@ -74,10 +96,43 @@ namespace DAVA
 		
 		if(markedCount > 0)
 		{
+			if(!started)
+			{
+				entity->GetScene()->actionSystem->Watch(this);
+			}
+			
 			started = true;
 			allActionsActive = false;
 		}
 	}
+	void ActionComponent::StartAdd()
+	{		
+		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
+			return;
+		uint32 markedCount = 0;
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			if(actions[i].action.eventType == Action::EVENT_ADDED_TO_SCENE)
+			{
+				actions[i].markedForUpdate = true;
+				markedCount++;
+			}
+		}
+
+		if(markedCount > 0)
+		{
+			if(!started)
+			{
+				entity->GetScene()->actionSystem->Watch(this);
+			}
+
+			started = true;
+			allActionsActive = false;
+		}
+	}
+
+
 	
 	bool ActionComponent::IsStarted()
 	{
@@ -91,43 +146,44 @@ namespace DAVA
 			started = false;
 			allActionsActive = false;
 			
-			uint32 count = actions.size();
-			for(uint32 i = 0; i < count; ++i)
+			entity->GetScene()->actionSystem->UnWatch(this);
+		}
+		
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			actions[i].active = false;
+			actions[i].timer = 0.0f;
+			actions[i].markedForUpdate = false;
+		}
+	}
+	
+	void ActionComponent::StopSwitch(int32 switchIndex)
+	{
+		uint32 activeCount = 0;
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
 				actions[i].markedForUpdate = false;
 			}
-		}
-	}
-	
-	void ActionComponent::Stop(int32 switchIndex)
-	{
-		if(started)
-		{
-			uint32 activeCount = 0;
-			uint32 count = actions.size();
-			for(uint32 i = 0; i < count; ++i)
-			{
-				if(actions[i].markedForUpdate &&
-				   (actions[i].action.switchIndex == switchIndex))
-				{
-					actions[i].active = false;
-					actions[i].timer = 0.0f;
-					actions[i].markedForUpdate = false;
-				}
-				
-				if(actions[i].active)
-				{
-					activeCount++;
-				}
-			}
 			
-			if(0 == activeCount)
+			if(actions[i].active)
 			{
-				started = false;
-				allActionsActive = false;
+				activeCount++;
 			}
+		}
+
+		if(started &&
+		   0 == activeCount)
+		{			
+			started = false;
+			allActionsActive = false;
+				
+			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -162,7 +218,14 @@ namespace DAVA
 			}
 		}
 		
+		bool prevActionsActive = allActionsActive;
 		allActionsActive = (activeActionCount == count);
+		
+		if(!prevActionsActive &&
+		   allActionsActive != prevActionsActive)
+		{
+			entity->GetScene()->actionSystem->UnWatch(this);
+		}
 	}
 	
 	void ActionComponent::Remove(const ActionComponent::Action& action)
@@ -209,7 +272,15 @@ namespace DAVA
 				}
 			}
 			
+			bool prevActionsActive = allActionsActive;
 			allActionsActive = (activeActionCount == count);
+			
+			if(!prevActionsActive &&
+			   allActionsActive != prevActionsActive)
+			{
+				started = false;
+				entity->GetScene()->actionSystem->UnWatch(this);
+			}
 		}
 	}
 	
@@ -223,6 +294,8 @@ namespace DAVA
 		for(uint32 i = 0; i < count; ++i)
 		{
 			actionComponent->actions[i] = actions[i];
+			actionComponent->actions[i].active = false;
+			actionComponent->actions[i].timer = 0.0f;
 		}
 		
 		return actionComponent;
@@ -241,6 +314,7 @@ namespace DAVA
 			{
 				KeyedArchive* actionArchive = new KeyedArchive();
 				
+				actionArchive->SetUInt32("act.event", actions[i].action.eventType);
 				actionArchive->SetFloat("act.delay", actions[i].action.delay);
 				actionArchive->SetUInt32("act.type", actions[i].action.type);
 				actionArchive->SetString("act.entityName", actions[i].action.entityName);
@@ -266,6 +340,7 @@ namespace DAVA
 				KeyedArchive* actionArchive = archive->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				
 				Action action;
+				action.eventType = (Action::eEvent)actionArchive->GetUInt32("act.event");
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = actionArchive->GetString("act.entityName");
@@ -279,8 +354,7 @@ namespace DAVA
 		
 		Component::Deserialize(archive, sceneFile);
 	}
-
-	
+		
 	void ActionComponent::EvaluateAction(const Action& action)
 	{
 		if(Action::TYPE_PARTICLE_EFFECT == action.type)
@@ -304,6 +378,7 @@ namespace DAVA
 			{
 				component->StopAfterNRepeats(action.stopAfterNRepeats);
 				component->StopWhenEmpty(action.stopWhenEmpty);
+				component->Stop();
 				component->Start();
 			}
 		}

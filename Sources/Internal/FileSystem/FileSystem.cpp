@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/FileList.h"
 #include "Debug/DVAssert.h"
@@ -224,16 +238,16 @@ bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath 
     
 	bool ret = true;
 
-	FileList fileList(sourceDirectory);
-	int32 count = fileList.GetCount();
+	ScopedPtr<FileList> fileList( new FileList(sourceDirectory));
+	int32 count = fileList->GetCount();
 	String fileOnly;
 	String pathOnly;
 	for(int32 i = 0; i < count; ++i)
 	{
-		if(!fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
+		if(!fileList->IsDirectory(i) && !fileList->IsNavigationDirectory(i))
 		{
-            const FilePath destinationPath = destinationDirectory + fileList.GetFilename(i);
-			if(!CopyFile(fileList.GetPathname(i), destinationPath))
+            const FilePath destinationPath = destinationDirectory + fileList->GetFilename(i);
+			if(!CopyFile(fileList->GetPathname(i), destinationPath))
 			{
 				ret = false;
 			}
@@ -266,9 +280,9 @@ bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 			{
 				if(isRecursive)
 				{
-//					Logger::Debug("- try to delete directory: %s / %s", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str());
+//					Logger::FrameworkDebug("- try to delete directory: %s / %s", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str());
 					bool success = DeleteDirectory(fileList->GetPathname(i), isRecursive);
-//					Logger::Debug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+//					Logger::FrameworkDebug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 					if (!success)return false;
 				}
 			}
@@ -276,7 +290,7 @@ bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 		else 
 		{
 			bool success = DeleteFile(fileList->GetPathname(i));
-//			Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+//			Logger::FrameworkDebug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 			if(!success)return false;
 		}
 	}
@@ -404,13 +418,18 @@ bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory
   
 bool FileSystem::IsFile(const FilePath & pathToCheck)
 {
+#if defined(__DAVAENGINE_ANDROID__)
+	const String& path = pathToCheck.GetAbsolutePathname();
+	if (IsAPKPath(path))
+		return (fileSet.find(path) != fileSet.end());
+#endif
 	struct stat s;
- 	if(stat(pathToCheck.GetAbsolutePathname().c_str(),&s) == 0)
+	if(stat(pathToCheck.GetAbsolutePathname().c_str(),&s) == 0)
 	{
 		return (0 != (s.st_mode & S_IFREG));
 	}
 
-    return false;
+ 	return false;
 }
 
 bool FileSystem::IsDirectory(const FilePath & pathToCheck)
@@ -419,7 +438,12 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 #if defined (__DAVAENGINE_WIN32__)
 	DWORD stats = GetFileAttributesA(pathToCheck.GetAbsolutePathname().c_str());
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
-#else //#if defined (__DAVAENGINE_WIN32__)
+#else //defined (__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_ANDROID__)
+	const String& path = pathToCheck.GetAbsolutePathname();
+	if (IsAPKPath(path))
+		return (dirSet.find(path) != dirSet.end());
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	struct stat s;
 	if(stat(pathToCheck.GetAbsolutePathname().c_str(), &s) == 0)
@@ -427,7 +451,7 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 		return (0 != (s.st_mode & S_IFDIR));
 	}
 #endif //#if defined (__DAVAENGINE_WIN32__)
-    
+
 	return false;
 }
 
@@ -548,8 +572,8 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 
 	if (!resourceArchive->Open(archiveName)) 
 	{
-		delete resourceArchive;
-		resourceArchive = 0;
+		SafeRelease(resourceArchive);
+		resourceArchive = NULL;
 		return;
 	}
 	ResourceArchiveItem item;
@@ -593,7 +617,43 @@ int32 FileSystem::Spawn(const String& command)
 	return retCode;
 }
 
-    
+#if defined(__DAVAENGINE_ANDROID__)
+
+Set<String> FileSystem::dirSet;
+Set<String> FileSystem::fileSet;
+
+bool FileSystem::IsAPKPath(const String& path) const
+{
+	if (!path.empty() && path.c_str()[0] == '/')
+		return false;
+	return true;
+}
+
+void FileSystem::Init()
+{
+	YamlParser* parser = YamlParser::Create("~res:/fileSystem.yaml");
+	if (parser)
+	{
+		const YamlNode* node = parser->GetRootNode();
+		const YamlNode* dirList = node->Get("dirList");
+		if (dirList)
+		{
+			const Vector<YamlNode*> vec = dirList->AsVector();
+			for (uint32 i = 0; i < vec.size(); ++i)
+				dirSet.insert(vec[i]->AsString());
+		}
+		const YamlNode* fileList = node->Get("fileList");
+		if (fileList)
+		{
+			const Vector<YamlNode*> vec = fileList->AsVector();
+			for (uint32 i = 0; i < vec.size(); ++i)
+				fileSet.insert(vec[i]->AsString());
+		}
+	}
+	SafeRelease(parser);
+}
+#endif
+
 }
 
 

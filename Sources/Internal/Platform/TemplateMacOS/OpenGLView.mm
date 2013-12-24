@@ -75,6 +75,8 @@ extern void FrameworkMain(int argc, char *argv[]);
 	GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 	
+	DAVA::RenderManager::Instance()->SetRenderContextId((uint64)CGLGetCurrentContext());
+	
 	activeCursor = 0;
     
     //RenderManager::Create(Core::RENDERER_OPENGL);
@@ -151,7 +153,7 @@ extern void FrameworkMain(int argc, char *argv[]);
     if(willQuit)
         return;
     
-//	Logger::Debug("drawRect started");
+//	Logger::FrameworkDebug("drawRect started");
 	
 	if (activeCursor != RenderManager::Instance()->GetCursor())
 	{
@@ -194,7 +196,7 @@ extern void FrameworkMain(int argc, char *argv[]);
         [[self openGLContext] flushBuffer];
     }
 	DAVA::RenderManager::Instance()->Unlock();
-//	Logger::Debug("drawRect ended");
+//	Logger::FrameworkDebug("drawRect ended");
 
 }
 
@@ -238,18 +240,26 @@ void ConvertNSEventToUIEvent(NSEvent *curEvent, UIEvent & event, int32 phase)
 {
     NSPoint p = [curEvent locationInWindow];
     
-    if(InputSystem::Instance()->IsCursorPining())
+    if(phase == UIEvent::PHASE_WHEEL)
+    {
+        event.physPoint.x = [curEvent scrollingDeltaX];
+        event.physPoint.y = [curEvent scrollingDeltaY];
+    }
+    else if(InputSystem::Instance()->IsCursorPining())
     {
         event.physPoint.x = [curEvent deltaX];
         event.physPoint.y = [curEvent deltaY];
+        
+        event.tapCount = curEvent.clickCount;
     }
     else
     {
         event.physPoint.x = p.x;
         event.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+        
+        event.tapCount = curEvent.clickCount;
     }
     event.timestamp = curEvent.timestamp;
-    event.tapCount = curEvent.clickCount;
     event.phase = phase;
 }
 
@@ -268,25 +278,25 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		button = curEvent.buttonNumber + 1;
 	}
-
-//	NSLog(@"Event button %d", button);
 	
 	int phase = UIEvent::PHASE_MOVE;
 	if(curEvent.type == NSLeftMouseDown || curEvent.type == NSRightMouseDown || curEvent.type == NSOtherMouseDown)
 	{
 		phase = UIEvent::PHASE_BEGAN;
-//		NSLog(@"Event phase PHASE_BEGAN");
 	}
 	else if(curEvent.type == NSLeftMouseUp || curEvent.type == NSRightMouseUp || curEvent.type == NSOtherMouseUp)
 	{
 		phase = UIEvent::PHASE_ENDED;
-//		NSLog(@"Event phase PHASE_ENDED");
 	}
 	else if(curEvent.type == NSLeftMouseDragged || curEvent.type == NSRightMouseDragged || curEvent.type == NSOtherMouseDragged)
 	{
 		phase = UIEvent::PHASE_DRAG;
 	}
-	
+	else if(curEvent.type == NSScrollWheel)
+    {
+        phase = UIEvent::PHASE_WHEEL;
+    }
+    
 	if(phase == UIEvent::PHASE_DRAG)
 	{
 		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
@@ -294,7 +304,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
             ConvertNSEventToUIEvent(curEvent, (*it), phase);
 		}
 	}
-	
+    
 	bool isFind = false;
 	for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 	{
@@ -342,13 +352,8 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
 	Vector<DAVA::UIEvent> touches;
 	Vector<DAVA::UIEvent> emptyTouches;
+
 	MoveTouchsToVector(touch, touchPhase, &touches);
-//	NSLog(@"----- Touches --------");
-//	for(int i = 0; i < touches.size(); i++)
-//	{
-//		NSLog(@"Button %d       phase %d", touches[i].buttonID, touches[i].phase);
-//	}
-//	NSLog(@"----- ------- --------");
 	UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
 	touches.clear();
 }
@@ -356,6 +361,11 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
+}
+
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+    [self process:DAVA::UIEvent::PHASE_WHEEL touch:theEvent];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -427,7 +437,7 @@ static int32 oldModifersFlags = 0;
 - (void) keyDown:(NSEvent *)event
 {
 	{
-			//		Logger::Debug("glview keypress!");
+			//		Logger::FrameworkDebug("glview keypress!");
 		unichar c = [[event characters] characterAtIndex:0];
 		
 		Vector<DAVA::UIEvent> touches;

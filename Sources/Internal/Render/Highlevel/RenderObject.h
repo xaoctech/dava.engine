@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
@@ -61,7 +75,8 @@ public:
         TYPE_LANDSCAPE,         // Landscape object
         TYPE_CUSTOM_DRAW,       // Custom drawn object
 		TYPE_SPRITE,			// Sprite Node
-		TYPE_PARTICLE_EMTITTER  // Particle Emitter
+		TYPE_PARTICLE_EMTITTER,  // Particle Emitter
+		TYPE_SKYBOX
     };
     
 	enum eFlags
@@ -70,23 +85,30 @@ public:
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
 		VISIBLE_LOD = 1 << 2,
 		VISIBLE_SWITCH = 1 << 3,
+		ALWAYS_CLIPPING_VISIBLE = 1 << 4,
+		TREE_NODE_NEED_UPDATE = 1 << 5,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH;
-
-    RenderObject();
+	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
+protected:
     virtual ~RenderObject();
+public:
+    RenderObject();
     
     
     inline void SetRemoveIndex(uint32 removeIndex);
     inline uint32 GetRemoveIndex();
+
+	inline void SetTreeNodeIndex(uint16 index);
+	inline uint16 GetTreeNodeIndex();	
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
     virtual void RecalcBoundingBox();
     
-    uint32 GetRenderBatchCount();
+	uint32 GetRenderBatchCount();
     RenderBatch * GetRenderBatch(uint32 batchIndex);
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
@@ -112,11 +134,15 @@ public:
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
 
-	void SetRenderSystem(RenderSystem * renderSystem);
+	virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform);
 	virtual ShadowVolume * CreateShadow() {return 0;}
+
+	virtual void RecalculateWorldBoundingBox();
+
+	uint8 startClippingPlane;
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
@@ -126,6 +152,7 @@ protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
+	uint16 treeNodeIndex;	
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
@@ -159,6 +186,16 @@ inline void RenderObject::SetRemoveIndex(uint32 _removeIndex)
 {
     removeIndex = _removeIndex;
 }
+
+inline void RenderObject::SetTreeNodeIndex(uint16 index)
+{
+	treeNodeIndex = index;
+}
+inline uint16 RenderObject::GetTreeNodeIndex()
+{
+	return treeNodeIndex;
+}
+
     
 inline void RenderObject::SetAABBox(const AABBox3 & _bbox)
 {

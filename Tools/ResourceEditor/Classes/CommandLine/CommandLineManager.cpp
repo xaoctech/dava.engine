@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "CommandLineManager.h"
 #include "CommandLineTool.h"
@@ -36,7 +50,7 @@ void CommandLineManager::PrintUsage()
 {
     printf("\nUsage:\n");
     
-    printf("\t-usage or --help to display this help\n");
+    printf("\t-h or --help to display this help\n");
     printf("\t-exo - extended output\n");
     printf("\t-v or --verbose - detailed output\n");
     printf("\t-forceclose - close editor after job would be finished\n");
@@ -54,7 +68,7 @@ void CommandLineManager::PrintUsageForActiveTool()
 {
     printf("\nUsage:\n");
     
-    printf("\t-usage or --help to display this help\n");
+    printf("\t-h or --help to display this help\n");
     printf("\t-exo - extended output\n");
     printf("\t-v or --verbose - detailed output\n");
     printf("\t-forceclose - close editor after job would be finished\n");
@@ -66,15 +80,18 @@ void CommandLineManager::PrintUsageForActiveTool()
 }
 
 CommandLineManager::CommandLineManager()
+	: isEnabled(false)
+	, isToolInitialized(false)
+	, activeTool(NULL)
 {
     AddCommandLineTool(new CleanFolderTool());
     AddCommandLineTool(new ImageSplitterTool());
     AddCommandLineTool(new SceneExporterTool());
     AddCommandLineTool(new SceneSaverTool());
 
-#if defined (__DAVAENGINE_WIN32__)
+#if defined (__DAVAENGINE_BEAST__)
 	AddCommandLineTool(new BeastCommandLineTool());
-#endif //#if defined (__DAVAENGINE_WIN32__)
+#endif //#if defined (__DAVAENGINE_BEAST__)
     
     AddCommandLineTool(new TextureDescriptorTool());
     
@@ -83,19 +100,12 @@ CommandLineManager::CommandLineManager()
     
     DetectCommandLineMode();
     
-    if(isCommandLineModeEnabled)
+    if(isEnabled)
     {
         Logger::Instance()->EnableConsoleMode();
     }
-    
 
     FindActiveTool();
-    
-    isToolInitialized = false;
-    if(activeTool)
-    {
-        isToolInitialized = activeTool->InitializeFromCommandLine();
-    }
 }
 
 CommandLineManager::~CommandLineManager()
@@ -122,13 +132,15 @@ void CommandLineManager::AddCommandLineTool(CommandLineTool *tool)
 
 void CommandLineManager::ParseCommandLine()
 {
-    if(CommandLineParser::CommandIsFound(String("-usage")) || CommandLineParser::CommandIsFound(String("-help")))
+    if(CommandLineParser::CommandIsFound(String("-h")) || CommandLineParser::CommandIsFound(String("--help")))
     {
         PrintUsage();
+
+		isEnabled = true;
         return;
     }
     
-    if(CommandLineParser::CommandIsFound(String("-v")) || CommandLineParser::CommandIsFound(String("-verbose")))
+    if(CommandLineParser::CommandIsFound(String("-v")) || CommandLineParser::CommandIsFound(String("--verbose")))
     {
         CommandLineParser::Instance()->SetVerbose(true);
     }
@@ -141,14 +153,14 @@ void CommandLineManager::ParseCommandLine()
 
 void CommandLineManager::DetectCommandLineMode()
 {
-    isCommandLineModeEnabled = Core::Instance()->IsConsoleMode();
+    isEnabled |= Core::Instance()->IsConsoleMode();
     
     Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
     for(auto it = commandLineTools.begin(); it != endIT; ++it)
     {
         if(CommandLineParser::CommandIsFound(it->first))
         {
-            isCommandLineModeEnabled = true;
+            isEnabled = true;
             break;
         }
     }
@@ -158,7 +170,7 @@ void CommandLineManager::DetectCommandLineMode()
 void CommandLineManager::FindActiveTool()
 {
     activeTool = NULL;
-    if(isCommandLineModeEnabled)
+    if(isEnabled)
     {
         Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
         for(auto it = commandLineTools.begin(); it != endIT; ++it)
@@ -202,26 +214,10 @@ void CommandLineManager::PrintResults()
     }
 }
 
-DAVA::uint32 CommandLineManager::GetErrorsCount() const
+void CommandLineManager::InitalizeTool()
 {
-	if(activeTool) 
-		return activeTool->GetErrorList().size();
-
-	return 0;
-}
-
-bool CommandLineManager::NeedCloseApplication()
-{
-	if(!activeTool) return true;
-
-
-	bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
-					||  CommandLineParser::CommandIsFound(String("-forceclose"));
-
-	uint32 errorsCount = GetErrorsCount();
-
-	if(activeTool->IsOneFrameCommand())
-		return (forceClose || 0 == errorsCount);
-
-	return (forceClose && errorsCount);
+	if(activeTool)
+	{
+		isToolInitialized = activeTool->InitializeFromCommandLine();
+	}
 }

@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/RenderHelper.h"
 #include "Render/Highlevel/Frustum.h"
 
@@ -32,6 +46,7 @@ Frustum::~Frustum()
 void Frustum::Build(const Matrix4 & viewProjection)
 {
 	planeArray.resize(6);
+	planeAccesArray.resize(6);
 	
 #define SETUP_PLANE(plane, x1, x2, x3, x4) \
 	planeArray[plane].n.x = -(x1); planeArray[plane].n.y = -(x2); \
@@ -91,6 +106,17 @@ void Frustum::Build(const Matrix4 & viewProjection)
 	planeCount = 6;
 
 #undef SETUP_PLANE 
+
+	//build plane min/max acces array
+	for (int32 i=0; i<planeCount; i++)
+	{
+		planeAccesArray[i].minx = ((planeArray[i].n.x>=0)?0:1);
+		planeAccesArray[i].maxx = 1 - planeAccesArray[i].minx;
+		planeAccesArray[i].miny = ((planeArray[i].n.y>=0)?0:1);
+		planeAccesArray[i].maxy = 1 - planeAccesArray[i].miny;
+		planeAccesArray[i].minz = ((planeArray[i].n.z>=0)?0:1);
+		planeAccesArray[i].maxz = 1 - planeAccesArray[i].minz;
+	}
 }
 
 void Frustum::Build()
@@ -263,6 +289,68 @@ Frustum::eFrustumResult Frustum::Classify(const Vector3 & min, const Vector3 &ma
 Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box) const
 {
 	return Classify(box.min, box.max);
+}
+
+//#define DISTANCE_TO_PLANE(p, vx, vy, vz) ((p.n.x)*(vx)+(p.n.y)*(vy)+(p.n.z)*(vz)+(p.d))
+
+Frustum::eFrustumResult Frustum::Classify(const AABBox3 & box, uint8 &planeMask, uint8 &startId) const
+{
+	const float32* verts[2] = {box.min.data, box.max.data};
+	Frustum::eFrustumResult result = EFR_INSIDE;	
+	uint8 plane, k;
+	plane = startId;
+	k=1<<startId;
+	if (k&planeMask)
+	{		
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)				
+			return EFR_OUTSIDE;		
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)		
+			result = EFR_INTERSECT;
+		else
+			planeMask^=k; //plane is inside
+	}
+	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
+	{		
+		if ((k&planeMask)&&(plane!=startId))
+		{			
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)			
+			{
+				startId = plane;
+				return EFR_OUTSIDE;
+			}
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].maxx][0], verts[planeAccesArray[plane].maxy][1], verts[planeAccesArray[plane].maxz][2]) >= 0.0f)			
+				result = EFR_INTERSECT;
+			else
+				planeMask^=k; //plane is inside
+		}
+		
+	}	
+	return result;
+}
+
+bool Frustum::IsInside(const AABBox3 & box, uint8 planeMask, uint8& startClippingPlane)const
+{
+	const float32* verts[2] = {box.min.data, box.max.data};
+	uint8 plane, k;
+	plane = startClippingPlane;
+	k=1<<plane;
+	if (k&planeMask)
+	{		
+		if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)		
+			return false;
+	}
+	for (plane = 0, k=1; k<=planeMask; ++plane, k+=k)
+	{		
+		if ((k&planeMask)&&(plane!=startClippingPlane))
+		{			
+			if (planeArray[plane].DistanceToPoint(verts[planeAccesArray[plane].minx][0], verts[planeAccesArray[plane].miny][1], verts[planeAccesArray[plane].minz][2]) > 0.0f)			
+			{
+				startClippingPlane = plane;
+				return false;
+			}
+		}
+	}		
+	return true;	
 }
 
 //! \brief check bounding sphere visibility against frustum

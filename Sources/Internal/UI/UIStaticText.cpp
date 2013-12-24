@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Utils/Utils.h"
 #include "UI/UIStaticText.h"
 #include "Render/RenderManager.h"
@@ -26,8 +40,6 @@
 namespace DAVA 
 {
 	
-REGISTER_CLASS(UIStaticText);
-
 UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/) 
 :	UIControl(rect, rectInAbsoluteCoordinates)
 	, textColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -65,10 +77,14 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl::CopyDataFrom(srcControl);
     UIStaticText *t = (UIStaticText *)srcControl;
+
+	SafeRelease(textBlock);
     textBlock = t->textBlock->Clone();
+
     textColor = t->textColor;
     shadowColor = t->shadowColor;
     shadowOffset = t->shadowOffset;
+
     SafeRelease(shadowBg);
 	SafeRelease(textBg);
     shadowBg = t->shadowBg->Clone();
@@ -126,6 +142,11 @@ void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 bool UIStaticText::GetMultiline() const
 {
 	return textBlock->GetMultiline();
+}
+
+bool UIStaticText::GetMultilineBySymbol() const
+{
+	return textBlock->GetMultilineBySymbol();
 }
 
 void UIStaticText::SetAlign(int32 _align)
@@ -204,10 +225,6 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	textBg->Draw(geometricData);
 }
 
-void UIStaticText::SetFontColor(const Color& fontColor)
-{
-	SetTextColor(fontColor);
-}
     
 const Vector<WideString> & UIStaticText::GetMultilineStrings()
 {
@@ -219,18 +236,18 @@ const WideString & UIStaticText::GetText()
 	return textBlock->GetText();
 }
 
-void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
-	YamlNode * fontNode = node->Get("font");
-	YamlNode * textNode = node->Get("text");
-	YamlNode * multilineNode = node->Get("multiline");
-    YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
-    YamlNode * fittingNode = node->Get("fitting");
-	YamlNode * textColorNode = node->Get("textcolor");
-	YamlNode * shadowColorNode = node->Get("shadowcolor");
-	YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+	const YamlNode * fontNode = node->Get("font");
+	const YamlNode * textNode = node->Get("text");
+	const YamlNode * multilineNode = node->Get("multiline");
+    const YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
+    const YamlNode * fittingNode = node->Get("fitting");
+	const YamlNode * textColorNode = node->Get("textcolor");
+	const YamlNode * shadowColorNode = node->Get("shadowcolor");
+	const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
 
 	if (fontNode)
 	{
@@ -286,7 +303,7 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetShadowOffset(shadowOffsetNode->AsVector2());
 	}
 
-	YamlNode * alignNode = node->Get("textalign");
+	const YamlNode * alignNode = node->Get("textalign");
 	SetTextAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
 

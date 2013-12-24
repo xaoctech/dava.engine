@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/2D/Sprite.h"
 #include "Debug/DVAssert.h"
 #include "Utils/Utils.h"
@@ -22,6 +36,8 @@
 #include "FileSystem/File.h"
 #include "Render/2D/TextBlock.h"
 #include "Core/Core.h"
+#include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 namespace DAVA 
 {
@@ -47,7 +63,7 @@ void UnregisterTextBlock(TextBlock *tbl)
 
 void TextBlock::ScreenResolutionChanged()
 {
-	Logger::Info("Regenerate text blocks");
+	Logger::FrameworkDebug("Regenerate text blocks");
 	for(Vector<TextBlock *>::iterator it = registredBlocks.begin(); it != registredBlocks.end(); it++)
 	{
 		(*it)->needRedraw = true;
@@ -92,19 +108,18 @@ TextBlock::~TextBlock()
 	
 void TextBlock::SetFont(Font * _font)
 {
-	if(!_font)
-        return;
+	if (!_font || _font == font)
+	{
+		return;
+	}
 
-	if (!constFont || !constFont->IsEqual(_font))
+	if (!(font && font->IsEqual(_font)))
 	{
 		needRedraw = true;
 	}
-//Do not change the code above. This magic realised to avoid font destruction.
-//For example in this case text->SetFont(text->GetFont()); code sрould works correct
-	SafeRelease(constFont);
-	constFont = _font->Clone();
+
 	SafeRelease(font);
-	font = constFont->Clone();
+	font = SafeRetain(_font);
 
 	originalFontSize = font->GetSize();
 	Prepare();
@@ -218,10 +233,17 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare()
 {
+	Retain();
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
+}
+
+void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
+{
 #if 1
 	if(!font || text == L"")
 	{
 		SafeRelease(sprite);
+        Release();
 		return;
 	}
 	if(needRedraw)
@@ -415,7 +437,7 @@ void TextBlock::Prepare()
 		{
 			if(fittingType && (requestedSize.dy >= 0/* || requestedSize.dx >= 0*/) && text.size() > 3)
 			{
-//				Logger::Info("Fitting enabled");
+//				Logger::FrameworkDebug("Fitting enabled");
 				Vector2 rectSz = rectSize;
 				if(requestedSize.dx > 0)
 				{
@@ -514,7 +536,7 @@ void TextBlock::Prepare()
 				};
 				
 			}
-//			Logger::Info("Font size: %.4f", font->GetSize());
+//			Logger::FrameworkDebug("Font size: %.4f", font->GetSize());
 
 
 			Vector2 rectSz = rectSize;
@@ -531,11 +553,11 @@ void TextBlock::Prepare()
 			textSize.dy = 0;
 			
 			int32 yOffset = font->GetVerticalSpacing();
-//			Logger::Info("yOffset = %.4d", yOffset);
+//			Logger::FrameworkDebug("yOffset = %.4d", yOffset);
 //			int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
 //			textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 			int32 fontHeight = font->GetFontHeight() + yOffset;
-//			Logger::Info("fontHeight = %.4d", fontHeight);
+//			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
 			textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
@@ -556,22 +578,22 @@ void TextBlock::Prepare()
 		if(requestedSize.dx == 0)
 		{
 			w = Min(w, textSize.dx);
-//			Logger::Info("On size not requested: w = %d", w);
+//			Logger::FrameworkDebug("On size not requested: w = %d", w);
 		}
 		else if(requestedSize.dx < 0)
 		{
 			w = textSize.dx;
-//			Logger::Info("On size automated: w = %d", w);
+//			Logger::FrameworkDebug("On size automated: w = %d", w);
 		}
 		if(requestedSize.dy == 0)
 		{
 			h = Min(h, textSize.dy);
-//			Logger::Info("On size not requested: h = %d", h);
+//			Logger::FrameworkDebug("On size not requested: h = %d", h);
 		}
 		else if(requestedSize.dy < 0)
 		{
 			h = textSize.dy;
-//			Logger::Info("On size automated: h = %d", w);
+//			Logger::FrameworkDebug("On size automated: h = %d", w);
 		}
 		
 		if (requestedSize.dx >= 0 && useJustify)
@@ -622,7 +644,6 @@ void TextBlock::Prepare()
 		else 
 		{
 			//omg 8888!
-			RenderManager::Instance()->LockNonMain();
 			sprite = Sprite::CreateAsRenderTarget(finalW, finalH, FORMAT_RGBA8888);
 			if (sprite && sprite->GetTexture())
 			{
@@ -634,7 +655,6 @@ void TextBlock::Prepare()
 						sprite->GetTexture()->SetDebugInfo(WStringToString(multilineStrings[0]));
 				}
 			}				
-			RenderManager::Instance()->UnlockNonMain();
 		}
 		
 
@@ -669,6 +689,8 @@ void TextBlock::Prepare()
 		
 	}
 #endif 
+
+	Release();
 }
 
 void TextBlock::DrawToBuffer(int16 *buf)
@@ -777,13 +799,11 @@ void TextBlock::PreDraw()
 	
 	if (!font->IsTextSupportsSoftwareRendering())
 	{
-		RenderManager::Instance()->LockNonMain();
 		RenderManager::Instance()->SetRenderTarget(sprite);
 
 		DrawToBuffer(NULL);
 		
 		RenderManager::Instance()->RestoreRenderTarget();
-		RenderManager::Instance()->UnlockNonMain();
 	}
 }
     

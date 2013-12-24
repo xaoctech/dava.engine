@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/CameraSystem.h"
@@ -31,6 +45,8 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
+	, selectionAllowed(true)
+	, selectionHasChanges(false)
 {
 
 }
@@ -42,11 +58,35 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
+	ForceEmitSignals();
+
+	if (IsLocked())
+	{
+		return;
+	}
+
 	UpdateHoodPos();
+}
+
+void SceneSelectionSystem::ForceEmitSignals()
+{
+	if(selectionHasChanges)
+	{
+		// emit signals
+		SceneSignals::Instance()->EmitSelectionChanged((SceneEditor2 *) GetScene(), &curSelections, &curDeselections);
+
+		selectionHasChanges = false;
+		curDeselections.Clear();
+	}
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
+	if (IsLocked() || !selectionAllowed)
+	{
+		return;
+	}
+
 	if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 	{
 		// we can select only if mouse isn't over hood axis
@@ -91,7 +131,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					// if new selection is NULL or is one of already selected items
 					// we should change current selection only on phase end
-					if(nextEntity == NULL || NULL != curSelections.IntersectedEntity(collisionEntities))
+					if(nextEntity == NULL || NULL != curSelections.IntersectedEntity(&selectableItems))
 					{
 						applyOnPhaseEnd = true;
 						lastSelection = nextEntity;
@@ -119,6 +159,11 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneSelectionSystem::Draw()
 {
+	if (IsLocked())
+	{
+		return;
+	}
+
 	if(curSelections.Size() > 0)
 	{
 		int oldState = DAVA::RenderManager::Instance()->GetState();
@@ -165,16 +210,16 @@ void SceneSelectionSystem::Draw()
 	}
 }
 
-void SceneSelectionSystem::PropeccCommand(const Command2 *command, bool redo)
+void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 	if(NULL != command)
 	{
-		if(command->GetId() == CMDID_ENTITY_REMOVE)
+		if((command->GetId() == CMDID_ENTITY_REMOVE) || (command->GetId() == CMDID_ENTITY_ADD && !redo))
 		{
 			// remove from selection entity that was removed by command
 			RemSelection(command->GetEntity());
 		}
-		else if(command->GetId() == CMDID_ENTITY_MOVE ||
+		else if(command->GetId() == CMDID_ENTITY_CHANGE_PARENT ||
 				command->GetId() == CMDID_TRANSFORM)
 		{
 			for(size_t i = 0; i < curSelections.Size(); ++i)
@@ -188,57 +233,88 @@ void SceneSelectionSystem::PropeccCommand(const Command2 *command, bool redo)
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
-	DAVA::Entity *selectedEntity = NULL;
-
-	// emit deselection for current selected items
-	for(size_t i = 0; i < curSelections.Size(); ++i)
+	if(!IsLocked())
 	{
-		EntityGroupItem* selectedItem = curSelections.GetItem(i);
-		SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectedItem->entity);
-	}
+		Clear();
 
-	// clear current selection
-	curSelections.Clear();
+		// add new selection
+		if(NULL != entity)
+		{
+			AddSelection(entity);
+		}
 
-	// add new selection
-	if(NULL != entity)
-	{
-		AddSelection(entity);
-	}
-	else
-	{
-		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), NULL);
 		UpdateHoodPos();
 	}
 }
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	if(NULL != entity)
+	if(!IsLocked())
 	{
-		EntityGroupItem selectableItem;
+		if(NULL != entity)
+		{
+			EntityGroupItem selectableItem;
 
-		selectableItem.entity = entity;
-		selectableItem.bbox = GetSelectionAABox(entity);
+			selectableItem.entity = entity;
+			selectableItem.bbox = GetSelectionAABox(entity);
 
-		curSelections.Add(selectableItem);
-		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
+			if(!curSelections.HasEntity(entity))
+			{
+				curSelections.Add(selectableItem);
+
+				selectionHasChanges = true;
+			}
+		}
+
+		UpdateHoodPos();
 	}
-
-	UpdateHoodPos();
 }
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	curSelections.Rem(entity);
-	SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+	if(!IsLocked())
+	{
+		if(curSelections.HasEntity(entity))
+		{
+			curSelections.Rem(entity);
+			curDeselections.Add(entity);
 
-	UpdateHoodPos();
+			selectionHasChanges = true;
+		}
+
+		UpdateHoodPos();
+	}
 }
 
-const EntityGroup* SceneSelectionSystem::GetSelection() const
+void SceneSelectionSystem::Clear()
 {
-	return &curSelections;
+	if(!IsLocked())
+	{
+		while(curSelections.Size() > 0)
+		{
+			DAVA::Entity *entity = curSelections.GetEntity(0);
+
+			curSelections.Rem(entity);
+			curDeselections.Add(entity);
+
+			selectionHasChanges = true;
+		}
+	}
+}
+
+EntityGroup SceneSelectionSystem::GetSelection() const
+{
+	return curSelections;
+}
+
+size_t SceneSelectionSystem::GetSelectionCount() const
+{
+	return curSelections.Size();
+}
+
+DAVA::Entity* SceneSelectionSystem::GetSelectionEntity(int index) const
+{
+	return curSelections.GetEntity(index);
 }
 
 void SceneSelectionSystem::SelectedItemsWereModified()
@@ -257,6 +333,29 @@ ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 	return curPivotPoint;
 }
 
+void SceneSelectionSystem::SetSelectionAllowed(bool allowed)
+{
+	selectionAllowed = allowed;
+}
+
+bool SceneSelectionSystem::IsSelectionAllowed() const
+{
+	return selectionAllowed;
+}
+
+void SceneSelectionSystem::SetLocked(bool lock)
+{
+	SceneSystem::SetLocked(lock);
+
+	hoodSystem->LockAxis(lock);
+	hoodSystem->SetVisible(!lock);
+
+	if(!lock)
+	{
+		UpdateHoodPos();
+	}
+}
+
 void SceneSelectionSystem::UpdateHoodPos() const
 {
 	if(curSelections.Size() > 0)
@@ -267,13 +366,15 @@ void SceneSelectionSystem::UpdateHoodPos() const
 		switch (curPivotPoint)
 		{
 		case ST_PIVOT_ENTITY_CENTER:
-			p = curSelections.GetBbox(0).GetCenter();
+			p = curSelections.GetZeroPos(0);
 			break;
 		default:
-			p = curSelections.GetCommonBbox().GetCenter();
+			p = curSelections.GetCommonZeroPos();
 			break;
 		}
 
+		// check if we have locked entities in selection group
+		// if so - lock modification hood
 		for(size_t i = 0; i < curSelections.Size(); ++i)
 		{
 			if(curSelections.GetEntity(i)->GetLocked())
@@ -285,14 +386,16 @@ void SceneSelectionSystem::UpdateHoodPos() const
 
 		hoodSystem->LockModif(lockHoodModif);
 		hoodSystem->SetPosition(p);
-		hoodSystem->Show(true);
+		hoodSystem->SetVisible(true);
 	}
 	else
 	{
-		hoodSystem->SetPosition(DAVA::Vector3(0, 0, 0));
 		hoodSystem->LockModif(false);
-		hoodSystem->Show(false);
+		hoodSystem->SetVisible(false);
 	}
+    
+    SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+    sc->cameraSystem->UpdateDistanceToCamera();
 }
 
 EntityGroup SceneSelectionSystem::GetSelecetableFromCollision(const EntityGroup *collisionEntities)
@@ -345,6 +448,11 @@ DAVA::Entity* SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 	return selectableEntity;
 }
 
+DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(int index) const
+{
+	return curSelections.GetBbox(index);
+}
+
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) const
 {
 	DAVA::Matrix4 beginTransform;
@@ -355,7 +463,7 @@ DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity) cons
 
 DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const
 {
-	DAVA::AABBox3 ret;
+	DAVA::AABBox3 ret = DAVA::AABBox3(DAVA::Vector3(0, 0, 0), 0);
 
 	if(NULL != entity)
 	{
@@ -400,3 +508,6 @@ int SceneSelectionSystem::GetDrawMode() const
 {
 	return drawMode;
 }
+
+
+

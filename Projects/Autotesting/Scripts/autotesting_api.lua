@@ -134,12 +134,15 @@ function SaveArchiveToDB(name, archive, document)
 end
 
 function GetParameter(name, default)
-	var = testData[name]
-	if not var then
-		if default then
-			return default
-		else
-			OnError("Couldn't find value for variable "..name)
+	local var = autotestingSystem:GetTestParameter(name)
+	if var == "not_found" then
+		var = testData[name]
+		if not var then
+			if default then
+				return default
+			else
+				OnError("Couldn't find value for variable "..name)
+			end
 		end
 	end
 	
@@ -269,15 +272,26 @@ function noneStep()
 end
 
 -- Work with UI controls
-function GetCenter(element)
+function GetControl(name)
 	local control
-	if (type(element) == "string") then
-		control = autotestingSystem:FindControl(element)
+	if (type(name) == "string") then
+		control = autotestingSystem:FindControl(name)
 		--Log(tostring(control))
 	else
-		control = element
+		control = name
 	end
+	
 	Yield()
+	
+	if control then
+		return control
+	else
+		OnError("Couldn't find control " .. tostring(name))
+	end
+end
+
+function GetCenter(element)
+	local control = GetControl(element)
 	
 	--Log(tostring(control))
 	if control then
@@ -295,6 +309,12 @@ function GetCenter(element)
 	else
 		OnError("Couldn't find element: "..element)
 	end
+end
+
+function GetText(element)
+	local control = GetControl(element)
+
+	return autotestingSystem:GetText(control)
 end
 
 function IsVisible(element, background)
@@ -327,16 +347,12 @@ end
 
 function IsDisabled(element)
 	Yield()
-	local control = autotestingSystem:FindControl(element)
-	if control then
-		if control:GetDisabled() then
-			return true
-		else
-			return false
-		end 
+	local control = GetControl(element)
+	if control:GetDisabled() then
+		return true
 	else
-		OnError(element.." not found")
-	end
+		return false
+	end 
 end
 
 function IsOnScreen(control)
@@ -373,6 +389,7 @@ function GetTimeElapsed()
 	return autotestingSystem:GetTimeElapsed()
 
 end
+
 function WaitControl(name, time)
     local waitTime = time or TIMEOUT
     --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
@@ -389,6 +406,25 @@ function WaitControl(name, time)
     end
     
     Log("WaitControl not found "..name, "DEBUG")
+    return false
+end
+
+function WaitControlDisappeared(name, time)
+    local waitTime = time or TIMEOUT
+    --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+		coroutine.yield()
+        
+        if not autotestingSystem:FindControl(name) then
+            --Log("WaitControl found "..name, "DEBUG")
+            return true
+        end
+    end
+    
+    Log("WaitControl still on the screen: "..name, "DEBUG")
     return false
 end
 
@@ -507,26 +543,18 @@ end
 
 function CheckText(name, txt)
 	Log("Check that text '" .. txt .. "' is present on control " .. name)
-	local control = autotestingSystem:FindControl(name)
+	local control = GetControl(name)
 	
-	if control then
-		Wait(waitTime)
-		return autotestingSystem:CheckText(control, txt)
-	else
-		error("Control " .. name .. " not found")
-	end
+	Wait(waitTime)
+	return autotestingSystem:CheckText(control, txt)
 end
 
 function CheckMsgText(name, key)
 	Log("Check that text with key [" .. key .. "] is present on control " .. name)
-	local control = autotestingSystem:FindControl(name)
+	local control = GetControl(name)
 	
-	if control then
-		Wait(waitTime)
-		return autotestingSystem:CheckMsgText(control, key)
-	else
-		error("Control " .. name .. " not found")
-	end
+	Wait(waitTime)
+	return autotestingSystem:CheckMsgText(control, key)
 end
 
 function KeyPress(key, control)
@@ -705,55 +733,49 @@ function SelectFirstVertical(list)
 end
 
 function ScrollDown(list, invert)
-	local control = autotestingSystem:FindControl(list)
-    if control then	
-        local position = Vector.Vector2()
+	local control = GetControl(list)
+
+	local position = Vector.Vector2()
             
-        local geomData = control:GetGeometricData()
-        local rect = geomData:GetUnrotatedRect()
+    local geomData = control:GetGeometricData()
+    local rect = geomData:GetUnrotatedRect()
        
-        position.x = rect.x + rect.dx/2
-        position.y = rect.y + rect.dy/2
+    position.x = rect.x + rect.dx/2
+    position.y = rect.y + rect.dy/2
 		
-		TouchDownPosition(position)
-		Wait(0.5)
+	TouchDownPosition(position)
+	Wait(0.5)
 		
-		if invert then
-			position.y = position.y + rect.dy/3
-		else
-        	position.y = position.y - rect.dy/3
-        end
-        
-		TouchMovePosition(position)
-		TouchUp()
-		Wait(0.5)
+	if invert then
+		position.y = position.y + rect.dy/3
 	else
-		OnError("Couldnt find list "..list)
-	end
+       	position.y = position.y - rect.dy/3
+    end
+        
+	TouchMovePosition(position)
+	TouchUp()
+	Wait(0.5)
 end
 
 function ScrollLeft(list, invert)
-	local control = autotestingSystem:FindControl(list)
-    if control then	
-        local position = Vector.Vector2()
+	local control = GetControl(list)	
+    
+    local position = Vector.Vector2()
             
-        local geomData = control:GetGeometricData()
-        local rect = geomData:GetUnrotatedRect()
+    local geomData = control:GetGeometricData()
+    local rect = geomData:GetUnrotatedRect()
        
-        position.x = rect.x + rect.dx/2
-        position.y = rect.y + rect.dy/2
+    position.x = rect.x + rect.dx/2
+    position.y = rect.y + rect.dy/2
 		
-		TouchDownPosition(position)
-		Wait(0.5)
-        if invert then
-			position.x = position.x + rect.dx/3
-		else
-        	position.x = position.x - rect.dx/3
-        end
-		TouchMovePosition(position)
-		TouchUp()
-		Wait(0.5)
+	TouchDownPosition(position)
+	Wait(0.5)
+    if invert then
+		position.x = position.x + rect.dx/3
 	else
-		OnError("Couldnt find list "..list)
-	end
+      	position.x = position.x - rect.dx/3
+    end
+	TouchMovePosition(position)
+	TouchUp()
+	Wait(0.5)
 end

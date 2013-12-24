@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "SceneEditorScreenMain.h"
 
@@ -34,7 +48,6 @@
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/SceneSaver/SceneSaver.h"
 #include "CommandLine/CommandLineManager.h"
-#include "CommandLine/Beast/BeastCommandLineTool.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -45,9 +58,7 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
-#include "../Commands/ToolsCommands.h"
 
-#include "../Deprecated/ScenePreviewDialog.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -57,8 +68,6 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
-    SafeRelease(scenePreviewDialog);
-    
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -105,8 +114,6 @@ void SceneEditorScreenMain::InitControls()
     // add line after menu
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
-    
-    scenePreviewDialog = new ScenePreviewDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -115,43 +122,10 @@ void SceneEditorScreenMain::UnloadResources()
 
 void SceneEditorScreenMain::WillAppear()
 {
-#if defined (__DAVAENGINE_WIN32__)
-    BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-    if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
-    {
-		FilePath scenePathname = beastTool->GetScenePathname();
-
-		String path = scenePathname.GetAbsolutePathname();
-		String dataSourceFolder = "/DataSource/3d/";
-		String::size_type pos = path.find(dataSourceFolder);
-		if(pos != String::npos)
-		{
-			EditorSettings::Instance()->SetProjectPath(path.substr(0, pos + 1));
-			EditorSettings::Instance()->SetDataSourcePath(path.substr(0, pos + dataSourceFolder.length()));
-		}
-
-		SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-		DVASSERT(levelScene);
-
-        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(scenePathname), levelScene->GetScene());
-    }
-#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 void SceneEditorScreenMain::DidAppear()
 {
-#if defined (__DAVAENGINE_WIN32__)
-	BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-	if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
-    {
-        Update(0.1f);
-
-		SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-		DVASSERT(levelScene);
-
-        CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast(), levelScene->GetScene());
-    }
-#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 
@@ -204,8 +178,6 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
-    HideScenePreview();
-    
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
     SceneDataManager::Instance()->SetActiveScene(scene);
     
@@ -301,11 +273,13 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
             
             if(answer == MB_FLAG_YES)
             {
-                bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
+				// TODO: mainwindow
+                /*bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
                 if(!saved)
                 {
                     return;
                 }
+                */
             }
 
             if(bodies[i]->bodyControl->GetParent())
@@ -459,18 +433,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-void SceneEditorScreenMain::OpenFileAtScene(const FilePath &pathToFile)
-{
-	// In case the current scene isn't the "level" one, switch to it firstly.
-	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
-	{
-		ActivateLevelBodyItem();
-	}
-
-    //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneDataManager::Instance()->EditLevelScene(pathToFile);
-}
-
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
     ReleaseResizedControl(textureTrianglesDialog);
@@ -512,26 +474,7 @@ bool SceneEditorScreenMain::SaveIsAvailable()
     return true;
 }
 
-void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    sceneData->SetScenePathname(pathToFile);
 
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->PushEditorEntities();
-    
-    Scene * scene = iBody->bodyControl->GetScene();
-    
-    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(pathToFile, scene);
-    SafeRelease(file);
-    uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-    Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
-    
-    iBody->bodyControl->PopEditorEntities();			
-}
 
 void SceneEditorScreenMain::UpdateModificationPanel(void)
 {
@@ -539,62 +482,6 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	{
 		bodies[i]->bodyControl->UpdateModificationPanel();
 	}
-}
-
-void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
-{
-    BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushEditorEntities();
-    
-	// Get project path
-//     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-//     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-
-
-    SceneSaver sceneSaver;
-//    sceneSaver.SetInFolder(dataSourcePath);
-	sceneSaver.SetInFolder(sceneData->GetScenePathname().GetDirectory());
-    sceneSaver.SetOutFolder(folder);
-    
-    Set<String> errorsLog;
-    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
-    
-	iBody->bodyControl->PopEditorEntities();
-    
-    ShowErrorDialog(errorsLog);
-}
-
-void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
-{
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	if(sceneData->GetScenePathname().IsEmpty())
-	{
-		ShowErrorDialog("Can't export not saved scene.");
-		return;
-	}
-
-	BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushEditorEntities();
-    
-    // Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
-    
-    SceneExporter exporter;
-    
-    exporter.SetInFolder(projectPath + String("DataSource/3d/"));
-    exporter.SetOutFolder(projectPath + String("Data/3d/"));
-    
-    exporter.SetGPUForExporting(forGPU);
-    
-    //TODO: how to be with removed nodes?
-    Set<String> errorsLog;
-    exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
-    
-	iBody->bodyControl->PopEditorEntities();
-    
-    ShowErrorDialog(errorsLog);
 }
 
 
@@ -834,18 +721,3 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceRes
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
 }
 
-void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Show(scenePathname);
-    }
-}
-
-void SceneEditorScreenMain::HideScenePreview()
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Close();
-    }
-}

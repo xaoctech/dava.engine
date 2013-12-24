@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
 #define __DAVAENGINE_PARTICLE_EMITTER_H__
 
@@ -78,6 +92,13 @@ public:
 		EMITTER_ONCIRCLE_VOLUME,
 		EMITTER_ONCIRCLE_EDGES,
 		EMITTER_SHOCKWAVE
+	};
+
+	enum eState
+	{
+		STATE_PLAYING,    
+		STATE_STOPPING, //emitter is stopping - no new particle generation, still need to update and recalculate
+		STATE_STOPPED   //emitter is completely stopped - no processing at all
 	};
 
 	ParticleEmitter();
@@ -166,6 +187,8 @@ public:
 		\returns is emitter paused 
 	 */
 	bool IsPaused();
+
+	eState GetState(){return state;}
 	
 	/**
 		\brief Function adds layer to emitter.
@@ -222,6 +245,9 @@ public:
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void RecalcBoundingBox();
+
+	/*from RenderObject*/
+	virtual void RecalculateWorldBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -257,9 +283,15 @@ public:
 	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
 	 Call this function in case you are using ParticleEmitter directly and it is not visible.
 	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 \return value - true if was Update, false if not
 	 */
-	void DeferredUpdate(float32 timeElapsed);
+	bool DeferredUpdate(float32 timeElapsed);
 	
+	/**
+	 \brief prepares render data for all layers in emitter
+	 */
+	virtual void PrepareRenderData(Camera * camera);
+
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.
@@ -267,19 +299,10 @@ public:
 	 */
 	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
 
-	/**
-	 \brief Enable/disable autorestart.
-	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 
-	 Option is enabled by default.
-	 \param[in] autoRestart enable autorestart if true
-	 */
-	void SetAutorestart(bool isAutorestart);
+		
 
-	/**
-	 \brief Get autorestart state.
-	 \returns current autorestart state.
-	 */
-	bool GetAutorestart();
+	
+	bool GetAutoRestart();
 
 	/**
 	 \brief Get emitter's size.
@@ -357,7 +380,7 @@ public:
 
 	bool IsToBeDeleted()
 	{
-		return shouldBeDeleted;
+		return shouldBeDeleted&&(!particleCount); //let inner emitter particles finish
 	};
 
 	void SetToBeDeleted(bool value)
@@ -373,10 +396,18 @@ public:
 	// This method is called when the emitter is about to remove from Emitters System.
 	virtual void HandleRemoveFromSystem();
 
+	void SetDesiredLodLevel(int32 level);
+	bool IsShortEffect();
+	void SetShortEffect(bool isShort);
+
+	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
+
+	Matrix3 GetRotationMatrix();	
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
-	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong);
+	virtual void LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLong);
 
 	// Internal restart function.
 	void DoRestart(bool isDeleteAllParticles);
@@ -399,6 +430,15 @@ protected:
 	float32 time;
 	int32	emitPointsCount;
 	bool	isPaused;
+	
+	eState  state;
+	
+	/**
+	 \brief Enable/disable autorestart.
+	 If autorestart is enabled, emitter will automatically start it's work from beginning after it's lifeTime ends. 
+	 Option is enabled by default.
+	 \param[in] autoRestart enable autorestart if true
+	 */
 	bool	isAutorestart;
 	bool	particlesFollow;
     bool    is3D;
@@ -410,6 +450,12 @@ protected:
 	bool	shouldBeDeleted;
 
 	Particle*	parentParticle;
+
+	bool shortEffect;
+	uint32 currentLodLevel, desiredLodLevel; //if lodLevelLocked - set lod level updates desired level
+	bool lodLevelLocked; //short effect locks it's lod layer once started
+	
+	int32 particleCount;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
@@ -431,11 +477,27 @@ public:
 	inline void SetRepeatCount(int32 repeatCount) {this->repeatCount = repeatCount;};
 	inline void SetTime(float32 time) {this->time = time;};
 	inline void SetEmitPointsCount(int32 emitPointsCount) {this->emitPointsCount = emitPointsCount;};
-	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};
+	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};	
 	inline void SetAutoRestart(bool isAutorestart) {this->isAutorestart = isAutorestart;};
     inline void Set3D(bool is3D) {this->is3D = is3D;};
 	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
 	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
+
+
+private:
+	struct EmitterYamlCacheEntry
+	{
+		YamlParser *parser;
+		int refCount;
+	};
+	static Map<String, EmitterYamlCacheEntry> emitterYamlCache;
+	
+protected:
+	friend class ParticleEmitter3D;
+	YamlParser* GetParser(const FilePath &filename);
+	void RetainInCache(const String& name);
+	void ReleaseFromCache(const String& name);	
+	String emitterFileName;
 
 public:
     
