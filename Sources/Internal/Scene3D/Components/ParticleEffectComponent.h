@@ -118,7 +118,6 @@ private:
 	
 	/*completion message stuff*/	
 	Message playbackComplete;		
-	
 
 	/*externals setup*/	
 	MultiMap<String, ModifiablePropertyLineBase *> externalModifiables;	

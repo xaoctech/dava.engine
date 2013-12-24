@@ -46,16 +46,6 @@ namespace DAVA
 #if defined(__DAVAENGINE_OPENGL__)
 	GLuint Shader::activeProgram = 0;
 	
-	bool IsAutobindUniform(Shader::eUniform uniformId)
-	{
-		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-				uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-				uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-				uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-				uniformId == Shader::UNIFORM_COLOR ||
-				uniformId == Shader::UNIFORM_GLOBAL_TIME);
-	}
-	
 	Shader::Shader()
     : RenderResource()
 	{
@@ -1058,6 +1048,16 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			activeProgram = 0;
 		}
 	}
+
+	bool Shader::IsAutobindUniform(Shader::eUniform uniformId)
+	{
+		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+		uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+		uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+		uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+		uniformId == Shader::UNIFORM_COLOR ||
+		uniformId == Shader::UNIFORM_GLOBAL_TIME);
+	}
     
 	void Shader::Bind()
 	{
@@ -1086,7 +1086,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                         lastMVPMatrixProjectionCache != projectionMatrixCache)
                     {
                         const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                        SetUniformValueByUniform(currentUniform, modelViewProj);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelViewProj.data));
                         lastMVPMatrixModelViewCache = modelViewMatrixCache;
                         lastMVPMatrixProjectionCache = projectionMatrixCache;
                     }
@@ -1099,7 +1099,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                         lastModelViewMatrixCache != modelViewMatrixCache)
                     {
                         const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        SetUniformValueByUniform(currentUniform, modelView);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelView.data));
                         lastModelViewMatrixCache = modelViewMatrixCache;
                     }
 					break;
@@ -1110,7 +1110,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     if (lastProjectionMatrixCache != projectionMatrixCache)
                     {
                         const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-                        SetUniformValueByUniform(currentUniform, proj);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, proj.data));
                         lastProjectionMatrixCache = projectionMatrixCache;
                     }
 					break;

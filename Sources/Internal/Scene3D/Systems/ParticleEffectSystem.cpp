@@ -76,7 +76,6 @@ const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameB
 	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
 }
 
-
 NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor)
 {
 	if (!texture) //for superemmiter particles eg
@@ -185,7 +184,7 @@ void ParticleEffectSystem::RemoveComponent(Entity * entity, Component * componen
 		RemoveFromActive(effect);
 }
 
-void ParticleEffectSystem::Process()
+void ParticleEffectSystem::Process(float32 timeElapsed)
 {    
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS)) 
 		return;

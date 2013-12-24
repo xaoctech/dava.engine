@@ -165,7 +165,7 @@ void main()
 #if defined(PIXEL_LIT)
 	vec3 n = normalize (normalMatrix * inNormal);
 	vec3 t = normalize (normalMatrix * inTangent);
-	vec3 b = -cross (n, t);
+	vec3 b = cross (n, t);
 
     vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
     

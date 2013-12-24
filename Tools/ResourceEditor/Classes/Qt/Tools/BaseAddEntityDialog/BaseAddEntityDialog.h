@@ -68,6 +68,7 @@ public:
 	void virtual SetEntity(DAVA::Entity* );
 	
 	void AddButton( QWidget* widget, eButtonAlign orientation = BUTTON_ALIGN_LEFT);
+	void AddButton( QWidget* widget, int32 position);
 
 protected slots:
 	virtual void OnItemEdited(const QModelIndex &);

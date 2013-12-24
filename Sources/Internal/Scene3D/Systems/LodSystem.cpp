@@ -50,11 +50,10 @@ LodSystem::LodSystem(Scene * scene)
 	UpdatePartialUpdateIndices();
 }
 
-void LodSystem::Process()
+void LodSystem::Process(float32 timeElapsed)
 {
     TIME_PROFILE("LodSystem::Process");
     
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	float32 currFps = 1.0f/timeElapsed;
 
 	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
@@ -218,7 +217,8 @@ bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 
 	if (usePsSettings)
 	{
 		layersCount = LodComponent::MAX_LOD_LAYERS;
-		dst = dst*psLodMultSq+psLodOffsetSq;
+		if (dst>lodComponent->GetLodLayerFarSquare(0)) //preserv lod 0 from degrade
+			dst = dst*psLodMultSq+psLodOffsetSq;
 	}
 
 	int32 layer = FindProperLayer(dst, lodComponent, layersCount);
@@ -341,7 +341,8 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 	if(fromEntity != toEntity)
 	{
 		LodComponent * lod = GetLodComponent(fromEntity);
-		if(lod)
+		ParticleEmitter *emitter = GetEmitter(fromEntity);
+		if(lod&&(!emitter)) //as emitters have separate LOD logic
 		{
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{

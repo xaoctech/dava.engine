@@ -1,7 +1,7 @@
 Material:
     MaterialState:
         Name: "Default"
-        MaterialDefines: ["PIXEL_LIT", "DIFFUSE"]
+        MaterialDefines: ["PIXEL_LIT", "SPECULAR", "GLOSS"]
         Uniforms:
             normalmap: 1
 

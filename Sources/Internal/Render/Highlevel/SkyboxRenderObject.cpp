@@ -44,6 +44,9 @@ namespace DAVA
 	rotationZ(0.0f),
 	nonClippingDistance(0.0f)
 	{
+		bbox.AddPoint(Vector3(0, 0, 0));
+		bbox.AddPoint(Vector3(1, 1, 1));
+		
 		type = RenderObject::TYPE_SKYBOX;
 		AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
 	}
@@ -94,8 +97,11 @@ namespace DAVA
 			skyboxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
 			skyboxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;*/
 			
-			MaterialSystem* matSystem = renderSystem->GetMaterialSystem();
-			NMaterial* skyboxMaterial = matSystem->CreateInstanceChild(FastName("Skybox"));
+//			MaterialSystem* matSystem = renderSystem->GetMaterialSystem();
+//			NMaterial* skyboxMaterial = matSystem->CreateInstanceChild(FastName("Skybox"));
+			
+			NMaterial* skyboxMaterial = MaterialSystem::CreateNamed();
+			skyboxMaterial->SwitchParent(FastName("Skybox"));
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
 			skyboxRenderBatch->SetRenderDataObject(renderDataObj);

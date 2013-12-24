@@ -63,6 +63,9 @@ public:
 		USER_COMPONENT,
 		SOUND_COMPONENT,
 		CUSTOM_PROPERTIES_COMPONENT,
+        STATIC_OCCLUSION_COMPONENT,
+        STATIC_OCCLUSION_DATA_COMPONENT, 
+        QUALITY_SETTINGS_COMPONENT,   // type as fastname for detecting type of model
 
         COMPONENT_COUNT
     };

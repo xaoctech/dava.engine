@@ -43,6 +43,7 @@ public:
 
 protected slots:
 	void ActionFavoritesEdit();
+	void ViewModeSelected(int index);
 };
 
 #endif // __RESOURCEEDITORQT__DOCKPROPERTIES__

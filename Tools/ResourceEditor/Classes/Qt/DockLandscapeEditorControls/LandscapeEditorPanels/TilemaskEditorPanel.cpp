@@ -4,12 +4,12 @@
 #include "../../Tools/TileTexturePreviewWidget/TileTexturePreviewWidget.h"
 #include "../../Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
-#include "TextureBrowser/TextureConvertor.h"
 #include "../LandscapeEditorShortcutManager.h"
 
 #include <QLayout>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QLabel>
 
 TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
@@ -36,6 +36,7 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 
 TilemaskEditorPanel::~TilemaskEditorPanel()
 {
+	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
 }
 
 bool TilemaskEditorPanel::GetEditorEnabled()
@@ -463,6 +464,12 @@ void TilemaskEditorPanel::ConnectToShortcuts()
 			this, SLOT(SetNormalDrawing()));
 	connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
 			this, SLOT(SetCopyPaste()));
+	
+	shortcutManager->SetTileMaskEditorShortcutsEnabled(true);
+	shortcutManager->SetBrushSizeShortcutsEnabled(true);
+	shortcutManager->SetStrengthShortcutsEnabled(true);
+	shortcutManager->SetTextureSwitchingShortcutsEnabled(true);
+	shortcutManager->SetBrushImageSwitchingShortcutsEnabled(true);
 }
 
 void TilemaskEditorPanel::DisconnectFromShortcuts()
@@ -501,6 +508,12 @@ void TilemaskEditorPanel::DisconnectFromShortcuts()
 			   this, SLOT(SetNormalDrawing()));
 	disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_COPY_PASTE_TILEMASK), SIGNAL(activated()),
 			   this, SLOT(SetCopyPaste()));
+	
+	shortcutManager->SetTileMaskEditorShortcutsEnabled(false);
+	shortcutManager->SetBrushSizeShortcutsEnabled(false);
+	shortcutManager->SetStrengthShortcutsEnabled(false);
+	shortcutManager->SetTextureSwitchingShortcutsEnabled(false);
+	shortcutManager->SetBrushImageSwitchingShortcutsEnabled(false);
 }
 
 void TilemaskEditorPanel::IncreaseBrushSize()

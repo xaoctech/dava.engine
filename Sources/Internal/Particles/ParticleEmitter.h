@@ -131,20 +131,22 @@ private:
 		int refCount;
 	};
 
+
 #if defined (USE_FILEPATH_IN_MAP)
-	static Map<FilePath, EmitterYamlCacheEntry> emitterYamlCache;
+	typedef Map<FilePath, EmitterYamlCacheEntry> YamlCacheMap;
 #else //#if defined (USE_FILEPATH_IN_MAP)
-	static Map<String, EmitterYamlCacheEntry> emitterYamlCache;
+	typedef Map<String, EmitterYamlCacheEntry> YamlCacheMap;
 #endif //#if defined (USE_FILEPATH_IN_MAP)
+	static YamlCacheMap emitterYamlCache;
 	
 protected:
 	
 	YamlParser* GetParser(const FilePath &filename);
 
-#if defined (USE_FILEPATH_IN_MAP)
 	void RetainInCache(const FilePath & name);
 	void ReleaseFromCache(const FilePath & name);	
 	FilePath emitterFileName;
+
 #else //#if defined (USE_FILEPATH_IN_MAP)
 	void RetainInCache(const String& name);
 	void ReleaseFromCache(const String& name);	

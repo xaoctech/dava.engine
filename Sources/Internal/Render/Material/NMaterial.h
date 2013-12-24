@@ -35,7 +35,6 @@
 #include "Base/FastNameMap.h"
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
-#include "Render/ShaderUniformArray.h"
 #include "Render/Material/NMaterialConsts.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
@@ -163,15 +162,16 @@ public:
 	// Work with textures and properties
     void SetTexture(const FastName & textureFastName, Texture * texture);
     Texture * GetTexture(const FastName & textureFastName) const;
-    Texture * GetTexture(uint32 index);
-	const FastName& GetTextureName(uint32 index);
-    uint32 GetTextureCount();
+    Texture * GetTexture(uint32 index) const;
+	const FastName& GetTextureName(uint32 index) const;
+    uint32 GetTextureCount() const;
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
-	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
 	
 	virtual void SetMaterialName(const String& name);
 	const FastName& GetMaterialName() const;
+	virtual void SetParentName(const String& name);
 	const FastName& GetParentName() const;
 	
 	void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
@@ -258,72 +258,57 @@ protected:
 	
 	void CopyTechniquesTo(NMaterialState* targetState);
 
+	void PropagateDirtyTextures();
+	
 protected:
+	
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
 	public:
-		NMaterialStateDynamicTexturesInsp()	{}
-		~NMaterialStateDynamicTexturesInsp() {}
-
-		int MembersCount(void *object) const
-		{
-			NMaterialState *state = (NMaterialState *)object;
-			return 5;
-		}
-
-		InspDesc MemberDesc(void *object, int index) const
-		{
-			return InspDesc(MemberName(object, index));
-		}
-
-		const char* MemberName(void *object, int index) const
-		{
-			FastName name = GetFastName(index);
-			return name.c_str();
-		}
-
-		VariantType MemberValueGet(void *object, int index) const
-		{
-			VariantType ret;
-
-			NMaterialState *state = (NMaterialState *)object;
-			FastName name = GetFastName(index);
-
-			if(name.IsValid() && NULL != state)
-			{
-				Texture* tex = state->GetTexture(name);
-
-				if(NULL != tex)
-				{
-					ret.SetFilePath(tex->GetPathname());
-				}
-				else
-				{
-					ret.SetFilePath(FilePath());
-				}
-			}
-
-			return ret;
-		}
-
-		void MemberValueSet(void *object, int index, const VariantType &value)
-		{
-			NMaterialState *state = (NMaterialState *)object;
-			FastName name = GetFastName(index);
-
-			if(name.IsValid() && NULL != state && value.type == VariantType::TYPE_FILEPATH)
-			{
-				state->SetTexture(name, Texture::CreateFromFile(value.AsFilePath()));
-			}
-		}
-
-		FastName GetFastName(int index) const;
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
 	};
+	
+	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
+	{
+	public:
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
+
+	protected:
+		struct PropData
+		{
+			enum PropSource
+			{
+				SOURCE_UNKNOWN = 0x0,
+				SOURCE_SELF = 0x1,
+				SOURCE_PARENT = 0x2,
+				SOURCE_SHADER = 0x4
+			};
+
+			PropData() : source(SOURCE_UNKNOWN)
+			{ }
+
+			int source;
+			NMaterialProperty property;
+		};
+
+		const FastNameMap<PropData>* FindMaterialProperties(NMaterialState *state) const;
+	};
+
 
 public:
 	INTROSPECTION(NMaterialState,
-		COLLECTION(materialProperties, "Material properties", I_SAVE | I_EDIT | I_VIEW)
 		DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
+		DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
 		);
 };
 
@@ -428,12 +413,15 @@ public:
 	inline bool HasDefine(const FastName& defineName) const {return (inheritedDefines.count(defineName) > 0);}
 		
 	void SwitchParent(const FastName& newParent);
+	void SwitchParentForAllStates(const FastName& newParent);
 	
 	inline MaterialChangeListener* GetChangeListener() {return stateListener;}
 	inline void SetChangeListener(MaterialChangeListener* listener) {stateListener = listener;}
 	
     IlluminationParams * GetIlluminationParams();
     void ReleaseIlluminationParams();
+	
+	void UpdateMaterialSystem(MaterialSystem* matSystem);
 
 protected:
 	
@@ -518,10 +506,11 @@ protected:
 	void BindMaterialProperties(Shader * shader);
 	
 	void OnDirtyTextures();
+	
+	void OnChildMaterialSystemChanged(NMaterial* child, MaterialSystem* matSystem);
 
 public:
     INTROSPECTION_EXTEND(NMaterial, NMaterialState,
-		COLLECTION(states, "Material states", I_SAVE | I_VIEW)
         MEMBER(illuminationParams, "Illumination Parameters", I_SAVE | I_VIEW | I_EDIT)
 	);
 
@@ -531,46 +520,6 @@ inline const FastNameSet& NMaterial::GetRenderLayers()
 {
 	return effectiveLayers;
 }
-
-	
-class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
-{
-	int MembersCount(void *object) const
-	{
-		NMaterialState *state = (NMaterialState *) object;
-		return 0;
-
-		// TODO:
-		// ...
-	}
-
-	/*
-	InspDesc MemberDesc(void *object, int index) const
-	{
-		NMaterialState *state = (NMaterialState *)object;
-
-
-	}
-
-	const char* MemberName(void *object, int index) const
-	{
-		NMaterialState *state = (NMaterialState *)object;
-
-	}
-
-	VariantType MemberValueGet(void *object, int index) const
-	{
-		NMaterialState *state = (NMaterialState *)object;
-
-	}
-
-	void MemberValueSet(void *object, int index, const VariantType &value)
-	{
-		NMaterialState *state = (NMaterialState *)object;
-
-	}
-	*/
-};
 
 };
 

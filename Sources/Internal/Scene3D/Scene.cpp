@@ -67,8 +67,11 @@
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
 
 #include "Render/Material/MaterialSystem.h"
+
+#include "Scene3D/Components/ComponentHelpers.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -88,8 +91,6 @@ Scene::Scene()
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
 	,	imposterManager(0)
-	,	entityManager(0)
-	,	referenceNodeSuffixChanged(false)
 {   
 
 //	entityManager = new EntityManager();
@@ -140,6 +141,9 @@ void Scene::CreateSystems()
 	
 	skyboxSystem = new SkyboxSystem(this);
 	AddSystem(skyboxSystem, (1 << Component::RENDER_COMPONENT));
+    
+    staticOcclusionSystem = new StaticOcclusionSystem(this);
+	AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT));
 }
 
 Scene::~Scene()
@@ -161,11 +165,7 @@ Scene::~Scene()
     SafeRelease(currentCamera);
     SafeRelease(clipCamera);
     
-#if defined (USE_FILEPATH_IN_MAP)
-    for (Map<FilePath, ProxyNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	for (Map<String, ProxyNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+    for (ProxyNodeMap::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
     {
         SafeRelease(it->second);
     }
@@ -178,7 +178,18 @@ Scene::~Scene()
 
     transformSystem = 0;
     renderUpdateSystem = 0;
+    lodSystem = 0;
+    debugRenderSystem = 0;
+    particleEffectSystem = 0;
+    updatableSystem = 0;
 	lodSystem = 0;
+    lightUpdateSystem = 0;
+    switchSystem = 0;
+    soundSystem = 0;
+    actionSystem = 0;
+    skyboxSystem = 0;
+    staticOcclusionSystem = 0;
+    
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
         SafeDelete(systems[k]);
@@ -398,24 +409,14 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
     ProxyNode * proxyNode = new ProxyNode();
     proxyNode->SetNode(node);
     
-#if defined (USE_FILEPATH_IN_MAP)
-	rootNodes[rootNodePath] = proxyNode;
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	rootNodes[rootNodePath.GetAbsolutePathname()] = proxyNode;
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	rootNodes[FILEPATH_MAP_KEY(rootNodePath)] = proxyNode;
 
 	proxyNode->SetName(rootNodePath.GetAbsolutePathname());
 }
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 {
-#if defined (USE_FILEPATH_IN_MAP)
-	Map<FilePath, ProxyNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	Map<String, ProxyNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	ProxyNodeMap::const_iterator it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
@@ -441,11 +442,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
-#if defined (USE_FILEPATH_IN_MAP)
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
@@ -457,13 +454,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 
 void Scene::ReleaseRootNode(const FilePath &rootNodePath)
 {
-#if defined (USE_FILEPATH_IN_MAP)
-	Map<FilePath, ProxyNode*>::iterator it;
-	it = rootNodes.find(rootNodePath);
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	Map<String, ProxyNode*>::iterator it;
-	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
-#endif //#if defined (USE_FILEPATH_IN_MAP)
+	ProxyNodeMap::iterator it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
 	if (it != rootNodes.end())
 	{
         it->second->Release();
@@ -542,50 +533,47 @@ void Scene::Update(float timeElapsed)
     
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
     
+    staticOcclusionSystem->SetCamera(clipCamera);
+    staticOcclusionSystem->Process(timeElapsed);
     
-	updatableSystem->UpdatePreTransform();
+	updatableSystem->UpdatePreTransform(timeElapsed);
 
-    transformSystem->Process();
-
-	updatableSystem->UpdatePostTransform();
+	updatableSystem->UpdatePreTransform(timeElapsed);
+    transformSystem->Process(timeElapsed);
+	updatableSystem->UpdatePostTransform(timeElapsed);
 
 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
 	{
 		lodSystem->SetCamera(currentCamera);
-		lodSystem->Process();
+		lodSystem->Process(timeElapsed);
 	}
 	
-
-	switchSystem->Process();
+	switchSystem->Process(timeElapsed);
     
-//	entityManager->Flush();
-	int32 size;
-	
-	size = (int32)animations.size();
-	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
-	{
-		SceneNodeAnimationList * anim = animations[animationIndex];
-		anim->Update(timeElapsed);
-	}
-	
-
-	referenceNodeSuffixChanged = false;
-
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
-	{
-		size = (int32)animatedMeshes.size();
-		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
-		{
-			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
-			mesh->Update(timeElapsed);
-		}
-	}
+// 	int32 size;
+// 	
+// 	size = (int32)animations.size();
+// 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
+// 	{
+// 		SceneNodeAnimationList * anim = animations[animationIndex];
+// 		anim->Update(timeElapsed);
+// 	}
+// 
+// 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
+// 	{
+// 		size = (int32)animatedMeshes.size();
+// 		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
+// 		{
+// 			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
+// 			mesh->Update(timeElapsed);
+// 		}
+// 	}
 
 	//if(imposterManager)
 	//{
 	//	imposterManager->Update(timeElapsed);
 	//}
-    
+
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
 
@@ -593,14 +581,12 @@ void Scene::Draw()
 {
     TIME_PROFILE("Scene::Draw");
 
-    //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
-	//RenderManager::Instance()->SetRenderTarget(fboSprite);
-	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
-    nodeCounter = 0;
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+	float timeElapsed = SystemTimer::Instance()->FrameDelta();
 
 	shadowVolumes.clear();
     
+    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
     //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
     //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
     //glDepthMask(GL_TRUE);
@@ -616,8 +602,6 @@ void Scene::Draw()
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
-    //glDepthMask(GL_TRUE);
-    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
     
 	
     if (currentCamera)
@@ -627,22 +611,23 @@ void Scene::Draw()
     
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
-    renderUpdateSystem->Process();
-	actionSystem->Process(); //update action system before particles and render
-	particleEffectSystem->Process();
-	skyboxSystem->Process();
+    renderSystem->SetClipCamera(clipCamera);
+    renderUpdateSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render
+	particleEffectSystem->Process(timeElapsed);
+	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
-    debugRenderSystem->Process();
+    debugRenderSystem->Process(timeElapsed);
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
-    if(imposterManager)
-	{
-		imposterManager->Draw();
-	}
+//     if(imposterManager)
+// 	{
+// 		imposterManager->Draw();
+// 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
@@ -830,22 +815,6 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	}
 }
 
-void Scene::SetReferenceNodeSuffix(const String & suffix)
-{
-	referenceNodeSuffix = suffix;
-	referenceNodeSuffixChanged = true;
-}
-
-const String & Scene::GetReferenceNodeSuffix()
-{
-	return referenceNodeSuffix;
-}
-
-bool Scene::IsReferenceNodeSuffixChanged()
-{
-	return referenceNodeSuffixChanged;
-}
-
 EventSystem * Scene::GetEventSystem()
 {
 	return eventSystem;
@@ -880,7 +849,11 @@ SceneFileV2::eError Scene::Save(const DAVA::FilePath & pathname, bool saveForGam
 	file->EnableSaveForGame(saveForGame);
 	return file->SaveScene(pathname, this);
 }
+    
+    
 };
+
+
 
 
 

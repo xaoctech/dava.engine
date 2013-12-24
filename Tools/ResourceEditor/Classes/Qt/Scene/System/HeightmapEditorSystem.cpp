@@ -37,7 +37,6 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Commands2/HeightmapEditorCommands2.h"
-#include "Commands2/TilemaskEditorCommands.h"
 #include "Main/QtUtils.h"
 #include "Deprecated/EditorSettings.h"
 #include "HoodSystem.h"
@@ -122,9 +121,6 @@ LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEdit
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
-
-	drawSystem->GetLandscapeProxy()->InitTilemaskImageCopy();
-	drawSystem->GetLandscapeProxy()->InitTilemaskSprites();
 
 	enabled = true;
 	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
@@ -300,8 +296,7 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	
-	//RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetDefault2DState();
 	RenderManager::Instance()->FlushState();
 	
 	RenderManager::Instance()->SetColor(Color::White());
@@ -336,7 +331,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	{
 		switch (activeDrawingType)
 		{
-			case HEIGHTMAP_DRAW_ABSOLUTE:
+			case HEIGHTMAP_DRAW_RELATIVE:
 			{
 				float32 koef = (strength * timeElapsed);
 				if(inverseDrawingEnabled)
@@ -360,7 +355,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				break;
 			}
 
-			case HEIGHTMAP_DRAW_RELATIVE:
+			case HEIGHTMAP_DRAW_ABSOLUTE:
 			case HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
 			{
 				float32 maxHeight = drawSystem->GetLandscapeMaxHeight();

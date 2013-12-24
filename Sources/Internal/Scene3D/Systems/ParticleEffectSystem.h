@@ -44,8 +44,9 @@ class ParticleEffectSystem : public SceneSystem
 	friend class ParticleEffectComponent;
 public:
 	ParticleEffectSystem(Scene * scene);
+
 	~ParticleEffectSystem();
-	virtual void Process();		
+	virtual void Process(float32 timeElapsed);		
 
 
 	virtual void RemoveEntity(Entity * entity);	

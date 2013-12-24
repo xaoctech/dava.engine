@@ -179,7 +179,7 @@ void SceneTree::dropEvent(QDropEvent * event)
 	}
 
 	// after processing don't allow this event to go higher
-	// so no body will decide to remove/insert grag&dropped items into treeview
+	// so no body will decide to remove/insert drag&dropped items into treeview
 	// except our model. Model will do this when scene entity remove/move signals catched
 	event->setDropAction(Qt::IgnoreAction);
 	event->accept();
@@ -382,6 +382,11 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 		{
 			// disabled entities can only be removed
 			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+            
+            if(selectionSize == 1 && GetCamera(entity))
+            {
+                AddCameraActions(contextMenu);
+            }
 		}
 		else
 		{
@@ -391,7 +396,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 			// look from
 			if(NULL != GetCamera(entity))
 			{
-				contextMenu.addAction(QIcon(":/QtIcons/eye.png"), "Look from", this, SLOT(SetCurrentCamera()));
+                AddCameraActions(contextMenu);
 			}
 
 			// add/remove
@@ -587,18 +592,6 @@ void SceneTree::UnlockEntities()
 	}
 }
 
-void SceneTree::SetCurrentCamera()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
-		if(NULL != camera)
-		{
-			sceneEditor->SetCurrentCamera(camera);
-		}
-	}
-}
 
 void SceneTree::CollapseSwitch()
 {
@@ -1366,4 +1359,57 @@ void SceneTree::SetEntityNameAsFilter()
 
 	Entity *entity = selection.GetEntity(0);
 	QtMainWindow::Instance()->GetUI()->sceneTreeFilterEdit->setText(entity->GetName().c_str());
+}
+
+void SceneTree::AddCameraActions(QMenu &menu)
+{
+    menu.addAction(QIcon(":/QtIcons/eye.png"), "Look from", this, SLOT(SetCurrentCamera()));
+    menu.addAction(QIcon(":/QtIcons/camera.png"), "Set view camera", this, SLOT(SetViewCamera()));
+    menu.addAction(QIcon(":/QtIcons/camera.png"), "Set clip camera", this, SLOT(SetClipCamera()));
+}
+
+
+void SceneTree::SetCurrentCamera()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
+		if(NULL != camera)
+		{
+			sceneEditor->SetCurrentCamera(camera);
+		}
+	}
+}
+
+void SceneTree::SetViewCamera()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
+		if(NULL != camera)
+		{
+            DAVA::Camera *clipCamera = SafeRetain(sceneEditor->GetClipCamera());
+
+			sceneEditor->SetCurrentCamera(camera);
+            sceneEditor->SetClipCamera(clipCamera);
+            
+            SafeRelease(clipCamera);
+		}
+	}
+}
+
+void SceneTree::SetClipCamera()
+{
+    SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
+		if(NULL != camera)
+		{
+			sceneEditor->SetClipCamera(camera);
+		}
+	}
+
 }

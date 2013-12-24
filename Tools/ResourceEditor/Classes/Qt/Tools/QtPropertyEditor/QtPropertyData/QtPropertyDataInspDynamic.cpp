@@ -21,17 +21,34 @@ QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspIn
 	, object(_object)
 	, dynamicInfo(_dynamicInfo)
 	, index(_index)
+	, inspFlags(0)
 	//, lastCommand(NULL)
 {
 	if(NULL != dynamicInfo)
 	{
 		SetVariantValue(dynamicInfo->MemberValueGet(object, index));
+		inspFlags = dynamicInfo->MemberFlags(object, index);
 	}
 }
 
 QtPropertyDataInspDynamic::~QtPropertyDataInspDynamic()
 {
 	// DAVA::SafeDelete(lastCommand);
+}
+
+const DAVA::MetaInfo * QtPropertyDataInspDynamic::MetaInfo() const
+{
+	if(NULL != dynamicInfo && NULL != dynamicInfo->GetMember())
+	{
+		return dynamicInfo->GetMember()->Type();
+	}
+
+	return NULL;
+}
+
+int QtPropertyDataInspDynamic::InspFlags() const
+{
+	return inspFlags;
 }
 
 void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
