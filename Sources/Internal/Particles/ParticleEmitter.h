@@ -146,12 +146,6 @@ protected:
 	void RetainInCache(const FilePath & name);
 	void ReleaseFromCache(const FilePath & name);	
 	FilePath emitterFileName;
-
-#else //#if defined (USE_FILEPATH_IN_MAP)
-	void RetainInCache(const String& name);
-	void ReleaseFromCache(const String& name);	
-	String emitterFileName;
-#endif //#if defined (USE_FILEPATH_IN_MAP)    
  
 };
 
