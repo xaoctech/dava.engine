@@ -106,6 +106,7 @@ private:
 	float32 effectDuration;       //duration for effect
 	uint32 repeatsCount;			  // note that now it's really count - not depending if effect is stop when empty or by duration - it would be restarted if currRepeatsCount<repetsCount
 	bool clearOnRestart;		  // when effect is restarted repeatsCount
+	
 	float32 playbackSpeed;
 	
 	/*state*/
@@ -131,10 +132,14 @@ private:
 	int32 desiredLodLevel;
 
 public:
+	uint32 loadedVersion;
+	void CollapseOldEffect(SerializationContext *serializationContext);
+
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
 		MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
         MEMBER(stopWhenEmpty, "stopWhenEmpty",  I_VIEW | I_EDIT | I_SAVE)
-        MEMBER(effectDuration, "effectDuration",  I_VIEW | I_SAVE)		
+        MEMBER(effectDuration, "effectDuration",  I_VIEW | I_EDIT |I_SAVE)	
+		MEMBER(clearOnRestart, "clearOnRestart",  I_VIEW | I_EDIT |I_SAVE)	
     );
 };
 

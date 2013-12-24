@@ -629,6 +629,10 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 		}
         if (removeChildren)
             node->RemoveAllChildren();
+		
+		ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+		if (effect && (effect->loadedVersion == 0))
+			effect->CollapseOldEffect(&serializationContext);
 
         SafeRelease(node);
     }

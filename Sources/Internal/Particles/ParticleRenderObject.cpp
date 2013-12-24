@@ -43,7 +43,6 @@ static Vector3 basisVectors[7*2] = {Vector3(), Vector3(),
 									Vector3(0,0,1), Vector3(1,0,0), 
 									Vector3(0,1,0), Vector3(1,0,0)};
 
-
 void ParticleRenderGroup::UpdateRenderBatch()
 {
 	RenderDataObject *renderDataObject = renderBatch->GetRenderDataObject();
@@ -82,6 +81,16 @@ void ParticleRenderGroup::ClearArrays()
 	colors.clear();
 	texcoords2.clear();
 	times.clear();
+}
+
+ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect)
+{
+	flags |= RenderObject::ALWAYS_CLIPPING_VISIBLE;
+}
+
+ParticleRenderObject::~ParticleRenderObject()
+{
+
 }
 
 

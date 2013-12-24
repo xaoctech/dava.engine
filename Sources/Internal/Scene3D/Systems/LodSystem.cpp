@@ -194,7 +194,7 @@ void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 p
 bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq)
 {
 	//LodComponent * lodComponent = GetLodComponent(entity);
-	bool usePsSettings = (GetEmitter(entity) != NULL);
+	bool usePsSettings = (GetEffectComponent(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{

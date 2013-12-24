@@ -47,7 +47,7 @@ class LodComponent;
 class SkyboxRenderObject;
 class SwitchComponent;
 
-ParticleEmitter * GetEmitter(Entity * fromEntity);
+
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 
 RenderObject * GetRenderObject(const Entity * fromEntity);

@@ -45,6 +45,13 @@ namespace DAVA
 	Map<String, ParticleEmitter::EmitterYamlCacheEntry> ParticleEmitter::emitterYamlCache;
 #endif //#if defined (USE_FILEPATH_IN_MAP)
 
+
+void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	if(NULL != archive)	
+		emitterFilename = archive->GetString("pe.configpath");
+}
+
 ParticleEmitter::ParticleEmitter()
 {	
 	
