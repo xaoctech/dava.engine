@@ -120,32 +120,8 @@ public:
 	}
 };
 		  
-/*class MaterialTechnique
-{
-		
-public:
-	
-    MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
-    ~MaterialTechnique();
-    
-	void RecompileShader(const FastNameSet& materialDefines);
-
-    const FastName & GetShaderName() const { return shaderName; }
-    inline Shader * GetShader() const { return shader; }
-    inline RenderState * GetRenderState() const { return renderState; }
-    const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
-	    
-protected:
-    FastName shaderName;
-    Shader * shader;
-    RenderState * renderState;
-    FastNameSet uniqueDefines;
-	};
-*/
-	
 class Camera;
 class SerializationContext;
-class MaterialSystem;
 class NMaterial : public DataNode
 {
 	friend class MaterialSystem;
@@ -188,7 +164,7 @@ public:
 	
 	NMaterial();
 	
-	inline NMaterial* GetParent() {return parent;}
+	inline NMaterial* GetParent() const {return parent;}
 	
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
@@ -211,7 +187,7 @@ public:
 	bool GetFlagValue(const FastName& flag);
 	bool IsFlagBlocked(const FastName& flag);
     
-	void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);
+	void BindMaterialTechnique(const FastName & passName, Camera* camera);
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
 		
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -261,65 +237,34 @@ protected:
 		static void Release(NMaterialProperty* prop);
 		static NMaterialProperty* Clone(NMaterialProperty* prop);
 	};
-	
-	class UniformPropertyManager
-	{
-	public:
-		static void Init(NMaterialProperty* prop);
-		static void Release(NMaterialProperty* prop);
-		static NMaterialProperty* Clone(NMaterialProperty* prop);
-	};
-	
+		
 	typedef NManagedMaterialProperty<GenericPropertyManager> GenericMaterialProperty;
-	typedef NManagedMaterialProperty<UniformPropertyManager> UniformMaterialProperty;
 
 	struct TextureBucket
 	{
 		Texture* texture; //VI: can be NULL
 		FilePath path;
 	};
-	
-	struct TextureParamCacheEntry
-	{
-		FastName textureName;
-		int32 slot;
-		Texture* tx;
-	};
-	
+		
 	struct UniformCacheEntry
 	{
 		Shader::Uniform* uniform;
 		int32 index;
-		void* propData;
+		NMaterialProperty* prop;
 	};
 		
 	struct RenderPassInstance
 	{
-		Shader* shader;
-		UniqueHandle renderState;
+		RenderState renderState;
 		
 		bool dirtyState;
+		bool texturesDirty;
 		
-		Vector<TextureParamCacheEntry> textureParamsCache;
+		HashMap<FastName, int32> textureIndexMap;
 		Vector<UniformCacheEntry> activeUniformsCache;
 		
-		TextureParamCacheEntry* textureParamsCachePtr;
 		UniformCacheEntry* activeUniformsCachePtr;
-		size_t textureParamsCacheSize;
 		size_t activeUniformsCacheSize;
-		
-		bool ContainsTexture(const FastName& name)
-		{
-			for(size_t i = 0; i < textureParamsCacheSize; ++i)
-			{
-				if(textureParamsCachePtr[i].textureName == name)
-				{
-					return true;
-				}
-			}
-			
-			return false;
-		}
 	};
 	
 protected:
@@ -331,8 +276,6 @@ protected:
 	HashMap<FastName, NMaterialProperty*> materialProperties;
 	
 	HashMap<FastName, TextureBucket*> textures;
-	UniqueHandle textureStateHandle;
-	bool texturesDirty;
 	
 	NMaterial* parent;
 	Vector<NMaterial*> children;
@@ -347,24 +290,18 @@ protected:
 	bool materialDynamicLit;
 	//}END TODO
 
-    //FastName activeTechniqueName;
-    //MaterialTechnique * activeTechnique;
-	
 	RenderTechnique* baseTechnique;
 	HashMap<FastName, RenderPassInstance*> instancePasses;
 	
 	RenderPassInstance* activePassInstance;
 	RenderTechniquePass* activeRenderPass;
-	
-	bool ready;
+	FastName activePassName;
 	
 	FastName currentQuality;
 			
     IlluminationParams * illuminationParams;
 	
 	const NMaterialTemplate* materialTemplate;
-	
-	Vector<uint8> uniformDataStorage;
 	
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	FastNameSet materialSetFlags; //VI: flags set in the current material only
@@ -394,6 +331,17 @@ protected:
 	void BuildTextureParamsCache(RenderPassInstance* passInstance);
 	void BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance);
 	TextureBucket* GetTextureBucketRecursive(const FastName& textureFastName) const;
+	
+	void LoadActiveTextures();
+	void CleanupUnusedTextures();
+	Texture* GetOrLoadTextureRecursive(const FastName& textureName);
+	bool IsTextureActive(const FastName& textureName) const;
+	void SetTexturesDirty();
+	void PrepareTextureState(RenderPassInstance* passInstance);
+	
+	void SetupPerFrameProperties(Camera* camera);
+	void BindMaterialTextures(RenderPassInstance* passInstance);
+	void BindMaterialProperties(RenderPassInstance* passInstance);
 		
 protected:
 	
@@ -402,30 +350,51 @@ protected:
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
+	void OnMaterialPropertyAdded(const FastName& propName, NMaterialProperty* prop);
+	void OnMaterialPropertyRemoved(const FastName& propName);
+	
 public:
 	
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
 	public:
-		int MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, int index) const;
-		const char* MemberName(void *object, int index) const;
-		VariantType MemberValueGet(void *object, int index) const;
-		void MemberValueSet(void *object, int index, const VariantType &value);
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
 	};
 	
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
-	private:
-		
-		void MemberValueSetInternal(NMaterial* state, int index, const VariantType &value);
-		
 	public:
-		int MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, int index) const;
-		const char* MemberName(void *object, int index) const;
-		VariantType MemberValueGet(void *object, int index) const;
-		void MemberValueSet(void *object, int index, const VariantType &value);
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		
+	protected:
+		struct PropData
+		{
+			enum PropSource
+			{
+				SOURCE_UNKNOWN = 0x0,
+				SOURCE_SELF = 0x1,
+				SOURCE_PARENT = 0x2,
+				SOURCE_SHADER = 0x4
+			};
+			
+			PropData() : source(SOURCE_UNKNOWN)
+			{ }
+			
+			int source;
+			NMaterialProperty property;
+		};
+		
+		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	
 public:

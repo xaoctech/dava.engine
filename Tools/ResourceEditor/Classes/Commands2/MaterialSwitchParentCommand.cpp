@@ -32,11 +32,12 @@
 
 MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, const DAVA::NMaterial *newParent)
 	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
-    , oldMaterialParent(oldMat->GetParentName())
+	, oldMaterialParent(DAVA::FastName("")) //VI: TODO: Implement for refactored new materials!
     , newMaterialParent(newParent->GetMaterialName())
     , currentMaterial(oldMat)
 {
     DVASSERT(currentMaterial);
+	DVASSERT(false && "Implement for refactored new materials");
 }
 
 MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
@@ -46,12 +47,12 @@ MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
 
 void MaterialSwitchParentCommand::Redo()
 {
-    currentMaterial->SwitchParent(newMaterialParent);
+    //currentMaterial->SwitchParent(newMaterialParent);
 }
 
 void MaterialSwitchParentCommand::Undo()
 {
-    currentMaterial->SwitchParent(oldMaterialParent);
+    //currentMaterial->SwitchParent(oldMaterialParent);
 }
 
 
