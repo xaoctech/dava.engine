@@ -306,7 +306,8 @@ namespace DAVA
 			FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
 			
 			material = MaterialSystem::CreateMaterial(FastName(oldMaterial->GetName()),
-													  newMaterialName);
+													  newMaterialName,
+													  GetDefaultMaterialQuality());
 			
 			
 			if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)

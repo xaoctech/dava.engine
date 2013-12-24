@@ -81,7 +81,7 @@ void RenderTechnique::AddRenderTechniquePass(const DAVA::FastName &_shaderName,
 															  _uniqueDefines,
 															  _renderState,
 															  layers);
-    nameIndexMap[_shaderName] = (uint32)renderTechniqueArray.size();
+    nameIndexMap.insert(_shaderName, (uint32)renderTechniqueArray.size());
     renderTechniqueArray.push_back(technique);
 }
 

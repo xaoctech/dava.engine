@@ -1207,8 +1207,12 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 Shader * Shader::RecompileNewInstance(const String & combination)
 {
     Shader * shader = new Shader();
-    shader->vertexShaderData = SafeRetain(vertexShaderData);
-    shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+	shader->vertexShaderData = SafeRetain(vertexShaderData);
+	shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+	shader->vertexShaderDataStart = vertexShaderDataStart;
+	shader->vertexShaderDataSize = vertexShaderDataSize;
+	shader->fragmentShaderDataStart = fragmentShaderDataStart;
+	shader->fragmentShaderDataSize = fragmentShaderDataSize;
     shader->SetDefineList(combination);
     
 	//TODO: return "invalid shader" on error;

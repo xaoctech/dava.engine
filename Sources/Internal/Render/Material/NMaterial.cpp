@@ -493,7 +493,8 @@ namespace DAVA
 		if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
 			clonedMaterial = MaterialSystem::CreateMaterial(materialName,
-															materialTemplate->name);
+															materialTemplate->name,
+															currentQuality);
 			
 		}
 		else if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
@@ -725,9 +726,11 @@ namespace DAVA
 		materialName = FastName(name);
 	}
 	
-	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate)
+	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate,
+										const FastName& defaultQuality)
 	{
 		materialTemplate = matTemplate;
+		currentQuality = defaultQuality;
 		
 		OnMaterialTemplateChanged();
 		
@@ -738,7 +741,7 @@ namespace DAVA
 		size_t childrenCount = children.size();
 		for(size_t i = 0; i < childrenCount; ++i)
 		{
-			children[i]->SetMaterialTemplate(matTemplate);
+			children[i]->SetMaterialTemplate(matTemplate, defaultQuality);
 		}
 		
 		//{VI: temporray code should be removed once lighting system is up
@@ -779,7 +782,7 @@ namespace DAVA
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
 		
-		SetMaterialTemplate(newParent->materialTemplate);
+		SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
 	}
 	
 	void NMaterial::OnParentFlagsChanged()
@@ -797,7 +800,7 @@ namespace DAVA
 		CleanupUnusedTextures();
 	}
 	
-	void NMaterial::BuildEffectiveFlagSet(FastNameSet effectiveFlagSet)
+	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
 	{
 		effectiveFlagSet.clear();
 		FastNameSet effectiveBlockedFlags(8);
@@ -1184,6 +1187,7 @@ namespace DAVA
 					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
 					{
 						pass->activeUniformsCachePtr[i].prop = prop;
+						break;
 					}
 				}
 			}
@@ -1214,6 +1218,7 @@ namespace DAVA
 					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
 					{
 						pass->activeUniformsCachePtr[i].prop = NULL;
+						break;
 					}
 				}
 			}

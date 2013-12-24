@@ -50,9 +50,8 @@ class PolygonGroup;
 class MaterialSystem
 {
 public:
-	
-	static FastName GLOBAL_NAME;
-	static NMaterial::NMaterialKey GLOBAL_KEY;
+
+	static const FastName DEFAULT_QUALITY_NAME;
 	
 public:
 	
@@ -71,7 +70,8 @@ public:
 	static NMaterial* CreateMaterialInstance();
 		
 	static NMaterial* CreateMaterial(const FastName& materialName,
-									 const FastName& templateName);
+									 const FastName& templateName,
+									 const FastName& defaultQuality);
 		
 private:
 	

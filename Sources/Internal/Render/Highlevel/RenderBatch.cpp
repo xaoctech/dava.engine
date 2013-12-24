@@ -99,17 +99,9 @@ void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
 
 void RenderBatch::SetMaterial(NMaterial * _material)
 {
-	SafeRelease(material);
+	NMaterial* oldMat = material;
     material = SafeRetain(_material);
-	
-	DVASSERT(false);
-	//VI: material should be ready after it has been set to render batch
-	//VI: so render system will be able to determine different materials-related renderbatch properties
-	//VI: such as if renderbatch receives dynamic light etc
-	//if(material && !material->IsReady())
-	//{
-	//	material->Rebuild();
-	//}
+	SafeRelease(oldMat);
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)

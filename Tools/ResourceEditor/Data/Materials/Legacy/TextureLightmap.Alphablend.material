@@ -1,9 +1,9 @@
 RenderTechnique:
-    Layers: ["TransclucentRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Old/materials"
         UniqueDefines: ["MATERIAL_TEXTURE", "MATERIAL_LIGHTMAP", "ALPHABLEND"]
+        Layers: ["TransclucentRenderLayer"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000
