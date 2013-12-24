@@ -46,7 +46,7 @@ class Camera;
 class LodComponent;
 class SkyboxRenderObject;
 class SwitchComponent;
-class ModelTypeComponent;
+class QualitySettingsComponent;
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
@@ -67,7 +67,7 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);
 
-ModelTypeComponent * GetModelTypeComponent(Entity *fromEntity);
+QualitySettingsComponent * GetQualitySettingsComponent(Entity *fromEntity);
     
 }
 
