@@ -131,8 +131,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 
 	NMaterial *currMaterial = NULL;
 	int32 renderGroupCount = 0;	
-	ParticleRenderGroup *currRenderGroup = NULL;
-	int32 maxParticlesPerBatch = 0;
+	ParticleRenderGroup *currRenderGroup = NULL;	
 	for (List<ParticleGroup>::iterator it = effectData->groups.begin(), e=effectData->groups.end(); it!=e; ++it)
 	{
 		const ParticleGroup& currGroup = (*it);		
@@ -142,27 +141,33 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 
 		//start new batch if needed
 		if (currGroup.material!=currMaterial) 
-		{
-			if (currRenderGroup&&(currRenderGroup->currParticlesCount>maxParticlesPerBatch))
-				maxParticlesPerBatch = currRenderGroup->currParticlesCount;
-				
+		{					
+			currMaterial = currGroup.material;
 			renderGroupCount++;
 			if (renderGroupCache.size()<renderGroupCount)
 			{
 				currRenderGroup = new ParticleRenderGroup();
 				currRenderGroup->renderBatch = new RenderBatch();
+				currRenderGroup->renderBatch->SetRenderObject(this);
 				currRenderGroup->renderBatch->SetRenderDataObject(new RenderDataObject());
 				renderGroupCache.push_back(currRenderGroup);
 			}	
 			else
 				currRenderGroup=renderGroupCache[renderGroupCount-1];
-			
+			currRenderGroup->currParticlesCount = 0;
 			currRenderGroup->enableFrameBlend = currGroup.layer->enableFrameBlend;
 			currRenderGroup->renderBatch->SetMaterial(currMaterial);
 		}
 
 		AppendParticleGroup(currGroup, currRenderGroup, currCamDirection);
 
+	}
+
+	int32 maxParticlesPerBatch = 0;
+	for (int32 i=0; i<renderGroupCount; ++i)
+	{
+		if (renderGroupCache[i]->currParticlesCount>maxParticlesPerBatch)
+			maxParticlesPerBatch = renderGroupCache[i]->currParticlesCount;
 	}
 	
 	
@@ -293,6 +298,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			renderGroup->currParticlesCount++;
 			currVerticesCount+=4;			
 		}
+		current = current->next;
 	}
 }
 

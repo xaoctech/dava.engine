@@ -52,6 +52,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 	effectData.infoSources[0].size=Vector2(1,1);
 	effectRenderObject = new ParticleRenderObject(&effectData);
 	time = 0;
+	desiredLodLevel = 1;
 }
 
 ParticleEffectComponent::~ParticleEffectComponent()

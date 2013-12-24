@@ -97,6 +97,8 @@ ParticleLayer::ParticleLayer()
 	particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
     
 	isLooped = false;	
+
+	isLong = false;
 	
 	isDisabled = false;
 
