@@ -75,6 +75,8 @@ protected slots:
     //TODO: remove after lod editing implementation
     void CopyLODToLod0Clicked();
 
+    void CreatePlaneLODClicked();
+
     void ForceLayerActivated(int index);
     
 protected:
