@@ -134,6 +134,7 @@ void TextureCache::setThumbnail(const DAVA::TextureDescriptor *descriptor, const
 	if(NULL != descriptor)
 	{
         DAVA::Vector<QImage> tmpImages;
+        tmpImages.reserve(images.size());
 		for(size_t i = 0; i < images.size(); ++i)
 		{
             QImage img(THUMBNAIL_SIZE, THUMBNAIL_SIZE, QImage::Format_ARGB32);
@@ -166,6 +167,8 @@ void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, const 
 	if(NULL != descriptor)
 	{
  		DAVA::Vector<QImage> tmpImages;
+        tmpImages.reserve(images.size());
+
 		for(size_t i = 0; i < images.size(); ++i)
 		{
 			tmpImages.push_back(images[i]);
@@ -184,6 +187,7 @@ void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, const
 		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
 		DAVA::Vector<QImage> tmpImages;
+        tmpImages.reserve(images.size());
 		for(int i = 0; i < (int)images.size(); ++i)
 		{
 			tmpImages.push_back(images[i]);

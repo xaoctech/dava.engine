@@ -338,7 +338,8 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
     Logger::FrameworkDebug("* Writing %d final textures", (int)packers.size());
 
 	Vector<PngImageExt*> finalImages;
-	
+	finalImages.reserve(packers.size());
+    
 	for (int imageIndex = 0; imageIndex < (int)packers.size(); ++imageIndex)
 	{
 		PngImageExt * image = new PngImageExt();

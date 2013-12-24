@@ -56,6 +56,7 @@ void NotPassableTerrainProxy::LoadColorsArray()
 		YamlNode* rootNode = parser->GetRootNode();
 		int32 anglesCount = rootNode->GetCount();
 		
+        angleColor.reserve(anglesCount);
 		for (int32 i = 0; i < anglesCount; ++i)
 		{
 			const YamlNode* node = rootNode->Get(i);
