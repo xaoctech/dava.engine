@@ -46,12 +46,7 @@ namespace DAVA
 	class NMaterialTemplateCache : public StaticSingleton<NMaterialTemplateCache>
 	{
 	public:
-		
-		void SetBasePath(const FilePath& path);
-		const FilePath& GetBasePath() const;
-		void SetDefaultQuality(const FastName& quality);
-		const FastName& GetDefaultQuality() const;
-		
+				
 		const NMaterialTemplate* Get(const FastName& templateName);
 		
 	private:
@@ -60,8 +55,6 @@ namespace DAVA
 				
 	private:
 		
-		FilePath basePath;
-		FastName defaultQuality;
 		HashMap<FastName, NMaterialTemplate*> templateCache;
 	};
 };

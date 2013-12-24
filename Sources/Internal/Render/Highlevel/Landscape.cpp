@@ -64,7 +64,7 @@ const FastName Landscape::PARAM_TILE_COLOR3("tileColor3");
 const FastName Landscape::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
 const FastName Landscape::PARAM_SPECULAR_SHININESS("materialSpecularShininess");
 const FastName Landscape::TEXTURE_SPECULAR_MAP("specularMap");
-const FastName Landscape::TECHNIQUE_TILEMASK_NAME("Landscape");
+const FastName Landscape::TECHNIQUE_TILEMASK_NAME("ForwardPass");
 	
 	const int TEXTURE_NAME_COLOR = 0;
 	const int TEXTURE_NAME_TILEMASK = 1;
@@ -149,17 +149,14 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	//tileMaskMaterial = NULL;
-	//fullTiledMaterial = NULL;
-	
-	DVASSERT(false);
+	tileMaskMaterial = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+													  FastName("~res:/Materials/Legacy/TileMask.material"),
+													  MaterialSystem::DEFAULT_QUALITY_NAME);
 	//tileMaskMaterial = MaterialSystem::CreateNamed();
 	//tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
-	
-	//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	tileMaskMaterial->AddMaterialDefine(FastName("SPECULAR_LAND"));
@@ -1791,20 +1788,17 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
             break;
     }
 	
-	DVASSERT(false);
-	/*if(prevContainsDetailMask != curContainsDetailMask)
+	if(prevContainsDetailMask != curContainsDetailMask)
 	{
 		if(curContainsDetailMask)
 		{
-			tileMaskMaterial->AddMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), true);
 		}
 		else
 		{
-			tileMaskMaterial->RemoveMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), false);
 		}
-		
-		tileMaskMaterial->Rebuild();
-	}*/
+	}
 }
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)

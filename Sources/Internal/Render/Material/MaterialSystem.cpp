@@ -42,6 +42,7 @@
 
 namespace DAVA
 {
+	const FastName MaterialSystem::DEFAULT_QUALITY_NAME = FastName("Normal");
 		
 	MaterialSystem::MaterialSystem()
 	{
@@ -101,7 +102,8 @@ namespace DAVA
 	//VI: creates material of type MATERIALTYPE_MATERIAL
 	//VI: These methods DO NOT add newly created materials to the material system
 	NMaterial* MaterialSystem::CreateMaterial(const FastName& materialName,
-											  const FastName& templateName)
+											  const FastName& templateName,
+											  const FastName& defaultQuality)
 	{
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
@@ -111,7 +113,7 @@ namespace DAVA
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
 		DVASSERT(matTemplate);
-		mat->SetMaterialTemplate(matTemplate);
+		mat->SetMaterialTemplate(matTemplate, defaultQuality);
 		
 		return mat;
 	}

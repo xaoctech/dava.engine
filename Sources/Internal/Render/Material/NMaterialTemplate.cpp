@@ -28,37 +28,16 @@
  =====================================================================================*/
 
 #include "FileSystem/YamlParser.h"
+#include "Render/Material/MaterialSystem.h"
 #include "Render/Material/NMaterialTemplate.h"
 
 namespace DAVA
 {
-	void NMaterialTemplateCache::SetBasePath(const FilePath& path)
-	{
-		basePath = path;
-	}
-	
-	const FilePath& NMaterialTemplateCache::GetBasePath() const
-	{
-		return basePath;
-	}
-	
-	void NMaterialTemplateCache::SetDefaultQuality(const FastName& quality)
-	{
-		defaultQuality = quality;
-	}
-	
-	const FastName& NMaterialTemplateCache::GetDefaultQuality() const
-	{
-		return defaultQuality;
-	}
-
 	const NMaterialTemplate* NMaterialTemplateCache::Get(const FastName& templateName)
 	{
-		String name = templateName.c_str();
-		FilePath path = basePath + name + ".material";
+		FilePath path = templateName.c_str();
 		
-		FastName fastName = FastName(path.GetAbsolutePathname());
-		NMaterialTemplate* matTemplate = templateCache.at(fastName);
+		NMaterialTemplate* matTemplate = templateCache.at(templateName);
 		if(NULL == matTemplate)
 		{
 			matTemplate = Load(path);
@@ -67,11 +46,11 @@ namespace DAVA
 			if(NULL == matTemplate)
 			{
 				matTemplate = new NMaterialTemplate();
-				matTemplate->techniqueStateMap.insert(defaultQuality,
+				matTemplate->techniqueStateMap.insert(MaterialSystem::DEFAULT_QUALITY_NAME,
 													  templateName);
 			}
 			
-			templateCache.insert(fastName, matTemplate);
+			templateCache.insert(templateName, matTemplate);
 		}
 		
 		DVASSERT(matTemplate);
@@ -99,15 +78,20 @@ namespace DAVA
 		}
 		
 		const YamlNode * materialTemplateNode = rootNode->Get("MaterialTemplate");
-
-		result = new NMaterialTemplate();
 		
-		for(int32 i = 0; i < materialTemplateNode->GetCount(); ++i)
+		//VI: if "MaterialTemplate" is NULL then it's probably a technique itsef.
+		//VI: Fallback to default behavior.
+		if(NULL != materialTemplateNode)
 		{
-			const YamlNode* techniqueNode = materialTemplateNode->Get(i);
+			result = new NMaterialTemplate();
 			
-			result->techniqueStateMap.insert(FastName(materialTemplateNode->GetItemKeyName(i)),
-											 FastName(techniqueNode->AsString()));
+			for(int32 i = 0; i < materialTemplateNode->GetCount(); ++i)
+			{
+				const YamlNode* techniqueNode = materialTemplateNode->Get(i);
+				
+				result->techniqueStateMap.insert(FastName(materialTemplateNode->GetItemKeyName(i)),
+												 FastName(techniqueNode->AsString()));
+			}
 		}
 		
 		SafeRelease(rootNode);

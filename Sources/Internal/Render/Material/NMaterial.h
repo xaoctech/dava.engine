@@ -265,6 +265,11 @@ protected:
 		
 		UniformCacheEntry* activeUniformsCachePtr;
 		size_t activeUniformsCacheSize;
+		
+		RenderPassInstance() : textureIndexMap(8)
+		{
+			
+		}
 	};
 	
 protected:
@@ -313,9 +318,9 @@ protected:
 	
 	inline void SetMaterialType(eMaterialType matType) {materialType = matType;}
 	inline void SetMaterialKey(NMaterialKey key) {materialKey = key;}
-	void SetMaterialTemplate(const NMaterialTemplate* matTemplate);
+	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
-	void BuildEffectiveFlagSet(FastNameSet effectiveFlagSet);
+	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
 	
 	void DeserializeFastNameSet(const KeyedArchive* srcArchive,
 								FastNameSet& targetSet);
