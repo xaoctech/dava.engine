@@ -71,6 +71,10 @@ const DAVA::MetaInfo * QtPropertyDataIntrospection::MetaInfo() const
 
 QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, const DAVA::InspMember *member)
 {
+	DVASSERT(false && "Implement for new materials!");
+	return NULL;
+	
+	/*
 	void *memberObject = member->Data(_object);
 	int memberFlags = member->Flags();
 	const DAVA::MetaInfo *memberMetaInfo = member->Type();
@@ -154,6 +158,7 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
 	}
 
 	return retData;
+	 */
 }
 
 void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member)

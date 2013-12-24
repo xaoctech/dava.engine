@@ -23,10 +23,16 @@ QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspIn
 	, index(_index)
 	//, lastCommand(NULL)
 {
+	DVASSERT(false && "Implement for refactored new materials!");
+	
+	//VI: TODO: Implement for refactored new materials!
+	
+	/*
 	if(NULL != dynamicInfo)
 	{
 		SetVariantValue(dynamicInfo->MemberValueGet(object, index));
 	}
+	 */
 }
 
 QtPropertyDataInspDynamic::~QtPropertyDataInspDynamic()
@@ -46,6 +52,10 @@ const DAVA::MetaInfo * QtPropertyDataInspDynamic::MetaInfo() const
 
 void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 {
+	DVASSERT(false && "Implement for new materials!");
+	//VI: TODO: implement for new materials
+	
+	/*
 	QtPropertyDataDavaVariant::SetValueInternal(value);
 	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
 
@@ -57,12 +67,17 @@ void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 
 		dynamicInfo->MemberValueSet(object, index, newValue);
 	}
+	 */
 }
 
 bool QtPropertyDataInspDynamic::UpdateValueInternal()
 {
 	bool ret = false;
 
+	DVASSERT(false && "Implement for new materials!");
+	//VI: TODO: implement for new materials
+
+	/*
 	// get current value from introspection member
 	// we should do this because member may change at any time
 	if(NULL != dynamicInfo)
@@ -77,13 +92,19 @@ bool QtPropertyDataInspDynamic::UpdateValueInternal()
 			ret = true;
 		}
 	}
+	 */
 
 	return ret;
 }
 
 bool QtPropertyDataInspDynamic::EditorDoneInternal(QWidget *editor)
 {
-	bool ret = QtPropertyDataDavaVariant::EditorDoneInternal(editor);
+	DVASSERT(false && "Implement for new materials!");
+	//VI: TODO: implement for new materials
+
+	return false;
+	
+	/*bool ret = QtPropertyDataDavaVariant::EditorDoneInternal(editor);
 
 	// if there was some changes in current value, done by editor
 	// we should save them into meta-object
@@ -92,7 +113,7 @@ bool QtPropertyDataInspDynamic::EditorDoneInternal(QWidget *editor)
 		dynamicInfo->MemberValueSet(object, index, QtPropertyDataDavaVariant::GetVariantValue());
 	}
 
-	return ret;
+	return ret;*/
 }
 
 

@@ -35,11 +35,15 @@
 namespace DAVA
 {
     
-RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState)
+RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName,
+										 const FastNameSet & _uniqueDefines,
+										 RenderState * _renderState,
+										 const FastNameSet & layers)
 {
     shaderName = _shaderName;
     uniqueDefines = _uniqueDefines;
     renderState = _renderState;
+	layersSet = layers;
 }
 
 RenderTechniquePass::~RenderTechniquePass()
@@ -70,9 +74,13 @@ RenderTechnique::~RenderTechnique()
     
 void RenderTechnique::AddRenderTechniquePass(const DAVA::FastName &_shaderName,
                                              const DAVA::FastNameSet & _uniqueDefines,
-                                             DAVA::RenderState *_renderState)
+                                             DAVA::RenderState *_renderState,
+											 const DAVA::FastNameSet& layers)
 {
-    RenderTechniquePass * technique = new RenderTechniquePass(_shaderName, _uniqueDefines, _renderState);
+    RenderTechniquePass * technique = new RenderTechniquePass(_shaderName,
+															  _uniqueDefines,
+															  _renderState,
+															  layers);
     nameIndexMap[_shaderName] = (uint32)renderTechniqueArray.size();
     renderTechniqueArray.push_back(technique);
 }
@@ -98,17 +106,6 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
  */
     const YamlNode * stateNode = rootNode->Get("RenderTechnique");
     if (!stateNode)return false;
-    
-    const YamlNode * layersNode = stateNode->Get("Layers");
-    if (layersNode)
-    {
-        int32 count = layersNode->GetCount();
-        for (int32 k = 0; k < count; ++k)
-        {
-            const YamlNode * singleLayerNode = layersNode->Get(k);
-            targetTechnique->layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
-        }
-    }
     
     uint32 techniqueCount = 0;
     for (int32 k = 0; k < stateNode->GetCount(); ++k)
@@ -158,9 +155,24 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
             {
                 renderState->LoadFromYamlNode(renderStepNode);
             }
+			
+			FastNameSet layersSet;
+			const YamlNode * layersNode = renderStepNode->Get("Layers");
+			if (layersNode)
+			{
+				int32 count = layersNode->GetCount();
+				for (int32 k = 0; k < count; ++k)
+				{
+					const YamlNode * singleLayerNode = layersNode->Get(k);
+					layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
+				}
+			}
 
             
-            targetTechnique->AddRenderTechniquePass(shaderName, definesSet, renderState);
+            targetTechnique->AddRenderTechniquePass(shaderName,
+													definesSet,
+													renderState,
+													layersSet);
             techniqueCount++;
         }
     }
