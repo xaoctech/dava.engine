@@ -169,6 +169,12 @@ private:
     bool SaveHierarchy(Entity * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, Entity * node, File * file, int32 level);
 
+    Entity * LoadEntity(Scene * scene, KeyedArchive * archive);
+    Entity * LoadLandscape(Scene * scene, KeyedArchive * archive);
+    Entity * LoadCamera(Scene * scene, KeyedArchive * archive);
+    Entity * LoadLight(Scene * scene, KeyedArchive * archive);
+    
+    
     bool ReplaceNodeAfterLoad(Entity * node);
 
 	void ReplaceOldNodes(Entity * currentNode);

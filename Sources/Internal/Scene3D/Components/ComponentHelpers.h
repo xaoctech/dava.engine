@@ -67,7 +67,7 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);
 
-QualitySettingsComponent * GetQualitySettingsComponent(Entity *fromEntity);
+QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
     
 }
 

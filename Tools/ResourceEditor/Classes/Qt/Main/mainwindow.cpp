@@ -653,7 +653,7 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-	QObject::connect(ui->actionAddModelTypeComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();

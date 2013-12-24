@@ -238,7 +238,7 @@ Landscape * FindLandscape(Entity * rootEntity)
 	return GetLandscape(entity);
 }
 
-QualitySettingsComponent * GetQualitySettingsComponent(Entity * fromEntity)
+QualitySettingsComponent * GetQualitySettingsComponent(const Entity * fromEntity)
 {
     if(fromEntity)
     {
