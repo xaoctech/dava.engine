@@ -425,10 +425,10 @@ void Texture::SetMinMagFilter(TextureFilter minFilter, TextureFilter magFilter)
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
 	GLint glMinFilter = HWglFilterToGLFilter(minFilter);
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glMinFilter));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, glMinFilter));
 
 	GLint glMagFilter = HWglFilterToGLFilter(magFilter);
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glMagFilter));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, glMagFilter));
 
 	if (saveId != 0)
 	{
