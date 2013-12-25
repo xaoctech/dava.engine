@@ -52,8 +52,7 @@ public:
     
     RenderTechniquePass(const FastName & _shaderName,
 						const FastNameSet & _uniqueDefines,
-						RenderState * _renderState,
-						const FastNameSet& layers);
+						RenderState * _renderState);
     ~RenderTechniquePass();
     
     Shader * RetainShader(const FastNameSet& materialDefines);
@@ -61,13 +60,11 @@ public:
     const FastName & GetShaderName() const { return shaderName; }
     inline RenderState * GetRenderState() const { return renderState; }
     const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; }
-	inline const FastNameSet & GetLayersSet() const { return layersSet; };
     
 protected:
     FastName shaderName;
     RenderState * renderState;
     FastNameSet uniqueDefines;
-	FastNameSet layersSet;
 };
 
 class RenderTechnique : public BaseObject
@@ -78,14 +75,15 @@ public:
     RenderTechnique(const FastName & name);
     ~RenderTechnique();
 
-    void AddRenderTechniquePass(const FastName & _shaderName,
+    void AddRenderTechniquePass(const FastName& passName,
+								const FastName & _shaderName,
 								const FastNameSet & _uniqueDefines,
-								RenderState * _renderState,
-								const FastNameSet& layers);
+								RenderState * _renderState);
 
     inline const FastName & GetName() { return name; };
     inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
     inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; }
+	inline const FastNameSet & GetLayersSet() const { return layersSet; };
 
 	inline const FastName& GetPassName(uint32 index)
 	{
@@ -107,6 +105,7 @@ protected:
     FastName name;
     Vector<RenderTechniquePass*> renderTechniqueArray;
     HashMap<FastName, uint32> nameIndexMap;
+	FastNameSet layersSet;
     
     friend class RenderTechniqueSingleton;
 };

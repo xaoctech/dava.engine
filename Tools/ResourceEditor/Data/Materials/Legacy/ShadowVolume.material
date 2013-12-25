@@ -1,8 +1,8 @@
 RenderTechnique:
+    Layers: ["ShadowVolumeRenderLayer"]
     RenderPass:
         Name: "ShadowVolumePass"
         Shader: "~res:/Materials/Shaders/ShadowVolume/shadowvolume"
-        Layers: ["ShadowVolumeRenderLayer"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

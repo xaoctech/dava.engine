@@ -1,9 +1,9 @@
 RenderTechnique:
+    Layers: ["AlphaTestLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Old/materials"
-        UniqueDefines: ["MATERIAL_TEXTURE", "MATERIAL_DETAIL", "ALPHATEST"]
-        Layers: ["AlphaTestLayer"]
+        UniqueDefines: ["MATERIAL_TEXTURE", "MATERIAL_DECAL", "ALPHATEST"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

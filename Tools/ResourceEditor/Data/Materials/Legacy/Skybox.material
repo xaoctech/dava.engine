@@ -1,9 +1,9 @@
 RenderTechnique:
+    Layers: ["AfterOpaqueRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Old/materials"
-        Layers: ["AfterOpaqueRenderLayer"]
-        UniqueDefines: ["MATERIAL_TEXTURE", "MATERIAL_SKYBOX"]
+        UniqueDefines: ["MATERIAL_SKYBOX"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

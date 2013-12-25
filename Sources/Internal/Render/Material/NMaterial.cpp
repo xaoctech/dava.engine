@@ -73,7 +73,14 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-		
+	
+	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
+	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
+	const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
+	const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
+	const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
+	const FastName NMaterial::FLAG_SETUPLIGHTMAP = FastName("SETUP_LIGHTMAP");
+
 	static FastName TEXTURE_NAME_PROPS[] = {
 		NMaterial::TEXTURE_ALBEDO,
 		NMaterial::TEXTURE_NORMAL,
@@ -124,11 +131,12 @@ namespace DAVA
 	requiredVertexFormat(EVF_FORCE_DWORD),
 	lightCount(0),
 	illuminationParams(NULL),
-	materialSetFlags(4),
-	materialBlockedFlags(4),
+	materialSetFlags(8),
 	baseTechnique(NULL),
 	activePassInstance(NULL),
-	activeRenderPass(NULL)
+	activeRenderPass(NULL),
+	instancePasses(4),
+	textures(8)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -208,47 +216,9 @@ namespace DAVA
 		return children[index];
 	}
 		
-	void NMaterial::SetFlag(const FastName& flag, bool flagValue)
+	void NMaterial::SetFlag(const FastName& flag, eFlagValue flagValue)
 	{
-		if(false == IsFlagBlocked(flag))
-		{
-			if(flagValue)
-			{
-				materialSetFlags.Insert(flag);
-			}
-			else
-			{
-				materialSetFlags.erase(flag);
-			}
-			
-			UpdateMaterialTemplate();
-			LoadActiveTextures();
-			
-			this->Retain();
-			
-			size_t childrenCount = children.size();
-			for(size_t i = 0; i < childrenCount; ++i)
-			{
-				children[i]->OnParentFlagsChanged();
-			}
-			
-			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
-			
-			this->Release();
-		}
-	}
-	
-	void NMaterial::SetBlockFlag(const FastName& flag, bool blockState)
-	{
-		if(blockState)
-		{
-			materialBlockedFlags.Insert(flag);
-		}
-		else
-		{
-			materialBlockedFlags.erase(flag);
-		}
+		materialSetFlags.insert(flag, flagValue);
 		
 		UpdateMaterialTemplate();
 		LoadActiveTextures();
@@ -266,34 +236,19 @@ namespace DAVA
 		
 		this->Release();
 	}
-		
-	bool NMaterial::GetFlagValue(const FastName& flag)
+			
+	int32 NMaterial::GetFlagValue(const FastName& flag) const
 	{
-		bool result = (materialSetFlags.at(flag) != 0);
+		int32 result = materialSetFlags.at(flag);
 		
-		if(!result &&
-		   parent != NULL)
+		if(NMaterial::FlagOff == result && parent)
 		{
 			result = parent->GetFlagValue(flag);
 		}
-		
-		return result;
-
-	}
-	
-	bool NMaterial::IsFlagBlocked(const FastName& flag)
-	{
-		bool result = (materialBlockedFlags.at(flag) != 0);
-		
-		if(!result &&
-		   parent != NULL)
-		{
-			result = parent->IsFlagBlocked(flag);
-		}
-		
+			
 		return result;
 	}
-		
+			
 	void NMaterial::Save(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
 	{
@@ -345,15 +300,15 @@ namespace DAVA
 		SafeRelease(materialProps);
 		
 		KeyedArchive* materialSetFlagsArchive = new KeyedArchive();
-		SerializeFastNameSet(materialSetFlags, materialSetFlagsArchive);
+		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
+			it != materialSetFlags.end();
+			++it)
+		{
+			materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+		}
 		archive->SetArchive("setFlags", materialSetFlagsArchive);
 		SafeRelease(materialSetFlagsArchive);
-		
-		KeyedArchive* materialBlockedFlagsArchive = new KeyedArchive();
-		SerializeFastNameSet(materialBlockedFlags, materialBlockedFlagsArchive);
-		archive->SetArchive("blockedFlags", materialBlockedFlagsArchive);
-		SafeRelease(materialBlockedFlagsArchive);
-		
+				
 		if(illuminationParams)
 		{
 			archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
@@ -397,10 +352,7 @@ namespace DAVA
 			String relativePathname = it->second->AsString();
 			SetTexture(FastName(it->first), relativePathname);
 		}
-		
-		DeserializeFastNameSet(archive->GetArchive("layers"), materialSetFlags);
-		DeserializeFastNameSet(archive->GetArchive("nativeDefines"), materialBlockedFlags);
-		
+						
 		if(archive->IsKeyExists("illumination.isUsed"))
 		{
 			illuminationParams = new IlluminationParams();
@@ -412,7 +364,7 @@ namespace DAVA
 		}
 		
 		serializationContext->SetMaterial((uint64)materialKey, this);
-		
+				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			NMaterial::NMaterialKey parentKey = (NMaterial::NMaterialKey)archive->GetInt64("parentMaterialKey");
@@ -423,31 +375,16 @@ namespace DAVA
 				parent->AddChild(this);
 			}
 		}
-	}
-	
-	void NMaterial::DeserializeFastNameSet(const KeyedArchive* srcArchive,
-										   FastNameSet& targetSet)
-	{
-		const Map<String, VariantType*>& setData = srcArchive->GetArchieveData();
-		for(Map<String, VariantType*>::const_iterator it = setData.begin();
-			it != setData.end();
+		
+		const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
+		for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
+			it != flagsMap.end();
 			++it)
 		{
-			targetSet.Insert(FastName(it->first));
+			SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
 		}
 	}
-	
-	void NMaterial::SerializeFastNameSet(const FastNameSet& srcSet,
-										 KeyedArchive* targetArchive)
-	{
-		for(FastNameSet::iterator it = srcSet.begin();
-			it != srcSet.end();
-			++it)
-		{
-			targetArchive->SetBool(it->first.c_str(), true);
-		}
-	}
-	
+		
 	bool NMaterial::SwitchQuality(const FastName& stateName)
 	{
 		bool result = false;
@@ -506,6 +443,8 @@ namespace DAVA
 			DVASSERT(false && "Material is not initialized properly!");
 			return clonedMaterial;
 		}
+		
+		clonedMaterial->SetName(GetName());
 				
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
 			it != materialProperties.end();
@@ -529,14 +468,17 @@ namespace DAVA
 			clonedMaterial->illuminationParams->lightmapSize = illuminationParams->lightmapSize;
 			clonedMaterial->illuminationParams->receiveShadow = illuminationParams->receiveShadow;
 		}
-		
-		clonedMaterial->SetName(GetName());
-		clonedMaterial->materialSetFlags.Combine(materialSetFlags);
-		clonedMaterial->materialBlockedFlags.Combine(materialBlockedFlags);
-		
+				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			parent->AddChild(clonedMaterial);
+		}
+		
+		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
+			it != materialSetFlags.end();
+			++it)
+		{
+			clonedMaterial->SetFlag(it->first, (NMaterial::eFlagValue)it->second);
 		}
 
 		return clonedMaterial;
@@ -581,6 +523,11 @@ namespace DAVA
 		{
 			SafeRelease(bucket->texture);
 			bucket->path = texturePath;
+			
+			if(IsTextureActive(textureFastName))
+			{
+				bucket->texture = Texture::CreateFromFile(texturePath);
+			}
 			
 			SetTexturesDirty();
 		}
@@ -737,26 +684,29 @@ namespace DAVA
 		LoadActiveTextures();
 		
 		this->Retain();
+				
+		//{VI: temporray code should be removed once lighting system is up
+		materialDynamicLit = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0);
+		
+		if(!materialDynamicLit)
+		{
+			uint32 passCount = baseTechnique->GetPassCount();
+			for(uint32 i = 0; i < passCount; ++i)
+			{
+				RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
+				const FastNameSet& defines = pass->GetUniqueDefineSet();
+				materialDynamicLit = materialDynamicLit ||
+				defines.count(DEFINE_VERTEX_LIT) ||
+				defines.count(DEFINE_PIXEL_LIT);
+			}
+		}
+		//}
 		
 		size_t childrenCount = children.size();
 		for(size_t i = 0; i < childrenCount; ++i)
 		{
 			children[i]->SetMaterialTemplate(matTemplate, defaultQuality);
 		}
-		
-		//{VI: temporray code should be removed once lighting system is up
-		materialDynamicLit = false;
-		uint32 passCount = baseTechnique->GetPassCount();
-		for(uint32 i = 0; i < passCount; ++i)
-		{
-			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
-			const FastNameSet& defines = pass->GetUniqueDefineSet();
-				materialDynamicLit = materialDynamicLit ||
-				defines.count(DEFINE_VERTEX_LIT) ||
-				defines.count(DEFINE_PIXEL_LIT) ||
-				pass->GetLayersSet().count(LAYER_SHADOW_VOLUME);
-		}
-		//}
 		
 		//VI: TODO: review if this call is realy needed at this point
 		CleanupUnusedTextures();
@@ -766,9 +716,9 @@ namespace DAVA
 	
 	const FastNameSet& NMaterial::GetRenderLayers()
 	{
-		DVASSERT(activeRenderPass);
+		DVASSERT(baseTechnique);
 		
-		return activeRenderPass->GetLayersSet();
+		return baseTechnique->GetLayersSet();
 	}
 	
 	void NMaterial::OnMaterialTemplateChanged()
@@ -778,11 +728,24 @@ namespace DAVA
 
 	void NMaterial::OnParentChanged(NMaterial* newParent)
 	{
+		bool oldParentHadTextures = false;
+		bool newParentHasTextures = false;
+		if(parent)
+		{
+			oldParentHadTextures = (parent->GetTextureCount() > 0);
+		}
+		
 		NMaterial* oldParent = parent;
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
 		
-		SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+		if(newParent)
+		{
+			newParentHasTextures = (newParent->GetTextureCount() > 0);
+			SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+		}
+		
+		SetTexturesDirty();
 	}
 	
 	void NMaterial::OnParentFlagsChanged()
@@ -803,24 +766,43 @@ namespace DAVA
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
 	{
 		effectiveFlagSet.clear();
-		FastNameSet effectiveBlockedFlags(8);
+				
+		HashMap<FastName, int32> rawEffectiveFlags;
+		BuildEffectiveFlagSet(rawEffectiveFlags);
 		
-		NMaterial* currentMaterial = this;
-		while(NULL != currentMaterial)
+		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
+			it != materialSetFlags.end();
+			++it)
 		{
-			effectiveFlagSet.Combine(currentMaterial->materialSetFlags);
-			effectiveBlockedFlags.Combine(currentMaterial->materialBlockedFlags);
-			
-			currentMaterial = currentMaterial->parent;
-		}
-		
-		if(effectiveBlockedFlags.size() > 0)
-		{
-			for(FastNameSet::iterator it = effectiveBlockedFlags.begin();
-				it != effectiveBlockedFlags.end();
-				++it)
+			int32 currentFlagValue = it->second;
+			if(NMaterial::FlagOn == currentFlagValue ||
+			   NMaterial::FlagOnOverride == currentFlagValue)
 			{
-				effectiveFlagSet.erase(it->first);
+				effectiveFlagSet.Insert(it->first);
+			}
+		}
+	}
+					
+	void NMaterial::BuildEffectiveFlagSet(HashMap<FastName, int32>& effectiveFlagSet)
+	{
+		if(parent)
+		{
+			parent->BuildEffectiveFlagSet(effectiveFlagSet);
+		}
+
+		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
+			it != materialSetFlags.end();
+			++it)
+		{
+			int32 currentFlagValue = it->second;
+			int32 effectiveFlagValue = effectiveFlagSet.at(it->first);
+			
+			if(NMaterial::FlagOnOverride == currentFlagValue ||
+			   NMaterial::FlagOffOverride == currentFlagValue ||
+			   (NMaterial::FlagOn == currentFlagValue &&
+				NMaterial::FlagOffOverride != effectiveFlagValue))
+			{
+				effectiveFlagSet.insert(it->first, currentFlagValue);
 			}
 		}
 	}
@@ -877,6 +859,7 @@ namespace DAVA
 		
 		DVASSERT(baseTechnique);
 		
+		//TODO: add unused render passes removing
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)
 		{
@@ -893,13 +876,13 @@ namespace DAVA
 		
 		RenderPassInstance* passInstance = new RenderPassInstance();
 		passInstance->dirtyState = false;
-		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
 		passInstance->renderState.stateHandle = parentRenderState->stateHandle;
 		passInstance->renderState.textureState = InvalidUniqueHandle;
+		passInstance->texturesDirty = false;
+		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
 		passInstance->renderState.scissorRect = parentRenderState->scissorRect;
 		passInstance->renderState.renderer = parentRenderState->renderer;
 		passInstance->renderState.color = parentRenderState->color;
-		passInstance->texturesDirty = false;
 		
 		instancePasses.insert(passName, passInstance);
 		
@@ -932,6 +915,7 @@ namespace DAVA
 	void NMaterial::BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance)
 	{
 		Shader* shader = passInstance->renderState.shader;
+		passInstance->activeUniformsCache.clear();
 		
 		uint32 uniformCount = shader->GetUniformCount();
 		for(uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
@@ -1019,13 +1003,18 @@ namespace DAVA
 		{
 			TextureBucket* bucket = currentMaterial->textures.at(textureName);
 			
-			if(bucket &&
-			   NULL == bucket->texture)
+			if(bucket)
 			{
-				bucket->texture = Texture::CreateFromFile(bucket->path);
+				if(NULL == bucket->texture)
+				{
+					bucket->texture = Texture::CreateFromFile(bucket->path);
+				}
+				
+				tex = bucket->texture;
+				break;
 			}
 			
-			currentMaterial = parent;
+			currentMaterial = currentMaterial->parent;
 		}
 		
 		return tex;
@@ -1100,7 +1089,12 @@ namespace DAVA
 		//VI: in case if there's such texture state already and it's owned by us only
 		UniqueHandle oldHandle = passInstance->renderState.textureState;
 		passInstance->renderState.textureState = RenderManager::Instance()->AddTextureStateData(&textureData);
-		RenderManager::Instance()->ReleaseTextureStateData(oldHandle);
+		
+		if(InvalidUniqueHandle != oldHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(oldHandle);
+		}
+		
 		passInstance->texturesDirty = false;
 		
 		for(int i = 0; i < COUNT_OF(textureData.textures); ++i)

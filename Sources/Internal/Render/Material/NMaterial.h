@@ -153,11 +153,26 @@ public:
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
 	
+	static const FastName FLAG_VERTEXFOG;
+	static const FastName FLAG_TEXTURESHIFT;
+	static const FastName FLAG_FLATCOLOR;
+	static const FastName FLAG_LIGHTMAPONLY;
+	static const FastName FLAG_TEXTUREONLY;
+	static const FastName FLAG_SETUPLIGHTMAP;
+	
 	enum eMaterialType
 	{
 		MATERIALTYPE_NONE = 0,
 		MATERIALTYPE_MATERIAL = 1,
 		MATERIALTYPE_INSTANCE = 2
+	};
+	
+	enum eFlagValue
+	{
+		FlagOff = 0,
+		FlagOn = 1,
+		FlagOffOverride = 2,
+		FlagOnOverride = 3
 	};
 	
 public:
@@ -182,10 +197,8 @@ public:
     void Draw(PolygonGroup * polygonGroup);
 	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
 	
-	void SetFlag(const FastName& flag, bool flagValue);
-	void SetBlockFlag(const FastName& flag, bool blockState);
-	bool GetFlagValue(const FastName& flag);
-	bool IsFlagBlocked(const FastName& flag);
+	void SetFlag(const FastName& flag, eFlagValue flagValue);
+	int32 GetFlagValue(const FastName& flag) const;
     
 	void BindMaterialTechnique(const FastName & passName, Camera* camera);
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
@@ -309,8 +322,7 @@ protected:
 	const NMaterialTemplate* materialTemplate;
 	
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
-	FastNameSet materialSetFlags; //VI: flags set in the current material only
-	FastNameSet materialBlockedFlags; //VI: flags blocked in the current material only
+	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
 protected:
 	
@@ -321,12 +333,8 @@ protected:
 	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
 	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
-	
-	void DeserializeFastNameSet(const KeyedArchive* srcArchive,
-								FastNameSet& targetSet);
-	void SerializeFastNameSet(const FastNameSet& srcSet,
-							  KeyedArchive* targetArchive);
-	
+	void BuildEffectiveFlagSet(HashMap<FastName, int32>& effectiveFlagSet);
+		
 	void ReleaseInstancePasses();
 	
 	void UpdateMaterialTemplate();
