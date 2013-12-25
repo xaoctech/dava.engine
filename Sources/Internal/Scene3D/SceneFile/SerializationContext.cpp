@@ -301,6 +301,12 @@ namespace DAVA
 
 				}
 					
+				case Material::MATERIAL_SPEED_TREE_LEAF:
+				{
+					name = FastName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
+					break;
+				}
+					
 				case Material::MATERIAL_SKYBOX:
 				{
 					name = FastName("~res:/Materials/Legacy/Skybox.material");
