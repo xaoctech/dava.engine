@@ -75,7 +75,7 @@ static const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
 };
 
-static const SettingRow SETTINGS_GROUP_MUTABLE_LENGHT_MAP[] =
+static const SettingRow SETTINGS_GROUP_VARIABLE_LENGHT_MAP[] =
 {
 	SettingRow("LastOpenedFile", DAVA::VariantType(int32(0))),
 };
@@ -116,7 +116,7 @@ private:
 	
 	void LoadSettings();
 
-	void UpdateMutableSectionIfNeeded(const String& _name, const DAVA::VariantType& _value);
+	void UpdateVariableSectionIfNeeded(const String& _name, const DAVA::VariantType& _value);
 
 };
 /*
