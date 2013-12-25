@@ -26,71 +26,68 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
+
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Scene.h"
 
 
-#include "CustomLandscape.h"
-#include "Deprecated/LandscapeRenderer.h"
-
-CustomLandscape::CustomLandscape()
-:	landscapeRenderer(NULL)
-,	textureState(InvalidUniqueHandle)
+namespace DAVA
 {
+	
+void QualitySettingsSystem::EnableOption( const FastName & option, bool enabled )
+{
+	qualityOptions[option] = enabled;
 }
 
-CustomLandscape::~CustomLandscape()
+bool QualitySettingsSystem::IsOptionEnabled( const FastName & option ) const
 {
-	SafeRelease(landscapeRenderer);
+	if(qualityOptions.count(option) > 0)
+	{
+		return qualityOptions[option];
+	}
+
+	return false;
+}
+
+void QualitySettingsSystem::UpdateEntityAfterLoad(Entity *entity)
+{
+	if(qualityOptions.empty() || (NULL == entity)) return;
+
+	Vector<Entity *> entitiesWithQualityComponent;
+	entity->GetChildEntitiesWithComponent(entitiesWithQualityComponent, Component::QUALITY_SETTINGS_COMPONENT);
+
+	if(entitiesWithQualityComponent.empty()) return;
+
+	RemoveModelsByType(entitiesWithQualityComponent);
+}
+
+void QualitySettingsSystem::RemoveModelsByType( const Vector<Entity *> & models )
+{
+	uint32 count = (uint32)models.size();
+	for(uint32 m = 0; m < count; ++m)
+	{
+		QualitySettingsComponent * comp = GetQualitySettingsComponent(models[m]);
+
+		if(IsOptionEnabled(comp->GetModelType()) == false)
+		{
+			Entity *parent = models[m]->GetParent();
+			parent->RemoveNode(models[m]);
+		}
+	}
+}
+
+bool QualitySettingsSystem::NeedLoadEntity(const Entity *entity)
+{
+    QualitySettingsComponent * comp = GetQualitySettingsComponent(entity);
+    if(comp)
+    {
+        return IsOptionEnabled(comp->GetModelType());
+    }
     
-    if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
+    return true;
 }
 
-void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
-{
-	SafeRelease(landscapeRenderer);
-	landscapeRenderer = SafeRetain(renderer);
-}
 
-LandscapeRenderer* CustomLandscape::GetRenderer()
-{
-	return landscapeRenderer;
-}
-
-void CustomLandscape::UpdateTextureState()
-{
-	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
-
-	if (textureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
-	}
-
-	textureState = uniqueHandle;
-}
-
-void CustomLandscape::Draw(DAVA::Camera *camera)
-{
-	if(!landscapeRenderer)
-	{
-		return;
-	}
-	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-
-	landscapeRenderer->BindMaterial(textureState);
-	landscapeRenderer->DrawLandscape();
-	
-	if (cursor)
-	{
-		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
-		RenderManager::Instance()->FlushState();
-
-		cursor->Prepare();
-		
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-	}
-	
-	landscapeRenderer->UnbindMaterial();
 }

@@ -28,69 +28,47 @@
 
 
 
-#include "CustomLandscape.h"
-#include "Deprecated/LandscapeRenderer.h"
+#ifndef __DAVAENGINE_SCENE3D_QUALITYSETTINGS_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_QUALITYSETTINGS_COMPONENT_H__
 
-CustomLandscape::CustomLandscape()
-:	landscapeRenderer(NULL)
-,	textureState(InvalidUniqueHandle)
-{
-}
+#include "Base/BaseTypes.h"
+#include "Base/FastName.h"
 
-CustomLandscape::~CustomLandscape()
+#include "Entity/Component.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
+
+namespace DAVA 
 {
-	SafeRelease(landscapeRenderer);
+
+class QualitySettingsComponent : public Component
+{
+protected:
+    virtual ~QualitySettingsComponent();
+public:
+    QualitySettingsComponent();
     
-    if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
-}
+    IMPLEMENT_COMPONENT_TYPE(QUALITY_SETTINGS_COMPONENT);
+    
+    virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
-{
-	SafeRelease(landscapeRenderer);
-	landscapeRenderer = SafeRetain(renderer);
-}
+    void SetModelType(const FastName & type);
+    const FastName & GetModelType() const;
+    
+private:
 
-LandscapeRenderer* CustomLandscape::GetRenderer()
-{
-	return landscapeRenderer;
-}
+    FastName modelType;
+    
+public:
+    
+    INTROSPECTION_EXTEND(QualitySettingsComponent, Component,
+        MEMBER(modelType, "Model Type", I_SAVE | I_VIEW | I_EDIT)
+    );
+};
 
-void CustomLandscape::UpdateTextureState()
-{
-	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
 
-	if (textureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
-	}
+};
 
-	textureState = uniqueHandle;
-}
-
-void CustomLandscape::Draw(DAVA::Camera *camera)
-{
-	if(!landscapeRenderer)
-	{
-		return;
-	}
-	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-
-	landscapeRenderer->BindMaterial(textureState);
-	landscapeRenderer->DrawLandscape();
-	
-	if (cursor)
-	{
-		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
-		RenderManager::Instance()->FlushState();
-
-		cursor->Prepare();
-		
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-	}
-	
-	landscapeRenderer->UnbindMaterial();
-}
+#endif //__DAVAENGINE_SCENE3D_QUALITYSETTINGS_COMPONENT_H__

@@ -112,6 +112,7 @@ void LibraryWidget::SetupFileTypes()
     allFiles.filter << "*.png";
     allFiles.filter << "*.tex";
     
+    fileTypeValues.reserve(7);
     fileTypeValues.push_back(allFiles);
     fileTypeValues.push_back(FileType("Models", "*.dae", "*.sc2"));
     fileTypeValues.push_back(FileType("Textures", "*.png", "*.tex"));

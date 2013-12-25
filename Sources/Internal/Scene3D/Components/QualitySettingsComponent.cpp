@@ -28,69 +28,57 @@
 
 
 
-#include "CustomLandscape.h"
-#include "Deprecated/LandscapeRenderer.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
 
-CustomLandscape::CustomLandscape()
-:	landscapeRenderer(NULL)
-,	textureState(InvalidUniqueHandle)
+namespace DAVA 
 {
-}
-
-CustomLandscape::~CustomLandscape()
-{
-	SafeRelease(landscapeRenderer);
     
-    if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
-}
+REGISTER_CLASS(QualitySettingsComponent)
 
-void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
+QualitySettingsComponent::QualitySettingsComponent()
+    : Component()
+    , modelType("")
 {
-	SafeRelease(landscapeRenderer);
-	landscapeRenderer = SafeRetain(renderer);
 }
 
-LandscapeRenderer* CustomLandscape::GetRenderer()
+QualitySettingsComponent::~QualitySettingsComponent()
 {
-	return landscapeRenderer;
 }
-
-void CustomLandscape::UpdateTextureState()
+    
+void QualitySettingsComponent::SetModelType(const FastName & type)
 {
-	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
-
-	if (textureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
-	}
-
-	textureState = uniqueHandle;
+    modelType = type;
 }
-
-void CustomLandscape::Draw(DAVA::Camera *camera)
+    
+const FastName & QualitySettingsComponent::GetModelType() const
 {
-	if(!landscapeRenderer)
-	{
-		return;
-	}
-	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-
-	landscapeRenderer->BindMaterial(textureState);
-	landscapeRenderer->DrawLandscape();
-	
-	if (cursor)
-	{
-		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
-		RenderManager::Instance()->FlushState();
-
-		cursor->Prepare();
-		
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-	}
-	
-	landscapeRenderer->UnbindMaterial();
+    return modelType;
 }
+    
+Component * QualitySettingsComponent::Clone(Entity * toEntity)
+{
+    QualitySettingsComponent * component = new QualitySettingsComponent();
+	component->SetEntity(toEntity);
+    
+    if (modelType.IsValid())
+    {
+        component->modelType = modelType;
+    }
+
+    return component;
+}
+
+void QualitySettingsComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+    archive->SetString("modelType", (modelType.IsValid()) ? modelType.c_str() : "");
+}
+
+void QualitySettingsComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    modelType = FastName(archive->GetString("modelType"));
+	Component::Deserialize(archive, serializationContext);
+}
+
+
+};

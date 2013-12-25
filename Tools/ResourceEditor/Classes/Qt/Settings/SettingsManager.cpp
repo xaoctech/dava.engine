@@ -35,7 +35,7 @@
 
 #define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
 #define SETTINGS_VERSION_NUMBER			1
-#define SETTINGS_VERSION_KEY			"SETTINGS_VERSION"
+#define SETTINGS_VERSION_KEY			"settingsVersion"
 #define MUTABLE_LENGTH_COUNT_SUFFIX		"sCount"
 
 SettingsManager::SettingsManager()
@@ -62,7 +62,7 @@ void SettingsManager::SetValue(const DAVA::String& _name, const DAVA::VariantTyp
 {
 	KeyedArchive* foundedGroupSettings = settings->GetArchive(GetNameOfGroup(group));
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
-	if(MUTABLE_LENGTH == group)
+	if(VARIABLE_LENGTH_SET == group)
 	{
 		UpdateMutableSectionIfNeeded(_name, _value);
 	}
@@ -82,14 +82,14 @@ void SettingsManager::UpdateMutableSectionIfNeeded(const String& name,  const DA
 		return;
 	}
 	
-	int32 presentSize = GetValue(name, MUTABLE_LENGTH)->AsInt32();
+	int32 presentSize = GetValue(name, VARIABLE_LENGTH_SET)->AsInt32();
 	int32 newSize = value.AsInt32();
 	if(presentSize == newSize)
 	{
 		return;
 	}
 
-	KeyedArchive* mutableSection = GetSettingsGroup(MUTABLE_LENGTH);
+	KeyedArchive* mutableSection = GetSettingsGroup(VARIABLE_LENGTH_SET);
 	if(newSize > presentSize)
 	{
 		for (int32 j = presentSize; j < newSize; ++j)
@@ -140,7 +140,7 @@ void SettingsManager::Initialize()
 	settings->SetArchive(GetNameOfGroup(GENERAL), generalSettings);
 	settings->SetArchive(GetNameOfGroup(DEFAULT), defaultSettings);
 	settings->SetArchive(GetNameOfGroup(INTERNAL), internalSettings);
-	settings->SetArchive(GetNameOfGroup(MUTABLE_LENGTH), mutableLengthSettings);
+	settings->SetArchive(GetNameOfGroup(VARIABLE_LENGTH_SET), mutableLengthSettings);
 	settings->SetUInt32(SETTINGS_VERSION_KEY, SETTINGS_VERSION_NUMBER);
 
 	LoadSettings();
@@ -178,7 +178,7 @@ void SettingsManager::LoadSettings()
 			}
 		}
 		//in case of mutable section, presentSettingsGroup contain only counter rows like "LastOpenedFilesCount"
-		if(MUTABLE_LENGTH == (eSettingsGroups)i && presentSettingsGroup->Count())
+		if(VARIABLE_LENGTH_SET == (eSettingsGroups)i && presentSettingsGroup->Count())
 		{
 			Map<String, VariantType*> predefinedMapUpdated = presentSettingsGroup->GetArchieveData();
 			it = predefinedMapUpdated.begin();
@@ -231,8 +231,8 @@ DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group)
 	case SettingsManager::INTERNAL:
 		retValue = "Internal";
 		break;
-	case SettingsManager::MUTABLE_LENGTH:
-		retValue = "Mutable length";
+	case SettingsManager::VARIABLE_LENGTH_SET:
+		retValue = "Variable length set";
 		break;
 	default:
 		DVASSERT(0);

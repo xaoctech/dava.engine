@@ -657,7 +657,7 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-	QObject::connect(ui->actionAddModelTypeComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -713,11 +713,11 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::MUTABLE_LENGTH)->AsInt32();
+	int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET)->AsInt32();
 	for(int i = 0; i < lastOpenedCount; ++i)
 	{
 		DVASSERT((0 <= i) && (i < lastOpenedCount));
-		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::MUTABLE_LENGTH)->AsString();
+		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET)->AsString();
 		if (path.empty())
 		{
 			continue;
@@ -740,10 +740,10 @@ void QtMainWindow::AddRecent(const QString &pathString)
 	DAVA::FilePath pathToFile(pathString.toStdString());
 	Vector<String> filesList;
 
-	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::MUTABLE_LENGTH)->AsInt32();
+	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET)->AsInt32();
 	for(int32 i = 0; i < count; ++i)
 	{
-		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::MUTABLE_LENGTH)->AsString();
+		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET)->AsString();
 		if(path != pathToFile.GetAbsolutePathname())
 		{
 			filesList.push_back(path);
@@ -754,13 +754,13 @@ void QtMainWindow::AddRecent(const QString &pathString)
 	count =  filesList.size() > RESENT_FILES_MAX_COUNT ? RESENT_FILES_MAX_COUNT : filesList.size();
 	SettingsManager::Instance()->SetValue("LastOpenedFilesCount",
 		VariantType(count),
-		SettingsManager::MUTABLE_LENGTH);
+		SettingsManager::VARIABLE_LENGTH_SET);
 
 	for(int i = 0; i < count; ++i)
 	{
 		SettingsManager::Instance()->SetValue(Format("LastOpenedFile_%d", i),
 											  VariantType(filesList[i]),
-											  SettingsManager::MUTABLE_LENGTH);
+											  SettingsManager::VARIABLE_LENGTH_SET);
 	}
 	
 	SettingsManager::Instance()->SaveSettings();
@@ -1665,20 +1665,35 @@ void QtMainWindow::OnSaveTiledTexture()
 
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
-//	landscape->UpdateFullTiledTexture();
-    
-    FilePath texPathname;// = landscape->SaveFullTiledTexture();
-    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
-    
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-    if(!descriptor)
-    {
-        descriptor = new TextureDescriptor();
-        descriptor->pathname = descriptorPathname;
-        descriptor->Save();
-    }
-    
-    SafeRelease(descriptor);
+
+	Texture* landscapeTexture = landscape->CreateLandscapeTexture();
+
+	if (landscapeTexture)
+	{
+		FilePath pathToSave;
+		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
+		pathToSave.ReplaceExtension(".thumbnail.png");
+
+		Image *image = landscapeTexture->CreateImageFromMemory();
+		if(image)
+		{
+			ImageLoader::Save(image, pathToSave);
+			SafeRelease(image);
+
+			FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToSave);
+			TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+			if(!descriptor)
+			{
+				descriptor = new TextureDescriptor();
+				descriptor->pathname = descriptorPathname;
+				descriptor->Save();
+			}
+
+			SafeRelease(descriptor);
+		}
+
+		SafeRelease(landscapeTexture);
+	}
 }
 
 void QtMainWindow::OnConvertModifiedTextures()
@@ -2148,7 +2163,7 @@ void QtMainWindow::OnAddModelTypeComponent()
         
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ModelTypeComponent()));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new QualitySettingsComponent()));
 		}
         
 		scene->EndBatch();
@@ -2370,7 +2385,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	//-->
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
-	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
 }
 

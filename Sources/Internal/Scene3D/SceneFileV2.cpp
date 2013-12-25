@@ -73,7 +73,7 @@
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
 #include "Scene3D/Scene.h"
-
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
 {
@@ -300,6 +300,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     Entity * rootNode = new Entity();
     rootNode->SetName(rootNodePathName.GetFilename());
 	rootNode->SetScene(0);
+    
+    rootNode->children.reserve(header.nodeCount);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
         LoadHierarchy(0, rootNode, file, 1);
@@ -394,6 +396,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
         if (node->GetClassName() == "DataNode")
         {
             SafeRelease(node);
+            SafeRelease(archive);
             return;
         }   
         node->SetScene(scene);
@@ -521,119 +524,118 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
-    //Entity * node = dynamic_cast<Entity*>(BaseObject::LoadFromArchive(archive));
-    
+
     String name = archive->GetString("##name");
-    BaseObject * baseObject = 0;
-    Entity * node = 0;
     
-    bool skipNode = false;
     bool removeChildren = false;
     
+    Entity * node = NULL;
     if (name == "LandscapeNode")
     {
-        node = new Entity();
-        baseObject = node;
-
-        node->SetScene(scene);
-        node->Load(archive, &serializationContext);
-        
-        Landscape * landscapeRenderObject = new Landscape();
-        landscapeRenderObject->Load(archive, &serializationContext);
-        
-        node->AddComponent(new RenderComponent(landscapeRenderObject));
-
-        parent->AddNode(node);
-        
-        SafeRelease(landscapeRenderObject);
-        // Elegant fix became part of architecture....
-        skipNode = true;
+        node = LoadLandscape(scene, archive);
     }else if (name == "Camera")
     {
-        node = new Entity();
-        baseObject = node;
-        
-        node->SetScene(scene);
-        node->Load(archive, &serializationContext);
-        
-        Camera * cameraObject = new Camera();
-        cameraObject->Load(archive);
-        
-        node->AddComponent(new CameraComponent(cameraObject));
-        parent->AddNode(node);
-        
-        SafeRelease(cameraObject);
-        skipNode = true;
+        node = LoadCamera(scene, archive);
     }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
     {
-        node = new Entity();
-        baseObject = node;
-        
-        node->SetScene(scene);
-        node->Load(archive, &serializationContext);
-        
-        bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-        
-        Light * light = new Light();
-        light->Load(archive, &serializationContext);
-        light->SetDynamic(isDynamic);
-        
-        node->AddComponent(new LightComponent(light));
-        parent->AddNode(node);
-        
-        SafeRelease(light);
-        skipNode = true;
+        node = LoadLight(scene, archive);
         removeChildren = true;
     }
 	else if(name == "SceneNode")
 	{
-		node = new Entity();
-		baseObject = node;
+		node = LoadEntity(scene, archive);
 	}
 	else
     {
-        baseObject = ObjectFactory::Instance()->New<BaseObject>(name);
-        node = dynamic_cast<Entity*>(baseObject);
+        node = dynamic_cast<Entity*>(ObjectFactory::Instance()->New<BaseObject>(name));
+        if(node)
+        {
+            node->SetScene(scene);
+            node->Load(archive, &serializationContext);
+            
+        }
+        else //in case if editor class is loading in non-editor sprsoject
+        {
+            node = new Entity();
+        }
     }
 
-	//TODO: refactor this elegant fix
-	if(!node) //in case if editor class is loading in non-editor sprsoject
-	{
-		node = new Entity();
-		skipNode = true;
-	}
-
-    //if(node)
+    if (isDebugLogEnabled)
     {
-        if (isDebugLogEnabled)
-        {
-            String name = archive->GetString("name");
-            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
-        }
-
-		if(!skipNode)
-		{
-			node->SetScene(scene);
-			node->Load(archive, &serializationContext);
-            
-            //ReplaceNodeAfterLoad(&node);
-            
-			parent->AddNode(node);
-		}
-        
-		int32 childrenCount = archive->GetInt32("#childrenCount", 0);
-
-		for (int ci = 0; ci < childrenCount; ++ci)
-		{
-			LoadHierarchy(scene, node, file, level + 1);
-		}
-        if (removeChildren)
-            node->RemoveAllChildren();
-
-        SafeRelease(node);
+        String name = archive->GetString("name");
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
     }
     
+    int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+    node->children.reserve(childrenCount);
+    for (int ci = 0; ci < childrenCount; ++ci)
+    {
+        LoadHierarchy(scene, node, file, level + 1);
+    }
+
+    if (removeChildren && childrenCount)
+    {
+        node->RemoveAllChildren();
+    }
+
+    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    {
+        parent->AddNode(node);
+    }
+    
+    SafeRelease(node);
     SafeRelease(archive);
+}
+    
+Entity * SceneFileV2::LoadEntity(Scene * scene, KeyedArchive * archive)
+{
+    Entity * entity = new Entity();
+    entity->SetScene(scene);
+    entity->Load(archive, &serializationContext);
+    return entity;
+}
+
+Entity * SceneFileV2::LoadLandscape(Scene * scene, KeyedArchive * archive)
+{
+    Entity * landscapeEntity = LoadEntity(scene, archive);
+    
+    Landscape * landscapeRenderObject = new Landscape();
+    landscapeRenderObject->Load(archive, &serializationContext);
+    
+    landscapeEntity->AddComponent(new RenderComponent(landscapeRenderObject));
+    SafeRelease(landscapeRenderObject);
+    
+    return landscapeEntity;
+}
+
+
+Entity * SceneFileV2::LoadCamera(Scene * scene, KeyedArchive * archive)
+{
+    Entity * cameraEntity = LoadEntity(scene, archive);
+    
+    Camera * cameraObject = new Camera();
+    cameraObject->Load(archive);
+    
+    cameraEntity->AddComponent(new CameraComponent(cameraObject));
+    SafeRelease(cameraObject);
+    
+    return cameraEntity;
+}
+
+Entity * SceneFileV2::LoadLight(Scene * scene, KeyedArchive * archive)
+{
+    Entity * lightEntity = LoadEntity(scene, archive);
+    
+    bool isDynamic = lightEntity->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+    
+    Light * light = new Light();
+    light->Load(archive, &serializationContext);
+    light->SetDynamic(isDynamic);
+    
+    lightEntity->AddComponent(new LightComponent(light));
+    SafeRelease(light);
+    
+    return lightEntity;
 }
 
 
@@ -1067,6 +1069,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 	
+    QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {
