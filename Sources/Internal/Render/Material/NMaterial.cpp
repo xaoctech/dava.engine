@@ -149,6 +149,7 @@ namespace DAVA
 		{
 			SafeDelete(it->second);
 		}
+		materialProperties.clear();
 		
 		for(HashMap<FastName, TextureBucket*>::iterator it = textures.begin();
 			it != textures.end();
@@ -157,6 +158,7 @@ namespace DAVA
 			SafeRelease(it->second->texture);
 			SafeDelete(it->second);
 		}
+		textures.clear();
 
 		ReleaseInstancePasses();
 				
@@ -479,6 +481,23 @@ namespace DAVA
 			++it)
 		{
 			clonedMaterial->SetFlag(it->first, (NMaterial::eFlagValue)it->second);
+		}
+		
+		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
+			it != instancePasses.end();
+			++it)
+		{
+			RenderPassInstance* currentPass = it->second;
+			
+			if(currentPass->dirtyState)
+			{
+				RenderPassInstance* clonedPass = clonedMaterial->instancePasses.at(it->first);
+				DVASSERT(clonedPass);
+				
+				clonedPass->dirtyState = true;
+				clonedPass->renderState.stateHandle = currentPass->renderState.stateHandle;
+				RenderManager::Instance()->RetainRenderStateData(currentPass->renderState.stateHandle);
+			}
 		}
 
 		return clonedMaterial;
@@ -830,6 +849,7 @@ namespace DAVA
 			
 			SafeDelete(it->second);
 		}
+		instancePasses.clear();
 	}
 	
 	void NMaterial::UpdateMaterialTemplate()
@@ -1321,7 +1341,49 @@ namespace DAVA
 				
 			}
 		}
+	}
+	
+	const RenderStateData* NMaterial::GetRenderState(const FastName& passName) const
+	{
+		RenderPassInstance* pass = instancePasses.at(passName);
+		DVASSERT(pass);
 		
+		const RenderStateData* state = NULL;
+		if(pass)
+		{
+			state = RenderManager::Instance()->GetRenderStateData(pass->renderState.stateHandle);
+		}
+		
+		return state;
+	}
+	
+	void NMaterial::SubclassRenderState(const FastName& passName, RenderStateData* newState)
+	{
+		DVASSERT(newState);
+		
+		RenderPassInstance* pass = instancePasses.at(passName);
+		DVASSERT(pass);
+
+		if(pass)
+		{
+			if(pass->dirtyState)
+			{
+				RenderManager::Instance()->ReleaseRenderStateData(pass->renderState.stateHandle);
+			}
+			
+			pass->renderState.stateHandle = RenderManager::Instance()->AddRenderStateData(newState);
+			pass->dirtyState = true;
+		}
+	}
+	
+	void NMaterial::SubclassRenderState(RenderStateData* newState)
+	{
+		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
+			it != instancePasses.end();
+			++it)
+		{
+			SubclassRenderState(it->first, newState);
+		}
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
