@@ -46,21 +46,18 @@ namespace DAVA
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)
 {
-	//shader = new Shader();
-	//shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	//shader->Recompile();
-
-    //SetOwnerLayerName(LAYER_SHADOW_VOLUME);
-    
     aabbox = AABBox3(Vector3(), Vector3());
+		
+	NMaterial* parentShadowVolume = MaterialSystem::CreateMaterial(FastName("Shadow_Volume_Material"),
+																	FastName("~res:/Materials/Legacy/ShadowVolume.material"),
+																	MaterialSystem::DEFAULT_QUALITY_NAME);
+	NMaterial* shadowMat = MaterialSystem::CreateMaterialInstance();
+	parentShadowVolume->AddChild(shadowMat);
 	
-	DVASSERT(false);
-	//NMaterial* mat = MaterialSystem::CreateNamed();
-	//mat->SwitchParent(FastName("LodShadowVolume"));
+	SetMaterial(shadowMat);
 	
-	//SetMaterial(mat);
-    
-    //mat->Release();
+	SafeRelease(parentShadowVolume);
+	SafeRelease(shadowMat);
 }
 
 ShadowVolume::~ShadowVolume()

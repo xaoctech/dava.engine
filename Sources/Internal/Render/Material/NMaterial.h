@@ -241,6 +241,10 @@ public:
 	
 	const FastNameSet& GetRenderLayers();
 	
+	const RenderStateData* GetRenderState(const FastName& passName) const;
+	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
+	void SubclassRenderState(RenderStateData* newState);
+	
 protected:
 	
 	class GenericPropertyManager

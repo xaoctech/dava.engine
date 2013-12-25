@@ -43,59 +43,35 @@
 namespace DAVA
 {
 
-	
-static const uint32 BLEND_KEYS[] =
-{
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA),
-	MAKE_BLEND_KEY(BLEND_ONE, BLEND_ONE),
-	MAKE_BLEND_KEY(BLEND_ONE_MINUS_DST_COLOR, BLEND_ONE),
-};
-	
-static const FastName BLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.Particles0"),
-	FastName("Global.Textured.VertexColor.Particles1"),
-	FastName("Global.Textured.VertexColor.Particles2"),
-	FastName("Global.Textured.VertexColor.Particles3")
-};
-
-static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend2"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend3")
-};
-	
-
-const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameBlendEnabled)
-{
-	uint32 blendKey = MAKE_BLEND_KEY(src, dst);
-	for(uint32 i = 0; i < COUNT_OF(BLEND_KEYS); ++i)
-	{
-		if(BLEND_KEYS[i] == blendKey)
-		{
-			return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[i] : BLEND_MATERIAL_NAMES[i];
-		}
-	}
-	
-	//VI: fallback to default material
-	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
-}
-
+NMaterial* ParticleLayer3D::regularMaterial = NULL;
+NMaterial* ParticleLayer3D::frameBlendMaterial = NULL;
 	
 Vector<uint16> ParticleLayer3D::indices;
 
 ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
+	if(NULL == ParticleLayer3D::regularMaterial)
+	{
+		//VI: do not call release on this material. It should be alive even with no children
+		ParticleLayer3D::regularMaterial = MaterialSystem::CreateMaterial(FastName("Particle_Material"),
+														 FastName("~res:/Materials/Legacy/Particles/Particles.material"),
+														 MaterialSystem::DEFAULT_QUALITY_NAME);
+	}
+	
+	if(NULL == ParticleLayer3D::frameBlendMaterial)
+	{
+		//VI: do not call release on this material. It should be alive even with no children
+		ParticleLayer3D::frameBlendMaterial = MaterialSystem::CreateMaterial(FastName("Particle_Frameblend_Material"),
+														 FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"),
+														 MaterialSystem::DEFAULT_QUALITY_NAME);
+	}
+	
 	isLong = false;
 	renderData = new RenderDataObject();
 	this->emitter = parent;
 	
-	DVASSERT(false);
-	//material = MaterialSystem::CreateNamed();
-	//material->SwitchParent(FindParticleMaterial(BLEND_SRC_ALPHA, BLEND_ONE, false));
+	material = MaterialSystem::CreateMaterialInstance();
+	ParticleLayer3D::regularMaterial->AddChild(material);
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
@@ -622,7 +598,23 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	if (enableFrameBlend==enable) return; 
 	ParticleLayer::SetFrameBlend(enable);
 	
-	UpdateBlendState();// this will choose appropriate material
+	NMaterial* curParent = material->GetParent();
+	DVASSERT(curParent);
+	if(curParent)
+	{
+		curParent->RemoveChild(material);
+	}
+	
+	if(enableFrameBlend)
+	{
+		ParticleLayer3D::frameBlendMaterial->AddChild(material);
+	}
+	else
+	{
+		ParticleLayer3D::regularMaterial->AddChild(material);
+	}
+	
+	UpdateBlendState();
 	
 	if (!enableFrameBlend)
 	{
@@ -642,22 +634,16 @@ void ParticleLayer3D::UpdateBlendState()
 	//						   BLEND_MODE_NAMES[srcBlendFactor].c_str(),
 	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
 
+
+		const RenderStateData* curState = material->GetRenderState(PASS_FORWARD);
+		RenderStateData subclassState;
+		memcpy(&subclassState, curState, sizeof(RenderStateData));
 		
-		DVASSERT(false);
-		//const FastName& parentName = FindParticleMaterial(srcBlendFactor, dstBlendFactor, enableFrameBlend);
-		//material->SwitchParent(parentName);
+		subclassState.sourceFactor = srcBlendFactor;
+		subclassState.destFactor = dstBlendFactor;
+		
+		material->SubclassRenderState(PASS_FORWARD, &subclassState);
 	}
-	
-	/*if(material &&
-	   material->GetParent() != NULL)
-	{
-		MaterialTechnique* technique = material->GetTechnique(FastName("ForwardPass"));
-		if(technique)
-		{
-			RenderState* rs = technique->GetRenderState();
-			rs->SetBlendMode(srcBlendFactor, dstBlendFactor);
-		}
-	}*/
 }
 
 
