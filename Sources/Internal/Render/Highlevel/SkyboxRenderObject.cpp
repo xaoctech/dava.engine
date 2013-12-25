@@ -88,19 +88,23 @@ namespace DAVA
 		if(renderBatchArray.size() == 0)
 		{
 			RenderDataObject* renderDataObj = new RenderDataObject();
-				
-			DVASSERT(false);
-			//NMaterial* skyboxMaterial = MaterialSystem::CreateNamed();
-			//skyboxMaterial->SwitchParent(FastName("Skybox"));
+							
+			NMaterial* skyboxParent = MaterialSystem::CreateMaterial(FastName("Skybox_material"),
+																	 FastName("~res:/Materials/Legacy/Skybox.material"),
+																	 MaterialSystem::DEFAULT_QUALITY_NAME);
+			NMaterial* skyboxMaterial = MaterialSystem::CreateMaterialInstance();
+			skyboxParent->AddChild(skyboxMaterial);
 			
-			//RenderBatch* skyboxRenderBatch = new RenderBatch();
-			//skyboxRenderBatch->SetRenderDataObject(renderDataObj);
-			//skyboxRenderBatch->SetMaterial(skyboxMaterial);
-			//SafeRelease(renderDataObj);
-			//SafeRelease(skyboxMaterial);
+			RenderBatch* skyboxRenderBatch = new RenderBatch();
+			skyboxRenderBatch->SetRenderDataObject(renderDataObj);
+			skyboxRenderBatch->SetMaterial(skyboxMaterial);
 			
-			//RenderObject::AddRenderBatch(skyboxRenderBatch);
-			//SafeRelease(skyboxRenderBatch);
+			RenderObject::AddRenderBatch(skyboxRenderBatch);
+			
+			SafeRelease(renderDataObj);
+			SafeRelease(skyboxMaterial);
+			SafeRelease(skyboxParent);
+			SafeRelease(skyboxRenderBatch);
 		}
 	}
 	

@@ -149,11 +149,13 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	tileMaskMaterial = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
-													  FastName("~res:/Materials/Legacy/TileMask.material"),
-													  MaterialSystem::DEFAULT_QUALITY_NAME);
-	//tileMaskMaterial = MaterialSystem::CreateNamed();
-	//tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
+	NMaterial* landscapeParent = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+																FastName("~res:/Materials/Legacy/TileMask.material"),
+																MaterialSystem::DEFAULT_QUALITY_NAME);
+
+	
+	tileMaskMaterial = 	MaterialSystem::CreateMaterialInstance();
+	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
@@ -165,7 +167,8 @@ Landscape::Landscape()
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
 	AddRenderBatch(chunk);
-	SafeRelease(chunk);	
+	SafeRelease(chunk);
+	SafeRelease(landscapeParent);
 }
 
 Landscape::~Landscape()
@@ -1792,11 +1795,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	{
 		if(curContainsDetailMask)
 		{
-			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), true);
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOn);
 		}
 		else
 		{
-			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), false);
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOff);
 		}
 	}
 }

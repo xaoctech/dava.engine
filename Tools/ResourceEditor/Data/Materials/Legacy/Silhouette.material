@@ -1,8 +1,8 @@
 RenderTechnique:
+    Layers: ["TransclucentRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Siluette/siluette"
-        Layers: ["TransclucentRenderLayer"]
         UniqueDefines: ["FLATCOLOR"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"

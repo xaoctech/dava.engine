@@ -276,6 +276,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
 	serializationContext.SetScene(scene);
+	serializationContext.SetDefaultMaterialQuality(MaterialSystem::DEFAULT_QUALITY_NAME);
     
     if(isDebugLogEnabled)
         Logger::FrameworkDebug("+ load data objects");
@@ -334,12 +335,8 @@ void SceneFileV2::SwitchMaterialQualityOnMainThread(BaseObject * caller,
 														void * param,
 														void *callerData)
 {
-	DVASSERT(false);
-	
-	//const FastName& qualityLod = serializationContext.GetScene()->renderSystem->GetMaterialSystem()->GetCurrentMaterialQuality();
-	//MaterialSystem* matSystem = serializationContext.GetScene()->renderSystem->GetMaterialSystem();
-	//matSystem->SwitchMaterialQuality(qualityLod, true);
-}	
+	Logger::FrameworkDebug("[SceneFileV2::SwitchMaterialQualityOnMainThread] is not needed probably");
+}
 	
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
 {
