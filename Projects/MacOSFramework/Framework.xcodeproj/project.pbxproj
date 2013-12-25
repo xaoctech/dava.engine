@@ -2102,14 +2102,20 @@
 		E8BAD5B3185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B4185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B5185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
-		E8EA8DC4185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
-		E8EA8DC5185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
-		E8EA8DC6185C63710064906E /* ModelTypeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */; };
-		E8EA8DC7185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
-		E8EA8DC8185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
-		E8EA8DC9185C63710064906E /* ModelTypeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8EA8DC3185C63710064906E /* ModelTypeComponent.h */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
+		E8FC12F2186972560095D8FE /* QualitySettingsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */; };
+		E8FC12F3186972560095D8FE /* QualitySettingsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */; };
+		E8FC12F61869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */; };
+		E8FC12F71869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */; };
+		E8FC12F81869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */; };
+		E8FC12F91869726A0095D8FE /* QualitySettingsSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */; };
+		E8FC12FA1869726A0095D8FE /* QualitySettingsSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */; };
+		E8FC12FB1869726A0095D8FE /* QualitySettingsSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */; };
+		E8FC12FC186972740095D8FE /* QualitySettingsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */; };
+		E8FC12FD186972740095D8FE /* QualitySettingsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */; };
+		E8FC12FE186972740095D8FE /* QualitySettingsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */; };
+		E8FC12FF186972740095D8FE /* QualitySettingsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */; };
 		E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
 		E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
 		E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E798A816F0BE7600745AF5 /* UISwitch.h */; };
@@ -2929,8 +2935,10 @@
 		E8BAD5AE185213F100C98C8D /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionDynamic.h; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
-		E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelTypeComponent.cpp; sourceTree = "<group>"; };
-		E8EA8DC3185C63710064906E /* ModelTypeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelTypeComponent.h; sourceTree = "<group>"; };
+		E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsComponent.cpp; sourceTree = "<group>"; };
+		E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualitySettingsComponent.h; sourceTree = "<group>"; };
+		E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsSystem.cpp; sourceTree = "<group>"; };
+		E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualitySettingsSystem.h; sourceTree = "<group>"; };
 		E9E798A716F0BE7600745AF5 /* UISwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitch.cpp; sourceTree = "<group>"; };
 		E9E798A816F0BE7600745AF5 /* UISwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwitch.h; sourceTree = "<group>"; };
 		E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
@@ -3868,10 +3876,10 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */,
+				E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */,
 				50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */,
 				50ED33491858B5A200A917D5 /* StaticOcclusionComponent.h */,
-				E8EA8DC2185C63710064906E /* ModelTypeComponent.cpp */,
-				E8EA8DC3185C63710064906E /* ModelTypeComponent.h */,
 				A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */,
 				A6E4FE001761D96C00B48E41 /* ActionComponent.h */,
 				A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */,
@@ -3909,6 +3917,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */,
+				E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */,
 				5013F68F1859EB0400FB3C51 /* StaticOcclusionSystem.cpp */,
 				5013F6901859EB0400FB3C51 /* StaticOcclusionSystem.h */,
 				A6E4FE071761D97C00B48E41 /* ActionUpdateSystem.cpp */,
@@ -4162,6 +4172,7 @@
 				176DE91A174B5561007A983B /* Message.h in Headers */,
 				176DE91B174B5561007A983B /* Meta.h in Headers */,
 				176DE91C174B5561007A983B /* ObjectCreator.h in Headers */,
+				E8FC12FF186972740095D8FE /* QualitySettingsComponent.h in Headers */,
 				176DE91D174B5561007A983B /* ObjectFactory.h in Headers */,
 				176DE91E174B5561007A983B /* Observable.h in Headers */,
 				176DE91F174B5561007A983B /* Observer.h in Headers */,
@@ -4233,6 +4244,7 @@
 				176DE960174B5561007A983B /* OOBBox.h in Headers */,
 				176DE961174B5561007A983B /* Plane.h in Headers */,
 				176DE962174B5561007A983B /* Polygon2.h in Headers */,
+				E8FC12FB1869726A0095D8FE /* QualitySettingsSystem.h in Headers */,
 				176DE963174B5561007A983B /* Polygon3.h in Headers */,
 				176DE964174B5561007A983B /* Quaternion.h in Headers */,
 				176DE965174B5561007A983B /* Ray.h in Headers */,
@@ -4387,7 +4399,6 @@
 				176DE9F0174B5561007A983B /* UI3DView.h in Headers */,
 				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
 				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
-				E8EA8DC9185C63710064906E /* ModelTypeComponent.h in Headers */,
 				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
 				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
 				176DE9F5174B5561007A983B /* UIEvent.h in Headers */,
@@ -4558,6 +4569,7 @@
 				E8989DF716BD24E500732C04 /* Backtrace.h in Headers */,
 				E8989DF816BD24E500732C04 /* DVAssert.h in Headers */,
 				E8989DF916BD24E500732C04 /* List.h in Headers */,
+				E8FC12F3186972560095D8FE /* QualitySettingsComponent.h in Headers */,
 				E8989DFA16BD24E500732C04 /* ListAllocator.h in Headers */,
 				E8989DFC16BD24E500732C04 /* MemoryManager.h in Headers */,
 				E8989DFE16BD24E500732C04 /* Replay.h in Headers */,
@@ -4566,7 +4578,6 @@
 				E8989E0616BD24E500732C04 /* DLCUnpacker.h in Headers */,
 				E8989E0816BD24E500732C04 /* FileDownloader.h in Headers */,
 				E8989E0916BD24E500732C04 /* DoxygenDocumenation.h in Headers */,
-				E8EA8DC7185C63710064906E /* ModelTypeComponent.h in Headers */,
 				E8989E0B16BD24E500732C04 /* Component.h in Headers */,
 				E8989E0D16BD24E500732C04 /* SceneSystem.h in Headers */,
 				E8989E2D16BD24E500732C04 /* Bitstream.h in Headers */,
@@ -4693,6 +4704,7 @@
 				E8989F6F16BD24E500732C04 /* Box2DGameObjectManager.h in Headers */,
 				E8989F7116BD24E500732C04 /* Box2DHelper.h in Headers */,
 				E8989F7316BD24E500732C04 /* Box2DTileCollider.h in Headers */,
+				E8FC12F91869726A0095D8FE /* QualitySettingsSystem.h in Headers */,
 				E8989F7516BD24E500732C04 /* GameObject.h in Headers */,
 				E8989F7716BD24E500732C04 /* GameObjectAnimations.h in Headers */,
 				E8989F7916BD24E500732C04 /* GameObjectManager.h in Headers */,
@@ -5124,7 +5136,6 @@
 				E898A16416BD265400732C04 /* LightUpdateSystem.h in Headers */,
 				E898A16516BD265400732C04 /* LodSystem.h in Headers */,
 				E898A16616BD265400732C04 /* ParticleEffectSystem.h in Headers */,
-				E8EA8DC8185C63710064906E /* ModelTypeComponent.h in Headers */,
 				E898A16716BD265400732C04 /* ParticleEmitterSystem.h in Headers */,
 				E898A16816BD265400732C04 /* RenderUpdateSystem.h in Headers */,
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
@@ -5167,6 +5178,7 @@
 				E898A19416BD265400732C04 /* HTTPDownloader.h in Headers */,
 				E898A19516BD265400732C04 /* MD5.h in Headers */,
 				E898A19616BD265400732C04 /* Random.h in Headers */,
+				E8FC12FA1869726A0095D8FE /* QualitySettingsSystem.h in Headers */,
 				E898A19716BD265400732C04 /* StringFormat.h in Headers */,
 				E898A19816BD265400732C04 /* UTF8Utils.h in Headers */,
 				E898A19916BD265400732C04 /* Utils.h in Headers */,
@@ -5185,6 +5197,7 @@
 				CCC7A43616F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
 				CCC7A43A16F1D6170061EA5D /* Landscape.h in Headers */,
 				CCC7A43E16F1D6170061EA5D /* LandscapeChunk.h in Headers */,
+				E8FC12FD186972740095D8FE /* QualitySettingsComponent.h in Headers */,
 				CCC7A44216F1D6170061EA5D /* LandscapeCursor.h in Headers */,
 				CCC7A44616F1D6170061EA5D /* Light.h in Headers */,
 				CCC7A44A16F1D6170061EA5D /* Mesh.h in Headers */,
@@ -5552,6 +5565,8 @@
 				176DEAFD174B5561007A983B /* BaseProcessSystem.cpp in Sources */,
 				176DEAFE174B5561007A983B /* DebugRenderSystem.cpp in Sources */,
 				176DEAFF174B5561007A983B /* EventSystem.cpp in Sources */,
+				E8FC12FE186972740095D8FE /* QualitySettingsComponent.cpp in Sources */,
+				E8FC12F81869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				176DEB00174B5561007A983B /* LightUpdateSystem.cpp in Sources */,
 				176DEB01174B5561007A983B /* LodSystem.cpp in Sources */,
 				176DEB02174B5561007A983B /* ParticleEffectSystem.cpp in Sources */,
@@ -5560,7 +5575,6 @@
 				176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */,
 				176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */,
 				176DEB07174B5561007A983B /* UserNode.cpp in Sources */,
-				E8EA8DC6185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				176DEB08174B5561007A983B /* Sound.cpp in Sources */,
 				02141409181984D600925E51 /* DAVAClassRegistrator.cpp in Sources */,
 				176DEB09174B5561007A983B /* SoundGroup.cpp in Sources */,
@@ -5900,6 +5914,7 @@
 				E898A01316BD24E500732C04 /* UIFadeTransition.cpp in Sources */,
 				E898A01516BD24E500732C04 /* UIFileSystemDialog.cpp in Sources */,
 				E898A01716BD24E500732C04 /* UIHierarchy.cpp in Sources */,
+				E8FC12F2186972560095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E898A01916BD24E500732C04 /* UIHierarchyCell.cpp in Sources */,
 				E898A01B16BD24E500732C04 /* UIHierarchyNode.cpp in Sources */,
 				E898A01D16BD24E500732C04 /* UIHoleTransition.cpp in Sources */,
@@ -5933,10 +5948,10 @@
 				C7FBCFBE16CD1FE5006F1B3F /* VectorSwig.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
 				840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */,
-				E8EA8DC4185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				7A16934D180EE75A005F1FBC /* AutotestingDB.cpp in Sources */,
 				171F938516CE6F28007038AB /* UIWebView.cpp in Sources */,
 				C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */,
+				E8FC12F61869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */,
 				C151B17D16D3755000E09BAF /* WebViewControlMacOS.mm in Sources */,
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
@@ -6058,12 +6073,12 @@
 				176395A91863373800EADDA2 /* GamepadManager.cpp in Sources */,
 				E898A1BB16BD265400732C04 /* MongodbClient.cpp in Sources */,
 				E898A1BC16BD265400732C04 /* MongodbObject.cpp in Sources */,
+				E8FC12FC186972740095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E898A1BD16BD265400732C04 /* DAVAEngine.cpp in Sources */,
 				E898A1BE16BD265400732C04 /* Backtrace.cpp in Sources */,
 				E898A1BF16BD265400732C04 /* MemoryManager.cpp in Sources */,
 				E898A1C016BD265400732C04 /* Replay.cpp in Sources */,
 				E898A1C116BD265400732C04 /* Stats.cpp in Sources */,
-				E8EA8DC5185C63710064906E /* ModelTypeComponent.cpp in Sources */,
 				E898A1C216BD265400732C04 /* DLCSystem.cpp in Sources */,
 				E898A1C316BD265400732C04 /* DLCUnpacker.cpp in Sources */,
 				E898A1C416BD265400732C04 /* FileDownloader.cpp in Sources */,
@@ -6177,6 +6192,7 @@
 				E898A24016BD265400732C04 /* SharedFBO.cpp in Sources */,
 				E898A24116BD265400732C04 /* Texture.cpp in Sources */,
 				E898A24216BD265400732C04 /* TextureDescriptor.cpp in Sources */,
+				E8FC12F71869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				E898A24316BD265400732C04 /* UberShader.cpp in Sources */,
 				E898A24416BD265400732C04 /* Box2DDebugDraw.cpp in Sources */,
 				E898A24516BD265400732C04 /* Box2DGameObject.cpp in Sources */,

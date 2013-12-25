@@ -497,8 +497,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ModelTypeComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.h" />
@@ -538,6 +538,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h" />
@@ -881,8 +882,8 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ModelTypeComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.cpp" />
@@ -922,6 +923,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp" />

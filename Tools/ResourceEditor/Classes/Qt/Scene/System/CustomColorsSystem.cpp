@@ -36,6 +36,7 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
+#include "Commands2/KeyedArchiveCommand.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Scene/SceneSignals.h"
 #include "Qt/Settings/SettingsManager.h"
@@ -402,22 +403,47 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool create
 		SafeRelease(texture);
 		for_each(images.begin(), images.end(), SafeRelease<Image>);
 
-		StoreSaveFileName(filePath);
-
 		if (createUndo)
 		{
+			((SceneEditor2*)GetScene())->BeginBatch("Load custom colors texture");
+			StoreSaveFileName(filePath);
 			CreateUndoPoint();
+			((SceneEditor2*)GetScene())->EndBatch();
 		}
 	}
 }
 
 void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 {
-	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
-	if (customProps)
+	Command2* command = CreateSaveFileNameCommand(GetRelativePathToProjectPath(filePath));
+	if (command)
 	{
-		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(filePath));
+		((SceneEditor2*)GetScene())->Exec(command);
 	}
+}
+
+Command2* CustomColorsSystem::CreateSaveFileNameCommand(const String& filePath)
+{
+	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	bool keyExists = customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+
+	Command2* command = NULL;
+	if (keyExists)
+	{
+		String curPath = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+		if (curPath != filePath)
+		{
+			command = new KeyeadArchiveSetValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,
+													   VariantType(filePath));
+		}
+	}
+	else
+	{
+		command = new KeyedArchiveAddValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,
+												  VariantType(filePath));
+	}
+
+	return command;
 }
 
 FilePath CustomColorsSystem::GetCurrentSaveFileName()

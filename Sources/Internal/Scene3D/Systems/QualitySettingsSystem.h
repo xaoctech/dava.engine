@@ -28,69 +28,37 @@
 
 
 
-#include "CustomLandscape.h"
-#include "Deprecated/LandscapeRenderer.h"
+#ifndef __DAVAENGINE_SCENE3D_QUALITYSETTINGSSYSTEM_H__
+#define __DAVAENGINE_SCENE3D_QUALITYSETTINGSSYSTEM_H__
 
-CustomLandscape::CustomLandscape()
-:	landscapeRenderer(NULL)
-,	textureState(InvalidUniqueHandle)
-{
-}
+#include "Base/StaticSingleton.h"
+#include "Base/FastNameMap.h"
 
-CustomLandscape::~CustomLandscape()
+namespace DAVA
 {
-	SafeRelease(landscapeRenderer);
+
+class QualitySettingsComponent;
+class QualitySettingsSystem: public StaticSingleton<QualitySettingsSystem>
+{
+public:
+
+	void EnableOption(const FastName & option, bool enabled);
+	bool IsOptionEnabled(const FastName & option) const;
+
+    bool NeedLoadEntity(const Entity *entity);
     
-    if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
-}
+	void UpdateEntityAfterLoad(Entity *entity);
 
-void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
-{
-	SafeRelease(landscapeRenderer);
-	landscapeRenderer = SafeRetain(renderer);
-}
+protected:
 
-LandscapeRenderer* CustomLandscape::GetRenderer()
-{
-	return landscapeRenderer;
-}
+	void RemoveModelsByType(const Vector<Entity *> & models);
 
-void CustomLandscape::UpdateTextureState()
-{
-	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
 
-	if (textureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
-	}
+protected:
 
-	textureState = uniqueHandle;
-}
-
-void CustomLandscape::Draw(DAVA::Camera *camera)
-{
-	if(!landscapeRenderer)
-	{
-		return;
-	}
+	FastNameMap<bool> qualityOptions;
+};
 	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-
-	landscapeRenderer->BindMaterial(textureState);
-	landscapeRenderer->DrawLandscape();
-	
-	if (cursor)
-	{
-		RenderManager::Instance()->SetRenderState(cursor->GetRenderState());
-		RenderManager::Instance()->FlushState();
-
-		cursor->Prepare();
-		
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-	}
-	
-	landscapeRenderer->UnbindMaterial();
 }
+
+#endif //__DAVAENGINE_SCENE3D_QUALITYSETTINGSSYSTEM_H__

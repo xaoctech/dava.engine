@@ -174,6 +174,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	// Copy the forces.
 	dstLayer->CleanupForces();
+    dstLayer->forces.reserve(forces.size());
 	for (int32 f = 0; f < (int32)forces.size(); ++ f)
 	{
 		ParticleForce* clonedForce = new ParticleForce(this->forces[f]);

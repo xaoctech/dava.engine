@@ -269,7 +269,7 @@
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
-#include "Scene3D/Components/ModelTypeComponent.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
 
 // Application core 
 #include "Core/Core.h"

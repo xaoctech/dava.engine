@@ -260,6 +260,7 @@ namespace DAVA
 		skyboxRenderObject->nonClippingDistance = nonClippingDistance;
 		
 		uint32 size = GetRenderBatchCount();
+        skyboxRenderObject->renderBatchArray.reserve(size);
 		for(uint32 i = 0; i < size; ++i)
 		{
 			RenderBatch *batch = GetRenderBatch(i)->Clone();
