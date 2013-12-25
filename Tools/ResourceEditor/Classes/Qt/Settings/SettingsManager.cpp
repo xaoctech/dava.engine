@@ -64,12 +64,12 @@ void SettingsManager::SetValue(const DAVA::String& _name, const DAVA::VariantTyp
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
 	if(VARIABLE_LENGTH_SET == group)
 	{
-		UpdateMutableSectionIfNeeded(_name, _value);
+		UpdateVariableSectionIfNeeded(_name, _value);
 	}
 	foundedGroupSettings->SetVariant(_name, _value);
 }
 
-void SettingsManager::UpdateMutableSectionIfNeeded(const String& name,  const DAVA::VariantType& value)
+void SettingsManager::UpdateVariableSectionIfNeeded(const String& name,  const DAVA::VariantType& value)
 {
 	if(name.size() < strlen(MUTABLE_LENGTH_COUNT_SUFFIX))
 	{
@@ -131,10 +131,10 @@ void SettingsManager::Initialize()
 		internalSettings->SetVariant( SETTINGS_GROUP_INTERNAL_MAP[i].key, DAVA::VariantType(SETTINGS_GROUP_INTERNAL_MAP[i].defValue) );
 	}
 	
-	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_MUTABLE_LENGHT_MAP) / sizeof(SettingRow)); ++i )
+	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_VARIABLE_LENGHT_MAP) / sizeof(SettingRow)); ++i )
 	{
-		mutableLengthSettings->SetVariant( SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_COUNT_SUFFIX, 
-			DAVA::VariantType(SETTINGS_GROUP_MUTABLE_LENGHT_MAP[i].defValue) );
+		mutableLengthSettings->SetVariant( SETTINGS_GROUP_VARIABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_COUNT_SUFFIX,
+			DAVA::VariantType(SETTINGS_GROUP_VARIABLE_LENGHT_MAP[i].defValue) );
 	}
 	
 	settings->SetArchive(GetNameOfGroup(GENERAL), generalSettings);
