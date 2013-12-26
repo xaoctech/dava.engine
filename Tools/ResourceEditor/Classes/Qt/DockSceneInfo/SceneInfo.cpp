@@ -680,6 +680,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::Entity *forEnt
     RenderObject * ro = GetRenderObject(forEntity);
     if(ro)
     {
+        Vector3 bboxSize = ro->GetBoundingBox().GetSize();
         int32 rbCount = ro->GetRenderBatchCount();
         for(int32 i = 0; i < rbCount; i++)
         {
@@ -710,11 +711,9 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::Entity *forEnt
                     info.leafsSquare += len;
                 }
             }
-
-            Vector3 bboxSize = rb->GetBoundingBox().GetSize();
-            info.leafsSquareDivX = info.leafsSquare / (bboxSize.x * bboxSize.z);
-            info.leafsSquareDivY = info.leafsSquare / (bboxSize.y * bboxSize.z);
         }
+        info.leafsSquareDivX = info.leafsSquare / (bboxSize.x * bboxSize.z);
+        info.leafsSquareDivY = info.leafsSquare / (bboxSize.y * bboxSize.z);
     }
     
     return info;

@@ -26,66 +26,37 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "DAVAEngine.h"
-#include "DAVAClassRegistrator.h"
 
-using namespace DAVA;
+#ifndef __DAVAENGINE_SPEEDTREE_OBJECT_H__
+#define __DAVAENGINE_SPEEDTREE_OBJECT_H__
 
-void DAVA::RegisterDAVAClasses()
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Render/Highlevel/Mesh.h"
+
+namespace DAVA 
 {
-    //this code do nothing. Needed to compiler generate code from this cpp file
-    Logger * log = Logger::Instance();
-    if(log)
-        log->Log(Logger::LEVEL__DISABLE, "");
-}
 
-#if !defined(__DAVAENGINE_ANDROID__)
-REGISTER_CLASS(TheoraPlayer);
-#endif
+class SpeedTreeObject: public Mesh
+{
+public:
 
-REGISTER_CLASS(ParticleEmitter);
-REGISTER_CLASS(ParticleEmitter3D);
-REGISTER_CLASS(PolygonGroup);
-REGISTER_CLASS(StaticMesh);
-REGISTER_CLASS(Camera);
-REGISTER_CLASS(UIScrollViewContainer);
-REGISTER_CLASS(UISlider);
-REGISTER_CLASS(UISpinner);
-REGISTER_CLASS(UIStaticText);
-REGISTER_CLASS(LandscapeChunk);
-REGISTER_CLASS(UISwitch);
-REGISTER_CLASS(UITextField);
-REGISTER_CLASS(Landscape);
-REGISTER_CLASS(UIAggregatorControl);
-REGISTER_CLASS(Light);
-REGISTER_CLASS(Mesh);
-REGISTER_CLASS(SpeedTreeObject);
-REGISTER_CLASS(RenderBatch);
-REGISTER_CLASS(RenderObject);
-REGISTER_CLASS(ShadowVolume);
-REGISTER_CLASS(SkyboxRenderObject);
-REGISTER_CLASS(InstanceMaterialState);
-REGISTER_CLASS(Material);
-REGISTER_CLASS(ImposterNode);
-REGISTER_CLASS(BillboardNode);
-REGISTER_CLASS(BoneNode);
-REGISTER_CLASS(DataNode);
-REGISTER_CLASS(Entity);
-REGISTER_CLASS(LodNode);
-REGISTER_CLASS(MeshInstanceNode);
-REGISTER_CLASS(ParticleEffectNode);
-REGISTER_CLASS(ParticleEmitterNode);
-REGISTER_CLASS(ProxyNode);
-REGISTER_CLASS(Scene);
-REGISTER_CLASS(ShadowVolumeNode);
-REGISTER_CLASS(SkeletonNode);
-REGISTER_CLASS(SwitchNode);
-REGISTER_CLASS(UserNode);
-REGISTER_CLASS(UIButton);
-REGISTER_CLASS(UIControl);
-REGISTER_CLASS(UIList);
-REGISTER_CLASS(UIListCell);
-REGISTER_CLASS(UIScrollBar);
-REGISTER_CLASS(UIScrollView);
+    SpeedTreeObject() {};
+    virtual ~SpeedTreeObject() {};
+
+    virtual void RecalcBoundingBox();
+    virtual RenderObject * Clone(RenderObject *newObject);
+
+    static AABBox3 CalcBBoxForSpeedTreeBatch(RenderBatch * rb);
+
+public:
+
+	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
+		NULL
+	);
+};
 
 
+};
+
+#endif // __DAVAENGINE_SPEEDTREE_OBJECT_H__
