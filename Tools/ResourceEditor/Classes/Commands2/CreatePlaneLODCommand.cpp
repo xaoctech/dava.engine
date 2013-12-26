@@ -118,14 +118,17 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
         secondSideViewport = Rect(halfSizef, 0, halfSizef, (float32)textureSize);
     }
     
+    float32 depth = 0.f;
     //draw 1st side
-    camera->Setup(min.x, max.x, max.z, min.z, min.y, max.y);
+    depth = max.y - min.y;
+    camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
     camera->SetPosition(Vector3(0.f, min.y, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, firstSideViewport, true);
 
     //draw 2nd side
-    camera->Setup(min.y, max.y, max.z, min.z, min.x, max.x);
-    camera->SetPosition(Vector3(min.x, 0.f, 0.f));
+    depth = max.x - min.x;
+    camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
+    camera->SetPosition(Vector3(max.x, 0.f, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, secondSideViewport, false);
 
     SafeRelease(camera);
@@ -181,10 +184,10 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     if(isMeshHorizontal)
     {
         //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0, 1, Vector2(.0f, .5f));
-        planePG->SetTexcoord(0, 2, Vector2(.0f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 0, Vector2(.0f, .5f));
+        planePG->SetTexcoord(0, 1, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(.0f, 1.f));
         
         //2nd plane
         planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
@@ -195,10 +198,10 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     else
     {
         //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0, 1, Vector2(.5f, 0.f));
-        planePG->SetTexcoord(0, 2, Vector2(.5f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 0, Vector2(.5f, 0.f));
+        planePG->SetTexcoord(0, 1, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(.5f, 1.f));
         
         //2nd plane
         planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));

@@ -1347,6 +1347,9 @@
     <ClInclude Include="..\..\Sources\Internal\Input\GamepadDevice.h">
       <Filter>Internal\Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2404,6 +2407,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp">
       <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
