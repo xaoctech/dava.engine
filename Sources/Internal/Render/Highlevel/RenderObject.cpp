@@ -32,6 +32,8 @@
 #include "Debug/DVAssert.h"
 #include "Utils/Utils.h"
 
+#include "Render/Highlevel/SpeedTreeLeafBatch.h"
+
 namespace DAVA
 {
 
@@ -176,7 +178,24 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != batchArch)
 				{
-					RenderBatch *batch = ObjectFactory::Instance()->New<RenderBatch>(batchArch->GetString("rb.classname"));
+					Material *mat = NULL;
+					bool shouldConvertMaterial = batchArch->IsKeyExists("rb.material");
+					if(shouldConvertMaterial)
+					{
+						uint64 materialId = batchArch->GetVariant("rb.material")->AsUInt64();
+						mat = static_cast<Material*>(serializationContext->GetDataBlock(materialId));
+					}
+					
+					RenderBatch *batch = NULL;
+					if(mat && Material::MATERIAL_SPEED_TREE_LEAF == mat->type)
+					{
+						batch = new SpeedTreeLeafBatch();
+					}
+					else
+					{
+						batch = ObjectFactory::Instance()->New<RenderBatch>(batchArch->GetString("rb.classname"));
+					}
+					
 					if(NULL != batch)
 					{
 						batch->Load(batchArch, serializationContext);
