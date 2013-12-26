@@ -125,6 +125,8 @@ public:
 	ActionUpdateSystem* actionSystem;
 	SkyboxSystem* skyboxSystem;
 	StaticOcclusionSystem * staticOcclusionSystem;
+    MaterialSystem *materialSystem;
+    
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -206,8 +208,10 @@ public:
 	void CreateComponents();
 	void CreateSystems();
 
-	EventSystem * GetEventSystem();
+	EventSystem * GetEventSystem() const;
 	RenderSystem * GetRenderSystem() const;
+    MaterialSystem * GetMaterialSystem() const;
+    
 	virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
 
 protected:	

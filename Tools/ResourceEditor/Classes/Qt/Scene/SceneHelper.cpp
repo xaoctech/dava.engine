@@ -31,8 +31,7 @@
 #include "Deprecated/SceneValidator.h"
 #include "CubemapEditor/MaterialHelper.h"
 
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
 {
@@ -107,8 +106,7 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
     
     DAVA::Vector<DAVA::NMaterial *> materials;
     
-    DAVA::RenderSystem *rSystem = forScene->GetRenderSystem();
-    DAVA::MaterialSystem *matSystem = rSystem->GetMaterialSystem();
+    DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
     
     matSystem->BuildMaterialList(materials);
 

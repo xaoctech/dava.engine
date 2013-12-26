@@ -32,9 +32,6 @@
 #include "GameCore.h"
 #include "version.h"
 
-#include "Render/Material/MaterialSystem.h"
-#include "Render/Material/NMaterialTemplate.h"
-
 void FrameworkDidLaunched()
 {
 	DAVA::KeyedArchive * appOptions = new DAVA::KeyedArchive();
