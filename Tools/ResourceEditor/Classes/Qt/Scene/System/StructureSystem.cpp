@@ -557,7 +557,7 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 	return loadedEntity;
 }
 
-void StructureSystem::CopyLightmapSettings(DAVA::NMaterialState *fromState, DAVA::NMaterialState *toState) const
+void StructureSystem::CopyLightmapSettings(DAVA::NMaterial *fromState, DAVA::NMaterial *toState) const
 {
 	Texture* lightmap = fromState->GetTexture(NMaterial::TEXTURE_LIGHTMAP);
 	if(!lightmap)
@@ -611,19 +611,6 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
 
 				NMaterial* fromMat = fromBatch->GetMaterial();
 				NMaterial* toMat = toBatch->GetMaterial();
-				
-				DVASSERT(fromMat->GetStateCount() == toMat->GetStateCount());
-				if(fromMat->GetStateCount() == toMat->GetStateCount())
-				{
-					uint32 stateCount = fromMat->GetStateCount();
-					for(uint32 stateIndex = 0; stateIndex < stateCount; ++stateIndex)
-					{
-						NMaterialState* fromState = fromMat->GetState(stateIndex);
-						NMaterialState* toState = toMat->GetState(stateIndex);
-						
-						CopyLightmapSettings(fromState, toState);
-					}
-				}
 				
 				CopyLightmapSettings(fromMat, toMat);
             }

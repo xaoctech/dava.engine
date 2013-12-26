@@ -527,6 +527,11 @@ public:
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
 	
+	inline void RetainRenderStateData(UniqueHandle handle)
+	{
+		uniqueRenderStates.RetainUnique(handle);
+	}
+	
 	inline UniqueHandle AddRenderStateData(const RenderStateData* data)
 	{
 		return uniqueRenderStates.MakeUnique(data);

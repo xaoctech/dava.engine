@@ -54,6 +54,8 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
     
 	if(NULL != scene)
 	{
+		DVASSERT(false && "Implement for refactored new materials");
+		/*
 		QStandardItem *root = invisibleRootItem();
 		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
 
@@ -75,7 +77,7 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 			}
 		}
         
-        SetSelection(scene->selectionSystem->GetSelection());
+        SetSelection(scene->selectionSystem->GetSelection());*/
 	}
 }
 
