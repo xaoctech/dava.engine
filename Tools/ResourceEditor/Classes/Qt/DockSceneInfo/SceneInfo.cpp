@@ -60,7 +60,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , activeScene(NULL)
 	, landscape(NULL)
     , treeStateHelper(this, this->curModel)
-    , speedTreeLeafSquare(0)
 {
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
@@ -164,13 +163,27 @@ void SceneInfo::InitializeSpeedTreeInfoSelection()
     QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
     
     AddChild("SpeedTree Leafs Square", header);
+    AddChild("SpeedTree Leafs Square Div X", header);
+    AddChild("SpeedTree Leafs Square Div Y", header);
 }
 
 void SceneInfo::RefreshSpeedTreeInfoSelection()
 {
     QtPropertyData* header = GetInfoHeader("SpeedTree Info");
     
+    float32 speedTreeLeafSquare = 0.f, speedTreeLeafSquareDivX = 0.f, speedTreeLeafSquareDivY = 0.f;
+    int32 infoCount = speedTreeLeafInfo.size();
+    for(int32 i = 0; i < infoCount; i++)
+    {
+        SpeedTreeInfo & info = speedTreeLeafInfo[i];
+        speedTreeLeafSquare += info.leafsSquare;
+        speedTreeLeafSquareDivX += info.leafsSquareDivX;
+        speedTreeLeafSquareDivY += info.leafsSquareDivY;
+    }
+
     SetChild("SpeedTree Leafs Square", speedTreeLeafSquare, header);
+    SetChild("SpeedTree Leafs Square Div X", speedTreeLeafSquareDivX, header);
+    SetChild("SpeedTree Leafs Square Div Y", speedTreeLeafSquareDivY, header);
 }
 
 void SceneInfo::RefreshMaterialsInfo()
@@ -326,8 +339,6 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
         CollectLODDataInFrame();
         CollectLODDataForSelection();
         
-        speedTreeLeafSquare = GetSpeedTreeLeafsSquareRecurcive(scene);
-        
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
         particleTexturesSize = CalculateTextureSize(particleTextures);
     }
@@ -350,7 +361,7 @@ void SceneInfo::ClearData()
     emittersCount = 0;
     spritesCount = 0;
     
-    speedTreeLeafSquare = 0.f;
+    speedTreeLeafInfo.clear();
 }
 
 void SceneInfo::ClearSelectionData()
@@ -647,11 +658,25 @@ void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
     ClearSelectionData();
     CollectLODDataForSelection();
     RefreshLODInfoForSelection();
+
+    CollectSpeedTreeLeafsSquare(selected);
+    RefreshSpeedTreeInfoSelection();
 }
 
-DAVA::float32 SceneInfo::GetSpeedTreeLeafsSquareRecurcive(DAVA::Entity *forEntity)
+void SceneInfo::CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup)
 {
-    float32 leafSqueare = 0.f;
+    speedTreeLeafInfo.clear();
+
+    int32 entitiesCount = forGroup->Size();
+    for(int32 i = 0; i < entitiesCount; i++)
+        speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(forGroup->GetEntity(i)));
+}
+
+SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::Entity *forEntity)
+{
+    SpeedTreeInfo info;
+    info.Clear();
+
     RenderObject * ro = GetRenderObject(forEntity);
     if(ro)
     {
@@ -659,7 +684,7 @@ DAVA::float32 SceneInfo::GetSpeedTreeLeafsSquareRecurcive(DAVA::Entity *forEntit
         for(int32 i = 0; i < rbCount; i++)
         {
             RenderBatch * rb = ro->GetRenderBatch(i);
-            if(rb->GetMaterial()->type == Material::MATERIAL_SPEED_TREE_LEAF)
+            if(rb->GetMaterial() && rb->GetMaterial()->type == Material::MATERIAL_SPEED_TREE_LEAF)
             {
                 PolygonGroup * pg = rb->GetPolygonGroup();
                 int32 triangleCount = pg->GetIndexCount() / 3;
@@ -681,17 +706,16 @@ DAVA::float32 SceneInfo::GetSpeedTreeLeafsSquareRecurcive(DAVA::Entity *forEntit
                     v3 -= v1;
                     Vector3 vec = v2.CrossProduct(v3);
                     float32 len = vec.Length() / 2;
-                    leafSqueare += len;
+
+                    info.leafsSquare += len;
                 }
             }
+
+            Vector3 bboxSize = rb->GetBoundingBox().GetSize();
+            info.leafsSquareDivX = info.leafsSquare / (bboxSize.x * bboxSize.z);
+            info.leafsSquareDivY = info.leafsSquare / (bboxSize.y * bboxSize.z);
         }
     }
-    if(forEntity)
-    {
-        int32 childrenCount = forEntity->GetChildrenCount();
-        for(int32 i = 0; i < childrenCount; i++)
-            leafSqueare += GetSpeedTreeLeafsSquareRecurcive(forEntity->GetChild(i));
-    }
     
-    return leafSqueare;
+    return info;
 }
