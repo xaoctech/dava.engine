@@ -211,6 +211,9 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
     const DAVA::NMaterial *material = GetMaterial(index);
     if(!material) return false;
     
+	DVASSERT(false && "Implement for refactored new materials");
+	
+	/*
     if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR))
     {
         return true;
@@ -231,6 +234,7 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
             }
         }
     }
+	 */
 
     return false;
 }
@@ -240,6 +244,9 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
     QRect rect = GetBackgroundRect(option);
     rect.setWidth(TextureCache::THUMBNAIL_SIZE);
 
+	DVASSERT(false && "Implement for refactored new materials");
+	
+	/*
     if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR))
     {
         const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
@@ -262,7 +269,8 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
             }
         }
     }
-    
+    */
+	
     return QImage();
 }
 

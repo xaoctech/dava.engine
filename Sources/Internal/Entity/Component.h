@@ -65,7 +65,7 @@ public:
 		CUSTOM_PROPERTIES_COMPONENT,
         STATIC_OCCLUSION_COMPONENT,
         STATIC_OCCLUSION_DATA_COMPONENT, 
-        MODEL_TYPE_COMPONENT,   // type as fastname for detecting type of model
+        QUALITY_SETTINGS_COMPONENT,   // type as fastname for detecting type of model
 
         COMPONENT_COUNT
     };

@@ -52,6 +52,7 @@ namespace DAVA
 		const T* GetUnique(UniqueHandle handle);
 		bool IsUnique(const T* objRef);
 		
+		void RetainUnique(UniqueHandle handle);
 		void ReleaseUnique(UniqueHandle handle);
 		
 	private:
@@ -156,6 +157,11 @@ namespace DAVA
 		}
 	}
 
+	template<typename T, typename V>
+	void UniqueStateSet<T, V>::RetainUnique(UniqueHandle handle)
+	{
+		refCounters[handle] += 1;
+	}
 };
 
 #endif /* defined(__DAVAENGINE_UNIQUESTATESET_H__) */

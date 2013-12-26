@@ -46,15 +46,18 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material, int level)
 	setEditable(false);
 	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    
-    if(material->IsSwitchable())
+
+    DVASSERT(false && "Implement for refactored new materials");
+	//VI: TODO: implement for refactored new materials
+	setIcon(qualityMaterialIcon);
+    /*if(material->IsSwitchable())
     {
 		setIcon(qualityMaterialIcon);
     }
     else
     {
 		setIcon(userMaretialIcon);
-    }
+    }*/
 
 	Sync();
 }
@@ -181,8 +184,10 @@ void MaterialItem::Sync()
 		row++;
 	}
 
-	if(material->IsConfigMaterial())
-	{
-		setEnabled(rowCount() > 0);
-	}
+	DVASSERT(false && "Impelement for new materials");
+	//VI: TODO: implement for new materials
+	//if(material->IsConfigMaterial())
+	//{
+	//	setEnabled(rowCount() > 0);
+	//}
 }

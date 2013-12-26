@@ -173,7 +173,9 @@ void LodComponent::Deserialize(KeyedArchive *archive, SerializationContext *seri
 		KeyedArchive *lodDataArch = archive->GetArchive("lc.loddata");
 		if(NULL != lodDataArch)
 		{
-			for(uint32 i = 0; i < archive->GetUInt32("lc.loddatacount"); ++i)
+            uint32 lodDataCount = archive->GetUInt32("lc.loddatacount");
+            lodLayers.reserve(lodDataCount);
+			for(uint32 i = 0; i < lodDataCount; ++i)
 			{
 				KeyedArchive *lodDataValuesArch = lodDataArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != lodDataValuesArch)
@@ -186,7 +188,9 @@ void LodComponent::Deserialize(KeyedArchive *archive, SerializationContext *seri
 					KeyedArchive *lodDataIndexesArch = lodDataValuesArch->GetArchive("indexes");
 					if(NULL != lodDataIndexesArch)
 					{
-						for(uint32 j = 0; j < lodDataValuesArch->GetUInt32("indexescount"); ++j)
+                        uint32 indexesCount = lodDataValuesArch->GetUInt32("indexescount");
+                        data.indexes.reserve(indexesCount);
+						for(uint32 j = 0; j < indexesCount; ++j)
 						{
 							data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
 						}
@@ -254,6 +258,7 @@ float32 LodComponent::GetForceDistance() const
 void LodComponent::GetLodData(Vector<LodData*> &retLodLayers)
 {
 	retLodLayers.clear();
+    retLodLayers.reserve(lodLayers.size());
 
 	Vector<LodData>::const_iterator endIt = lodLayers.end();
 	for(Vector<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
