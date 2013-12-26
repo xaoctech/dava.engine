@@ -110,6 +110,10 @@
 		A695E52E18113315008A0F20 /* RenderHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E52A18113315008A0F20 /* RenderHierarchy.h */; };
 		A695E53218113327008A0F20 /* SerializationContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E53018113327008A0F20 /* SerializationContext.cpp */; };
 		A695E53318113327008A0F20 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E53118113327008A0F20 /* SerializationContext.h */; };
+		A69C9397186C377C00EAC8BC /* NMaterialTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A69C9393186C377C00EAC8BC /* NMaterialTemplate.cpp */; };
+		A69C9398186C377C00EAC8BC /* NMaterialTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = A69C9394186C377C00EAC8BC /* NMaterialTemplate.h */; };
+		A69C9399186C377C00EAC8BC /* RenderTechnique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A69C9395186C377C00EAC8BC /* RenderTechnique.cpp */; };
+		A69C939A186C377C00EAC8BC /* RenderTechnique.h in Headers */ = {isa = PBXBuildFile; fileRef = A69C9396186C377C00EAC8BC /* RenderTechnique.h */; };
 		A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6A1E8671785688600AA3A86 /* CRC32.cpp */; };
 		A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A1E8681785688600AA3A86 /* CRC32.h */; };
 		A6B5D95F185600050011D172 /* IntrospectionDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */; };
@@ -873,6 +877,10 @@
 		A695E52A18113315008A0F20 /* RenderHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderHierarchy.h; sourceTree = "<group>"; };
 		A695E53018113327008A0F20 /* SerializationContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerializationContext.cpp; sourceTree = "<group>"; };
 		A695E53118113327008A0F20 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
+		A69C9393186C377C00EAC8BC /* NMaterialTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialTemplate.cpp; sourceTree = "<group>"; };
+		A69C9394186C377C00EAC8BC /* NMaterialTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterialTemplate.h; sourceTree = "<group>"; };
+		A69C9395186C377C00EAC8BC /* RenderTechnique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTechnique.cpp; sourceTree = "<group>"; };
+		A69C9396186C377C00EAC8BC /* RenderTechnique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderTechnique.h; sourceTree = "<group>"; };
 		A6A1E8671785688600AA3A86 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
 		A6A1E8681785688600AA3A86 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntrospectionDynamic.cpp; path = ../../Sources/Internal/Base/IntrospectionDynamic.cpp; sourceTree = "<group>"; };
@@ -2243,6 +2251,10 @@
 		E8B3C95716B9326E002BD35F /* Material */ = {
 			isa = PBXGroup;
 			children = (
+				A69C9393186C377C00EAC8BC /* NMaterialTemplate.cpp */,
+				A69C9394186C377C00EAC8BC /* NMaterialTemplate.h */,
+				A69C9395186C377C00EAC8BC /* RenderTechnique.cpp */,
+				A69C9396186C377C00EAC8BC /* RenderTechnique.h */,
 				A695E51D1811317E008A0F20 /* MaterialSystem.cpp */,
 				A695E51E1811317E008A0F20 /* MaterialSystem.h */,
 				A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */,
@@ -2687,6 +2699,7 @@
 				E8B3CAE616B9326E002BD35F /* DLCSystem.h in Headers */,
 				E8B3CAEA16B9326E002BD35F /* DLCUnpacker.h in Headers */,
 				E8B3CAEC16B9326E002BD35F /* FileDownloader.h in Headers */,
+				A69C939A186C377C00EAC8BC /* RenderTechnique.h in Headers */,
 				E8B3CAED16B9326E002BD35F /* DoxygenDocumenation.h in Headers */,
 				E8B3CAEF16B9326E002BD35F /* Component.h in Headers */,
 				E8B3CAF116B9326E002BD35F /* SceneSystem.h in Headers */,
@@ -2948,6 +2961,7 @@
 				CC247FF216D69F1700183D40 /* DVAssertMessage.h in Headers */,
 				CC247FF416D69F1700183D40 /* UIAlertView_Modal.h in Headers */,
 				CC24801616DD17F300183D40 /* UserComponent.h in Headers */,
+				A69C9398186C377C00EAC8BC /* NMaterialTemplate.h in Headers */,
 				E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */,
 				E95B4C5D16DF78EE00880713 /* UISpinner.h in Headers */,
 				CC24804616E0E34300183D40 /* VectorSpinnerAdapter.h in Headers */,
@@ -3258,6 +3272,7 @@
 				E8B3CC6216B9326E002BD35F /* BoneNode.cpp in Sources */,
 				E8B3CC6816B9326E002BD35F /* BulletComponent.cpp in Sources */,
 				E8B3CC6A16B9326E002BD35F /* CameraComponent.cpp in Sources */,
+				A69C9399186C377C00EAC8BC /* RenderTechnique.cpp in Sources */,
 				E8B3CC6C16B9326E002BD35F /* DebugRenderComponent.cpp in Sources */,
 				E8B3CC6E16B9326E002BD35F /* LightComponent.cpp in Sources */,
 				E8B3CC7016B9326E002BD35F /* LodComponent.cpp in Sources */,
@@ -3283,6 +3298,7 @@
 				E8B3CC9D16B9326E002BD35F /* Scene.cpp in Sources */,
 				E8B3CC9F16B9326E002BD35F /* SceneAnimationMixer.cpp in Sources */,
 				E8B3CCA116B9326E002BD35F /* SceneFile.cpp in Sources */,
+				A69C9397186C377C00EAC8BC /* NMaterialTemplate.cpp in Sources */,
 				E8B3CCA316B9326E002BD35F /* SceneFileV2.cpp in Sources */,
 				E8B3CCA516B9326E002BD35F /* SceneManager.cpp in Sources */,
 				E8B3CCA916B9326E002BD35F /* SceneNodeAnimation.cpp in Sources */,
