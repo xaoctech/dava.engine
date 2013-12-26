@@ -253,7 +253,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			
 			Vector3 left = ex*cos_angle+ey*sin_angle;
 			Vector3 right = -left;
-			Vector3 top = ey*cos_angle + ex*sin_angle;
+			Vector3 top = ey*(-cos_angle) + ex*sin_angle;
 			Vector3 bot = -top;
 			
 			left*=0.5f*current->currSize.x*(1+group.layer->layerPivotPoint.x);
