@@ -134,8 +134,11 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleE
 		group.loopLyaerStartTime = group.layer->startTime;
 		group.loopDuration = group.layer->endTime;		
 
-		group.material = GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->srcBlendFactor, layer->dstBlendFactor);
-		
+		if (layer->sprite&&(layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
+			group.material = GetMaterial(layer->sprite->GetTexture(0), layer->enableFog, layer->enableFrameBlend, layer->srcBlendFactor, layer->dstBlendFactor);
+		else
+			group.material = NULL;
+
 		effect->effectData.groups.push_back(group);			
 	}
 }
@@ -270,7 +273,12 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			{				
 				currForceValues.resize(forcesCount);
 				for (int32 i=0; i<forcesCount; ++i)
-					currForceValues[i]=group.layer->forces[i]->force->GetValue(currLoopTime);
+				{
+					if (group.layer->forces[i]->force)
+						currForceValues[i]=group.layer->forces[i]->force->GetValue(currLoopTime);
+					else
+						currForceValues[i]=Vector3(0,0,0);
+				}
 			}
 		}		
 		Particle *current = group.head;
