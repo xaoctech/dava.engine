@@ -64,7 +64,7 @@ const FastName Landscape::PARAM_TILE_COLOR3("tileColor3");
 const FastName Landscape::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
 const FastName Landscape::PARAM_SPECULAR_SHININESS("materialSpecularShininess");
 const FastName Landscape::TEXTURE_SPECULAR_MAP("specularMap");
-const FastName Landscape::TECHNIQUE_TILEMASK_NAME("Landscape");
+const FastName Landscape::TECHNIQUE_TILEMASK_NAME("ForwardPass");
 	
 	const int TEXTURE_NAME_COLOR = 0;
 	const int TEXTURE_NAME_TILEMASK = 1;
@@ -149,16 +149,16 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	//tileMaskMaterial = NULL;
-	//fullTiledMaterial = NULL;
+	NMaterial* landscapeParent = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+																FastName("~res:/Materials/Legacy/TileMask.material"),
+																MaterialSystem::DEFAULT_QUALITY_NAME);
+
 	
-	tileMaskMaterial = MaterialSystem::CreateNamed();
-	tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
+	tileMaskMaterial = 	MaterialSystem::CreateMaterialInstance();
+	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
-	
-	//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	tileMaskMaterial->AddMaterialDefine(FastName("SPECULAR_LAND"));
@@ -167,7 +167,8 @@ Landscape::Landscape()
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
 	AddRenderBatch(chunk);
-	SafeRelease(chunk);	
+	SafeRelease(chunk);
+	SafeRelease(landscapeParent);
 }
 
 Landscape::~Landscape()
@@ -183,10 +184,11 @@ Landscape::~Landscape()
     SafeRelease(heightmap);
 	SafeDelete(cursor);
 	
-	if(tileMaskMaterial)
-	{
-		tileMaskMaterial->SetParent(NULL);
-	}
+	DVASSERT(false);
+	//if(tileMaskMaterial)
+	//{
+	//	tileMaskMaterial->SetParent(NULL);
+	//}
 	
 	//if(fullTiledMaterial)
 	//{
@@ -1796,20 +1798,19 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	{
 		if(curContainsDetailMask)
 		{
-			tileMaskMaterial->AddMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOn);
 		}
 		else
 		{
-			tileMaskMaterial->RemoveMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOff);
 		}
-		
-		tileMaskMaterial->Rebuild();
 	}
 }
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
 {
-	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
+	DVASSERT(false);
+/*	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
 	DVASSERT(global);
 	
 	if(isFogEnabled)
@@ -1826,6 +1827,7 @@ void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerDa
 	
 	global->Rebuild();
 	global->Rebind();	
+ */
 }
 	
     

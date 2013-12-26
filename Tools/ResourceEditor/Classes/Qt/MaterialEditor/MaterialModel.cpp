@@ -55,7 +55,9 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 
 	if(NULL != scene)
 	{
-		QStandardItem *root = invisibleRootItem();
+		DVASSERT(false && "Implement for refactored new materials");
+		
+		/*QStandardItem *root = invisibleRootItem();
 		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
 
 		DAVA::Vector<DAVA::NMaterial *> materials;
@@ -69,7 +71,7 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 				item->setDragEnabled(false);
 				root->appendRow(item);
 			}
-		}
+		}*/
 	}
 }
 
@@ -143,6 +145,8 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 	{
 		if(dropCanBeAccepted(data, action, row, column, parent))
 		{
+			DVASSERT(false && "Implement for refactored new materials");
+			/*
 			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
 			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
 
@@ -157,6 +161,7 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 			}
 
 			targetMaterialItem->Sync();
+			 */
 		}
 	}
 
@@ -228,6 +233,9 @@ int MaterialModel::GetLevel(DAVA::NMaterial *material) const
 
 	if(NULL != material)
 	{
+		DVASSERT(false && "Implement for refactored new materials");
+		
+		/*
 		// determine material level
 		if(material->IsConfigMaterial() && material->IsSwitchable())
 		{
@@ -245,6 +253,7 @@ int MaterialModel::GetLevel(DAVA::NMaterial *material) const
 				ret = 3;
 			}
 		}
+		 */
 	}
 
 	return ret;
