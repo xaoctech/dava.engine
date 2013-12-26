@@ -30,7 +30,7 @@
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/SpriteRenderBatch.h"
 #include "Render/Highlevel/RenderFastNames.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 
 

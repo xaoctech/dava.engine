@@ -35,7 +35,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "FileSystem/FilePath.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 namespace DAVA
 {
