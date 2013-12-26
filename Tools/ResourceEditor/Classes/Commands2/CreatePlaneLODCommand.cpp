@@ -45,8 +45,6 @@ CreatePlaneLODCommand::CreatePlaneLODCommand(DAVA::LodComponent * _lodComponent,
 
 CreatePlaneLODCommand::~CreatePlaneLODCommand()
 {
-    if(lodData)
-        SafeRelease(lodData->nodes[0]);
     SafeDelete(lodData);
 }
 
@@ -56,33 +54,30 @@ void CreatePlaneLODCommand::Redo()
     DVASSERT(lodComponent->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
     DVASSERT(lodComponent->lodLayers[fromLodLayer].nodes.size() == 1);
 
-    if(!lodData)
-    {
-        Entity * planeLodEntity = CreatePlaneEntity(lodComponent->lodLayers[fromLodLayer].nodes[0]);
+    Entity * planeLodEntity = CreatePlaneEntity(lodComponent->lodLayers[fromLodLayer].nodes[0]);
 
-        lodData = new LodComponent::LodData();
-        lodData->layer = lodComponent->GetLodLayersCount();
-        lodData->nodes.push_back(planeLodEntity);
-        lodData->indexes.push_back(lodComponent->GetEntity()->GetChildrenCount());
+    lodData = new LodComponent::LodData();
+    lodData->layer = lodComponent->GetLodLayersCount();
+    lodData->nodes.push_back(planeLodEntity);
+    lodData->indexes.push_back(lodComponent->GetEntity()->GetChildrenCount());
 
-        planeLodEntity->SetLocked(true);
-    }
+    planeLodEntity->SetLocked(true);
 
     lodComponent->lodLayers.push_back((*lodData));
     lodComponent->SetLodLayerDistance(lodData->layer, lodComponent->GetLodLayerDistance(lodData->layer-1) * 2);
 
-    lodComponent->GetEntity()->AddNode(lodData->nodes[0]);
-    lodData->nodes[0]->SetLodVisible(lodComponent->currentLod == lodData->layer);
+    lodComponent->GetEntity()->AddNode(planeLodEntity);
+    planeLodEntity->SetLodVisible(lodComponent->currentLod == lodData->layer);
+    planeLodEntity->Release();
 }
 
 void CreatePlaneLODCommand::Undo()
 {
-    if(lodData)
-    {
-        lodComponent->GetEntity()->RemoveNode(lodData->nodes[0]);
-        lodComponent->lodLayers.pop_back();
-        lodComponent->SetLodLayerDistance(lodData->layer, LodComponent::INVALID_DISTANCE);
-    }
+    lodComponent->GetEntity()->RemoveNode(lodData->nodes[0]);
+    lodComponent->lodLayers.pop_back();
+    lodComponent->SetLodLayerDistance(lodData->layer, LodComponent::INVALID_DISTANCE);
+    
+    SafeDelete(lodData);
 }
 
 DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
@@ -108,15 +103,30 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     camera->SetIsOrtho(true);
 
     float32 halfSizef = textureSize / 2.f;
+    
+    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
+    
+    Rect firstSideViewport, secondSideViewport;
+    if(isMeshHorizontal) //bushes
+    {
+        firstSideViewport = Rect(0, 0, (float32)textureSize, halfSizef);
+        secondSideViewport = Rect(0, halfSizef, (float32)textureSize, halfSizef);
+    }
+    else //trees
+    {
+        firstSideViewport = Rect(0, 0, halfSizef, (float32)textureSize);
+        secondSideViewport = Rect(halfSizef, 0, halfSizef, (float32)textureSize);
+    }
+    
     //draw 1st side
     camera->Setup(min.x, max.x, max.z, min.z, min.y, max.y);
     camera->SetPosition(Vector3(0.f, min.y, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, Rect(0, 0, halfSizef, (float32)textureSize), true);
+    DrawToTexture(fromEntity, camera, fboTexture, firstSideViewport, true);
 
     //draw 2nd side
     camera->Setup(min.y, max.y, max.z, min.z, min.x, max.x);
     camera->SetPosition(Vector3(min.x, 0.f, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, Rect(halfSizef, 0, halfSizef, (float32)textureSize), false);
+    DrawToTexture(fromEntity, camera, fboTexture, secondSideViewport, false);
 
     SafeRelease(camera);
 
@@ -143,10 +153,10 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
     
     //1st plane
-    planePG->SetCoord(0, Vector3(0.f, min.y, max.z)); planePG->SetTexcoord(0, 0, Vector2(1.f, 0.f));
-    planePG->SetCoord(1, Vector3(0.f, max.y, max.z)); planePG->SetTexcoord(0, 1, Vector2(.5f, 0.f));
-    planePG->SetCoord(2, Vector3(0.f, max.y, min.z)); planePG->SetTexcoord(0, 2, Vector2(.5f, 1.f));
-    planePG->SetCoord(3, Vector3(0.f, min.y, min.z)); planePG->SetTexcoord(0, 3, Vector2(1.f, 1.f));
+    planePG->SetCoord(0, Vector3(0.f, min.y, max.z));
+    planePG->SetCoord(1, Vector3(0.f, max.y, max.z));
+    planePG->SetCoord(2, Vector3(0.f, max.y, min.z));
+    planePG->SetCoord(3, Vector3(0.f, min.y, min.z));
 
     planePG->SetIndex(0, 1);
     planePG->SetIndex(1, 0);
@@ -156,10 +166,10 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     planePG->SetIndex(5, 2);
 
     //2nd plane
-    planePG->SetCoord(4, Vector3(min.x, 0.f, max.z)); planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
-    planePG->SetCoord(5, Vector3(max.x, 0.f, max.z)); planePG->SetTexcoord(0, 5, Vector2(.5f, 0.f));
-    planePG->SetCoord(6, Vector3(max.x, 0.f, min.z)); planePG->SetTexcoord(0, 6, Vector2(.5f, 1.f));
-    planePG->SetCoord(7, Vector3(min.x, 0.f, min.z)); planePG->SetTexcoord(0, 7, Vector2(.0f, 1.f));
+    planePG->SetCoord(4, Vector3(min.x, 0.f, max.z));
+    planePG->SetCoord(5, Vector3(max.x, 0.f, max.z));
+    planePG->SetCoord(6, Vector3(max.x, 0.f, min.z));
+    planePG->SetCoord(7, Vector3(min.x, 0.f, min.z));
 
     planePG->SetIndex(6,  5);
     planePG->SetIndex(7,  4);
@@ -168,6 +178,35 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     planePG->SetIndex(10, 7);
     planePG->SetIndex(11, 6);
 
+    if(isMeshHorizontal)
+    {
+        //1st plane
+        planePG->SetTexcoord(0, 0, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0, 1, Vector2(.0f, .5f));
+        planePG->SetTexcoord(0, 2, Vector2(.0f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(1.f, 1.f));
+        
+        //2nd plane
+        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
+        planePG->SetTexcoord(0, 5, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0, 6, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0, 7, Vector2(.0f, .5f));
+    }
+    else
+    {
+        //1st plane
+        planePG->SetTexcoord(0, 0, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0, 1, Vector2(.5f, 0.f));
+        planePG->SetTexcoord(0, 2, Vector2(.5f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(1.f, 1.f));
+        
+        //2nd plane
+        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
+        planePG->SetTexcoord(0, 5, Vector2(.5f, 0.f));
+        planePG->SetTexcoord(0, 6, Vector2(.5f, 1.f));
+        planePG->SetTexcoord(0, 7, Vector2(.0f, 1.f));
+    }
+    
     rb->SetPolygonGroup(planePG);
     planeRO->AddRenderBatch(rb);
 
