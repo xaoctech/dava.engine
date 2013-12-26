@@ -1,3 +1,12 @@
+<CONFIG>
+tileTexture0 = 2
+tileTexture1 = 3
+tileTexture2 = 4
+tileTexture3 = 5
+tileMask = 1
+colorTexture = 0
+specularMap = 6
+<FRAGMENT_SHADER>
 #ifdef GL_ES
 precision highp float;
 #else

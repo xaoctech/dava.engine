@@ -1078,7 +1078,10 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 	else
 	{
 		clippedVertices.clear();
+        clippedVertices.reserve(clipPolygon->GetPointCount());
 		clippedTexCoords.clear();
+        clippedTexCoords.reserve(clipPolygon->GetPointCount());
+        
 		Texture * t = GetTexture(frame);
 		float32 adjWidth = 1.f / t->width / resourceToVirtualFactor;
 		float32 adjHeight = 1.f / t->height / resourceToVirtualFactor;

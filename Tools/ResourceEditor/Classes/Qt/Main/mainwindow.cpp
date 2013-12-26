@@ -653,7 +653,7 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-	QObject::connect(ui->actionAddModelTypeComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -1623,20 +1623,35 @@ void QtMainWindow::OnSaveTiledTexture()
 
     Landscape *landscape = FindLandscape(scene);
     if(!landscape) return;
-	landscape->UpdateFullTiledTexture();
-    
-    FilePath texPathname = landscape->SaveFullTiledTexture();
-    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
-    
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-    if(!descriptor)
-    {
-        descriptor = new TextureDescriptor();
-        descriptor->pathname = descriptorPathname;
-        descriptor->Save();
-    }
-    
-    SafeRelease(descriptor);
+
+	Texture* landscapeTexture = landscape->CreateLandscapeTexture();
+
+	if (landscapeTexture)
+	{
+		FilePath pathToSave;
+		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
+		pathToSave.ReplaceExtension(".thumbnail.png");
+
+		Image *image = landscapeTexture->CreateImageFromMemory();
+		if(image)
+		{
+			ImageLoader::Save(image, pathToSave);
+			SafeRelease(image);
+
+			FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToSave);
+			TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+			if(!descriptor)
+			{
+				descriptor = new TextureDescriptor();
+				descriptor->pathname = descriptorPathname;
+				descriptor->Save();
+			}
+
+			SafeRelease(descriptor);
+		}
+
+		SafeRelease(landscapeTexture);
+	}
 }
 
 void QtMainWindow::OnConvertModifiedTextures()
@@ -2106,7 +2121,7 @@ void QtMainWindow::OnAddModelTypeComponent()
         
 		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
 		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new ModelTypeComponent()));
+			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new QualitySettingsComponent()));
 		}
         
 		scene->EndBatch();
@@ -2341,7 +2356,6 @@ void QtMainWindow::DiableUIForFutureUsing()
 	//-->
 	ui->actionAddNewComponent->setVisible(false);
 	ui->actionRemoveComponent->setVisible(false);
-	ui->actionSaveTiledTexture->setVisible(false);
 	//<--
 }
 

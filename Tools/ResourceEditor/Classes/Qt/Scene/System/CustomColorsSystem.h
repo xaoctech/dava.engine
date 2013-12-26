@@ -37,6 +37,7 @@
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
+class Command2;
 
 class CustomColorsSystem: public DAVA::SceneSystem
 {
@@ -110,6 +111,8 @@ protected:
 	LandscapeEditorDrawSystem::eErrorType IsCanBeEnabled();
 
 	void FinishEditing();
+
+	Command2* CreateSaveFileNameCommand(const String& filePath);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSSYSTEM__) */

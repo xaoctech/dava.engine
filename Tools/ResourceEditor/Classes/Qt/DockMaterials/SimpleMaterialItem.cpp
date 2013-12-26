@@ -47,14 +47,17 @@ SimpleMaterialItem::SimpleMaterialItem(DAVA::NMaterial * _material)
 	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
-    if(material->IsSwitchable())
+	DVASSERT(false && "Implement for refactored new materials");
+	setIcon(userMaterialIcon);
+	//VI: TODO: Implement for refactored new materials
+    /*if(material->IsSwitchable())
     {
 		setIcon(qualityMaterialIcon);
     }
     else
     {
 		setIcon(userMaterialIcon);
-    }
+    }*/
 }
 
 SimpleMaterialItem::~SimpleMaterialItem()

@@ -365,6 +365,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				}
 
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
+                layersGroup.reserve(layersV.size());
 				for(int i = 0; i < layersV.size(); ++i)
 				{
 					layersGroup.push_back((DAVA::ParticleLayer *) layersV[i]);
@@ -383,7 +384,10 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 			if(NULL != newLayer && forcesV.size())
 			{
 				DAVA::Vector<DAVA::ParticleForce*> forcesGroup;
+                forcesGroup.reserve(forcesV.size());
+                
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
+                layersGroup.reserve(forcesV.size());
 
 				for(int i = 0; i < forcesV.size(); ++i)
 				{

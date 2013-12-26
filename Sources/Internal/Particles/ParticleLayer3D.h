@@ -111,6 +111,9 @@ protected:
 	
 	NMaterial* material;
 	Texture* currentTexture;
+	
+	static NMaterial* regularMaterial;
+	static NMaterial* frameBlendMaterial;
 
 public:
     //INTROSPECTION_EXTEND(ParticleLayer3D, ParticleLayer,

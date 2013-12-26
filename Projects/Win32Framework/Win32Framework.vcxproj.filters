@@ -1374,9 +1374,6 @@
     <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionDynamic.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ModelTypeComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1394,6 +1391,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Input\GamepadDevice.h">
       <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\RenderTechnique.h">
+      <Filter>Internal\Render\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2468,9 +2477,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionDynamic.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ModelTypeComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2491,6 +2497,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp">
       <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
