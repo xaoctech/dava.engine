@@ -108,7 +108,7 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
     
     DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
     
-    matSystem->BuildMaterialList(materials);
+    matSystem->BuildMaterialList(forScene, materials);
 
     DAVA::uint32 count = (DAVA::uint32)materials.size();
     for(DAVA::uint32 m = 0; m < count; ++m)
