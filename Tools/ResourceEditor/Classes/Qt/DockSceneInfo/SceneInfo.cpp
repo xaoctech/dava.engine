@@ -60,6 +60,7 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , activeScene(NULL)
 	, landscape(NULL)
     , treeStateHelper(this, this->curModel)
+    , speedTreeLeafSquare(0)
 {
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
@@ -96,6 +97,7 @@ void SceneInfo::InitializeInfo()
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
     InitializeParticlesSection();
+    InitializeSpeedTreeInfoSelection();
 }
 
 void SceneInfo::InitializeGeneralSection()
@@ -155,6 +157,20 @@ void SceneInfo::InitializeMaterialsSection()
     AddChild("Materials Count", header);
     AddChild("Textures Count", header);
     AddChild("Textures Size", header);
+}
+
+void SceneInfo::InitializeSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
+    
+    AddChild("SpeedTree Leafs Square", header);
+}
+
+void SceneInfo::RefreshSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = GetInfoHeader("SpeedTree Info");
+    
+    SetChild("SpeedTree Leafs Square", speedTreeLeafSquare, header);
 }
 
 void SceneInfo::RefreshMaterialsInfo()
@@ -310,6 +326,8 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
         CollectLODDataInFrame();
         CollectLODDataForSelection();
         
+        speedTreeLeafSquare = GetSpeedTreeLeafsSquareRecurcive(scene);
+        
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
         particleTexturesSize = CalculateTextureSize(particleTextures);
     }
@@ -331,6 +349,8 @@ void SceneInfo::ClearData()
     particleTexturesSize = 0;
     emittersCount = 0;
     spritesCount = 0;
+    
+    speedTreeLeafSquare = 0.f;
 }
 
 void SceneInfo::ClearSelectionData()
@@ -590,6 +610,7 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 	RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
 	RefreshParticlesInfo();
+    RefreshSpeedTreeInfoSelection();
 
 	RestoreTreeState();
 }
@@ -626,4 +647,51 @@ void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
     ClearSelectionData();
     CollectLODDataForSelection();
     RefreshLODInfoForSelection();
+}
+
+DAVA::float32 SceneInfo::GetSpeedTreeLeafsSquareRecurcive(DAVA::Entity *forEntity)
+{
+    float32 leafSqueare = 0.f;
+    RenderObject * ro = GetRenderObject(forEntity);
+    if(ro)
+    {
+        int32 rbCount = ro->GetRenderBatchCount();
+        for(int32 i = 0; i < rbCount; i++)
+        {
+            RenderBatch * rb = ro->GetRenderBatch(i);
+            if(rb->GetMaterial()->type == Material::MATERIAL_SPEED_TREE_LEAF)
+            {
+                PolygonGroup * pg = rb->GetPolygonGroup();
+                int32 triangleCount = pg->GetIndexCount() / 3;
+                for(int32 t = 0; t < triangleCount; t++)
+                {
+                    int32 i1, i2, i3;
+                    pg->GetIndex(t * 3, i1);
+                    pg->GetIndex(t * 3 + 1, i2);
+                    pg->GetIndex(t * 3 + 2, i3);
+                    
+                    Vector3 v1, v2, v3;
+                    pg->GetCoord(i1, v1);
+                    pg->GetCoord(i2, v2);
+                    pg->GetCoord(i3, v3);
+                    
+                    v1.z = 0; v2.z = 0; v3.z = 0; //ortho projection in XY-plane
+                    
+                    v2 -= v1;
+                    v3 -= v1;
+                    Vector3 vec = v2.CrossProduct(v3);
+                    float32 len = vec.Length() / 2;
+                    leafSqueare += len;
+                }
+            }
+        }
+    }
+    if(forEntity)
+    {
+        int32 childrenCount = forEntity->GetChildrenCount();
+        for(int32 i = 0; i < childrenCount; i++)
+            leafSqueare += GetSpeedTreeLeafsSquareRecurcive(forEntity->GetChild(i));
+    }
+    
+    return leafSqueare;
 }

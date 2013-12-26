@@ -87,6 +87,7 @@ protected:
     void InitializeLODSectionInFrame();
     void InitializeLODSectionForSelection();
     void InitializeParticlesSection();
+    void InitializeSpeedTreeInfoSelection();
 
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
@@ -94,7 +95,7 @@ protected:
     void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
     void RefreshParticlesInfo();
-
+    void RefreshSpeedTreeInfoSelection();
     
 	void RefreshAllData(SceneEditor2 *scene);
 
@@ -126,6 +127,8 @@ protected:
 
     static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
     
+    static DAVA::float32 GetSpeedTreeLeafsSquareRecurcive(DAVA::Entity *forEntity);
+    
 protected:
     
 	QtPosSaver posSaver;
@@ -141,6 +144,7 @@ protected:
     DAVA::Map<DAVA::String, DAVA::Texture *>sceneTextures;
     DAVA::Map<DAVA::String, DAVA::Texture *>particleTextures;
     
+    DAVA::float32 speedTreeLeafSquare;
     
     DAVA::uint32 sceneTexturesSize;
     DAVA::uint32 particleTexturesSize;
