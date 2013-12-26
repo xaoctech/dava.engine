@@ -40,7 +40,7 @@
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Highlevel/SpatialTree.h"
 
 // TODO: Move class to other place
@@ -94,10 +94,6 @@ RenderSystem::RenderSystem()
 		globalBatchArray->InitLayer(it->first, it->second->GetFlags());
 	}
 	
-	materialSystem = new MaterialSystem();
-	materialSystem->SetDefaultMaterialQuality(MaterialSystem::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
-	//materialSystem->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
-
 	markedObjects.reserve(100);
 }
 

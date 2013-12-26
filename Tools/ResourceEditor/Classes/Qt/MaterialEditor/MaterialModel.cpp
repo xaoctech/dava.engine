@@ -35,8 +35,7 @@
 #include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Scene3D/Scene.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
