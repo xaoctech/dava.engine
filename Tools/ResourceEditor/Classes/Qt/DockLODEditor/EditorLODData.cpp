@@ -460,7 +460,12 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
     if(properties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
         entityPath = FilePath(properties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, entityPath.GetAbsolutePathname()));
 
-    entityPath = entityPath.GetDirectory() + "images/" + entity->GetName() + "_planes.png";
+    String entityName = entity->GetName();
+    size_t pos = entityName.find(".sc2");
+    if(pos != String::npos)
+        entityName = entityName.substr(0, pos);
+
+    entityPath = entityPath.GetDirectory() + "images/" + entityName + "_planes.png";
 
     return entityPath;
 }
