@@ -605,7 +605,7 @@ namespace DAVA
 		return textures.keyByIndex(index);
 	}
 	
-    uint32 NMaterial::NMaterial::GetTextureCount() const
+    uint32 NMaterial::GetTextureCount() const
 	{
 		return textures.size();
 	}
