@@ -221,9 +221,8 @@ namespace DAVA
 	void NMaterial::SetFlag(const FastName& flag, eFlagValue flagValue)
 	{
 		materialSetFlags.insert(flag, flagValue);
-		
-		UpdateMaterialTemplate();
-		LoadActiveTextures();
+
+		UpdateShaderWithFlags();
 		
 		this->Retain();
 		
@@ -232,10 +231,7 @@ namespace DAVA
 		{
 			children[i]->OnParentFlagsChanged();
 		}
-		
-		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
-		
+				
 		this->Release();
 	}
 			
@@ -769,7 +765,7 @@ namespace DAVA
 	
 	void NMaterial::OnParentFlagsChanged()
 	{
-		UpdateMaterialTemplate();
+		UpdateShaderWithFlags();
 	}
 	
 	void NMaterial::OnInstanceQualityChanged()
@@ -789,8 +785,8 @@ namespace DAVA
 		HashMap<FastName, int32> rawEffectiveFlags;
 		BuildEffectiveFlagSet(rawEffectiveFlags);
 		
-		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
-			it != materialSetFlags.end();
+		for(HashMap<FastName, int32>::iterator it = rawEffectiveFlags.begin();
+			it != rawEffectiveFlags.end();
 			++it)
 		{
 			int32 currentFlagValue = it->second;
@@ -834,7 +830,8 @@ namespace DAVA
 		{
 			RenderPassInstance* passInstance = it->second;
 			
-			SafeRelease(passInstance->renderState.shader);
+			//VI: TODO: make sure need to release shader
+			//SafeRelease(passInstance->renderState.shader);
 			
 			if(passInstance->dirtyState &&
 			   passInstance->renderState.stateHandle != InvalidUniqueHandle)
@@ -1383,6 +1380,28 @@ namespace DAVA
 			++it)
 		{
 			SubclassRenderState(it->first, newState);
+		}
+	}
+	
+	void NMaterial::UpdateShaderWithFlags()
+	{
+		DVASSERT(baseTechnique);
+		
+		if(baseTechnique)
+		{
+			FastNameSet effectiveFlags(16);
+			BuildEffectiveFlagSet(effectiveFlags);
+			
+			for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
+				it != instancePasses.end();
+				++it)
+			{
+				RenderPassInstance* pass = it->second;
+				RenderTechniquePass* techniquePass = baseTechnique->GetPassByName(it->first);
+				
+				pass->renderState.shader = techniquePass->RetainShader(effectiveFlags);
+				BuildActiveUniformsCacheParamsCache(pass);
+			}
 		}
 	}
 	
