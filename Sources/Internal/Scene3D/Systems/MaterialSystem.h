@@ -27,27 +27,26 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_MATERIAL_SYSTEM_H__
 #define __DAVAENGINE_MATERIAL_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Scene3D/DataNode.h"
-#include "FileSystem/YamlParser.h"
-#include "Render/Shader.h"
+#include "Base/FastName.h"
+
 #include "Render/Material/NMaterial.h"
+
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
     
 class MaterialGraph;
 class MaterialGraphNode;
-class NMaterial;
 class PolygonGroup;
 
-class MaterialSystem
+class MaterialSystem: public SceneSystem
 {
 public:
 
@@ -55,8 +54,8 @@ public:
 	
 public:
 	
-	MaterialSystem();
-	~MaterialSystem();
+	MaterialSystem(Scene * scene);
+	virtual ~MaterialSystem();
 		
 	void BuildMaterialList(Vector<NMaterial*>& materialList) const;
 	void BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const;

@@ -99,8 +99,6 @@
 		A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919535183A6E9B00D598AE /* UniqueStateSet.h */; };
 		A6919544183A70D600D598AE /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */; };
 		A6919545183A70D600D598AE /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919543183A70D600D598AE /* AutotestingSystemYaml.h */; };
-		A695E5201811317E008A0F20 /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E51D1811317E008A0F20 /* MaterialSystem.cpp */; };
-		A695E5211811317E008A0F20 /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E51E1811317E008A0F20 /* MaterialSystem.h */; };
 		A695E5221811317E008A0F20 /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */; };
 		A695E52518113195008A0F20 /* ShaderCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E52318113195008A0F20 /* ShaderCache.cpp */; };
 		A695E52618113195008A0F20 /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E52418113195008A0F20 /* ShaderCache.h */; };
@@ -740,6 +738,8 @@
 		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */; };
 		E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */; };
+		E8F43E2D186C5D4E006796CB /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F43E2B186C5D4E006796CB /* MaterialSystem.cpp */; };
+		E8F43E2E186C5D4E006796CB /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F43E2C186C5D4E006796CB /* MaterialSystem.h */; };
 		E8FC1303186972B60095D8FE /* QualitySettingsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC1301186972B60095D8FE /* QualitySettingsComponent.cpp */; };
 		E8FC1304186972B60095D8FE /* QualitySettingsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC1302186972B60095D8FE /* QualitySettingsComponent.h */; };
 		E8FC1307186972C80095D8FE /* QualitySettingsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC1305186972C80095D8FE /* QualitySettingsSystem.cpp */; };
@@ -866,8 +866,6 @@
 		A6919535183A6E9B00D598AE /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
 		A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
 		A6919543183A70D600D598AE /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
-		A695E51D1811317E008A0F20 /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
-		A695E51E1811317E008A0F20 /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
 		A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
 		A695E52318113195008A0F20 /* ShaderCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderCache.cpp; sourceTree = "<group>"; };
 		A695E52418113195008A0F20 /* ShaderCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderCache.h; sourceTree = "<group>"; };
@@ -1509,6 +1507,8 @@
 		E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
+		E8F43E2B186C5D4E006796CB /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
+		E8F43E2C186C5D4E006796CB /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
 		E8FC1301186972B60095D8FE /* QualitySettingsComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsComponent.cpp; sourceTree = "<group>"; };
 		E8FC1302186972B60095D8FE /* QualitySettingsComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualitySettingsComponent.h; sourceTree = "<group>"; };
 		E8FC1305186972C80095D8FE /* QualitySettingsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsSystem.cpp; sourceTree = "<group>"; };
@@ -2255,8 +2255,6 @@
 				A69C9394186C377C00EAC8BC /* NMaterialTemplate.h */,
 				A69C9395186C377C00EAC8BC /* RenderTechnique.cpp */,
 				A69C9396186C377C00EAC8BC /* RenderTechnique.h */,
-				A695E51D1811317E008A0F20 /* MaterialSystem.cpp */,
-				A695E51E1811317E008A0F20 /* MaterialSystem.h */,
 				A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */,
 				E8B3C95816B9326E002BD35F /* MaterialCompiler.cpp */,
 				E8B3C95916B9326E002BD35F /* MaterialCompiler.h */,
@@ -2407,6 +2405,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E8F43E2B186C5D4E006796CB /* MaterialSystem.cpp */,
+				E8F43E2C186C5D4E006796CB /* MaterialSystem.h */,
 				E8FC1305186972C80095D8FE /* QualitySettingsSystem.cpp */,
 				E8FC1306186972C80095D8FE /* QualitySettingsSystem.h */,
 				A611714B1860C2A500E18F8C /* StaticOcclusionSystem.cpp */,
@@ -2729,6 +2729,7 @@
 				E8B3CB4716B9326E002BD35F /* BezierSpline.h in Headers */,
 				E8B3CB4816B9326E002BD35F /* Circle.h in Headers */,
 				E8B3CB4916B9326E002BD35F /* Color.h in Headers */,
+				E8F43E2E186C5D4E006796CB /* MaterialSystem.h in Headers */,
 				E8B3CB4B16B9326E002BD35F /* Math2D.h in Headers */,
 				E8B3CB4C16B9326E002BD35F /* Math2DTemplateClasses.h in Headers */,
 				E8B3CB4D16B9326E002BD35F /* MathConstants.h in Headers */,
@@ -3008,7 +3009,6 @@
 				EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */,
 				7A8F772A17E73E720048A43D /* AutotestingDB.h in Headers */,
 				7A8F772C17E73E720048A43D /* GameAPI.h in Headers */,
-				A695E5211811317E008A0F20 /* MaterialSystem.h in Headers */,
 				A695E52618113195008A0F20 /* ShaderCache.h in Headers */,
 				A695E52C18113315008A0F20 /* RenderBatchArray.h in Headers */,
 				A695E52E18113315008A0F20 /* RenderHierarchy.h in Headers */,
@@ -3313,6 +3313,7 @@
 				E8FC1303186972B60095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E8B3CCBE16B9326E002BD35F /* EventSystem.cpp in Sources */,
 				E8B3CCC016B9326E002BD35F /* LightUpdateSystem.cpp in Sources */,
+				E8F43E2D186C5D4E006796CB /* MaterialSystem.cpp in Sources */,
 				E8B3CCC216B9326E002BD35F /* LodSystem.cpp in Sources */,
 				E8B3CCC416B9326E002BD35F /* ParticleEffectSystem.cpp in Sources */,
 				E8B3CCC616B9326E002BD35F /* ParticleEmitterSystem.cpp in Sources */,
@@ -3425,7 +3426,6 @@
 				EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */,
 				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
 				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,
-				A695E5201811317E008A0F20 /* MaterialSystem.cpp in Sources */,
 				A695E5221811317E008A0F20 /* NMaterialConsts.cpp in Sources */,
 				A695E52518113195008A0F20 /* ShaderCache.cpp in Sources */,
 				A695E52B18113315008A0F20 /* RenderBatchArray.cpp in Sources */,
