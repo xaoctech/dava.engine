@@ -143,6 +143,8 @@ namespace DAVA
 	
 	NMaterial::~NMaterial()
 	{
+		ReleaseInstancePasses();
+		
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
 			it != materialProperties.end();
 			++it)
@@ -159,8 +161,6 @@ namespace DAVA
 			SafeDelete(it->second);
 		}
 		textures.clear();
-
-		ReleaseInstancePasses();
 				
 		if(illuminationParams)
 		{
@@ -678,9 +678,14 @@ namespace DAVA
 	
 	void NMaterial::RemoveMaterialProperty(const FastName & keyName)
 	{
-		materialProperties.erase(keyName);
-		
 		OnMaterialPropertyRemoved(keyName);
+		
+		NMaterialProperty* prop = materialProperties.at(keyName);
+		if(prop)
+		{
+			materialProperties.erase(keyName);
+			SafeDelete(prop);
+		}
 	}
 	
 	void NMaterial::SetMaterialName(const String& name)
