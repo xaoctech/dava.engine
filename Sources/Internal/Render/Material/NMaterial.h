@@ -56,7 +56,7 @@ class MaterialCompiler;
 class MaterialGraph;
 	
 class NMaterial;
-class NMaterialTemplate;
+struct NMaterialTemplate;
 	
 struct IlluminationParams : public InspBase
 {
