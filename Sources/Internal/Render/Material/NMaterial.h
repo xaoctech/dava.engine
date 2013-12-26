@@ -355,6 +355,7 @@ protected:
 	bool IsTextureActive(const FastName& textureName) const;
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
+	void UpdateShaderWithFlags();
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
