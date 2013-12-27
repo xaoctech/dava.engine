@@ -126,6 +126,7 @@ class NMaterial : public DataNode
 {
 	friend class MaterialSystem;
 	friend class MaterialCompiler;
+	friend class NMaterialHelper;
 	
 public:
 	
@@ -159,6 +160,8 @@ public:
 	static const FastName FLAG_LIGHTMAPONLY;
 	static const FastName FLAG_TEXTUREONLY;
 	static const FastName FLAG_SETUPLIGHTMAP;
+	
+	static const FastName DEFAULT_QUALITY_NAME;
 	
 	enum eMaterialType
 	{
@@ -244,6 +247,16 @@ public:
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
 	void SubclassRenderState(RenderStateData* newState);
+	
+	static NMaterial* CreateMaterialInstance();
+	
+	static NMaterial* CreateMaterialInstance(const FastName& parentName,
+											 const FastName& templateName,
+											 const FastName& defaultQuality);
+	
+	static NMaterial* CreateMaterial(const FastName& materialName,
+									 const FastName& templateName,
+									 const FastName& defaultQuality);
 	
 protected:
 	
@@ -429,6 +442,16 @@ public:
 				  );
 
 };
+	
+	class NMaterialHelper
+	{
+	public:
+		
+		static void EnableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
+		static void DisableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
+		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
+		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
+	};
 
 };
 
