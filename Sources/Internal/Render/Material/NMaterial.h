@@ -126,6 +126,7 @@ class NMaterial : public DataNode
 {
 	friend class MaterialSystem;
 	friend class MaterialCompiler;
+	friend class NMaterialHelper;
 	
 public:
 	
@@ -423,6 +424,16 @@ public:
 				  );
 
 };
+	
+	class NMaterialHelper
+	{
+	public:
+		
+		static void EnableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
+		static void DisableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
+		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
+		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
+	};
 
 };
 

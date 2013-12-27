@@ -1119,7 +1119,7 @@ namespace DAVA
 		
 		passInstance->texturesDirty = false;
 		
-		for(int i = 0; i < COUNT_OF(textureData.textures); ++i)
+		for(size_t i = 0; i < COUNT_OF(textureData.textures); ++i)
 		{
 			if(textureData.textures[i] &&
 			   textureData.textures[i]->isPink)
@@ -1408,6 +1408,62 @@ namespace DAVA
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
 		}
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////
+	
+	void NMaterialHelper::EnableStateFlags(const FastName& passName,
+											 NMaterial* target,
+											 uint32 stateFlags)
+	{
+		DVASSERT(target);
+		
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.state = newData.state | stateFlags;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::DisableStateFlags(const FastName& passName,
+										   NMaterial* target,
+										   uint32 stateFlags)
+	{
+		DVASSERT(target);
+		
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.state = newData.state & ~stateFlags;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::SetBlendMode(const FastName& passName,
+											 NMaterial* target,
+											 eBlendMode src,
+											 eBlendMode dst)
+	{
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.sourceFactor = src;
+		newData.destFactor = dst;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::SwitchTemplate(NMaterial* material,
+										 const FastName& templateName)
+	{
+		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		material->SetMaterialTemplate(matTemplate, material->currentQuality);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

@@ -183,20 +183,8 @@ Landscape::~Landscape()
 
     SafeRelease(heightmap);
 	SafeDelete(cursor);
-	
-	DVASSERT(false);
-	//if(tileMaskMaterial)
-	//{
-	//	tileMaskMaterial->SetParent(NULL);
-	//}
-	
-	//if(fullTiledMaterial)
-	//{
-	//	fullTiledMaterial->SetParent(NULL);
-	//}
-	
+		
 	SafeRelease(tileMaskMaterial);
-	//SafeRelease(fullTiledMaterial);
 }
     
 
