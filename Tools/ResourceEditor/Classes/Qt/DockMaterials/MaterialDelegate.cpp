@@ -64,7 +64,7 @@ QSize MaterialDelegate::sizeHint(const QStyleOptionViewItem &option, const QMode
 {
     if((drawRule == DRAW_PREVIEW) && (HasPreview(index)))
     {
-		return QSize(option.rect.x(), TextureCache::THUMBNAIL_SIZE);
+		return QSize(option.rect.x(), PREVIEW_HEIGHT);
     }
     
     return QSize(option.rect.x(), TEXT_HEIGHT);
@@ -104,8 +104,8 @@ void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         const QImage img = GetPreview(option, material);
         if(img.isNull() == false)
         {
-            painter->drawImage(backgroundRect.topLeft(), img);
-            textXOffset = TextureCache::THUMBNAIL_SIZE;
+            painter->drawImage(QRect(backgroundRect.topLeft(), QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT)), img);
+            textXOffset = PREVIEW_HEIGHT;
         }
     }
     
@@ -211,25 +211,23 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
     const DAVA::NMaterial *material = GetMaterial(index);
     if(!material) return false;
     
-    if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
+    if(t)
     {
-        return true;
-    }
-    else
-    {
-        DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-        if(t)
+        const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
+        if((images.size() > 0) && (images[0].isNull() == false))
         {
-            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
-            if((images.size() > 0) && (images[0].isNull() == false))
-            {
-                return true;
-            }
-            else
-            {
-                TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
-            }
+            return true;
         }
+        else
+        {
+            TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
+        }
+    }
+    else if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    {
+        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
+        return (NULL != prop);
     }
     
     return false;
@@ -237,29 +235,26 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
 
 QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const DAVA::NMaterial * material) const
 {
-    QRect rect = GetBackgroundRect(option);
-    rect.setWidth(TextureCache::THUMBNAIL_SIZE);
-
-    if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
+    if(t)
     {
-//        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
-//        const DAVA::Color color = *(DAVA::Color*)prop->data;
-//
-//        QImage img(rect.size(), QImage::Format_ARGB32);
-//        img.fill(ColorToQColor(color));
-//        
-//        return img;
-    }
-    else
-    {
-        DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-        if(t)
+        const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
+        if((images.size() > 0) && (images[0].isNull() == false))
         {
-            const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
-            if((images.size() > 0) && (images[0].isNull() == false))
-            {
-                return images[0];
-            }
+            return images[0];
+        }
+    }
+    else if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    {
+        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
+        if(prop)
+        {
+            const DAVA::Color color = *(DAVA::Color*)prop->data;
+            
+            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
+            img.fill(ColorToQColor(color));
+            
+            return img;
         }
     }
 	

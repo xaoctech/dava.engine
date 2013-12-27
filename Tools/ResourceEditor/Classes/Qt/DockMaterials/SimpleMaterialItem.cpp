@@ -40,6 +40,9 @@ SimpleMaterialItem::SimpleMaterialItem(DAVA::NMaterial * _material)
 	setEditable(false);
 	setText(material->GetName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+
+    static QIcon icon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
+    setIcon(icon);
 }
 
 SimpleMaterialItem::~SimpleMaterialItem()

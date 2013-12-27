@@ -42,6 +42,7 @@ class MaterialDelegate: public QAbstractItemDelegate
 {
 	Q_OBJECT
     
+    static const int PREVIEW_HEIGHT = 32;
     static const int TEXT_HEIGHT = 24;
     static const int BORDER_MARGIN = 1;
 
