@@ -289,7 +289,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 				}
 				float32 *pT = group.layer->sprite->GetTextureVerts(nextFrame);
 
-				memcpy(&renderGroup->texcoords2[currVerticesCount], pT, sizeof(float32) * 8);				
+				memcpy(&renderGroup->texcoords2[currVerticesCount*2], pT, sizeof(float32) * 8);				
 				renderGroup->times[currVerticesCount] = current->animTime;
 				renderGroup->times[currVerticesCount+1] = current->animTime;
 				renderGroup->times[currVerticesCount+2] = current->animTime;

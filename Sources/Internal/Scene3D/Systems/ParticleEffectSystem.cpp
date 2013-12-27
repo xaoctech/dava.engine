@@ -319,7 +319,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			
 			if (group.layer->sizeOverLifeXY)
 			{
-				current->currSize=current->baseSize*group.layer->sizeOverLifeXY->GetValue(current->life);
+				current->currSize=current->baseSize*group.layer->sizeOverLifeXY->GetValue(overLifeTime);
 				Vector2 pivotSize = current->currSize*group.layer->layerPivotSizeOffsets;
 				current->currRadius = pivotSize.Length();
 			}
@@ -336,7 +336,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				float32 animDelta = group.layer->frameOverLifeFPS;
 				if (group.layer->animSpeedOverLife)
 					animDelta*=group.layer->animSpeedOverLife->GetValue(overLifeTime);
-				current->animTime+=animDelta;
+				current->animTime+=animDelta*dt;
 
 				while (current->animTime>1.0f)
 				{
@@ -544,7 +544,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 	{
 		if (group.emitter->emissionRange)
 		{
-			float32 theta = (float32)Random::Instance()->RandFloat()*group.emitter->emissionRange->GetValue(group.time);
+			float32 theta = (float32)Random::Instance()->RandFloat()*DegToRad(group.emitter->emissionRange->GetValue(group.time));
 			float32 phi = (float32)Random::Instance()->RandFloat() * PI_2;
 			particle->speed = Vector3(currEmissionPower* cos(phi) * sin(theta), currEmissionPower * sin (phi) * sin(theta), currEmissionPower * cos(theta));			
 		}
