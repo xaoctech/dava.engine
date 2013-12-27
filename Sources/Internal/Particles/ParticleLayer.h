@@ -88,9 +88,7 @@ struct ParticleLayer : public BaseObject
 		
 
 	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	    	
-	
-	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
+	    			
 	
 	// Convert from Layer Type to its name and vice versa.
 	eType StringToLayerType(const String& layerTypeName, eType defaultLayerType);
@@ -190,6 +188,9 @@ private:
 		String layerTypeName;
 	};
 	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+
+	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
+	void UpdateSizeLine(PropertyLine<Vector2> *line, bool rescaleSize, bool swapXY); //conversion from old format
 };
 }
 

@@ -83,7 +83,7 @@ public:
 	virtual ~ParticleEmitter();
 	ParticleEmitter * Clone();
 	
-	void LoadFromYaml(const FilePath & pathName);		
+	void LoadFromYaml(const FilePath & pathName, float32 *oLifeTime = NULL); //output life time is required for conversion purpose only
     void SaveToYaml(const FilePath & pathName);    	
 	
 	virtual void AddLayer(ParticleLayer * layer);

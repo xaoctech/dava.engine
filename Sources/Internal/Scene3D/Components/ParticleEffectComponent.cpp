@@ -43,8 +43,9 @@ REGISTER_CLASS(ParticleEffectComponent)
 ParticleEffectComponent::ParticleEffectComponent()
 {
 	repeatsCount = -1;
-	stopWhenEmpty = true;
-	effectDuration = 0.0f;
+	stopWhenEmpty = false;
+	clearOnRestart = true;
+	effectDuration = 100.0f;
 	playbackSpeed = 1.0f;
 	isPaused = false;
 	state = STATE_STOPPED;
@@ -309,6 +310,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 {
 	Entity *entity = GetEntity();
 	bool lodDefined = false;
+	effectDuration = 0;
 	for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
 	{
 		Entity *child = entity->GetChild(i);
@@ -318,8 +320,14 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 			emitterProxy = static_cast<PartilceEmitterLoadProxy *>(renderComponent->GetRenderObject());
 		if (!emitterProxy) continue;
 		ParticleEmitter *emitter = new ParticleEmitter();
+		emitter->position = child->GetLocalTransform().GetTranslationVector();
 		if (!emitterProxy->emitterFilename.empty())
-			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename);
+		{
+			float32 emitterLifeTime;
+			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename, &emitterLifeTime);
+			if (effectDuration<emitterLifeTime)
+				effectDuration = emitterLifeTime;
+		}
 		emitters.push_back(emitter);
 		if (!lodDefined)
 		{
