@@ -72,7 +72,6 @@ namespace DAVA
 		
 		if (!rootNode)
 		{
-			SafeRelease(rootNode);
 			SafeRelease(parser);
 			return result;
 		}
@@ -94,9 +93,7 @@ namespace DAVA
 			}
 		}
 		
-		SafeRelease(rootNode);
 		SafeRelease(parser);
-
 		return result;
 	}
 };
