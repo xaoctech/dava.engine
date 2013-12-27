@@ -46,7 +46,7 @@ namespace DAVA
 			if(NULL == matTemplate)
 			{
 				matTemplate = new NMaterialTemplate();
-				matTemplate->techniqueStateMap.insert(MaterialSystem::DEFAULT_QUALITY_NAME,
+				matTemplate->techniqueStateMap.insert(NMaterial::DEFAULT_QUALITY_NAME,
 													  templateName);
 			}
 			
