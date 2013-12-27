@@ -211,10 +211,7 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
     const DAVA::NMaterial *material = GetMaterial(index);
     if(!material) return false;
     
-	DVASSERT(false && "Implement for refactored new materials");
-	
-	/*
-    if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR))
+    if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
     {
         return true;
     }
@@ -234,8 +231,7 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
             }
         }
     }
-	 */
-
+    
     return false;
 }
 
@@ -244,18 +240,15 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
     QRect rect = GetBackgroundRect(option);
     rect.setWidth(TextureCache::THUMBNAIL_SIZE);
 
-	DVASSERT(false && "Implement for refactored new materials");
-	
-	/*
-    if(material->HasDefine(DAVA::NMaterial::PARAM_FLAT_COLOR))
+    if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
     {
-        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
-        const DAVA::Color color = *(DAVA::Color*)prop->data;
-
-        QImage img(rect.size(), QImage::Format_ARGB32);
-        img.fill(ColorToQColor(color));
-        
-        return img;
+//        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
+//        const DAVA::Color color = *(DAVA::Color*)prop->data;
+//
+//        QImage img(rect.size(), QImage::Format_ARGB32);
+//        img.fill(ColorToQColor(color));
+//        
+//        return img;
     }
     else
     {
@@ -269,7 +262,6 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
             }
         }
     }
-    */
 	
     return QImage();
 }

@@ -28,7 +28,7 @@
  =====================================================================================*/
 
 #include "FileSystem/YamlParser.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Material/NMaterialTemplate.h"
 
 namespace DAVA
@@ -72,7 +72,6 @@ namespace DAVA
 		
 		if (!rootNode)
 		{
-			SafeRelease(rootNode);
 			SafeRelease(parser);
 			return result;
 		}
@@ -94,9 +93,7 @@ namespace DAVA
 			}
 		}
 		
-		SafeRelease(rootNode);
 		SafeRelease(parser);
-
 		return result;
 	}
 };

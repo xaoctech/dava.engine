@@ -298,7 +298,7 @@ namespace DAVA
 		YamlNode * rootNode = parser->GetRootNode();
 		if (!rootNode)
 		{
-			SafeRelease(rootNode);
+			SafeRelease(parser);
 			return false;
 		}
 		

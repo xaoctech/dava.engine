@@ -67,6 +67,7 @@ protected:
     bool IsFastNameContains(const DAVA::FastName & name, const DAVA::String & partOfName) const;
     
     DAVA::Set<const DAVA::NMaterial *> selectedMaterials;
+    SceneEditor2 * curScene;
 };
 
 Q_DECLARE_METATYPE(DAVA::NMaterial *)

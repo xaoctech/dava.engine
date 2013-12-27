@@ -1320,9 +1320,6 @@
     <ClInclude Include="..\..\Sources\Internal\DAVAClassRegistrator.h">
       <Filter>Internal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialSystem.h">
-      <Filter>Internal\Render\Material</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1403,6 +1400,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material\RenderTechnique.h">
       <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2432,9 +2432,6 @@
     <ClCompile Include="..\..\Sources\Internal\DAVAClassRegistrator.cpp">
       <Filter>Internal</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialSystem.cpp">
-      <Filter>Internal\Render\Material</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2509,6 +2506,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp">
       <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

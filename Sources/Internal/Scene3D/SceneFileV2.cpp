@@ -68,7 +68,7 @@
 #include "Render/Highlevel/SpriteObject.h"
 
 #include "Render/Material/NMaterial.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
@@ -322,11 +322,6 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         // TODO: Check do we need to releae root node here
         _scene->AddRootNode(rootNode, rootNodePathName);
     }
-    else
-    {
-        SafeRelease(rootNode);
-    }
-    
     
     SafeRelease(rootNode);
     SafeRelease(file);

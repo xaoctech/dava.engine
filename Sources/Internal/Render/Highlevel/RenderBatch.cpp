@@ -37,7 +37,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Debug/DVAssert.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/OcclusionQuery.h"
 #include "Debug/Stats.h"
 
