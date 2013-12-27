@@ -63,14 +63,15 @@ protected:
     
     struct SpeedTreeInfo
     {
+        SpeedTreeInfo() :
+        leafsSquare(0.f),
+        leafsSquareDivX(0.f),
+        leafsSquareDivY(0.f)
+        {}
+        
         DAVA::float32 leafsSquare;
         DAVA::float32 leafsSquareDivX;
         DAVA::float32 leafsSquareDivY;
-        
-        void Clear()
-        {
-            leafsSquare = leafsSquareDivX = leafsSquareDivY = 0.f;
-        }
     };
 
 public:
@@ -140,7 +141,7 @@ protected:
 
     static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
     
-    static SpeedTreeInfo GetSpeedTreeLeafsSquare(DAVA::Entity *forEntity);
+    static SpeedTreeInfo GetSpeedTreeLeafsSquare(DAVA::RenderObject *forEntity);
     
 protected:
     

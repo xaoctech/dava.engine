@@ -669,22 +669,19 @@ void SceneInfo::CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup)
 
     int32 entitiesCount = forGroup->Size();
     for(int32 i = 0; i < entitiesCount; i++)
-        speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(forGroup->GetEntity(i)));
+        speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(GetRenderObject(forGroup->GetEntity(i))));
 }
 
-SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::Entity *forEntity)
+SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *renderObject)
 {
     SpeedTreeInfo info;
-    info.Clear();
-
-    RenderObject * ro = GetRenderObject(forEntity);
-    if(ro)
+    if(renderObject)
     {
-        Vector3 bboxSize = ro->GetBoundingBox().GetSize();
-        int32 rbCount = ro->GetRenderBatchCount();
-        for(int32 i = 0; i < rbCount; i++)
+        Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
+        int32 rbCount = renderObject->GetRenderBatchCount();
+        for(int32 i = 0; i < rbCount; ++i)
         {
-            RenderBatch * rb = ro->GetRenderBatch(i);
+            RenderBatch * rb = renderObject->GetRenderBatch(i);
             if(rb->GetMaterial() && rb->GetMaterial()->type == Material::MATERIAL_SPEED_TREE_LEAF)
             {
                 PolygonGroup * pg = rb->GetPolygonGroup();
@@ -692,9 +689,10 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::Entity *forEnt
                 for(int32 t = 0; t < triangleCount; t++)
                 {
                     int32 i1, i2, i3;
-                    pg->GetIndex(t * 3, i1);
-                    pg->GetIndex(t * 3 + 1, i2);
-                    pg->GetIndex(t * 3 + 2, i3);
+                    int32 baseVertexIndex = t * 3;
+                    pg->GetIndex(baseVertexIndex, i1);
+                    pg->GetIndex(baseVertexIndex + 1, i2);
+                    pg->GetIndex(baseVertexIndex + 2, i3);
                     
                     Vector3 v1, v2, v3;
                     pg->GetCoord(i1, v1);
