@@ -54,24 +54,24 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	if(NULL == ParticleLayer3D::regularMaterial)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
-		ParticleLayer3D::regularMaterial = MaterialSystem::CreateMaterial(FastName("Particle_Material"),
+		ParticleLayer3D::regularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"),
 														 FastName("~res:/Materials/Legacy/Particles/Particles.material"),
-														 MaterialSystem::DEFAULT_QUALITY_NAME);
+														 NMaterial::DEFAULT_QUALITY_NAME);
 	}
 	
 	if(NULL == ParticleLayer3D::frameBlendMaterial)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
-		ParticleLayer3D::frameBlendMaterial = MaterialSystem::CreateMaterial(FastName("Particle_Frameblend_Material"),
+		ParticleLayer3D::frameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"),
 														 FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"),
-														 MaterialSystem::DEFAULT_QUALITY_NAME);
+														 NMaterial::DEFAULT_QUALITY_NAME);
 	}
 	
 	isLong = false;
 	renderData = new RenderDataObject();
 	this->emitter = parent;
 	
-	material = MaterialSystem::CreateMaterialInstance();
+	material = NMaterial::CreateMaterialInstance();
 	ParticleLayer3D::regularMaterial->AddChild(material);
 	
 	renderBatch->SetIndices(&indices);
@@ -636,14 +636,7 @@ void ParticleLayer3D::UpdateBlendState()
 	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
 
 
-		const RenderStateData* curState = material->GetRenderState(PASS_FORWARD);
-		RenderStateData subclassState;
-		memcpy(&subclassState, curState, sizeof(RenderStateData));
-		
-		subclassState.sourceFactor = srcBlendFactor;
-		subclassState.destFactor = dstBlendFactor;
-		
-		material->SubclassRenderState(PASS_FORWARD, &subclassState);
+		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcBlendFactor, dstBlendFactor);
 	}
 }
 

@@ -276,7 +276,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
 	serializationContext.SetScene(scene);
-	serializationContext.SetDefaultMaterialQuality(MaterialSystem::DEFAULT_QUALITY_NAME);
+	serializationContext.SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME);
     
     if(isDebugLogEnabled)
         Logger::FrameworkDebug("+ load data objects");

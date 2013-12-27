@@ -38,12 +38,10 @@
 namespace DAVA
 {
     
-const FastName MaterialSystem::DEFAULT_QUALITY_NAME = FastName("Normal");
-    
 MaterialSystem::MaterialSystem(Scene * scene)
 : SceneSystem(scene)
 {
-    SetDefaultMaterialQuality(MaterialSystem::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
+    SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
 }
 
 MaterialSystem::~MaterialSystem()
@@ -119,41 +117,6 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
     {
         materialList[i]->SwitchQuality(qualityLevelName);
     }
-}
-
-//VI: creates material of type MATERIALTYPE_INSTANCE
-//VI: These methods DO NOT add newly created materials to the material system
-NMaterial* MaterialSystem::CreateMaterialInstance()
-{
-    static int32 instanceCounter = 0;
-    instanceCounter++;
-    
-    NMaterial* mat = new NMaterial();
-    mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
-    mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
-    mat->SetMaterialName(Format("Instance-%d", instanceCounter));
-    mat->SetName(mat->GetMaterialName().c_str());
-    
-    return mat;
-}
-
-//VI: creates material of type MATERIALTYPE_MATERIAL
-//VI: These methods DO NOT add newly created materials to the material system
-NMaterial* MaterialSystem::CreateMaterial(const FastName& materialName,
-                                          const FastName& templateName,
-                                          const FastName& defaultQuality)
-{
-    NMaterial* mat = new NMaterial();
-    mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
-    mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
-    mat->SetMaterialName(materialName.c_str());
-    mat->SetName(mat->GetMaterialName().c_str());
-    
-    const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
-    DVASSERT(matTemplate);
-    mat->SetMaterialTemplate(matTemplate, defaultQuality);
-    
-    return mat;
 }
     
 };
