@@ -340,9 +340,15 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 
 				while (current->animTime>1.0f)
 				{
-					current->frame ++;					
-					//TODO: note - code to compute frame according to sprite frame count was here - later add it to render object
+					current->frame ++;										
 					current->animTime -= 1.0f;
+					if (current->frame>=group.layer->sprite->GetFrameCount())
+					{
+						if (group.layer->loopSpriteAnimation)
+							current->frame = 0;
+						else
+							current->frame = group.layer->sprite->GetFrameCount()-1;
+					}
 				}
 			}			
 			prev = current;
