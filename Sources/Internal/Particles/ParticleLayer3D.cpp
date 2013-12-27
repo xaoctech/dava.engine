@@ -635,14 +635,7 @@ void ParticleLayer3D::UpdateBlendState()
 	//						   BLEND_MODE_NAMES[dstBlendFactor].c_str());
 
 
-		const RenderStateData* curState = material->GetRenderState(PASS_FORWARD);
-		RenderStateData subclassState;
-		memcpy(&subclassState, curState, sizeof(RenderStateData));
-		
-		subclassState.sourceFactor = srcBlendFactor;
-		subclassState.destFactor = dstBlendFactor;
-		
-		material->SubclassRenderState(PASS_FORWARD, &subclassState);
+		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcBlendFactor, dstBlendFactor);
 	}
 }
 

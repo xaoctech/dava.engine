@@ -117,5 +117,21 @@ namespace DAVA
 		
 		return mat;
 	}
+	
+	NMaterial* MaterialSystem::CreateMaterialInstance(const FastName& parentName,
+											 const FastName& templateName,
+											 const FastName& defaultQuality)
+	{
+		NMaterial* parentMaterial = MaterialSystem::CreateMaterial(parentName,
+																   templateName,
+																   defaultQuality);
+		NMaterial* material = MaterialSystem::CreateMaterialInstance();
+		parentMaterial->AddChild(material);
+		
+		SafeRelease(parentMaterial);
+		
+		return material;
+	}
+
 };
 
