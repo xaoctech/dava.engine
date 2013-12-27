@@ -30,16 +30,10 @@
 
 
 #include "Scene3D/Systems/MaterialSystem.h"
-#include "Render/Material/MaterialCompiler.h"
-#include "Render/Material/MaterialGraph.h"
-#include "Render/Material/MaterialGraphNode.h"
-#include "Render/3D/PolygonGroup.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/Shader.h"
-#include "Utils/StringFormat.h"
-#include "FileSystem/YamlParser.h"
-#include "Render/RenderManager.h"
 #include "Render/Material/NMaterialTemplate.h"
+
+#include "Utils/StringFormat.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -56,16 +50,48 @@ MaterialSystem::~MaterialSystem()
 {
 }
 
-void MaterialSystem::BuildMaterialList(Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, Vector<NMaterial*>& materialList) const
 {
+    if(!forEntity) return;
+    
+    Vector<NMaterial*> materials;
+    forEntity->GetDataNodes(materials);
+
+    materialList.insert(materialList.end(), materials.begin(), materials.end());
 }
 
-void MaterialSystem::BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Vector<NMaterial*>& materialList) const
 {
+    if(!forEntity) return;
+    
+    Vector<NMaterial*> materials;
+    forEntity->GetDataNodes(materials);
+    
+    uint32 size = materials.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        if(materials[i]->GetMaterialName() == materialName)
+        {
+            materialList.push_back(materials[i]);
+        }
+    }
 }
     
-void MaterialSystem::BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const
 {
+    if(!forEntity) return;
+    
+    Vector<NMaterial*> materials;
+    forEntity->GetDataNodes(materials);
+
+    uint32 size = materials.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        if(materials[i]->GetMaterialType() == materialType)
+        {
+            materialList.push_back(materials[i]);
+        }
+    }
 }
 
 void MaterialSystem::SetDefaultMaterialQuality(const FastName& qualityLevelName)
@@ -85,6 +111,14 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
 
 void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 {
+    Vector<NMaterial*> materialList;
+    BuildMaterialList(GetScene(), materialList);
+    
+    uint32 size = materialList.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        materialList[i]->SwitchQuality(qualityLevelName);
+    }
 }
 
 //VI: creates material of type MATERIALTYPE_INSTANCE
