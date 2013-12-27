@@ -366,9 +366,6 @@ private:
 #if defined(__DAVAENGINE_OPENGL__)
 	void HWglCreateFBOBuffers();
 	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
-
-    static GLint HWglFilterToGLFilter(TextureFilter filter);
-    static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     static eGPUFamily defaultGPU;

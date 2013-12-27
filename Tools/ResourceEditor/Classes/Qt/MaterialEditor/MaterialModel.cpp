@@ -54,23 +54,17 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 
 	if(NULL != scene)
 	{
-		DVASSERT(false && "Implement for refactored new materials");
-		
-		/*QStandardItem *root = invisibleRootItem();
-		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
+		QStandardItem *root = invisibleRootItem();
+		DAVA::MaterialSystem *matSys = scene->GetMaterialSystem();
 
 		DAVA::Vector<DAVA::NMaterial *> materials;
-		matSys->BuildMaterialList(NULL, materials);
+		matSys->BuildMaterialList(scene, DAVA::NMaterial::MATERIALTYPE_MATERIAL, materials);
 
 		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
 		{
-			if(GetLevel(materials[i]) == 1)
-			{
-				MaterialItem *item = new MaterialItem(materials[i], 1);
-				item->setDragEnabled(false);
-				root->appendRow(item);
-			}
-		}*/
+			MaterialItem *item = new MaterialItem(materials[i]);
+			root->appendRow(item);
+		}
 	}
 }
 
@@ -144,8 +138,6 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 	{
 		if(dropCanBeAccepted(data, action, row, column, parent))
 		{
-			DVASSERT(false && "Implement for refactored new materials");
-			/*
 			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
 			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
 
@@ -154,13 +146,18 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 				MaterialItem *sourceMaterialItem = (MaterialItem *) itemFromIndex(GetIndex(materials[i]));
 				if(NULL != sourceMaterialItem)
 				{
-					materials[i]->SetParent(targetMaterial);
+					// TODO:
+					// this should be done with command
+					// -->
+					materials[i]->GetParent()->RemoveChild(materials[i]);
+					targetMaterial->AddChild(materials[i]);
+					// <--
+
 					((MaterialItem *) sourceMaterialItem->parent())->Sync();
 				}
 			}
 
 			targetMaterialItem->Sync();
-			 */
 		}
 	}
 
@@ -179,113 +176,22 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction acti
 		{
 			bool foundInacceptable = false;
 			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
-			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
 
-			switch(targetMaterialItem->GetLevel())
+			// allow drop only into material, but not into instance
+			if(targetMaterial->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
 			{
-			case 1:
+				// only instance type should be in mime data
+				for(int i = 0; i < materials.size(); ++i)
 				{
-					// dropping into level 1 material
-					// accept only level 2 materials
-					for(int i = 0; i < materials.size(); ++i)
+					if(materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE)
 					{
-						if(GetLevel(materials[i]) != 2)
-						{
-							foundInacceptable = true;
-							break;
-						}
+						foundInacceptable = true;
+						break;
 					}
 				}
-				break;
-
-			case 2:
-				{
-					// dropping into level 2 material
-					// accept only level 3 materials
-					for(int i = 0; i < materials.size(); ++i)
-					{
-						if(GetLevel(materials[i]) != 3)
-						{
-							foundInacceptable = true;
-							break;
-						}
-					}
-				}
-				break;
-
-			case 0:
-			default:
-				foundInacceptable = true;
-				break;
 			}
 
 			ret = !foundInacceptable;
-		}
-	}
-
-	return ret;
-}
-
-int MaterialModel::GetLevel(DAVA::NMaterial *material) const
-{
-	int ret = 0;
-
-	if(NULL != material)
-	{
-		DVASSERT(false && "Implement for refactored new materials");
-		
-		/*
-		// determine material level
-		if(material->IsConfigMaterial() && material->IsSwitchable())
-		{
-			ret = 1;
-		}
-		else if(material->IsSwitchable())
-		{
-			if(NULL != material->GetParent() &&
-				material->GetParent()->IsConfigMaterial())
-			{
-				ret = 2;
-			}
-			else
-			{
-				ret = 3;
-			}
-		}
-		 */
-	}
-
-	return ret;
-}
-
-MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /*= NULL*/)
-: QSortFilterProxyModel(parent)
-, materialModel(_materialModel)
-{ 
-	setSourceModel(materialModel);
-}
-
-bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
-{
-	bool ret = false;
-
-	if(NULL != materialModel)
-	{
-		DAVA::NMaterial *materialLeft = materialModel->GetMaterial(left);
-		DAVA::NMaterial *materialRight = materialModel->GetMaterial(right);
-
-		if( materialModel->GetLevel(materialLeft) == 1 &&
-			materialModel->GetLevel(materialRight) == 1)
-		{
-			if( materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() > 0 ||
-				materialLeft->GetChildrenCount() == 0 && materialRight->GetChildrenCount() == 0)
-			{
-				ret = (strcmp(materialLeft->GetMaterialName().c_str(), materialRight->GetMaterialName().c_str()) < 0);
-			}
-			else if(materialLeft->GetChildrenCount() > 0 && materialRight->GetChildrenCount() == 0)
-			{
-				ret = true;
-			}
 		}
 	}
 

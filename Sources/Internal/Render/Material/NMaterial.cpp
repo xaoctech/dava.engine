@@ -1588,59 +1588,55 @@ namespace DAVA
 			source = PropData::SOURCE_PARENT;
 		}
 		
-		DVASSERT(false && "Implement for refactored new materials!");
-		//VI: TODO: implement for refactored new materials
-		
-		/*parent = state;
-		MaterialTechnique *technique = NULL;
-		while(NULL != parent && NULL == technique)
-		{
-			technique = parent->techniqueForRenderPass[PASS_FORWARD];
-			parent = parent->GetParent();
-		}
-		
+
 		// shader data
 		source = PropData::SOURCE_SHADER;
-		if(NULL != technique)
+		if(state->instancePasses.size() > 0)
 		{
-			Shader *shader = technique->GetShader();
-			if(NULL != shader)
+			HashMap<FastName, RenderPassInstance*>::iterator it = state->instancePasses.begin();
+			HashMap<FastName, RenderPassInstance*>::iterator end = state->instancePasses.end();
+
+			for(; it != end; ++it)
 			{
-				int32 uniformCount = shader->GetUniformCount();
-				for(int32 i = 0; i < uniformCount; ++i)
+				Shader *shader = it->second->renderState.shader;
+				if(NULL != shader)
 				{
-					Shader::Uniform *uniform = shader->GetUniform(i);
-					if( !Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
-					   uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
+					int32 uniformCount = shader->GetUniformCount();
+					for(int32 i = 0; i < uniformCount; ++i)
 					{
-						FastName propName = uniform->name;
-						
-						// redefine some shader properties names
-						if(propName == NMaterial::PARAM_LIGHT_AMBIENT_COLOR) propName = NMaterial::PARAM_PROP_AMBIENT_COLOR;
-						else if(propName == NMaterial::PARAM_LIGHT_DIFFUSE_COLOR) propName = NMaterial::PARAM_PROP_DIFFUSE_COLOR;
-						else if(propName == NMaterial::PARAM_LIGHT_SPECULAR_COLOR) propName = NMaterial::PARAM_PROP_SPECULAR_COLOR;
-						
-						if(!staticData.count(propName))
+						Shader::Uniform *uniform = shader->GetUniform(i);
+						if(!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
 						{
-							PropData data;
-							
-							data.property.data = NULL;
-							data.property.type = uniform->type;
-							data.property.size = uniform->size;
-							data.source |= source;
-							
-							staticData.Insert(propName, data);
-							//printf("insert %s, %d\n", propName.c_str(), source);
-						}
-						else
-						{
-							staticData[propName].source |= source;
-							//printf("update %s, %d\n", propName.c_str(), source);
+							FastName propName = uniform->name;
+
+							// redefine some shader properties names
+							if(propName == NMaterial::PARAM_LIGHT_AMBIENT_COLOR) propName = NMaterial::PARAM_PROP_AMBIENT_COLOR;
+							else if(propName == NMaterial::PARAM_LIGHT_DIFFUSE_COLOR) propName = NMaterial::PARAM_PROP_DIFFUSE_COLOR;
+							else if(propName == NMaterial::PARAM_LIGHT_SPECULAR_COLOR) propName = NMaterial::PARAM_PROP_SPECULAR_COLOR;
+
+							if(!staticData.count(propName))
+							{
+								PropData data;
+
+								data.property.data = NULL;
+								data.property.type = uniform->type;
+								data.property.size = uniform->size;
+								data.source |= source;
+
+								staticData.Insert(propName, data);
+								//printf("insert %s, %d\n", propName.c_str(), source);
+							}
+							else
+							{
+								staticData[propName].source |= source;
+								//printf("update %s, %d\n", propName.c_str(), source);
+							}
 						}
 					}
 				}
 			}
-		}*/
+		}
 		
 		return &staticData;
 	}
