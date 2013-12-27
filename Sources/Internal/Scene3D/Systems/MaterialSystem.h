@@ -57,9 +57,9 @@ public:
 	MaterialSystem(Scene * scene);
 	virtual ~MaterialSystem();
 		
-	void BuildMaterialList(Vector<NMaterial*>& materialList) const;
-	void BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const;
-	void BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, const FastName& materialName, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
 	
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
