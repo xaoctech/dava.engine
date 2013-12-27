@@ -89,10 +89,10 @@ namespace DAVA
 		{
 			RenderDataObject* renderDataObj = new RenderDataObject();
 							
-			NMaterial* skyboxParent = MaterialSystem::CreateMaterial(FastName("Skybox_material"),
+			NMaterial* skyboxParent = NMaterial::CreateMaterial(FastName("Skybox_material"),
 																	 FastName("~res:/Materials/Legacy/Skybox.material"),
-																	 MaterialSystem::DEFAULT_QUALITY_NAME);
-			NMaterial* skyboxMaterial = MaterialSystem::CreateMaterialInstance();
+																	 NMaterial::DEFAULT_QUALITY_NAME);
+			NMaterial* skyboxMaterial = NMaterial::CreateMaterialInstance();
 			skyboxParent->AddChild(skyboxMaterial);
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();

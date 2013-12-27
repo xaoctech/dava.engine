@@ -361,7 +361,7 @@ namespace DAVA
 			FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
 			DVASSERT(newMaterialName.IsValid());
 			
-			material = MaterialSystem::CreateMaterial(FastName(oldMaterial->GetName()),
+			material = NMaterial::CreateMaterial(FastName(oldMaterial->GetName()),
 													  newMaterialName,
 													  GetDefaultMaterialQuality());
 			
@@ -454,7 +454,7 @@ namespace DAVA
 			SetMaterial(oldMaterialId, material);
 		}
 		
-		NMaterial* instanceMaterial = MaterialSystem::CreateMaterialInstance();
+		NMaterial* instanceMaterial = NMaterial::CreateMaterialInstance();
 		
 		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 		{

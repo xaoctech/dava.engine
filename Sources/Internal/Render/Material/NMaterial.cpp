@@ -89,6 +89,7 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 	
 	void NMaterial::GenericPropertyManager::Init(NMaterialProperty* prop)
 	{
@@ -180,6 +181,7 @@ namespace DAVA
 	void NMaterial::AddChild(NMaterial* material)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
+		DVASSERT(NULL == parent);
 		
 		children.push_back(material);
 		
@@ -427,14 +429,14 @@ namespace DAVA
 		NMaterial* clonedMaterial = NULL;
 		if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
-			clonedMaterial = MaterialSystem::CreateMaterial(materialName,
+			clonedMaterial = NMaterial::CreateMaterial(materialName,
 															materialTemplate->name,
 															currentQuality);
 			
 		}
 		else if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
-			clonedMaterial = MaterialSystem::CreateMaterialInstance();
+			clonedMaterial = NMaterial::CreateMaterialInstance();
 		}
 		else
 		{
@@ -531,6 +533,7 @@ namespace DAVA
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
+			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
 		
@@ -1409,6 +1412,58 @@ namespace DAVA
 			}
 		}
 	}
+	
+	//VI: creates material of type MATERIALTYPE_INSTANCE
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterialInstance()
+	{
+		static int32 instanceCounter = 0;
+		instanceCounter++;
+		
+		NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
+		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
+		mat->SetName(mat->GetMaterialName().c_str());
+		
+		return mat;
+	}
+	
+	//VI: creates material of type MATERIALTYPE_MATERIAL
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterial(const FastName& materialName,
+										 const FastName& templateName,
+										 const FastName& defaultQuality)
+	{
+		NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
+		mat->SetMaterialName(materialName.c_str());
+		mat->SetName(mat->GetMaterialName().c_str());
+		
+		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		mat->SetMaterialTemplate(matTemplate, defaultQuality);
+		
+		return mat;
+	}
+
+	//VI: creates material of type MATERIALTYPE_INSTANCE
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterialInstance(const FastName& materialName,
+												 const FastName& templateName,
+												 const FastName& defaultQuality)
+	{
+		NMaterial* parentMat = CreateMaterial(materialName, templateName, defaultQuality);
+		
+		NMaterial* mat = CreateMaterialInstance();
+		parentMat->AddChild(mat);
+		
+		SafeRelease(parentMat);
+		
+		return mat;
+	}
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
