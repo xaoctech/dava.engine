@@ -669,7 +669,11 @@ void SceneInfo::CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup)
 
     int32 entitiesCount = forGroup->Size();
     for(int32 i = 0; i < entitiesCount; i++)
-        speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(GetRenderObject(forGroup->GetEntity(i))));
+    {
+        RenderObject * ro = GetRenderObject(forGroup->GetEntity(i));
+        if(ro)
+            speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(ro));
+    }
 }
 
 SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *renderObject)
