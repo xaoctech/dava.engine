@@ -50,7 +50,6 @@ public slots:
 
 protected:
 	MaterialModel *treeModel;
-	MaterialFilteringModel *treeFilteringModel;
 
 	void dragEnterEvent(QDragEnterEvent * event);
 	void dragMoveEvent(QDragMoveEvent * event);

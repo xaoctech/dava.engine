@@ -52,8 +52,7 @@ public:
     void SetScene(SceneEditor2 * scene);
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
-	int GetLevel(DAVA::NMaterial *) const;
-
+	
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
@@ -62,16 +61,6 @@ public:
 
 protected:
 	
-};
-
-class MaterialFilteringModel : public QSortFilterProxyModel
-{
-public:
-	MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent = NULL);
-
-protected:
-	MaterialModel *materialModel;
-	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 };
 
 Q_DECLARE_METATYPE(DAVA::NMaterial *)
