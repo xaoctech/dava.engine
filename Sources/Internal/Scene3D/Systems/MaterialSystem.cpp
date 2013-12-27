@@ -112,7 +112,7 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
 void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 {
     Vector<NMaterial*> materialList;
-    BuildMaterialList(GetScene(), materialList);
+    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materialList);
     
     uint32 size = materialList.size();
     for(uint32 i = 0; i < size; ++i)
