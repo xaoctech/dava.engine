@@ -104,7 +104,7 @@ void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         const QImage img = GetPreview(option, material);
         if(img.isNull() == false)
         {
-            painter->drawImage(backgroundRect.topLeft(), img);
+            painter->drawImage(QRect(backgroundRect.topLeft(), QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT)), img);
             textXOffset = PREVIEW_HEIGHT;
         }
     }
@@ -235,9 +235,6 @@ bool MaterialDelegate::HasPreview(const QModelIndex &index) const
 
 QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const DAVA::NMaterial * material) const
 {
-    QRect rect = GetBackgroundRect(option);
-    rect.setWidth(TextureCache::THUMBNAIL_SIZE);
-
     DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
     if(t)
     {
@@ -254,7 +251,7 @@ QImage MaterialDelegate::GetPreview(const QStyleOptionViewItem & option, const D
         {
             const DAVA::Color color = *(DAVA::Color*)prop->data;
             
-            QImage img(rect.size(), QImage::Format_ARGB32);
+            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
             img.fill(ColorToQColor(color));
             
             return img;
