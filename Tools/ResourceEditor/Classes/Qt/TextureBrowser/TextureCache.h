@@ -80,7 +80,7 @@ signals:
     
 protected slots:
     
-    void TexturesReloaded();
+    void ClearCache();
     
 	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
     void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
