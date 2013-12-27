@@ -56,7 +56,7 @@ class MaterialCompiler;
 class MaterialGraph;
 	
 class NMaterial;
-class NMaterialTemplate;
+struct NMaterialTemplate;
 	
 struct IlluminationParams : public InspBase
 {
@@ -260,12 +260,18 @@ protected:
 
 	struct TextureBucket
 	{
+		TextureBucket() : texture(NULL)
+		{ }
+
 		Texture* texture; //VI: can be NULL
 		FilePath path;
 	};
 		
 	struct UniformCacheEntry
 	{
+		UniformCacheEntry() : uniform(NULL), prop(NULL)
+		{ }
+
 		Shader::Uniform* uniform;
 		int32 index;
 		NMaterialProperty* prop;

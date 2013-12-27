@@ -750,12 +750,6 @@
 		50A5187317B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
 		50A5187417B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
 		50A5187517B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
-		50A5187817B256590022E8FA /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A5187617B256590022E8FA /* MaterialSystem.cpp */; };
-		50A5187917B256590022E8FA /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A5187617B256590022E8FA /* MaterialSystem.cpp */; };
-		50A5187A17B256590022E8FA /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A5187617B256590022E8FA /* MaterialSystem.cpp */; };
-		50A5187B17B256590022E8FA /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5187717B256590022E8FA /* MaterialSystem.h */; };
-		50A5187C17B256590022E8FA /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5187717B256590022E8FA /* MaterialSystem.h */; };
-		50A5187D17B256590022E8FA /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5187717B256590022E8FA /* MaterialSystem.h */; };
 		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50ED334A1858B5A200A917D5 /* StaticOcclusionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */; };
@@ -2116,6 +2110,12 @@
 		E8BAD5B5185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
+		E8F43E24186C3D02006796CB /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F43E22186C3D02006796CB /* MaterialSystem.cpp */; };
+		E8F43E25186C3D02006796CB /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F43E22186C3D02006796CB /* MaterialSystem.cpp */; };
+		E8F43E26186C3D02006796CB /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F43E22186C3D02006796CB /* MaterialSystem.cpp */; };
+		E8F43E27186C3D02006796CB /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F43E23186C3D02006796CB /* MaterialSystem.h */; };
+		E8F43E28186C3D02006796CB /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F43E23186C3D02006796CB /* MaterialSystem.h */; };
+		E8F43E29186C3D02006796CB /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F43E23186C3D02006796CB /* MaterialSystem.h */; };
 		E8FC12F2186972560095D8FE /* QualitySettingsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */; };
 		E8FC12F3186972560095D8FE /* QualitySettingsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */; };
 		E8FC12F61869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */; };
@@ -2277,8 +2277,6 @@
 		50A5186517B255EC0022E8FA /* RenderHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderHierarchy.h; sourceTree = "<group>"; };
 		50A5186E17B256250022E8FA /* ShaderCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderCache.cpp; sourceTree = "<group>"; };
 		50A5186F17B256250022E8FA /* ShaderCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderCache.h; sourceTree = "<group>"; };
-		50A5187617B256590022E8FA /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
-		50A5187717B256590022E8FA /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionComponent.cpp; sourceTree = "<group>"; };
@@ -2951,6 +2949,8 @@
 		E8BAD5AE185213F100C98C8D /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionDynamic.h; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
+		E8F43E22186C3D02006796CB /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
+		E8F43E23186C3D02006796CB /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
 		E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsComponent.cpp; sourceTree = "<group>"; };
 		E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualitySettingsComponent.h; sourceTree = "<group>"; };
 		E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySettingsSystem.cpp; sourceTree = "<group>"; };
@@ -3783,8 +3783,6 @@
 			children = (
 				A6931ACB1868569D00006294 /* RenderTechnique.cpp */,
 				A6931ACC1868569D00006294 /* RenderTechnique.h */,
-				50A5187617B256590022E8FA /* MaterialSystem.cpp */,
-				50A5187717B256590022E8FA /* MaterialSystem.h */,
 				E8989C7416BD24E400732C04 /* MaterialCompiler.cpp */,
 				E8989C7516BD24E400732C04 /* MaterialCompiler.h */,
 				E8989C7616BD24E400732C04 /* MaterialGraph.cpp */,
@@ -3937,6 +3935,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E8F43E22186C3D02006796CB /* MaterialSystem.cpp */,
+				E8F43E23186C3D02006796CB /* MaterialSystem.h */,
 				E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */,
 				E8FC12F51869726A0095D8FE /* QualitySettingsSystem.h */,
 				5013F68F1859EB0400FB3C51 /* StaticOcclusionSystem.cpp */,
@@ -4299,6 +4299,7 @@
 				176DE981174B5561007A983B /* OpenGLView.h in Headers */,
 				176DE982174B5561007A983B /* Thread.h in Headers */,
 				176DE983174B5561007A983B /* Font.h in Headers */,
+				E8F43E29186C3D02006796CB /* MaterialSystem.h in Headers */,
 				176DE984174B5561007A983B /* FontManager.h in Headers */,
 				176DE985174B5561007A983B /* FTFont.h in Headers */,
 				176DE986174B5561007A983B /* GraphicsFont.h in Headers */,
@@ -4514,7 +4515,6 @@
 				A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554F17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187517B256250022E8FA /* ShaderCache.h in Headers */,
-				50A5187D17B256590022E8FA /* MaterialSystem.h in Headers */,
 				A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */,
 				A66533EA17F98EC100B8906A /* Serializable.h in Headers */,
 				A63BCD6F17EB26E300EA4811 /* Process.h in Headers */,
@@ -4893,7 +4893,6 @@
 				50A5186717B255EC0022E8FA /* RenderBatchArray.h in Headers */,
 				50A5186917B255EC0022E8FA /* RenderHierarchy.h in Headers */,
 				50A5187317B256250022E8FA /* ShaderCache.h in Headers */,
-				50A5187B17B256590022E8FA /* MaterialSystem.h in Headers */,
 				A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */,
 				505EB4111824CEC5009BEA3C /* OcclusionQuery.h in Headers */,
 				A66533E817F98EC100B8906A /* Serializable.h in Headers */,
@@ -4906,6 +4905,7 @@
 				A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2CA184773B40030E075 /* SpeedTreeLeafBatch.h in Headers */,
 				A670F2F11847A99E0030E075 /* TextureStateData.h in Headers */,
+				E8F43E27186C3D02006796CB /* MaterialSystem.h in Headers */,
 				A670F2F41847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 				9A0114637D598239F4C36EA3 /* GamepadDevice.h in Headers */,
 				9A0114DFC94738EDBF7B7A79 /* GamepadManager.h in Headers */,
@@ -5003,6 +5003,7 @@
 				E898A0A516BD265400732C04 /* Logger.h in Headers */,
 				7A16933D180EE618005F1FBC /* AutotestingSystemLua.h in Headers */,
 				E898A0A716BD265400732C04 /* ResourceArchive.h in Headers */,
+				E8F43E28186C3D02006796CB /* MaterialSystem.h in Headers */,
 				E898A0A816BD265400732C04 /* VariantType.h in Headers */,
 				E898A0A916BD265400732C04 /* XMLParser.h in Headers */,
 				E898A0AA16BD265400732C04 /* YamlArchive.h in Headers */,
@@ -5266,7 +5267,6 @@
 				A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				EA56554E17CDFF4B00426EB8 /* PerformanceSettings.h in Headers */,
 				50A5187417B256250022E8FA /* ShaderCache.h in Headers */,
-				50A5187C17B256590022E8FA /* MaterialSystem.h in Headers */,
 				A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */,
 				A66533E917F98EC100B8906A /* Serializable.h in Headers */,
 				A63BCD6E17EB26E300EA4811 /* Process.h in Headers */,
@@ -5685,6 +5685,7 @@
 				176DEB54174B5561007A983B /* DeviceInfoMacOS.mm in Sources */,
 				176DEB55174B5561007A983B /* UIAggregatorControl.cpp in Sources */,
 				176DEB56174B5561007A983B /* FilePathObjective.mm in Sources */,
+				E8F43E26186C3D02006796CB /* MaterialSystem.cpp in Sources */,
 				176DEB57174B5561007A983B /* SoundEvent.cpp in Sources */,
 				176DEB58174B5561007A983B /* SoundEventCategory.cpp in Sources */,
 				176DEB59174B5561007A983B /* VolumeAnimatedObject.cpp in Sources */,
@@ -5711,7 +5712,6 @@
 				50A5186B17B256000022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186D17B256040022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187217B256250022E8FA /* ShaderCache.cpp in Sources */,
-				50A5187A17B256590022E8FA /* MaterialSystem.cpp in Sources */,
 				A68290BC17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */,
 				A63BCD6C17EB26E300EA4811 /* Process.cpp in Sources */,
@@ -5761,6 +5761,7 @@
 				E8989DFD16BD24E500732C04 /* Replay.cpp in Sources */,
 				E8989DFF16BD24E500732C04 /* Stats.cpp in Sources */,
 				E8989E0116BD24E500732C04 /* DLCSystem.cpp in Sources */,
+				E8F43E24186C3D02006796CB /* MaterialSystem.cpp in Sources */,
 				E8989E0516BD24E500732C04 /* DLCUnpacker.cpp in Sources */,
 				E8989E0716BD24E500732C04 /* FileDownloader.cpp in Sources */,
 				E8989E0A16BD24E500732C04 /* Component.cpp in Sources */,
@@ -6047,7 +6048,6 @@
 				50A5186617B255EC0022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186817B255EC0022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187017B256250022E8FA /* ShaderCache.cpp in Sources */,
-				50A5187817B256590022E8FA /* MaterialSystem.cpp in Sources */,
 				A68290BA17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */,
 				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
@@ -6223,6 +6223,7 @@
 				E898A24016BD265400732C04 /* SharedFBO.cpp in Sources */,
 				E898A24116BD265400732C04 /* Texture.cpp in Sources */,
 				E898A24216BD265400732C04 /* TextureDescriptor.cpp in Sources */,
+				E8F43E25186C3D02006796CB /* MaterialSystem.cpp in Sources */,
 				E8FC12F71869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				E898A24316BD265400732C04 /* UberShader.cpp in Sources */,
 				E898A24416BD265400732C04 /* Box2DDebugDraw.cpp in Sources */,
@@ -6385,7 +6386,6 @@
 				50A5186A17B256000022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186C17B256030022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187117B256250022E8FA /* ShaderCache.cpp in Sources */,
-				50A5187917B256590022E8FA /* MaterialSystem.cpp in Sources */,
 				A68290BB17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */,
 				A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */,

@@ -437,7 +437,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.h" />
@@ -538,6 +537,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.h" />
@@ -828,7 +828,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp" />
@@ -925,6 +924,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.cpp" />

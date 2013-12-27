@@ -27,7 +27,7 @@
  =====================================================================================*/
 
 
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderState.h"
@@ -605,7 +605,7 @@ namespace DAVA
 		return textures.keyByIndex(index);
 	}
 	
-    uint32 NMaterial::NMaterial::GetTextureCount() const
+    uint32 NMaterial::GetTextureCount() const
 	{
 		return textures.size();
 	}
