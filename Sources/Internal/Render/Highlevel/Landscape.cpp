@@ -149,12 +149,12 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	NMaterial* landscapeParent = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
 																FastName("~res:/Materials/Legacy/TileMask.material"),
-																MaterialSystem::DEFAULT_QUALITY_NAME);
+																NMaterial::DEFAULT_QUALITY_NAME);
 
 	
-	tileMaskMaterial = 	MaterialSystem::CreateMaterialInstance();
+	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
 	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;

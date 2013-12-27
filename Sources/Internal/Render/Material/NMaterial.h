@@ -161,6 +161,8 @@ public:
 	static const FastName FLAG_TEXTUREONLY;
 	static const FastName FLAG_SETUPLIGHTMAP;
 	
+	static const FastName DEFAULT_QUALITY_NAME;
+	
 	enum eMaterialType
 	{
 		MATERIALTYPE_NONE = 0,
@@ -245,6 +247,16 @@ public:
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
 	void SubclassRenderState(RenderStateData* newState);
+	
+	static NMaterial* CreateMaterialInstance();
+	
+	static NMaterial* CreateMaterialInstance(const FastName& parentName,
+											 const FastName& templateName,
+											 const FastName& defaultQuality);
+	
+	static NMaterial* CreateMaterial(const FastName& materialName,
+									 const FastName& templateName,
+									 const FastName& defaultQuality);
 	
 protected:
 	

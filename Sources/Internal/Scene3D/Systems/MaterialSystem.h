@@ -49,10 +49,6 @@ class PolygonGroup;
 class MaterialSystem: public SceneSystem
 {
 public:
-
-	static const FastName DEFAULT_QUALITY_NAME;
-	
-public:
 	
 	MaterialSystem(Scene * scene);
 	virtual ~MaterialSystem();
@@ -65,17 +61,7 @@ public:
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName);
-	
-	static NMaterial* CreateMaterialInstance();
-	
-	static NMaterial* CreateMaterialInstance(const FastName& parentName,
-											 const FastName& templateName,
-											 const FastName& defaultQuality);
-		
-	static NMaterial* CreateMaterial(const FastName& materialName,
-									 const FastName& templateName,
-									 const FastName& defaultQuality);
-		
+			
 private:
 	
 	FastName currentMaterialQuality;
