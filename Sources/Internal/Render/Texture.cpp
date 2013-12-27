@@ -159,7 +159,8 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 TexturesMap Texture::textureMap;
 
 
-Texture * Texture::pinkPlaceholder = 0;
+Texture * Texture::pinkPlaceholder = NULL;
+Texture * Texture::pinkCubePlaceholder = NULL;
 static int32 textureFboCounter = 0;
 
 // Main constructors
@@ -1067,9 +1068,21 @@ int32 Texture::GetDataSize() const
 
 Texture * Texture::CreatePink(TextureType requestedType)
 {
-    Texture *tex = new Texture();
-    tex->MakePink(requestedType);
-    
+	if(NULL == pinkPlaceholder)
+	{
+		pinkPlaceholder = new Texture();
+		pinkPlaceholder->MakePink(TEXTURE_2D);
+	}
+	
+	if(NULL == pinkCubePlaceholder)
+	{
+		pinkCubePlaceholder = new Texture();
+		pinkCubePlaceholder->MakePink(TEXTURE_CUBE);
+	}
+	
+    Texture *tex = (TEXTURE_CUBE == requestedType) ? pinkCubePlaceholder : pinkPlaceholder;
+    SafeRetain(tex);
+	
 	return tex;
 }
 

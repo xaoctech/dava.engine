@@ -160,7 +160,7 @@ namespace DAVA
 											InstanceMaterialState* oldMaterialState,
 												   uint64 oldMaterialId);
 		
-		Texture* PrepareTexture(Texture* tx);
+		Texture* PrepareTexture(uint32 textureTypeHint, Texture* tx);
 	};
 };
 

@@ -86,7 +86,7 @@ class NMaterialProperty
 public:
     Shader::eUniformType type;
     uint8 size;
-    void* data;
+    uint8* data;
 	
 	virtual ~NMaterialProperty()
 	{
@@ -137,6 +137,7 @@ public:
     static const FastName TEXTURE_DETAIL;
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
+	static const FastName TEXTURE_CUBEMAP;
 	
 	static const FastName PARAM_LIGHT_POSITION0;
 	static const FastName PARAM_PROP_AMBIENT_COLOR;
@@ -186,8 +187,16 @@ public:
 	
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
-    int32 GetChildrenCount() const;
-    NMaterial *GetChild(int32 index) const;
+	inline uint32 GetChildrenCount() const
+	{
+		return children.size();
+	}
+
+	NMaterial* GetChild(uint32 index) const
+	{
+		DVASSERT(index >= 0 && index < children.size());
+		return children[index];
+	}
 		
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
@@ -222,9 +231,9 @@ public:
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     Texture * GetTexture(const FastName& textureFastName) const;
 	const FilePath& GetTexturePath(const FastName& textureFastName) const;
-    Texture * GetTexture(int32 index) const;
-	const FilePath& GetTexturePath(int32 index) const;
-	const FastName& GetTextureName(int32 index) const;
+    Texture * GetTexture(uint32 index) const;
+	const FilePath& GetTexturePath(uint32 index) const;
+	const FastName& GetTextureName(uint32 index) const;
     uint32 GetTextureCount() const;
     
     void SetPropertyValue(const FastName & keyName,
@@ -281,7 +290,10 @@ protected:
 		
 	struct UniformCacheEntry
 	{
-		UniformCacheEntry() : uniform(NULL), prop(NULL)
+		UniformCacheEntry() :
+			uniform(NULL),
+			prop(NULL),
+			index(-1)
 		{ }
 
 		Shader::Uniform* uniform;
@@ -302,7 +314,12 @@ protected:
 		UniformCacheEntry* activeUniformsCachePtr;
 		size_t activeUniformsCacheSize;
 		
-		RenderPassInstance() : textureIndexMap(8)
+		RenderPassInstance() :
+			textureIndexMap(8),
+			dirtyState(false),
+			texturesDirty(true),
+			activeUniformsCachePtr(NULL),
+			activeUniformsCacheSize(0)
 		{
 			
 		}

@@ -56,7 +56,7 @@ namespace DAVA
 	const FastName NMaterial::TEXTURE_DETAIL("detail");
 	const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 	const FastName NMaterial::TEXTURE_DECAL("decal");
-	
+	const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 	
 	const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
 	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("prop_ambientColor");
@@ -102,8 +102,7 @@ namespace DAVA
 	{
 		if(prop->data)
 		{
-			uint8* fakePtr = (uint8*)prop->data;
-			SafeDeleteArray(fakePtr);
+			SafeDeleteArray(prop->data);
 		}
 	}
 	
@@ -113,6 +112,7 @@ namespace DAVA
 		
 		cloneProp->size = prop->size;
 		cloneProp->type = prop->type;
+		
 		if(prop->data)
 		{
 			size_t dataSize = Shader::GetUniformTypeSize(prop->type) * prop->size;
@@ -137,13 +137,22 @@ namespace DAVA
 	activePassInstance(NULL),
 	activeRenderPass(NULL),
 	instancePasses(4),
-	textures(8)
+	textures(8),
+	materialDynamicLit(false),
+	materialTemplate(NULL)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
 	
 	NMaterial::~NMaterial()
 	{
+		if(parent)
+		{
+			parent->RemoveChild(this);
+			
+			SafeRelease(parent);
+		}
+
 		ReleaseInstancePasses();
 		
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
@@ -163,25 +172,16 @@ namespace DAVA
 		}
 		textures.clear();
 				
-		if(illuminationParams)
-		{
-			SafeDelete(illuminationParams);
-		}
+		SafeDelete(illuminationParams);
 		
 		SafeRelease(baseTechnique);
-		
-		if(parent)
-		{
-			parent->RemoveChild(this);
-			
-			SafeRelease(parent);
-		}
 	}
 			
 	void NMaterial::AddChild(NMaterial* material)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
+		DVASSERT(this != material);
 		
 		children.push_back(material);
 		
@@ -208,18 +208,7 @@ namespace DAVA
 			this->Release();
 		}
 	}
-	
-    int32 NMaterial::GetChildrenCount() const
-	{
-		return children.size();
-	}
-	
-    NMaterial* NMaterial::GetChild(int32 index) const
-	{
-		DVASSERT(index >= 0 && index < children.size());
-		return children[index];
-	}
-		
+
 	void NMaterial::SetFlag(const FastName& flag, eFlagValue flagValue)
 	{
 		materialSetFlags.insert(flag, flagValue);
@@ -350,7 +339,7 @@ namespace DAVA
 			++it)
 		{
 			String relativePathname = it->second->AsString();
-			SetTexture(FastName(it->first), relativePathname);
+			SetTexture(FastName(it->first), serializationContext->GetScenePath() + relativePathname);
 		}
 						
 		if(archive->IsKeyExists("illumination.isUsed"))
@@ -387,40 +376,43 @@ namespace DAVA
 		
 	bool NMaterial::SwitchQuality(const FastName& stateName)
 	{
-		bool result = false;
+		DVASSERT(materialTemplate);
 		
-		currentQuality = stateName;
+		bool result = (materialTemplate->techniqueStateMap.count(stateName) > 0);
 		
-		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		if(result)
 		{
-			OnInstanceQualityChanged();
-		}
-		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
-		{
-			DVASSERT(materialTemplate);
+			currentQuality = stateName;
 			
-			UpdateMaterialTemplate();
-			
-			LoadActiveTextures();
-			
-			this->Retain();
-			
-			size_t childrenCount = children.size();
-			for(size_t i = 0; i < childrenCount; ++i)
+			if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 			{
-				children[i]->SwitchQuality(stateName);
+				OnInstanceQualityChanged();
 			}
-			
-			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
-			
-			this->Release();
+			else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
+			{
+				UpdateMaterialTemplate();
+				
+				LoadActiveTextures();
+				
+				this->Retain();
+				
+				size_t childrenCount = children.size();
+				for(size_t i = 0; i < childrenCount; ++i)
+				{
+					children[i]->SwitchQuality(stateName);
+				}
+				
+				//VI: TODO: review if this call is realy needed at this point
+				CleanupUnusedTextures();
+				
+				this->Release();
+			}
+			else
+			{
+				DVASSERT(false && "Material is not initialized properly!");
+			}
 		}
-		else
-		{
-			DVASSERT(false && "Material is not initialized properly!");
-		}
-		
+
 		return result;
 	}
 		
@@ -585,7 +577,7 @@ namespace DAVA
 		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
 	}
 	
-    Texture * NMaterial::GetTexture(int32 index) const
+    Texture * NMaterial::GetTexture(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textures.size());
 		
@@ -593,7 +585,7 @@ namespace DAVA
 		return bucket->texture;
 	}
 	
-	const FilePath& NMaterial::GetTexturePath(int32 index) const
+	const FilePath& NMaterial::GetTexturePath(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textures.size());
 		
@@ -601,7 +593,7 @@ namespace DAVA
 		return bucket->path;
 	}
 	
-	const FastName& NMaterial::GetTextureName(int32 index) const
+	const FastName& NMaterial::GetTextureName(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textures.size());
 		
@@ -751,20 +743,12 @@ namespace DAVA
 
 	void NMaterial::OnParentChanged(NMaterial* newParent)
 	{
-		bool oldParentHadTextures = false;
-		bool newParentHasTextures = false;
-		if(parent)
-		{
-			oldParentHadTextures = (parent->GetTextureCount() > 0);
-		}
-		
 		NMaterial* oldParent = parent;
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
 		
 		if(newParent)
 		{
-			newParentHasTextures = (newParent->GetTextureCount() > 0);
 			SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
 		}
 		
@@ -855,6 +839,10 @@ namespace DAVA
 			SafeDelete(it->second);
 		}
 		instancePasses.clear();
+		
+		activePassInstance = NULL;
+		activePassName.Reset();
+		activeRenderPass = NULL;
 	}
 	
 	void NMaterial::UpdateMaterialTemplate()
@@ -884,7 +872,6 @@ namespace DAVA
 		
 		DVASSERT(baseTechnique);
 		
-		//TODO: add unused render passes removing
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)
 		{
@@ -947,8 +934,10 @@ namespace DAVA
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 			
-			if(Shader::UNIFORM_NONE == uniform->id ||
-			   Shader::UNIFORM_COLOR == uniform->id) //TODO: do something with conditional binding
+			if((Shader::UNIFORM_NONE == uniform->id ||
+			   Shader::UNIFORM_COLOR == uniform->id) &&
+			   (Shader::UT_SAMPLER_2D != uniform->type &&
+				Shader::UT_SAMPLER_CUBE != uniform->type)) //TODO: do something with conditional binding
 			{
 				NMaterialProperty* prop = GetPropertyValue(uniform->name);
 				
@@ -1121,15 +1110,6 @@ namespace DAVA
 		}
 		
 		passInstance->texturesDirty = false;
-		
-		for(size_t i = 0; i < COUNT_OF(textureData.textures); ++i)
-		{
-			if(textureData.textures[i] &&
-			   textureData.textures[i]->isPink)
-			{
-				SafeRelease(textureData.textures[i]);
-			}
-		}
 	}
 	
 	void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
