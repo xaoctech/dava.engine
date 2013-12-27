@@ -89,6 +89,7 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 	
 	void NMaterial::GenericPropertyManager::Init(NMaterialProperty* prop)
 	{
@@ -180,6 +181,7 @@ namespace DAVA
 	void NMaterial::AddChild(NMaterial* material)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
+		DVASSERT(NULL == parent);
 		
 		children.push_back(material);
 		
@@ -427,14 +429,14 @@ namespace DAVA
 		NMaterial* clonedMaterial = NULL;
 		if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
-			clonedMaterial = MaterialSystem::CreateMaterial(materialName,
+			clonedMaterial = NMaterial::CreateMaterial(materialName,
 															materialTemplate->name,
 															currentQuality);
 			
 		}
 		else if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
-			clonedMaterial = MaterialSystem::CreateMaterialInstance();
+			clonedMaterial = NMaterial::CreateMaterialInstance();
 		}
 		else
 		{
@@ -531,6 +533,7 @@ namespace DAVA
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
+			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
 		
@@ -1119,7 +1122,7 @@ namespace DAVA
 		
 		passInstance->texturesDirty = false;
 		
-		for(int i = 0; i < COUNT_OF(textureData.textures); ++i)
+		for(size_t i = 0; i < COUNT_OF(textureData.textures); ++i)
 		{
 			if(textureData.textures[i] &&
 			   textureData.textures[i]->isPink)
@@ -1408,6 +1411,114 @@ namespace DAVA
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
 		}
+	}
+	
+	//VI: creates material of type MATERIALTYPE_INSTANCE
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterialInstance()
+	{
+		static int32 instanceCounter = 0;
+		instanceCounter++;
+		
+		NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
+		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
+		mat->SetName(mat->GetMaterialName().c_str());
+		
+		return mat;
+	}
+	
+	//VI: creates material of type MATERIALTYPE_MATERIAL
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterial(const FastName& materialName,
+										 const FastName& templateName,
+										 const FastName& defaultQuality)
+	{
+		NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
+		mat->SetMaterialName(materialName.c_str());
+		mat->SetName(mat->GetMaterialName().c_str());
+		
+		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		mat->SetMaterialTemplate(matTemplate, defaultQuality);
+		
+		return mat;
+	}
+
+	//VI: creates material of type MATERIALTYPE_INSTANCE
+	//VI: These methods DO NOT add newly created materials to the material system
+	NMaterial* NMaterial::CreateMaterialInstance(const FastName& materialName,
+												 const FastName& templateName,
+												 const FastName& defaultQuality)
+	{
+		NMaterial* parentMat = CreateMaterial(materialName, templateName, defaultQuality);
+		
+		NMaterial* mat = CreateMaterialInstance();
+		parentMat->AddChild(mat);
+		
+		SafeRelease(parentMat);
+		
+		return mat;
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////////////////////
+	
+	void NMaterialHelper::EnableStateFlags(const FastName& passName,
+											 NMaterial* target,
+											 uint32 stateFlags)
+	{
+		DVASSERT(target);
+		
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.state = newData.state | stateFlags;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::DisableStateFlags(const FastName& passName,
+										   NMaterial* target,
+										   uint32 stateFlags)
+	{
+		DVASSERT(target);
+		
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.state = newData.state & ~stateFlags;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::SetBlendMode(const FastName& passName,
+											 NMaterial* target,
+											 eBlendMode src,
+											 eBlendMode dst)
+	{
+		const RenderStateData* currentData = target->GetRenderState(passName);
+		RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.sourceFactor = src;
+		newData.destFactor = dst;
+		
+		target->SubclassRenderState(passName, &newData);
+	}
+	
+	void NMaterialHelper::SwitchTemplate(NMaterial* material,
+										 const FastName& templateName)
+	{
+		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		material->SetMaterialTemplate(matTemplate, material->currentQuality);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

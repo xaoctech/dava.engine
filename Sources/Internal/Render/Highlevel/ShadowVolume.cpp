@@ -48,10 +48,10 @@ ShadowVolume::ShadowVolume()
 {
     aabbox = AABBox3(Vector3(), Vector3());
 		
-	NMaterial* parentShadowVolume = MaterialSystem::CreateMaterial(FastName("Shadow_Volume_Material"),
+	NMaterial* parentShadowVolume = NMaterial::CreateMaterial(FastName("Shadow_Volume_Material"),
 																	FastName("~res:/Materials/Legacy/ShadowVolume.material"),
-																	MaterialSystem::DEFAULT_QUALITY_NAME);
-	NMaterial* shadowMat = MaterialSystem::CreateMaterialInstance();
+																	NMaterial::DEFAULT_QUALITY_NAME);
+	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();
 	parentShadowVolume->AddChild(shadowMat);
 	
 	SetMaterial(shadowMat);
