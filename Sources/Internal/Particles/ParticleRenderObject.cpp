@@ -115,8 +115,8 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 
 	/*prepare effect basises*/
 	const Matrix4 &mv = camera->GetMatrix();
-	basisVectors[0] = Vector3(mv._01, mv._11, mv._21);
-	basisVectors[1] = Vector3(mv._00, mv._10, mv._20);
+	basisVectors[0] = Vector3(mv._00, mv._10, mv._20);
+	basisVectors[1] = Vector3(mv._01, mv._11, mv._21);
 	basisVectors[0].Normalize();
 	basisVectors[1].Normalize();	
 	Vector3 ex(transformPtr->_00, transformPtr->_01, transformPtr->_02);
@@ -243,11 +243,11 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			//TODO: rethink this code - it should be easier
 			if (group.layer->isLong) //note that for now it's just a copy of long implementatio - later rethink it;
 			{
-				ex = current->speed;
-				float32 vel = ex.Length();
-				ey = ex.CrossProduct(cameraDirection);
-				ey.Normalize();				
-				ex *=(group.layer->scaleVelocityBase/vel+group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
+				ey = current->speed;
+				float32 vel = ey.Length();
+				ex = ey.CrossProduct(cameraDirection);
+				ex.Normalize();				
+				ey *=(group.layer->scaleVelocityBase/vel+group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
 			}			
 
 			
@@ -264,10 +264,10 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			Vector3 particlePosition = current->position;
 			if (group.layer->inheritPosition)
 				particlePosition+=effectData->infoSources[group.positionSource].position;
-			particlePos[0] = particlePosition+left+top;
-			particlePos[1] = particlePosition+right+top;
-			particlePos[2] = particlePosition+left+bot;			
-			particlePos[3] = particlePosition+right+bot;
+			particlePos[0] = particlePosition+left+bot;
+			particlePos[1] = particlePosition+right+bot;
+			particlePos[2] = particlePosition+left+top;			
+			particlePos[3] = particlePosition+right+top;
 			
 			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);						
 			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);						
@@ -287,7 +287,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 					else
 						nextFrame = group.layer->sprite->GetFrameCount()-1;
 				}
-				pT = group.layer->sprite->GetTextureVerts(nextFrame);
+				float32 *pT = group.layer->sprite->GetTextureVerts(nextFrame);
 
 				memcpy(&renderGroup->texcoords2[currVerticesCount], pT, sizeof(float32) * 8);				
 				renderGroup->times[currVerticesCount] = current->animTime;

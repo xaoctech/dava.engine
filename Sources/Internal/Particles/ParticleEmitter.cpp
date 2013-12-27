@@ -286,7 +286,7 @@ YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
 }
 
 
-void ParticleEmitter::LoadFromYaml(const FilePath & filename)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename, float32 *oLifeTime)
 {
     Cleanup(true);
     
@@ -304,6 +304,17 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	const YamlNode * emitterNode = rootNode->Get("emitter");
 	if (emitterNode)
 	{
+		if (oLifeTime)
+		{
+			const YamlNode * lifeTimeNode = emitterNode->Get("life");
+			if (lifeTimeNode)
+			{
+				*oLifeTime = lifeTimeNode->AsFloat();
+			}else
+			{
+				*oLifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
+			}
+		}
 		if (emitterNode->Get("emissionAngle"))
 			emissionAngle = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionAngle"));
         
@@ -370,7 +381,9 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
                 _size.y = depthNode->AsFloat();
             
             size = new PropertyLineValue<Vector3>(_size);
-        }        		
+        }        	
+
+
 	}
 
 	int cnt = rootNode->GetCount();

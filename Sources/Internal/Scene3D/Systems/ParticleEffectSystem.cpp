@@ -345,6 +345,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 					current->animTime -= 1.0f;
 				}
 			}			
+			prev = current;
 			current=current->next;			
 		}		
 		bool allowParticleGeneration = !group.finishingGroup;

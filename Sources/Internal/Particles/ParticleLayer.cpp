@@ -227,6 +227,7 @@ ParticleLayer * ParticleLayer::Clone()
     
 	dstLayer->spritePath = spritePath;
 	dstLayer->activeLODS = activeLODS;
+	dstLayer->isLong = isLong;
 
 	return dstLayer;
 }
@@ -363,6 +364,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	if (nameNode)
 	{
 		layerName = nameNode->AsString();
+	}
+
+	const YamlNode * longNode = node->Get("isLong");
+	if (longNode)
+	{
+		isLong = longNode->AsBool();
 	}
 
 	const YamlNode * pivotPointNode = node->Get("pivotPoint");
@@ -603,6 +610,42 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		innerEmitterPath = FilePath(configPath.GetDirectory(), innerEmitterPathNode->AsString());
 		innerEmitter->LoadFromYaml(this->innerEmitterPath);
 	}	
+
+	// format processing
+	int32 format = 0;
+	const YamlNode * formatNode = node->Get("effectFormat");
+	if (formatNode)
+	{
+		format = formatNode->AsInt32();
+	}
+	if (format == 0) //update old stuff
+	{
+		UpdateSizeLine(size.Get(), true, !isLong);
+		UpdateSizeLine(sizeVariation.Get(), true, !isLong);
+		UpdateSizeLine(sizeOverLifeXY.Get(), false, !isLong);
+	}
+}
+
+void ParticleLayer::UpdateSizeLine(PropertyLine<Vector2> *line, bool rescaleSize, bool swapXY)
+{
+	//conversion from old format
+	if (!line) return;
+	if ((!rescaleSize)&&(!swapXY)) return; //nothing to update
+	Vector<typename PropertyLine<Vector2>::PropertyKey> &keys = line->GetValues();		
+	for (int i=0, sz = keys.size(); i<sz; ++i)
+	{			
+		if (rescaleSize)
+		{
+			keys[i].value.x*=0.5f;
+			keys[i].value.y*=0.5f;
+		}
+		if (swapXY)
+		{
+			float x = keys[i].value.x;
+			keys[i].value.x=keys[i].value.y;
+			keys[i].value.y=x;
+		}		
+	}
 }
 
 void ParticleLayer::SaveToYamlNode(const FilePath & configPath, YamlNode* parentNode, int32 layerIndex)
@@ -691,6 +734,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath & configPath, YamlNode* parent
 		String innerRelativePath = innerEmitterPath.GetRelativePathname(configPath.GetDirectory());
 		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", innerRelativePath);
 	}
+
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "effectFormat", 1);
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
