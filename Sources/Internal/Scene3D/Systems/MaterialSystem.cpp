@@ -48,46 +48,46 @@ MaterialSystem::~MaterialSystem()
 {
 }
 
-void MaterialSystem::BuildMaterialList(Entity *forEntity, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const
 {
     if(!forEntity) return;
-    
-    Vector<NMaterial*> materials;
+
+    List<NMaterial*> materials;
     forEntity->GetDataNodes(materials);
 
-    materialList.insert(materialList.end(), materials.begin(), materials.end());
+    materialList.insert(materials.begin(), materials.end());
 }
 
-void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const
 {
     if(!forEntity) return;
     
-    Vector<NMaterial*> materials;
+    List<NMaterial*> materials;
     forEntity->GetDataNodes(materials);
     
-    uint32 size = materials.size();
-    for(uint32 i = 0; i < size; ++i)
+    List<NMaterial *>::const_iterator endIt = materials.end();
+    for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        if(materials[i]->GetMaterialName() == materialName)
+        if((*it)->GetMaterialName() == materialName)
         {
-            materialList.push_back(materials[i]);
+            materialList.insert(*it);
         }
     }
 }
     
-void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const
 {
     if(!forEntity) return;
     
-    Vector<NMaterial*> materials;
+    List<NMaterial*> materials;
     forEntity->GetDataNodes(materials);
-
-    uint32 size = materials.size();
-    for(uint32 i = 0; i < size; ++i)
+    
+    List<NMaterial *>::const_iterator endIt = materials.end();
+    for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        if(materials[i]->GetMaterialType() == materialType)
+        if((*it)->GetMaterialType() == materialType)
         {
-            materialList.push_back(materials[i]);
+            materialList.insert(*it);
         }
     }
 }
@@ -109,13 +109,13 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
 
 void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 {
-    Vector<NMaterial*> materialList;
-    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materialList);
+    Set<NMaterial*> materials;
+    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materials);
     
-    uint32 size = materialList.size();
-    for(uint32 i = 0; i < size; ++i)
+    Set<NMaterial *>::const_iterator endIt = materials.end();
+    for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        materialList[i]->SwitchQuality(qualityLevelName);
+        (*it)->SwitchQuality(qualityLevelName);
     }
 }
     

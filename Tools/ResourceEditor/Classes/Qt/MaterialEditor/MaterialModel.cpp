@@ -57,14 +57,15 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 		QStandardItem *root = invisibleRootItem();
 		DAVA::MaterialSystem *matSys = scene->GetMaterialSystem();
 
-		DAVA::Vector<DAVA::NMaterial *> materials;
+		DAVA::Set<DAVA::NMaterial *> materials;
 		matSys->BuildMaterialList(scene, DAVA::NMaterial::MATERIALTYPE_MATERIAL, materials);
 
-		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
-		{
-			MaterialItem *item = new MaterialItem(materials[i]);
+        DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
+        for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
+        {
+            MaterialItem *item = new MaterialItem(*it);
 			root->appendRow(item);
-		}
+        }
 	}
 }
 
