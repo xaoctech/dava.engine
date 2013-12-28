@@ -36,11 +36,6 @@
 namespace DAVA
 {
 	
-QualitySettingsSystem::QualitySettingsSystem(Scene * scene)
-	: SceneSystem(scene)
-{
-}
-
 void QualitySettingsSystem::EnableOption( const FastName & option, bool enabled )
 {
 	qualityOptions[option] = enabled;
@@ -56,16 +51,16 @@ bool QualitySettingsSystem::IsOptionEnabled( const FastName & option ) const
 	return false;
 }
 
-void QualitySettingsSystem::UpdateSceneAfterLoad()
+void QualitySettingsSystem::UpdateEntityAfterLoad(Entity *entity)
 {
-	if(qualityOptions.empty()) return;
+	if(qualityOptions.empty() || (NULL == entity)) return;
 
-	Vector<Entity *> entities;
-	GetScene()->GetChildEntitiesWithComponent(entities, Component::QUALITY_SETTINGS_COMPONENT);
+	Vector<Entity *> entitiesWithQualityComponent;
+	entity->GetChildEntitiesWithComponent(entitiesWithQualityComponent, Component::QUALITY_SETTINGS_COMPONENT);
 
-	if(entities.empty()) return;
+	if(entitiesWithQualityComponent.empty()) return;
 
-	RemoveModelsByType(entities);
+	RemoveModelsByType(entitiesWithQualityComponent);
 }
 
 void QualitySettingsSystem::RemoveModelsByType( const Vector<Entity *> & models )
@@ -81,6 +76,17 @@ void QualitySettingsSystem::RemoveModelsByType( const Vector<Entity *> & models 
 			parent->RemoveNode(models[m]);
 		}
 	}
+}
+
+bool QualitySettingsSystem::NeedLoadEntity(const Entity *entity)
+{
+    QualitySettingsComponent * comp = GetQualitySettingsComponent(entity);
+    if(comp)
+    {
+        return IsOptionEnabled(comp->GetModelType());
+    }
+    
+    return true;
 }
 
 

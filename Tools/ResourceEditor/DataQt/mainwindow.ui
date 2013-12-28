@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -323,7 +323,7 @@
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
     <addaction name="actionAddActionComponent"/>
-    <addaction name="actionAddModelTypeComponent"/>
+    <addaction name="actionAddQualitySettingsComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1639,9 +1639,9 @@
     <string>Build Static Occlusion</string>
    </property>
   </action>
-  <action name="actionAddModelTypeComponent">
+  <action name="actionAddQualitySettingsComponent">
    <property name="text">
-    <string>Add Model Type Component</string>
+    <string>Add Quality Settings Component</string>
    </property>
   </action>
   <action name="actionSpeedTree">

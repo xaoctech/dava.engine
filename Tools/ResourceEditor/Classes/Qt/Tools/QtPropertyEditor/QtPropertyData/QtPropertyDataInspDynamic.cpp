@@ -102,7 +102,6 @@ bool QtPropertyDataInspDynamic::EditorDoneInternal(QWidget *editor)
 	return ret;
 }
 
-
 // void* QtPropertyDataInspDynamic::CreateLastCommand() const
 // {
 // 	Command2 *command = NULL;

@@ -31,8 +31,7 @@
 #include "Deprecated/SceneValidator.h"
 #include "CubemapEditor/MaterialHelper.h"
 
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
 {
@@ -107,10 +106,9 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
     
     DAVA::Vector<DAVA::NMaterial *> materials;
     
-    DAVA::RenderSystem *rSystem = forScene->GetRenderSystem();
-    DAVA::MaterialSystem *matSystem = rSystem->GetMaterialSystem();
+    DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
     
-    matSystem->BuildMaterialList(NULL, materials);
+    matSystem->BuildMaterialList(forScene, materials);
 
     DAVA::uint32 count = (DAVA::uint32)materials.size();
     for(DAVA::uint32 m = 0; m < count; ++m)
@@ -123,13 +121,14 @@ void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::Texture
 {
     String materialName = material->GetMaterialName().c_str();
 	
-	//VI: do not check root materials
-	if(!material->GetParentName().IsValid())
+	
+    String parentName;
+	
+	if(material->GetParent())
 	{
-		return;
+		parentName = material->GetParent()->GetMaterialName().c_str();
 	}
 	
-    String parentName = material->GetParentName().c_str();
     if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
     {
         return;

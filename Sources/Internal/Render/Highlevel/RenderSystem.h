@@ -49,7 +49,6 @@ class Light;
 class ParticleEmitterSystem;
 class RenderHierarchy;
 class RenderPassBatchArray;
-class MaterialSystem;
     
 class RenderSystem
 {
@@ -112,8 +111,6 @@ public:
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
 	
-	inline MaterialSystem* GetMaterialSystem() const {return materialSystem;}
-
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
     RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
@@ -155,8 +152,6 @@ private:
     Camera * clipCamera;
     //Vector<RenderObject*> forRemove;
 	
-	MaterialSystem* materialSystem;
-    
     friend class RenderPass;
 };
     

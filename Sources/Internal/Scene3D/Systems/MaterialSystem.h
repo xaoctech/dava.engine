@@ -27,96 +27,42 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_MATERIAL_SYSTEM_H__
 #define __DAVAENGINE_MATERIAL_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Scene3D/DataNode.h"
-#include "FileSystem/YamlParser.h"
-#include "Render/Shader.h"
+#include "Base/FastName.h"
 
+#include "Render/Material/NMaterial.h"
+
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
     
 class MaterialGraph;
 class MaterialGraphNode;
-class NMaterial;
 class PolygonGroup;
 
-class MaterialSystem
+class MaterialSystem: public SceneSystem
 {
 public:
 	
-	MaterialSystem();
-	~MaterialSystem();
-	
-	bool LoadMaterialConfig(const FilePath& filePath);
-	
-    NMaterial* GetMaterial(const FastName & name); //returns substitute material if there were no requested one
-	NMaterial* GetSpecificMaterial(const FastName & name); //returns NULL if there were no requested one
-
-	//MaterialSystem will take ownership on the added material so release it after adding
-	void AddMaterial(NMaterial* material);
-	
-	//MaterialSystem will call Release() on the material after removing it from its state
-	void RemoveMaterial(NMaterial* material);
-	void Clear();
-	
-	void BuildMaterialList(NMaterial* parent, /*out*/ Vector<NMaterial*>& materialList) const;
-	
-	inline NMaterial* GetDefaultMaterial() const {return defaultMaterial;}
+	MaterialSystem(Scene * scene);
+	virtual ~MaterialSystem();
+		
+	void BuildMaterialList(Entity *forEntity, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, const FastName& materialName, Vector<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
 	
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
-	void SwitchMaterialQuality(const FastName& qualityLevelName, bool forceSwitch = false);
-	
-	static NMaterial* CreateInstanceChild(NMaterial* parent);
-	NMaterial* CreateInstanceChild(const FastName& parentName);
-	
-	static NMaterial* CreateSwitchableChild(NMaterial* parent);
-	NMaterial* CreateSwitchableChild(const FastName& parentName);
-	
-	//NMaterial* CreateChild(NMaterial* parent);
-	//NMaterial* CreateChild(const FastName& parentName);
-	
-	bool Contains(NMaterial* material);
-	
-	void BindMaterial(NMaterial* material);
-	
-	static NMaterial* CreateNamed();
-	
+	void SwitchMaterialQuality(const FastName& qualityLevelName);
+			
 private:
-	
-	friend class NMaterial;
-	
-	struct MaterialData
-	{
-		String name;
-		String path;
-		String parent;
-		bool isLod;
-	};
-	
-private:
-		
-	NMaterial* LoadMaterial(const FastName& name,
-							const FilePath& filePath,
-							NMaterial* parentMaterial,
-							bool isLod,
-							Map<String, Vector<MaterialData> >& nodes);
-	
-	void BuildAndBindOnMainThread(BaseObject * caller, void * param, void *callerData);
-	
-private:
-	
-    HashMap<FastName, NMaterial*> materials;
-	//HashMap<FastName, NMaterial*> switchableTemplates;
-	NMaterial* defaultMaterial;
 	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;

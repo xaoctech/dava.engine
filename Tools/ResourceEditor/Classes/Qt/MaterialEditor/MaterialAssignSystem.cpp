@@ -297,7 +297,10 @@ void MaterialAssignSystem::AddSelectedMaterial(DAVA::Set<DAVA::NMaterial *> &mat
                 DAVA::NMaterial *material = ro->GetRenderBatch(m)->GetMaterial();
                 QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
 
-                QString text = QString(material->GetParentName().c_str()) + ": " + material->GetMaterialName().c_str();
+				DVASSERT(false && "Review to implment with refactored materials!");
+				//VI: TODO: implement for refactored new materials
+               // QString text = QString(material->GetParentName().c_str()) + ": " + material->GetMaterialName().c_str();
+				QString text;
                 QAction *action = selectMaterialMenu.addAction(text);
                 action->setData(materialAsVariant);
             }

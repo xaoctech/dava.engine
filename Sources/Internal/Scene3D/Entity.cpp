@@ -902,6 +902,7 @@ namespace DAVA
 		dstNode->nodeAnimations = nodeAnimations;
 		
 		dstNode->RemoveAllChildren();
+        dstNode->children.reserve(children.size());
 		std::vector<Entity*>::iterator it = children.begin();
 		const std::vector<Entity*>::iterator & childsEnd = children.end();
 		for(; it != childsEnd; it++)

@@ -57,10 +57,20 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
 	posSaver.LoadState(ui->splitter_2);
+
+	DAVA::VariantType v1 = posSaver.LoadValue("splitPosProperties");
+	DAVA::VariantType v2 = posSaver.LoadValue("splitPosTexttures");
+	if(v1.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(0, v1.AsInt32());
+	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialTexture->header()->resizeSection(0, v2.AsInt32());
 }
 
 MaterialEditor::~MaterialEditor()
 { 
+	DAVA::VariantType v1(ui->materialProperty->header()->sectionSize(0));
+	DAVA::VariantType v2(ui->materialTexture->header()->sectionSize(0));
+	posSaver.SaveValue("splitPosProperties", v1);
+	posSaver.SaveValue("splitPosTexttures", v2);
+
 	posSaver.SaveState(ui->splitter);
 	posSaver.SaveState(ui->splitter_2);
 }
@@ -84,8 +94,6 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 	if(isVisible())
 	{
 		ui->materialTree->SetScene(scene);
-		ui->materialTree->sortByColumn(0, Qt::AscendingOrder);
-		ui->materialTree->expandToDepth(0);
 	}
 }
 
@@ -111,7 +119,7 @@ void MaterialEditor::showEvent(QShowEvent * event)
 void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 {
 	const DAVA::InspInfo *info = material->GetTypeInfo();
-	const DAVA::InspMember *materialProperties = info->BaseInfo()->Member("materialProperties");
+	const DAVA::InspMember *materialProperties = info->Member("materialProperties");
 
 	// fill material properties
 	if(NULL != materialProperties)
@@ -172,7 +180,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 {
 	const DAVA::InspInfo *info = material->GetTypeInfo();
-	const DAVA::InspMember *materialTextures = info->BaseInfo()->Member("textures");
+	const DAVA::InspMember *materialTextures = info->Member("textures");
 
 	// fill own material textures
 	if(NULL != materialTextures)

@@ -28,9 +28,6 @@
 
 #include "SimpleMaterialItem.h"
 
-#include <QSet>
-#include <QIcon>
-
 Q_DECLARE_METATYPE(DAVA::NMaterial *)
 
 
@@ -40,21 +37,12 @@ SimpleMaterialItem::SimpleMaterialItem(DAVA::NMaterial * _material)
 {
 	DVASSERT(material);
 
-	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
-	static QIcon userMaterialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
-
 	setEditable(false);
-	setText(material->GetMaterialName().c_str());
+	setText(material->GetName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    
-    if(material->IsSwitchable())
-    {
-		setIcon(qualityMaterialIcon);
-    }
-    else
-    {
-		setIcon(userMaterialIcon);
-    }
+
+    static QIcon icon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
+    setIcon(icon);
 }
 
 SimpleMaterialItem::~SimpleMaterialItem()
