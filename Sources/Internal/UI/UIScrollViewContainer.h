@@ -75,7 +75,6 @@ protected:
 	int32		touchTreshold;
 	
 	int 		mainTouch;	
-	UIEvent		scrollTouch;
 	
 	Vector2 	oldPos;
 	Vector2		newPos;
