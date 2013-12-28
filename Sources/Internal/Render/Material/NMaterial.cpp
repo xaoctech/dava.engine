@@ -139,7 +139,8 @@ namespace DAVA
 	instancePasses(4),
 	textures(8),
 	materialDynamicLit(false),
-	materialTemplate(NULL)
+	materialTemplate(NULL),
+	materialProperties(16)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -646,6 +647,12 @@ namespace DAVA
 		}
 		
 		memcpy(materialProperty->data, data, dataSize);
+		
+		//VI: this is temporary solution. It has to be removed once lighting system + autobind system is ready
+		if(IsDynamicLit() && IsLightingProperty(keyName))
+		{
+			UpdateLightingProperties(lights[0]);
+		}
 	}
 	
 	NMaterialProperty* NMaterial::GetPropertyValue(const FastName & keyName) const
@@ -1279,53 +1286,77 @@ namespace DAVA
 	
 	void NMaterial::SetLight(uint32 index, Light * light)
 	{
+		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		{
+			if(parent)
+			{
+				parent->SetLight(index, light);
+			}
+			else
+			{
+				SetLightInternal(index, light);
+			}
+		}
+		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
+		{
+			SetLightInternal(index, light);
+
+			for(size_t i = 0; i < children.size(); ++i)
+			{
+				children[i]->SetLightInternal(index, light);
+			}
+		}
+	}
+	
+	void NMaterial::SetLightInternal(int index, Light* light)
+	{
 		bool changed = (light != lights[index]);
 		lights[index] = light;
 		
 		if(changed && materialDynamicLit)
 		{
-			if(lights[0])
-			{
-				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-				
-				Color materialAmbientColor = (propAmbientColor) ? *(Color*) propAmbientColor->data : Color(1, 1, 1, 1);
-				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*) propDiffuseColor->data : Color(1, 1, 1, 1);
-				Color materialSpecularColor = (propSpecularColor) ? *(Color*) propSpecularColor->data : Color(1, 1, 1, 1);
-				float32 intensity = lights[0]->GetIntensity();
-				
-				materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();
-				materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
-				materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
-				
-				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
-			}
-			else
-			{
-				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-				
-				Color materialAmbientColor = (propAmbientColor) ? *(Color*) propAmbientColor->data : Color(1, 1, 1, 1);
-				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*) propDiffuseColor->data : Color(1, 1, 1, 1);
-				Color materialSpecularColor = (propSpecularColor) ? *(Color*) propSpecularColor->data : Color(1, 1, 1, 1);
-				float32 intensity = 0;
-				
-				materialAmbientColor = materialAmbientColor * Color(0, 0, 0, 0);
-				materialDiffuseColor = materialDiffuseColor * Color(0, 0, 0, 0);
-				materialSpecularColor = materialSpecularColor * Color(0, 0, 0, 0);
-				
-				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
-				
-			}
+			UpdateLightingProperties(lights[0]);
 		}
+	}
+	
+	void NMaterial::UpdateLightingProperties(Light* light)
+	{
+		NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+		if(propAmbientColor)
+		{
+			Color lightAmbientColor = (light) ? light->GetAmbientColor() : Color(0, 0, 0, 0);
+			Color materialAmbientColor = *(Color*) propAmbientColor->data;
+			materialAmbientColor = materialAmbientColor * lightAmbientColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+		}
+		
+		NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+		if(propDiffuseColor)
+		{
+			Color lightDiffuseColor = (light) ? light->GetDiffuseColor() : Color(0, 0, 0, 0);
+			Color materialDiffuseColor = *(Color*) propDiffuseColor->data;
+			materialDiffuseColor = materialDiffuseColor * lightDiffuseColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+		}
+		
+		NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+		if(propSpecularColor)
+		{
+			Color lightSpecularColor = (light) ? light->GetSpecularColor() : Color(0, 0, 0, 0);
+			Color materialSpecularColor = *(Color*) propSpecularColor->data;
+			materialSpecularColor = materialSpecularColor * lightSpecularColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+		}
+		
+		float32 intensity = (light) ? light->GetIntensity() : 0;
+		SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+	}
+	
+	bool NMaterial::IsLightingProperty(const FastName& propName) const
+	{
+		return (NMaterial::PARAM_PROP_AMBIENT_COLOR == propName ||
+				NMaterial::PARAM_PROP_DIFFUSE_COLOR == propName ||
+				NMaterial::PARAM_PROP_SPECULAR_COLOR == propName);
 	}
 	
 	const RenderStateData* NMaterial::GetRenderState(const FastName& passName) const
