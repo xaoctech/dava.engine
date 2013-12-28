@@ -221,7 +221,7 @@
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Render/Material/RenderTechnique.h"
 
 // 3D scene management
 #include "Scene3D/Scene.h"

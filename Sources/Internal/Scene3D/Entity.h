@@ -494,12 +494,11 @@ inline void Entity::SetTag(int32 _tag)
 {
     tag = _tag;
 }
+
     
 template<template <typename> class Container, class T>
 void Entity::GetDataNodes(Container<T> & container)
 {
-    container.clear();
-    
     Set<DataNode*> objects;
     GetDataNodes(objects);
     

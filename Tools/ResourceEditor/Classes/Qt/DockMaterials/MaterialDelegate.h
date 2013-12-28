@@ -42,6 +42,7 @@ class MaterialDelegate: public QAbstractItemDelegate
 {
 	Q_OBJECT
     
+    static const int PREVIEW_HEIGHT = 32;
     static const int TEXT_HEIGHT = 24;
     static const int BORDER_MARGIN = 1;
 
@@ -67,7 +68,7 @@ private slots:
 private:
     QRect GetBackgroundRect(const QStyleOptionViewItem & option) const;
     
-    void DrawBackground(QPainter *painter, const QRect &rect, const DAVA::NMaterial * material) const;
+    void DrawBackground(QPainter *painter, const QRect &rect, DAVA::NMaterial * material) const;
 	void DrawText(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect,  const DAVA::NMaterial * material) const;
     void DrawSelection(QPainter *painter, const QStyleOptionViewItem &option, const DAVA::NMaterial * material) const;
     

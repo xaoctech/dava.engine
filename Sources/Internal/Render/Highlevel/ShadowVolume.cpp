@@ -35,7 +35,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "FileSystem/FilePath.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -46,20 +46,18 @@ namespace DAVA
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)
 {
-	//shader = new Shader();
-	//shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	//shader->Recompile();
-
-    //SetOwnerLayerName(LAYER_SHADOW_VOLUME);
-    
     aabbox = AABBox3(Vector3(), Vector3());
+		
+	NMaterial* parentShadowVolume = NMaterial::CreateMaterial(FastName("Shadow_Volume_Material"),
+																	FastName("~res:/Materials/Legacy/ShadowVolume.material"),
+																	NMaterial::DEFAULT_QUALITY_NAME);
+	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();
+	parentShadowVolume->AddChild(shadowMat);
 	
-	NMaterial* mat = MaterialSystem::CreateNamed();
-	mat->SwitchParent(FastName("LodShadowVolume"));
+	SetMaterial(shadowMat);
 	
-	SetMaterial(mat);
-    
-    mat->Release();
+	SafeRelease(parentShadowVolume);
+	SafeRelease(shadowMat);
 }
 
 ShadowVolume::~ShadowVolume()

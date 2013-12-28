@@ -161,7 +161,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
-    QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(TexturesReloaded()));
+    QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(ClearCache()));
 
     
 	LoadGPUFormat();
@@ -2263,36 +2263,49 @@ void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
 
 bool QtMainWindow::OpenScene( const QString & path )
 {
-    if(path.isEmpty())
-        return false;
-	
-	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
-	FilePath argumentPath(path.toStdString());
-	if(!FilePath::ContainPath(argumentPath, projectPath))
-	{
-		QMessageBox::warning(this, "Open scene error.", "Selected scene file doesn't belogn to project.");
-		return false;
-	}
-	
-    SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
-    if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
-    {
-        FilePath path = scene->GetScenePath();
-        if(path.GetFilename() == "newscene1.sc2" && !scene->CanUndo())
-        {
-            ui->sceneTabWidget->CloseTab(0);
-        }
-    }
-    
-    int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
-    if(index != -1)
-    {
-        ui->sceneTabWidget->SetCurrentTab(index);
-        AddRecent(path);
-        return true;
-    }
+	bool ret = false;
 
-    return false;
+	if(!path.isEmpty())
+	{
+		FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
+		FilePath argumentPath(path.toStdString());
+
+		if(!FilePath::ContainPath(argumentPath, projectPath))
+		{
+			QMessageBox::warning(this, "Open scene error.", QString().sprintf("Can't open scene file outside project path.\n\nScene:\n%s\n\nProject:\n%s", 
+				projectPath.GetAbsolutePathname().c_str(),
+				argumentPath.GetAbsolutePathname().c_str()));
+		}
+		else
+		{
+			SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
+			if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
+			{
+				FilePath path = scene->GetScenePath();
+				if(path.GetFilename() == "newscene1.sc2" && !scene->CanUndo())
+				{
+					ui->sceneTabWidget->CloseTab(0);
+				}
+			}
+
+			DAVA::FilePath scenePath = DAVA::FilePath(path.toStdString());
+
+			WaitStart("Opening scene...", scenePath.GetAbsolutePathname().c_str());
+
+			int index = ui->sceneTabWidget->OpenTab(scenePath);
+			if(index != -1)
+			{
+				ui->sceneTabWidget->SetCurrentTab(index);
+				AddRecent(path);
+
+				ret = true;
+			}
+
+			WaitStop();
+		}
+	}
+
+    return ret;
 }
 
 void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
