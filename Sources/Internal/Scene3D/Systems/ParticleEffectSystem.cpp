@@ -35,53 +35,19 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/Random.h"
 #include "Core/PerformanceSettings.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 
 namespace DAVA
 {
 
-#define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 4)
-static const uint32 BLEND_KEYS[] =
-{
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE),
-	MAKE_BLEND_KEY(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA)
-};
-
-static const FastName BLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.Particles0"),
-	FastName("Global.Textured.VertexColor.Particles1")
-};
-
-static const FastName FRAMEBLEND_MATERIAL_NAMES[] =
-{
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend0"),
-	FastName("Global.Textured.VertexColor.ParticlesFrameBlend1")
-};
-
-
-const FastName& FindParticleMaterial(eBlendMode src, eBlendMode dst, bool frameBlendEnabled)
-{
-	uint32 blendKey = MAKE_BLEND_KEY(src, dst);
-	for(uint32 i = 0; i < COUNT_OF(BLEND_KEYS); ++i)
-	{
-		if(BLEND_KEYS[i] == blendKey)
-		{
-			return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[i] : BLEND_MATERIAL_NAMES[i];
-		}
-	}
-
-	//VI: fallback to default material
-	return (frameBlendEnabled) ? FRAMEBLEND_MATERIAL_NAMES[0] : BLEND_MATERIAL_NAMES[0];
-}
 
 NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor)
 {
 	if (!texture) //for superemmiter particles eg
 		return NULL;
 
-	uint32 materialKey = MAKE_BLEND_KEY(srcFactor, dstFactor);
+	uint32 materialKey = srcFactor<<4 | dstFactor;
 	if (enableFog)
 		materialKey+=1<<8;
 	if (enableFrameBlend)
@@ -95,10 +61,13 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 	}
 	else //create new
 	{
-		NMaterial *material = MaterialSystem::CreateNamed();
-		material->SwitchParent(FindParticleMaterial(srcFactor, dstFactor, enableFrameBlend));
+		NMaterial *material = NMaterial::CreateMaterialInstance();
+		if (enableFrameBlend)
+			particleFrameBlendMaterial->AddChild(material);
+		else
+			particleRegularMaterial->AddChild(material);		
 		material->SetTexture(NMaterial::TEXTURE_ALBEDO, texture);
-		material->UpdateMaterialSystem(GetScene()->renderSystem->GetMaterialSystem());		
+		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcFactor, dstFactor);
 		materialMap[materialKey] = material;
 		return material;
 	}
@@ -106,7 +75,9 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
-{
+{	
+	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"), FastName("~res:/Materials/Legacy/Particles/Particles.material"), NMaterial::DEFAULT_QUALITY_NAME);		
+	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"), FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"), NMaterial::DEFAULT_QUALITY_NAME);	
 }
 ParticleEffectSystem::~ParticleEffectSystem()
 {
@@ -114,6 +85,8 @@ ParticleEffectSystem::~ParticleEffectSystem()
 	{
 		SafeRelease(it->second);
 	}
+	SafeRelease(particleRegularMaterial);
+	SafeRelease(particleFrameBlendMaterial);
 }
 
 void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource)
