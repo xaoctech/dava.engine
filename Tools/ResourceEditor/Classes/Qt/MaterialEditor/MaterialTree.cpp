@@ -36,7 +36,7 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	treeModel = new MaterialModel();
 
 	setModel(treeModel);
-	setSortingEnabled(true);
+	//setSortingEnabled(true);
 }
 
 MaterialTree::~MaterialTree()
