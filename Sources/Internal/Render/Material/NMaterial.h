@@ -396,6 +396,11 @@ protected:
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
 	void BindMaterialProperties(RenderPassInstance* passInstance);
+	
+	//VI: this method is for updating light. It's temporary solution hopefully
+	void UpdateLightingProperties(Light* light);
+	bool IsLightingProperty(const FastName& propName) const;
+	void SetLightInternal(int index, Light* light);
 		
 protected:
 	
