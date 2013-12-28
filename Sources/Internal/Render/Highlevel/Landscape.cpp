@@ -284,13 +284,11 @@ void Landscape::SetLods(const Vector4 & lods)
     
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & _box)
 {
-    ReleaseAllRDOQuads();
-    SafeDeleteArray(indices); //TODO: need here or no?
-
 	heightmapPath = heightmapPathname;
+    BuildHeightmap();
+
 	bbox = _box;
 
-    BuildHeightmap();
     BuildLandscape();
 }
 
@@ -334,6 +332,10 @@ bool Landscape::BuildHeightmap()
     
 void Landscape::BuildLandscape()
 {
+    ReleaseAllRDOQuads();
+    SafeDeleteArray(indices);
+
+    
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
     quadTreeHead.data.rdoQuad = -1;
@@ -1604,12 +1606,8 @@ Heightmap * Landscape::GetHeightmap()
 void Landscape::SetHeightmap(DAVA::Heightmap *height)
 {
     SafeRelease(heightmap);
-    
-    ReleaseAllRDOQuads();
-    
-    SafeDeleteArray(indices);
-
     heightmap = SafeRetain(height);
+    
     BuildLandscape();
 }
     
