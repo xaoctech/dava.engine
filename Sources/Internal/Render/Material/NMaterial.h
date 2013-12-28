@@ -88,38 +88,39 @@ public:
     uint8 size;
     uint8* data;
 	
-	virtual ~NMaterialProperty()
+	NMaterialProperty()
 	{
+		type = Shader::UT_INT;
+		size = 0;
+		data = NULL;
 	}
 	
-	virtual NMaterialProperty* Clone()
+	~NMaterialProperty()
 	{
-		return NULL;
+		if(data)
+		{
+			SafeDeleteArray(data);
+		}
+	}
+	
+	NMaterialProperty* Clone()
+	{
+		NMaterialProperty* cloneProp = new NMaterialProperty();
+		
+		cloneProp->size = size;
+		cloneProp->type = type;
+		
+		if(data)
+		{
+			size_t dataSize = Shader::GetUniformTypeSize(type) * size;
+			cloneProp->data = new uint8[dataSize];
+			memcpy(cloneProp->data, data, dataSize);
+		}
+		
+		return cloneProp;
 	}
 };
-	
-template<typename MEMMANAGER>
-class NManagedMaterialProperty : public NMaterialProperty
-{
-	
-public:
-	
-	NManagedMaterialProperty()
-	{
-		MEMMANAGER::Init(this);
-	}
 
-	virtual ~NManagedMaterialProperty()
-	{
-		MEMMANAGER::Release(this);
-	}
-	
-	virtual NMaterialProperty* Clone()
-	{
-		return MEMMANAGER::Clone(this);
-	}
-};
-		  
 class Camera;
 class SerializationContext;
 class NMaterial : public DataNode
@@ -269,16 +270,6 @@ public:
 	
 protected:
 	
-	class GenericPropertyManager
-	{
-	public:
-		static void Init(NMaterialProperty* prop);
-		static void Release(NMaterialProperty* prop);
-		static NMaterialProperty* Clone(NMaterialProperty* prop);
-	};
-		
-	typedef NManagedMaterialProperty<GenericPropertyManager> GenericMaterialProperty;
-
 	struct TextureBucket
 	{
 		TextureBucket() : texture(NULL)
@@ -436,6 +427,56 @@ public:
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 		
 	protected:
+		
+		class IntrospectionMaterialPropData
+		{
+		public:
+			
+			Shader::eUniformType type;
+			uint8 size;
+			uint8* data;
+			
+			IntrospectionMaterialPropData()
+			{
+				type = Shader::UT_INT;
+				size = 0;
+				data = NULL;
+			}
+			
+			
+			IntrospectionMaterialPropData(const IntrospectionMaterialPropData& prop)
+			{
+				type = prop.type;
+				size = prop.size;
+				data = prop.data;
+			}
+
+			IntrospectionMaterialPropData(const NMaterialProperty& prop)
+			{
+				type = prop.type;
+				size = prop.size;
+				data = prop.data;
+			}
+						
+			IntrospectionMaterialPropData& operator=(const NMaterialProperty& prop)
+			{
+				type = prop.type;
+				size = prop.size;
+				data = prop.data;
+				
+				return *this;
+			}
+			
+			IntrospectionMaterialPropData& operator=(const IntrospectionMaterialPropData& prop)
+			{
+				type = prop.type;
+				size = prop.size;
+				data = prop.data;
+				
+				return *this;
+			}
+		};
+		
 		struct PropData
 		{
 			enum PropSource
@@ -450,7 +491,7 @@ public:
 			{ }
 			
 			int source;
-			NMaterialProperty property;
+			IntrospectionMaterialPropData property;
 		};
 		
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
