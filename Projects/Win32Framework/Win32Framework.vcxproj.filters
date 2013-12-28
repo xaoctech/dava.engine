@@ -2405,5 +2405,8 @@
     <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp">
       <Filter>Internal\Input</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
+      <Filter>Internal\Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

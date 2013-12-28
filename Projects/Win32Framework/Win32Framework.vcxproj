@@ -715,6 +715,7 @@
     <ClCompile Include="..\..\Sources\Internal\Math\AABBox2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\BezierSpline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Math2D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Polygon2.cpp" />
