@@ -77,10 +77,10 @@ ParticleLayer::ParticleLayer()
 	dstBlendFactor = BLEND_ONE;
 	enableFog = true;
 	enableFrameBlend = false;
-	inheritPosition = true;
+	inheritPosition = false;
 	type = TYPE_PARTICLES;
     
-    endTime = 100000000.0f;
+    endTime = 100.0f;
 	deltaTime = 0.0f;
 	deltaVariation = 0.0f;
 	loopVariation = 0.0f;
@@ -624,6 +624,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		UpdateSizeLine(size.Get(), true, !isLong);
 		UpdateSizeLine(sizeVariation.Get(), true, !isLong);
 		UpdateSizeLine(sizeOverLifeXY.Get(), false, !isLong);
+		inheritPosition = false; //minimize pain
 	}
 }
 

@@ -76,6 +76,7 @@ private:
 
 
 private: //materials stuff
+	NMaterial *particleRegularMaterial, *particleFrameBlendMaterial;
 	Map<uint32, NMaterial *> materialMap;
 	NMaterial *GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor);
 };
