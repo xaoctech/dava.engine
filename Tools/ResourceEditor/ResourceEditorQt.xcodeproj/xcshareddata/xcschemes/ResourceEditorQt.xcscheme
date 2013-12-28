@@ -62,6 +62,10 @@
             argument = "-sceneexporter -export -indir /Users/victorkleschenko/Work/WoT/wot.blitz_054/DataSource/3d/ -outdir /Users/victorkleschenko/Work/WoT/wot.blitz_054/Data/3d -processdir Tanks"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-extract -folder /Users/a_makovii/Documents/work/temp/dds -mipmaps 3 -forceclose"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
