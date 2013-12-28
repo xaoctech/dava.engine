@@ -84,7 +84,7 @@ protected:
 	DAVA::Entity* LoadInternal(const DAVA::FilePath& sc2path, bool optimize, bool clearCached);
 
     bool CopyLightmapSettings(DAVA::Entity *fromState, DAVA::Entity *toState) const;
-	void CopyLightmapSettings(DAVA::NMaterialState *fromEntity, DAVA::NMaterialState *toEntity) const;
+	void CopyLightmapSettings(DAVA::NMaterial *fromEntity, DAVA::NMaterial *toEntity) const;
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 
 	void CheckAndMarkSolid(DAVA::Entity *entity);

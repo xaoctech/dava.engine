@@ -40,7 +40,9 @@ CustomLandscape::CustomLandscape()
 CustomLandscape::~CustomLandscape()
 {
 	SafeRelease(landscapeRenderer);
-	RenderManager::Instance()->ReleaseTextureStateData(textureState);
+    
+    if(textureState != InvalidUniqueHandle)
+        RenderManager::Instance()->ReleaseTextureStateData(textureState);
 }
 
 void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)

@@ -1,3 +1,12 @@
+<CONFIG>
+albedo = 0
+cubemap = 0
+decal = 1
+detail = 1
+lightmap = 1
+normalmap = 1
+<FRAGMENT_SHADER>
+
 #ifdef GL_ES
 // define default precision for float, vec, mat.
 precision highp float;
@@ -18,20 +27,20 @@ precision highp float;
 uniform sampler2D albedo;
 varying mediump vec2 varTexCoord0;
 #elif defined(MATERIAL_SKYBOX)
-uniform samplerCube albedo;
+uniform samplerCube cubemap; //[1]:ONCE
 varying mediump vec3 varTexCoord0;
 #endif
 
 #if defined(MATERIAL_DECAL)
-uniform sampler2D decal;
+uniform sampler2D decal; //[1]:ONCE
 #endif
 
 #if defined(MATERIAL_DETAIL)
-uniform sampler2D detail;
+uniform sampler2D detail; //[1]:ONCE
 #endif
 
 #if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
-uniform sampler2D lightmap;
+uniform sampler2D lightmap; //[1]:ONCE
 #endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
@@ -39,7 +48,7 @@ varying mediump vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
-uniform sampler2D normalmap;
+uniform sampler2D normalmap; // [1]:ONCE
 uniform float materialSpecularShininess;
 uniform float lightIntensity0; 
 #endif
@@ -100,7 +109,7 @@ void main()
 #endif
 	
 #elif defined(MATERIAL_SKYBOX)
-        lowp vec4 textureColor0 = textureCube(albedo, varTexCoord0);
+        lowp vec4 textureColor0 = textureCube(cubemap, varTexCoord0);
 #endif
 	
 #if defined(MATERIAL_TEXTURE)

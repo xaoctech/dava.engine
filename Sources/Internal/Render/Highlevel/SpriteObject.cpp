@@ -30,7 +30,7 @@
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/SpriteRenderBatch.h"
 #include "Render/Highlevel/RenderFastNames.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 
 
@@ -95,17 +95,17 @@ void SpriteObject::SetupRenderBatch()
 //	material->SetName("SpriteObject_material");
 //	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
-    //NMaterial * material = renderSystem->GetMaterialSystem()->CreateChild("Global.Textured.Alphablend");
-	NMaterial * material = MaterialSystem::CreateNamed();
-	material->SwitchParent(FastName("Global.Textured.Alphablend")); //TODO: think if should use LOD material here
-	material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
+    DVASSERT(false);
+	//NMaterial * material = MaterialSystem::CreateNamed();
+	//material->SwitchParent(FastName("Global.Textured.Alphablend")); //TODO: think if should use LOD material here
+	//material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
         
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
-	batch->SetMaterial(material);
+	//batch->SetMaterial(material);
     batch->SetRenderDataObject(renderDataObject);
 	AddRenderBatch(batch);
 
-	SafeRelease(material);
+	//SafeRelease(material);
 	SafeRelease(renderDataObject);
 	SafeRelease(batch);
 }
@@ -183,6 +183,8 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	//0, 0
 	float32 *pT = sprite->GetTextureVerts(frameToGen);
 
+    verts.reserve(3 * 4);
+
 	verts.push_back(x0);
 	verts.push_back(y0);
 	verts.push_back(0);
@@ -212,7 +214,7 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	//textures.push_back(pT[1 * 2 + 0]);
 	//textures.push_back(pT[1 * 2 + 1]);
 
-
+    textures.reserve(2*4);
 	for (int32 i = 0; i < 2*4; i++) 
 	{
 		textures.push_back(*pT);

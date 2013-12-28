@@ -69,7 +69,7 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
 
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 #include "Scene3D/Components/ComponentHelpers.h"
 
@@ -144,6 +144,9 @@ void Scene::CreateSystems()
     
     staticOcclusionSystem = new StaticOcclusionSystem(this);
 	AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT));
+    
+    materialSystem = new MaterialSystem(this);
+//    AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -189,6 +192,9 @@ Scene::~Scene()
     actionSystem = 0;
     skyboxSystem = 0;
     staticOcclusionSystem = 0;
+
+    SafeDelete(materialSystem);
+//    materialSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
@@ -815,7 +821,7 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	}
 }
 
-EventSystem * Scene::GetEventSystem()
+EventSystem * Scene::GetEventSystem() const
 {
 	return eventSystem;
 }
@@ -824,6 +830,12 @@ RenderSystem * Scene::GetRenderSystem() const
 {
 	return renderSystem;
 }
+
+MaterialSystem * Scene::GetMaterialSystem() const
+{
+    return materialSystem;
+}
+
 
 /*void Scene::Save(KeyedArchive * archive)
 {

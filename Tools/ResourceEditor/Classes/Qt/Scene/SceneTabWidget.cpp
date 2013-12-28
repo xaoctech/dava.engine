@@ -178,8 +178,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		return tabIndex;
 	}
 
-	QtMainWindow::Instance()->WaitStart("Opening scene...", scenePapth.GetAbsolutePathname().c_str());
-
 	SceneEditor2 *scene = new SceneEditor2();
 	if(scene->Load(scenePapth))
 	{
@@ -190,10 +188,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	}
 	else
 	{
-		// TODO:
-		// message box about can't load scene
-		// ...
-		
         SafeRelease(scene);
 	}
 
@@ -201,8 +195,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
 		SetCurrentTab(tabIndex);
 	}
-
-	QtMainWindow::Instance()->WaitStop();
 
 	return tabIndex;
 }
@@ -250,7 +242,9 @@ void SceneTabWidget::SetCurrentTab(int index)
 			SceneSignals::Instance()->EmitDeactivated(oldScene);
 		}
 
+		tabBar->blockSignals(true);
 		tabBar->setCurrentIndex(index);
+		tabBar->blockSignals(false);
 
 		if(NULL != curScene)
 		{

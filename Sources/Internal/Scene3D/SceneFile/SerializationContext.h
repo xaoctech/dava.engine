@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
 
 namespace DAVA
@@ -43,6 +44,7 @@ namespace DAVA
 	class InstanceMaterialState;
 	class NMaterial;
 	class Texture;
+	class NMaterial;
 
 	class SerializationContext
 	{
@@ -54,7 +56,9 @@ namespace DAVA
 		Scene* scene;
 		uint32 lastError;
 		uint32 version;
+		FastName defaultMaterialQuality;
 		Map<uint64, DataNode*> dataBlocks;
+		Map<uint64, NMaterial*> serializationMaterialMap;
 	
 	public:
 		
@@ -121,6 +125,17 @@ namespace DAVA
 			return (it != dataBlocks.end()) ? it->second : NULL;
 		}
 		
+		inline void SetMaterial(uint64 materialId, NMaterial* material)
+		{
+			serializationMaterialMap[materialId] = material;
+		}
+		
+		inline NMaterial* GetMaterial(uint64 materialId)
+		{
+			Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.find(materialId);
+			return (it != serializationMaterialMap.end()) ? it->second : NULL;
+		}
+		
 		inline void SetLastError(uint32 error)
 		{
 			lastError = error;
@@ -131,14 +146,21 @@ namespace DAVA
 			return lastError;
 		}
 		
+		inline void SetDefaultMaterialQuality(const FastName& quality)
+		{
+			defaultMaterialQuality = quality;
+		}
+		
+		inline const FastName& GetDefaultMaterialQuality() const
+		{
+			return defaultMaterialQuality;
+		}
+		
 		NMaterial* ConvertOldMaterialToNewMaterial(Material* oldMaterial,
 											InstanceMaterialState* oldMaterialState,
 												   uint64 oldMaterialId);
-		NMaterial* GetNewMaterial(const String& name);
-
-		MaterialSystem* GetMaterialSystem();
 		
-		Texture* PrepareTexture(Texture* tx);
+		Texture* PrepareTexture(uint32 textureTypeHint, Texture* tx);
 	};
 };
 

@@ -47,6 +47,8 @@ LodSystem::LodSystem(Scene * scene)
 :	SceneSystem(scene)
 {
 	camera = 0;
+    
+    partialUpdateIndices.reserve(UPDATE_PART_PER_FRAME + 1);
 	UpdatePartialUpdateIndices();
 }
 
@@ -326,6 +328,7 @@ void LodSystem::LodMerger::MergeChildLods()
 			}
 
 			uint32 nodesToCopy = fromData.nodes.size();
+            toData->nodes.reserve(nodesToCopy);
 			for(uint32 j = 0; j < nodesToCopy; ++j)
 			{
 				toData->nodes.push_back(fromData.nodes[j]); 

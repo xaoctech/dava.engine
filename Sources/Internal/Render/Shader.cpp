@@ -40,6 +40,7 @@
 #ifdef USE_CRC_COMPARE
 #include "Utils/CRC32.h"
 #endif
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -297,7 +298,7 @@ namespace DAVA
 		YamlNode * rootNode = parser->GetRootNode();
 		if (!rootNode)
 		{
-			SafeRelease(rootNode);
+			SafeRelease(parser);
 			return false;
 		}
 		
@@ -350,10 +351,14 @@ namespace DAVA
         
 		uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(vertexShaderPath, vertexShaderSize);
 		vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
-		
+		vertexShaderDataStart = vertexShaderBytes;
+        vertexShaderDataSize = vertexShaderSize;
+        
 		uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
 		fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
-		
+        fragmentShaderDataStart = fragmentShaderBytes;
+        fragmentShaderDataSize = fragmentShaderSize;
+        
 		return true;
 	}
     
@@ -391,13 +396,13 @@ namespace DAVA
 			DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
 		}
 		
-		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
+		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderDataSize, (GLchar*)vertexShaderDataStart, vertexShaderDefines))
 		{
 			Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
 			return;
 		}
 		
-		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr(), fragmentShaderDefines))
+		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderDataSize, (GLchar*)fragmentShaderDataStart, fragmentShaderDefines))
 		{
 			Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
 			return ;
@@ -1167,11 +1172,23 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 	}
     
-	Shader * Shader::CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet)
+	Shader * Shader::CompileShader(const FastName & assetName,
+                                   Data * vertexShaderData,
+                                   Data * fragmentShaderData,
+                                   uint8 * vertexShaderDataStart,
+                                   uint32 vertexShaderDataSize,
+                                   uint8 * fragmentShaderDataStart,
+                                   uint32 fragmentShaderDataSize,
+                                   const FastNameSet & definesSet)
 	{
 		Shader * shader = new Shader();
+        shader->assetName = assetName;
 		shader->vertexShaderData = SafeRetain(vertexShaderData);
 		shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+        shader->vertexShaderDataStart = vertexShaderDataStart;
+        shader->vertexShaderDataSize = vertexShaderDataSize;
+        shader->fragmentShaderDataStart = fragmentShaderDataStart;
+        shader->fragmentShaderDataSize = fragmentShaderDataSize;
 		
 		String result;
 		FastNameSet::iterator end = definesSet.end();
@@ -1182,7 +1199,6 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 		shader->SetDefines(result);
 		
-		
 		shader->Recompile();
 		return shader;
 	}
@@ -1191,8 +1207,12 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 Shader * Shader::RecompileNewInstance(const String & combination)
 {
     Shader * shader = new Shader();
-    shader->vertexShaderData = SafeRetain(vertexShaderData);
-    shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+	shader->vertexShaderData = SafeRetain(vertexShaderData);
+	shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+	shader->vertexShaderDataStart = vertexShaderDataStart;
+	shader->vertexShaderDataSize = vertexShaderDataSize;
+	shader->fragmentShaderDataStart = fragmentShaderDataStart;
+	shader->fragmentShaderDataSize = fragmentShaderDataSize;
     shader->SetDefineList(combination);
     
 	//TODO: return "invalid shader" on error;

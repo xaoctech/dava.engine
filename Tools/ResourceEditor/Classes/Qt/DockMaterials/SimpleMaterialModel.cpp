@@ -36,11 +36,11 @@
 #include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Scene3D/Scene.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 SimpleMaterialModel::SimpleMaterialModel(QObject * parent)
     : QStandardItemModel(parent)
+    , curScene(NULL)
 { 
 }
 
@@ -52,30 +52,25 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 	removeRows(0, rowCount());
     selectedMaterials.clear();
     
-	if(NULL != scene)
+    curScene = scene;
+	if(NULL != curScene)
 	{
 		QStandardItem *root = invisibleRootItem();
-		DAVA::MaterialSystem *matSys = scene->renderSystem->GetMaterialSystem();
+		DAVA::MaterialSystem *matSys = curScene->GetMaterialSystem();
 
 		DAVA::Vector<DAVA::NMaterial *> materials;
-		matSys->BuildMaterialList(NULL, materials);
+		matSys->BuildMaterialList(curScene, NMaterial::MATERIALTYPE_MATERIAL, materials);
 
 		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
 		{
-			if(materials[i]->IsSwitchable() && materials[i]->IsConfigMaterial())
-			{
-                if(IsMaterialValidForModel(materials[i]) == false)
-                    continue;
-                
-                for(DAVA::int32 m = 0; m < materials[i]->GetChildrenCount(); ++m)
-                {
-                    SimpleMaterialItem *item = new SimpleMaterialItem(materials[i]->GetChild(m));
-                    root->appendRow(item);
-                }
-			}
+            if(IsMaterialValidForModel(materials[i]))
+            {
+                SimpleMaterialItem *item = new SimpleMaterialItem(materials[i]);
+                root->appendRow(item);
+            }
 		}
         
-        SetSelection(scene->selectionSystem->GetSelection());
+        SetSelection(curScene->selectionSystem->GetSelection());
 	}
 }
 
@@ -117,7 +112,10 @@ bool SimpleMaterialModel::IsMaterialValidForModel(const DAVA::NMaterial * materi
     const DAVA::FastName & name = material->GetMaterialName();
     
     bool invalid =
-        IsFastNameContains(name, "ShadowVolume")   ||
+        IsFastNameContains(name, "Shadow_Volume")   ||
+        IsFastNameContains(name, "Particle_")   ||
+        IsFastNameContains(name, "Landscape_")   ||
+        IsFastNameContains(name, "SkyBox_")   ||
         IsFastNameContains(name, "Silhouette");
     
     return !invalid;
@@ -133,36 +131,21 @@ bool SimpleMaterialModel::IsFastNameContains(const DAVA::FastName & name, const 
 void SimpleMaterialModel::SetSelection(const EntityGroup & selection)
 {
     selectedMaterials.clear();
+    if(!curScene) return;
     
-    DAVA::Vector<DAVA::Entity *> entitiesWithRenderComponent;
-
+    DAVA::MaterialSystem *matSys = curScene->GetMaterialSystem();
+    DAVA::Vector<DAVA::NMaterial *> materials;
+    
     size_t count = selection.Size();
     for(size_t i = 0; i < count; ++i)
     {
-        DAVA::Entity *entity = selection.GetEntity(i);
-        
-        entity->GetChildEntitiesWithComponent(entitiesWithRenderComponent, DAVA::Component::RENDER_COMPONENT);
-        if(GetRenderObject(entity))
-        {
-            entitiesWithRenderComponent.push_back(entity);
-        }
+        matSys->BuildMaterialList(selection.GetEntity(i), NMaterial::MATERIALTYPE_MATERIAL, materials);
     }
     
-    count = entitiesWithRenderComponent.size();
+    count = materials.size();
     for(size_t i = 0; i < count; ++i)
     {
-        RenderObject *ro = GetRenderObject(entitiesWithRenderComponent[i]);
-        if(!ro) continue;
-        
-        DAVA::uint32 rbCount = ro->GetRenderBatchCount();
-        for(DAVA::uint32 r = 0; r < rbCount; ++r)
-        {
-            DAVA::NMaterial * mat = ro->GetRenderBatch(r)->GetMaterial();
-            if(mat)
-            {
-                selectedMaterials.insert(mat->GetParent());
-            }
-        }
+        selectedMaterials.insert(materials[i]);
     }
 }
 
