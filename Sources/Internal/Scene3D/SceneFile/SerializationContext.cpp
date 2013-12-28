@@ -361,6 +361,36 @@ namespace DAVA
 				}
 			}
 
+			if(oldMaterial->IsFlatColorEnabled())
+			{
+				material->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
+			}
+			
+			if(oldMaterial->IsTextureShiftEnabled())
+			{
+				material->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+			}
+			
+			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				float32 shininess = oldMaterial->GetShininess();
+				material->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
+				
+				Color ambientColor = oldMaterial->GetAmbientColor();
+				Color diffuseColor = oldMaterial->GetDiffuseColor();
+				Color specularColor = oldMaterial->GetSpecularColor();
+				
+				material->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &ambientColor);
+				material->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &diffuseColor);
+				material->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &specularColor);
+			}
+			
 			//VI: should not retain material here. it will be released in the context's destructor
 			//VI: if the material still has children it will survive that.
 			SetMaterial(oldMaterialId, material);
@@ -384,15 +414,6 @@ namespace DAVA
 			}
 		}
 		
-		if(oldMaterial->IsFlatColorEnabled())
-		{
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
-		}
-		
-		if(oldMaterial->IsTextureShiftEnabled())
-		{
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
-		}
 		
 		if(oldMaterialState)
 		{
@@ -402,27 +423,6 @@ namespace DAVA
 				instanceMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
 			}
 		}
-		
-		if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-		{
-			float32 shininess = oldMaterial->GetShininess();
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
-			
-			Color ambientColor = oldMaterial->GetAmbientColor();
-			Color diffuseColor = oldMaterial->GetDiffuseColor();
-			Color specularColor = oldMaterial->GetSpecularColor();
-			
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &ambientColor);
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &diffuseColor);
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &specularColor);
-		}
-
 		
 		material->AddChild(instanceMaterial);
 		
