@@ -59,14 +59,14 @@ public:
 
     void SetSelection(const EntityGroup & selection);
 
-    bool IsMaterialSelected(const DAVA::NMaterial *material) const;
+    bool IsMaterialSelected(DAVA::NMaterial *material) const;
     
 protected:
     
     bool IsMaterialValidForModel(const DAVA::NMaterial * material) const;
     bool IsFastNameContains(const DAVA::FastName & name, const DAVA::String & partOfName) const;
     
-    DAVA::Set<const DAVA::NMaterial *> selectedMaterials;
+    DAVA::Set<DAVA::NMaterial *> selectedMaterials;
     SceneEditor2 * curScene;
 };
 

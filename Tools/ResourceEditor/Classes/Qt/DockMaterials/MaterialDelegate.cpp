@@ -88,7 +88,7 @@ void MaterialDelegate::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor
 
 void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    const DAVA::NMaterial * material = GetMaterial(index);
+    DAVA::NMaterial * material = GetMaterial(index);
     if(!material) return;
     
     painter->save();
@@ -122,7 +122,7 @@ void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     painter->restore();
 }
 
-void MaterialDelegate::DrawBackground(QPainter *painter, const QRect &rect, const DAVA::NMaterial * material) const
+void MaterialDelegate::DrawBackground(QPainter *painter, const QRect &rect, DAVA::NMaterial * material) const
 {
     const SimpleMaterialModel *curModel = (SimpleMaterialModel *) proxyModel->sourceModel();
     if(curModel->IsMaterialSelected(material))

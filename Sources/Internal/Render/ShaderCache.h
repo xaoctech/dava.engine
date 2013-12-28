@@ -64,6 +64,10 @@ public:
     Shader * Get(const FastNameSet & defines);
     void BindShaderDefaults(Shader * shader);
     const DefaultValue & GetDefaultValue(const FastName & name) { return defaultValues[name]; };
+	
+private:
+	
+	void BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData);
     
 protected:
     FastName name;
