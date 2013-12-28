@@ -1567,7 +1567,7 @@ namespace DAVA
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
 	{
-		return 0;
+		return I_VIEW | I_EDIT;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1588,19 +1588,27 @@ namespace DAVA
 			
 			for(; it != end; ++it)
 			{
-				if(0 == staticData.count(it->first))
+				FastName propName = it->first;
+
+				// don't add some properties with light settings, they should be hidden for user
+				if(propName != NMaterial::PARAM_LIGHT_AMBIENT_COLOR &&
+					propName != NMaterial::PARAM_LIGHT_DIFFUSE_COLOR &&
+					propName != NMaterial::PARAM_LIGHT_SPECULAR_COLOR)
 				{
-					PropData data;
-					data.property = *it->second;
-					data.source |= source;
+					if(0 == staticData.count(it->first))
+					{
+						PropData data;
+						data.property = *it->second;
+						data.source |= source;
 					
-					staticData.Insert(it->first, data);
-					//printf("insert %s, %d\n", it->first.c_str(), source);
-				}
-				else
-				{
-					staticData[it->first].source |= source;
-					//printf("update %s, %d\n", it->first.c_str(), source);
+						staticData.Insert(propName, data);
+						//printf("insert %s, %d\n", propName.c_str(), source);
+					}
+					else
+					{
+						staticData[propName].source |= source;
+						//printf("update %s, %d\n", propName.c_str(), source);
+					}
 				}
 			}
 			
@@ -1968,5 +1976,78 @@ namespace DAVA
 				break;
 		}
 		
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
+	FastName NMaterial::NMaterialStateDynamicFlagsInsp::GetName(size_t index) const
+	{
+		FastName ret;
+
+		switch(index)
+		{
+			case 0: ret = FLAG_VERTEXFOG; break;
+			case 1: ret = FLAG_TEXTURESHIFT; break;
+			case 2: ret = FLAG_FLATCOLOR; break;
+			case 3: ret = FLAG_LIGHTMAPONLY; break;
+			case 4: ret = FLAG_TEXTUREONLY; break;
+			case 5: ret = FLAG_SETUPLIGHTMAP; break;
+			default: break;
+		}
+
+		return ret;
+	}
+
+	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
+	{
+		return 6;
+	}
+
+	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const
+	{
+		return InspDesc(MemberName(object, index));
+	}
+
+	const char* NMaterial::NMaterialStateDynamicFlagsInsp::MemberName(void *object, size_t index) const
+	{
+		return GetName(index).c_str();
+	}
+
+	VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *object, size_t index) const
+	{
+		VariantType ret;
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		FastName name = GetName(index);
+		if(name.IsValid())
+		{
+			ret.SetBool(state->GetFlagValue(name));
+		}
+
+		return ret;
+	}
+
+	void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
+	{
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		FastName name = GetName(index);
+		if(name.IsValid())
+		{
+			NMaterial::eFlagValue flag = NMaterial::FlagOff;
+			if(value.AsBool())
+			{
+				flag = NMaterial::FlagOn;
+			}
+
+			state->SetFlag(name, flag);
+		}
+	}
+
+	int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, size_t index) const
+	{
+		return I_VIEW | I_EDIT;
 	}
 };

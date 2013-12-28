@@ -401,8 +401,22 @@ public:
 		int MemberFlags(void *object, size_t index) const;
 		VariantType MemberValueGet(void *object, size_t index) const;
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
+	protected:
 	};
-	
+
+	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
+	{
+	public:
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
+	protected:
+		FastName GetName(size_t index) const;
+	};
+
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
 	public:
@@ -437,6 +451,7 @@ public:
 public:
 	
 	INTROSPECTION(NMaterial,
+				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  );

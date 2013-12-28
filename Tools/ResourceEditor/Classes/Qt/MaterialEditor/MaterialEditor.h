@@ -61,6 +61,7 @@ protected slots:
 	void OnRemProperty();
 	void OnAddTexture();
 	void OnRemTexture();
+	void OnPropertyEdited(const QModelIndex &);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
