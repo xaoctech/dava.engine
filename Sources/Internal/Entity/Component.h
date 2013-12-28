@@ -113,8 +113,6 @@ public:
 template<template <typename> class Container, class T>
 void Component::GetDataNodes(Container<T> & container)
 {
-    container.clear();
-    
     Set<DataNode*> objects;
     GetDataNodes(objects);
     
