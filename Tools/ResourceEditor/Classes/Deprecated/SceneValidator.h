@@ -48,13 +48,6 @@ public:
      \returns true if errors were found
 	 */
     bool ValidateSceneAndShowErrors(Scene *scene, const DAVA::FilePath &scenePath);
-    
-	/*
-     \brief Function to validate Particle Emitter upon loading.
-     \param[in] emitter Particle Emitter to validate
-     \param[out] errorsLog set for validation erros
-	 */
-	bool ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog);
 	
     /*
      \brief Function to validate Scene errors
@@ -136,7 +129,7 @@ protected:
 
     void ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog);
     void ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog);
-    void ValidateParticleEmitterComponent(Entity *ownerNode, Set<String> &errorsLog);
+    void ValidateParticleEffectComponent(Entity *ownerNode, Set<String> &errorsLog);
 
     void ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
     void ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog);

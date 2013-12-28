@@ -471,13 +471,53 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 	}
 }
 
+
+SceneTreeItemParticleEmitter::SceneTreeItemParticleEmitter(DAVA::ParticleEffectComponent *_effect, DAVA::ParticleEmitter* _emitter) : SceneTreeItem(SceneTreeItem::EIT_Emitter), effect(_effect), emitter(_emitter)
+{
+	DoSync(this, emitter);
+}
+SceneTreeItemParticleEmitter::~SceneTreeItemParticleEmitter()
+{
+
+}
+
+DAVA::ParticleEmitter* SceneTreeItemParticleEmitter::GetEmitter(SceneTreeItem *item)
+{
+	DAVA::ParticleEmitter *ret = NULL;
+
+	if(NULL != item && item->ItemType() == SceneTreeItem::EIT_Emitter)
+	{
+		SceneTreeItemParticleEmitter *itemLayer = (SceneTreeItemParticleEmitter *) item;
+		ret = itemLayer->emitter;
+	}
+	return ret;
+}
+void SceneTreeItemParticleEmitter::DoSync(QStandardItem *rootItem, DAVA::ParticleEmitter *emitter)
+{
+
+}
+
+QString SceneTreeItemParticleEmitter::ItemName() const
+{
+
+}
+QVariant SceneTreeItemParticleEmitter::ItemData() const
+{
+	return qVariantFromValue(emitter);
+}
+QIcon SceneTreeItemParticleEmitter::ItemIcon() const
+{
+
+}
+
 // =========================================================================================
 // SceneTreeItemParticleLayer
 // =========================================================================================
 
-SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEmitter* _parent, DAVA::ParticleLayer *_layer)
+SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEffectComponent *_effect, DAVA::ParticleEmitter* _emitter, DAVA::ParticleLayer *_layer)
 	: SceneTreeItem(SceneTreeItem::EIT_Layer)
-	, parent(_parent)
+	, effect(_effect)
+	, emitter(_emitter)
 	, layer(_layer)
 	, hasInnerEmmiter(false)
 {
@@ -485,7 +525,7 @@ SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEmitter* _p
 	{
 		setCheckable(true);
 
-		if(layer->GetDisabled())
+		if(layer->isDisabled)
 		{
 			setCheckState(Qt::Unchecked);
 		}
@@ -493,7 +533,7 @@ SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEmitter* _p
 		{
 			setCheckState(Qt::Checked);
 		}
-		hasInnerEmmiter = (layer->GetInnerEmitter()!=NULL);
+		hasInnerEmmiter = (layer->innerEmitter!=NULL);
 	}
 
 	DoSync(this, layer);

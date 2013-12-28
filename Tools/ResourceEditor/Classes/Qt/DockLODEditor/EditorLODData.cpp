@@ -408,7 +408,7 @@ void EditorLODData::UpdateForceData()
 
 DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
 {
-    if(GetEmitter(lod->GetEntity()))
+    if(GetEffectComponent(lod->GetEntity()))
     {
         return DAVA::LodComponent::MAX_LOD_LAYERS;
     }

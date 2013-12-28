@@ -343,8 +343,7 @@ class CommandUpdateParticleForce: public CommandAction
 public:
 	CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId);
 	
-	void Init(RefPtr< PropertyLine<Vector3> > force,
-			  RefPtr< PropertyLine<Vector3> > forcesVariation,
+	void Init(RefPtr< PropertyLine<Vector3> > force,			  
 			  RefPtr< PropertyLine<float32> > forcesOverLife);
 	
 	virtual void Redo();
@@ -356,8 +355,7 @@ protected:
 	ParticleLayer* layer;
 	uint32 forceId;
 	
-	RefPtr< PropertyLine<Vector3> > force;
-	RefPtr< PropertyLine<Vector3> > forcesVariation;
+	RefPtr< PropertyLine<Vector3> > force;	
 	RefPtr< PropertyLine<float32> > forcesOverLife;
 };
 

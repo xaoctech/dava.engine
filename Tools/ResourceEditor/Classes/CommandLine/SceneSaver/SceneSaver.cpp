@@ -235,10 +235,11 @@ void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 
 void SceneSaver::CopyEffects(Entity *node, Set<String> &errorLog)
 {
-	ParticleEmitter *emitter = GetEmitter(node);
-	if(emitter)
+	ParticleEffectComponent *effect = GetEffectComponent(node);
+	if(effect)
 	{
-		CopyEmitter(emitter, errorLog);
+		for (int32 i=0, sz=effect->GetEmittersCount(); i<sz; ++i)
+			CopyEmitter(effect->GetEmitter(i), errorLog);
 	}
 
 	for (int i = 0; i < node->GetChildrenCount(); ++i)
@@ -249,20 +250,20 @@ void SceneSaver::CopyEffects(Entity *node, Set<String> &errorLog)
 
 void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 {
-	sceneUtils.CopyFile(emitter->GetConfigPath(), errorLog);
+	sceneUtils.CopyFile(emitter->configPath, errorLog);
 
-	const Vector<ParticleLayer*> &layers = emitter->GetLayers();
+	const Vector<ParticleLayer*> &layers = emitter->layers;
 
 	uint32 count = (uint32)layers.size();
 	for(uint32 i = 0; i < count; ++i)
 	{
 		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
 		{
-			CopyEmitter(layers[i]->GetInnerEmitter(), errorLog);
+			CopyEmitter(layers[i]->innerEmitter, errorLog);
 		}
 		else
 		{
-			Sprite *sprite = layers[i]->GetSprite();
+			Sprite *sprite = layers[i]->sprite;
 			if(!sprite) continue;
 
 			FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");

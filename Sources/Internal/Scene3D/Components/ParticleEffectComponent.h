@@ -130,6 +130,12 @@ private:
 	ParticleRenderObject *effectRenderObject;
 	int32 desiredLodLevel;
 
+public: //mostly editor commands
+	int32 GetEmittersCount();
+	ParticleEmitter* GetEmitter(int32 id);
+	void AddEmitter(ParticleEmitter *emitter);
+
+
 public:
 	uint32 loadedVersion;
 	void CollapseOldEffect(SerializationContext *serializationContext);

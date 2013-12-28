@@ -72,8 +72,7 @@ private:
 	ParticleLayer* layer;
 	int32 forceIndex;
 	
-	TimeLineWidget* forceTimeLine;
-	TimeLineWidget* forceVariationTimeLine;
+	TimeLineWidget* forceTimeLine;	
 	TimeLineWidget* forceOverLifeTimeLine;
 	
 	bool blockSignals;

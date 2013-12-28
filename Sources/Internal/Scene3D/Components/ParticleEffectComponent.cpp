@@ -343,6 +343,19 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 	entity->RemoveAllChildren();
 }
 
+int32 ParticleEffectComponent::GetEmittersCount()
+{
+	return emitters.size();
+}
+ParticleEmitter* ParticleEffectComponent::GetEmitter(int32 id)
+{
+	DVASSERT(id<emitters.size());
+	return emitters[id];
+}
 
+void ParticleEffectComponent::AddEmitter(ParticleEmitter *emitter)
+{
+	emitters.push_back(emitter);
+}
 
 }
