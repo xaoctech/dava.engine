@@ -58,17 +58,18 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 		QStandardItem *root = invisibleRootItem();
 		DAVA::MaterialSystem *matSys = curScene->GetMaterialSystem();
 
-		DAVA::Vector<DAVA::NMaterial *> materials;
+		DAVA::Set<DAVA::NMaterial *> materials;
 		matSys->BuildMaterialList(curScene, NMaterial::MATERIALTYPE_MATERIAL, materials);
 
-		for(DAVA::uint32 i = 0; i < (DAVA::uint32)materials.size(); ++i)
-		{
-            if(IsMaterialValidForModel(materials[i]))
+        DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
+        for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
+        {
+            if(IsMaterialValidForModel(*it))
             {
-                SimpleMaterialItem *item = new SimpleMaterialItem(materials[i]);
+                SimpleMaterialItem *item = new SimpleMaterialItem(*it);
                 root->appendRow(item);
             }
-		}
+        }
         
         SetSelection(curScene->selectionSystem->GetSelection());
 	}
@@ -134,22 +135,15 @@ void SimpleMaterialModel::SetSelection(const EntityGroup & selection)
     if(!curScene) return;
     
     DAVA::MaterialSystem *matSys = curScene->GetMaterialSystem();
-    DAVA::Vector<DAVA::NMaterial *> materials;
     
     size_t count = selection.Size();
     for(size_t i = 0; i < count; ++i)
     {
-        matSys->BuildMaterialList(selection.GetEntity(i), NMaterial::MATERIALTYPE_MATERIAL, materials);
-    }
-    
-    count = materials.size();
-    for(size_t i = 0; i < count; ++i)
-    {
-        selectedMaterials.insert(materials[i]);
+        matSys->BuildMaterialList(selection.GetEntity(i), NMaterial::MATERIALTYPE_MATERIAL, selectedMaterials);
     }
 }
 
-bool SimpleMaterialModel::IsMaterialSelected(const DAVA::NMaterial *material) const
+bool SimpleMaterialModel::IsMaterialSelected(DAVA::NMaterial *material) const
 {
     return (selectedMaterials.find(material) != selectedMaterials.end());
 }

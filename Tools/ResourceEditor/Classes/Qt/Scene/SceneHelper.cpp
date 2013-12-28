@@ -104,16 +104,15 @@ void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &te
 {
     if(!forScene) return;
     
-    DAVA::Vector<DAVA::NMaterial *> materials;
-    
     DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
     
+    DAVA::Set<DAVA::NMaterial *> materials;
     matSystem->BuildMaterialList(forScene, materials);
 
-    DAVA::uint32 count = (DAVA::uint32)materials.size();
-    for(DAVA::uint32 m = 0; m < count; ++m)
+    Set<NMaterial *>::const_iterator endIt = materials.end();
+    for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        CollectTextures(materials[m], textureCollection);
+        CollectTextures(*it, textureCollection);
     }
 }
 
