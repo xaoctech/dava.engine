@@ -92,9 +92,7 @@ int32 UIScrollViewContainer::GetTouchTreshold()
 
 void UIScrollViewContainer::Input(UIEvent *currentTouch)
 {
-	Vector<UIEvent> touches = UIControlSystem::Instance()->GetAllInputs();
-	
-	if(1 == touches.size())
+	if(currentTouch->tid == mainTouch)
 	{
 		newPos = currentTouch->point;
 		
@@ -102,7 +100,6 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 		{
 			case UIEvent::PHASE_BEGAN:
 			{
-				scrollTouch = *currentTouch;
 				scrollStartInitialPosition = currentTouch->point;
 				scrollStartMovement = false;
 				state = STATE_SCROLL;
@@ -114,10 +111,7 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 			{
 				if(state == STATE_SCROLL)
 				{
-					if(currentTouch->tid == scrollTouch.tid)
-					{
-						scrollStartMovement = true;
-					}
+					scrollStartMovement = true;
 				}
 			}
 			break;
@@ -145,7 +139,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		return systemInput;
 	}
 
-	if(currentTouch->phase == UIEvent::PHASE_BEGAN)
+	if(currentTouch->phase == UIEvent::PHASE_BEGAN && mainTouch == -1)
 	{
 		if(IsPointInside(currentTouch->point))
 		{
@@ -207,14 +201,28 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		oldPos = newPos;
 	
 		// Get scrolls positions and change scroll container relative position
-		if (scrollView->GetHorizontalScroll() == currentScroll && enableHorizontalScroll)
-		{
-			contentRect.x = currentScroll->GetPosition(posDelta.x, timeElapsed, lockTouch);
-		}
-		if (scrollView->GetVerticalScroll() == currentScroll && enableVerticalScroll)
-		{
-			contentRect.y = currentScroll->GetPosition(posDelta.y, timeElapsed, lockTouch);
-		}
+        if (enableHorizontalScroll)
+        {
+            if (scrollView->GetHorizontalScroll() == currentScroll)
+            {
+                contentRect.x = currentScroll->GetPosition(posDelta.x, timeElapsed, lockTouch);
+            }
+            else
+            {
+                contentRect.x = scrollView->GetHorizontalScroll()->GetPosition(0, timeElapsed, false);
+            }
+        }
+        if (enableVerticalScroll)
+        {
+            if (scrollView->GetVerticalScroll() == currentScroll)
+            {
+                contentRect.y = currentScroll->GetPosition(posDelta.y, timeElapsed, lockTouch);
+            }
+            else
+            {
+                contentRect.y = scrollView->GetVerticalScroll()->GetPosition(0, timeElapsed, false);
+            }
+        } 
 
 		this->SetRect(contentRect);
 		// Change state when scrolling is not active
