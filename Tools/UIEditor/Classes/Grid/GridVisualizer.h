@@ -26,31 +26,30 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#ifndef __GRID_VISUALIZER__H__
+#define __GRID_VISUALIZER__H__
 
-#include "BaseCommand.h"
-
+#include "DAVAEngine.h"
 using namespace DAVA;
 
-class ReloadSpritesCommand: public BaseCommand
+// This class helps us to visualize UI Editor Grid if needed.
+class GridVisualizer : public Singleton<GridVisualizer>
 {
 public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
-
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+    // Construction/destruction.
+    GridVisualizer();
+    virtual ~GridVisualizer();
+    
+    // Set the current screen scale.
+    void SetScale(float32 scale);
+    
+    // Draw the grid, if needed. Call this method from the Screen Control.
+    void DrawGridIfNeeded(const Rect& rect);
     
 protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
-
-private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
+    // Current screen scale.
+    float32 curScale;
 };
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+
+#endif /* defined(__GRID_VISUALIZER__H__) */

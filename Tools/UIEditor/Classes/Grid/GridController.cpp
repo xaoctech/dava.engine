@@ -26,31 +26,35 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#include "GridController.h"
 
-#include "BaseCommand.h"
-
-using namespace DAVA;
-
-class ReloadSpritesCommand: public BaseCommand
+// Construction/destruction.
+GridController::GridController() :
+    gridSpacing(1.0f, 1.0f),
+    screenScale(1.0f)
 {
-public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+}
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
-    
-protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
+GridController::~GridController()
+{
+}
 
-private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
-};
+void GridController::SetGridSpacing(const Vector2& spacing)
+{
+    gridSpacing = spacing;
+}
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+void GridController::SetScale(float32 scale)
+{
+    screenScale = scale;
+}
+
+Vector2 GridController::RecalculateMousePos(const Vector2& mousePos)
+{
+    float32 stepX = (screenScale * gridSpacing.x);
+    float32 stepY = (screenScale * gridSpacing.y);
+
+    return Vector2(CalculateDiscreteStep(mousePos.x, stepX),
+                   CalculateDiscreteStep(mousePos.y, stepY));
+}
+

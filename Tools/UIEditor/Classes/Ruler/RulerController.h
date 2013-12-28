@@ -26,31 +26,58 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#ifndef __RULERCONTROLLER__H__
+#define __RULERCONTROLLER__H__
 
-#include "BaseCommand.h"
-
+#include "DAVAEngine.h"
 using namespace DAVA;
 
-class ReloadSpritesCommand: public BaseCommand
-{
-public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+#include "RulerSettings.h"
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+#include <QObject>
+
+class RulerController : public QObject, public Singleton<RulerController>
+{
+    Q_OBJECT
     
+public:
+    // Construction/destruction.
+    RulerController();
+    virtual ~RulerController();
+
+    // Set the screen view pos and scale.
+    void SetViewPos(const Vector2& startPos);
+    void SetScale(float32 scale);
+
+    // Update the rulers by sending "settings changed" signal to them.
+    void UpdateRulers();
+
+    // Update the ruler markers with the mouse position.
+    void UpdateRulerMarkers(const Vector2& curMousePos);
+
+signals:
+    // Horizontal/Vertical ruler settings are changed.
+    void HorisontalRulerSettingsChanged(const RulerSettings& settings);
+    void VerticalRulerSettingsChanged(const RulerSettings& settings);
+
+    // Horizontal/Vertical mark positions are changed.
+    void HorisontalRulerMarkPositionChanged(int position);
+    void VerticalRulerMarkPositionChanged(int position);
+
 protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
+    void SetupInitialRulerSettings(RulerSettings& settings);
+
+    // Recalculate the ruler settings depending on position/zoom level and emit signals.
+    void RecalculateRulerSettings();
 
 private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
+    // Screen view pos and scale.
+    Vector2 screenViewPos;
+    float32 screenScale;
+    
+    // Ruler settings.
+    RulerSettings horisontalRulerSettings;
+    RulerSettings verticalRulerSettings;
 };
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+#endif /* defined(__RULERCONTROLLER__H__) */

@@ -26,31 +26,20 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#ifndef __RULERSETTINGS__H__
+#define __RULERSETTINGS__H__
 
-#include "BaseCommand.h"
-
+#include "DAVAEngine.h"
 using namespace DAVA;
 
-class ReloadSpritesCommand: public BaseCommand
+// Settings for the ruler widget.
+struct RulerSettings
 {
-public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+    int32 startPos;        // Start ruler position.
+    int32 smallTicksDelta; // Distance between "small" ticks.
+    int32 bigTicksDelta;   // Distance between "big" ticks.
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
-    
-protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
-
-private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
+    float32 zoomLevel;     // Zoom level for the current control.
 };
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+#endif /* defined(__RULERSETTINGS__H__) */

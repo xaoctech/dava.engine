@@ -26,31 +26,66 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#ifndef __RULER_WIDGET__H__
+#define __RULER_WIDGET__H__
 
-#include "BaseCommand.h"
+#include "RulerSettings.h"
 
-using namespace DAVA;
+#include <QWidget>
+#include <QPixmap>
 
-class ReloadSpritesCommand: public BaseCommand
+class RulerWidget : public QWidget
 {
-public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+    Q_OBJECT
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+public:
+    enum eOrientation
+    {
+        Horizontal,
+        Vertical
+    };
+
+    explicit RulerWidget(QWidget *parent = 0);
+    virtual ~RulerWidget();
+
+    // Whether the ruler horisontal or vertical?
+    void SetOrientation(eOrientation rulerOrientation);
+
+    // Set the initial Ruler Settings.
+    void SetRulerSettings(const RulerSettings& rulerSettings);
+
+    // Update the rulers by sending appropriate events.
+    void UpdateRulers();
+
+    virtual void paintEvent(QPaintEvent *event);
     
-protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
+public slots:
+    // Ruler Settings are changed.
+    void OnRulerSettingsChanged(const RulerSettings& rulerSettings);
 
+    // Marker Position is changed.
+    void OnMarkerPositionChanged(int position);
+
+protected:
+    // We are using double buffering to avoid flicker and excessive updates.
+    void UpdateDoubleBufferImage();
+    
+    // Draw different types of scales.
+    void DrawScale(QPainter& painter, int tickStep, int tickStartPos, int tickEndPos,
+                   bool drawValues, bool isHorizontal);
+    
 private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
+    // Ruler orientation.
+    eOrientation orientation;
+    
+    // Ruler settings.
+    RulerSettings settings;
+    
+    // Ruler double buffer.
+    QPixmap* doubleBuffer;
+    
+    // Marker position.
+    int markerPosition;
 };
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+#endif /* defined(__RULER_WIDGET__H__) */

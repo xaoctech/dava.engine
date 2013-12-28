@@ -26,31 +26,35 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#include "GridVisualizer.h"
 
-#include "BaseCommand.h"
-
-using namespace DAVA;
-
-class ReloadSpritesCommand: public BaseCommand
+// Construction/destruction.
+GridVisualizer::GridVisualizer() :
+    curScale(0.0f)
 {
-public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+}
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+GridVisualizer::~GridVisualizer()
+{
     
-protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
+}
 
-private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
-};
+void GridVisualizer::SetScale(float32 scale)
+{
+    curScale = scale;
+}
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+void GridVisualizer::DrawGridIfNeeded(const Rect& rect)
+{
+    // Grid constants.
+    static const Color gridColor = Color(0.5f, 0.5f, 0.5f, 0.5f); // TODO: customize with designers.
+    static const Vector2 gridSize = Vector2(1.0f, 1.0f);
+    static const float32 scaleTresholdToDrawGrid = 8.0f; // 800%+ as requested.
+
+    if (curScale < scaleTresholdToDrawGrid)
+    {
+        return;
+    }
+    
+    RenderHelper::Instance()->DrawGrid(rect, gridSize, gridColor);
+}
