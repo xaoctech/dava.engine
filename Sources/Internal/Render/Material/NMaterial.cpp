@@ -90,39 +90,7 @@ namespace DAVA
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
-	
-	void NMaterial::GenericPropertyManager::Init(NMaterialProperty* prop)
-	{
-		prop->type = Shader::UT_INT;
-		prop->size = 0;
-		prop->data = NULL;
-	}
-	
-	void NMaterial::GenericPropertyManager::Release(NMaterialProperty* prop)
-	{
-		if(prop->data)
-		{
-			SafeDeleteArray(prop->data);
-		}
-	}
-	
-	NMaterialProperty* NMaterial::GenericPropertyManager::Clone(NMaterialProperty* prop)
-	{
-		NMaterial::GenericMaterialProperty* cloneProp = new NMaterial::GenericMaterialProperty();
 		
-		cloneProp->size = prop->size;
-		cloneProp->type = prop->type;
-		
-		if(prop->data)
-		{
-			size_t dataSize = Shader::GetUniformTypeSize(prop->type) * prop->size;
-			cloneProp->data = new uint8[dataSize];
-			memcpy(cloneProp->data, prop->data, dataSize);
-		}
-		
-		return cloneProp;
-	}
-	
 ////////////////////////////////////////////////////////////////////////////////
 	
 	NMaterial::NMaterial() :
@@ -559,7 +527,7 @@ namespace DAVA
 			SafeRelease(bucket->texture);
 			
 			bucket->texture = SafeRetain(texture);
-			bucket->path = texture->relativePathname;
+			bucket->path = (bucket->texture) ? bucket->texture->relativePathname : FilePath();
 			
 			SetTexturesDirty();
 		}
@@ -620,7 +588,7 @@ namespace DAVA
 				//VI: material property type or size chnage should never happen at runtime
 				DVASSERT(false && "Runtime change of material property type!");
 				
-				NMaterialProperty* newProp = new NMaterial::GenericMaterialProperty();
+				NMaterialProperty* newProp = new NMaterialProperty();
 				newProp->size = size;
 				newProp->type = type;
 				newProp->data = new uint8[dataSize];
@@ -637,7 +605,7 @@ namespace DAVA
 		}
 		else
 		{
-			materialProperty = new NMaterial::GenericMaterialProperty();
+			materialProperty = new NMaterialProperty();
 			materialProperty->size = size;
 			materialProperty->type = type;
 			materialProperty->data = new uint8[dataSize];
@@ -1740,7 +1708,7 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
+		const IntrospectionMaterialPropData *prop = &members->valueByIndex(index).property;
 		
 		// self or parent property
 		if(NULL != prop->data)
@@ -1851,7 +1819,7 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
+		const IntrospectionMaterialPropData *prop = &members->valueByIndex(index).property;
 		int propSize = prop->size;
 		Shader::eUniformType propType = prop->type;
 		
