@@ -40,44 +40,17 @@ class SceneEditor2;
 class MaterialAssignSystem
 {
 public:
-    
-    struct DropTestResult
-    {
-        DropTestResult();
-        
-        bool hasEntitiesAvailableToDrop;
-        bool hasEntityUnavailableToDrop;
-        
-        DAVA::int32 countEntitiesAvailableToDrop;
-        DAVA::int32 countEntityUnavailableToDrop;
-        
-        const DAVA::Entity *firstUnavailableEntity;
-    };
-    
-public:
 
-    static void AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial);
+    static void AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *instance, DAVA::NMaterial *newMaterialParent);
 
-    static void AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material);
-    static void AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material);
-    
-    static DropTestResult TestEntityGroup(const EntityGroup *group, const bool recursive);
-    static DropTestResult TestEntity(const DAVA::Entity * entity, const bool recursive);
+    static void AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, DAVA::NMaterial *newMaterialParent);
+    static void AssignMaterialToEntity(SceneEditor2 *scene, DAVA::Entity *entity, DAVA::NMaterial *newMaterialParent);
     
 protected:
 
-    static void TestEntity(DropTestResult & result, const DAVA::Entity * entity, const bool recursive);
-
-    static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const DropTestResult &result, const EntityGroup *group, const bool recursive);
-    static DAVA::Set<DAVA::NMaterial *> GetAvailableMaterials(const DropTestResult &result, const DAVA::Entity *entity, const bool recursive);
-    static void GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive);
+    static void AssignMaterial(SceneEditor2 *scene, const DAVA::Set<DAVA::NMaterial *> & allMaterials, DAVA::NMaterial *newMaterialParent);
     
-    
-    static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const EntityGroup *group, const bool recursive);
-    static DAVA::Vector<const DAVA::Entity *> GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive);
-    static void GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive);
-    
-    static void AddSelectedMaterial(DAVA::Set<DAVA::NMaterial *> &materials, const DropTestResult &result);
+    static DAVA::NMaterial * SelectMaterial(const DAVA::Set<DAVA::NMaterial *> & materials);
 };
 
 #endif // __MATERIALS_DROP_SYSTEM_H__
