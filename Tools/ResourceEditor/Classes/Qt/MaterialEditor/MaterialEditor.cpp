@@ -50,9 +50,14 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// ui signals
 	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
 
+	// material properties
+	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
+
 	ui->materialTree->setDragEnabled(true);
 	ui->materialTree->setAcceptDrops(true);
 	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
+
+	ui->materialProperty->SetEditTracking(true);
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -120,15 +125,34 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 {
 	const DAVA::InspInfo *info = material->GetTypeInfo();
 	const DAVA::InspMember *materialProperties = info->Member("materialProperties");
+	const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
+
+	// fill material flags
+	if(NULL != materialFlags)
+	{
+		const DAVA::InspMemberDynamic* dynamicInsp = materialFlags->Dynamic();
+
+		if(NULL != dynamicInsp)
+		{
+			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+
+			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
+			for(size_t i = 0; i < count; ++i)
+			{
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
+				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
+			}
+		}
+	}
 
 	// fill material properties
 	if(NULL != materialProperties)
 	{
-		const DAVA::InspMemberDynamic* dynamicMember = materialProperties->Dynamic();
+		const DAVA::InspMemberDynamic* dynamicInsp = materialProperties->Dynamic();
 
-		if(NULL != dynamicMember)
+		if(NULL != dynamicInsp)
 		{
-			DAVA::InspInfoDynamic *dynamicInfo = dynamicMember->GetDynamicInfo();
+			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
 
 			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
 			for(size_t i = 0; i < count; ++i)
@@ -160,15 +184,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 					btn->setIconSize(QSize(14, 14));
 					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
-					// shader param
-					if(memberFlags & DAVA::I_SAVE)
-					{
-						dynamicMember->SetBackground(QBrush(QColor(0, 0, 255, 10)));
-					}
-					else
-					{
-						dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
-					}
+					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
 				}
 
 				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
@@ -226,4 +242,9 @@ void MaterialEditor::OnAddTexture()
 void MaterialEditor::OnRemTexture()
 {
 
+}
+
+void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
+{
+	materialClicked(ui->materialTree->currentIndex());
 }

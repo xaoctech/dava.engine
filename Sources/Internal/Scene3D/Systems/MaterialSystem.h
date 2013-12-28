@@ -53,6 +53,8 @@ public:
 	MaterialSystem(Scene * scene);
 	virtual ~MaterialSystem();
 		
+    virtual void AddEntity(Entity * entity);
+    
 	void BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const;
 	void BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const;
 	void BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const;
@@ -62,10 +64,16 @@ public:
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName);
 			
+    inline float32 GetFogDensity() const { return fogDensity; };
+    inline const Color & GetFogColor() const { return fogColor; };
+    
 private:
 	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;
+    
+    float32 fogDensity;
+    Color fogColor;
 };
 
 };
