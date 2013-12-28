@@ -1638,8 +1638,6 @@ Texture * Landscape::CreateLandscapeTexture()
     ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
     ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
 
-	SetupMaterialProperties();
-	
     //Draw landscape to texture
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     

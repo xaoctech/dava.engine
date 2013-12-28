@@ -36,8 +36,7 @@
 #include "Tools/MimeData/MimeDataHelper2.h"
 
 #include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 //Qt
 #include <QMessageBox>
@@ -48,272 +47,103 @@
 Q_DECLARE_METATYPE( DAVA::NMaterial * );
 
 
-MaterialAssignSystem::DropTestResult::DropTestResult()
+void MaterialAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *instance, DAVA::NMaterial *newMaterialParent)
 {
-    hasEntitiesAvailableToDrop = hasEntityUnavailableToDrop = false;
-    
-    countEntitiesAvailableToDrop = countEntityUnavailableToDrop = 0;
-    
-    firstUnavailableEntity = NULL;
+    scene->Exec(new MaterialSwitchParentCommand(instance, newMaterialParent));
 }
 
 
-void MaterialAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *oldMaterial, const DAVA::NMaterial *newMaterial)
+void MaterialAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, DAVA::NMaterial *newMaterialParent)
 {
-    scene->Exec(new MaterialSwitchParentCommand(oldMaterial, newMaterial));
-}
+    MaterialSystem *matSystem = scene->GetMaterialSystem();
 
+    DAVA::Set<DAVA::NMaterial *> allMaterials;
 
-void MaterialAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, const DAVA::NMaterial *material)
-{
-    MaterialAssignSystem::DropTestResult result = TestEntityGroup(group, true);
-    DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(result, group, true);
-    if(oldMaterials.size())
-    {
-        scene->BeginBatch("Set material");
-        
-        auto endIt = oldMaterials.end();
-        for(auto it = oldMaterials.begin(); it != endIt; ++it)
-        {
-            scene->Exec(new MaterialSwitchParentCommand(*it, material));
-        }
-
-        scene->EndBatch();
-    }
-    
-    if(result.countEntityUnavailableToDrop > 1)
-    {
-        DAVA::Vector<const DAVA::Entity *> rejectedEntities = GetDropRejectedEntities(group, true);
-        
-        DAVA::String names;
-        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
-        {
-            if(ie != 0) names += ",";
-            
-            names += rejectedEntities[ie]->GetName();
-        }
-        
-        String errorString = Format("Cannot drop material to %s", names.c_str());
-        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
-    }
-}
-
-
-void MaterialAssignSystem::AssignMaterialToEntity(SceneEditor2 *scene, const DAVA::Entity *entity, const DAVA::NMaterial *material)
-{
-    MaterialAssignSystem::DropTestResult result = TestEntity(entity, true);
-    DAVA::Set<DAVA::NMaterial *> oldMaterials = GetAvailableMaterials(result, entity, true);
-    if(oldMaterials.size())
-    {
-        scene->BeginBatch("Set material");
-        
-        auto endIt = oldMaterials.end();
-        for(auto it = oldMaterials.begin(); it != endIt; ++it)
-        {
-            scene->Exec(new MaterialSwitchParentCommand(*it, material));
-        }
-        
-        scene->EndBatch();
-    }
-    
-    if(result.countEntityUnavailableToDrop > 1)
-    {
-        DAVA::Vector<const DAVA::Entity *> rejectedEntities = GetDropRejectedEntities(entity, true);
-        
-        DAVA::String names;
-        for (DAVA::uint32 ie = 0; ie < (DAVA::uint32)rejectedEntities.size(); ++ie)
-        {
-            if(ie != 0) names += ",";
-            
-            names += rejectedEntities[ie]->GetName();
-        }
-        
-        String errorString = Format("Cannot drop material to %s", names.c_str());
-        QMessageBox::warning(NULL, QString("Drop error"), QString::fromStdString(errorString), QMessageBox::Ok);
-    }
-}
-
-MaterialAssignSystem::DropTestResult MaterialAssignSystem::TestEntityGroup(const EntityGroup *group, const bool recursive)
-{
-    if(!group) return MaterialAssignSystem::DropTestResult();
-    
-    MaterialAssignSystem::DropTestResult result;
-    
     const size_t count = group->Size();
     for(size_t i = 0; i < count; ++i)
     {
-        TestEntity(result, group->GetEntity(i), recursive);
+        matSystem->BuildMaterialList(group->GetEntity(i), allMaterials);
     }
-    
-    return result;
+
+    AssignMaterial(scene, allMaterials, newMaterialParent);
 }
 
 
-MaterialAssignSystem::DropTestResult MaterialAssignSystem::TestEntity(const DAVA::Entity * entity, const bool recursive)
+void MaterialAssignSystem::AssignMaterialToEntity(SceneEditor2 *scene, DAVA::Entity *entity, DAVA::NMaterial *newMaterialParent)
 {
-    MaterialAssignSystem::DropTestResult result;
-    
-    TestEntity(result, entity, recursive);
-    
-    return result;
+    MaterialSystem *matSystem = scene->GetMaterialSystem();
+
+    DAVA::Set<DAVA::NMaterial *> allMaterials;
+    matSystem->BuildMaterialList(entity, allMaterials);
+
+    AssignMaterial(scene, allMaterials, newMaterialParent);
 }
 
-void MaterialAssignSystem::TestEntity(MaterialAssignSystem::DropTestResult & result, const DAVA::Entity * entity, const bool recursive)
+void MaterialAssignSystem::AssignMaterial(SceneEditor2 *scene, const DAVA::Set<DAVA::NMaterial *> & allMaterials, DAVA::NMaterial *newMaterialParent)
 {
-    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
-    if(ro)
+    DAVA::Set<DAVA::NMaterial *> materials;
+    DAVA::Set<DAVA::NMaterial *> instances;
+
+    auto endIt = allMaterials.end();
+    for(auto it = allMaterials.begin(); it != endIt; ++it)
     {
-        DAVA::uint32 rbCount = ro->GetRenderBatchCount();
-        if(rbCount == 1)
+        if((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_INSTANCE)
         {
-            result.hasEntitiesAvailableToDrop = true;
-            ++result.countEntitiesAvailableToDrop;
+            instances.insert(*it);
         }
         else
         {
-            result.hasEntityUnavailableToDrop = true;
-            ++result.countEntityUnavailableToDrop;
-            
-            if(result.firstUnavailableEntity == NULL) result.firstUnavailableEntity = entity;
+            materials.insert(*it);
         }
     }
-    
-    if(recursive)
+
+    DAVA::NMaterial *selectedMaterial = SelectMaterial(materials);
+    if(selectedMaterial)
     {
-        const DAVA::int32 count = entity->GetChildrenCount();
-        for(DAVA::int32 i = 0; i < count; ++i)
+        scene->BeginBatch("Switch Material Parent");
+        
+        auto endIt = instances.end();
+        for(auto it = instances.begin(); it != endIt; ++it)
         {
-            TestEntity(result, entity->GetChild(i), recursive);
+            if((*it)->GetParent() == selectedMaterial)
+            {
+                scene->Exec(new MaterialSwitchParentCommand(*it, newMaterialParent));
+            }
         }
+        
+        scene->EndBatch();
     }
 }
 
 
-DAVA::Set<DAVA::NMaterial *> MaterialAssignSystem::GetAvailableMaterials(const MaterialAssignSystem::DropTestResult & result, const EntityGroup *group, const bool recursive)
+DAVA::NMaterial * MaterialAssignSystem::SelectMaterial(const DAVA::Set<DAVA::NMaterial *> & materials)
 {
-    DAVA::Set<DAVA::NMaterial *> materials;
-    
-    size_t count = group->Size();
-    for(size_t i = 0; i < count; ++i)
-    {
-        GetAvailableMaterials(materials, group->GetEntity(i), recursive);
-    }
-
-    AddSelectedMaterial(materials, result);
-
-    return materials;
-}
-
-DAVA::Set<DAVA::NMaterial *> MaterialAssignSystem::GetAvailableMaterials(const MaterialAssignSystem::DropTestResult & result, const DAVA::Entity *entity, const bool recursive)
-{
-    DAVA::Set<DAVA::NMaterial *> materials;
-    
-    GetAvailableMaterials(materials, entity, recursive);
-    AddSelectedMaterial(materials, result);
-
-    return materials;
-}
-
-void MaterialAssignSystem::GetAvailableMaterials(DAVA::Set<DAVA::NMaterial *> &materials, const DAVA::Entity *entity, const bool recursive)
-{
-    DAVA::RenderObject * ro = DAVA::GetRenderObject(entity);
-    if(ro)
-    {
-        DAVA::uint32 count = ro->GetRenderBatchCount();
-        if(1 == count)
-        {
-            materials.insert(ro->GetRenderBatch(0)->GetMaterial());
-        }
-    }
-    
-    if(recursive)
-    {
-        DAVA::int32 count = entity->GetChildrenCount();
-        for(DAVA::int32 i = 0; i < count; ++i)
-        {
-            GetAvailableMaterials(materials, entity->GetChild(i), recursive);
-        }
-    }
-}
-
-
-DAVA::Vector<const DAVA::Entity *> MaterialAssignSystem::GetDropRejectedEntities(const EntityGroup *group, const bool recursive)
-{
-    DAVA::Vector<const DAVA::Entity *> rejectedEntities;
-    
-    size_t count = group->Size();
-    for(size_t i = 0; i < count; ++i)
-    {
-        GetDropRejectedEntities(rejectedEntities, group->GetEntity(i), recursive);
-    }
-    
-    return rejectedEntities;
-}
-
-
-DAVA::Vector<const DAVA::Entity *> MaterialAssignSystem::GetDropRejectedEntities(const DAVA::Entity *entity, const bool recursive)
-{
-    DAVA::Vector<const DAVA::Entity *> rejectedEntities;
-    
-    GetDropRejectedEntities(rejectedEntities, entity, recursive);
-    
-    return rejectedEntities;
-}
-    
-void MaterialAssignSystem::GetDropRejectedEntities(DAVA::Vector<const DAVA::Entity *> &rejectedEntities, const DAVA::Entity *entity, const bool recursive)
-{
-    DAVA::RenderObject * ro = DAVA::GetRenderObject(entity);
-    if(ro)
-    {
-        DAVA::uint32 count = ro->GetRenderBatchCount();
-        if(count != 1)
-        {
-            rejectedEntities.push_back(entity);
-        }
-    }
-    
-    if(recursive)
-    {
-        DAVA::int32 count = entity->GetChildrenCount();
-        for(DAVA::int32 i = 0; i < count; ++i)
-        {
-            GetDropRejectedEntities(rejectedEntities, entity->GetChild(i), recursive);
-        }
-    }
-}
-
-void MaterialAssignSystem::AddSelectedMaterial(DAVA::Set<DAVA::NMaterial *> &materials, const MaterialAssignSystem::DropTestResult &result)
-{
-    if(result.countEntityUnavailableToDrop == 1)
+    if(materials.size() > 1)
     {
         QMenu selectMaterialMenu;
         
-        DAVA::RenderObject * ro = DAVA::GetRenderObject(result.firstUnavailableEntity);
-        if(ro)
+        auto endIt = materials.end();
+        for(auto it = materials.begin(); it != endIt; ++it)
         {
-            DAVA::uint32 count = ro->GetRenderBatchCount();
-            for(DAVA::uint32 m = 0; m < count; ++m)
-            {
-                DAVA::NMaterial *material = ro->GetRenderBatch(m)->GetMaterial();
-                QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
-
-				DVASSERT(false && "Review to implment with refactored materials!");
-				//VI: TODO: implement for refactored new materials
-               // QString text = QString(material->GetParentName().c_str()) + ": " + material->GetMaterialName().c_str();
-				QString text;
-                QAction *action = selectMaterialMenu.addAction(text);
-                action->setData(materialAsVariant);
-            }
+            QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(*it);
+            
+            QString text = QString((*it)->GetName().c_str());
+            QAction *action = selectMaterialMenu.addAction(text);
+            action->setData(materialAsVariant);
         }
-
+        
         QAction * selectedMaterialAction = selectMaterialMenu.exec(QCursor::pos());
         if(selectedMaterialAction)
         {
             QVariant materialAsVariant = selectedMaterialAction->data();
-            DAVA::NMaterial * material = materialAsVariant.value<DAVA::NMaterial *>();
-            
-            materials.insert(material);
+            return materialAsVariant.value<DAVA::NMaterial *>();
         }
     }
+    else if(materials.size() == 1)
+    {
+        return *materials.begin();
+    }
+    
+    
+    return NULL;
 }
-
