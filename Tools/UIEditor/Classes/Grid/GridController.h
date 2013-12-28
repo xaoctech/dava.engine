@@ -26,31 +26,53 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RELOADSPRITESCOMMAND__H__
-#define __RELOADSPRITESCOMMAND__H__
+#ifndef __GRIDCONTROLLER__H__
+#define __GRIDCONTROLLER__H__
 
-#include "BaseCommand.h"
-
+#include "DAVAEngine.h"
 using namespace DAVA;
 
-class ReloadSpritesCommand: public BaseCommand
+// This class is responsible for handling Grid in UI Editor and calculating the controls positions over it.
+class GridController : public Singleton<GridController>
 {
 public:
-public:
-	ReloadSpritesCommand(const HierarchyTreeNode* node, bool needRepack, bool pixelized);
+    // Construction/destruction.
+    GridController();
+    virtual ~GridController();
 
-	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+    // Set the grid X and Y spacing.
+    void SetGridSpacing(const Vector2& spacing);
     
+    // Set the current screen scale.
+    void SetScale(float32 scale);
+
+    // Recalculate the mouse position according to the grid and current zoom level.
+    Vector2 RecalculateMousePos(const Vector2& mousePos);
+
 protected:
-    // Repack/reload sprites.
-    void RepackSprites();
-    void ReloadSprites();
+    // Calcute discrete step from position.
+    inline float32 CalculateDiscreteStep(float32 position, float32 step);
 
 private:
-    const HierarchyTreeNode* rootNode;
-    bool isNeedRepack;
-    bool isPixelized;
+    // Grid spacing.
+    Vector2 gridSpacing;
+    
+    // Screen scale.
+    float32 screenScale;
 };
 
-#endif /* defined(__RELOADSPRITESCOMMAND__H__) */
+inline float32 GridController::CalculateDiscreteStep(float32 position, float32 step)
+{
+    float32 scaledValue = position/step;
+    float32 integerPart = floor(scaledValue);
+
+    // Check the fractional part.
+    if (scaledValue - integerPart < 0.5f)
+    {
+        return integerPart * step;
+    }
+    
+    return (integerPart + 1) * step;
+}
+
+#endif /* defined(__GRIDCONTROLLER__H__) */
