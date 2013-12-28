@@ -965,6 +965,9 @@
 		CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		D9A9E6C3186F3EB0002C8467 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9A9E6C2186F3EB0002C8467 /* Color.cpp */; };
+		D9A9E6C4186F3EB0002C8467 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9A9E6C2186F3EB0002C8467 /* Color.cpp */; };
+		D9A9E6C5186F3EB0002C8467 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9A9E6C2186F3EB0002C8467 /* Color.cpp */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
@@ -2282,6 +2285,7 @@
 		CCC7A48816F1D6B80061EA5D /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		D9A9E6C2186F3EB0002C8467 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TeamcityOutput.cpp; sourceTree = "<group>"; };
 		E843505517FA0D3B00A25F04 /* TeamcityOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeamcityOutput.h; sourceTree = "<group>"; };
@@ -3251,6 +3255,7 @@
 		E8989B8E16BD24E400732C04 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				D9A9E6C2186F3EB0002C8467 /* Color.cpp */,
 				E8989B8F16BD24E400732C04 /* AABBox2.cpp */,
 				E8989B9016BD24E400732C04 /* AABBox2.h */,
 				E8989B9116BD24E400732C04 /* AABBox3.cpp */,
@@ -5140,6 +5145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				176DEA42174B5561007A983B /* AnimatedObject.cpp in Sources */,
+				D9A9E6C5186F3EB0002C8467 /* Color.cpp in Sources */,
 				7A169347180EE619005F1FBC /* UIControlSwig.cpp in Sources */,
 				176DEA43174B5561007A983B /* Animation.cpp in Sources */,
 				176DEA44174B5561007A983B /* AnimationManager.cpp in Sources */,
@@ -5514,6 +5520,7 @@
 				E8989E4916BD24E500732C04 /* ResourceArchive.cpp in Sources */,
 				E8989E4B16BD24E500732C04 /* VariantType.cpp in Sources */,
 				7A169353180EE75A005F1FBC /* GameAPI.cpp in Sources */,
+				D9A9E6C3186F3EB0002C8467 /* Color.cpp in Sources */,
 				E8989E4D16BD24E500732C04 /* XMLParser.cpp in Sources */,
 				E8989E4F16BD24E500732C04 /* XMLParser.mm in Sources */,
 				E8989E5016BD24E500732C04 /* YamlArchive.cpp in Sources */,
@@ -6010,6 +6017,7 @@
 				E898A29B16BD265400732C04 /* UIHoleTransition.cpp in Sources */,
 				E898A29C16BD265400732C04 /* UIJoypad.cpp in Sources */,
 				E898A29D16BD265400732C04 /* UIList.cpp in Sources */,
+				D9A9E6C4186F3EB0002C8467 /* Color.cpp in Sources */,
 				7A16933C180EE618005F1FBC /* AutotestingSystemLua.cpp in Sources */,
 				E898A29E16BD265400732C04 /* UIListCell.cpp in Sources */,
 				E898A29F16BD265400732C04 /* UILoadingTransition.cpp in Sources */,
