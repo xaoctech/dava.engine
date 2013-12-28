@@ -58,11 +58,14 @@ namespace DAVA
 		
 		TextureStateData& operator=(const TextureStateData& src)
 		{
-			ReleaseAll();
-
-			memcpy(textures, src.textures, sizeof(textures));
-			
-			RetainAll();
+			if(this != &src)
+			{
+				ReleaseAll();
+				
+				memcpy(textures, src.textures, sizeof(textures));
+				
+				RetainAll();
+			}
 			
 			return *this;
 		}
@@ -76,6 +79,15 @@ namespace DAVA
 				SafeRelease(textures[i]);
 			}
 		}
+
+		void ReleaseAll(Texture* tx[MAX_TEXTURE_COUNT])
+		{
+			for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+			{
+				SafeRelease(tx[i]);
+			}
+		}
+
 		
 		void RetainAll()
 		{

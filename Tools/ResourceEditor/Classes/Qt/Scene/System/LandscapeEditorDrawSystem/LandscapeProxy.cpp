@@ -360,10 +360,7 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 {
 	if (force || mode == MODE_CUSTOM_LANDSCAPE)
 	{
-		if (fullTiledTexture != NULL)
-		{
-			SafeRelease(fullTiledTexture);
-		}
+		SafeRelease(fullTiledTexture);
 
 		RenderManager::Instance()->SetDefault2DState();
 		RenderManager::Instance()->SetDefaultTextureState();

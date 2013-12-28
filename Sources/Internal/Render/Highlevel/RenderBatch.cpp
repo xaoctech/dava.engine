@@ -37,7 +37,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Debug/DVAssert.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/OcclusionQuery.h"
 #include "Debug/Stats.h"
 
@@ -74,12 +74,7 @@ RenderBatch::~RenderBatch()
 #endif
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
-	
-	if(material)
-	{
-		material->SetParent(NULL);
-	}
-	
+		
 	SafeRelease(material);
 }
     
@@ -98,16 +93,9 @@ void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
 
 void RenderBatch::SetMaterial(NMaterial * _material)
 {
-	SafeRelease(material);
+	NMaterial* oldMat = material;
     material = SafeRetain(_material);
-	
-	//VI: material should be ready after it has been set to render batch
-	//VI: so render system will be able to determine different materials-related renderbatch properties
-	//VI: such as if renderbatch receives dynamic light etc
-	if(material && !material->IsReady())
-	{
-		material->Rebuild();
-	}	
+	SafeRelease(oldMat);
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
@@ -240,11 +228,12 @@ void RenderBatch::SetSortingKey(uint32 _key)
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	//VI: NMaterial is not a DataNode anymore
-	/*if(material)
+	if(material)
 	{
 		InsertDataNode(material, dataNodes);
-	}*/
+		if (material->GetParent() != 0)
+			InsertDataNode(material->GetParent(), dataNodes);
+	}
 
 	if(dataSource)
 	{
@@ -308,7 +297,8 @@ void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializati
 		NMaterial* material = GetMaterial();
 		if(material)
 		{
-			archive->SetString("rb.nmatname", material->GetMaterialName().c_str());
+			int64 matKey = (int64)material->GetMaterialKey();
+			archive->SetInt64("rb.nmatname", matKey);
 		}
 		
 		//archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
@@ -346,18 +336,15 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			if(mat)
 			{
 				newMaterial = serializationContext->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, materialId);
-				//MaterialSystem* matSystem = serializationContext->GetMaterialSystem();
-				
-				//matSystem->BindMaterial(newMaterial);
 			}
 			
 			SafeRelease(oldMaterialInstance);
 		}
 		else
 		{
-			String matName = archive->GetString("rb.nmatname");
+			int64 matKey = archive->GetInt64("rb.nmatname");
 			
-			newMaterial = serializationContext->GetNewMaterial(matName);
+			newMaterial = serializationContext->GetMaterial(matKey);
 		}
 
 		SetPolygonGroup(pg);
@@ -396,31 +383,5 @@ bool RenderBatch::GetVisible() const
     
 void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
 {
-	MaterialSystem* matSystem = (rs) ? rs->GetMaterialSystem() : NULL;
-	MaterialSystem* prevSystem = (material) ? material->GetMaterialSystem() : NULL;
-	if(material &&
-	   prevSystem != matSystem)
-	{
-		/*if(NULL == matSystem)
-		{
-			if(prevSystem)
-			{
-				prevSystem->RemoveMaterial(material);
-			}
-			
-			material->SetMaterialSystem(NULL);
-		}
-		else
-		{
-			matSystem->BindMaterial(material);
-			
-			if(prevSystem)
-			{
-				prevSystem->RemoveMaterial(material);
-			}
-		}*/
-		
-		material->UpdateMaterialSystem(matSystem);
-	}	
 }
 };

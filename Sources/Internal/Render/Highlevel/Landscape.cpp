@@ -45,7 +45,7 @@
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"
-#include "Render/Material/MaterialSystem.h"
+#include "Scene3D/Systems/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -64,7 +64,7 @@ const FastName Landscape::PARAM_TILE_COLOR3("tileColor3");
 const FastName Landscape::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
 const FastName Landscape::PARAM_SPECULAR_SHININESS("materialSpecularShininess");
 const FastName Landscape::TEXTURE_SPECULAR_MAP("specularMap");
-const FastName Landscape::TECHNIQUE_TILEMASK_NAME("Landscape");
+const FastName Landscape::TECHNIQUE_TILEMASK_NAME("ForwardPass");
 	
 	const int TEXTURE_NAME_COLOR = 0;
 	const int TEXTURE_NAME_TILEMASK = 1;
@@ -149,16 +149,16 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	//tileMaskMaterial = NULL;
-	//fullTiledMaterial = NULL;
+	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+																FastName("~res:/Materials/Legacy/TileMask.material"),
+																NMaterial::DEFAULT_QUALITY_NAME);
+
 	
-	tileMaskMaterial = MaterialSystem::CreateNamed();
-	tileMaskMaterial->SwitchParent(FastName("Global.Fog.Landscape.TileMask"));
+	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
+	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
-	
-	//fullTiledMaterial = matSystem->CreateChild("Global.Landscape.FullTiled");
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	tileMaskMaterial->AddMaterialDefine(FastName("SPECULAR_LAND"));
@@ -167,7 +167,8 @@ Landscape::Landscape()
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
 	AddRenderBatch(chunk);
-	SafeRelease(chunk);	
+	SafeRelease(chunk);
+	SafeRelease(landscapeParent);
 }
 
 Landscape::~Landscape()
@@ -182,19 +183,8 @@ Landscape::~Landscape()
 
     SafeRelease(heightmap);
 	SafeDelete(cursor);
-	
-	if(tileMaskMaterial)
-	{
-		tileMaskMaterial->SetParent(NULL);
-	}
-	
-	//if(fullTiledMaterial)
-	//{
-	//	fullTiledMaterial->SetParent(NULL);
-	//}
-	
+		
 	SafeRelease(tileMaskMaterial);
-	//SafeRelease(fullTiledMaterial);
 }
     
 
@@ -294,13 +284,11 @@ void Landscape::SetLods(const Vector4 & lods)
     
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & _box)
 {
-    ReleaseAllRDOQuads();
-    SafeDeleteArray(indices); //TODO: need here or no?
-
 	heightmapPath = heightmapPathname;
+    BuildHeightmap();
+
 	bbox = _box;
 
-    BuildHeightmap();
     BuildLandscape();
 }
 
@@ -344,6 +332,10 @@ bool Landscape::BuildHeightmap()
     
 void Landscape::BuildLandscape()
 {
+    ReleaseAllRDOQuads();
+    SafeDeleteArray(indices);
+
+    
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
     quadTreeHead.data.rdoQuad = -1;
@@ -1614,12 +1606,8 @@ Heightmap * Landscape::GetHeightmap()
 void Landscape::SetHeightmap(DAVA::Heightmap *height)
 {
     SafeRelease(heightmap);
-    
-    ReleaseAllRDOQuads();
-    
-    SafeDeleteArray(indices);
-
     heightmap = SafeRetain(height);
+    
     BuildLandscape();
 }
     
@@ -1796,20 +1784,19 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	{
 		if(curContainsDetailMask)
 		{
-			tileMaskMaterial->AddMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOn);
 		}
 		else
 		{
-			tileMaskMaterial->RemoveMaterialDefine(FastName("DETAILMASK"));
+			tileMaskMaterial->SetFlag(FastName("DETAILMASK"), NMaterial::FlagOff);
 		}
-		
-		tileMaskMaterial->Rebuild();
 	}
 }
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
 {
-	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
+	DVASSERT(false);
+/*	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
 	DVASSERT(global);
 	
 	if(isFogEnabled)
@@ -1826,6 +1813,7 @@ void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerDa
 	
 	global->Rebuild();
 	global->Rebind();	
+ */
 }
 	
     
