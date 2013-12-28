@@ -43,106 +43,6 @@ namespace DAVA
 	{
 	public:
 
-/*
-		static FastName MapName(Material* mat)
-		{
-			String name = "Global";
-			
-			switch(mat->type)
-			{
-				case Material::MATERIAL_UNLIT_TEXTURE:
-				{
-					name += ".Textured";
-					break;
-				}
-					
-				case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-				{
-					name += ".Textured.Lightmap";
-					break;
-				}
-					
-				case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
-				{
-					name += ".Textured.Decal";
-					break;
-				}
-					
-				case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
-				{
-					name += ".Textured.Detail";
-					break;
-				}
-					
-				case Material::MATERIAL_VERTEX_LIT_TEXTURE:
-				{
-					name += ".Textured.VertexLit";
-					break;
-				}
-					
-				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
-				{
-					name += ".Textured.PixelLit";
-					break;
-				}
-					
-				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
-				{
-					name += ".Textured.PixelLit.Specular";
-					break;
-				}
-					
-				case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
-				{
-					name += ".Textured.PixelLit.Specular.Gloss";
-					break;
-				}
-					
-				case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
-				{
-					name += ".Textured.VertexColor";
-					break;
-				}
-					
-				case Material::MATERIAL_SKYBOX:
-				{
-					name = "Skybox";
-					break;
-				}
-					
-				default:
-					break;
-			};
-			
-			if(mat->IsTextureShiftEnabled())
-			{
-				name += ".TextureShift";
-			}
-			
-			if(Material::MATERIAL_FLAT_COLOR == mat->type)
-			{
-				name += ".Flatcolor";
-			}
-			
-			if(mat->GetAlphablend() ||
-			   Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
-			{
-				name += ".Alphablend";
-			}
-			else if(mat->GetAlphatest())
-			{
-				name += ".Alphatest";
-			}
-			else
-			{
-				name += ".Opaque";
-			}
-			
-			FastName fastName = name;
-			return fastName;
-		}
- */
-        
 		static FastName MapName(Material* mat)
 		{
 			FastName name;
@@ -406,7 +306,7 @@ namespace DAVA
 			
 			if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
 			{
-				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DECAL]);
+				Texture* tex = PrepareTexture(Texture::TEXTURE_2D, oldMaterial->GetTexture(Material::TEXTURE_DECAL));
 				material->SetTexture(NMaterial::TEXTURE_DECAL, tex);
 				
 				if(tex->isPink)
@@ -416,7 +316,7 @@ namespace DAVA
 			}
 			else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
 			{
-				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DETAIL]);
+				Texture* tex = PrepareTexture(Texture::TEXTURE_2D, oldMaterial->GetTexture(Material::TEXTURE_DETAIL));
 				material->SetTexture(NMaterial::TEXTURE_DETAIL, tex);
 				
 				if(tex->isPink)
@@ -425,10 +325,22 @@ namespace DAVA
 				}
 			}
 			
-			if (Material::MATERIAL_FLAT_COLOR != oldMaterial->type)
+			if (Material::MATERIAL_FLAT_COLOR != oldMaterial->type &&
+				Material::MATERIAL_SKYBOX != oldMaterial->type)
 			{
-				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+				Texture* tex = PrepareTexture(Texture::TEXTURE_2D, oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE));
 				material->SetTexture(NMaterial::TEXTURE_ALBEDO, tex);
+				
+				if(tex->isPink)
+				{
+					SafeRelease(tex);
+				}
+			}
+			
+			if(Material::MATERIAL_SKYBOX == oldMaterial->type)
+			{
+				Texture* tex = PrepareTexture(Texture::TEXTURE_CUBE, oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE));
+				material->SetTexture(NMaterial::TEXTURE_CUBEMAP, tex);
 				
 				if(tex->isPink)
 				{
@@ -440,7 +352,7 @@ namespace DAVA
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
 			{
-				Texture* tex = PrepareTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
+				Texture* tex = PrepareTexture(Texture::TEXTURE_2D, oldMaterial->GetTexture(Material::TEXTURE_NORMALMAP));
 				material->SetTexture(NMaterial::TEXTURE_NORMAL, tex);
 				
 				if(tex->isPink)
@@ -449,6 +361,36 @@ namespace DAVA
 				}
 			}
 
+			if(oldMaterial->IsFlatColorEnabled())
+			{
+				material->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
+			}
+			
+			if(oldMaterial->IsTextureShiftEnabled())
+			{
+				material->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+			}
+			
+			if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+			{
+				float32 shininess = oldMaterial->GetShininess();
+				material->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
+				
+				Color ambientColor = oldMaterial->GetAmbientColor();
+				Color diffuseColor = oldMaterial->GetDiffuseColor();
+				Color specularColor = oldMaterial->GetSpecularColor();
+				
+				material->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &ambientColor);
+				material->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &diffuseColor);
+				material->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &specularColor);
+			}
+			
 			//VI: should not retain material here. it will be released in the context's destructor
 			//VI: if the material still has children it will survive that.
 			SetMaterial(oldMaterialId, material);
@@ -463,7 +405,7 @@ namespace DAVA
 				instanceMaterial->GetIlluminationParams()->lightmapSize = oldMaterialState->GetLightmapSize();
 			}
 			
-			Texture* tex = PrepareTexture(oldMaterialState ? oldMaterialState->GetLightmap() : NULL);
+			Texture* tex = PrepareTexture(Texture::TEXTURE_2D, oldMaterialState ? oldMaterialState->GetLightmap() : NULL);
 			instanceMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, tex);
 			
 			if(tex->isPink)
@@ -472,15 +414,6 @@ namespace DAVA
 			}
 		}
 		
-		if(oldMaterial->isFlatColorEnabled)
-		{
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
-		}
-		
-		if(oldMaterial->isTexture0ShiftEnabled)
-		{
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
-		}
 		
 		if(oldMaterialState)
 		{
@@ -491,22 +424,6 @@ namespace DAVA
 			}
 		}
 		
-		if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
-		   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-		   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-		{
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &oldMaterial->shininess);
-			
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
-		}
-
-		
 		material->AddChild(instanceMaterial);
 		
 		//VI: need to retain instance material before adding to context
@@ -516,8 +433,9 @@ namespace DAVA
 		return instanceMaterial;
 	}
 			
-	Texture* SerializationContext::PrepareTexture(Texture* tx)
+	Texture* SerializationContext::PrepareTexture(uint32 textureTypeHint,
+												  Texture* tx)
 	{
-		return (tx) ? tx : Texture::CreatePink();
+		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
 	}
 }

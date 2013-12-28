@@ -159,7 +159,8 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 TexturesMap Texture::textureMap;
 
 
-Texture * Texture::pinkPlaceholder = 0;
+Texture * Texture::pinkPlaceholder = NULL;
+Texture * Texture::pinkCubePlaceholder = NULL;
 static int32 textureFboCounter = 0;
 
 // Main constructors
@@ -402,11 +403,8 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 	
-	GLint glWrapS = HWglConvertWrapMode(wrapS);
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, glWrapS));
-	
-	GLint glWrapT = HWglConvertWrapMode(wrapT);
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, glWrapT));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[wrapS]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[wrapT]));
 
 	if (saveId != 0)
 	{
@@ -424,11 +422,8 @@ void Texture::SetMinMagFilter(TextureFilter minFilter, TextureFilter magFilter)
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	GLint glMinFilter = HWglFilterToGLFilter(minFilter);
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, glMinFilter));
-
-	GLint glMagFilter = HWglFilterToGLFilter(magFilter);
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, glMagFilter));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[minFilter]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[magFilter]));
 
 	if (saveId != 0)
 	{
@@ -652,11 +647,11 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeS)));
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)texDescriptor->settings.wrapModeT)));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeS]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeT]));
 
-    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.minFilter)));
-    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)texDescriptor->settings.magFilter)));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.minFilter]));
+    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.magFilter]));
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -1067,9 +1062,21 @@ int32 Texture::GetDataSize() const
 
 Texture * Texture::CreatePink(TextureType requestedType)
 {
-    Texture *tex = new Texture();
-    tex->MakePink(requestedType);
-    
+	if(NULL == pinkPlaceholder)
+	{
+		pinkPlaceholder = new Texture();
+		pinkPlaceholder->MakePink(TEXTURE_2D);
+	}
+	
+	if(NULL == pinkCubePlaceholder)
+	{
+		pinkCubePlaceholder = new Texture();
+		pinkCubePlaceholder->MakePink(TEXTURE_CUBE);
+	}
+	
+    Texture *tex = (TEXTURE_CUBE == requestedType) ? pinkCubePlaceholder : pinkPlaceholder;
+    SafeRetain(tex);
+	
 	return tex;
 }
 
@@ -1252,54 +1259,6 @@ void Texture::GenerateID()
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
 }
-
-#if defined (__DAVAENGINE_OPENGL__)
-GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
-{
-    switch(wrap)
-    {
-        case WRAP_CLAMP_TO_EDGE:
-            return GL_CLAMP_TO_EDGE;
-        case WRAP_REPEAT:
-            return GL_REPEAT;
-    };
-    
-    return 0;
-}
-    
-GLint Texture::HWglFilterToGLFilter(TextureFilter filter)
-{
-    switch (filter)
-    {
-        case FILTER_NEAREST:
-            return GL_NEAREST;
-            
-        case FILTER_LINEAR:
-            return GL_LINEAR;
-
-        case FILTER_NEAREST_MIPMAP_NEAREST:
-            return GL_NEAREST_MIPMAP_NEAREST;
-
-        case FILTER_LINEAR_MIPMAP_NEAREST:
-            return GL_LINEAR_MIPMAP_NEAREST;
-
-        case FILTER_NEAREST_MIPMAP_LINEAR:
-            return GL_NEAREST_MIPMAP_LINEAR;
-
-        case FILTER_LINEAR_MIPMAP_LINEAR:
-            return GL_LINEAR_MIPMAP_LINEAR;
-
-		default:
-			DVASSERT(0 && "Wrong filter");
-			break;
-    }	
-    
-    return GL_NEAREST;
-}
-    
-    
-#endif //#if defined (__DAVAENGINE_OPENGL__)
-    
     
 void Texture::SetDefaultGPU(eGPUFamily gpuFamily)
 {

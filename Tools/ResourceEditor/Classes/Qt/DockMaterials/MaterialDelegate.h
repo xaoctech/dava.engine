@@ -68,7 +68,7 @@ private slots:
 private:
     QRect GetBackgroundRect(const QStyleOptionViewItem & option) const;
     
-    void DrawBackground(QPainter *painter, const QRect &rect, const DAVA::NMaterial * material) const;
+    void DrawBackground(QPainter *painter, const QRect &rect, DAVA::NMaterial * material) const;
 	void DrawText(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect,  const DAVA::NMaterial * material) const;
     void DrawSelection(QPainter *painter, const QStyleOptionViewItem &option, const DAVA::NMaterial * material) const;
     
