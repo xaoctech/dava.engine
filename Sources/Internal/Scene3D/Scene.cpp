@@ -146,7 +146,7 @@ void Scene::CreateSystems()
 	AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT));
     
     materialSystem = new MaterialSystem(this);
-//    AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
+    AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -192,9 +192,7 @@ Scene::~Scene()
     actionSystem = 0;
     skyboxSystem = 0;
     staticOcclusionSystem = 0;
-
-    SafeDelete(materialSystem);
-//    materialSystem = 0;
+    materialSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)

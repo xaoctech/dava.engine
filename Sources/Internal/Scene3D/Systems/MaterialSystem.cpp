@@ -32,6 +32,11 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Material/NMaterialTemplate.h"
 
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/Landscape.h"
+
 #include "Utils/StringFormat.h"
 #include "Scene3D/Scene.h"
 
@@ -39,7 +44,9 @@ namespace DAVA
 {
     
 MaterialSystem::MaterialSystem(Scene * scene)
-: SceneSystem(scene)
+    : SceneSystem(scene)
+    , fogDensity(0.1f)
+    , fogColor(1.f, 0.f, 1.f, 1.f)
 {
     SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
 }
@@ -47,47 +54,87 @@ MaterialSystem::MaterialSystem(Scene * scene)
 MaterialSystem::~MaterialSystem()
 {
 }
-
-void MaterialSystem::BuildMaterialList(Entity *forEntity, Vector<NMaterial*>& materialList) const
-{
-    if(!forEntity) return;
     
-    Vector<NMaterial*> materials;
-    forEntity->GetDataNodes(materials);
 
-    materialList.insert(materialList.end(), materials.begin(), materials.end());
+void MaterialSystem::AddEntity(Entity * entity)
+{
+    RenderObject *ro = GetRenderObject(entity);
+    if(!ro) return;
+
+    // try to retrive fog settings from scene settings
+    if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
+    {
+        Landscape *land = static_cast<Landscape *>(ro);
+        fogDensity = land->GetFogDensity();
+        fogColor = land->GetFogColor();
+    }
+    
+    //set fog at materials if need
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *rb = ro->GetRenderBatch(i);
+        NMaterial *instance = rb->GetMaterial();
+        if(instance)
+        {
+            NMaterial * parent = instance->GetParent();
+            if(parent)
+            {
+                int32 fog = parent->GetFlagValue(NMaterial::FLAG_VERTEXFOG);
+                if((NMaterial::FlagOn == fog) || (NMaterial::FlagOnOverride == fog))
+                {
+                    NMaterialProperty *property = parent->GetMaterialProperty(NMaterial::PARAM_FOG_COLOR);
+                    if(!property)
+                    {
+                        parent->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+                        parent->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+                    }
+                }
+            }
+        }
+    }
 }
 
-void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const
+{
+    if(!forEntity) return;
+
+    List<NMaterial*> materials;
+    forEntity->GetDataNodes(materials);
+
+    materialList.insert(materials.begin(), materials.end());
+}
+
+void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const
 {
     if(!forEntity) return;
     
-    Vector<NMaterial*> materials;
+    List<NMaterial*> materials;
     forEntity->GetDataNodes(materials);
     
-    uint32 size = materials.size();
-    for(uint32 i = 0; i < size; ++i)
+    List<NMaterial *>::const_iterator endIt = materials.end();
+    for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        if(materials[i]->GetMaterialName() == materialName)
+        if((*it)->GetMaterialName() == materialName)
         {
-            materialList.push_back(materials[i]);
+            materialList.insert(*it);
         }
     }
 }
     
-void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const
 {
     if(!forEntity) return;
     
-    Vector<NMaterial*> materials;
+    List<NMaterial*> materials;
     forEntity->GetDataNodes(materials);
-
-    uint32 size = materials.size();
-    for(uint32 i = 0; i < size; ++i)
+    
+    List<NMaterial *>::const_iterator endIt = materials.end();
+    for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        if(materials[i]->GetMaterialType() == materialType)
+        if((*it)->GetMaterialType() == materialType)
         {
-            materialList.push_back(materials[i]);
+            materialList.insert(*it);
         }
     }
 }
@@ -109,13 +156,13 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
 
 void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
 {
-    Vector<NMaterial*> materialList;
-    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materialList);
+    Set<NMaterial*> materials;
+    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materials);
     
-    uint32 size = materialList.size();
-    for(uint32 i = 0; i < size; ++i)
+    Set<NMaterial *>::const_iterator endIt = materials.end();
+    for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        materialList[i]->SwitchQuality(qualityLevelName);
+        (*it)->SwitchQuality(qualityLevelName);
     }
 }
     
