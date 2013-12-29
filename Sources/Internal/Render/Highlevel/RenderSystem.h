@@ -49,7 +49,8 @@ class Light;
 class ParticleEmitterSystem;
 class RenderHierarchy;
 class RenderPassBatchArray;
-    
+class NMaterialProperty;
+
 class RenderSystem
 {
 public:
@@ -114,7 +115,7 @@ public:
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
     RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
-
+	
 private:
 	void CreateSpatialTree();
     void ProcessClipping();
@@ -151,7 +152,7 @@ private:
     Camera * camera;
     Camera * clipCamera;
     //Vector<RenderObject*> forRemove;
-	
+
     friend class RenderPass;
 };
     

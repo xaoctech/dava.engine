@@ -341,7 +341,7 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
 
 				if(NULL != group && group->Size() > 0)
 				{
-					const DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
+                    DAVA::Entity *targetEntity = curScene->selectionSystem->GetSelectableEntity(group->GetEntity(0));
 					MaterialAssignSystem::AssignMaterialToEntity(curScene, targetEntity, materials[0]);
 				}
 			}
