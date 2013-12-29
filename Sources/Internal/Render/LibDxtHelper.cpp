@@ -240,7 +240,7 @@ PixelFormat QualcommHeler::GetDavaFormat(int32 format)
 }
 
 	
-bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSet, bool forseSoftwareConvertation /*=false*/)
 {
 	nvtt::Decompressor dec;
 
@@ -249,10 +249,10 @@ bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSe
 		return false;
 	}
 	
-	return NvttHelper::ReadDxtFile(dec, imageSet, false);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
 }
 
-bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet, bool forseSoftwareConvertation /*=false*/)
 {
 	nvtt::Decompressor dec;
 
@@ -260,7 +260,7 @@ bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet)
 	{
 		return false;
 	}
-	return NvttHelper::ReadDxtFile(dec, imageSet, false);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
 }
 
 bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &imageSet, bool forseSoftwareConvertation)
