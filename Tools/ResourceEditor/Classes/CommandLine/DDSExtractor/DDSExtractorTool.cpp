@@ -31,19 +31,18 @@
 #include "DDSExtractorTool.h"
 
 #include "TexturePacker/CommandLineParser.h"
-
-using namespace DAVA;
+#include "Render/LibDxtHelper.h"
 
 void DDSExtractorTool::PrintUsage()
 {
     printf("\n");
-    printf("-extract [-folder [directory] -mipmaps [number]]\n");
+    printf("-extract [-path [path to folder or file] -mipmaps [number]]\n");
     printf("\twill extract mentioned number of mipmaps\n");
-    printf("\tfrom all dds files, located in specified folder\n");
+    printf("\tfrom specifed file or all dds files, located in specified folder\n");
 
     printf("\n");
     printf("Sample:\n");
-    printf("-extract -folder /Users/User/Project/Data/3d -mipmaps 2 -forceclose\n");
+    printf("-extract -path /Users/User/Project/Data/3d -mipmaps 2 -forceclose\n");
 }
 
 DAVA::String DDSExtractorTool::GetCommandLineKey()
@@ -53,21 +52,20 @@ DAVA::String DDSExtractorTool::GetCommandLineKey()
 
 bool DDSExtractorTool::InitializeFromCommandLine()
 {
-	sourcePath = CommandLineParser::GetCommandParam(String("-folder"));
+	sourcePath = DAVA::CommandLineParser::GetCommandParam(DAVA::String("-path"));
 	
 	if(sourcePath.IsEmpty())
 	{
-		errors.insert(String("Incorrect params for source folder"));
+		errors.insert(DAVA::String("Incorrect params for source folder"));
 		return false;
 	}
 	
-    sourcePath.MakeDirectoryPathname();
-	String mipmapsNumberStr = CommandLineParser::GetCommandParam(String("-mipmaps"));
+	DAVA::String mipmapsNumberStr = DAVA::CommandLineParser::GetCommandParam(DAVA::String("-mipmaps"));
 	
-	int32 number = atoi(mipmapsNumberStr.c_str());
+	DAVA::int32 number = atoi(mipmapsNumberStr.c_str());
 	if (number <= 0)
 	{
-		errors.insert(String("Incorrect param for mipmaps number"));
+		errors.insert(DAVA::String("Incorrect param for mipmaps number"));
 		return false;
 	}
 	mipmapsNumber = number;
@@ -77,10 +75,16 @@ bool DDSExtractorTool::InitializeFromCommandLine()
 
 void DDSExtractorTool::Process()
 {
-	if (!sourcePath.Exists())
+	if (DAVA::FileSystem::Instance()->IsFile(sourcePath))
+	{
+		ExtractImagesFromFile(sourcePath);
+		return;
+	}
+	if (!DAVA::FileSystem::Instance()->IsDirectory(sourcePath))
 	{
 		return;
 	}
+	sourcePath.MakeDirectoryPathname();
 	DAVA::List<DAVA::FilePath> allFiles = GetFilesFromFolderRecursively(sourcePath);
 	DAVA::List<DAVA::FilePath>::const_iterator it = allFiles.begin();
 	DAVA::List<DAVA::FilePath>::const_iterator end = allFiles.end();
@@ -97,29 +101,30 @@ void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& path)
 		return;
 	}
 	
-	Vector<Image *> imageSet = ImageLoader::CreateFromFile(path);
-	if(0 == imageSet.size())
-	{
-		return;
-	}
+	DAVA::Vector<DAVA::Image *> imageSet;
+	//extracted images should have rgba format, but not DX1..DX5, even in case of dxt supporting systems(like windows)
+	DAVA::LibDxtHelper::ReadDxtFile(path, imageSet, true);
 	
-	uint32 size = mipmapsNumber >= imageSet.size() ? imageSet.size() : mipmapsNumber;
-	for (uint32 i = 0; i < size; ++i)
+	DAVA::uint32 size = mipmapsNumber >= imageSet.size() ? imageSet.size() : mipmapsNumber;
+	for (DAVA::uint32 i = 0; i < size; ++i)
 	{
-		FilePath saveFilePath(path);
+		DAVA::Image* imageToSave = imageSet[i];
+		DAVA::FilePath saveFilePath(path);
 		saveFilePath.ReplaceExtension(".png");
-		saveFilePath.ReplaceBasename(path.GetBasename() + Format("_%u", imageSet[i]->GetHeight()));
-		ImageLoader::Save(imageSet[i], saveFilePath);
+		saveFilePath.ReplaceBasename(path.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
+		
+		DAVA::ImageLoader::Save(imageToSave, saveFilePath);
+		printf("\n");
+		printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()));
+		SafeRelease(imageToSave);
 	}
-	for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 }
-
 
 DAVA::List<DAVA::FilePath> DDSExtractorTool::GetFilesFromFolderRecursively(const DAVA::FilePath& path)
 {
 	DAVA::List<DAVA::FilePath> retList;
-	FileList * fileList = new FileList(path);
-	for(uint32 i = 0; i < fileList->GetCount(); ++i)
+	DAVA::FileList * fileList = new DAVA::FileList(path);
+	for(DAVA::int32 i = 0; i < fileList->GetCount(); ++i)
 	{
 		if (fileList->IsNavigationDirectory(i))
 		{
@@ -127,7 +132,7 @@ DAVA::List<DAVA::FilePath> DDSExtractorTool::GetFilesFromFolderRecursively(const
 		}
 		if(fileList->IsDirectory(i))
 		{
-			DAVA::List<FilePath> subSet = GetFilesFromFolderRecursively(fileList->GetPathname(i));
+			DAVA::List<DAVA::FilePath> subSet = GetFilesFromFolderRecursively(fileList->GetPathname(i));
 			retList.insert(retList.end(), subSet.begin(), subSet.end());
 		}
 		else
