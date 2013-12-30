@@ -57,18 +57,14 @@ namespace DAVA
 		
 	void SkyboxRenderObject::SetRenderSystem(RenderSystem * renderSystem)
 	{
-		bool adding = (GetRenderSystem() == NULL && renderSystem != NULL);
-		bool removing = (GetRenderSystem() != NULL && renderSystem == NULL);
-		bool switching = (GetRenderSystem() != NULL && renderSystem != NULL);
-		
-		if(removing || switching)
+		if(GetRenderSystem())
 		{
 			GetRenderSystem()->UnregisterFromUpdate(this);
 		}
 		
 		RenderObject::SetRenderSystem(renderSystem);
 		
-		if(adding || switching)
+		if(GetRenderSystem())
 		{
 			GetRenderSystem()->RegisterForUpdate(this);
 		}

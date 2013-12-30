@@ -406,7 +406,7 @@ protected:
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
-	void OnMaterialPropertyAdded(const FastName& propName, NMaterialProperty* prop);
+	void OnMaterialPropertyAdded(const FastName& propName);
 	void OnMaterialPropertyRemoved(const FastName& propName);
 	
 public:

@@ -414,4 +414,21 @@ const Color & RenderSystem::GetShadowRectColor()
     
     return shadowRect->GetColor();
 }
+	
+void RenderSystem::SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode)
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	shadowVolume->SetBlendMode(blendMode);
+}
+	
+ShadowPassBlendMode::eBlend RenderSystem::GetShadowBlendMode()
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	return shadowVolume->GetBlendMode();
+}
+
 };

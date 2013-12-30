@@ -27,41 +27,23 @@
  =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_NMATERIAL_TEMPLATE_H__
-#define __DAVAENGINE_NMATERIAL_TEMPLATE_H__
-
-#include "Base/BaseTypes.h"
-#include "Core/Core.h"
-
-#include "Render/Material/NMaterial.h"
+#ifndef __DAVAENGINE_SCENE3D_SHADOW_BLEND_MODE_H__
+#define	__DAVAENGINE_SCENE3D_SHADOW_BLEND_MODE_H__
 
 namespace DAVA
 {
-	struct NMaterialTemplate
-	{
-		FastName name;
-		HashMap<FastName, FastName> techniqueStateMap;
-		
-		NMaterialTemplate() : techniqueStateMap(4)
-		{
-			
-		}
-	};
-	
-	class NMaterialTemplateCache : public StaticSingleton<NMaterialTemplateCache>
+	class ShadowPassBlendMode
 	{
 	public:
-				
-		const NMaterialTemplate* Get(const FastName& templateName);
 		
-	private:
-		
-		NMaterialTemplate* Load(const FilePath& loadPath);
-				
-	private:
-		
-		HashMap<FastName, NMaterialTemplate*> templateCache;
+		enum eBlend
+		{
+			MODE_BLEND_ALPHA = 0,
+			MODE_BLEND_MULTIPLY,
+			
+			MODE_BLEND_COUNT
+		};
 	};
 };
 
-#endif /* defined(__Framework__NMaterialTemplate__) */
+#endif
