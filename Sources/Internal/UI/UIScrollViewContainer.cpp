@@ -241,4 +241,20 @@ YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
     return node;
 }
 
+void UIScrollViewContainer::InputCancelled( UIEvent *currentInput )
+{
+    //TODO: FIX THIS FUCKING SHIT WITH INPUT CANCELS
+    //if (currentInput->tid == mainTouch)
+    //{
+    //    mainTouch = -1;
+    //    lockTouch = false;
+    //}
+}
+
+void UIScrollViewContainer::WillDisappear()
+{
+    mainTouch = -1;
+    lockTouch = false;
+}
+
 };
