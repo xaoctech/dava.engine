@@ -176,13 +176,18 @@ namespace DAVA
 			++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			int componentCount = componentsVector->size();
-
-			for(Vector<Component*>::iterator compIt = componentsVector->begin();
-				compIt != componentsVector->end(); ++compIt)
+			DVASSERT(it->second);
+			
+			if(it->second)
 			{
-				componentCount--;
-				CleanupComponent(*compIt, componentCount);
+				int componentCount = componentsVector->size();
+				
+				for(Vector<Component*>::iterator compIt = componentsVector->begin();
+					compIt != componentsVector->end(); ++compIt)
+				{
+					componentCount--;
+					CleanupComponent(*compIt, componentCount);
+				}
 			}
 
 			SafeDelete(componentsVector);

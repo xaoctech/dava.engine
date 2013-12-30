@@ -45,7 +45,7 @@ namespace DAVA
     
 MaterialSystem::MaterialSystem(Scene * scene)
     : SceneSystem(scene)
-    , fogDensity(0.1f)
+    , fogDensity(0.001f)
     , fogColor(1.f, 0.f, 1.f, 1.f)
 {
     SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs

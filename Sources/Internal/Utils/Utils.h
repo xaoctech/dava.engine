@@ -67,6 +67,9 @@ void ReplaceBundleName(const String &newBundlePath);
 template<class T>
 T ParseStringTo(const String & str);
 
+template<class T>
+void Swap(T & v1, T & v2);
+
 /**
  \brief Function to compare strings case-insensitive
  \param[in] ext1 - first string 
@@ -131,6 +134,14 @@ T ParseStringTo(const String & str)
     std::stringstream stream (str);
     stream >> result;
     return result;
+}
+
+template<class T>
+void Swap(T & v1, T & v2)
+{
+    T temp = v1;
+    v1 = v2;
+    v2 = temp;
 }
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)

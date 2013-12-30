@@ -204,7 +204,7 @@ template < typename E > class Vector : public std::vector< E >
 public:
     typedef E	   value_type;
     typedef size_t size_type;
-    explicit Vector(size_type __n, const value_type & __value = value_type()) : std::vector< E >(__n, __value) {}
+    explicit Vector(size_type n, const value_type & value = value_type()) : std::vector< E >(n, value) {}
     Vector() : std::vector< E >() {}
 };
 template < class E > class Set : public std::set< E > {};
