@@ -38,6 +38,7 @@
 #include "Render/Highlevel/SpatialTree.h"
 #include "Render/Highlevel/RenderLayerManager.h"
 #include "Render/Highlevel/RenderPassManager.h"
+#include "Render/Highlevel/ShadowBlendMode.h"
 
 namespace DAVA
 {
@@ -139,6 +140,8 @@ public:
     
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
+	void SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode);
+	ShadowPassBlendMode::eBlend GetShadowBlendMode();
 	
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     

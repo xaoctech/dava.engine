@@ -598,7 +598,7 @@ namespace DAVA
 				SafeDelete(materialProperty);
 				materialProperties.insert(keyName, newProp);
 				
-				OnMaterialPropertyAdded(keyName, newProp);
+				OnMaterialPropertyAdded(keyName);
 				
 				materialProperty = newProp;
 			}
@@ -611,7 +611,7 @@ namespace DAVA
 			materialProperty->data = new uint8[dataSize];
 			materialProperties.insert(keyName, materialProperty);
 			
-			OnMaterialPropertyAdded(keyName, materialProperty);
+			OnMaterialPropertyAdded(keyName);
 		}
 		
 		memcpy(materialProperty->data, data, dataSize);
@@ -1146,8 +1146,7 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::OnMaterialPropertyAdded(const FastName& propName,
-											NMaterialProperty* prop)
+	void NMaterial::OnMaterialPropertyAdded(const FastName& propName)
 	{
 		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
 			it != instancePasses.end();
@@ -1158,9 +1157,10 @@ namespace DAVA
 			{
 				for(size_t i = 0; i < pass->activeUniformsCacheSize; ++i)
 				{
-					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
+					UniformCacheEntry& cacheEntry = pass->activeUniformsCachePtr[i];
+					if(cacheEntry.uniform->name == propName)
 					{
-						pass->activeUniformsCachePtr[i].prop = prop;
+						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
 						break;
 					}
 				}
@@ -1172,7 +1172,7 @@ namespace DAVA
 		size_t childrenCount = children.size();
 		for(size_t i = 0; i< childrenCount; ++i)
 		{
-			children[i]->OnMaterialPropertyAdded(propName, prop);
+			children[i]->OnMaterialPropertyAdded(propName);
 		}
 		
 		this->Release();
@@ -1191,7 +1191,8 @@ namespace DAVA
 				{
 					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
 					{
-						pass->activeUniformsCachePtr[i].prop = NULL;
+						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
+						
 						break;
 					}
 				}
