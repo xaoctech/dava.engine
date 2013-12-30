@@ -26,66 +26,36 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+
+
+#ifndef __CREATE_PLANE_LOD_COOMAND_H__
+#define __CREATE_PLANE_LOD_COOMAND_H__
+
+#include "Commands2/Command2.h"
 #include "DAVAEngine.h"
-#include "DAVAClassRegistrator.h"
 
-using namespace DAVA;
-
-void DAVA::RegisterDAVAClasses()
+class CreatePlaneLODCommand : public Command2
 {
-    //this code do nothing. Needed to compiler generate code from this cpp file
-    Logger * log = Logger::Instance();
-    if(log)
-        log->Log(Logger::LEVEL__DISABLE, "");
-}
+public:
+	CreatePlaneLODCommand(DAVA::LodComponent * lodComponent, DAVA::int32 fromLodLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath);
+    ~CreatePlaneLODCommand();
 
-#if !defined(__DAVAENGINE_ANDROID__)
-REGISTER_CLASS(TheoraPlayer);
-#endif
+    virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
+    
+    DAVA::Entity * CreatePlaneEntity(DAVA::Entity * fromEntity);
 
-REGISTER_CLASS(ParticleEmitter);
-REGISTER_CLASS(ParticleEmitter3D);
-REGISTER_CLASS(PolygonGroup);
-REGISTER_CLASS(StaticMesh);
-REGISTER_CLASS(Camera);
-REGISTER_CLASS(UIScrollViewContainer);
-REGISTER_CLASS(UISlider);
-REGISTER_CLASS(UISpinner);
-REGISTER_CLASS(UIStaticText);
-REGISTER_CLASS(LandscapeChunk);
-REGISTER_CLASS(UISwitch);
-REGISTER_CLASS(UITextField);
-REGISTER_CLASS(Landscape);
-REGISTER_CLASS(UIAggregatorControl);
-REGISTER_CLASS(Light);
-REGISTER_CLASS(Mesh);
-REGISTER_CLASS(SpeedTreeObject);
-REGISTER_CLASS(RenderBatch);
-REGISTER_CLASS(RenderObject);
-REGISTER_CLASS(ShadowVolume);
-REGISTER_CLASS(SkyboxRenderObject);
-REGISTER_CLASS(InstanceMaterialState);
-REGISTER_CLASS(Material);
-REGISTER_CLASS(ImposterNode);
-REGISTER_CLASS(BillboardNode);
-REGISTER_CLASS(BoneNode);
-REGISTER_CLASS(DataNode);
-REGISTER_CLASS(Entity);
-REGISTER_CLASS(LodNode);
-REGISTER_CLASS(MeshInstanceNode);
-REGISTER_CLASS(ParticleEffectNode);
-REGISTER_CLASS(ParticleEmitterNode);
-REGISTER_CLASS(ProxyNode);
-REGISTER_CLASS(Scene);
-REGISTER_CLASS(ShadowVolumeNode);
-REGISTER_CLASS(SkeletonNode);
-REGISTER_CLASS(SwitchNode);
-REGISTER_CLASS(UserNode);
-REGISTER_CLASS(UIButton);
-REGISTER_CLASS(UIControl);
-REGISTER_CLASS(UIList);
-REGISTER_CLASS(UIListCell);
-REGISTER_CLASS(UIScrollBar);
-REGISTER_CLASS(UIScrollView);
+    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
+
+protected:
+    DAVA::LodComponent * lodComponent;
+    DAVA::LodComponent::LodData * lodData;
+
+    DAVA::int32 fromLodLayer;
+    DAVA::uint32 textureSize;
+    DAVA::FilePath textureSavePath;
+};
 
 
+#endif // #ifndef __CREATE_PLANE_LOD_COOMAND_H__

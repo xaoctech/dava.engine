@@ -13,6 +13,8 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
+		02A03D73186D561600FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03D71186D561600FA72CE /* SpeedTreeObject.cpp */; };
+		02A03D74186D561600FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03D72186D561600FA72CE /* SpeedTreeObject.h */; };
 		02E9E3A11729669200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3A01729669200C501BC /* FMODUtils.h */; };
 		02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D41734176100C501BC /* SoundEvent.cpp */; };
 		02E9E3DB1734176200C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D51734176200C501BC /* SoundEvent.h */; };
@@ -736,6 +738,8 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		02A03D71186D561600FA72CE /* SpeedTreeObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeObject.cpp; sourceTree = "<group>"; };
+		02A03D72186D561600FA72CE /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
 		02E9E3A01729669200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphoneos.a; sourceTree = "<group>"; };
 		02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphonesimulator.a; sourceTree = "<group>"; };
@@ -2075,6 +2079,8 @@
 		E8B3C92316B9326D002BD35F /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				02A03D71186D561600FA72CE /* SpeedTreeObject.cpp */,
+				02A03D72186D561600FA72CE /* SpeedTreeObject.h */,
 				EA84E17317FAC20100304C3C /* SpatialTree.cpp */,
 				EA84E17417FAC20100304C3C /* SpatialTree.h */,
 				A679102717B3CF2D000AA2F2 /* SkyboxRenderObject.cpp */,
@@ -2553,6 +2559,7 @@
 				E8B3CADE16B9326E002BD35F /* ListAllocator.h in Headers */,
 				E8B3CAE016B9326E002BD35F /* MemoryManager.h in Headers */,
 				E8B3CAE216B9326E002BD35F /* Replay.h in Headers */,
+				02A03D74186D561600FA72CE /* SpeedTreeObject.h in Headers */,
 				E8B3CAE416B9326E002BD35F /* Stats.h in Headers */,
 				E8B3CAE616B9326E002BD35F /* DLCSystem.h in Headers */,
 				E8B3CAEA16B9326E002BD35F /* DLCUnpacker.h in Headers */,
@@ -3084,6 +3091,7 @@
 				E8B3CC3D16B9326E002BD35F /* ShaderDX.cpp in Sources */,
 				E8B3CC3E16B9326E002BD35F /* ShaderGL.cpp in Sources */,
 				021414161819851100925E51 /* DAVAClassRegistrator.cpp in Sources */,
+				02A03D73186D561600FA72CE /* SpeedTreeObject.cpp in Sources */,
 				E8B3CC4016B9326E002BD35F /* SharedFBO.cpp in Sources */,
 				E8B3CC4216B9326E002BD35F /* StaticIndexBuffer.cpp in Sources */,
 				E8B3CC4416B9326E002BD35F /* StaticVertexBuffer.cpp in Sources */,
