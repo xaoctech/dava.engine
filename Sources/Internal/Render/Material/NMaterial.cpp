@@ -172,7 +172,7 @@ namespace DAVA
 			material->OnParentChanged(NULL);
 			
 			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
+			//CleanupUnusedTextures();
 		
 			this->Release();
 		}
@@ -372,7 +372,7 @@ namespace DAVA
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
-				CleanupUnusedTextures();
+				//CleanupUnusedTextures();
 				
 				this->Release();
 			}
@@ -699,7 +699,7 @@ namespace DAVA
 		}
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 		
 		this->Release();
 	}
@@ -742,7 +742,7 @@ namespace DAVA
 		LoadActiveTextures();
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 	}
 	
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
@@ -1122,9 +1122,9 @@ namespace DAVA
 
 	void NMaterial::BindMaterialTextures(RenderPassInstance* passInstance)
 	{
-		if(activePassInstance->texturesDirty)
+		if(passInstance->texturesDirty)
 		{
-			PrepareTextureState(activePassInstance);
+			PrepareTextureState(passInstance);
 		}
 	}
 	
