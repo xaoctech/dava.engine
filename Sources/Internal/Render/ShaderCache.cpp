@@ -77,10 +77,19 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
                                             fragmentShaderDataStart,
                                             fragmentShaderDataSize,
                                             defines);
-    BindShaderDefaults(shader);
+	
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+														   Message(this, &ShaderAsset::BindShaderDefaultsInternal, shader));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
 
     compiledShaders.insert(defines, shader);
     return shader;
+}
+	
+void ShaderAsset::BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData)
+{
+	BindShaderDefaults((Shader*)param);
 }
 
 void ShaderAsset::BindShaderDefaults(Shader * shader)

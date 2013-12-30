@@ -358,6 +358,7 @@ private:
     Image * ReadDataToImage();
 
 	static Texture * pinkPlaceholder;
+	static Texture * pinkCubePlaceholder;
     
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
@@ -365,9 +366,6 @@ private:
 #if defined(__DAVAENGINE_OPENGL__)
 	void HWglCreateFBOBuffers();
 	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
-
-    static GLint HWglFilterToGLFilter(TextureFilter filter);
-    static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     static eGPUFamily defaultGPU;

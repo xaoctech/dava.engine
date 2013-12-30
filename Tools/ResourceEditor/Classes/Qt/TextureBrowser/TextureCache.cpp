@@ -105,7 +105,7 @@ DAVA::Vector<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *d
 	return DAVA::Vector<QImage>();
 }
 
-void TextureCache::TexturesReloaded()
+void TextureCache::ClearCache()
 {
     clearInsteadThumbnails();
     cacheThumbnail.clear();

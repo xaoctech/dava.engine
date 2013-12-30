@@ -159,7 +159,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
-    QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(TexturesReloaded()));
+    QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(ClearCache()));
 
     
 	LoadGPUFormat();

@@ -52,7 +52,8 @@ class ParticleEmitterSystem;
 class RenderHierarchy;
 class RenderPassBatchArray;
 class NMaterial;
-    
+class NMaterialProperty;
+
 class RenderSystem
 {
 public:
@@ -174,7 +175,7 @@ private:
     Camera * clipCamera;
     
 	ParticleEmitterSystem * particleEmitterSystem;
-	
+		
     friend class RenderPass;
 };
     
