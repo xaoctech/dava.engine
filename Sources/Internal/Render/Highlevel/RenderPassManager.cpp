@@ -25,75 +25,56 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-#include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/RenderPassManager.h"
 #include "Render/Highlevel/RenderFastNames.h"
-#include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatchArray.h"
-#include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Render/Highlevel/RenderLayerManager.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 namespace DAVA
 {
+
     
-RenderPass::RenderPass(RenderSystem * _renderSystem, const FastName & _name, RenderPassID _id)
-    :   renderSystem(_renderSystem)
-    ,   name(_name)
-    ,   id(_id)
+void RenderPassManager::InsertPass(RenderPass * renderPass)
 {
-    renderLayers.reserve(RENDER_LAYER_ID_COUNT);
+    array[renderPass->GetRenderPassID()] = renderPass;
+    map[renderPass->GetName()] = renderPass;
 }
 
-RenderPass::~RenderPass()
+void RenderPassManager::Release()
 {
-    
-}
-    
-void RenderPass::AddRenderLayer(RenderLayer * layer, const FastName & afterLayer)
-{
-	if(LAST_LAYER != afterLayer)
-	{
-		uint32 size = renderLayers.size();
-		for(uint32 i = 0; i < size; ++i)
-		{
-			const FastName & name = renderLayers[i]->GetName();
-			if(afterLayer == name)
-			{
-				renderLayers.insert(renderLayers.begin() +i+1, layer);
-				return;
-			}
-		}
-		DVASSERT(0 && "RenderPass::AddRenderLayer afterLayer not found");
-	}
-	else
-	{
-		renderLayers.push_back(layer);
-	}
-}
-    
-void RenderPass::RemoveRenderLayer(RenderLayer * layer)
-{
-	Vector<RenderLayer*>::iterator it = std::find(renderLayers.begin(), renderLayers.end(), layer);
-	DVASSERT(it != renderLayers.end());
-
-	renderLayers.erase(it);
+    size_t size = array.size();
+    for (size_t i = 0; i < size; ++i)
+        SafeDelete(array[i]);
+    array.clear();
+    map.clear();
 }
 
-void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+RenderPassManager::RenderPassManager(RenderSystem * renderSystem)
+    : array(RENDER_PASS_ID_COUNT)
+    , map(RENDER_PASS_ID_COUNT)
 {
-    // Set Render Target
+    const RenderLayerManager * renderLayerManager = renderSystem->GetRenderLayerManager();
+
+    RenderPass * forwardPass = new RenderPass(renderSystem, PASS_FORWARD, RENDER_PASS_FORWARD_ID);
+    InsertPass(forwardPass);
     
-    // Draw all layers with their materials
-    uint32 size = (uint32)renderLayers.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        RenderLayer * layer = renderLayers[k];
-        RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
-        if (renderLayerBatchArray)
-        {
-            layer->Draw(name, camera, renderLayerBatchArray);
-        }
-    }
+    forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
+    forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+    
+    ShadowVolumeRenderPass * shadowVolumePass = new ShadowVolumeRenderPass(renderSystem, PASS_SHADOW_VOLUME, RENDER_PASS_SHADOW_VOLUME_ID);
+    InsertPass(shadowVolumePass);
+    shadowVolumePass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
+}
+
+RenderPassManager::~RenderPassManager()
+{
+    Release();
 }
 
 };

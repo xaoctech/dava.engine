@@ -390,6 +390,17 @@ namespace DAVA
 				material->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &diffuseColor);
 				material->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &specularColor);
 			}
+			else //VI: copy fog settings for static lit materials only! For tanks fog propeties will be set from scene
+			{
+				if(oldMaterial->IsFogEnabled())
+				{
+					Color fogColor = oldMaterial->GetFogColor();
+					float32 fogDensity = oldMaterial->GetFogDensity();
+					
+					material->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+					material->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+				}
+			}
 			
 			//VI: should not retain material here. it will be released in the context's destructor
 			//VI: if the material still has children it will survive that.

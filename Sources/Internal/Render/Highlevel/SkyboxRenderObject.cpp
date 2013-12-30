@@ -208,7 +208,7 @@ namespace DAVA
 				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
             }
             
-			skyboxMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, tx);
+			skyboxMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
 
             SafeRelease(descriptor);
 			SafeRelease(tx);

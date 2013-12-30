@@ -42,7 +42,7 @@ class StaticOcclusion;
 class StaticOcclusionRenderLayer : public RenderLayer
 {
 public:
-    StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * occlusion);
+    StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * occlusion, RenderLayerID id);
     ~StaticOcclusionRenderLayer();
     
     virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
@@ -53,7 +53,7 @@ public:
 class StaticOcclusionRenderPass : public RenderPass
 {
 public:
-    StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * occlusion);
+    StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * occlusion, RenderPassID id);
     ~StaticOcclusionRenderPass();
 
     void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);

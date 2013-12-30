@@ -716,6 +716,15 @@
 		5013F6941859EB0400FB3C51 /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5013F6901859EB0400FB3C51 /* StaticOcclusionSystem.h */; };
 		5013F6951859EB0400FB3C51 /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5013F6901859EB0400FB3C51 /* StaticOcclusionSystem.h */; };
 		5013F6961859EB0400FB3C51 /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5013F6901859EB0400FB3C51 /* StaticOcclusionSystem.h */; };
+		5022951C186DD1BC00F55478 /* RenderPassManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5022951A186DD1BC00F55478 /* RenderPassManager.cpp */; };
+		5022951D186DD1BC00F55478 /* RenderPassManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5022951A186DD1BC00F55478 /* RenderPassManager.cpp */; };
+		5022951E186DD1BC00F55478 /* RenderPassManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5022951A186DD1BC00F55478 /* RenderPassManager.cpp */; };
+		5022951F186DD1BC00F55478 /* RenderPassManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5022951B186DD1BC00F55478 /* RenderPassManager.h */; };
+		50229520186DD1BC00F55478 /* RenderPassManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5022951B186DD1BC00F55478 /* RenderPassManager.h */; };
+		50229521186DD1BC00F55478 /* RenderPassManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5022951B186DD1BC00F55478 /* RenderPassManager.h */; };
+		5043DDAB18706828005E3584 /* VisibilityArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 5043DDAA18706828005E3584 /* VisibilityArray.h */; };
+		5043DDAC18706828005E3584 /* VisibilityArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 5043DDAA18706828005E3584 /* VisibilityArray.h */; };
+		5043DDAD18706828005E3584 /* VisibilityArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 5043DDAA18706828005E3584 /* VisibilityArray.h */; };
 		505EB40E1824CEC5009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB40C1824CEC5009BEA3C /* OcclusionQuery.cpp */; };
 		505EB40F1824CEC5009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB40C1824CEC5009BEA3C /* OcclusionQuery.cpp */; };
 		505EB4101824CEC5009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB40C1824CEC5009BEA3C /* OcclusionQuery.cpp */; };
@@ -750,6 +759,12 @@
 		50A5187317B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
 		50A5187417B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
 		50A5187517B256250022E8FA /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5186F17B256250022E8FA /* ShaderCache.h */; };
+		50B06920186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50B0691E186D4C4C00B44A39 /* RenderLayerManager.cpp */; };
+		50B06921186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50B0691E186D4C4C00B44A39 /* RenderLayerManager.cpp */; };
+		50B06922186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50B0691E186D4C4C00B44A39 /* RenderLayerManager.cpp */; };
+		50B06923186D4C4C00B44A39 /* RenderLayerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B0691F186D4C4C00B44A39 /* RenderLayerManager.h */; };
+		50B06924186D4C4C00B44A39 /* RenderLayerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B0691F186D4C4C00B44A39 /* RenderLayerManager.h */; };
+		50B06925186D4C4C00B44A39 /* RenderLayerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B0691F186D4C4C00B44A39 /* RenderLayerManager.h */; };
 		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50ED334A1858B5A200A917D5 /* StaticOcclusionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */; };
@@ -2265,6 +2280,9 @@
 		4FFE5CAD1779DBC700728624 /* MipmapReplacer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MipmapReplacer.h; sourceTree = "<group>"; };
 		5013F68F1859EB0400FB3C51 /* StaticOcclusionSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionSystem.cpp; sourceTree = "<group>"; };
 		5013F6901859EB0400FB3C51 /* StaticOcclusionSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusionSystem.h; sourceTree = "<group>"; };
+		5022951A186DD1BC00F55478 /* RenderPassManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderPassManager.cpp; sourceTree = "<group>"; };
+		5022951B186DD1BC00F55478 /* RenderPassManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderPassManager.h; sourceTree = "<group>"; };
+		5043DDAA18706828005E3584 /* VisibilityArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityArray.h; sourceTree = "<group>"; };
 		505EB40C1824CEC5009BEA3C /* OcclusionQuery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OcclusionQuery.cpp; sourceTree = "<group>"; };
 		505EB40D1824CEC5009BEA3C /* OcclusionQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcclusionQuery.h; sourceTree = "<group>"; };
 		50A3043718575C370082CA8D /* StaticOcclusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusion.cpp; sourceTree = "<group>"; };
@@ -2277,6 +2295,8 @@
 		50A5186517B255EC0022E8FA /* RenderHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderHierarchy.h; sourceTree = "<group>"; };
 		50A5186E17B256250022E8FA /* ShaderCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderCache.cpp; sourceTree = "<group>"; };
 		50A5186F17B256250022E8FA /* ShaderCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderCache.h; sourceTree = "<group>"; };
+		50B0691E186D4C4C00B44A39 /* RenderLayerManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderLayerManager.cpp; sourceTree = "<group>"; };
+		50B0691F186D4C4C00B44A39 /* RenderLayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderLayerManager.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionComponent.cpp; sourceTree = "<group>"; };
@@ -3717,6 +3737,11 @@
 		E8989C3F16BD24E400732C04 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				5043DDAA18706828005E3584 /* VisibilityArray.h */,
+				5022951A186DD1BC00F55478 /* RenderPassManager.cpp */,
+				5022951B186DD1BC00F55478 /* RenderPassManager.h */,
+				50B0691E186D4C4C00B44A39 /* RenderLayerManager.cpp */,
+				50B0691F186D4C4C00B44A39 /* RenderLayerManager.h */,
 				50A3043718575C370082CA8D /* StaticOcclusion.cpp */,
 				50A3043818575C370082CA8D /* StaticOcclusion.h */,
 				50A3043A18575C370082CA8D /* StaticOcclusionRenderPass.cpp */,
@@ -4311,6 +4336,7 @@
 				176DE98C174B5561007A983B /* PolygonGroup.h in Headers */,
 				176DE98D174B5561007A983B /* StaticMesh.h in Headers */,
 				176DE98E174B5561007A983B /* Cursor.h in Headers */,
+				50B06925186D4C4C00B44A39 /* RenderLayerManager.h in Headers */,
 				176DE98F174B5561007A983B /* ColorOnlyEffect.h in Headers */,
 				176DE990174B5561007A983B /* MultiTextureEffect.h in Headers */,
 				176DE991174B5561007A983B /* TextureMulColorAlphaTestEffect.h in Headers */,
@@ -4505,6 +4531,8 @@
 				17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */,
 				17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */,
 				1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */,
+				5043DDAD18706828005E3584 /* VisibilityArray.h in Headers */,
+				50229521186DD1BC00F55478 /* RenderPassManager.h in Headers */,
 				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
 				A6E4FE0E1761D9CD00B48E41 /* ActionComponent.h in Headers */,
 				A6E4FE121761D9D900B48E41 /* CustomPropertiesComponent.h in Headers */,
@@ -4759,6 +4787,7 @@
 				E8989FB016BD24E500732C04 /* PolygonGroupInstance.h in Headers */,
 				50ED334D1858B5A200A917D5 /* StaticOcclusionComponent.h in Headers */,
 				E8989FB216BD24E500732C04 /* ProxyNode.h in Headers */,
+				50B06923186D4C4C00B44A39 /* RenderLayerManager.h in Headers */,
 				E8989FBA16BD24E500732C04 /* Scene.h in Headers */,
 				E8989FBC16BD24E500732C04 /* SceneAnimationMixer.h in Headers */,
 				E8989FBE16BD24E500732C04 /* SceneFile.h in Headers */,
@@ -4813,9 +4842,11 @@
 				E898A03916BD24E500732C04 /* UIScrollBar.h in Headers */,
 				E898A03B16BD24E500732C04 /* UISlider.h in Headers */,
 				E898A03D16BD24E500732C04 /* UIStaticText.h in Headers */,
+				5022951F186DD1BC00F55478 /* RenderPassManager.h in Headers */,
 				E898A03F16BD24E500732C04 /* UITextField.h in Headers */,
 				E898A04316BD24E500732C04 /* UIYamlLoader.h in Headers */,
 				E898A04416BD24E500732C04 /* HTTPDownloader.h in Headers */,
+				5043DDAB18706828005E3584 /* VisibilityArray.h in Headers */,
 				7A169356180EE75A005F1FBC /* GameAPI.h in Headers */,
 				E898A04816BD24E500732C04 /* MD5.h in Headers */,
 				E898A04916BD24E500732C04 /* Random.h in Headers */,
@@ -5024,6 +5055,7 @@
 				505EB4121824CEC5009BEA3C /* OcclusionQuery.h in Headers */,
 				E898A0B916BD265400732C04 /* Matrix2.h in Headers */,
 				E898A0BA16BD265400732C04 /* Matrix3.h in Headers */,
+				50229520186DD1BC00F55478 /* RenderPassManager.h in Headers */,
 				E898A0BB16BD265400732C04 /* Matrix4.h in Headers */,
 				E898A0BC16BD265400732C04 /* NeonMath.h in Headers */,
 				E898A0BD16BD265400732C04 /* OOBBox.h in Headers */,
@@ -5065,6 +5097,7 @@
 				E898A0E816BD265400732C04 /* GraphicsFont.h in Headers */,
 				E898A0E916BD265400732C04 /* GridSprite.h in Headers */,
 				E898A0EA16BD265400732C04 /* Sprite.h in Headers */,
+				5043DDAC18706828005E3584 /* VisibilityArray.h in Headers */,
 				E898A0EB16BD265400732C04 /* TextBlock.h in Headers */,
 				E898A0EC16BD265400732C04 /* AnimatedMesh.h in Headers */,
 				E898A0ED16BD265400732C04 /* EdgeAdjacency.h in Headers */,
@@ -5239,6 +5272,7 @@
 				CCC7A46A16F1D6170061EA5D /* ShadowRect.h in Headers */,
 				CCC7A46E16F1D6170061EA5D /* ShadowVolume.h in Headers */,
 				CCC7A47216F1D6170061EA5D /* ShadowVolumeRenderPass.h in Headers */,
+				50B06924186D4C4C00B44A39 /* RenderLayerManager.h in Headers */,
 				CCC7A47616F1D6170061EA5D /* SpriteObject.h in Headers */,
 				CCC7A47A16F1D6170061EA5D /* SpriteRenderBatch.h in Headers */,
 				CCC7A48016F1D64D0061EA5D /* RenderState.h in Headers */,
@@ -5536,6 +5570,7 @@
 				176DEAC9174B5561007A983B /* RenderOptions.cpp in Sources */,
 				176DEACA174B5561007A983B /* RenderResource.cpp in Sources */,
 				176DEACB174B5561007A983B /* Shader.cpp in Sources */,
+				5022951E186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
 				176DEACC174B5561007A983B /* ShaderGL.cpp in Sources */,
 				176DEACD174B5561007A983B /* SharedFBO.cpp in Sources */,
 				176DEACE174B5561007A983B /* Texture.cpp in Sources */,
@@ -5562,6 +5597,7 @@
 				176DEAE2174B5561007A983B /* RenderComponent.cpp in Sources */,
 				176DEAE3174B5561007A983B /* SwitchComponent.cpp in Sources */,
 				176DEAE4174B5561007A983B /* TransformComponent.cpp in Sources */,
+				50B06922186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */,
 				CC84B02A18211A9000934482 /* JobWaiter.cpp in Sources */,
 				176DEAE5174B5561007A983B /* UpdatableComponent.cpp in Sources */,
 				176DEAE6174B5561007A983B /* DataNode.cpp in Sources */,
@@ -5921,6 +5957,7 @@
 				E8989FD216BD24E500732C04 /* SwitchNode.cpp in Sources */,
 				E8989FD416BD24E500732C04 /* BaseProcessSystem.cpp in Sources */,
 				E8989FD616BD24E500732C04 /* DebugRenderSystem.cpp in Sources */,
+				5022951C186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
 				E8989FDA16BD24E500732C04 /* EventSystem.cpp in Sources */,
 				CC84B01618211A9000934482 /* Job.cpp in Sources */,
 				E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */,
@@ -5944,6 +5981,7 @@
 				E898A01116BD24E500732C04 /* UIEvent.cpp in Sources */,
 				E898A01316BD24E500732C04 /* UIFadeTransition.cpp in Sources */,
 				E898A01516BD24E500732C04 /* UIFileSystemDialog.cpp in Sources */,
+				50B06920186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */,
 				E898A01716BD24E500732C04 /* UIHierarchy.cpp in Sources */,
 				E8FC12F2186972560095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E898A01916BD24E500732C04 /* UIHierarchyCell.cpp in Sources */,
@@ -6084,6 +6122,7 @@
 				E898A1A816BD265400732C04 /* BaseObject.cpp in Sources */,
 				E898A1A916BD265400732C04 /* BaseObjectChecker.cpp in Sources */,
 				E898A1AA16BD265400732C04 /* Data.cpp in Sources */,
+				50B06921186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */,
 				E8BAD5B1185213F100C98C8D /* IntrospectionDynamic.cpp in Sources */,
 				E898A1AB16BD265400732C04 /* DynamicObjectCache.cpp in Sources */,
 				E898A1AC16BD265400732C04 /* EventDispatcher.cpp in Sources */,
@@ -6198,6 +6237,7 @@
 				E898A22B16BD265400732C04 /* LibPngHelpers.cpp in Sources */,
 				7A16933B180EE618005F1FBC /* KeyedArchiveSwig.cpp in Sources */,
 				E898A22C16BD265400732C04 /* LibPVRHelper.cpp in Sources */,
+				5022951D186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
 				CC84B02318211A9000934482 /* JobQueue.cpp in Sources */,
 				E898A22D16BD265400732C04 /* MaterialCompiler.cpp in Sources */,
 				E898A22E16BD265400732C04 /* MaterialGraph.cpp in Sources */,

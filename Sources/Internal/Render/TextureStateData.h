@@ -40,17 +40,20 @@ namespace DAVA
 		friend class TextureStateDataUniqueHandler;
 	public:
 		
+		uint32 minmaxTextureIndex; //VI: calculated in TextureStateDataUniqueHandler::Assign
 		Texture* textures[MAX_TEXTURE_COUNT];
 		
 	public:
 		
 		TextureStateData()
 		{
+			minmaxTextureIndex = 0;
 			memset(textures, 0, sizeof(textures));
 		}
 
 		TextureStateData(const TextureStateData& src)
 		{
+			minmaxTextureIndex = src.minmaxTextureIndex;
 			memcpy(textures, src.textures, sizeof(textures));
 			
 			RetainAll();
@@ -60,6 +63,8 @@ namespace DAVA
 		{
 			if(this != &src)
 			{
+				minmaxTextureIndex = src.minmaxTextureIndex;
+				
 				ReleaseAll();
 				
 				memcpy(textures, src.textures, sizeof(textures));
@@ -95,6 +100,36 @@ namespace DAVA
 			{
 				SafeRetain(textures[i]);
 			}
+		}
+		
+		void CalculateMinMaxTextureIndex()
+		{
+			uint32 minIndex = 0;
+			
+			for(uint32 i = 0; i < MAX_TEXTURE_COUNT; ++i)
+			{
+				if(textures[i])
+				{
+					minIndex = i;
+					break;
+				}
+			}
+			
+			uint32 maxIndex = minIndex;
+			for(uint32 i = MAX_TEXTURE_COUNT - 1; i > 0; --i)
+			{
+				if(textures[i])
+				{
+					maxIndex = i;
+					break;
+				}
+			}
+			
+			DVASSERT(maxIndex >= minIndex);
+			DVASSERT(minIndex >= 0 && minIndex < MAX_TEXTURE_COUNT);
+			DVASSERT(maxIndex >= 0 && maxIndex < MAX_TEXTURE_COUNT);
+			
+			minmaxTextureIndex = (minIndex | (maxIndex << 8));
 		}
 	};
 };

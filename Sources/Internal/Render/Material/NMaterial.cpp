@@ -43,13 +43,13 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Utils/StringFormat.h"
 #include "Render/Material/NMaterialTemplate.h"
+#include "Render/Highlevel/RenderLayer.h"
 
 namespace DAVA
 {
     
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
-    static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
 	
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 	const FastName NMaterial::TEXTURE_NORMAL("normal");
@@ -92,39 +92,7 @@ namespace DAVA
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
-	
-	void NMaterial::GenericPropertyManager::Init(NMaterialProperty* prop)
-	{
-		prop->type = Shader::UT_INT;
-		prop->size = 0;
-		prop->data = NULL;
-	}
-	
-	void NMaterial::GenericPropertyManager::Release(NMaterialProperty* prop)
-	{
-		if(prop->data)
-		{
-			SafeDeleteArray(prop->data);
-		}
-	}
-	
-	NMaterialProperty* NMaterial::GenericPropertyManager::Clone(NMaterialProperty* prop)
-	{
-		NMaterial::GenericMaterialProperty* cloneProp = new NMaterial::GenericMaterialProperty();
 		
-		cloneProp->size = prop->size;
-		cloneProp->type = prop->type;
-		
-		if(prop->data)
-		{
-			size_t dataSize = Shader::GetUniformTypeSize(prop->type) * prop->size;
-			cloneProp->data = new uint8[dataSize];
-			memcpy(cloneProp->data, prop->data, dataSize);
-		}
-		
-		return cloneProp;
-	}
-	
 ////////////////////////////////////////////////////////////////////////////////
 	
 	NMaterial::NMaterial() :
@@ -206,7 +174,7 @@ namespace DAVA
 			material->OnParentChanged(NULL);
 			
 			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
+			//CleanupUnusedTextures();
 		
 			this->Release();
 		}
@@ -406,7 +374,7 @@ namespace DAVA
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
-				CleanupUnusedTextures();
+				//CleanupUnusedTextures();
 				
 				this->Release();
 			}
@@ -559,7 +527,7 @@ namespace DAVA
 			SafeRelease(bucket->texture);
 			
 			bucket->texture = SafeRetain(texture);
-			bucket->path = texture->relativePathname;
+			bucket->path = (bucket->texture) ? bucket->texture->relativePathname : FilePath();
 			
 			SetTexturesDirty();
 		}
@@ -620,7 +588,7 @@ namespace DAVA
 				//VI: material property type or size chnage should never happen at runtime
 				DVASSERT(false && "Runtime change of material property type!");
 				
-				NMaterialProperty* newProp = new NMaterial::GenericMaterialProperty();
+				NMaterialProperty* newProp = new NMaterialProperty();
 				newProp->size = size;
 				newProp->type = type;
 				newProp->data = new uint8[dataSize];
@@ -637,7 +605,7 @@ namespace DAVA
 		}
 		else
 		{
-			materialProperty = new NMaterial::GenericMaterialProperty();
+			materialProperty = new NMaterialProperty();
 			materialProperty->size = size;
 			materialProperty->type = type;
 			materialProperty->data = new uint8[dataSize];
@@ -731,7 +699,7 @@ namespace DAVA
 		}
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 		
 		this->Release();
 	}
@@ -774,7 +742,7 @@ namespace DAVA
 		LoadActiveTextures();
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 	}
 	
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
@@ -875,7 +843,7 @@ namespace DAVA
 		DVASSERT(techniqueName.IsValid());
 		
 		SafeRelease(baseTechnique);
-		baseTechnique = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(techniqueName);
+		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
 		
@@ -1154,9 +1122,9 @@ namespace DAVA
 
 	void NMaterial::BindMaterialTextures(RenderPassInstance* passInstance)
 	{
-		if(activePassInstance->texturesDirty)
+		if(passInstance->texturesDirty)
 		{
-			PrepareTextureState(activePassInstance);
+			PrepareTextureState(passInstance);
 		}
 	}
 	
@@ -1748,7 +1716,7 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
+		const IntrospectionMaterialPropData *prop = &members->valueByIndex(index).property;
 		
 		// self or parent property
 		if(NULL != prop->data)
@@ -1859,7 +1827,7 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
+		const IntrospectionMaterialPropData *prop = &members->valueByIndex(index).property;
 		int propSize = prop->size;
 		Shader::eUniformType propType = prop->type;
 		
@@ -1988,6 +1956,33 @@ namespace DAVA
 		}
 		
 	}
+    
+    void NMaterial::AssignRenderLayerIDs(RenderLayerManager * manager)
+    {
+        const FastNameSet & layers = baseTechnique->GetLayersSet();
+        FastNameSet::iterator layerEnd = layers.end();
+        renderLayerIDs.reserve(layers.size());
+        renderLayerIDs.clear();
+        uint32 minLayerID = 100000;
+        uint32 maxLayerID = 0;
+        renderLayerIDsBitmask = 0;
+        for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
+        {
+            RenderLayer * layer = manager->GetRenderLayer(layerIt->first);
+            RenderLayerID id = layer->GetRenderLayerID();
+            renderLayerIDs.push_back(id);
+            minLayerID = Min(id, minLayerID);
+            maxLayerID = Max(id, maxLayerID);
+            renderLayerIDsBitmask |= (1 << id);
+        }
+        if (renderLayerIDsBitmask)
+        {
+            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
+            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
+            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
+            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
+        }
+    }
 
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation

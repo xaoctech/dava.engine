@@ -312,8 +312,6 @@ public:
 protected:
 	
 	const static FastName PARAM_CAMERA_POSITION;
-	const static FastName PARAM_FOG_DENSITY;
-	const static FastName PARAM_FOG_COLOR;
 	const static FastName PARAM_TEXTURE0_TILING;
 	const static FastName PARAM_TEXTURE1_TILING;
 	const static FastName PARAM_TEXTURE2_TILING;
