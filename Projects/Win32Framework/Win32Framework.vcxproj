@@ -412,8 +412,10 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayerManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPassManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h" />
@@ -425,6 +427,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusion.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VisibilityArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
@@ -805,8 +808,10 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayerManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPassManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp" />
