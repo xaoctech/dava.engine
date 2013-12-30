@@ -69,10 +69,19 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    void SetDefaultParams() 
+    IlluminationParams() :
+    isUsed(false),
+    castShadow(false),
+    receiveShadow(false),
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
+    {}
+
+    IlluminationParams(const IlluminationParams & params)
     {
-        isUsed = castShadow = receiveShadow = true;
-        lightmapSize = LIGHTMAP_SIZE_DEFAULT;
+        isUsed = params.isUsed;
+        castShadow = params.castShadow;
+        receiveShadow = params.receiveShadow;
+        lightmapSize = params.lightmapSize;
     }
 
     INTROSPECTION(IlluminationParams, 
