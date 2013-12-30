@@ -52,7 +52,7 @@ public:
 		MODE_BLEND_COUNT
 	};
 
-    ShadowVolumeRenderPass(const FastName & name);
+    ShadowVolumeRenderPass(RenderSystem *rs, const FastName & name, RenderPassID id);
     virtual ~ShadowVolumeRenderPass();
     
     void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);

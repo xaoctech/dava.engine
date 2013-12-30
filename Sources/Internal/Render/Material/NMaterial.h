@@ -36,11 +36,13 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Material/NMaterialTemplate.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Render/Material/RenderTechnique.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -54,7 +56,7 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-	
+class RenderLayerManager;
 class NMaterial;
 struct NMaterialTemplate;
 	
@@ -155,6 +157,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
+	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
@@ -253,7 +257,10 @@ public:
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
 	
 	const FastNameSet& GetRenderLayers();
-	
+    void AssignRenderLayerIDs(RenderLayerManager * manager);
+    inline const Vector<RenderLayerID> & GetRenderLayerIDs() const { return renderLayerIDs; };
+	inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
+    
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
 	void SubclassRenderState(RenderStateData* newState);
@@ -267,7 +274,9 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
-	
+
+	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+
 protected:
 	
 	struct TextureBucket
@@ -355,6 +364,8 @@ protected:
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
+    Vector<RenderLayerID>   renderLayerIDs;
+    uint32                  renderLayerIDsBitmask;
 protected:
 	
 	virtual ~NMaterial();

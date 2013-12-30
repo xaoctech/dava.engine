@@ -275,7 +275,15 @@ inline const V & HashMap<K, V>::at(const K &key) const
 template <typename K, typename V>
 V & HashMap<K, V>::operator[](const K &key)
 {
-	return at(key);
+    HashMapItem* item = GetItem(key);
+    if(NULL != item)
+    {
+        return item->second;
+    }else
+    {
+        HashMap<K, V>::iterator it = insert(key, defaultV);
+        return it.current_item->second;
+    }
 }
     
 template <typename K, typename V>
@@ -428,7 +436,7 @@ V& HashMap<K, V>::valueByIndex(size_t index)
 	
 	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
-	if(index >= 0 && index < size())
+	if(index < size())
 	{
 		stateIter = begin();
 		//HashMap<K, V>::iterator itEnd = end();
@@ -450,7 +458,7 @@ const V& HashMap<K, V>::valueByIndex(size_t index) const
 	
 	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
-	if(index >= 0 && index < size())
+	if(index < size())
 	{
 		stateIter = begin();
 		HashMap<K, V>::iterator itEnd = end();
@@ -472,7 +480,7 @@ const K& HashMap<K, V>::keyByIndex(size_t index)
 	
 	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
-	if(index >= 0 && index < size())
+	if(index < size())
 	{
 		stateIter = begin();
 		HashMap<K, V>::iterator itEnd = end();
@@ -494,7 +502,7 @@ const K& HashMap<K, V>::keyByIndex(size_t index) const
 	
 	size_t curIndex = 0;
 	HashMap<K, V>::iterator stateIter;
-	if(index >= 0 && index < size())
+	if(index < size())
 	{
 		stateIter = begin();
 		HashMap<K, V>::iterator itEnd = end();
