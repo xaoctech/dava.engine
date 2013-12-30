@@ -41,6 +41,8 @@ class QMimeData;
 class QStandardItem;
 class SceneEditor2;
 class MaterialItem;
+class Command2;
+
 class MaterialModel: public QStandardItemModel
 {
     Q_OBJECT
@@ -60,7 +62,10 @@ public:
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
 protected:
-	
+	SceneEditor2 *curScene;
+
+protected slots:
+	void OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
 };
 
 Q_DECLARE_METATYPE(DAVA::NMaterial *)
