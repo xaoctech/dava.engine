@@ -56,7 +56,7 @@ bool DDSExtractorTool::InitializeFromCommandLine()
 	
 	if(sourcePath.IsEmpty())
 	{
-		errors.insert(DAVA::String("Incorrect params for source folder"));
+		errors.insert(DAVA::String("Incorrect params for source path"));
 		return false;
 	}
 	
