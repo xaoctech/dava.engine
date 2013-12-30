@@ -27,64 +27,38 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_RENDER_PASS_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_PASS_H__
+#ifndef __DAVAENGINE_VISIBILITY_ARRAY_H__
+#define	__DAVAENGINE_VISIBILITY_ARRAY_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderFastNames.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
+#include "Render/UniqueStateSet.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
-class RenderPassBatchArray;
-class Camera;
-
-class RenderPass
+class RenderObject;
+class VisibilityArray
 {
 public:
-    RenderPass(RenderSystem * renderSystem, const FastName & name, RenderPassID id);
-    virtual ~RenderPass();
-    
-    void InitDefaultLayers();
-    
-    inline RenderPassID GetRenderPassID() const;
-    inline const FastName & GetName() const;
-    
-	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
-	void RemoveRenderLayer(RenderLayer * layer);
-
-    virtual void Draw(Camera * camera, RenderPassBatchArray * renderBatchArray);
-    
-protected:
-    // TODO: add StaticVector container
-    Vector<RenderLayer*> renderLayers;
-    RenderSystem * renderSystem;
-    FastName name;
-    RenderPassID id;
-
-public:
-    
-    INTROSPECTION(RenderPass,
-        COLLECTION(renderLayers, "Render Layers", I_VIEW | I_EDIT)
-        MEMBER(name, "Name", I_VIEW)
-    );
-
-	friend class RenderSystem;
+    inline void Clear();
+	inline void Add(RenderObject * renderObject);
+    Vector<RenderObject*> visibilityArray;
 };
 
-inline RenderPassID RenderPass::GetRenderPassID() const
+inline void VisibilityArray::Clear()
 {
-    return id;
-}
-
-inline const FastName & RenderPass::GetName() const
-{
-    return name;
+    visibilityArray.clear();
 }
     
+inline void VisibilityArray::Add(RenderObject * renderObject)
+{
+    visibilityArray.push_back(renderObject);
+}
+
 
 } // ns
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
+#endif	/* __DAVAENGINE_VISIBILITY_ARRAY_H__ */
 

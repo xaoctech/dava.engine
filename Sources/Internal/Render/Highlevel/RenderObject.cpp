@@ -58,7 +58,6 @@ RenderObject::~RenderObject()
 	uint32 size = renderBatchArray.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		DVASSERT(renderBatchArray[i]->GetOwnerLayer() == 0);
 		renderBatchArray[i]->Release();
 	}
 }
@@ -68,7 +67,9 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 	batch->Retain();
 	batch->SetRenderObject(this);
     renderBatchArray.push_back(batch);
-    batch->AttachToRenderSystem(renderSystem);
+    //batch->AttachToRenderSystem(renderSystem);
+    if (renderSystem)
+        renderSystem->RegisterBatch(batch);
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
 //    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
@@ -79,7 +80,10 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
-{    
+{
+    if (renderSystem)
+        renderSystem->UnregisterBatch(batch);
+    
     batch->SetRenderObject(0);
 	batch->Release();
 
@@ -213,13 +217,6 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
 {
 	renderSystem = _renderSystem;
-	
-	uint32 size = GetRenderBatchCount();
-	for(uint32 i = 0; i < size; ++i)
-	{
-        RenderBatch *batch = GetRenderBatch(i);
-		batch->AttachToRenderSystem(_renderSystem);
-	}
 }
 
 RenderSystem * RenderObject::GetRenderSystem()

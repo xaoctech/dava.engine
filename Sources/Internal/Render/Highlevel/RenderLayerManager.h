@@ -27,64 +27,37 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_RENDER_PASS_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_PASS_H__
+#ifndef __DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__
+#define	__DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderFastNames.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
-class RenderPassBatchArray;
-class Camera;
-
-class RenderPass
+class RenderPass;
+class RenderLayer;
+    
+class RenderLayerManager : public StaticSingleton<RenderLayerManager>
 {
 public:
-    RenderPass(RenderSystem * renderSystem, const FastName & name, RenderPassID id);
-    virtual ~RenderPass();
+    RenderLayerManager();
+    ~RenderLayerManager();
     
-    void InitDefaultLayers();
-    
-    inline RenderPassID GetRenderPassID() const;
-    inline const FastName & GetName() const;
-    
-	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
-	void RemoveRenderLayer(RenderLayer * layer);
+    void InsertLayer(RenderLayer * renderLayer);
+    inline RenderLayer * GetRenderLayer(uint32 index) const { return array[index]; };
+    inline RenderLayer * GetRenderLayer(const FastName & name) const { return map.at(name); };
 
-    virtual void Draw(Camera * camera, RenderPassBatchArray * renderBatchArray);
+private:
+    void Release();
     
-protected:
-    // TODO: add StaticVector container
-    Vector<RenderLayer*> renderLayers;
-    RenderSystem * renderSystem;
-    FastName name;
-    RenderPassID id;
-
-public:
-    
-    INTROSPECTION(RenderPass,
-        COLLECTION(renderLayers, "Render Layers", I_VIEW | I_EDIT)
-        MEMBER(name, "Name", I_VIEW)
-    );
-
-	friend class RenderSystem;
+    Vector<RenderLayer*> array;
+    HashMap<FastName, RenderLayer*> map;
 };
 
-inline RenderPassID RenderPass::GetRenderPassID() const
-{
-    return id;
-}
-
-inline const FastName & RenderPass::GetName() const
-{
-    return name;
-}
     
-
 } // ns
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
+#endif	/* __DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__ */
 
