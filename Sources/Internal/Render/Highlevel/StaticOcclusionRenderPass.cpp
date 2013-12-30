@@ -35,8 +35,8 @@
 namespace DAVA
 {
     
-StaticOcclusionRenderLayer::StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * _occlusion)
-    : RenderLayer(name, sortingFlags)
+StaticOcclusionRenderLayer::StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * _occlusion, RenderLayerID id)
+    : RenderLayer(name, sortingFlags, id)
     , occlusion(_occlusion)
 {
     
@@ -69,8 +69,8 @@ void StaticOcclusionRenderLayer::Draw(const FastName & ownerRenderPass, Camera *
     //Logger::FrameworkDebug(Format("Pass: %s Layer: %s - objects: %d", ownerRenderPass.c_str(), name.c_str(), size));
 }
 
-StaticOcclusionRenderPass::StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * _occlusion)
-    : RenderPass(name)
+StaticOcclusionRenderPass::StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
+    : RenderPass(rs, name, id)
     , occlusion(_occlusion)
 {
 }
@@ -86,7 +86,7 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * ren
     for (uint32 k = 0; k < size; ++k)
     {
         RenderLayer * layer = renderLayers[k];
-        RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetName());
+        RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
         if (renderLayerBatchArray)
         {
             layer->Draw(name, camera, renderLayerBatchArray);

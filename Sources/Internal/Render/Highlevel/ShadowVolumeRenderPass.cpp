@@ -36,8 +36,8 @@
 namespace DAVA
 {
     
-ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
-    :   RenderPass(_name)
+ShadowVolumeRenderPass::ShadowVolumeRenderPass(RenderSystem * rs, const FastName & _name, RenderPassID id)
+    :   RenderPass(rs, _name, id)
 {
     shadowRect = ShadowRect::Create();
 	blendMode = MODE_BLEND_ALPHA;
@@ -83,7 +83,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera, RenderPassBatchArray * render
     
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW))
 	{
-		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(shadowVolumesLayer->GetName());
+		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(shadowVolumesLayer->GetRenderLayerID());
         if (renderLayerBatchArray)
         {
 			//draw shadowvolumes here. Each shadow volume has special shadow material
