@@ -268,6 +268,23 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         {
             break;
         }
+        /*
+        lineEnding = 0;
+        // get next line
+        lineEnd = sourceFile.find("\r\n", lineBegin);
+        if(String::npos != lineEnd)
+        {
+            lineEnding = 2;
+        }else
+        {
+            lineEnd = sourceFile.find("\n", lineBegin);
+            if(String::npos != lineEnd)
+            {
+                lineEnding = 1;
+            }
+        }
+         */
+
         
         // get next line
         lineEnd = sourceFile.find("\n", lineBegin);
