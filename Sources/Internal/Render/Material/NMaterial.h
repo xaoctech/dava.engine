@@ -36,6 +36,7 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Material/NMaterialTemplate.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
@@ -154,6 +155,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
+	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
@@ -266,7 +269,9 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
-	
+
+	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+
 protected:
 	
 	class GenericPropertyManager

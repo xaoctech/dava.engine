@@ -73,6 +73,8 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -507,10 +509,8 @@ namespace DAVA
 	IlluminationParams * NMaterial::GetIlluminationParams()
     {
         if(!illuminationParams)
-        {
             illuminationParams = new IlluminationParams();
-            illuminationParams->SetDefaultParams();
-        }
+        
         return illuminationParams;
     }
 	
