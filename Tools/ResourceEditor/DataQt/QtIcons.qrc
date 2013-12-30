@@ -1,7 +1,8 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/sphere_add.png</file>
+    <file>QtIcons/sphere-clone.png</file>
     <file>QtIcons/3d.png</file>
-    <file>QtIcons/material.png</file>
     <file>QtIcons/sphere.png</file>
     <file>QtIcons/all.png</file>
     <file>QtIcons/star.png</file>

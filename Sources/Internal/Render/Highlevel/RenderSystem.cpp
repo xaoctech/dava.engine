@@ -42,6 +42,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Highlevel/SpatialTree.h"
+#include "Render/ShaderCache.h"
 
 // TODO: Move class to other place
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
@@ -360,6 +361,8 @@ void RenderSystem::Update(float32 timeElapsed)
 	{
         objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
     }
+
+    ShaderCache::Instance()->ClearAllLastBindedCaches();
 }
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
@@ -371,6 +374,7 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 void RenderSystem::Render()
 {
     TIME_PROFILE("RenderSystem::Render");
+
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
@@ -414,4 +418,21 @@ const Color & RenderSystem::GetShadowRectColor()
     
     return shadowRect->GetColor();
 }
+	
+void RenderSystem::SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode)
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	shadowVolume->SetBlendMode(blendMode);
+}
+	
+ShadowPassBlendMode::eBlend RenderSystem::GetShadowBlendMode()
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	return shadowVolume->GetBlendMode();
+}
+
 };

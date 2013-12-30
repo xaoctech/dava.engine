@@ -140,7 +140,7 @@ public:
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
 
-    void SetRenderSystem(RenderSystem * renderSystem);
+    virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform);

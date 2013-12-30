@@ -43,14 +43,16 @@ namespace DAVA
 //Shader * ShadowVolume::shader = 0;
 //int32 ShadowVolume::uniformLightPosition0 = 0;
 
+const FastName ShadowVolume::MATERIAL_NAME = FastName("Shadow_Volume_Material");
+
 ShadowVolume::ShadowVolume()
 :   shadowPolygonGroup(0)
 {
     aabbox = AABBox3(Vector3(), Vector3());
 		
-	NMaterial* parentShadowVolume = NMaterial::CreateMaterial(FastName("Shadow_Volume_Material"),
-																	FastName("~res:/Materials/Legacy/ShadowVolume.material"),
-																	NMaterial::DEFAULT_QUALITY_NAME);
+	NMaterial* parentShadowVolume = NMaterial::CreateMaterial(MATERIAL_NAME,
+															  FastName("~res:/Materials/Legacy/ShadowVolume.material"),
+															  NMaterial::DEFAULT_QUALITY_NAME);
 	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();
 	parentShadowVolume->AddChild(shadowMat);
 	

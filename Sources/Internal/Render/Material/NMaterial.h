@@ -36,6 +36,7 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Material/NMaterialTemplate.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
@@ -68,10 +69,19 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    void SetDefaultParams() 
+    IlluminationParams() :
+    isUsed(false),
+    castShadow(false),
+    receiveShadow(false),
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
+    {}
+
+    IlluminationParams(const IlluminationParams & params)
     {
-        isUsed = castShadow = receiveShadow = true;
-        lightmapSize = LIGHTMAP_SIZE_DEFAULT;
+        isUsed = params.isUsed;
+        castShadow = params.castShadow;
+        receiveShadow = params.receiveShadow;
+        lightmapSize = params.lightmapSize;
     }
 
     INTROSPECTION(IlluminationParams, 
@@ -156,6 +166,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
+	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
@@ -272,7 +284,9 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
-	
+
+	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+
 protected:
 	
 	struct TextureBucket
@@ -406,7 +420,7 @@ protected:
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
-	void OnMaterialPropertyAdded(const FastName& propName, NMaterialProperty* prop);
+	void OnMaterialPropertyAdded(const FastName& propName);
 	void OnMaterialPropertyRemoved(const FastName& propName);
 	
 public:
@@ -447,56 +461,6 @@ public:
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 		
 	protected:
-		
-		class IntrospectionMaterialPropData
-		{
-		public:
-			
-			Shader::eUniformType type;
-			uint8 size;
-			uint8* data;
-			
-			IntrospectionMaterialPropData()
-			{
-				type = Shader::UT_INT;
-				size = 0;
-				data = NULL;
-			}
-			
-			
-			IntrospectionMaterialPropData(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-
-			IntrospectionMaterialPropData(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-						
-			IntrospectionMaterialPropData& operator=(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-			
-			IntrospectionMaterialPropData& operator=(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-		};
-		
 		struct PropData
 		{
 			enum PropSource
@@ -511,9 +475,12 @@ public:
 			{ }
 			
 			int source;
-			IntrospectionMaterialPropData property;
+			Shader::eUniformType type;
+			uint8 size;
+			uint8* data;
 		};
 		
+		bool isColor(const FastName &propName) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	
