@@ -27,64 +27,37 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_RENDER_PASS_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_PASS_H__
+#ifndef __DAVAENGINE_SPEEDTREE_OBJECT_H__
+#define __DAVAENGINE_SPEEDTREE_OBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderFastNames.h"
+#include "Base/BaseObject.h"
+#include "Render/Highlevel/Mesh.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class RenderPassBatchArray;
-class Camera;
 
-class RenderPass
+class SpeedTreeObject: public Mesh
 {
 public:
-    RenderPass(RenderSystem * renderSystem, const FastName & name, RenderPassID id);
-    virtual ~RenderPass();
-    
-    void InitDefaultLayers();
-    
-    inline RenderPassID GetRenderPassID() const;
-    inline const FastName & GetName() const;
-    
-	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
-	void RemoveRenderLayer(RenderLayer * layer);
 
-    virtual void Draw(Camera * camera, RenderPassBatchArray * renderBatchArray);
-    
-protected:
-    // TODO: add StaticVector container
-    Vector<RenderLayer*> renderLayers;
-    RenderSystem * renderSystem;
-    FastName name;
-    RenderPassID id;
+    SpeedTreeObject() {};
+    virtual ~SpeedTreeObject() {};
+
+    virtual void RecalcBoundingBox();
+    virtual RenderObject * Clone(RenderObject *newObject);
+
+private:
+    AABBox3 CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * rb);
 
 public:
-    
-    INTROSPECTION(RenderPass,
-        COLLECTION(renderLayers, "Render Layers", I_VIEW | I_EDIT)
-        MEMBER(name, "Name", I_VIEW)
-    );
 
-	friend class RenderSystem;
+	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
+		NULL
+	);
 };
 
-inline RenderPassID RenderPass::GetRenderPassID() const
-{
-    return id;
-}
 
-inline const FastName & RenderPass::GetName() const
-{
-    return name;
-}
-    
+};
 
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
-
+#endif // __DAVAENGINE_SPEEDTREE_OBJECT_H__

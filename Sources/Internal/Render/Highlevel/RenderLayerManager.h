@@ -26,32 +26,38 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef ___SPEEDTREE_LEAF_BATCH_H__
-#define ___SPEEDTREE_LEAF_BATCH_H__
 
-#include "Render/Highlevel/RenderBatch.h"
+#ifndef __DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__
+#define	__DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
-
-class Texture;
-class Camera;
-class Shader;
-class SpeedTreeLeafBatch : public RenderBatch
+class RenderPass;
+class RenderLayer;
+    
+class RenderLayerManager : public StaticSingleton<RenderLayerManager>
 {
-protected:
-    virtual ~SpeedTreeLeafBatch();
 public:
-    SpeedTreeLeafBatch();
+    RenderLayerManager();
+    ~RenderLayerManager();
+    
+    void InsertLayer(RenderLayer * renderLayer);
+    inline RenderLayer * GetRenderLayer(uint32 index) const { return array[index]; };
+    inline RenderLayer * GetRenderLayer(const FastName & name) const { return map.at(name); };
 
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
-    virtual RenderBatch * Clone(RenderBatch * dstNode = 0);
-
-public:
-    INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);
-
+private:
+    void Release();
+    
+    Vector<RenderLayer*> array;
+    HashMap<FastName, RenderLayer*> map;
 };
 
-}
+    
+} // ns
 
-#endif //___SPEEDTREE_BATCH_H__
+#endif	/* __DAVAENGINE_RENDER_RENDER_LAYER_MANAGER_H__ */
+
