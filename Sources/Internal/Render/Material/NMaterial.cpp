@@ -43,13 +43,13 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Utils/StringFormat.h"
 #include "Render/Material/NMaterialTemplate.h"
+#include "Render/Highlevel/RenderLayer.h"
 
 namespace DAVA
 {
     
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
-    static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
 	
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 	const FastName NMaterial::TEXTURE_NORMAL("normal");
@@ -73,6 +73,8 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -172,7 +174,7 @@ namespace DAVA
 			material->OnParentChanged(NULL);
 			
 			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
+			//CleanupUnusedTextures();
 		
 			this->Release();
 		}
@@ -372,7 +374,7 @@ namespace DAVA
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
-				CleanupUnusedTextures();
+				//CleanupUnusedTextures();
 				
 				this->Release();
 			}
@@ -475,10 +477,8 @@ namespace DAVA
 	IlluminationParams * NMaterial::GetIlluminationParams()
     {
         if(!illuminationParams)
-        {
             illuminationParams = new IlluminationParams();
-            illuminationParams->SetDefaultParams();
-        }
+        
         return illuminationParams;
     }
 	
@@ -699,7 +699,7 @@ namespace DAVA
 		}
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 		
 		this->Release();
 	}
@@ -742,7 +742,7 @@ namespace DAVA
 		LoadActiveTextures();
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 	}
 	
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
@@ -843,7 +843,7 @@ namespace DAVA
 		DVASSERT(techniqueName.IsValid());
 		
 		SafeRelease(baseTechnique);
-		baseTechnique = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(techniqueName);
+		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
 		
@@ -1122,9 +1122,9 @@ namespace DAVA
 
 	void NMaterial::BindMaterialTextures(RenderPassInstance* passInstance)
 	{
-		if(activePassInstance->texturesDirty)
+		if(passInstance->texturesDirty)
 		{
-			PrepareTextureState(activePassInstance);
+			PrepareTextureState(passInstance);
 		}
 	}
 	
@@ -1956,6 +1956,33 @@ namespace DAVA
 		}
 		
 	}
+    
+    void NMaterial::AssignRenderLayerIDs(RenderLayerManager * manager)
+    {
+        const FastNameSet & layers = baseTechnique->GetLayersSet();
+        FastNameSet::iterator layerEnd = layers.end();
+        renderLayerIDs.reserve(layers.size());
+        renderLayerIDs.clear();
+        uint32 minLayerID = 100000;
+        uint32 maxLayerID = 0;
+        renderLayerIDsBitmask = 0;
+        for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
+        {
+            RenderLayer * layer = manager->GetRenderLayer(layerIt->first);
+            RenderLayerID id = layer->GetRenderLayerID();
+            renderLayerIDs.push_back(id);
+            minLayerID = Min(id, minLayerID);
+            maxLayerID = Max(id, maxLayerID);
+            renderLayerIDsBitmask |= (1 << id);
+        }
+        if (renderLayerIDsBitmask)
+        {
+            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
+            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
+            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
+            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
+        }
+    }
 
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation

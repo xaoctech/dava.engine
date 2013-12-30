@@ -147,6 +147,12 @@ Shader * ShaderAsset::Get(const FastNameSet & defines)
     return shader;
 }
 
+void ShaderAsset::ClearAllLastBindedCaches()
+{
+    HashMap<FastNameSet, Shader *>::iterator end = compiledShaders.end();
+    for (HashMap<FastNameSet, Shader *>::iterator it = compiledShaders.begin(); it != end; ++it)
+        it->second->ClearLastBindedCaches();
+}
     
 ShaderCache::ShaderCache()
 {
@@ -163,6 +169,12 @@ ShaderCache::~ShaderCache()
     }
 }
 
+void ShaderCache::ClearAllLastBindedCaches()
+{
+    FastNameMap<ShaderAsset*>::iterator end = shaderAssetMap.end();
+    for (FastNameMap<ShaderAsset*>::iterator it = shaderAssetMap.begin(); it != end; ++it)
+        it->second->ClearAllLastBindedCaches();
+}
     
 ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData)
 {
@@ -268,6 +280,23 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         {
             break;
         }
+        /*
+        lineEnding = 0;
+        // get next line
+        lineEnd = sourceFile.find("\r\n", lineBegin);
+        if(String::npos != lineEnd)
+        {
+            lineEnding = 2;
+        }else
+        {
+            lineEnd = sourceFile.find("\n", lineBegin);
+            if(String::npos != lineEnd)
+            {
+                lineEnding = 1;
+            }
+        }
+         */
+
         
         // get next line
         lineEnd = sourceFile.find("\n", lineBegin);

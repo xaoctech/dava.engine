@@ -425,6 +425,11 @@ namespace DAVA
 			}
 		}
 		
+		if(Material::MATERIAL_SPEED_TREE_LEAF == oldMaterial->type)
+		{
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &(oldMaterial->treeLeafColor * oldMaterial->treeLeafOcclusionMul));
+			instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET, Shader::UT_FLOAT, 1, &(oldMaterial->treeLeafOcclusionOffset));
+		}
 		
 		if(oldMaterialState)
 		{
