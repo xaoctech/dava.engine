@@ -47,6 +47,9 @@ class ParticleLayer3D : public ParticleLayer
 public:
 	ParticleLayer3D(ParticleEmitter* parent);
 	virtual ~ParticleLayer3D();
+
+	static const FastName PARTICLE_MATERIAL_NAME;
+	static const FastName PARTICLE_FRAMEBLEND_MATERIAL_NAME;
 	
 	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 

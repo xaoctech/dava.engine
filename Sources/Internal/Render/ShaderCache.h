@@ -68,6 +68,8 @@ public:
 private:
 	
 	void BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData);
+
+    void ClearAllLastBindedCaches();
     
 protected:
     FastName name;
@@ -95,6 +97,8 @@ public:
     ShaderAsset * Load(const FastName & shader);
     ShaderAsset * Get(const FastName & shader);
     Shader * Get(const FastName & shader, const FastNameSet & definesSet);
+
+    void ClearAllLastBindedCaches();
 
 private:
     ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
