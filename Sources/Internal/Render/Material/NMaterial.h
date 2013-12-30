@@ -513,8 +513,8 @@ public:
     void NMaterial::SetRenderLayers(uint32 bitmask)
     {
         renderLayerIDsBitmask = bitmask;
-        RenderLayerID minLayerID;
-        RenderLayerID maxLayerID;
+        RenderLayerID minLayerID = RENDER_LAYER_ID_BITMASK_MAX_MASK;
+        RenderLayerID maxLayerID = 0;
         for (uint32 k = 0; k < RENDER_LAYER_ID_COUNT; ++k)
         {
             if (bitmask & (1 << k))

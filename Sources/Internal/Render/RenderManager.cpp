@@ -187,6 +187,7 @@ void RenderManager::InitDefaultRenderStates()
 	//VI: do not set up stencil state for default states. It's disabled in them. 
 	
 	RenderStateData defaultStateData = {0};
+	
 	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
 	defaultStateData.cullMode = FACE_BACK;
 	defaultStateData.depthFunc = CMP_NEVER;
@@ -195,6 +196,15 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.fillMode = FILLMODE_SOLID;
 	
 	default2DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	
+	defaultStateData.state = RenderState::DEFAULT_2D_STATE;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	default2DNoBlendRenderStateHandle = AddRenderStateData(&defaultStateData);
 	
 	defaultStateData.state =	RenderStateData::STATE_BLEND |
 								RenderStateData::STATE_COLORMASK_ALL;
@@ -206,7 +216,6 @@ void RenderManager::InitDefaultRenderStates()
 	
 	default2DNoTextureStateHandle = AddRenderStateData(&defaultStateData);
 
-	
 	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
 	defaultStateData.cullMode = FACE_BACK;
 	defaultStateData.depthFunc = CMP_LESS;
@@ -786,6 +795,11 @@ void RenderManager::ProcessStats()
 void RenderManager::SetDefault2DState()
 {
 	currentState.stateHandle = GetDefault2DStateHandle();
+}
+	
+void RenderManager::SetDefault2DNoBlendState()
+{
+	currentState.stateHandle = GetDefault2DNoBlendStateHandle();
 }
 	
 void RenderManager::SetDefault2DNoTextureState()

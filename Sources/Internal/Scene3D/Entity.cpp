@@ -176,7 +176,6 @@ namespace DAVA
 			++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			DVASSERT(it->second);
 			
 			if(it->second)
 			{
