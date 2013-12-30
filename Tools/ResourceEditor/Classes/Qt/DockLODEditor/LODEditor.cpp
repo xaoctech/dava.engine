@@ -244,6 +244,7 @@ void LODEditor::LODDataChanged()
     UpdateWidgetVisibility();
 
     ui->createPlaneLodButton->setEnabled(editedLODData->CanCreatePlaneLOD());
+    ui->lastLodToFrontButton->setEnabled(editedLODData->CanCreatePlaneLOD());
 }
 
 void LODEditor::LODDistanceChangedBySlider(const QVector<int> &changedLayers, bool continuous)
@@ -379,5 +380,6 @@ void LODEditor::CreatePlaneLODClicked()
 
 void LODEditor::CopyLODToLod0Clicked()
 {
-    editedLODData->CopyLastLodToLod0();
+    if(editedLODData->CanCreatePlaneLOD())
+        editedLODData->CopyLastLodToLod0();
 }
