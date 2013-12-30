@@ -140,7 +140,7 @@ namespace DAVA
 			it->second->push_back(component);
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap[componentType];
+			Vector<Component*>* componentsVector = componentsMap.at(componentType);
 			if(NULL == componentsVector)
 			{
 				DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);
@@ -1412,6 +1412,8 @@ namespace DAVA
     
 	void Entity::SetFog_Kostil(float32 density, const Color &color)
 	{
+        //DVASSERT(false && "Should be removed, because fog settings are applied at MaterialSystem");
+        
 		Vector<Material *> materials;
 		GetDataNodes(materials);
 		

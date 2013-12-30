@@ -32,6 +32,11 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Material/NMaterialTemplate.h"
 
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/Landscape.h"
+
 #include "Utils/StringFormat.h"
 #include "Scene3D/Scene.h"
 
@@ -39,13 +44,55 @@ namespace DAVA
 {
     
 MaterialSystem::MaterialSystem(Scene * scene)
-: SceneSystem(scene)
+    : SceneSystem(scene)
+    , fogDensity(0.1f)
+    , fogColor(1.f, 0.f, 1.f, 1.f)
 {
     SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
 }
 
 MaterialSystem::~MaterialSystem()
 {
+}
+    
+
+void MaterialSystem::AddEntity(Entity * entity)
+{
+    RenderObject *ro = GetRenderObject(entity);
+    if(!ro) return;
+
+    // try to retrive fog settings from scene settings
+    if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
+    {
+        Landscape *land = static_cast<Landscape *>(ro);
+        fogDensity = land->GetFogDensity();
+        fogColor = land->GetFogColor();
+    }
+    
+    //set fog at materials if need
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *rb = ro->GetRenderBatch(i);
+        NMaterial *instance = rb->GetMaterial();
+        if(instance)
+        {
+            NMaterial * parent = instance->GetParent();
+            if(parent)
+            {
+                int32 fog = parent->GetFlagValue(NMaterial::FLAG_VERTEXFOG);
+                if((NMaterial::FlagOn == fog) || (NMaterial::FlagOnOverride == fog))
+                {
+                    NMaterialProperty *property = parent->GetMaterialProperty(NMaterial::PARAM_FOG_COLOR);
+                    if(!property)
+                    {
+                        parent->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+                        parent->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void MaterialSystem::BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const
