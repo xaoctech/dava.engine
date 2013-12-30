@@ -33,6 +33,15 @@ public:
 	virtual const DAVA::MetaInfo * MetaInfo() const;
 	// virtual void* CreateLastCommand() const;
 
+	DAVA::InspInfoDynamic* GetDynamicInfo() const 
+	{ return dynamicInfo; }
+
+	int GetIndex() const 
+	{ return index; }
+	
+	void* GetObject() const 
+	{ return object; }
+
 protected:
 	int index;
 	int inspFlags;

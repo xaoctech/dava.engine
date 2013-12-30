@@ -49,12 +49,15 @@ NMaterial* ParticleLayer3D::frameBlendMaterial = NULL;
 	
 Vector<uint16> ParticleLayer3D::indices;
 
+const FastName ParticleLayer3D::PARTICLE_MATERIAL_NAME = FastName("Particle_Material");
+const FastName ParticleLayer3D::PARTICLE_FRAMEBLEND_MATERIAL_NAME = FastName("Particle_Frameblend_Material");
+
 ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	if(NULL == ParticleLayer3D::regularMaterial)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
-		ParticleLayer3D::regularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"),
+		ParticleLayer3D::regularMaterial = NMaterial::CreateMaterial(PARTICLE_MATERIAL_NAME,
 														 FastName("~res:/Materials/Legacy/Particles/Particles.material"),
 														 NMaterial::DEFAULT_QUALITY_NAME);
 	}
@@ -62,7 +65,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	if(NULL == ParticleLayer3D::frameBlendMaterial)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
-		ParticleLayer3D::frameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"),
+		ParticleLayer3D::frameBlendMaterial = NMaterial::CreateMaterial(PARTICLE_FRAMEBLEND_MATERIAL_NAME,
 														 FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"),
 														 NMaterial::DEFAULT_QUALITY_NAME);
 	}
