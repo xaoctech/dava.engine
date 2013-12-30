@@ -51,8 +51,6 @@ namespace DAVA
 {
 
 const FastName Landscape::PARAM_CAMERA_POSITION("cameraPosition");
-const FastName Landscape::PARAM_FOG_DENSITY("fogDensity");
-const FastName Landscape::PARAM_FOG_COLOR("fogColor");
 const FastName Landscape::PARAM_TEXTURE0_TILING("texture0Tiling");
 const FastName Landscape::PARAM_TEXTURE1_TILING("texture1Tiling");
 const FastName Landscape::PARAM_TEXTURE2_TILING("texture2Tiling");
@@ -149,12 +147,12 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	NMaterial* landscapeParent = MaterialSystem::CreateMaterial(FastName("Landscape_Tilemask_Material"),
+	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
 																FastName("~res:/Materials/Legacy/TileMask.material"),
-																MaterialSystem::DEFAULT_QUALITY_NAME);
+																NMaterial::DEFAULT_QUALITY_NAME);
 
 	
-	tileMaskMaterial = 	MaterialSystem::CreateMaterialInstance();
+	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
 	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
@@ -183,20 +181,8 @@ Landscape::~Landscape()
 
     SafeRelease(heightmap);
 	SafeDelete(cursor);
-	
-	DVASSERT(false);
-	//if(tileMaskMaterial)
-	//{
-	//	tileMaskMaterial->SetParent(NULL);
-	//}
-	
-	//if(fullTiledMaterial)
-	//{
-	//	fullTiledMaterial->SetParent(NULL);
-	//}
-	
+		
 	SafeRelease(tileMaskMaterial);
-	//SafeRelease(fullTiledMaterial);
 }
     
 
@@ -296,13 +282,11 @@ void Landscape::SetLods(const Vector4 & lods)
     
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & _box)
 {
-    ReleaseAllRDOQuads();
-    SafeDeleteArray(indices); //TODO: need here or no?
-
 	heightmapPath = heightmapPathname;
+    BuildHeightmap();
+
 	bbox = _box;
 
-    BuildHeightmap();
     BuildLandscape();
 }
 
@@ -346,6 +330,10 @@ bool Landscape::BuildHeightmap()
     
 void Landscape::BuildLandscape()
 {
+    ReleaseAllRDOQuads();
+    SafeDeleteArray(indices);
+
+    
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
     quadTreeHead.data.rdoQuad = -1;
@@ -1156,27 +1144,6 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippi
     
 void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
 {	
-    //if(-1 != prevLodLayer)
-    //{
-    //    UnbindMaterial();
-    //}
-
-    /*if(0 == lodLayer)
-    {
-		if(currentMaterial == tileMaskMaterial) return;
-		
-		currentMaterial = tileMaskMaterial;
-    }
-    else
-    {		
-		if(currentMaterial == fullTiledMaterial) return;
-		
-		currentMaterial = fullTiledMaterial;
-    }
-	
-	currentMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
-	currentMaterial->BindMaterialTechnique("Landscape", camera);*/
-	
 	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	tileMaskMaterial->BindMaterialTechnique(TECHNIQUE_TILEMASK_NAME, camera);
     
@@ -1616,12 +1583,8 @@ Heightmap * Landscape::GetHeightmap()
 void Landscape::SetHeightmap(DAVA::Heightmap *height)
 {
     SafeRelease(heightmap);
-    
-    ReleaseAllRDOQuads();
-    
-    SafeDeleteArray(indices);
-
     heightmap = SafeRetain(height);
+    
     BuildLandscape();
 }
     
@@ -1675,8 +1638,6 @@ Texture * Landscape::CreateLandscapeTexture()
     ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
     ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
 
-	SetupMaterialProperties();
-	
     //Draw landscape to texture
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     
@@ -1809,25 +1770,20 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
 	
 void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
 {
-	DVASSERT(false);
-/*	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global.Fog"));
-	DVASSERT(global);
-	
-	if(isFogEnabled)
+	if(tileMaskMaterial)
 	{
-		global->AddMaterialDefine(FastName("VERTEX_FOG"));
-		
-		global->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-		global->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+		if(IsFogEnabled())
+		{
+			tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
+			
+			tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+			tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+		}
+		else
+		{
+			tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
+		}
 	}
-	else
-	{
-		global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
-	}
-	
-	global->Rebuild();
-	global->Rebind();	
- */
 }
 	
     
@@ -1839,26 +1795,6 @@ void Landscape::SetFog(const bool& fogState)
 		
 		if(renderSystem)
 		{
-		//VI: TODO: Fog should be set in a different way
-			
-			/*NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(FastName("Global"));
-			DVASSERT(global);
-			
-			if(isFogEnabled)
-			{
-				global->AddMaterialDefine(FastName("VERTEX_FOG"));
-				
-				global->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-				global->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
-			}
-			else
-			{
-				global->RemoveMaterialDefine(FastName("VERTEX_FOG"));
-			}
-			
-			global->Rebuild();
-			global->Rebind();	*/
-			
 			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
 																   Message(this, &Landscape::SetFogInternal));
 			JobInstanceWaiter waiter(job);
@@ -1876,8 +1812,7 @@ void Landscape::SetFogDensity(float32 _fogDensity)
 {
     fogDensity = _fogDensity;
 	
-	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-	//fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+	tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
 }
 
 float32 Landscape::GetFogDensity() const
@@ -1889,8 +1824,7 @@ void Landscape::SetFogColor(const Color & _fogColor)
 {
     fogColor = _fogColor;
 	
-	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
-	//fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
 }
 
 const Color & Landscape::GetFogColor() const
@@ -1964,18 +1898,11 @@ void Landscape::SetupMaterialProperties()
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE2]);
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE3]);
 		
-		//tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC3, 1, &fogColor);
-		//tileMaskMaterial->SetPropertyValue(Landscape::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+		tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+		tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
 		
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	}
-	
-	/*if(fullTiledMaterial)
-	{
-		fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
-		fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC3, 1, &fogColor);
-		fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
-	}*/
 }
 	
 void Landscape::SetRenderSystem(RenderSystem * _renderSystem)

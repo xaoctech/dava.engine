@@ -49,33 +49,31 @@ class PolygonGroup;
 class MaterialSystem: public SceneSystem
 {
 public:
-
-	static const FastName DEFAULT_QUALITY_NAME;
-	
-public:
 	
 	MaterialSystem(Scene * scene);
 	virtual ~MaterialSystem();
 		
-	void BuildMaterialList(Vector<NMaterial*>& materialList) const;
-	void BuildMaterialList(const FastName& materialName, Vector<NMaterial*>& materialList) const;
-	void BuildMaterialList(NMaterial::eMaterialType materialType, Vector<NMaterial*>& materialList) const;
+    virtual void AddEntity(Entity * entity);
+    
+	void BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const;
 	
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName);
-	
-	static NMaterial* CreateMaterialInstance();
-		
-	static NMaterial* CreateMaterial(const FastName& materialName,
-									 const FastName& templateName,
-									 const FastName& defaultQuality);
-		
+			
+    inline float32 GetFogDensity() const { return fogDensity; };
+    inline const Color & GetFogColor() const { return fogColor; };
+    
 private:
 	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;
+    
+    float32 fogDensity;
+    Color fogColor;
 };
 
 };

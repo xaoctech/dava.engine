@@ -32,32 +32,38 @@
 #include "MaterialItem.h"
 #include "MaterialModel.h"
 
-MaterialItem::MaterialItem(DAVA::NMaterial * _material, int level)
+MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     : QStandardItem()
     , material(_material)
-	, materialLevel(level)
 {
-	static QIcon qualityMaterialIcon(QString::fromUtf8(":/QtLibraryIcons/lodmaterial.png"));
-	static QIcon userMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
-	static QIcon instanceMaretialIcon(QString::fromUtf8(":/QtIcons/materialeditor.png"));
+	static QIcon materialIcon(QString::fromUtf8(":/QtIcons/3d.png"));
+	static QIcon instanceIcon(QString::fromUtf8(":/QtIcons/sphere.png"));
 
 	DVASSERT(material);
 	
 	setEditable(false);
 	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
+    
+	switch(material->GetMaterialType())
+	{
+		case DAVA::NMaterial::MATERIALTYPE_MATERIAL:
+			setIcon(materialIcon);
+			setDragEnabled(true);
+			setDropEnabled(true);
+			break;
 
-    DVASSERT(false && "Implement for refactored new materials");
-	//VI: TODO: implement for refactored new materials
-	setIcon(qualityMaterialIcon);
-    /*if(material->IsSwitchable())
-    {
-		setIcon(qualityMaterialIcon);
-    }
-    else
-    {
-		setIcon(userMaretialIcon);
-    }*/
+		case DAVA::NMaterial::MATERIALTYPE_INSTANCE:
+			setIcon(instanceIcon);
+			setDragEnabled(true);
+			setDropEnabled(false);
+			break;
+
+		default:
+			setDragEnabled(false);
+			setDropEnabled(false);
+			break;
+	}
 
 	Sync();
 }
@@ -73,11 +79,6 @@ QVariant MaterialItem::data(int role) const
 DAVA::NMaterial * MaterialItem::GetMaterial() const
 {
 	return material;
-}
-
-int MaterialItem::GetLevel() const
-{
-	return materialLevel;
 }
 
 void MaterialItem::Sync()
@@ -133,7 +134,7 @@ void MaterialItem::Sync()
 			// append entity that isn't in child items list
 			if(NULL == item)
 			{
-				appendRow(new MaterialItem(childMaterial, materialLevel + 1));
+				appendRow(new MaterialItem(childMaterial));
 			}
 			else if(childMaterial != itemMaterial)
 			{
@@ -170,7 +171,7 @@ void MaterialItem::Sync()
 				}
 				else
 				{
-					insertRow(row, new MaterialItem(childMaterial, materialLevel + 1));
+					insertRow(row, new MaterialItem(childMaterial));
 				}
 			}
 			else
@@ -183,11 +184,4 @@ void MaterialItem::Sync()
 		materialsSet.insert(childMaterial);
 		row++;
 	}
-
-	DVASSERT(false && "Impelement for new materials");
-	//VI: TODO: implement for new materials
-	//if(material->IsConfigMaterial())
-	//{
-	//	setEnabled(rowCount() > 0);
-	//}
 }

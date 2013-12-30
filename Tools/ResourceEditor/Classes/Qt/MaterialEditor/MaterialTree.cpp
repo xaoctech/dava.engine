@@ -34,10 +34,9 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 { 
 	treeModel = new MaterialModel();
-	treeFilteringModel = new MaterialFilteringModel(treeModel);
 
-	setModel(treeFilteringModel);
-	setSortingEnabled(true);
+	setModel(treeModel);
+	//setSortingEnabled(true);
 }
 
 MaterialTree::~MaterialTree()
@@ -50,33 +49,30 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
 {
-	return treeModel->GetMaterial(treeFilteringModel->mapToSource(index));
+	return treeModel->GetMaterial(index);
 }
 
 void MaterialTree::ShowContextMenu(const QPoint &pos)
-{
-
-
-}
+{ }
 
 void MaterialTree::dragEnterEvent(QDragEnterEvent * event)
 {
 	QTreeView::dragEnterEvent(event);
-	dragTryAccepted(event);
+	//dragTryAccepted(event);
 }
 
 void MaterialTree::dragMoveEvent(QDragMoveEvent * event)
 {
 	QTreeView::dragMoveEvent(event);
-	dragTryAccepted(event);
+	//dragTryAccepted(event);
 }
 
 void MaterialTree::dropEvent(QDropEvent * event)
 {
 	QTreeView::dropEvent(event);
 
-	event->setDropAction(Qt::IgnoreAction);
-	event->accept();
+	//event->setDropAction(Qt::IgnoreAction);
+	//event->accept();
 }
 
 void MaterialTree::dragTryAccepted(QDragMoveEvent *event)
@@ -85,7 +81,7 @@ void MaterialTree::dragTryAccepted(QDragMoveEvent *event)
 	QModelIndex parent;
 
 	GetDropParams(event->pos(), parent, row, col);
-	if(treeModel->dropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, treeFilteringModel->mapToSource(parent)))
+	if(treeModel->dropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, parent))
 	{
 		event->setDropAction(Qt::MoveAction);
 		event->accept();

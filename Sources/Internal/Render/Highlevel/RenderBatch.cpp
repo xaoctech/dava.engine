@@ -71,13 +71,7 @@ RenderBatch::~RenderBatch()
 #endif
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
-	
-	DVASSERT(false);
-	//if(material)
-	//{
-	//	material->SetParent(NULL);
-	//}
-	
+		
 	SafeRelease(material);
 }
     

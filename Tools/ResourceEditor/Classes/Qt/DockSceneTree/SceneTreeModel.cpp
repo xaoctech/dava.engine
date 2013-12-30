@@ -537,9 +537,8 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			DAVA::Entity *targetEntity = SceneTreeItemEntity::GetEntity(parentItem);
 			if(targetEntity)
 			{
-				MaterialAssignSystem::DropTestResult result = MaterialAssignSystem::TestEntity(targetEntity, true);
-				ret = (result.hasEntitiesAvailableToDrop || result.hasEntityUnavailableToDrop);
-			}
+                ret = true;
+    		}
 		}
         break;
 
