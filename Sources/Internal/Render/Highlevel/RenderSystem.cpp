@@ -168,7 +168,7 @@ void RenderSystem::UnregisterBatch(RenderBatch * batch)
     
 void RenderSystem::RegisterMaterial(NMaterial * material)
 {
-    material->AssignRenderLayerIDs(GetRenderLayerManager());
+    //material->AssignRenderLayerIDs(GetRenderLayerManager());
 }
     
 void RenderSystem::UnregisterMaterial(NMaterial * material)

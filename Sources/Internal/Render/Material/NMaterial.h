@@ -253,10 +253,11 @@ public:
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
 	
-	const FastNameSet& GetRenderLayers();
-    void AssignRenderLayerIDs(RenderLayerManager * manager);
-    inline const Vector<RenderLayerID> & GetRenderLayerIDs() const { return renderLayerIDs; };
-	inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
+    //void AssignRenderLayerIDs(RenderLayerManager * manager);
+    
+    inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
+    inline uint32 GetRenderLayers() const;
+    inline void SetRenderLayers(uint32 bitmask);
     
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
@@ -359,7 +360,6 @@ protected:
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
-    Vector<RenderLayerID>   renderLayerIDs;
     uint32                  renderLayerIDsBitmask;
 protected:
 	
@@ -536,6 +536,39 @@ public:
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
 	};
+    
+    
+    inline uint32 NMaterial::GetRenderLayers() const
+    {
+        return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
+    }
+    
+    void NMaterial::SetRenderLayers(uint32 bitmask)
+    {
+        renderLayerIDsBitmask = bitmask;
+        RenderLayerID minLayerID;
+        RenderLayerID maxLayerID;
+        for (uint32 k = 0; k < RENDER_LAYER_ID_COUNT; ++k)
+        {
+            if (bitmask & (1 << k))
+            {
+                RenderLayerID id = k;
+                minLayerID = Min(id, minLayerID);
+                maxLayerID = Max(id, maxLayerID);
+            }
+        }
+        
+        if (renderLayerIDsBitmask)
+        {
+            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
+            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
+            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
+            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
+        }
+    }
+    
+    
+    
 
 };
 
