@@ -100,6 +100,8 @@ public:
         UNIFORM_NORMAL_MATRIX, 
         UNIFORM_COLOR,
         UNIFORM_GLOBAL_TIME,
+        UNIFORM_MODEL_VIEW_TRANSLATE,
+        UNIFORM_MODEL_SCALE,
         UNIFORM_COUNT,
     };
     enum eUpdateFreq
@@ -203,6 +205,8 @@ public:
     bool Recompile(bool silentDelete = false);
 	bool IsReady();
     
+    void ClearLastBindedCaches();
+
     void Bind();
     static void Unbind();
 	static bool IsAutobindUniform(Shader::eUniform uniformId);
@@ -341,6 +345,8 @@ private:
     uint32 lastModelViewMatrixCache;
     uint32 lastMVPMatrixModelViewCache;
     uint32 lastMVPMatrixProjectionCache;
+    uint32 lastModelViewTranslateCache;
+    uint32 lastModelScaleCache;
 };
 
 //

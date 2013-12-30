@@ -140,7 +140,7 @@ namespace DAVA
 			it->second->push_back(component);
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap[componentType];
+			Vector<Component*>* componentsVector = componentsMap.at(componentType);
 			if(NULL == componentsVector)
 			{
 				DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);

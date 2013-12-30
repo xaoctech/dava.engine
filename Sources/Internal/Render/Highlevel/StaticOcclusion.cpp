@@ -62,20 +62,15 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
                                                StaticOcclusionData * _currentData,
                                                RenderHierarchy * _renderHierarchy)
 {
-    staticOcclusionRenderPass = new StaticOcclusionRenderPass(PASS_FORWARD, this);
+    staticOcclusionRenderPass = new StaticOcclusionRenderPass(renderSystem, PASS_FORWARD, this, RENDER_PASS_FORWARD_ID);
     
-    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
 
-    renderPassBatchArray = new RenderPassBatchArray();
-    renderPassBatchArray->InitLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
-    renderPassBatchArray->InitLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
-    renderPassBatchArray->InitLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
-    renderPassBatchArray->InitLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
-    renderPassBatchArray->InitLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
+    renderPassBatchArray = new RenderPassBatchArray(renderSystem);
     
     
     currentData = _currentData;
@@ -270,8 +265,13 @@ uint32 StaticOcclusion::RenderFrame()
                 camera->Set();
                 
                 recordedBatches.clear();
+                
+                visibilityArray.Clear();
+                renderHierarchy->Clip(camera, &visibilityArray);
+
                 renderPassBatchArray->Clear();
-                renderHierarchy->Clip(camera, renderPassBatchArray);
+                renderPassBatchArray->PrepareVisibilityArray(&visibilityArray);
+                
                 staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
                 
                 size_t size = recordedBatches.size();

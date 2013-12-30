@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -43,22 +44,40 @@ class Camera;
 class RenderLayer
 {
 public:
-    RenderLayer(const FastName & name, uint32 sortingFlags);
+    RenderLayer(const FastName & name, uint32 sortingFlags, RenderLayerID id);
     virtual ~RenderLayer();
     
+    inline RenderLayerID GetRenderLayerID() const;
+	inline const FastName & GetName() const;
+	inline uint32 GetFlags() const;
+
     virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
     
-	const FastName & GetName();
-	uint32 GetFlags();
 protected:
     FastName name;
     uint32 flags;
+    RenderLayerID id;
 public:
     INTROSPECTION(RenderLayer,
         MEMBER(name, "Name", I_VIEW )
         //COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
     );
 };
+    
+inline RenderLayerID RenderLayer::GetRenderLayerID() const
+{
+    return id;
+}
+    
+inline const FastName & RenderLayer::GetName() const
+{
+    return name;
+}
+
+inline uint32 RenderLayer::GetFlags() const
+{
+    return flags;
+}
     
 } // ns
 

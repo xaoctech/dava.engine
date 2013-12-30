@@ -76,6 +76,8 @@ namespace DAVA
         lastModelViewMatrixCache = 0;
         lastMVPMatrixModelViewCache = 0;
         lastMVPMatrixProjectionCache = 0;
+        lastModelViewTranslateCache = 0;
+        lastModelScaleCache = 0;
 		
 		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		//    relativeFileName = "";
@@ -104,6 +106,8 @@ namespace DAVA
         FastName("normalMatrix"),
         FastName("flatColor"),
         FastName("globalTime"),
+        FastName("worldTranslate"),
+        FastName("worldScale"),
     };
 	
 	FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
@@ -234,7 +238,17 @@ namespace DAVA
 	 }
 	 return -1;
 	 }*/
-	
+
+    void Shader::ClearLastBindedCaches()
+    {
+        lastProjectionMatrixCache = 0;
+        lastModelViewMatrixCache = 0;
+        lastMVPMatrixModelViewCache = 0;
+        lastMVPMatrixProjectionCache = 0;
+        lastModelViewTranslateCache = 0;
+        lastModelScaleCache = 0;
+    }
+
 	int32 Shader::FindUniformIndexByName(const FastName & name)
 	{
 		for (int32 k = 0; k < activeUniforms; ++k)
@@ -1061,7 +1075,10 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
 		uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
 		uniformId == Shader::UNIFORM_COLOR ||
-		uniformId == Shader::UNIFORM_GLOBAL_TIME);
+		uniformId == Shader::UNIFORM_GLOBAL_TIME ||
+        uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
+        uniformId == Shader::UNIFORM_MODEL_SCALE
+        );
 	}
     
 	void Shader::Bind()
@@ -1109,6 +1126,29 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
 					break;
 				}
+                case UNIFORM_MODEL_VIEW_TRANSLATE:
+                {
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    if (modelViewMatrixCache == 0 || lastModelViewTranslateCache != modelViewMatrixCache)
+                    {
+                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                        SetUniformValueByUniform(currentUniform, modelView.GetTranslationVector());
+                        lastModelViewTranslateCache = modelViewMatrixCache;
+                    }
+                    break;
+                }
+                case UNIFORM_MODEL_SCALE:
+                {
+                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
+                    if (modelViewMatrixCache == 0 || lastModelScaleCache != modelViewMatrixCache)
+                    {
+                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                        //TODO: GetScaleVector() is slow
+                        SetUniformValueByUniform(currentUniform, modelView.GetScaleVector());
+                        lastModelScaleCache = modelViewMatrixCache;
+                    }
+                    break;
+                }
 				case UNIFORM_PROJECTION_MATRIX:
 				{
                     uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
