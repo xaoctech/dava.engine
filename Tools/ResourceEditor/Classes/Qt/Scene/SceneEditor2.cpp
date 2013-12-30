@@ -538,7 +538,7 @@ void SceneEditor2::SetShadowBlendMode(DAVA::ShadowVolumeRenderPass::eBlend blend
 {
 	if(GetRenderSystem())
 	{
-		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
+		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 		shadowPass->SetBlendMode(blend);
 	}
 }
@@ -547,7 +547,7 @@ DAVA::ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
+		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 		return shadowPass->GetBlendMode();
 	}
 

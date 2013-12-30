@@ -87,9 +87,6 @@ protected:
 public:
     RenderBatch();
     
-    FastName GetOwnerLayerName();
-    void SetOwnerLayerName(const FastName & fastname);
-    
     void SetPolygonGroup(PolygonGroup * _polygonGroup);
     inline PolygonGroup * GetPolygonGroup();
     
@@ -98,16 +95,13 @@ public:
     
     void SetMaterial(NMaterial * _material);
     inline NMaterial * GetMaterial();
+    inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmaskFromMaterial; };
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
-    
-    inline void SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _removeIndex);
-    inline uint32 GetRemoveIndex();
-    inline RenderLayer * GetOwnerLayer();
 
     virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
     
@@ -129,18 +123,13 @@ public:
 
 	virtual void UpdateAABBoxFromSource();
 	
-	virtual void AttachToRenderSystem(RenderSystem* rs);
-
     pointer_size layerSortingKey;
 protected:
+    uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     NMaterial * material;                    // Should be replaced to NMaterial
-    // NMaterialInstance * materialInstance; // Should be replaced by NMaterialInstance
-    
-    
 	RenderObject * renderObject;
-    FastName ownerLayerName;
     
     uint32 startIndex;
     uint32 indexCount;
@@ -149,8 +138,6 @@ protected:
     uint32 type;
     uint32 sortingKey;
     uint32 visiblityCriteria;
-    RenderLayer * ownerLayer;
-    uint32 removeIndex;
 
 	AABBox3 aabbox;
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
@@ -177,10 +164,7 @@ public:
         MEMBER(aabbox, "AABBox",  I_SAVE | I_VIEW | I_EDIT )
         MEMBER(material, "Material", I_VIEW | I_EDIT)
                          
-       // PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT)
-
-        //MEMBER(materialInstance, "Material Instance", I_VIEW | I_EDIT)
     );
 };
 
@@ -212,24 +196,6 @@ inline void RenderBatch::SetStartIndex(uint32 _startIndex)
 inline void RenderBatch::SetIndexCount(uint32 _indexCount)
 {
     indexCount = _indexCount;
-}
-    
-    
-    
-inline uint32 RenderBatch::GetRemoveIndex()
-{
-    return removeIndex;
-}
-    
-inline RenderLayer * RenderBatch::GetOwnerLayer()
-{
-    return ownerLayer;
-}
-
-inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _removeIndex)
-{
-    ownerLayer = _ownerLayer;
-    removeIndex = _removeIndex;
 }
     
 inline uint32 RenderBatch::GetSortingKey()

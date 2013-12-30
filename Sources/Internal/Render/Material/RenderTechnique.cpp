@@ -62,13 +62,21 @@ Shader * RenderTechniquePass::RetainShader(const FastNameSet & materialDefines)
     
     
 RenderTechnique::RenderTechnique(const FastName & _name)
-    : name(_name),
-	nameIndexMap(8)
+    :   name(_name)
+    ,   nameIndexMap(8)
 {
 }
     
 RenderTechnique::~RenderTechnique()
 {
+    size_t size = renderTechniqueArray.size();
+    for (size_t rt = 0; rt < size; ++rt)
+    {
+        SafeDelete(renderTechniqueArray[rt]);
+    }
+    
+    renderTechniqueArray.clear();
+    nameIndexMap.clear();
 }
     
 void RenderTechnique::AddRenderTechniquePass(const FastName& passName,
@@ -85,7 +93,6 @@ void RenderTechnique::AddRenderTechniquePass(const FastName& passName,
 
 bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * rootNode, RenderTechnique * targetTechnique)
 {
-    bool result = false;
 /*
     Move to shader level uniforms;
     const YamlNode * uniformsNode = stateNode->Get("Uniforms");
@@ -113,10 +120,9 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
 		{
 			const YamlNode * singleLayerNode = layersNode->Get(k);
 			targetTechnique->layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
-		}
+        }
 	}
     
-    uint32 techniqueCount = 0;
     for (int32 k = 0; k < stateNode->GetCount(); ++k)
     {
         const YamlNode * renderStepNode = stateNode->Get(k);
@@ -168,21 +174,20 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
 													shaderName,
 													definesSet,
 													renderState);
-            techniqueCount++;
+            //techniqueCount++;
         }
     }
-    result = true;
-    return result;
+    return true;
 }
 
     
-RenderTechnique * RenderTechniqueSingleton::RetainRenderTechniqueByName(const FastName & renderTechniquePathInFastName)
+RenderTechnique * RenderTechniqueSingleton::CreateTechniqueByName(const FastName & renderTechniquePathInFastName)
 {
     FilePath renderTechniquePathname(renderTechniquePathInFastName.c_str());
-    FastName renderTechniqueFastName(renderTechniquePathname.GetRelativePathname().c_str());
+    //FastName renderTechniqueFastName(renderTechniquePathname.GetRelativePathname().c_str());
     //Logger::Debug("Get render technique: %s %d", renderTechniquePathname.GetRelativePathname().c_str(), renderTechniqueFastName.Index());
     
-    RenderTechnique * renderTechnique = renderTechniqueMap.at(renderTechniqueFastName);
+    RenderTechnique * renderTechnique = renderTechniqueMap.at(renderTechniquePathInFastName);
     if (!renderTechnique)
     {
 		YamlParser * parser = YamlParser::Create(renderTechniquePathname);
@@ -194,9 +199,9 @@ RenderTechnique * RenderTechniqueSingleton::RetainRenderTechniqueByName(const Fa
         Logger::Debug("Load render technique: %s", renderTechniquePathname.GetRelativePathname().c_str());
 		YamlNode * rootNode = parser->GetRootNode();
         
-        renderTechnique = new RenderTechnique(renderTechniqueFastName);
+        renderTechnique = new RenderTechnique(renderTechniquePathInFastName);
         LoadRenderTechniqueFromYamlNode(rootNode, renderTechnique);
-        renderTechniqueMap.insert(renderTechniqueFastName, renderTechnique);
+        renderTechniqueMap.insert(renderTechniquePathInFastName, renderTechnique);
         
 		if (!rootNode)
 		{
