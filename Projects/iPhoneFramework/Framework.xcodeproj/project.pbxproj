@@ -80,8 +80,6 @@
 		9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011711EF06ABD979FD9B39 /* GamepadManager.h */; };
 		9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */; };
 		9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011D1A54C2070D923E1061 /* GamepadDevice.h */; };
-		A61171451860C24D00E18F8C /* SpeedTreeLeafBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A611713F1860C24D00E18F8C /* SpeedTreeLeafBatch.cpp */; };
-		A61171461860C24D00E18F8C /* SpeedTreeLeafBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = A61171401860C24D00E18F8C /* SpeedTreeLeafBatch.h */; };
 		A61171471860C24D00E18F8C /* StaticOcclusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171411860C24D00E18F8C /* StaticOcclusion.cpp */; };
 		A61171481860C24D00E18F8C /* StaticOcclusion.h in Headers */ = {isa = PBXBuildFile; fileRef = A61171421860C24D00E18F8C /* StaticOcclusion.h */; };
 		A61171491860C24D00E18F8C /* StaticOcclusionRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171431860C24D00E18F8C /* StaticOcclusionRenderPass.cpp */; };
@@ -120,6 +118,8 @@
 		A6AFDEDA187187D3006E43A1 /* RenderPassManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6AFDED5187187D3006E43A1 /* RenderPassManager.cpp */; };
 		A6AFDEDB187187D3006E43A1 /* RenderPassManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A6AFDED6187187D3006E43A1 /* RenderPassManager.h */; };
 		A6AFDEDC187187D3006E43A1 /* VisibilityArray.h in Headers */ = {isa = PBXBuildFile; fileRef = A6AFDED7187187D3006E43A1 /* VisibilityArray.h */; };
+		A6AFDEFC1871C3D1006E43A1 /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6AFDEFA1871C3D1006E43A1 /* SpeedTreeObject.cpp */; };
+		A6AFDEFD1871C3D1006E43A1 /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */; };
 		A6B5D95F185600050011D172 /* IntrospectionDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */; };
 		A6B5D960185600050011D172 /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B5D95E185600050011D172 /* IntrospectionDynamic.h */; };
 		A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */; };
@@ -853,8 +853,6 @@
 		9A011B491A9F000929E1677C /* GamepadDevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadDevice.mm; sourceTree = "<group>"; };
 		9A011D1A54C2070D923E1061 /* GamepadDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadDevice.h; sourceTree = "<group>"; };
 		9A011F9F2BA83F7B090CBCFF /* GamepadManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GamepadManager.mm; sourceTree = "<group>"; };
-		A611713F1860C24D00E18F8C /* SpeedTreeLeafBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeLeafBatch.cpp; sourceTree = "<group>"; };
-		A61171401860C24D00E18F8C /* SpeedTreeLeafBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeLeafBatch.h; sourceTree = "<group>"; };
 		A61171411860C24D00E18F8C /* StaticOcclusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusion.cpp; sourceTree = "<group>"; };
 		A61171421860C24D00E18F8C /* StaticOcclusion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticOcclusion.h; sourceTree = "<group>"; };
 		A61171431860C24D00E18F8C /* StaticOcclusionRenderPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StaticOcclusionRenderPass.cpp; sourceTree = "<group>"; };
@@ -893,6 +891,8 @@
 		A6AFDED5187187D3006E43A1 /* RenderPassManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderPassManager.cpp; sourceTree = "<group>"; };
 		A6AFDED6187187D3006E43A1 /* RenderPassManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderPassManager.h; sourceTree = "<group>"; };
 		A6AFDED7187187D3006E43A1 /* VisibilityArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityArray.h; sourceTree = "<group>"; };
+		A6AFDEFA1871C3D1006E43A1 /* SpeedTreeObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeObject.cpp; sourceTree = "<group>"; };
+		A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
 		A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntrospectionDynamic.cpp; path = ../../Sources/Internal/Base/IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		A6B5D95E185600050011D172 /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntrospectionDynamic.h; path = ../../Sources/Internal/Base/IntrospectionDynamic.h; sourceTree = "<group>"; };
 		A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
@@ -2195,13 +2195,13 @@
 		E8B3C92316B9326D002BD35F /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				A6AFDEFA1871C3D1006E43A1 /* SpeedTreeObject.cpp */,
+				A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */,
 				A6AFDED3187187D3006E43A1 /* RenderLayerManager.cpp */,
 				A6AFDED4187187D3006E43A1 /* RenderLayerManager.h */,
 				A6AFDED5187187D3006E43A1 /* RenderPassManager.cpp */,
 				A6AFDED6187187D3006E43A1 /* RenderPassManager.h */,
 				A6AFDED7187187D3006E43A1 /* VisibilityArray.h */,
-				A611713F1860C24D00E18F8C /* SpeedTreeLeafBatch.cpp */,
-				A61171401860C24D00E18F8C /* SpeedTreeLeafBatch.h */,
 				A61171411860C24D00E18F8C /* StaticOcclusion.cpp */,
 				A61171421860C24D00E18F8C /* StaticOcclusion.h */,
 				A61171431860C24D00E18F8C /* StaticOcclusionRenderPass.cpp */,
@@ -2682,7 +2682,6 @@
 				E8B3CAAE16B9326E002BD35F /* IntrospectionBase.h in Headers */,
 				E8B3CAAF16B9326E002BD35F /* IntrospectionCollection.h in Headers */,
 				E8B3CAB016B9326E002BD35F /* IntrospectionFlags.h in Headers */,
-				A61171461860C24D00E18F8C /* SpeedTreeLeafBatch.h in Headers */,
 				E8B3CAB116B9326E002BD35F /* IntrospectionProperty.h in Headers */,
 				E8B3CAB216B9326E002BD35F /* Mallocator.h in Headers */,
 				E8B3CAB416B9326E002BD35F /* Message.h in Headers */,
@@ -2956,6 +2955,7 @@
 				E8B3CD1116B9326E002BD35F /* UIScreenManager.h in Headers */,
 				E8B3CD1416B9326E002BD35F /* UIScreenManageriPhone.h in Headers */,
 				E8B3CD1616B9326E002BD35F /* UIScreenManageriPhoneImpl.h in Headers */,
+				A6AFDEFD1871C3D1006E43A1 /* SpeedTreeObject.h in Headers */,
 				E8B3CD1B16B9326E002BD35F /* UIScreenTransition.h in Headers */,
 				E8B3CD1D16B9326E002BD35F /* UIScrollBar.h in Headers */,
 				E8B3CD1F16B9326E002BD35F /* UISlider.h in Headers */,
@@ -3408,6 +3408,7 @@
 				E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */,
 				E8FC1307186972C80095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */,
+				A6AFDEFC1871C3D1006E43A1 /* SpeedTreeObject.cpp in Sources */,
 				E8CBDFC716EE10EE00F70C8F /* UTF8UtilsMac.mm in Sources */,
 				E9E7982F16F0B45100745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A49F16F1D80C0061EA5D /* Frustum.cpp in Sources */,
@@ -3434,7 +3435,6 @@
 				A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */,
 				A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */,
-				A61171451860C24D00E18F8C /* SpeedTreeLeafBatch.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
 				4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */,
 				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
