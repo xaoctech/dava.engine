@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2008, binaryzebra
+    Copyright (c) 2008, ;
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,32 @@
 namespace DAVA
 {
     
+HashMap<FastName, RenderLayerID> RenderLayerManager::layerIDmap(16);
+    
+uint32 RenderLayerManager::GetLayerIDMaskBySet(const FastNameSet & layers)
+{
+    uint32 renderLayerIDsBitmask = 0;
+    uint32 minLayerID = 100000;
+    uint32 maxLayerID = 0;
+    renderLayerIDsBitmask = 0;
+    
+    FastNameSet::iterator layerEnd = layers.end();
+    for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
+    {
+        RenderLayerID id = GetLayerIDByName(layerIt->first);
+        minLayerID = Min(id, minLayerID);
+        maxLayerID = Max(id, maxLayerID);
+        renderLayerIDsBitmask |= (1 << id);
+    }
+    return renderLayerIDsBitmask;
+}
+
+    
 void RenderLayerManager::InsertLayer(RenderLayer * renderLayer)
 {
     array[renderLayer->GetRenderLayerID()] = renderLayer;
     map[renderLayer->GetName()] = renderLayer;
+    layerIDmap[renderLayer->GetName()] = renderLayer->GetRenderLayerID();
 }
     
 void RenderLayerManager::Release()
@@ -58,7 +80,6 @@ RenderLayerManager::RenderLayerManager()
                                                       RENDER_LAYER_OPAQUE_ID);
     InsertLayer(renderLayerOpaque);
 
-    
     RenderLayer * renderLayerAfterOpaque = new RenderLayer(LAYER_AFTER_OPAQUE,
                                                            RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL,
                                                            RENDER_LAYER_AFTER_OPAQUE_ID);

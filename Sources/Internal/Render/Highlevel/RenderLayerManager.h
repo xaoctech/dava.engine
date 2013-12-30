@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -49,11 +50,14 @@ public:
     inline RenderLayer * GetRenderLayer(uint32 index) const { return array[index]; };
     inline RenderLayer * GetRenderLayer(const FastName & name) const { return map.at(name); };
 
+    static RenderLayerID GetLayerIDByName(const FastName & fastname) { return layerIDmap[fastname]; };
+    static uint32 GetLayerIDMaskBySet(const FastNameSet & set);
 private:
     void Release();
     
     Vector<RenderLayer*> array;
     HashMap<FastName, RenderLayer*> map;
+    static HashMap<FastName, RenderLayerID> layerIDmap;
 };
 
     

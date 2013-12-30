@@ -704,13 +704,6 @@ namespace DAVA
 		this->Release();
 	}
 	
-	const FastNameSet& NMaterial::GetRenderLayers()
-	{
-		DVASSERT(baseTechnique);
-		
-		return baseTechnique->GetLayersSet();
-	}
-	
 	void NMaterial::OnMaterialTemplateChanged()
 	{
 		UpdateMaterialTemplate();
@@ -853,6 +846,8 @@ namespace DAVA
 			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
 			UpdateRenderPass(baseTechnique->GetPassName(i), effectiveFlags, pass);
 		}
+        
+        SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 	}
 	
 	void NMaterial::UpdateRenderPass(const FastName& passName,
@@ -1954,35 +1949,7 @@ namespace DAVA
 				DVASSERT(false);
 				break;
 		}
-		
 	}
-    
-    void NMaterial::AssignRenderLayerIDs(RenderLayerManager * manager)
-    {
-        const FastNameSet & layers = baseTechnique->GetLayersSet();
-        FastNameSet::iterator layerEnd = layers.end();
-        renderLayerIDs.reserve(layers.size());
-        renderLayerIDs.clear();
-        uint32 minLayerID = 100000;
-        uint32 maxLayerID = 0;
-        renderLayerIDsBitmask = 0;
-        for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
-        {
-            RenderLayer * layer = manager->GetRenderLayer(layerIt->first);
-            RenderLayerID id = layer->GetRenderLayerID();
-            renderLayerIDs.push_back(id);
-            minLayerID = Min(id, minLayerID);
-            maxLayerID = Max(id, maxLayerID);
-            renderLayerIDsBitmask |= (1 << id);
-        }
-        if (renderLayerIDsBitmask)
-        {
-            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
-            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
-            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
-            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
-        }
-    }
 
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
