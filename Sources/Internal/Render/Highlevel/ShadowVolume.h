@@ -47,8 +47,10 @@ class ShadowVolume : public RenderBatch
 {
 protected:
 	virtual ~ShadowVolume();
+
 public:
 	ShadowVolume();
+	static const FastName MATERIAL_NAME;
 
     //virtual void Draw(Camera * camera);
 	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
