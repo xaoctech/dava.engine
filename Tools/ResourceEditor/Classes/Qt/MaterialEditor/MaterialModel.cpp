@@ -32,17 +32,22 @@
 #include "MaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
+#include "Scene/SceneSignals.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
+#include "Commands2/MaterialSwitchParentCommand.h"
 
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 
 MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
+	, curScene(NULL)
 { 
 	QStringList headerLabels;
 	headerLabels.append("Materials hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 }
 
 MaterialModel::~MaterialModel()
@@ -54,6 +59,8 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 
 	if(NULL != scene)
 	{
+		curScene = scene;
+
 		QStandardItem *root = invisibleRootItem();
 		DAVA::MaterialSystem *matSys = scene->GetMaterialSystem();
 
@@ -63,8 +70,14 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
         DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
         for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
         {
-            MaterialItem *item = new MaterialItem(*it);
-			root->appendRow(item);
+			DAVA::FastName materialName = (*it)->GetMaterialName();
+			if( materialName != DAVA::ShadowVolume::MATERIAL_NAME &&
+				materialName != DAVA::ParticleLayer3D::PARTICLE_MATERIAL_NAME &&
+				materialName != DAVA::ParticleLayer3D::PARTICLE_FRAMEBLEND_MATERIAL_NAME)
+			{
+				MaterialItem *item = new MaterialItem(*it);
+				root->appendRow(item);
+			}
         }
 	}
 }
@@ -142,23 +155,27 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
 			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
 
+			if(materials.size() > 1)
+			{
+				curScene->BeginBatch("Change materials parent");
+			}
+
+			// change parent material
+			// NOTE: model synchronization will be done in OnCommandExecuted handler
 			for(int i = 0; i < materials.size(); ++i)
 			{
 				MaterialItem *sourceMaterialItem = (MaterialItem *) itemFromIndex(GetIndex(materials[i]));
 				if(NULL != sourceMaterialItem)
 				{
-					// TODO:
-					// this should be done with command
-					// -->
-					materials[i]->GetParent()->RemoveChild(materials[i]);
-					targetMaterial->AddChild(materials[i]);
-					// <--
-
-					((MaterialItem *) sourceMaterialItem->parent())->Sync();
+					curScene->Exec(new MaterialSwitchParentCommand(materials[i], targetMaterial));
 				}
 			}
 
-			targetMaterialItem->Sync();
+			if(materials.size() > 1)
+			{
+				curScene->EndBatch();
+			}
+		
 		}
 	}
 
@@ -197,4 +214,19 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction acti
 	}
 
 	return ret;
+}
+
+void MaterialModel::OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
+{
+	if(curScene == scene && command->GetId() == CMDID_MATERIAL_SWITCH_PARENT)
+	{
+		for(int i = 0; i < rowCount(); ++i)
+		{
+			MaterialItem *item = (MaterialItem *) itemFromIndex(index(i, 0));
+			if(NULL != item)
+			{
+				item->Sync();
+			}
+		}
+	}
 }
