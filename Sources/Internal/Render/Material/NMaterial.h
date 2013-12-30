@@ -461,56 +461,6 @@ public:
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 		
 	protected:
-		
-		class IntrospectionMaterialPropData
-		{
-		public:
-			
-			Shader::eUniformType type;
-			uint8 size;
-			uint8* data;
-			
-			IntrospectionMaterialPropData()
-			{
-				type = Shader::UT_INT;
-				size = 0;
-				data = NULL;
-			}
-			
-			
-			IntrospectionMaterialPropData(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-
-			IntrospectionMaterialPropData(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-						
-			IntrospectionMaterialPropData& operator=(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-			
-			IntrospectionMaterialPropData& operator=(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-		};
-		
 		struct PropData
 		{
 			enum PropSource
@@ -525,9 +475,12 @@ public:
 			{ }
 			
 			int source;
-			IntrospectionMaterialPropData property;
+			Shader::eUniformType type;
+			uint8 size;
+			uint8* data;
 		};
 		
+		bool isColor(const FastName &propName) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	

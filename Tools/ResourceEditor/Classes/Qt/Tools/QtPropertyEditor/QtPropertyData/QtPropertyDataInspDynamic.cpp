@@ -54,7 +54,12 @@ int QtPropertyDataInspDynamic::InspFlags() const
 void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
-	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
+	DAVA::VariantType newValue;
+	
+	if(!value.isNull())
+	{
+		newValue = QtPropertyDataDavaVariant::GetVariantValue();
+	}
 
 	// also save value to meta-object
 	if(NULL != dynamicInfo)
