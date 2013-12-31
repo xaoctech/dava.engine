@@ -579,6 +579,10 @@ namespace DAVA
 						  uint32 size,
 						  const void * data)
 	{
+		DVASSERT(data);
+		DVASSERT(size);
+		DVASSERT(keyName.IsValid());
+		
 		size_t dataSize = Shader::GetUniformTypeSize(type) * size;
 		NMaterialProperty * materialProperty = materialProperties.at(keyName);
 		if (materialProperty)
@@ -648,14 +652,14 @@ namespace DAVA
 	
 	void NMaterial::RemoveMaterialProperty(const FastName & keyName)
 	{
-		OnMaterialPropertyRemoved(keyName);
-		
 		NMaterialProperty* prop = materialProperties.at(keyName);
 		if(prop)
 		{
 			materialProperties.erase(keyName);
 			SafeDelete(prop);
 		}
+		
+		OnMaterialPropertyRemoved(keyName);
 	}
 	
 	void NMaterial::SetMaterialName(const String& name)
