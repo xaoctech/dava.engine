@@ -105,7 +105,7 @@ void SpriteObject::SetupRenderBatch()
     batch->SetRenderDataObject(renderDataObject);
 	AddRenderBatch(batch);
 
-	//SafeRelease(material);
+	SafeRelease(material);
 	SafeRelease(renderDataObject);
 	SafeRelease(batch);
 }
@@ -117,9 +117,10 @@ RenderObject * SpriteObject::Clone(RenderObject *newObject)
 	{
 		DVASSERT_MSG(IsPointerToExactClass<SpriteObject>(this), "Can clone only SpriteObject");
 
-		SpriteObject *newObject = new SpriteObject(sprite, frame, sprScale, sprPivot);
-		newObject->spriteType = spriteType;
+		newObject = new SpriteObject(sprite, frame, sprScale, sprPivot);
 	}
+	SpriteObject *o = static_cast<SpriteObject *>(newObject);
+	o->spriteType = spriteType;
 
 	return RenderObject::Clone(newObject);
 }
