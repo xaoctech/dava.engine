@@ -157,7 +157,7 @@ private:
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
     Vector<RenderObject*> markedObjects;
-    List<Light*> movedLights;
+    Vector<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     
     RenderLayerManager renderLayerManager;
