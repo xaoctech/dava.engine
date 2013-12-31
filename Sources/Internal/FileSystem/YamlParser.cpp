@@ -241,6 +241,11 @@ const String & YamlNode::AsString() const
 	return nwStringValue;
 }
 
+FastName YamlNode::AsFastName() const
+{
+    return FastName(nwStringValue);
+}
+    
 bool YamlNode::AsBool() const
 {
 	return ("true" == nwStringValue);

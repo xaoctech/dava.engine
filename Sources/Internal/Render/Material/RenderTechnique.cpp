@@ -119,7 +119,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
 		for (int32 k = 0; k < count; ++k)
 		{
 			const YamlNode * singleLayerNode = layersNode->Get(k);
-			targetTechnique->layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
+			targetTechnique->layersSet.Insert(singleLayerNode->AsFastName());
         }
 	}
     
@@ -133,7 +133,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
             FastName renderPassName;
             if (renderPassNameNode)
             {
-                renderPassName = FastName(renderPassNameNode->AsString());
+                renderPassName = renderPassNameNode->AsFastName();
             }
             
             Logger::FrameworkDebug("- RenderPass: %s", renderPassName.c_str());
@@ -149,7 +149,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
             FastName shaderName;
             if (shaderNode)
             {
-                shaderName = FastName(shaderNode->AsString().c_str());
+                shaderName = shaderNode->AsFastName();
             }
             
             FastNameSet definesSet;
