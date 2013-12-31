@@ -49,7 +49,7 @@ RenderTechniquePass::~RenderTechniquePass()
     SafeDelete(renderState);
 }
 
-Shader * RenderTechniquePass::RetainShader(const FastNameSet & materialDefines)
+Shader * RenderTechniquePass::CompileShader(const FastNameSet & materialDefines)
 {
     FastNameSet combinedDefines = materialDefines;
     if(uniqueDefines.size() > 0)

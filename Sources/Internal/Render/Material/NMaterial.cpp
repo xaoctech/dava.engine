@@ -861,7 +861,7 @@ namespace DAVA
 		passInstance->renderState.stateHandle = parentRenderState->stateHandle;
 		passInstance->renderState.textureState = InvalidUniqueHandle;
 		passInstance->texturesDirty = false;
-		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
+		passInstance->renderState.shader = pass->CompileShader(instanceDefines);
 		passInstance->renderState.scissorRect = parentRenderState->scissorRect;
 		passInstance->renderState.renderer = parentRenderState->renderer;
 		passInstance->renderState.color = parentRenderState->color;
@@ -1382,7 +1382,7 @@ namespace DAVA
 				RenderPassInstance* pass = it->second;
 				RenderTechniquePass* techniquePass = baseTechnique->GetPassByName(it->first);
 				
-				pass->renderState.shader = techniquePass->RetainShader(effectiveFlags);
+				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
 		}
