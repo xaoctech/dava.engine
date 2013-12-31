@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
-, curMaterial()
+, curMaterial(NULL)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -185,6 +185,10 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
 					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+
+					// required by shader
+					//if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
+					//{	}
 				}
 
 				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
@@ -218,9 +222,18 @@ void MaterialEditor::OnAddProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 	
-	if(NULL != btn)
+	if(NULL != btn && NULL != curMaterial)
 	{
-		QtPropertyData *data = btn->GetPropertyData();
+		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			//DAVA::InspInfoDynamic* dynamicInfo = data->GetDynamicInfo();
+			//dynamicInfo->
+
+			// reload material properties
+			materialClicked(ui->materialTree->currentIndex());
+		}
 	}
 }
 
@@ -228,15 +241,21 @@ void MaterialEditor::OnRemProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn)
+	if(NULL != btn && NULL != curMaterial)
 	{
-		QtPropertyData *data = btn->GetPropertyData();
+		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+
+			//QString propertyName = data->GetName();
+		}
 	}
 }
 
 void MaterialEditor::OnAddTexture()
 {
-
+	
 }
 
 void MaterialEditor::OnRemTexture()
@@ -246,5 +265,6 @@ void MaterialEditor::OnRemTexture()
 
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 {
+	// reload material properties
 	materialClicked(ui->materialTree->currentIndex());
 }

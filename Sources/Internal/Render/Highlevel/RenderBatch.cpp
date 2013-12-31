@@ -46,9 +46,7 @@ namespace DAVA
 
     
 RenderBatch::RenderBatch()
-    :   ownerLayer(0)
-    ,   removeIndex(-1)
-    ,   sortingKey(8)
+    :   sortingKey(8)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -57,7 +55,6 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
-    ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 	aabbox = AABBox3(Vector3(), Vector3());
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
@@ -96,6 +93,8 @@ void RenderBatch::SetMaterial(NMaterial * _material)
 	NMaterial* oldMat = material;
     material = SafeRetain(_material);
 	SafeRelease(oldMat);
+    
+    renderLayerIDsBitmaskFromMaterial = material->GetRenderLayerIDsBitmask();
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
@@ -180,41 +179,6 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 #endif
 }
     
-    
-FastName RenderBatch::GetOwnerLayerName()
-{
-    if (ownerLayerName == INHERIT_FROM_MATERIAL)
-    {
-        DVASSERT(material != 0);
-        return ownerLayerName;
-    }
-    else
-    {
-        return ownerLayerName;
-    }
-}
-    
-void RenderBatch::SetOwnerLayerName(const FastName & fastname)
-{
-    ownerLayerName = fastname;
-}
-    
-//const FastName & RenderBatch::GetOwnerLayerName()
-//{
-//    static FastName opaqueLayer("OpaqueRenderLayer");
-//    static FastName translucentLayer("TransclucentRenderLayer");
-//    
-//    if (material)
-//    {
-//        if(material->GetOpaque() || material->GetAlphablend())
-//		{
-//			return translucentLayer;
-//		}
-//    }
-//    
-//    return opaqueLayer;
-//}
-
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 {
 	renderObject = _renderObject;
@@ -281,8 +245,6 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->type = type;
 
 	rb->aabbox = aabbox;
-
-	rb->ownerLayerName = ownerLayerName;
 	rb->sortingKey = sortingKey;
 
 	return rb;
@@ -386,8 +348,5 @@ bool RenderBatch::GetVisible() const
     uint32 flags = renderObject->GetFlags();
     return ((flags & visiblityCriteria) == visiblityCriteria);
 }
-    
-void RenderBatch::AttachToRenderSystem(RenderSystem* rs)
-{
-}
+
 };

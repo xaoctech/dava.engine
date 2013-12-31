@@ -33,6 +33,9 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderFastNames.h"
+#include "Render/Highlevel/VisibilityArray.h"
 
 namespace DAVA
 {
@@ -41,16 +44,19 @@ class RenderLayerBatchArray;
 class RenderPassBatchArray
 {
 public:
-    RenderPassBatchArray();
+    RenderPassBatchArray(RenderSystem * renderSystem);
     ~RenderPassBatchArray();
     
     void Clear();
-    inline void AddRenderBatch(const FastName & name, RenderBatch * renderBatch);
-    RenderLayerBatchArray * Get(const FastName & name);
-	void InitLayer(const FastName& layerName, uint32 sortingFlags);
+
+    void PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera);
+    inline void AddRenderBatch(RenderLayerID id, RenderBatch * renderBatch);
+    inline RenderLayerBatchArray * Get(RenderLayerID id) { return layerBatchArrays[id]; };
 
 private:
-    HashMap<FastName, RenderLayerBatchArray*> layerBatchArrayMap;
+    Vector<Matrix4> cameraWorldMatrices;
+    RenderLayerBatchArray* layerBatchArrays[RENDER_LAYER_ID_COUNT];
+    friend class RenderLayerBatchArray;
 };
 
 class RenderLayerBatchArray
@@ -93,16 +99,14 @@ public:
     );
 };
 	
-	inline void RenderPassBatchArray::AddRenderBatch(const FastName & name, RenderBatch * renderBatch)
+	inline void RenderPassBatchArray::AddRenderBatch(RenderLayerID id, RenderBatch * renderBatch)
 	{
-		RenderLayerBatchArray * layerBatchArray = layerBatchArrayMap.at(name);
-		DVASSERT(layerBatchArray);
-		layerBatchArray->AddRenderBatch(renderBatch);
+        //layerBatchArrays[id]->renderBatchArray->push_back(renderBatch);
+		layerBatchArrays[id]->AddRenderBatch(renderBatch);
 	}
 	
 	inline void RenderLayerBatchArray::AddRenderBatch(RenderBatch * batch)
 	{
-		//DVASSERT(batch->GetRemoveIndex() == -1)
 		renderBatchArray.push_back(batch);
 	}
 
