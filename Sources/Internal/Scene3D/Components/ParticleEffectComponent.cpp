@@ -33,6 +33,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 
 namespace DAVA
@@ -84,7 +85,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 
 void ParticleEffectComponent::Start()
 {
-
+	isPaused = false;
 	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
 	currRepeatsCont = 0;
 }
@@ -121,11 +122,12 @@ bool ParticleEffectComponent::IsPaused()
 
 void ParticleEffectComponent::Step(float32 delta)
 {
-	
+	GetEntity()->GetScene()->particleEffectSystem->UpdateEffect(this, delta, delta);
 }
 	
 void ParticleEffectComponent::Restart(bool isDeleteAllParticles)
 {
+	isPaused = false;
 	if (isDeleteAllParticles)
 		ClearCurrentGroups();
 	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
@@ -153,6 +155,8 @@ void ParticleEffectComponent::ClearCurrentGroups()
 			delete current;
 			current = next;
 		}
+		it->layer->Release();
+		it->emitter->Release();		
 	}
 	effectData.groups.clear();
 }
@@ -322,25 +326,25 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 		ParticleEmitter *emitter = new ParticleEmitter();
 		emitter->position = child->GetLocalTransform().GetTranslationVector();
 		if (!emitterProxy->emitterFilename.empty())
-		{
-			float32 emitterLifeTime;
-			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename, &emitterLifeTime);
-			if (effectDuration<emitterLifeTime)
-				effectDuration = emitterLifeTime;
+		{			
+			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename);
+			if (effectDuration<emitter->lifeTime)
+				effectDuration = emitter->lifeTime;
 		}
+		emitter->name = child->GetName();
 		emitters.push_back(emitter);
 		if (!lodDefined)
 		{
 			LodComponent *lodComponent = static_cast<LodComponent *>(child->GetComponent(Component::LOD_COMPONENT));
 			if (lodComponent)
 			{
-				lodComponent->Clone(entity);
+				entity->AddComponent(lodComponent->Clone(entity));
 				lodDefined = true;
 			}
 		}
 	}
 
-	entity->RemoveAllChildren();
+	entity->RemoveAllChildren();	
 }
 
 int32 ParticleEffectComponent::GetEmittersCount()
@@ -356,6 +360,14 @@ ParticleEmitter* ParticleEffectComponent::GetEmitter(int32 id)
 void ParticleEffectComponent::AddEmitter(ParticleEmitter *emitter)
 {
 	emitters.push_back(emitter);
+}
+
+void ParticleEffectComponent::RemoveEmitter(ParticleEmitter *emitter)
+{
+	Vector<ParticleEmitter *>::iterator it = std::find(emitters.begin(), emitters.end(), emitter);
+	DVASSERT(it!=emitters.end());
+	emitter->Release();
+	emitters.erase(it);	
 }
 
 }

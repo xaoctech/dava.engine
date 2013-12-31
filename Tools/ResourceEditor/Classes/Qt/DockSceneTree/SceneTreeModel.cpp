@@ -344,14 +344,10 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 		{
 			
 			DAVA::ParticleEmitter* emitter = NULL;
-			if (parentItem->ItemType() == SceneTreeItem::EIT_Entity)
+			
+			if ((parentItem->ItemType() == SceneTreeItem::EIT_Emitter)||(parentItem->ItemType() == SceneTreeItem::EIT_InnerEmitter))
 			{
-				DAVA::Entity *parentEntity = SceneTreeItemEntity::GetEntity(parentItem);
-				emitter = DAVA::GetEmitter(parentEntity);
-			}
-			else if (parentItem->ItemType() == SceneTreeItem::EIT_InnerEmmiter)
-			{
-				emitter = ((SceneTreeItemParticleInnerEmmiter* )parentItem)->emitter;
+				emitter = ((SceneTreeItemParticleEmitter* )parentItem)->emitter;
 			}
 
 			QVector<DAVA::ParticleLayer *> layersV = MimeDataHelper2<DAVA::ParticleLayer>::DecodeMimeData(data);
@@ -359,9 +355,9 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 			{
 				DAVA::ParticleLayer* beforeLayer = NULL;
 
-				if(row >= 0 && row < (int) emitter->GetLayers().size())
+				if(row >= 0 && row < (int) emitter->layers.size())
 				{
-					beforeLayer = emitter->GetLayers()[row];
+					beforeLayer = emitter->layers[row];
 				}
 
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
@@ -502,15 +498,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			// accept layer to be dropped only to entity with particle emitter
 			if(NULL != parentItem) 
 			{
-				if (parentItem->ItemType() == SceneTreeItem::EIT_Entity)
-				{
-					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(parentItem);
-					if(NULL != DAVA::GetEmitter(entity))
-					{
-						ret = true;
-					}
-				}
-				else if (parentItem->ItemType() == SceneTreeItem::EIT_InnerEmmiter)
+				if ((parentItem->ItemType() == SceneTreeItem::EIT_Emitter)||(parentItem->ItemType() == SceneTreeItem::EIT_InnerEmitter))
 				{
 					ret = true;
 				}

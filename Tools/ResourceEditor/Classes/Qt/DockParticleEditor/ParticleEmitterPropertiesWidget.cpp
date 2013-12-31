@@ -88,20 +88,7 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterLifeHBox->addWidget(emitterLife);
 	mainLayout->addLayout(emitterLifeHBox);
 	connect(emitterLife, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-	
-	QVBoxLayout* playbackSpeedHBox = new QVBoxLayout;
-	emitterPlaybackSpeedLabel = new QLabel("playback speed");
-	playbackSpeedHBox->addWidget(emitterPlaybackSpeedLabel);
-
-	emitterPlaybackSpeed = new QSlider(Qt::Horizontal, this);
-	emitterPlaybackSpeed->setTracking(true);
-	emitterPlaybackSpeed->setRange(0, 4); // 25%, 50%, 100%, 200%, 400% - 5 values total.
-	emitterPlaybackSpeed->setTickPosition(QSlider::TicksBelow);
-	emitterPlaybackSpeed->setTickInterval(1);
-	emitterPlaybackSpeed->setSingleStep(1);
-	playbackSpeedHBox->addWidget(emitterPlaybackSpeed);
-	mainLayout->addLayout(playbackSpeedHBox);
-	connect(emitterPlaybackSpeed, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+		
 
 	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
         sp->installEventFilter( this );
@@ -153,10 +140,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 		return;
 
 	float32 life = emitterLife->value();
-	float32 currentLifeTime = emitter->GetLifeTime();
-	bool initEmittersByDef = FLOAT_EQUAL(life,currentLifeTime) ? false : true;
-
-	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(emitterPlaybackSpeed->value());
+	float32 currentLifeTime = emitter->lifeTime;
+	bool initEmittersByDef = FLOAT_EQUAL(life,currentLifeTime) ? false : true;	
 
 	bool isShortEffect = shortEffectCheckBox->isChecked();
 
@@ -168,7 +153,6 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   colorOverLife.GetPropLine(),
 							   size.GetPropLine(),
 							   life,
-							   playbackSpeed,
 							   isShortEffect);
 
 	DVASSERT(activeScene != 0);
@@ -186,9 +170,9 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 
 	blockSignals = true;
 
-	shortEffectCheckBox->setChecked(emitter->IsShortEffect());
+	shortEffectCheckBox->setChecked(emitter->shortEffect);
 
-	float32 emitterLifeTime = emitter->GetLifeTime();
+	float32 emitterLifeTime = emitter->lifeTime;
 
     
 	float minTime		= 0.f;
@@ -196,7 +180,7 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
     
 	float maxTime		= emitterLifeTime;
 	float maxTimeLimit	= emitterLifeTime;
-	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath().GetAbsolutePathname()));
+	emitterYamlPath->setText(QString::fromStdString(emitter->configPath.GetAbsolutePathname()));
 	emitterType->setCurrentIndex(emitter->emitterType);
 
 	if(!needUpdateTimeLimits)
@@ -249,12 +233,7 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 	emitterSize->AddLines(PropLineWrapper<Vector3>(PropertyLineHelper::GetValueLine(emitter->size)).GetProps(), sizeColors, sizeLegends);
 	emitterSize->EnableLock(true);
 	
-	emitterLife->setValue(emitterLifeTime);
-
-	// Normalize Playback Speed to the UISlider range.
-	float32 playbackSpeed = emitter->GetPlaybackSpeed();
-	emitterPlaybackSpeed->setValue(ConvertFromPlaybackSpeedToSliderValue(playbackSpeed));
-	UpdatePlaybackSpeedLabel();
+	emitterLife->setValue(emitterLifeTime);	
 
 	blockSignals = false;
 }
@@ -334,15 +313,4 @@ void ParticleEmitterPropertiesWidget::UpdateTooltip()
 	{
 		emitterYamlPath->setToolTip("");
 	}
-}
-
-void ParticleEmitterPropertiesWidget::UpdatePlaybackSpeedLabel()
-{
-	if (!emitter)
-	{
-		return;
-	}
-
-	float32 playbackSpeedValue = emitter->GetPlaybackSpeed();
-	emitterPlaybackSpeedLabel->setText(QString("playback speed: %1x").arg(playbackSpeedValue));
 }

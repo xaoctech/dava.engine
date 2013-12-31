@@ -44,18 +44,13 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
-{
-	
-
-
-#define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
-#define PARTICLE_EMITTER_MAX_PLAYBACK_SPEED 4.0f
-
+{	
 /*this class is proxy to load old effect hierarchy
   */
 class PartilceEmitterLoadProxy : public RenderObject
 {
 public:
+	PartilceEmitterLoadProxy();
 	String emitterFilename;
 	void Load(KeyedArchive *archive, SerializationContext *serializationContext); 
 };
@@ -83,16 +78,15 @@ public:
 	virtual ~ParticleEmitter();
 	ParticleEmitter * Clone();
 	
-	void LoadFromYaml(const FilePath & pathName, float32 *oLifeTime = NULL); //output life time is required for conversion purpose only
+	void LoadFromYaml(const FilePath & pathName); 
     void SaveToYaml(const FilePath & pathName);    	
 	
-	virtual void AddLayer(ParticleLayer * layer);
+	void AddLayer(ParticleLayer * layer);
+	ParticleLayer* GetNextLayer(ParticleLayer* layer);
 	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);	
 	void RemoveLayer(ParticleLayer * layer);
 	void RemoveLayer(int32 index);	
-	void MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);			
-		    
-	void SetLifeTime(float32 time);        
+	void MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);					    	      
 
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);			
@@ -115,6 +109,10 @@ public:
 	Vector<ParticleLayer*> layers;
 	Vector3 position;			
 	bool shortEffect;	
+	
+	float32 lifeTime;
+
+	String name;
 
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;

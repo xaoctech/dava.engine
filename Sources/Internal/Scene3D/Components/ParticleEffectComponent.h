@@ -134,6 +134,7 @@ public: //mostly editor commands
 	int32 GetEmittersCount();
 	ParticleEmitter* GetEmitter(int32 id);
 	void AddEmitter(ParticleEmitter *emitter);
+	void RemoveEmitter(ParticleEmitter *emitter);
 
 
 public:

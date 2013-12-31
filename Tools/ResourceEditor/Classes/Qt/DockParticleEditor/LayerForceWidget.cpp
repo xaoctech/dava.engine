@@ -66,14 +66,13 @@ void LayerForceWidget::InitWidget(QWidget* widget)
 			SLOT(OnValueChanged()));
 }
 
-void LayerForceWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
+void LayerForceWidget::Init(SceneEditor2* scene, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
 {	
 	if (!layer || layer->forces.size() <= forceIndex)
 	{
 		return;
 	}
-	
-	this->emitter = emitter;
+		
 	this->layer = layer;
 	this->forceIndex = forceIndex;
 	SetActiveScene(scene);
@@ -143,11 +142,11 @@ void LayerForceWidget::OnValueChanged()
 	DVASSERT(activeScene);
 	activeScene->Exec(updateForceCmd);
 
-	Init(activeScene, emitter, layer, forceIndex, false);
+	Init(activeScene, layer, forceIndex, false);
 	emit ValueChanged();
 }
 
 void LayerForceWidget::Update()
 {
-	Init(activeScene, emitter, layer, forceIndex, false);
+	Init(activeScene, layer, forceIndex, false);
 }

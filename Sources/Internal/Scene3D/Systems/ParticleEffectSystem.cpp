@@ -98,8 +98,8 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleE
 		if ((!isLodActive)&&emitter->shortEffect) //layer could never become active
 			continue; 
 		ParticleGroup group;
-		group.emitter = emitter;
-		group.layer = layer;
+		group.emitter = SafeRetain(emitter);
+		group.layer = SafeRetain(layer);
 		group.visibleLod = isLodActive;
 		group.positionSource = positionSource;
 		//prepare 1st loop info - so even not looped layers will follow common logic
@@ -362,7 +362,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 
 		/*finally*/
 		if (group.finishingGroup&&(!group.head))
+		{
+			group.emitter->Release();
+			group.layer->Release();
 			it = effect->effectData.groups.erase(it);
+		}
 		else
 			++it;
 	}
