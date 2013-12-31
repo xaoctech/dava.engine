@@ -29,44 +29,80 @@
 =====================================================================================*/
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Debug/Stats.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderLayerManager.h"
 
 namespace DAVA
 {
     
-RenderPassBatchArray::RenderPassBatchArray()
-    :	layerBatchArrayMap(8)
+RenderPassBatchArray::RenderPassBatchArray(RenderSystem * rs)
 {
+    const RenderLayerManager * manager = rs->GetRenderLayerManager();
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
+    {
+        RenderLayerBatchArray* batchArray = new RenderLayerBatchArray( manager->GetRenderLayer(id)->GetFlags() );
+        layerBatchArrays[id] = batchArray;
+    }
 }
     
 RenderPassBatchArray::~RenderPassBatchArray()
 {
-    HashMap<FastName, RenderLayerBatchArray*>::iterator end = layerBatchArrayMap.end();
-    for (HashMap<FastName, RenderLayerBatchArray*>::iterator it = layerBatchArrayMap.begin(); it != end; ++it)
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
     {
-        RenderLayerBatchArray * layer = it->second;
-        SafeDelete(layer);
+        SafeDelete(layerBatchArrays[id]);
+    }
+}
+    
+void RenderPassBatchArray::Clear()
+{
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
+    {
+        layerBatchArrays[id]->Clear();
     }
 }
 
-void RenderPassBatchArray::Clear()
+void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera)
 {
-    HashMap<FastName, RenderLayerBatchArray*>::iterator end = layerBatchArrayMap.end();
-    for (HashMap<FastName, RenderLayerBatchArray*>::iterator it = layerBatchArrayMap.begin(); it != end; ++it)
+    cameraWorldMatrices.clear();
+    uint32 size = (uint32)visibilityArray->visibilityArray.size();
+    for (uint32 ro = 0; ro < size; ++ro)
     {
-        it->second->Clear();
-    }    
+        RenderObject * renderObject = visibilityArray->visibilityArray[ro];
+		renderObject->PrepareToRender(camera);
+        //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
+        
+        uint32 batchCount = renderObject->GetRenderBatchCount();
+		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
+		{
+			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+            //batch->SetCameraWorldTransformPtr(&cameraWorldMatrices[ro]);
+
+			NMaterial * material = batch->GetMaterial();
+			if (material)
+			{
+//                const Vector<RenderLayerID> & layers = material->GetRenderLayerIDs();
+//                uint32 size = (uint32)layers.size();
+//                for (uint32 k = 0; k < size; ++k)
+//                {
+//                    AddRenderBatch(layers[k], batch);
+
+//                uint32 checkCount = 0;
+                uint32 renderLayerBitmask = material->GetRenderLayerIDsBitmask();
+                for (uint32 layer = (renderLayerBitmask >> RENDER_LAYER_ID_BITMASK_MIN_POS) & RENDER_LAYER_ID_BITMASK_MIN_MASK,
+                     max = (renderLayerBitmask >> RENDER_LAYER_ID_BITMASK_MAX_POS) & RENDER_LAYER_ID_BITMASK_MAX_MASK; layer <= max; ++layer)
+                {
+                    if (renderLayerBitmask & (1 << layer))
+                    {
+                        AddRenderBatch(layer, batch);
+//                        checkCount++;
+                    }
+                }
+//                DVASSERT(checkCount == size);
+			}
+		}
+    }
 }
     
-RenderLayerBatchArray * RenderPassBatchArray::Get(const FastName & name)
-{
-    return layerBatchArrayMap.at(name);
-}
-
-void RenderPassBatchArray::InitLayer(const FastName& layerName, uint32 sortingFlags)
-{
-	RenderLayerBatchArray* batchArray = new RenderLayerBatchArray(sortingFlags);
-	layerBatchArrayMap.insert(layerName, batchArray);
-}
     
 RenderLayerBatchArray::RenderLayerBatchArray(uint32 sortingFlags)
     : flags(sortingFlags)

@@ -445,7 +445,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 
 			currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 			if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-				AddToRender(currNode.objects[i], currCamera);
+				visibilityArray->Add(currNode.objects[i]);
 		}
 	}
 	else
@@ -459,7 +459,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 				{
 					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
 					if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-						AddToRender(currNode.objects[i], currCamera);
+						visibilityArray->Add(currNode.objects[i]);
 				}
 			}				
 		}
@@ -476,18 +476,18 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 	}		
 }
 
-void QuadTree::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+void QuadTree::Clip(Camera * camera, VisibilityArray * _visibilityArray)
 {
 	DVASSERT(worldInitialized);
 	currCamera = camera;
 	currFrustum = camera->GetFrustum();	
-	currRenderPassBatchArray = renderPassBatchArray;
+	visibilityArray = _visibilityArray;
 	ProcessNodeClipping(0, 0x3f); 
 
 	
 }
     
-void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray)
+void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, VisibilityArray * visibilityArray)
 {
     QuadTreeNode& currNode = nodes[nodeId];
     int32 objectsSize = currNode.objects.size();
@@ -500,7 +500,7 @@ void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bb
         RenderObject * renderObject = currNode.objects[i];
         if (bbox.IntersectsWithBox(renderObject->GetWorldBoundingBox()))
         {
-            renderObjectArray.push_back(renderObject);
+            visibilityArray->Add(renderObject);
         }
     }
 //	}else
@@ -515,13 +515,13 @@ void QuadTree::GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bb
 		uint16 childNodeId = currNode.children[i];
 		if (childNodeId != INVALID_TREE_NODE_INDEX)
 		{
-			GetObjects(childNodeId, clippingFlags, bbox, renderObjectArray);
+			GetObjects(childNodeId, clippingFlags, bbox, visibilityArray);
 		}
 	}
 }
 
     
-void QuadTree::GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray)
+void QuadTree::GetAllObjectsInBBox(const AABBox3 & bbox, VisibilityArray * visibilityArray)
 {
     
 }

@@ -61,7 +61,7 @@ class QuadTree : public RenderHierarchy
 	
 	
 	void ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags);	
-    void GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray);
+    void GetObjects(uint16 nodeId, uint8 clippingFlags, const AABBox3 & bbox, VisibilityArray * visibilityArray);
     
     
 	uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
@@ -89,8 +89,8 @@ public:
 	virtual void AddRenderObject(RenderObject * renderObject);
 	virtual void RemoveRenderObject(RenderObject * renderObject);
 	virtual void ObjectUpdated(RenderObject * renderObject);
-	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
-    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray);
+	virtual void Clip(Camera * camera, VisibilityArray * visibilityArray);
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, VisibilityArray * visibilityArray);
 
 	virtual void Initialize();
 

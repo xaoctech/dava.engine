@@ -235,6 +235,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
+#include "Render/Highlevel/SpeedTreeObject.h"
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"

@@ -36,6 +36,7 @@
 #include "Render/UniqueStateSet.h"
 //#include "Render/Highlevel/LayerSetUniqueHandler.h"
 #include "Base/BaseMath.h"
+#include "Render/Highlevel/VisibilityArray.h"
 
 namespace DAVA
 {
@@ -51,17 +52,17 @@ public:
     virtual void AddRenderObject(RenderObject * renderObject) = 0;
     virtual void RemoveRenderObject(RenderObject * renderObject) = 0;
 	virtual void ObjectUpdated(RenderObject * renderObject) = 0;
-    virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray) = 0;
+    virtual void Clip(Camera * camera, VisibilityArray * visibilityArray) = 0;
     
-    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & renderObjectArray) = 0;
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, VisibilityArray * visibilityArray) = 0;
 	
 	virtual void Initialize(){};
 	virtual void Update(){};
-	virtual void DebugDraw(const Matrix4& cameraMatrix){};
+	virtual void DebugDraw(const Matrix4 & cameraMatrix){};
 
 protected:
-	void AddToRender(RenderObject * renderObject, Camera *camera);
-	RenderPassBatchArray * currRenderPassBatchArray;
+	VisibilityArray * visibilityArray;
+
 };
 
 class LinearRenderHierarchy : public RenderHierarchy
@@ -69,8 +70,8 @@ class LinearRenderHierarchy : public RenderHierarchy
 	virtual void AddRenderObject(RenderObject * renderObject);
 	virtual void RemoveRenderObject(RenderObject * renderObject);
 	virtual void ObjectUpdated(RenderObject * renderObject);
-	virtual void Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
-    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & objects);
+	virtual void Clip(Camera * camera, VisibilityArray * visibilityArray);
+    virtual void GetAllObjectsInBBox(const AABBox3 & bbox, VisibilityArray * visibilityArray);
 
 private:
     Vector<RenderObject*> renderObjectArray;    

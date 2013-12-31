@@ -34,27 +34,7 @@
 
 namespace DAVA
 {
-		
-	void RenderHierarchy::AddToRender(RenderObject * renderObject, Camera *camera)
-	{
-		renderObject->PrepareToRender(camera);
-		uint32 batchCount = renderObject->GetRenderBatchCount();
-		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
-		{
-			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
-			NMaterial * material = batch->GetMaterial();
-			if (material)
-			{
-				const FastNameSet & layers = material->GetRenderLayers();
-				FastNameSet::iterator layerEnd = layers.end();
-				for (FastNameSet::iterator layerIt = layers.begin(); layerIt != layerEnd; ++layerIt)
-				{
-					currRenderPassBatchArray->AddRenderBatch(layerIt->first, batch);
-				}
-			}
-		}
-	}
-    
+
 	void LinearRenderHierarchy::AddRenderObject(RenderObject * object)
 	{		
 		renderObjectArray.push_back(object);
@@ -77,13 +57,12 @@ namespace DAVA
 	
 	void LinearRenderHierarchy::ObjectUpdated(RenderObject * renderObject)
 	{		
-	}		
+	}
     
-	void LinearRenderHierarchy::Clip(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+	void LinearRenderHierarchy::Clip(Camera * camera, VisibilityArray * _visibilityArray)
 	{				
-		currRenderPassBatchArray = renderPassBatchArray;
+		visibilityArray = _visibilityArray;
 		Frustum * frustum = camera->GetFrustum();
-		int32 objectsToClip = 0;
 		uint32 size = renderObjectArray.size();
 		for (uint32 pos = 0; pos < size; ++pos)
 		{
@@ -94,7 +73,7 @@ namespace DAVA
 			if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
 			{
 				node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-				AddToRender(node, camera);
+				visibilityArray->Add(node);
 			}
 			else
 			{
@@ -105,15 +84,15 @@ namespace DAVA
 		       
 	}
     
-    void LinearRenderHierarchy::GetAllObjectsInBBox(const AABBox3 & bbox, Vector<RenderObject*> & objects)
+    void LinearRenderHierarchy::GetAllObjectsInBBox(const AABBox3 & bbox, VisibilityArray * visibilityArray)
     {
         uint32 size = renderObjectArray.size();
 		for (uint32 pos = 0; pos < size; ++pos)
 		{
-			RenderObject * node = renderObjectArray[pos];
-            if (bbox.IntersectsWithBox(node->GetWorldBoundingBox()))
+			RenderObject * ro = renderObjectArray[pos];
+            if (bbox.IntersectsWithBox(ro->GetWorldBoundingBox()))
             {
-                objects.push_back(node);
+                visibilityArray->Add(ro);
             }
         }
     }

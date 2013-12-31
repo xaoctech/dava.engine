@@ -34,6 +34,7 @@
 #include "Base/FastName.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/UniqueStateSet.h"
+#include "Render/Highlevel/ShadowBlendMode.h"
 
 namespace DAVA
 {
@@ -44,27 +45,19 @@ class ShadowVolumeRenderPass : public RenderPass
 {
 public:
 
-	enum eBlend
-	{
-		MODE_BLEND_ALPHA = 0,
-		MODE_BLEND_MULTIPLY,
-
-		MODE_BLEND_COUNT
-	};
-
-    ShadowVolumeRenderPass(const FastName & name);
+    ShadowVolumeRenderPass(RenderSystem *rs, const FastName & name, RenderPassID id);
     virtual ~ShadowVolumeRenderPass();
     
     void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
     
     ShadowRect * GetShadowRect() const;
 
-	void SetBlendMode(eBlend blendMode);
-	eBlend GetBlendMode() const;
+	void SetBlendMode(ShadowPassBlendMode::eBlend blendMode);
+	ShadowPassBlendMode::eBlend GetBlendMode() const;
     
 private:
     ShadowRect * shadowRect;
-	eBlend blendMode;
+	ShadowPassBlendMode::eBlend blendMode;
 	
 	UniqueHandle blendAlphaState;
 	UniqueHandle blendMultiplyState;

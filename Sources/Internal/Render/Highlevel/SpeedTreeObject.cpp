@@ -27,73 +27,74 @@
 =====================================================================================*/
 
 
-#include "Render/Highlevel/RenderPass.h"
-#include "Render/Highlevel/RenderFastNames.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderBatchArray.h"
-#include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/SpeedTreeObject.h"
+#include "Utils/Utils.h"
 
-namespace DAVA
+namespace DAVA 
 {
-    
-RenderPass::RenderPass(RenderSystem * _renderSystem, const FastName & _name, RenderPassID _id)
-    :   renderSystem(_renderSystem)
-    ,   name(_name)
-    ,   id(_id)
-{
-    renderLayers.reserve(RENDER_LAYER_ID_COUNT);
-}
 
-RenderPass::~RenderPass()
+void SpeedTreeObject::RecalcBoundingBox()
 {
-    
-}
-    
-void RenderPass::AddRenderLayer(RenderLayer * layer, const FastName & afterLayer)
-{
-	if(LAST_LAYER != afterLayer)
-	{
-		uint32 size = renderLayers.size();
-		for(uint32 i = 0; i < size; ++i)
-		{
-			const FastName & name = renderLayers[i]->GetName();
-			if(afterLayer == name)
-			{
-				renderLayers.insert(renderLayers.begin() +i+1, layer);
-				return;
-			}
-		}
-		DVASSERT(0 && "RenderPass::AddRenderLayer afterLayer not found");
-	}
-	else
-	{
-		renderLayers.push_back(layer);
-	}
-}
-    
-void RenderPass::RemoveRenderLayer(RenderLayer * layer)
-{
-	Vector<RenderLayer*>::iterator it = std::find(renderLayers.begin(), renderLayers.end(), layer);
-	DVASSERT(it != renderLayers.end());
+    bbox = AABBox3();
 
-	renderLayers.erase(it);
-}
-
-void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
-{
-    // Set Render Target
-    
-    // Draw all layers with their materials
-    uint32 size = (uint32)renderLayers.size();
+    uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        RenderLayer * layer = renderLayers[k];
-        RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
-        if (renderLayerBatchArray)
+        RenderBatch * rb = renderBatchArray[k];
+        PolygonGroup * pg = rb->GetPolygonGroup();
+        if(pg)
         {
-            layer->Draw(name, camera, renderLayerBatchArray);
+            if((pg->GetFormat() & EVF_TANGENT) > 0) //speedtree leaf batch
+                bbox.AddAABBox(CalcBBoxForSpeedTreeLeafGeometry(pg));
+            else
+                bbox.AddAABBox(rb->GetBoundingBox());
+        }   
+    }
+}
+
+RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
+{
+    if(!newObject)
+    {
+        DVASSERT_MSG(IsPointerToExactClass<SpeedTreeObject>(this), "Can clone only SpeedTreeObject");
+        newObject = new SpeedTreeObject();
+    }
+
+    return Mesh::Clone(newObject);
+}
+
+AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * pg)
+{
+    AABBox3 pgBbox;
+    if(pg)
+    {
+        DVASSERT((pg->GetFormat() & EVF_TANGENT) > 0); //non speedtree leaf batch
+
+        int32 vertexCount = pg->GetVertexCount();
+        for(int32 vi = 0; vi < vertexCount; vi++)
+        {
+            Vector3 pivot;
+            pg->GetTangent(vi, pivot);
+
+            Vector3 pointX, pointY, pointZ;
+            Vector3 offsetX, offsetY, offsetZ;
+
+            pg->GetCoord(vi, pointZ);
+            offsetX = offsetY = offsetZ = pointZ - pivot;
+
+            Swap(offsetX.x, offsetX.z);
+            Swap(offsetX.y, offsetX.z);
+            
+            pointX = pivot + offsetX;
+            pointY = pivot + offsetY;
+
+            pgBbox.AddPoint(pointX);
+            pgBbox.AddPoint(pointY);
+            pgBbox.AddPoint(pointZ);
         }
     }
+
+    return pgBbox;
 }
 
 };

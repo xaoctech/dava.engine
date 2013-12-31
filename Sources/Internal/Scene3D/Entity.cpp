@@ -140,7 +140,7 @@ namespace DAVA
 			it->second->push_back(component);
 #else
 			
-			Vector<Component*>* componentsVector = componentsMap[componentType];
+			Vector<Component*>* componentsVector = componentsMap.at(componentType);
 			if(NULL == componentsVector)
 			{
 				DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);
@@ -176,13 +176,17 @@ namespace DAVA
 			++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			int componentCount = componentsVector->size();
-
-			for(Vector<Component*>::iterator compIt = componentsVector->begin();
-				compIt != componentsVector->end(); ++compIt)
+			
+			if(it->second)
 			{
-				componentCount--;
-				CleanupComponent(*compIt, componentCount);
+				int componentCount = componentsVector->size();
+				
+				for(Vector<Component*>::iterator compIt = componentsVector->begin();
+					compIt != componentsVector->end(); ++compIt)
+				{
+					componentCount--;
+					CleanupComponent(*compIt, componentCount);
+				}
 			}
 
 			SafeDelete(componentsVector);

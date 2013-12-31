@@ -41,6 +41,8 @@ namespace DAVA
 		void Assign(TextureStateData* to, const TextureStateData* from)
 		{
 			*to = *from;
+			
+			to->CalculateMinMaxTextureIndex();
 		}
 		
 		void Release(TextureStateData* data)

@@ -36,8 +36,8 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     : QStandardItem()
     , material(_material)
 {
-	static QIcon materialIcon(QString::fromUtf8(":/QtIcons/3d.png"));
-	static QIcon instanceIcon(QString::fromUtf8(":/QtIcons/sphere.png"));
+	static QIcon materialIcon(QString::fromUtf8(":/QtIcons/sphere.png"));
+	static QIcon instanceIcon(QString::fromUtf8(":/QtIcons/3d.png"));
 
 	DVASSERT(material);
 	

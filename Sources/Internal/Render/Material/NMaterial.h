@@ -36,11 +36,13 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Material/NMaterialTemplate.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Render/Material/RenderTechnique.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -54,7 +56,7 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-	
+class RenderLayerManager;
 class NMaterial;
 struct NMaterialTemplate;
 	
@@ -67,10 +69,19 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    void SetDefaultParams() 
+    IlluminationParams() :
+    isUsed(false),
+    castShadow(false),
+    receiveShadow(false),
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
+    {}
+
+    IlluminationParams(const IlluminationParams & params)
     {
-        isUsed = castShadow = receiveShadow = true;
-        lightmapSize = LIGHTMAP_SIZE_DEFAULT;
+        isUsed = params.isUsed;
+        castShadow = params.castShadow;
+        receiveShadow = params.receiveShadow;
+        lightmapSize = params.lightmapSize;
     }
 
     INTROSPECTION(IlluminationParams, 
@@ -155,6 +166,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
+	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
@@ -252,8 +265,12 @@ public:
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
 	
-	const FastNameSet& GetRenderLayers();
-	
+    //void AssignRenderLayerIDs(RenderLayerManager * manager);
+    
+    inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
+    inline uint32 GetRenderLayers() const;
+    inline void SetRenderLayers(uint32 bitmask);
+    
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
 	void SubclassRenderState(RenderStateData* newState);
@@ -267,7 +284,9 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
-	
+
+	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+
 protected:
 	
 	struct TextureBucket
@@ -355,6 +374,7 @@ protected:
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
+    uint32                  renderLayerIDsBitmask;
 protected:
 	
 	virtual ~NMaterial();
@@ -400,7 +420,7 @@ protected:
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
-	void OnMaterialPropertyAdded(const FastName& propName, NMaterialProperty* prop);
+	void OnMaterialPropertyAdded(const FastName& propName);
 	void OnMaterialPropertyRemoved(const FastName& propName);
 	
 public:
@@ -441,56 +461,6 @@ public:
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 		
 	protected:
-		
-		class IntrospectionMaterialPropData
-		{
-		public:
-			
-			Shader::eUniformType type;
-			uint8 size;
-			uint8* data;
-			
-			IntrospectionMaterialPropData()
-			{
-				type = Shader::UT_INT;
-				size = 0;
-				data = NULL;
-			}
-			
-			
-			IntrospectionMaterialPropData(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-
-			IntrospectionMaterialPropData(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-			}
-						
-			IntrospectionMaterialPropData& operator=(const NMaterialProperty& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-			
-			IntrospectionMaterialPropData& operator=(const IntrospectionMaterialPropData& prop)
-			{
-				type = prop.type;
-				size = prop.size;
-				data = prop.data;
-				
-				return *this;
-			}
-		};
-		
 		struct PropData
 		{
 			enum PropSource
@@ -505,9 +475,12 @@ public:
 			{ }
 			
 			int source;
-			IntrospectionMaterialPropData property;
+			Shader::eUniformType type;
+			uint8 size;
+			uint8* data;
 		};
 		
+		bool isColor(const FastName &propName) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	
@@ -530,6 +503,39 @@ public:
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
 	};
+    
+    
+    inline uint32 NMaterial::GetRenderLayers() const
+    {
+        return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
+    }
+    
+    void NMaterial::SetRenderLayers(uint32 bitmask)
+    {
+        renderLayerIDsBitmask = bitmask;
+        RenderLayerID minLayerID = RENDER_LAYER_ID_BITMASK_MAX_MASK;
+        RenderLayerID maxLayerID = 0;
+        for (uint32 k = 0; k < RENDER_LAYER_ID_COUNT; ++k)
+        {
+            if (bitmask & (1 << k))
+            {
+                RenderLayerID id = k;
+                minLayerID = Min(id, minLayerID);
+                maxLayerID = Max(id, maxLayerID);
+            }
+        }
+        
+        if (renderLayerIDsBitmask)
+        {
+            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
+            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
+            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
+            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
+        }
+    }
+    
+    
+    
 
 };
 
