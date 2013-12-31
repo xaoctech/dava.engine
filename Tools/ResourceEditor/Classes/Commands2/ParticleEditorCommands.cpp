@@ -76,7 +76,6 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
 								float32 life,
-								float32 playbackSpeed,
 								bool isShortEffect)
 {
 	this->emitterType = emitterType;
@@ -85,8 +84,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->radius = radius;
 	this->colorOverLife = colorOverLife;
 	this->size = size;
-	this->life = life;
-	this->playbackSpeed = playbackSpeed;
+	this->life = life;	
 	this->isShortEffect = isShortEffect;
 }
 
@@ -99,8 +97,7 @@ void CommandUpdateEmitter::Redo()
 	PropertyLineHelper::SetValueLine(emitter->emissionVector, emissionVector);
 	PropertyLineHelper::SetValueLine(emitter->radius, radius);
 	PropertyLineHelper::SetValueLine(emitter->colorOverLife, colorOverLife);
-	PropertyLineHelper::SetValueLine(emitter->size, size);
-	emitter->SetLifeTime(life);
+	PropertyLineHelper::SetValueLine(emitter->size, size);	
 	emitter->shortEffect = isShortEffect;
 }
 
@@ -465,47 +462,41 @@ void CommandAddParticleEmitterLayer::Redo()
 	createdLayer->life = new PropertyLineValue<float32>(1.0f);
     createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, selectedEmitter);
 
-	createdLayer->SetLoopEndTime(selectedEmitter->GetLifeTime());	
+	createdLayer->loopEndTime = selectedEmitter->lifeTime;	
     selectedEmitter->AddLayer(createdLayer);	
 }
 
-CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleLayer* layer) :
-    CommandAction(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
+CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
+    CommandAction(CMDID_PARTICLE_EMITTER_LAYER_REMOVE), selectedEmitter(emitter), selectedLayer(layer)
 {
-	this->selectedLayer = layer;
+	
 }
 
 void CommandRemoveParticleEmitterLayer::Redo()
 {
-	if (!selectedLayer)
+	if (selectedEmitter&&selectedLayer)
 	{
-		return;
-	}
-	
-	ParticleEmitter* emitter = selectedLayer->GetEmitter();
-    if (!emitter)
-    {
-        return;
-    }
-
-	bool isStopped = emitter->IsStopped();
-	if (!isStopped)
-	{
-		emitter->Stop();
-	}
-
-	emitter->RemoveLayer(selectedLayer);
-    
-	if (!isStopped)
-	{
-		emitter->Restart();
-	}
+		selectedEmitter->RemoveLayer(selectedLayer);	
+	}			    	
 }
 
-CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer(ParticleLayer* layer) :
-	CommandAction(CMDID_PARTICLE_EMITTER_LAYER_CLONE)
+CommandRemoveParticleEmitter::CommandRemoveParticleEmitter(ParticleEffectComponent *effect, ParticleEmitter* emitter) :
+CommandAction(CMDID_PARTICLE_EFFECT_EMITTER_REMOVE), selectedEffect(effect), selectedEmitter(emitter)
 {
-	this->selectedLayer = layer;
+
+}
+
+void CommandRemoveParticleEmitter::Redo()
+{
+	if (selectedEmitter&&selectedEffect)
+	{
+		selectedEffect->RemoveEmitter(selectedEmitter);
+	}			    	
+}
+
+CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer(ParticleEmitter *emitter, ParticleLayer* layer) :
+	CommandAction(CMDID_PARTICLE_EMITTER_LAYER_CLONE), selectedEmitter(emitter), selectedLayer(layer)
+{	
 }
 
 void CommandCloneParticleEmitterLayer::Redo()
@@ -513,17 +504,15 @@ void CommandCloneParticleEmitterLayer::Redo()
 	if (!selectedLayer)
 	{
 		return;
-	}
-
-	ParticleEmitter* emitter = selectedLayer->GetEmitter();
-    if (!emitter)
+	}	
+    if (!selectedEmitter)
     {
         return;
     }
 
     ParticleLayer* clonedLayer = selectedLayer->Clone();
 	clonedLayer->layerName = selectedLayer->layerName + " Clone";
-    emitter->AddLayer(clonedLayer);
+    selectedEmitter->AddLayer(clonedLayer);
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer) :
@@ -539,28 +528,12 @@ void CommandAddParticleEmitterForce::Redo()
 		return;
 	}
 
-	ParticleEmitter* emitter = selectedLayer->GetEmitter();
-    if (!emitter)
-    {
-        return;
-    }
 	
-	bool isStopped = emitter->IsStopped();
-	if (!isStopped)
-	{
-		emitter->Stop();
-	}
 	
     // Add the new Force to the Layer.
-	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
-												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
+	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32> >(NULL));
 	selectedLayer->AddForce(newForce);
-	newForce->Release();
-
-	if (!isStopped)
-	{
-		emitter->Restart();
-	}
+	newForce->Release();	
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force) :
@@ -575,26 +548,8 @@ void CommandRemoveParticleEmitterForce::Redo()
 	if (!selectedLayer || !selectedForce)
 	{
 		return;
-	}
-	
-	ParticleEmitter* emitter = selectedLayer->GetEmitter();
-    if (!emitter)
-    {
-        return;
-    }
-
-	bool isStopped = emitter->IsStopped();
-	if (!isStopped)
-	{
-		emitter->Stop();
-	}
-	
-	selectedLayer->RemoveForce(selectedForce);
-	
-	if (!isStopped)
-	{
-		emitter->Restart();
-	}
+	}		
+	selectedLayer->RemoveForce(selectedForce);		
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEmitter* emitter, const FilePath& path) :
@@ -609,20 +564,10 @@ void CommandLoadParticleEmitterFromYaml::Redo()
     if(!selectedEmitter)
     {
     	return;
-    }
+    }	
 
-	bool isStopped = selectedEmitter->IsStopped();
-	if (!isStopped)
-	{
-		selectedEmitter->Stop();
-	}
-
-    selectedEmitter->LoadFromYaml(filePath);
-
-	if (!isStopped)
-	{
-		selectedEmitter->Restart();
-	}
+	//TODO: restart effect
+    selectedEmitter->LoadFromYaml(filePath);	
 }
 
 CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path) :

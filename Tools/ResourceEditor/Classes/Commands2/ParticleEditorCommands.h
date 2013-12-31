@@ -86,6 +86,7 @@ public:
 	virtual void Redo();
 
 	ParticleLayer* GetCreatedLayer() const {return createdLayer;};
+	ParticleEmitter *GetParentEmitter() const {return selectedEmitter;}
 
 protected:
 	ParticleEmitter* selectedEmitter;
@@ -96,21 +97,35 @@ protected:
 class CommandRemoveParticleEmitterLayer: public CommandAction
 {
 public:
-	CommandRemoveParticleEmitterLayer(ParticleLayer* layer);
+	CommandRemoveParticleEmitterLayer(ParticleEmitter *emitter, ParticleLayer* layer);
 	virtual void Redo();
 
 protected:
+	ParticleEmitter *selectedEmitter;
 	ParticleLayer* selectedLayer;
+};
+
+class CommandRemoveParticleEmitter: public CommandAction
+{
+public:
+	CommandRemoveParticleEmitter(ParticleEffectComponent *effect, ParticleEmitter* emitter);
+	virtual void Redo();
+
+protected:
+	ParticleEffectComponent* selectedEffect;
+	ParticleEmitter *selectedEmitter;
+	
 };
 
 // Clone a layer inside Particle Emitter.
 class CommandCloneParticleEmitterLayer: public CommandAction
 {
 public:
-	CommandCloneParticleEmitterLayer(ParticleLayer* layer);
+	CommandCloneParticleEmitterLayer(ParticleEmitter *emitter, ParticleLayer* layer);
 	virtual void Redo();
 	
 protected:
+	ParticleEmitter *selectedEmitter;
 	ParticleLayer* selectedLayer;
 };
 
@@ -160,8 +175,7 @@ public:
 			  RefPtr<PropertyLine<float32> > radius,
 			  RefPtr<PropertyLine<Color> > colorOverLife,
 			  RefPtr<PropertyLine<Vector3> > size,
-			  float32 life,
-			  float32 playbackSpeed,
+			  float32 life,			  
 			  bool isShortEffect);
 
 	ParticleEmitter* GetEmitter() const {return emitter;};
@@ -177,8 +191,7 @@ protected:
 	RefPtr<PropertyLine<float32> > radius;
 	RefPtr<PropertyLine<Color> > colorOverLife;
 	RefPtr<PropertyLine<Vector3> > size;
-	float32 life;
-	float32 playbackSpeed;
+	float32 life;	
 	bool isShortEffect;
 };
 

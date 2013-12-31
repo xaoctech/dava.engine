@@ -150,7 +150,8 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 
 		for(size_t i = 0; i < layers.size(); ++i)
 		{
-			sceneEditor->Exec(new ParticleLayerMoveCommand(layers[i], newEmitter, newBefore));
+			//TODO: restore layer drag and drop
+			//sceneEditor->Exec(new ParticleLayerMoveCommand(layers[i], newEmitter, newBefore));
 		}
 
 		if(layers.size() > 1)
@@ -175,7 +176,8 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 
 		for(size_t i = 0; i < layers.size(); ++i)
 		{
-			sceneEditor->Exec(new ParticleLayerRemoveCommand(layers[i]));
+			//TODO: remove all this stuff from StructureSystem
+			//sceneEditor->Exec(new ParticleLayerRemoveCommand(layers[i]));
 		}
 
 		if(layers.size() > 1)

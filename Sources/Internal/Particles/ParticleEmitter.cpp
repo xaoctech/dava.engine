@@ -41,6 +41,11 @@ namespace DAVA
 
 ParticleEmitter::YamlCacheMap ParticleEmitter::emitterYamlCache;
 
+PartilceEmitterLoadProxy::PartilceEmitterLoadProxy()
+{
+	AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+	bbox = AABBox3(Vector3(0,0,0), Vector3(0,0,0));
+}
 
 void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
@@ -50,7 +55,7 @@ void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext 
 
 ParticleEmitter::ParticleEmitter()
 {	
-	
+	Cleanup(false);
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -60,6 +65,7 @@ ParticleEmitter::~ParticleEmitter()
 
 void ParticleEmitter::Cleanup(bool needCleanupLayers)
 {
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitterType = EMITTER_POINT;
 	emissionVector.Set(NULL);
 	emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
@@ -70,6 +76,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
+	name = "Particle Emitter";
 	
 	if (needCleanupLayers)
 	{
@@ -85,42 +92,14 @@ void ParticleEmitter::CleanupLayers()
     }
 }
 
-//ParticleEmitter * ParticleEmitter::Clone()
-//{
-//	ParticleEmitter * emitter = new ParticleEmitter();
-//	for (int32 k = 0; k < (int32)layers.size(); ++k)
-//	{
-//		ParticleLayer * newLayer = layers[k]->Clone();
-//		newLayer->SetEmitter(emitter);
-//		emitter->layers.push_back(newLayer);
-//	}
-//    emitter->emissionVector = emissionVector;
-//	if (emissionAngle)
-//		emitter->emissionAngle = emissionAngle->Clone();
-//	if (emissionRange)
-//		emitter->emissionRange = emissionRange->Clone();
-//	if(colorOverLife)
-//		emitter->colorOverLife = colorOverLife->Clone();
-//	if (radius)
-//		emitter->radius = radius->Clone();
-//    if (size)
-//        emitter->size = size->Clone();
-//	
-//	emitter->type = type;
-//	emitter->lifeTime = lifeTime;
-//	emitter->emitPointsCount = emitPointsCount;
-//	emitter->isPaused = isPaused;
-//	emitter->isAutorestart = isAutorestart;
-//	emitter->particlesFollow = particlesFollow;
-//	return emitter;
-//}
-
 ParticleEmitter * ParticleEmitter::Clone()
 {
 	ParticleEmitter* clonedEmitter = new ParticleEmitter();
 	clonedEmitter->configPath = this->configPath;
 	clonedEmitter->position = this->position;
 	
+	clonedEmitter->name = name;
+	clonedEmitter->lifeTime = lifeTime;
 
 	if (this->emissionVector)
 	{
@@ -188,6 +167,26 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 
 	layer->Retain();			
 	layers.push_back(layer);		
+}
+
+ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
+{
+	if (!layer || layers.size() < 2)
+	{
+		return NULL;
+	}
+
+	int32 layersToCheck = layers.size() - 1;
+	for (int32 i = 0; i < layersToCheck; i ++)
+	{
+		ParticleLayer* curLayer = layers[i];
+		if (curLayer == layer)
+		{
+			return layers[i + 1];
+		}
+	}
+
+	return NULL;
 }
 
 void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
@@ -286,7 +285,7 @@ YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
 }
 
 
-void ParticleEmitter::LoadFromYaml(const FilePath & filename, float32 *oLifeTime)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {
     Cleanup(true);
     
@@ -304,17 +303,20 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename, float32 *oLifeTime
 	const YamlNode * emitterNode = rootNode->Get("emitter");
 	if (emitterNode)
 	{
-		if (oLifeTime)
+	
+		const YamlNode * lifeTimeNode = emitterNode->Get("life");
+		if (lifeTimeNode)
 		{
-			const YamlNode * lifeTimeNode = emitterNode->Get("life");
-			if (lifeTimeNode)
-			{
-				*oLifeTime = lifeTimeNode->AsFloat();
-			}else
-			{
-				*oLifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
-			}
+			lifeTime = lifeTimeNode->AsFloat();
+		}else
+		{
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
+		
+
+		const YamlNode * nameNode = emitterNode->Get("name");
+		if (nameNode)		
+			name = nameNode->AsString();
 		if (emitterNode->Get("emissionAngle"))
 			emissionAngle = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionAngle"));
         
@@ -417,6 +419,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
         
+	emitterYamlNode->Set("name", name);
     emitterYamlNode->Set("type", GetEmitterTypeName());
 	emitterYamlNode->Set("shortEffect", shortEffect);
     
