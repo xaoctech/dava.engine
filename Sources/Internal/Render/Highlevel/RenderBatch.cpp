@@ -47,21 +47,23 @@ namespace DAVA
     
 RenderBatch::RenderBatch()
     :   sortingKey(8)
+    ,   dataSource(0)
+    ,   renderDataObject(0)
+    ,   material(0)
+    ,   startIndex(0)
+    ,   indexCount(0)
+    ,   type(PRIMITIVETYPE_TRIANGLELIST)
+    ,   renderObject(0)
+    ,	visiblityCriteria(RenderObject::VISIBILITY_CRITERIA)
+    ,   aabbox(Vector3(), Vector3())
 {
-    dataSource = 0;
-    renderDataObject = 0;
-    material = 0;
-    startIndex = 0;
-    indexCount = 0;
-    type = PRIMITIVETYPE_TRIANGLELIST;
-	renderObject = 0;
-	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
-	aabbox = AABBox3(Vector3(), Vector3());
+	
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
     occlusionQuery = new OcclusionQuery();
-#endif
     queryRequested = -1;
+    queryRequestFrame = 0;
     lastFraemDrawn = -10;
+#endif
 }
     
 RenderBatch::~RenderBatch()

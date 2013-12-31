@@ -142,10 +142,10 @@ protected:
 	AABBox3 aabbox;
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
     OcclusionQuery * occlusionQuery;
-#endif
     int32 queryRequested;
     uint32 queryRequestFrame;
     uint32 lastFraemDrawn;
+#endif
 
 	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     
