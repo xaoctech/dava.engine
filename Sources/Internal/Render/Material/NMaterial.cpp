@@ -111,7 +111,8 @@ namespace DAVA
 	materialDynamicLit(false),
 	materialTemplate(NULL),
 	materialProperties(16),
-	instancePassRenderStates(4)
+	instancePassRenderStates(4),
+	materialSortKey(0)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -925,6 +926,7 @@ namespace DAVA
 		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
+		materialSortKey = baseTechnique->GetTechniqueId();
 		
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)

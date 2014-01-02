@@ -265,6 +265,8 @@ public:
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
 	
+	inline uint16 GetSortingKey() {return materialSortKey;}
+	
     //void AssignRenderLayerIDs(RenderLayerManager * manager);
     
     inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
@@ -358,6 +360,7 @@ protected:
 	bool materialDynamicLit;
 	//}END TODO
 
+	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;
 	HashMap<FastName, RenderPassInstance*> instancePasses;
 	HashMap<FastName, UniqueHandle> instancePassRenderStates;
