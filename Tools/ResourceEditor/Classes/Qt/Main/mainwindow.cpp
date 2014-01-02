@@ -1630,7 +1630,24 @@ void QtMainWindow::OnSaveTiledTexture()
 	{
 		FilePath pathToSave;
 		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
-		pathToSave.ReplaceExtension(".thumbnail.png");
+		if (pathToSave.IsEmpty())
+		{
+			FilePath scenePath = scene->GetScenePath().GetDirectory();
+			QString selectedPath = QtFileDialog::getSaveFileName(this, "Save landscape texture as",
+														 scenePath.GetAbsolutePathname().c_str(),
+														 "PGN Image (*.png)");
+			if (selectedPath.isEmpty())
+			{
+				SafeRelease(landscapeTexture);
+				return;
+			}
+
+			pathToSave = FilePath(selectedPath.toStdString());
+		}
+		else
+		{
+			pathToSave.ReplaceExtension(".thumbnail.png");
+		}
 
 		Image *image = landscapeTexture->CreateImageFromMemory();
 		if(image)
