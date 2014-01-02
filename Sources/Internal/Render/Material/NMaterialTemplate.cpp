@@ -50,6 +50,7 @@ namespace DAVA
 													  templateName);
 			}
 			
+			matTemplate->name = templateName;
 			templateCache.insert(templateName, matTemplate);
 		}
 		
