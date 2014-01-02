@@ -125,14 +125,16 @@ public:
         
      */
 
-	uint8 * data;
     uint32 dataSize;
-	uint32	width;
-	uint32	height;
-	PixelFormat format;
+	uint32	width:16;
+	uint32	height:16;
+
+	uint8 * data;
+
+    uint32 mipmapLevel;
+    PixelFormat format:8;
 	
 	uint32 cubeFaceID;
-	uint32 mipmapLevel;
 };
 	
 // Implementation of inline functions

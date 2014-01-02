@@ -44,6 +44,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/Material/NMaterialTemplate.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA
 {
@@ -527,7 +528,7 @@ namespace DAVA
 			SafeRelease(bucket->texture);
 			
 			bucket->texture = SafeRetain(texture);
-			bucket->path = (bucket->texture) ? bucket->texture->relativePathname : FilePath();
+			bucket->path = (bucket->texture) ? bucket->texture->texDescriptor->pathname : FilePath();
 			
 			SetTexturesDirty();
 		}
