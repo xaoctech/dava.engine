@@ -44,7 +44,7 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(true);
 	setAttribute( Qt::WA_DeleteOnClose, true );
-	FilePath defaultPath(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString()).GetAbsolutePathname() + "/DataSource/3d");
+	FilePath defaultPath(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname() + "/DataSource/3d");
 	
 	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
 	if(scene)

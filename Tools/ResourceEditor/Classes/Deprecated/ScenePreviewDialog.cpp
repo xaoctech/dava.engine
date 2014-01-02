@@ -67,7 +67,7 @@ ScenePreviewDialog::~ScenePreviewDialog()
 
 void ScenePreviewDialog::Show(const FilePath &scenePathname)
 {
-    bool enabled = SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, SettingsManager::GENERAL)->AsBool();
+    bool enabled = SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, SettingsManager::GENERAL).AsBool();
     if(!enabled)
         return;
     

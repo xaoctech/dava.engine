@@ -75,11 +75,6 @@ static const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
 };
 
-static const SettingRow SETTINGS_GROUP_VARIABLE_LENGHT_MAP[] =
-{
-	SettingRow("LastOpenedFile", DAVA::VariantType(int32(0))),
-};
-
 class SettingsManager: public DAVA::Singleton<SettingsManager>
 {
 public:
@@ -89,7 +84,6 @@ public:
 		GENERAL = 0,
 		DEFAULT,
 		INTERNAL,
-		VARIABLE_LENGTH_SET,
 
 		GROUPS_COUNT
 	};
@@ -100,48 +94,25 @@ public:
 
 	DAVA::KeyedArchive* GetSettingsGroup(eSettingsGroups group);
 
-	DAVA::VariantType* GetValue(const DAVA::String& _name, eSettingsGroups group);
+	DAVA::VariantType GetValue(const DAVA::String& _name, eSettingsGroups group) const;
 
 	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group);
 
-	void SaveSettings();
+	DAVA::String GetNameOfGroup(eSettingsGroups group) const;
 
-	DAVA::String GetNameOfGroup(eSettingsGroups group);
-
-	void Initialize();
-
+	void Save();
+	
 private:
 	
-	DAVA::KeyedArchive* settings;
+	void Load();
+
+	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize);
 	
-	void LoadSettings();
-
-	void UpdateVariableSectionIfNeeded(const String& _name, const DAVA::VariantType& _value);
-
+	static Map<DAVA::uint32, DAVA::String> MakeGroupNamesMap();
+	
+	static Map<DAVA::uint32, DAVA::String> GROUP_NAMES;
+	
+	DAVA::KeyedArchive* settings;
 };
-/*
-class SettingsManager2: public QObject, public DAVA::Singleton<SettingsManager2>
-{
-	Q_OBJECT
-
-public:
-	SettingsManager2();
-	virtual ~SettingsManager2();
-
-	const DAVA::VariantType& GetValue(DAVA::FastName key);
-	void SetValue(DAVA::FastName key, const DAVA::VariantType& value);
-
-	void TrackSettings(DAVA::InspInfo *insp, void *object);
-
-protected:
-	struct SettingRow
-	{
-		void *object;
-		DAVA::InspMember *member;
-	};
-
-	DAVA::FastNameMap<SettingRow> settings;
-};
-*/
 
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_MANAGER__) */

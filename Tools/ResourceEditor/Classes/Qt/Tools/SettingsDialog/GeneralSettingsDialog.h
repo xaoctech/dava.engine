@@ -50,11 +50,9 @@ public:
 	
 	~GeneralSettingsDialog();
 
-public	slots:
+public slots:
 
-	void reject();
-
-	void accept();
+	void SaveChanges();
 
 protected:
 	
@@ -62,8 +60,8 @@ protected:
 
 	QTabWidget*						tabWidget;
 	QVBoxLayout*					mainLayout;
-	QDialogButtonBox*				btnBox;
+	QPushButton*					btnOK;
 	DAVA::Vector<QtPropertyEditor*>	settingGroupsEditors;
-	static const SettingsManager::eSettingsGroups groupsTodisplay[]; 
+	static const SettingsManager::eSettingsGroups groupsTodisplay[];
 };
 #endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__) */

@@ -48,13 +48,12 @@ GeneralSettingsDialog::GeneralSettingsDialog( QWidget* parent)
 	setWindowTitle("Settings");
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	tabWidget = new QTabWidget;
-	btnBox = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);;
-	connect(btnBox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(btnBox, SIGNAL(rejected()), this, SLOT(reject()));
+	btnOK = new QPushButton("OK", this);
+	connect(btnOK, SIGNAL(clicked(bool)), this, SLOT(accept()));
 
 	mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);
-	mainLayout->addWidget(btnBox);
+	mainLayout->addWidget(btnOK, 0, Qt::AlignRight );
 	setLayout(mainLayout);
 	InitSettings();
 }
@@ -65,7 +64,7 @@ GeneralSettingsDialog::~GeneralSettingsDialog()
 	{
 		SafeDelete(editor);
 	}
-	delete btnBox;
+	delete btnOK;
 	delete tabWidget;
 }
 
@@ -83,7 +82,7 @@ void GeneralSettingsDialog::InitSettings()
 		
 		QtPropertyEditor* groupEditor = new QtPropertyEditor(this);
 		settingGroupsEditors.push_back(groupEditor);
-		
+		groupEditor->SetEditTracking(true);
 		DAVA::Map<DAVA::String, DAVA::VariantType*> data = settingsGroup->GetArchieveData();
 		DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator it = data.begin();
 
@@ -96,18 +95,12 @@ void GeneralSettingsDialog::InitSettings()
 		groupEditor->expandAll();
 		groupEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
 		tabWidget->addTab(groupEditor, groupName.c_str());
+		groupEditor->resizeColumnToContents(0);
+		connect(groupEditor, SIGNAL(PropertyEdited(const QModelIndex&)), this, SLOT(SaveChanges()));
 	}
 }
 
-void GeneralSettingsDialog::reject()
+void GeneralSettingsDialog::SaveChanges()
 {
-	SettingsManager::Instance()->Initialize();
-	QDialog::reject();
+	SettingsManager::Instance()->Save();
 }
-
-void GeneralSettingsDialog::accept()
-{
-	SettingsManager::Instance()->SaveSettings();
-	QDialog::accept();
-}
-

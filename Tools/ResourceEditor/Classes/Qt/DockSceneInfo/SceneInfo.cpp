@@ -232,7 +232,7 @@ void SceneInfo::RefreshLODInfoForSelection()
 
 uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
-	String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString();
+	String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
     uint32 textureSize = 0;
     
     TexturesMap::const_iterator endIt = textures.end();
@@ -255,7 +255,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL)->AsInt32());
+        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
         
         SafeRelease(descriptor);
     }

@@ -36,60 +36,51 @@
 #define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
 #define SETTINGS_VERSION_NUMBER			1
 #define SETTINGS_VERSION_KEY			"settingsVersion"
-#define MUTABLE_LENGTH_COUNT_SUFFIX		"sCount"
+
+Map<DAVA::uint32, DAVA::String> SettingsManager::MakeGroupNamesMap()
+{
+	Map<DAVA::uint32, DAVA::String> map;
+	map[GENERAL] = "General";
+	map[DEFAULT] = "Scene default";
+	map[INTERNAL] = "Internal";
+	return map;
+}
+
+Map<DAVA::uint32, DAVA::String> SettingsManager::GROUP_NAMES = MakeGroupNamesMap();
 
 SettingsManager::SettingsManager()
 {
 	settings = new KeyedArchive();
-
-	Initialize();
+	
+	InitSettingsGroup(GENERAL, SETTINGS_GROUP_GENERAL_MAP, sizeof(SETTINGS_GROUP_GENERAL_MAP) / sizeof(SettingRow));
+	InitSettingsGroup(DEFAULT, SETTINGS_GROUP_DEFAULT_MAP, sizeof(SETTINGS_GROUP_DEFAULT_MAP) / sizeof(SettingRow));
+	InitSettingsGroup(INTERNAL, SETTINGS_GROUP_INTERNAL_MAP, sizeof(SETTINGS_GROUP_INTERNAL_MAP) / sizeof(SettingRow));
+	
+	settings->SetUInt32(SETTINGS_VERSION_KEY, SETTINGS_VERSION_NUMBER);
+	
+	Load();
 }
 
 SettingsManager::~SettingsManager()
 {
-	settings->DeleteAllKeys();
+	Save();
 	SafeRelease(settings);
 }
 
-void SettingsManager::Initialize()
+void SettingsManager::InitSettingsGroup(SettingsManager::eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize)
 {
-	settings->DeleteAllKeys();
-	KeyedArchive* generalSettings = new KeyedArchive();
-	KeyedArchive* defaultSettings = new KeyedArchive();
-	KeyedArchive* internalSettings = new KeyedArchive();
-	KeyedArchive* mutableLengthSettings = new KeyedArchive();
+	KeyedArchive* groupSettings = new KeyedArchive();
 	
-	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_GENERAL_MAP) / sizeof(SettingRow)); ++i )
+	for (uint32 i = 0; i < mapSize; ++i )
 	{
-		generalSettings->SetVariant( SETTINGS_GROUP_GENERAL_MAP[i].key, DAVA::VariantType(SETTINGS_GROUP_GENERAL_MAP[i].defValue) );
+		groupSettings->SetVariant( groupMap[i].key, DAVA::VariantType(groupMap[i].defValue) );
 	}
 	
-	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_DEFAULT_MAP) / sizeof(SettingRow)); ++i )
-	{
-		defaultSettings->SetVariant( SETTINGS_GROUP_DEFAULT_MAP[i].key, DAVA::VariantType(SETTINGS_GROUP_DEFAULT_MAP[i].defValue) );
-	}
-	
-	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_INTERNAL_MAP) / sizeof(SettingRow)); ++i )
-	{
-		internalSettings->SetVariant( SETTINGS_GROUP_INTERNAL_MAP[i].key, DAVA::VariantType(SETTINGS_GROUP_INTERNAL_MAP[i].defValue) );
-	}
-	
-	for (uint32 i = 0; i < (sizeof(SETTINGS_GROUP_VARIABLE_LENGHT_MAP) / sizeof(SettingRow)); ++i )
-	{
-		mutableLengthSettings->SetVariant( SETTINGS_GROUP_VARIABLE_LENGHT_MAP[i].key + MUTABLE_LENGTH_COUNT_SUFFIX,
-										  DAVA::VariantType(SETTINGS_GROUP_VARIABLE_LENGHT_MAP[i].defValue) );
-	}
-	
-	settings->SetArchive(GetNameOfGroup(GENERAL), generalSettings);
-	settings->SetArchive(GetNameOfGroup(DEFAULT), defaultSettings);
-	settings->SetArchive(GetNameOfGroup(INTERNAL), internalSettings);
-	settings->SetArchive(GetNameOfGroup(VARIABLE_LENGTH_SET), mutableLengthSettings);
-	settings->SetUInt32(SETTINGS_VERSION_KEY, SETTINGS_VERSION_NUMBER);
-	
-	LoadSettings();
+	settings->SetArchive(GetNameOfGroup(groupID), groupSettings);
+	SafeRelease(groupSettings);
 }
 
-void SettingsManager::LoadSettings()
+void SettingsManager::Load()
 {
 	KeyedArchive* loadedArchive = new KeyedArchive();
 	if(!loadedArchive->Load(CONFIG_FILE))
@@ -120,93 +111,27 @@ void SettingsManager::LoadSettings()
 				presentSettingsGroup->SetVariant(it->first, *archiveFromFile->GetVariant(it->first));
 			}
 		}
-		//in case of mutable section, presentSettingsGroup contain only counter rows like "LastOpenedFilesCount"
-		if(VARIABLE_LENGTH_SET == (eSettingsGroups)i && presentSettingsGroup->Count())
-		{
-			Map<String, VariantType*> predefinedMapUpdated = presentSettingsGroup->GetArchieveData();
-			it = predefinedMapUpdated.begin();
-			end = predefinedMapUpdated.end();
-			Vector<std::pair<String, VariantType> > setToInsert;
-			for(; it != end; ++it)
-			{
-				int32 subsectionLength = it->second->AsInt32();
-				String subSectionName = it->first.substr(0, it->first.size() - strlen(MUTABLE_LENGTH_COUNT_SUFFIX));
-				for (uint32 j = 0; j < subsectionLength; ++j)
-				{
-					String keyToInsert(Format((subSectionName + "_%d").c_str(), j));
-					setToInsert.push_back(std::make_pair(keyToInsert, *archiveFromFile->GetVariant(keyToInsert)));
-				}
-			}
-			Vector<std::pair<String, VariantType> >::iterator iterToInsert = setToInsert.begin();
-			Vector<std::pair<String, VariantType> >::iterator endToInsert = setToInsert.end();
-			for(; iterToInsert != endToInsert; ++iterToInsert)
-			{
-				presentSettingsGroup->SetVariant(iterToInsert->first, iterToInsert->second);
-			}
-		}
 	}
 	
 	SafeRelease(loadedArchive);
 }
 
-DAVA::VariantType* SettingsManager::GetValue(const DAVA::String& _name, eSettingsGroups _group)
+DAVA::VariantType SettingsManager::GetValue(const DAVA::String& _name, eSettingsGroups _group) const
 {
 	KeyedArchive* foundedGroupSettings = settings->GetArchive(GetNameOfGroup(_group));
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
-	return foundedGroupSettings->GetVariant(_name);
+	return *foundedGroupSettings->GetVariant(_name);
 }
 
 void SettingsManager::SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group)
 {
 	KeyedArchive* foundedGroupSettings = settings->GetArchive(GetNameOfGroup(group));
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
-	if(VARIABLE_LENGTH_SET == group)
-	{
-		UpdateVariableSectionIfNeeded(_name, _value);
-	}
 	foundedGroupSettings->SetVariant(_name, _value);
+	Save();
 }
 
-void SettingsManager::UpdateVariableSectionIfNeeded(const String& name,  const DAVA::VariantType& value)
-{
-	if(name.size() < strlen(MUTABLE_LENGTH_COUNT_SUFFIX))
-	{
-		return;
-	}
-	String key_part = name.substr(0, name.size() - strlen(MUTABLE_LENGTH_COUNT_SUFFIX));
-	String suffix = name.substr(key_part.size(), name.size());
-	if(suffix != MUTABLE_LENGTH_COUNT_SUFFIX)
-	{
-		return;
-	}
-	
-	int32 presentSize = GetValue(name, VARIABLE_LENGTH_SET)->AsInt32();
-	int32 newSize = value.AsInt32();
-	if(presentSize == newSize)
-	{
-		return;
-	}
-
-	KeyedArchive* mutableSection = GetSettingsGroup(VARIABLE_LENGTH_SET);
-	if(newSize > presentSize)
-	{
-		for (int32 j = presentSize; j < newSize; ++j)
-		{
-			String keyToInsert(Format((key_part + "_%d").c_str(), j));
-			mutableSection->SetVariant(keyToInsert, VariantType());
-		}
-	}
-	else
-	{
-		for (int32 j = newSize; j < presentSize; ++j)
-		{
-			String keyToDelete(Format((key_part + "_%d").c_str(), j));
-			mutableSection->DeleteKey(keyToDelete);
-		}
-	}
-}
-
-void SettingsManager::SaveSettings()
+void SettingsManager::Save()
 {
 	settings->Save(CONFIG_FILE);
 }
@@ -217,26 +142,7 @@ DAVA::KeyedArchive* SettingsManager::GetSettingsGroup(eSettingsGroups group)
 	return settings->GetArchive(nameOfGroup);
 }
 
-DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group)
+DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group) const
 {
-	String retValue;
-	switch (group)
-	{
-	case SettingsManager::GENERAL:
-		retValue = "General";
-		break;
-	case SettingsManager::DEFAULT:
-		retValue = "Scene default";
-		break;
-	case SettingsManager::INTERNAL:
-		retValue = "Internal";
-		break;
-	case SettingsManager::VARIABLE_LENGTH_SET:
-		retValue = "Variable length set";
-		break;
-	default:
-		DVASSERT(0);
-		break;
-	}
-	return retValue;
+	return GROUP_NAMES[group];
 }

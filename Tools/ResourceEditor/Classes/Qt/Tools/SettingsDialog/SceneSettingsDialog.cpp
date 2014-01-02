@@ -33,6 +33,8 @@
 #include "Main/mainwindow.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 
+#define EDITOR_TAB_WIDTH 400
+
 SceneSettingsDialog::SceneSettingsDialog( QWidget* parent)
 		:QDialog(parent)
 {
@@ -40,7 +42,8 @@ SceneSettingsDialog::SceneSettingsDialog( QWidget* parent)
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	sceneSettingsEditor = new QtPropertyEditor(this);
 	InitSceneSettingsEditor();
-
+	sceneSettingsEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
+	sceneSettingsEditor->resizeColumnToContents(0);
 	btnOk = new QPushButton("OK", this);
 	btnOk->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	connect(btnOk, SIGNAL(clicked()), this, SLOT(close()));
