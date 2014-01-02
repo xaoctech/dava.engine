@@ -62,13 +62,7 @@ bool DDSExtractorTool::InitializeFromCommandLine()
 	
 	DAVA::String mipmapsNumberStr = DAVA::CommandLineParser::GetCommandParam(DAVA::String("-mipmaps"));
 	
-	DAVA::int32 number = atoi(mipmapsNumberStr.c_str());
-	if (number <= 0)
-	{
-		errors.insert(DAVA::String("Incorrect param for mipmaps number"));
-		return false;
-	}
-	mipmapsNumber = number;
+	mipmapsNumber = atoi(mipmapsNumberStr.c_str());
 	
 	return true;
 }
@@ -105,19 +99,36 @@ void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& path)
 	//extracted images should have rgba format, but not DX1..DX5, even in case of dxt supporting systems(like windows)
 	DAVA::LibDxtHelper::ReadDxtFile(path, imageSet, true);
 	
-	DAVA::uint32 size = mipmapsNumber >= imageSet.size() ? imageSet.size() : mipmapsNumber;
-	for (DAVA::uint32 i = 0; i < size; ++i)
+	if (mipmapsNumber == 0 && imageSet.size())
 	{
-		DAVA::Image* imageToSave = imageSet[i];
-		DAVA::FilePath saveFilePath(path);
-		saveFilePath.ReplaceExtension(".png");
-		saveFilePath.ReplaceBasename(path.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
-		
-		DAVA::ImageLoader::Save(imageToSave, saveFilePath);
-		printf("\n");
-		printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()));
-		SafeRelease(imageToSave);
+		// if "-mipmaps" argumant was entered blank only biggest mipmap will be extracted without
+		// addition of size into file name
+		SaveImageAsPNG(path, imageSet[0], false);
 	}
+	else
+	{
+		DAVA::uint32 size = mipmapsNumber >= imageSet.size() ? imageSet.size() : mipmapsNumber;
+		for (DAVA::uint32 i = 0; i < size; ++i)
+		{
+			SaveImageAsPNG(path, imageSet[i], true);
+		}
+	}
+	
+	for_each(imageSet.begin(), imageSet.end(), DAVA::SafeRelease<DAVA::Image>);
+}
+
+void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& path, DAVA::Image* imageToSave, bool addMipmapsIntoName)
+{
+	DAVA::FilePath saveFilePath(path);
+	saveFilePath.ReplaceExtension(".png");
+	if(addMipmapsIntoName)
+	{
+		saveFilePath.ReplaceBasename(path.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
+	}
+	
+	DAVA::ImageLoader::Save(imageToSave, saveFilePath);
+	printf("\n");
+	printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()));
 }
 
 DAVA::List<DAVA::FilePath> DDSExtractorTool::GetFilesFromFolderRecursively(const DAVA::FilePath& path)

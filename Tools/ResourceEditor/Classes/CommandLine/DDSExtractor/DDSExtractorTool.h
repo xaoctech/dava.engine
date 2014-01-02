@@ -44,6 +44,7 @@ public:
 protected:
 	
 	void ExtractImagesFromFile(const DAVA::FilePath& path);
+	void SaveImageAsPNG(const DAVA::FilePath& originalName, DAVA::Image* imageToSave, bool addMipmapsIntoName);
 	
 	DAVA::List<DAVA::FilePath> GetFilesFromFolderRecursively(const DAVA::FilePath& path);
 		
