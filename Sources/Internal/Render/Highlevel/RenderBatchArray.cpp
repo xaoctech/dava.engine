@@ -145,7 +145,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
                 float32 distance = (position - cameraPosition).Length();
                 uint32 distanceBits = 0xFFFF - ((uint32)distance) & 0xFFFF;
-                uint32 materialIndex = (batch->GetMaterial()->GetParent()->GetMaterialName().Index() & 0xFFF);
+                uint32 materialIndex = (batch->GetMaterial()->GetSortingKey() & 0xFFF);
                 batch->layerSortingKey = (pointer_size)((batch->GetSortingKey() << 28) | (materialIndex << 16) | (distanceBits));
             }
             
