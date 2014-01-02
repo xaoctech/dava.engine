@@ -1,4 +1,4 @@
-/*==================================================================================
+ /*==================================================================================
  Copyright (c) 2008, binaryzebra
  All rights reserved.
  
@@ -110,7 +110,8 @@ namespace DAVA
 	textures(8),
 	materialDynamicLit(false),
 	materialTemplate(NULL),
-	materialProperties(16)
+	materialProperties(16),
+	instancePassRenderStates(4)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -125,6 +126,13 @@ namespace DAVA
 		}
 
 		ReleaseInstancePasses();
+		
+		for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+			it != instancePassRenderStates.end();
+			++it)
+		{
+			RenderManager::Instance()->ReleaseRenderStateData(it->second);
+		}
 		
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
 			it != materialProperties.end();
@@ -148,7 +156,7 @@ namespace DAVA
 		SafeRelease(baseTechnique);
 	}
 			
-	void NMaterial::AddChild(NMaterial* material)
+	void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
@@ -158,7 +166,7 @@ namespace DAVA
 		
 		this->Retain();
 		
-		material->OnParentChanged(this);
+		material->OnParentChanged(this, inheritTemplate);
 		
 		this->Release();
 	}
@@ -171,7 +179,7 @@ namespace DAVA
 			this->Retain();
 			
 			children.erase(child);
-			material->OnParentChanged(NULL);
+			material->OnParentChanged(NULL, true);
 			
 			//VI: TODO: review if this call is realy needed at this point
 			//CleanupUnusedTextures();
@@ -212,16 +220,40 @@ namespace DAVA
 	void NMaterial::Save(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
 	{
+		DataNode::Save(archive, serializationContext);
+		
 		archive->SetString("materialName", (materialName.IsValid()) ? materialName.c_str() : "");
 		archive->SetInt32("materialType", (int32)materialType);
-		int64 tmpMaterialKey = (int64)materialKey;
-		archive->SetInt64("materialKey", tmpMaterialKey);
+		archive->SetUInt64("materialKey", materialKey);
 		
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType &&
 		   parent)
 		{
-			tmpMaterialKey = (int64)parent->materialKey;
-			archive->SetInt64("parentMaterialKey", tmpMaterialKey);
+			archive->SetUInt64("parentMaterialKey", parent->materialKey);
+		}
+		
+		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
+		{
+			archive->SetString("materialQuality", currentQuality.c_str());
+		}
+		
+		DVASSERT(materialTemplate);
+		archive->SetString("materialTemplate", (materialTemplate) ? materialTemplate->name.c_str() : "");
+		
+		if(instancePassRenderStates.size() > 0)
+		{
+			KeyedArchive* materialCustomStates = new KeyedArchive();
+			for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+				it != instancePassRenderStates.end();
+				++it)
+			{
+				UniqueHandle currentHandle = it->second;
+				
+				const RenderStateData* stateData = RenderManager::Instance()->GetRenderStateData(currentHandle);
+				materialCustomStates->SetByteArray(it->first.c_str(), (uint8*)stateData, sizeof(RenderStateData));
+			}
+			archive->SetArchive("materialCustomStates", materialCustomStates);
+			SafeRelease(materialCustomStates);
 		}
 		
 		KeyedArchive* materialTextures = new KeyedArchive();
@@ -231,8 +263,17 @@ namespace DAVA
 		{
 			if(it->second->texture)
 			{
-				materialTextures->SetString(it->first.c_str(),
-											it->second->path.GetRelativePathname(serializationContext->GetScenePath()));
+				String texturePath = it->second->path.GetRelativePathname(serializationContext->GetScenePath());
+				
+				if(texturePath.size() > 0)
+				{
+					materialTextures->SetString(it->first.c_str(),
+												texturePath);
+				}
+				else
+				{
+					Logger::FrameworkDebug("[NMaterial::Save] Material '%s' has empty texture '%s'! Skipping...", materialName.c_str(), it->first.c_str());
+				}
 			}
 		}
 		archive->SetArchive("textures", materialTextures);
@@ -281,11 +322,50 @@ namespace DAVA
 	void NMaterial::Load(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
 	{
+		DataNode::Load(archive, serializationContext);
+		
 		materialName = FastName(archive->GetString("materialName"));
 		materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
-		materialKey = (NMaterial::NMaterialKey)archive->GetInt64("materialKey");
+		materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
 		
 		DataNode::SetName(materialName.c_str());
+		
+		if(archive->IsKeyExists("materialCustomStates"))
+		{
+			RenderStateData stateData;
+			const Map<String, VariantType*>& customRenderState = archive->GetArchive("materialCustomStates")->GetArchieveData();
+			for(Map<String, VariantType*>::const_iterator it = customRenderState.begin();
+				it != customRenderState.end();
+				++it)
+			{
+				DVASSERT(it->second->AsByteArraySize() == sizeof(RenderStateData));
+				const uint8* array = it->second->AsByteArray();
+				memcpy(&stateData, array, sizeof(RenderStateData));
+				
+				UniqueHandle currentHandle = RenderManager::Instance()->AddRenderStateData(&stateData);
+				instancePassRenderStates.insert(FastName(it->first.c_str()), currentHandle);
+			}
+		}
+		
+		if(archive->IsKeyExists("materialQuality"))
+		{
+			currentQuality = FastName(archive->GetString("materialQuality"));
+		}
+		else
+		{
+			currentQuality = serializationContext->GetDefaultMaterialQuality();
+		}
+		
+		String materialTemplateName = archive->GetString("materialTemplate");
+		if(materialTemplateName.size() > 0)
+		{
+			NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
+		}
+		else
+		{
+			//VI: will inherit from parent probably
+			materialTemplate = NULL;
+		}
 		
 		const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
 		for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
@@ -322,26 +402,19 @@ namespace DAVA
 			illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
 			illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
 		}
-		
-		serializationContext->SetMaterial((uint64)materialKey, this);
-				
-		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
-		{
-			NMaterial::NMaterialKey parentKey = (NMaterial::NMaterialKey)archive->GetInt64("parentMaterialKey");
-			NMaterial* parent = serializationContext->GetMaterial((uint64)parentKey);
-			
-			if(parent)
-			{
-				parent->AddChild(this);
-			}
-		}
-		
+						
 		const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
 		for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
 			it != flagsMap.end();
 			++it)
 		{
 			SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
+		}
+		
+		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		{
+			uint64 parentKey = archive->GetUInt64("parentMaterialKey");
+			serializationContext->AddBinding(parentKey, this);
 		}
 	}
 		
@@ -457,9 +530,22 @@ namespace DAVA
 				
 				clonedPass->dirtyState = true;
 				clonedPass->renderState.stateHandle = currentPass->renderState.stateHandle;
-				RenderManager::Instance()->RetainRenderStateData(currentPass->renderState.stateHandle);
 			}
 		}
+		
+		for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+			it != instancePassRenderStates.end();
+			++it)
+		{
+			clonedMaterial->instancePassRenderStates.insert(it->first, it->second);
+			RenderManager::Instance()->RetainRenderStateData(it->second);
+		}
+		
+		//DataNode properties
+		clonedMaterial->pointer = pointer;
+		clonedMaterial->scene = scene;
+		clonedMaterial->index = index;
+		clonedMaterial->nodeFlags = nodeFlags;
 
 		return clonedMaterial;
 	}
@@ -713,13 +799,15 @@ namespace DAVA
 		UpdateMaterialTemplate();
 	}
 
-	void NMaterial::OnParentChanged(NMaterial* newParent)
+	void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	{
 		NMaterial* oldParent = parent;
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
 		
-		if(newParent)
+		bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
+		
+		if(newParent && useParentTemplate)
 		{
 			SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
 		}
@@ -797,12 +885,6 @@ namespace DAVA
 			//VI: TODO: make sure need to release shader
 			//SafeRelease(passInstance->renderState.shader);
 			
-			if(passInstance->dirtyState &&
-			   passInstance->renderState.stateHandle != InvalidUniqueHandle)
-			{
-				RenderManager::Instance()->ReleaseRenderStateData(passInstance->renderState.stateHandle);
-			}
-						
 			if(passInstance->renderState.textureState != InvalidUniqueHandle)
 			{
 				RenderManager::Instance()->ReleaseTextureStateData(passInstance->renderState.textureState);
@@ -861,8 +943,17 @@ namespace DAVA
 		RenderState* parentRenderState = pass->GetRenderState();
 		
 		RenderPassInstance* passInstance = new RenderPassInstance();
-		passInstance->dirtyState = false;
-		passInstance->renderState.stateHandle = parentRenderState->stateHandle;
+		passInstance->dirtyState = (instancePassRenderStates.count(passName) != 0);
+		
+		if(passInstance->dirtyState)
+		{
+			passInstance->renderState.stateHandle = instancePassRenderStates.at(passName);
+		}
+		else
+		{
+			passInstance->renderState.stateHandle = parentRenderState->stateHandle;
+		}
+		
 		passInstance->renderState.textureState = InvalidUniqueHandle;
 		passInstance->texturesDirty = false;
 		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
@@ -1350,6 +1441,8 @@ namespace DAVA
 
 		if(pass)
 		{
+			DVASSERT(!pass->dirtyState || (pass->renderState.stateHandle == instancePassRenderStates.at(passName)));
+			
 			if(pass->dirtyState)
 			{
 				RenderManager::Instance()->ReleaseRenderStateData(pass->renderState.stateHandle);
@@ -1357,6 +1450,8 @@ namespace DAVA
 			
 			pass->renderState.stateHandle = RenderManager::Instance()->AddRenderStateData(newState);
 			pass->dirtyState = true;
+			
+			instancePassRenderStates.insert(passName, pass->renderState.stateHandle);
 		}
 	}
 	

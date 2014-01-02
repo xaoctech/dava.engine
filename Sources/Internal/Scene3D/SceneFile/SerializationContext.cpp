@@ -222,7 +222,6 @@ namespace DAVA
         
 	};
 
-
 	SerializationContext::~SerializationContext()
 	{
 		for(Map<uint64, DataNode*>::iterator it = dataBlocks.begin();
@@ -231,14 +230,34 @@ namespace DAVA
 		{
 			SafeRelease(it->second);
 		}
-
-		for(Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.begin();
-			it != serializationMaterialMap.end();
+		
+		for(Map<uint64, NMaterial*>::iterator it = importedMaterials.begin();
+			it != importedMaterials.end();
 			++it)
 		{
 			SafeRelease(it->second);
-			//VI: TODO: make sure there's only 1 reference to the material at this point
 		}
+
+		DVASSERT(materialBindings.size() == 0 && "Serialization context destroyed without resolving material bindings!");
+		materialBindings.clear();
+	}
+	
+	void SerializationContext::ResolveMaterialBindings()
+	{
+		size_t instanceCount = materialBindings.size();
+		for(size_t i = 0; i < instanceCount; ++i)
+		{
+			MaterialBinding& binding = materialBindings[i];
+			NMaterial* parentMat = static_cast<NMaterial*>(GetDataBlock(binding.parentKey));
+			
+			DVASSERT(parentMat);
+			if(parentMat)
+			{
+				parentMat->AddChild(binding.instanceMaterial, false);
+			}
+		}
+		
+		materialBindings.clear();
 	}
 
 	NMaterial* SerializationContext::ConvertOldMaterialToNewMaterial(Material* oldMaterial,
@@ -255,7 +274,7 @@ namespace DAVA
 		//VI:                                  and has specific
 		//VI:                                  properties set)
 		
-		NMaterial* material = GetMaterial(oldMaterialId);
+		NMaterial* material = static_cast<NMaterial*>(GetImportedMaterial(oldMaterialId));
 		if(NULL == material)
 		{
 			FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
@@ -402,9 +421,8 @@ namespace DAVA
 				}
 			}
 			
-			//VI: should not retain material here. it will be released in the context's destructor
-			//VI: if the material still has children it will survive that.
-			SetMaterial(oldMaterialId, material);
+			//VI: material will be released by ~SerializationContext
+			SetImportedMaterial(oldMaterialId, material);
 		}
 		
 		NMaterial* instanceMaterial = NMaterial::CreateMaterialInstance();
@@ -442,11 +460,7 @@ namespace DAVA
 		}
 		
 		material->AddChild(instanceMaterial);
-		
-		//VI: need to retain instance material before adding to context
-		//VI: in other case it will be deleted in the context's destructor
-		SetMaterial(instanceMaterial->GetMaterialKey(), SafeRetain(instanceMaterial));
-		
+						
 		return instanceMaterial;
 	}
 			
