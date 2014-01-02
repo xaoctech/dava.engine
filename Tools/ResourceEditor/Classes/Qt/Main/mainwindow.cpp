@@ -133,7 +133,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupTitle();
 
 	qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PROJECT_PATH, SettingsManager::INTERNAL)->AsString()
+	EditorConfig::Instance()->ParseConfig(SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PROJECT_PATH, SettingsManager::INTERNAL).AsString()
 		+ "EditorConfig.yaml");
 
 	SetupMainMenu();
@@ -280,7 +280,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
 {
 	
-	return (eGPUFamily)SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL)->AsInt32();
+	return (eGPUFamily)SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL).AsInt32();
 }
 
 void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
@@ -713,11 +713,11 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET)->AsInt32();
+	/*int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET).AsInt32();
 	for(int i = 0; i < lastOpenedCount; ++i)
 	{
 		DVASSERT((0 <= i) && (i < lastOpenedCount));
-		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET)->AsString();
+		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET).AsString();
 		if (path.empty())
 		{
 			continue;
@@ -726,12 +726,12 @@ void QtMainWindow::InitRecent()
 
 		action->setData(QString(path.c_str()));
 		recentScenes.push_back(action);
-	}
+	}*/
 }
 
 void QtMainWindow::AddRecent(const QString &pathString)
 {
-    while(recentScenes.size())
+    /*while(recentScenes.size())
     {
         ui->menuFile->removeAction(recentScenes[0]);
         recentScenes.removeAt(0);
@@ -740,10 +740,10 @@ void QtMainWindow::AddRecent(const QString &pathString)
 	DAVA::FilePath pathToFile(pathString.toStdString());
 	Vector<String> filesList;
 
-	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET)->AsInt32();
+	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET).AsInt32();
 	for(int32 i = 0; i < count; ++i)
 	{
-		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET)->AsString();
+		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET).AsString();
 		if(path != pathToFile.GetAbsolutePathname())
 		{
 			filesList.push_back(path);
@@ -763,8 +763,7 @@ void QtMainWindow::AddRecent(const QString &pathString)
 											  SettingsManager::VARIABLE_LENGTH_SET);
 	}
 	
-	SettingsManager::Instance()->SaveSettings();
-	InitRecent();
+	InitRecent();*/
 }
 
 // ###################################################################################################
@@ -1140,7 +1139,7 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 void QtMainWindow::OnReloadSprites()
 {
     SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->
-		GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL)->AsInt32());
+		GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL).AsInt32());
 	emit SpritesReloaded();
 }
 

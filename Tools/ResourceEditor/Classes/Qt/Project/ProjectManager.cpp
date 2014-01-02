@@ -90,12 +90,11 @@ void ProjectManager::ProjectOpen(const QString &path)
 				VariantType(projectPath.GetAbsolutePathname()), SettingsManager::INTERNAL);
 			SettingsManager::Instance()->SetValue("3dDataSourcePath", 
 				VariantType(dataSource3Dpathname.GetAbsolutePathname()), SettingsManager::INTERNAL);
-			SettingsManager::Instance()->SaveSettings();
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
-            SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL)->AsInt32());
+            SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
             LoadProjectSettings();
             
@@ -108,7 +107,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 void ProjectManager::ProjectOpenLast()
 {
-	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString());
+	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
 
 	if(!projectPath.IsEmpty())
 	{

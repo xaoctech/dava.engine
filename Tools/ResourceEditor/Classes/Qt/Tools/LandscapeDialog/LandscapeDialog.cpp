@@ -140,7 +140,7 @@ SelectPathWidgetBase* LandscapeDialog::InitPathWidget(QWidget* parent, int32 wid
 		fileFilter = HEIGHTMAP_FILTER;
 	}
 
-	DAVA::String resFolder = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL)->AsString()).GetAbsolutePathname();
+	DAVA::String resFolder = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname();
 	SelectPathWidgetBase* widget = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);
 
 	if(innerLandscape)

@@ -93,7 +93,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 {
 	FilePath projectPath = CubemapUtils::GetDialogSavedPath(ResourceEditor::SETTINGS_CUBEMAP_LAST_FACE_DIR,
 															rootPath.toStdString(),
-															FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL)->AsString()).GetAbsolutePathname());
+															FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname());
 		
 	QString fileName = QtFileDialog::getOpenFileName(this,
 													tr("Open Cubemap Face Image"),
@@ -505,8 +505,6 @@ void CubemapEditorDialog::OnSave()
 	
 	this->setUpdatesEnabled(true);
 	ui->lblSaving->setVisible(false);
-	
-	SettingsManager::Instance()->SaveSettings();
 	close();
 }
 
@@ -523,7 +521,6 @@ void CubemapEditorDialog::OnClose()
 
 	if(MB_FLAG_YES == answer)
 	{
-		SettingsManager::Instance()->SaveSettings();
 		close();
 	}
 }

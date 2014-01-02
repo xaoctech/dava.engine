@@ -439,7 +439,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
-        String path = landscape->GetHeightmapPathname().GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL)->AsString()));
+        String path = landscape->GetHeightmapPathname().GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()));
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }

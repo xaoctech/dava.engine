@@ -236,7 +236,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 {
 	SceneExporter exporter;
 	
-	FilePath projectPath( SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString());
+	FilePath projectPath( SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));

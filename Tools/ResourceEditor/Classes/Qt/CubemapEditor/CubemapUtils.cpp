@@ -112,13 +112,12 @@ const DAVA::String& CubemapUtils::GetDefaultFaceExtension()
 
 DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String& initialValue, const DAVA::String& defaultValue)
 {
-	DAVA::FilePath projectPath(SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL)->AsString());
+	DAVA::FilePath projectPath(SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL).AsString());
 	
 	if(!projectPath.Exists())
 	{
 		projectPath = defaultValue;
 		SettingsManager::Instance()->SetValue(key, VariantType(defaultValue), SettingsManager::INTERNAL);
-		SettingsManager::Instance()->SaveSettings();
 	}
 
 	return projectPath;

@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 
 void UnpackHelpDoc()
 {
-	DAVA::String editorVer =SettingsManager::Instance()->GetValue("editor.version", SettingsManager::INTERNAL)->AsString();
+	DAVA::String editorVer =SettingsManager::Instance()->GetValue("editor.version", SettingsManager::INTERNAL).AsString();
 	DAVA::FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
 	if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
 	{
