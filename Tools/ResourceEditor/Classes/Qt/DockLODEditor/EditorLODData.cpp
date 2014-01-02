@@ -447,7 +447,14 @@ void EditorLODData::CreatePlaneLOD(DAVA::int32 fromLayer, DAVA::uint32 textureSi
 
 bool EditorLODData::CanCreatePlaneLOD()
 {
-    return (lodData.size() == 1) && (lodData[0]->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
+    if(lodData.size() != 1)
+        return false;
+
+    Entity * componentOwner = lodData[0]->GetEntity();
+    if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+        return false;
+
+    return (lodData[0]->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
 }
 
 FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()

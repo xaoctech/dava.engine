@@ -259,12 +259,11 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
     tempScene->Draw();
 
     SafeRelease(entity);
+    SafeRelease(tempScene);
 
     RenderManager::Instance()->SetViewport(oldViewport, true);
 
 #ifdef __DAVAENGINE_OPENGL__
     RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
-
-    SafeRelease(tempScene);
 }
