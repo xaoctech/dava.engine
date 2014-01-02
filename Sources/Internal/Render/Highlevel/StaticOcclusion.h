@@ -34,6 +34,7 @@
 #include "Render/RenderBase.h"
 #include "Render/Texture.h"
 #include "Render/OcclusionQuery.h"
+#include "Render/Highlevel/VisibilityArray.h"
 
 namespace DAVA
 {
@@ -96,6 +97,7 @@ private:
     
     RenderHierarchy * renderHierarchy;
     RenderPassBatchArray * renderPassBatchArray;
+    VisibilityArray visibilityArray;
     OcclusionQueryManager manager;
     Vector<std::pair<RenderBatch*, OcclusionQueryManagerHandle> > recordedBatches;
     Set<RenderObject*> frameGlobalVisibleInfo;

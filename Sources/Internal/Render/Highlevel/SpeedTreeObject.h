@@ -26,32 +26,38 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef ___SPEEDTREE_LEAF_BATCH_H__
-#define ___SPEEDTREE_LEAF_BATCH_H__
 
-#include "Render/Highlevel/RenderBatch.h"
+#ifndef __DAVAENGINE_SPEEDTREE_OBJECT_H__
+#define __DAVAENGINE_SPEEDTREE_OBJECT_H__
 
-namespace DAVA
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Render/Highlevel/Mesh.h"
+
+namespace DAVA 
 {
 
-class Texture;
-class Camera;
-class Shader;
-class SpeedTreeLeafBatch : public RenderBatch
+class SpeedTreeObject: public Mesh
 {
-protected:
-    virtual ~SpeedTreeLeafBatch();
 public:
-    SpeedTreeLeafBatch();
 
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
-    virtual RenderBatch * Clone(RenderBatch * dstNode = 0);
+    SpeedTreeObject() {};
+    virtual ~SpeedTreeObject() {};
+
+    virtual void RecalcBoundingBox();
+    virtual RenderObject * Clone(RenderObject *newObject);
+
+private:
+    AABBox3 CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * rb);
 
 public:
-    INTROSPECTION_EXTEND(SpeedTreeLeafBatch, RenderBatch, NULL);
+
+	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
+		NULL
+	);
+};
+
 
 };
 
-}
-
-#endif //___SPEEDTREE_BATCH_H__
+#endif // __DAVAENGINE_SPEEDTREE_OBJECT_H__

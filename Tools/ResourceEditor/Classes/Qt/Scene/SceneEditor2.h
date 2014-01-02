@@ -148,8 +148,8 @@ public:
 	const Color GetShadowColor() const;
 	void UpdateShadowColorFromLandscape();
 
-	void SetShadowBlendMode(DAVA::ShadowVolumeRenderPass::eBlend blend);
-	DAVA::ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
+	void SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend);
+	DAVA::ShadowPassBlendMode::eBlend GetShadowBlendMode() const;
 
     const RenderManager::Stats & GetRenderStats() const;
 

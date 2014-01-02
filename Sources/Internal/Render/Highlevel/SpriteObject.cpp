@@ -95,17 +95,17 @@ void SpriteObject::SetupRenderBatch()
 //	material->SetName("SpriteObject_material");
 //	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
-    DVASSERT(false);
-	//NMaterial * material = MaterialSystem::CreateNamed();
-	//material->SwitchParent(FastName("Global.Textured.Alphablend")); //TODO: think if should use LOD material here
-	//material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
+	NMaterial* material = NMaterial::CreateMaterialInstance(FastName("SpriteObject_material"),
+															FastName("~res:/Materials/Legacy/Textured.Alphablend.material"),
+															NMaterial::DEFAULT_QUALITY_NAME);
+	material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
         
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
-	//batch->SetMaterial(material);
+	batch->SetMaterial(material);
     batch->SetRenderDataObject(renderDataObject);
 	AddRenderBatch(batch);
 
-	//SafeRelease(material);
+	SafeRelease(material);
 	SafeRelease(renderDataObject);
 	SafeRelease(batch);
 }
@@ -117,9 +117,10 @@ RenderObject * SpriteObject::Clone(RenderObject *newObject)
 	{
 		DVASSERT_MSG(IsPointerToExactClass<SpriteObject>(this), "Can clone only SpriteObject");
 
-		SpriteObject *newObject = new SpriteObject(sprite, frame, sprScale, sprPivot);
-		newObject->spriteType = spriteType;
+		newObject = new SpriteObject(sprite, frame, sprScale, sprPivot);
 	}
+	SpriteObject *o = static_cast<SpriteObject *>(newObject);
+	o->spriteType = spriteType;
 
 	return RenderObject::Clone(newObject);
 }

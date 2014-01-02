@@ -36,6 +36,9 @@
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Render/Highlevel/SpatialTree.h"
+#include "Render/Highlevel/RenderLayerManager.h"
+#include "Render/Highlevel/RenderPassManager.h"
+#include "Render/Highlevel/ShadowBlendMode.h"
 
 namespace DAVA
 {
@@ -49,13 +52,28 @@ class Light;
 class ParticleEmitterSystem;
 class RenderHierarchy;
 class RenderPassBatchArray;
-    
+class NMaterial;
+class NMaterialProperty;
+
 class RenderSystem
 {
 public:
     RenderSystem();
     virtual ~RenderSystem();
     
+    /**
+        \brief Get Render Layer Manager to have ability to get all render layers from RenderSystem.
+     */
+    RenderLayerManager * GetRenderLayerManager() { return &renderLayerManager; }
+    /**
+        \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
+     */
+    RenderPassManager * GetRenderPassManager() { return &renderPassManager; };
+    /**
+        \brief Get Render Hierarchy. It allow you to work with current render hierarchy and perform all main tasks with geometry on the level.
+     */
+    RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
+
     /**
         \brief Register render objects for permanent rendering
      */
@@ -75,6 +93,19 @@ public:
         \brief Render this batch only on this frame.
      */
     void RenderOnce(RenderBatch * renderBatch);
+    
+    /**
+        \brief Register batch
+     */
+    void RegisterBatch(RenderBatch * batch);
+    /**
+        \brief Unregister batch
+     */
+    void UnregisterBatch(RenderBatch * batch);
+    
+    void RegisterMaterial(NMaterial * material);
+    void UnregisterMaterial(NMaterial * material);
+    
 
     /**
         \brief Set main camera
@@ -104,17 +135,16 @@ public:
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
 
-	RenderLayer * AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer);
-    
-	RenderPass * GetRenderPass(const FastName & passName);
+	//RenderLayer * AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer);
+	//RenderPass * GetRenderPass(const FastName & passName);
     
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
+	void SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode);
+	ShadowPassBlendMode::eBlend GetShadowBlendMode();
 	
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
     
-    RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
-
 private:
 	void CreateSpatialTree();
     void ProcessClipping();
@@ -129,10 +159,10 @@ private:
     Vector<RenderObject*> markedObjects;
     List<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
-    //Vector<RenderLayer*> renderLayers;
     
-    FastNameMap<RenderPass*> renderPassesMap;
-    FastNameMap<RenderLayer*> renderLayersMap;
+    RenderLayerManager renderLayerManager;
+    RenderPassManager renderPassManager;
+    
     
     Vector<RenderObject*> renderObjectArray;
 	Vector<RenderObject*> particleEmitterArray;
@@ -142,18 +172,13 @@ private:
 	bool hierarchyInitialized;
 
     RenderPassBatchArray * globalBatchArray;
+    VisibilityArray visibilityArray;
     
-
-    //Vector<AABBox> transformedBBox;
-    //Vector<BSphere> transformedBSphere;
-    
-    //HashMap<Entity*, RenderObject *> entityObjectMap;
     Camera * camera;
     Camera * clipCamera;
-    //Vector<RenderObject*> forRemove;
     
 	ParticleEmitterSystem * particleEmitterSystem;
-	
+		
     friend class RenderPass;
 };
     
@@ -161,12 +186,14 @@ private:
     
 inline void RenderSystem::SetCamera(Camera * _camera)
 {
-    camera = _camera;
+    SafeRelease(camera);
+    camera = SafeRetain(_camera);
 }
 
 inline void RenderSystem::SetClipCamera(Camera * _camera)
 {
-    clipCamera = _camera;
+    SafeRelease(clipCamera);
+    clipCamera = SafeRetain(_camera);
 }
 
 inline Camera * RenderSystem::GetCamera() const

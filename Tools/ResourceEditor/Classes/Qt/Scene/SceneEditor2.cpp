@@ -119,7 +119,7 @@ SceneEditor2::SceneEditor2()
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
     AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
 
-	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
 
@@ -533,24 +533,22 @@ const Color SceneEditor2::GetShadowColor() const
 	return Color::White();
 }
 
-void SceneEditor2::SetShadowBlendMode(DAVA::ShadowVolumeRenderPass::eBlend blend)
+void SceneEditor2::SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend)
 {
 	if(GetRenderSystem())
 	{
-		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
-		shadowPass->SetBlendMode(blend);
+		GetRenderSystem()->SetShadowBlendMode(blend);
 	}
 }
 
-DAVA::ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
+DAVA::ShadowPassBlendMode::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		DAVA::ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<DAVA::ShadowVolumeRenderPass*>(GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME));
-		return shadowPass->GetBlendMode();
+		GetRenderSystem()->GetShadowBlendMode();
 	}
 
-	return DAVA::ShadowVolumeRenderPass::MODE_BLEND_COUNT;
+	return DAVA::ShadowPassBlendMode::MODE_BLEND_COUNT;
 }
 
 const RenderManager::Stats & SceneEditor2::GetRenderStats() const

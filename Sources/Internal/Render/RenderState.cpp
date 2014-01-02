@@ -293,9 +293,9 @@ void RenderState::Flush(RenderState * hardwareState) const
 			const TextureStateData* currentTextureData = RenderManager::Instance()->GetTextureStateData(textureState);
 			const TextureStateData* hardwareTextureData = RenderManager::Instance()->GetTextureStateData(hardwareState->textureState);
 			
-			//VI: TODO: oprimize this after ensuring all textures are localted sequentially:
-			//break once NULL texture in current state were found
-			for(size_t i = 0; (i < MAX_TEXTURE_COUNT) && (currentTextureData->textures[i] != NULL); ++i)
+			uint32 minIndex = currentTextureData->minmaxTextureIndex & 0x000000FF;
+			uint32 maxIndex = ((currentTextureData->minmaxTextureIndex & 0x0000FF00) >> 8);
+			for(size_t i = minIndex; i <= maxIndex; ++i)
 			{
 				if(currentTextureData->textures[i] != hardwareTextureData->textures[i])
 				{
