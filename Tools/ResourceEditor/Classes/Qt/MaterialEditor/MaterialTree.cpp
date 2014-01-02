@@ -36,7 +36,7 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	treeModel = new MaterialModel();
 
 	setModel(treeModel);
-	setSortingEnabled(true);
+	//setSortingEnabled(true);
 }
 
 MaterialTree::~MaterialTree()
@@ -58,21 +58,21 @@ void MaterialTree::ShowContextMenu(const QPoint &pos)
 void MaterialTree::dragEnterEvent(QDragEnterEvent * event)
 {
 	QTreeView::dragEnterEvent(event);
-	//dragTryAccepted(event);
+	dragTryAccepted(event);
 }
 
 void MaterialTree::dragMoveEvent(QDragMoveEvent * event)
 {
 	QTreeView::dragMoveEvent(event);
-	//dragTryAccepted(event);
+	dragTryAccepted(event);
 }
 
 void MaterialTree::dropEvent(QDropEvent * event)
 {
 	QTreeView::dropEvent(event);
 
-	//event->setDropAction(Qt::IgnoreAction);
-	//event->accept();
+	event->setDropAction(Qt::IgnoreAction);
+	event->accept();
 }
 
 void MaterialTree::dragTryAccepted(QDragMoveEvent *event)

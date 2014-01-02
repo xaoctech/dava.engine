@@ -43,13 +43,13 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Utils/StringFormat.h"
 #include "Render/Material/NMaterialTemplate.h"
+#include "Render/Highlevel/RenderLayer.h"
 
 namespace DAVA
 {
     
 	static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
-    static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
 	
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 	const FastName NMaterial::TEXTURE_NORMAL("normal");
@@ -73,6 +73,8 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -90,39 +92,7 @@ namespace DAVA
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
-	
-	void NMaterial::GenericPropertyManager::Init(NMaterialProperty* prop)
-	{
-		prop->type = Shader::UT_INT;
-		prop->size = 0;
-		prop->data = NULL;
-	}
-	
-	void NMaterial::GenericPropertyManager::Release(NMaterialProperty* prop)
-	{
-		if(prop->data)
-		{
-			SafeDeleteArray(prop->data);
-		}
-	}
-	
-	NMaterialProperty* NMaterial::GenericPropertyManager::Clone(NMaterialProperty* prop)
-	{
-		NMaterial::GenericMaterialProperty* cloneProp = new NMaterial::GenericMaterialProperty();
 		
-		cloneProp->size = prop->size;
-		cloneProp->type = prop->type;
-		
-		if(prop->data)
-		{
-			size_t dataSize = Shader::GetUniformTypeSize(prop->type) * prop->size;
-			cloneProp->data = new uint8[dataSize];
-			memcpy(cloneProp->data, prop->data, dataSize);
-		}
-		
-		return cloneProp;
-	}
-	
 ////////////////////////////////////////////////////////////////////////////////
 	
 	NMaterial::NMaterial() :
@@ -139,7 +109,8 @@ namespace DAVA
 	instancePasses(4),
 	textures(8),
 	materialDynamicLit(false),
-	materialTemplate(NULL)
+	materialTemplate(NULL),
+	materialProperties(16)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -203,7 +174,7 @@ namespace DAVA
 			material->OnParentChanged(NULL);
 			
 			//VI: TODO: review if this call is realy needed at this point
-			CleanupUnusedTextures();
+			//CleanupUnusedTextures();
 		
 			this->Release();
 		}
@@ -403,7 +374,7 @@ namespace DAVA
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
-				CleanupUnusedTextures();
+				//CleanupUnusedTextures();
 				
 				this->Release();
 			}
@@ -506,10 +477,8 @@ namespace DAVA
 	IlluminationParams * NMaterial::GetIlluminationParams()
     {
         if(!illuminationParams)
-        {
             illuminationParams = new IlluminationParams();
-            illuminationParams->SetDefaultParams();
-        }
+        
         return illuminationParams;
     }
 	
@@ -558,7 +527,7 @@ namespace DAVA
 			SafeRelease(bucket->texture);
 			
 			bucket->texture = SafeRetain(texture);
-			bucket->path = texture->relativePathname;
+			bucket->path = (bucket->texture) ? bucket->texture->relativePathname : FilePath();
 			
 			SetTexturesDirty();
 		}
@@ -610,6 +579,10 @@ namespace DAVA
 						  uint32 size,
 						  const void * data)
 	{
+		DVASSERT(data);
+		DVASSERT(size);
+		DVASSERT(keyName.IsValid());
+		
 		size_t dataSize = Shader::GetUniformTypeSize(type) * size;
 		NMaterialProperty * materialProperty = materialProperties.at(keyName);
 		if (materialProperty)
@@ -619,7 +592,7 @@ namespace DAVA
 				//VI: material property type or size chnage should never happen at runtime
 				DVASSERT(false && "Runtime change of material property type!");
 				
-				NMaterialProperty* newProp = new NMaterial::GenericMaterialProperty();
+				NMaterialProperty* newProp = new NMaterialProperty();
 				newProp->size = size;
 				newProp->type = type;
 				newProp->data = new uint8[dataSize];
@@ -629,23 +602,29 @@ namespace DAVA
 				SafeDelete(materialProperty);
 				materialProperties.insert(keyName, newProp);
 				
-				OnMaterialPropertyAdded(keyName, newProp);
+				OnMaterialPropertyAdded(keyName);
 				
 				materialProperty = newProp;
 			}
 		}
 		else
 		{
-			materialProperty = new NMaterial::GenericMaterialProperty();
+			materialProperty = new NMaterialProperty();
 			materialProperty->size = size;
 			materialProperty->type = type;
 			materialProperty->data = new uint8[dataSize];
 			materialProperties.insert(keyName, materialProperty);
 			
-			OnMaterialPropertyAdded(keyName, materialProperty);
+			OnMaterialPropertyAdded(keyName);
 		}
 		
 		memcpy(materialProperty->data, data, dataSize);
+		
+		//VI: this is temporary solution. It has to be removed once lighting system + autobind system is ready
+		if(IsDynamicLit() && IsLightingProperty(keyName))
+		{
+			UpdateLightingProperties(lights[0]);
+		}
 	}
 	
 	NMaterialProperty* NMaterial::GetPropertyValue(const FastName & keyName) const
@@ -673,14 +652,14 @@ namespace DAVA
 	
 	void NMaterial::RemoveMaterialProperty(const FastName & keyName)
 	{
-		OnMaterialPropertyRemoved(keyName);
-		
 		NMaterialProperty* prop = materialProperties.at(keyName);
 		if(prop)
 		{
 			materialProperties.erase(keyName);
 			SafeDelete(prop);
 		}
+		
+		OnMaterialPropertyRemoved(keyName);
 	}
 	
 	void NMaterial::SetMaterialName(const String& name)
@@ -724,16 +703,9 @@ namespace DAVA
 		}
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 		
 		this->Release();
-	}
-	
-	const FastNameSet& NMaterial::GetRenderLayers()
-	{
-		DVASSERT(baseTechnique);
-		
-		return baseTechnique->GetLayersSet();
 	}
 	
 	void NMaterial::OnMaterialTemplateChanged()
@@ -767,7 +739,7 @@ namespace DAVA
 		LoadActiveTextures();
 		
 		//VI: TODO: review if this call is realy needed at this point
-		CleanupUnusedTextures();
+		//CleanupUnusedTextures();
 	}
 	
 	void NMaterial::BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet)
@@ -868,7 +840,7 @@ namespace DAVA
 		DVASSERT(techniqueName.IsValid());
 		
 		SafeRelease(baseTechnique);
-		baseTechnique = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(techniqueName);
+		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
 		
@@ -878,6 +850,8 @@ namespace DAVA
 			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
 			UpdateRenderPass(baseTechnique->GetPassName(i), effectiveFlags, pass);
 		}
+        
+        SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 	}
 	
 	void NMaterial::UpdateRenderPass(const FastName& passName,
@@ -1147,9 +1121,9 @@ namespace DAVA
 
 	void NMaterial::BindMaterialTextures(RenderPassInstance* passInstance)
 	{
-		if(activePassInstance->texturesDirty)
+		if(passInstance->texturesDirty)
 		{
-			PrepareTextureState(activePassInstance);
+			PrepareTextureState(passInstance);
 		}
 	}
 	
@@ -1171,8 +1145,7 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::OnMaterialPropertyAdded(const FastName& propName,
-											NMaterialProperty* prop)
+	void NMaterial::OnMaterialPropertyAdded(const FastName& propName)
 	{
 		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
 			it != instancePasses.end();
@@ -1183,9 +1156,10 @@ namespace DAVA
 			{
 				for(size_t i = 0; i < pass->activeUniformsCacheSize; ++i)
 				{
-					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
+					UniformCacheEntry& cacheEntry = pass->activeUniformsCachePtr[i];
+					if(cacheEntry.uniform->name == propName)
 					{
-						pass->activeUniformsCachePtr[i].prop = prop;
+						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
 						break;
 					}
 				}
@@ -1197,7 +1171,7 @@ namespace DAVA
 		size_t childrenCount = children.size();
 		for(size_t i = 0; i< childrenCount; ++i)
 		{
-			children[i]->OnMaterialPropertyAdded(propName, prop);
+			children[i]->OnMaterialPropertyAdded(propName);
 		}
 		
 		this->Release();
@@ -1216,7 +1190,8 @@ namespace DAVA
 				{
 					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
 					{
-						pass->activeUniformsCachePtr[i].prop = NULL;
+						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
+						
 						break;
 					}
 				}
@@ -1279,53 +1254,77 @@ namespace DAVA
 	
 	void NMaterial::SetLight(uint32 index, Light * light)
 	{
+		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		{
+			if(parent)
+			{
+				parent->SetLight(index, light);
+			}
+			else
+			{
+				SetLightInternal(index, light);
+			}
+		}
+		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
+		{
+			SetLightInternal(index, light);
+
+			for(size_t i = 0; i < children.size(); ++i)
+			{
+				children[i]->SetLightInternal(index, light);
+			}
+		}
+	}
+	
+	void NMaterial::SetLightInternal(int index, Light* light)
+	{
 		bool changed = (light != lights[index]);
 		lights[index] = light;
 		
 		if(changed && materialDynamicLit)
 		{
-			if(lights[0])
-			{
-				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-				
-				Color materialAmbientColor = (propAmbientColor) ? *(Color*) propAmbientColor->data : Color(1, 1, 1, 1);
-				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*) propDiffuseColor->data : Color(1, 1, 1, 1);
-				Color materialSpecularColor = (propSpecularColor) ? *(Color*) propSpecularColor->data : Color(1, 1, 1, 1);
-				float32 intensity = lights[0]->GetIntensity();
-				
-				materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();
-				materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
-				materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
-				
-				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
-			}
-			else
-			{
-				NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-				NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-				NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-				
-				Color materialAmbientColor = (propAmbientColor) ? *(Color*) propAmbientColor->data : Color(1, 1, 1, 1);
-				Color materialDiffuseColor = (propDiffuseColor) ? *(Color*) propDiffuseColor->data : Color(1, 1, 1, 1);
-				Color materialSpecularColor = (propSpecularColor) ? *(Color*) propSpecularColor->data : Color(1, 1, 1, 1);
-				float32 intensity = 0;
-				
-				materialAmbientColor = materialAmbientColor * Color(0, 0, 0, 0);
-				materialDiffuseColor = materialDiffuseColor * Color(0, 0, 0, 0);
-				materialSpecularColor = materialSpecularColor * Color(0, 0, 0, 0);
-				
-				SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-				SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
-				
-			}
+			UpdateLightingProperties(lights[0]);
 		}
+	}
+	
+	void NMaterial::UpdateLightingProperties(Light* light)
+	{
+		NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+		if(propAmbientColor)
+		{
+			Color lightAmbientColor = (light) ? light->GetAmbientColor() : Color(0, 0, 0, 0);
+			Color materialAmbientColor = *(Color*) propAmbientColor->data;
+			materialAmbientColor = materialAmbientColor * lightAmbientColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+		}
+		
+		NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+		if(propDiffuseColor)
+		{
+			Color lightDiffuseColor = (light) ? light->GetDiffuseColor() : Color(0, 0, 0, 0);
+			Color materialDiffuseColor = *(Color*) propDiffuseColor->data;
+			materialDiffuseColor = materialDiffuseColor * lightDiffuseColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+		}
+		
+		NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+		if(propSpecularColor)
+		{
+			Color lightSpecularColor = (light) ? light->GetSpecularColor() : Color(0, 0, 0, 0);
+			Color materialSpecularColor = *(Color*) propSpecularColor->data;
+			materialSpecularColor = materialSpecularColor * lightSpecularColor;
+			SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+		}
+		
+		float32 intensity = (light) ? light->GetIntensity() : 0;
+		SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+	}
+	
+	bool NMaterial::IsLightingProperty(const FastName& propName) const
+	{
+		return (NMaterial::PARAM_PROP_AMBIENT_COLOR == propName ||
+				NMaterial::PARAM_PROP_DIFFUSE_COLOR == propName ||
+				NMaterial::PARAM_PROP_SPECULAR_COLOR == propName);
 	}
 	
 	const RenderStateData* NMaterial::GetRenderState(const FastName& passName) const
@@ -1547,7 +1546,7 @@ namespace DAVA
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
 	{
-		return 0;
+		return I_VIEW | I_EDIT;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1568,19 +1567,29 @@ namespace DAVA
 			
 			for(; it != end; ++it)
 			{
-				if(0 == staticData.count(it->first))
+				FastName propName = it->first;
+
+				// don't add some properties with light settings, they should be hidden for user
+				if(propName != NMaterial::PARAM_LIGHT_AMBIENT_COLOR &&
+					propName != NMaterial::PARAM_LIGHT_DIFFUSE_COLOR &&
+					propName != NMaterial::PARAM_LIGHT_SPECULAR_COLOR)
 				{
-					PropData data;
-					data.property = *it->second;
-					data.source |= source;
+					if(0 == staticData.count(it->first))
+					{
+						PropData data;
+						data.data = it->second->data;
+						data.size = it->second->size;
+						data.type = it->second->type;
+						data.source |= source;
 					
-					staticData.Insert(it->first, data);
-					//printf("insert %s, %d\n", it->first.c_str(), source);
-				}
-				else
-				{
-					staticData[it->first].source |= source;
-					//printf("update %s, %d\n", it->first.c_str(), source);
+						staticData.Insert(propName, data);
+						//printf("insert %s, %d\n", propName.c_str(), source);
+					}
+					else
+					{
+						staticData[propName].source |= source;
+						//printf("update %s, %d\n", propName.c_str(), source);
+					}
 				}
 			}
 			
@@ -1618,10 +1627,9 @@ namespace DAVA
 							if(!staticData.count(propName))
 							{
 								PropData data;
-
-								data.property.data = NULL;
-								data.property.type = uniform->type;
-								data.property.size = uniform->size;
+								data.data = NULL;
+								data.size = uniform->size;
+								data.type = uniform->type;
 								data.source |= source;
 
 								staticData.Insert(propName, data);
@@ -1709,53 +1717,47 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
+		PropData prop = members->valueByIndex(index);
 		
 		// self or parent property
-		if(NULL != prop->data)
+		if(NULL != prop.data)
 		{
-			switch(prop->type)
+			switch(prop.type)
 			{
 				case Shader::UT_FLOAT:
-					ret.SetFloat(*(float32*) prop->data);
+					ret.SetFloat(*(float32*) prop.data);
 					break;
 					
 				case Shader::UT_FLOAT_VEC2:
-					ret.SetVector2(*(Vector2*) prop->data);
+					ret.SetVector2(*(Vector2*) prop.data);
 					break;
 					
 				case Shader::UT_FLOAT_VEC3:
-					if(        propName == NMaterial::PARAM_LIGHT_AMBIENT_COLOR ||
-					   propName == NMaterial::PARAM_LIGHT_DIFFUSE_COLOR ||
-					   propName == NMaterial::PARAM_LIGHT_SPECULAR_COLOR)
+					if(isColor(propName))
 					{
-						float32 *color = (float32*) prop->data;
+						float32 *color = (float32*) prop.data;
 						ret.SetColor(Color(color[0], color[1], color[2], 1.0));
 					}
 					else
 					{
-						ret.SetVector3(*(Vector3*) prop->data);
+						ret.SetVector3(*(Vector3*) prop.data);
 					}
 					break;
 					
 				case Shader::UT_FLOAT_VEC4:
-					if(propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
-					   propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
-					   propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
-					   propName == NMaterial::PARAM_FOG_COLOR ||
-					   propName == NMaterial::PARAM_FLAT_COLOR)
+					if(isColor(propName))
 					{
-						float32 *color = (float32*) prop->data;
+						float32 *color = (float32*) prop.data;
 						ret.SetColor(Color(color[0], color[1], color[2], color[3]));
 					}
 					else
 					{
-						ret.SetVector4(*(Vector4*) prop->data);
+						ret.SetVector4(*(Vector4*) prop.data);
 					}
 					break;
 					
 				case Shader::UT_INT:
-					ret.SetInt32(*(int32*) prop->data);
+					ret.SetInt32(*(int32*) prop.data);
 					break;
 					
 				case Shader::UT_INT_VEC2:
@@ -1766,7 +1768,7 @@ namespace DAVA
 					break;
 					
 				case Shader::UT_BOOL:
-					ret.SetBool((*(int32*) prop->data) != 0);
+					ret.SetBool((*(int32*) prop.data) != 0);
 					break;
 					
 				case Shader::UT_BOOL_VEC2:
@@ -1777,23 +1779,23 @@ namespace DAVA
 					break;
 					
 				case Shader::UT_FLOAT_MAT2:
-					ret.SetMatrix2(*(Matrix2*) prop->data);
+					ret.SetMatrix2(*(Matrix2*) prop.data);
 					break;
 					
 				case Shader::UT_FLOAT_MAT3:
-					ret.SetMatrix3(*(Matrix3*) prop->data);
+					ret.SetMatrix3(*(Matrix3*) prop.data);
 					break;
 					
 				case Shader::UT_FLOAT_MAT4:
-					ret.SetMatrix4(*(Matrix4*) prop->data);
+					ret.SetMatrix4(*(Matrix4*) prop.data);
 					break;
 					
 				case Shader::UT_SAMPLER_2D:
-					ret.SetInt32(*(int32*) prop->data);
+					ret.SetInt32(*(int32*) prop.data);
 					break;
 					
 				case Shader::UT_SAMPLER_CUBE:
-					ret.SetInt32(*(int32*) prop->data);
+					ret.SetInt32(*(int32*) prop.data);
 					break;
 					
 				default:
@@ -1805,10 +1807,50 @@ namespace DAVA
 		// shader property that is not set in self or parent properties
 		else
 		{
-			ret = VariantType(FastName("not set"));
+			switch(prop.type)
+			{
+				case Shader::UT_FLOAT: ret.SetFloat(0);	break;
+				case Shader::UT_FLOAT_VEC2:	ret.SetVector2(DAVA::Vector2()); break;
+				case Shader::UT_FLOAT_VEC3:	isColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector3(DAVA::Vector3()); break;
+				case Shader::UT_FLOAT_VEC4:	isColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector4(DAVA::Vector4()); break;
+				case Shader::UT_INT: ret.SetInt32(0); break;
+				case Shader::UT_BOOL: ret.SetBool(false); break;
+				case Shader::UT_FLOAT_MAT2:	ret.SetMatrix2(DAVA::Matrix2()); break;
+				case Shader::UT_FLOAT_MAT3:	ret.SetMatrix3(DAVA::Matrix3()); break;
+				case Shader::UT_FLOAT_MAT4:	ret.SetMatrix4(DAVA::Matrix4()); break;
+				case Shader::UT_SAMPLER_2D:	ret.SetInt32(0); break;
+				case Shader::UT_SAMPLER_CUBE: ret.SetInt32(0); break;
+
+				case Shader::UT_INT_VEC2:
+				case Shader::UT_INT_VEC3:
+				case Shader::UT_INT_VEC4:
+					DVASSERT(false);
+					//TODO: add a way to set int[]
+					break;
+
+				case Shader::UT_BOOL_VEC2:
+				case Shader::UT_BOOL_VEC3:
+				case Shader::UT_BOOL_VEC4:
+					DVASSERT(false);
+					//TODO: add a way to set bool[]
+					break;
+
+				default:
+					DVASSERT(false);
+					break;
+			}
 		}
 		
 		return ret;
+	}
+
+	bool NMaterial::NMaterialStateDynamicPropertiesInsp::isColor(const FastName &propName) const
+	{
+		return (propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
+				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
+				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
+				propName == NMaterial::PARAM_FOG_COLOR ||
+				propName == NMaterial::PARAM_FLAT_COLOR);
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
@@ -1820,133 +1862,207 @@ namespace DAVA
 		DVASSERT(index < members->size());
 		
 		FastName propName = members->keyByIndex(index);
-		const NMaterialProperty *prop = &members->valueByIndex(index).property;
-		int propSize = prop->size;
-		Shader::eUniformType propType = prop->type;
+		PropData prop = members->valueByIndex(index);
+		int propSize = prop.size;
+		Shader::eUniformType propType = prop.type;
 		
-		switch(prop->type)
+		if(value.GetType() == VariantType::TYPE_NONE)
 		{
-			case Shader::UT_FLOAT:
-			{
-				float32 val = value.AsFloat();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_FLOAT_VEC2:
-			{
-				const Vector2& val = value.AsVector2();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_FLOAT_VEC3:
-			{
-				Vector3 val;
-				
-				if(        propName == NMaterial::PARAM_LIGHT_AMBIENT_COLOR ||
-				   propName == NMaterial::PARAM_LIGHT_DIFFUSE_COLOR ||
-				   propName == NMaterial::PARAM_LIGHT_SPECULAR_COLOR)
-				{
-					Color c = value.AsColor();
-					val = Vector3(c.r, c.g, c.b);
-				}
-				else
-				{
-					val = value.AsVector3();
-				}
-				
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_FLOAT_VEC4:
-			{
-				Vector4 val;
-				
-				if(propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
-				   propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
-				   propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
-				   propName == NMaterial::PARAM_FOG_COLOR ||
-				   propName == NMaterial::PARAM_FLAT_COLOR)
-				{
-					Color c = value.AsColor();
-					val = Vector4(c.r, c.g, c.b, c.a);
-				}
-				else
-				{
-					val = value.AsVector4();
-				}
-				
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_INT:
-			{
-				int32 val = value.AsInt32();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_INT_VEC2:
-			case Shader::UT_INT_VEC3:
-			case Shader::UT_INT_VEC4:
-			{
-				DVASSERT(false);
-				//TODO: add a way to set int[]
-			}
-				break;
-				
-			case Shader::UT_BOOL:
-			{
-				bool val = value.AsBool();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_BOOL_VEC2:
-			case Shader::UT_BOOL_VEC3:
-			case Shader::UT_BOOL_VEC4:
-			{
-				DVASSERT(false);
-				//TODO: add a way to set bool[]
-			}
-				break;
-				
-			case Shader::UT_FLOAT_MAT2:
-			{
-				const Matrix2& val = value.AsMatrix2();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_FLOAT_MAT3:
-			{
-				const Matrix3& val = value.AsMatrix3();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_FLOAT_MAT4:
-			{
-				const Matrix3& val = value.AsMatrix3();
-				state->SetPropertyValue(propName, propType, propSize, &val);
-			}
-				break;
-				
-			case Shader::UT_SAMPLER_2D:
-				//VI: samplers are set by config materials
-				break;
-				
-			case Shader::UT_SAMPLER_CUBE:
-				//VI: samplers are set by config materials
-				break;
-				
-			default:
-				DVASSERT(false);
-				break;
+			// empty variant value should remove this property
+			state->RemoveMaterialProperty(propName);
 		}
-		
+		else
+		{
+			switch(prop.type)
+			{
+				case Shader::UT_FLOAT:
+				{
+					float32 val = value.AsFloat();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_FLOAT_VEC2:
+				{
+					const Vector2& val = value.AsVector2();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_FLOAT_VEC3:
+				{
+					Vector3 val;
+				
+					if(isColor(propName))
+					{
+						Color c = value.AsColor();
+						val = Vector3(c.r, c.g, c.b);
+					}
+					else
+					{
+						val = value.AsVector3();
+					}
+				
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_FLOAT_VEC4:
+				{
+					Vector4 val;
+				
+					if(isColor(propName))
+					{
+						Color c = value.AsColor();
+						val = Vector4(c.r, c.g, c.b, c.a);
+					}
+					else
+					{
+						val = value.AsVector4();
+					}
+				
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_INT:
+				{
+					int32 val = value.AsInt32();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_INT_VEC2:
+				case Shader::UT_INT_VEC3:
+				case Shader::UT_INT_VEC4:
+				{
+					DVASSERT(false);
+					//TODO: add a way to set int[]
+				}
+					break;
+				
+				case Shader::UT_BOOL:
+				{
+					bool val = value.AsBool();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_BOOL_VEC2:
+				case Shader::UT_BOOL_VEC3:
+				case Shader::UT_BOOL_VEC4:
+				{
+					DVASSERT(false);
+					//TODO: add a way to set bool[]
+				}
+					break;
+				
+				case Shader::UT_FLOAT_MAT2:
+				{
+					const Matrix2& val = value.AsMatrix2();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_FLOAT_MAT3:
+				{
+					const Matrix3& val = value.AsMatrix3();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_FLOAT_MAT4:
+				{
+					const Matrix3& val = value.AsMatrix3();
+					state->SetPropertyValue(propName, propType, propSize, &val);
+				}
+					break;
+				
+				case Shader::UT_SAMPLER_2D:
+					//VI: samplers are set by config materials
+					break;
+				
+				case Shader::UT_SAMPLER_CUBE:
+					//VI: samplers are set by config materials
+					break;
+				
+				default:
+					DVASSERT(false);
+					break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
+	FastName NMaterial::NMaterialStateDynamicFlagsInsp::GetName(size_t index) const
+	{
+		FastName ret;
+
+		switch(index)
+		{
+			case 0: ret = FLAG_VERTEXFOG; break;
+			case 1: ret = FLAG_TEXTURESHIFT; break;
+			case 2: ret = FLAG_FLATCOLOR; break;
+			case 3: ret = FLAG_LIGHTMAPONLY; break;
+			case 4: ret = FLAG_TEXTUREONLY; break;
+			case 5: ret = FLAG_SETUPLIGHTMAP; break;
+			default: break;
+		}
+
+		return ret;
+	}
+
+	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
+	{
+		return 6;
+	}
+
+	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const
+	{
+		return InspDesc(MemberName(object, index));
+	}
+
+	const char* NMaterial::NMaterialStateDynamicFlagsInsp::MemberName(void *object, size_t index) const
+	{
+		return GetName(index).c_str();
+	}
+
+	VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *object, size_t index) const
+	{
+		VariantType ret;
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		FastName name = GetName(index);
+		if(name.IsValid())
+		{
+			ret.SetBool(state->GetFlagValue(name));
+		}
+
+		return ret;
+	}
+
+	void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
+	{
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		FastName name = GetName(index);
+		if(name.IsValid())
+		{
+			NMaterial::eFlagValue flag = NMaterial::FlagOff;
+			if(value.AsBool())
+			{
+				flag = NMaterial::FlagOn;
+			}
+
+			state->SetFlag(name, flag);
+		}
+	}
+
+	int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, size_t index) const
+	{
+		return I_VIEW | I_EDIT;
 	}
 };

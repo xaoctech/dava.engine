@@ -1527,10 +1527,10 @@ void QtMainWindow::LoadShadowBlendModeState(SceneEditor2* scene)
 {
 	if(NULL != scene)
 	{
-		const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
+		const ShadowPassBlendMode::eBlend blend = scene->GetShadowBlendMode();
 
-		ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
-		ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+		ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowPassBlendMode::MODE_BLEND_ALPHA);
+		ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 	}
 }
 
@@ -1596,7 +1596,7 @@ void QtMainWindow::OnShadowBlendModeAlpha()
 		return;
 	}
 	
-	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_ALPHA));
+	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowPassBlendMode::MODE_BLEND_ALPHA));
 }
 
 void QtMainWindow::OnShadowBlendModeMultiply()
@@ -1609,7 +1609,7 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 		return;
 	}
 	
-	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY));
+	scene->Exec(new ChangeDynamicShadowModeCommand(scene, ShadowPassBlendMode::MODE_BLEND_MULTIPLY));
 }
 
 void QtMainWindow::OnSaveHeightmapToPNG()

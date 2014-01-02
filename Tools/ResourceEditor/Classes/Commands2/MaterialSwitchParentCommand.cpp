@@ -30,29 +30,35 @@
 
 #include "MaterialSwitchParentCommand.h"
 
-MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *oldMat, const DAVA::NMaterial *newParent)
+MaterialSwitchParentCommand::MaterialSwitchParentCommand(DAVA::NMaterial *instance, DAVA::NMaterial *_newParent)
 	: Command2(CMDID_MATERIAL_SWITCH_PARENT, "Switch Material Parent")
-	, oldMaterialParent(DAVA::FastName("")) //VI: TODO: Implement for refactored new materials!
-    , newMaterialParent(newParent->GetMaterialName())
-    , currentMaterial(oldMat)
 {
-    DVASSERT(currentMaterial);
-	DVASSERT(false && "Implement for refactored new materials");
+    DVASSERT(instance);
+    DVASSERT(_newParent);
+    DVASSERT(instance->GetParent());
+    
+    currentInstance = DAVA::SafeRetain(instance);
+    newParent = DAVA::SafeRetain(_newParent);
+    oldParent = DAVA::SafeRetain(instance->GetParent());
 }
 
 MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
 {
-    currentMaterial = NULL;
+    DAVA::SafeRelease(oldParent);
+    DAVA::SafeRelease(newParent);
+    DAVA::SafeRelease(currentInstance);
 }
 
 void MaterialSwitchParentCommand::Redo()
 {
-    //currentMaterial->SwitchParent(newMaterialParent);
+    oldParent->RemoveChild(currentInstance);
+    newParent->AddChild(currentInstance);
 }
 
 void MaterialSwitchParentCommand::Undo()
 {
-    //currentMaterial->SwitchParent(oldMaterialParent);
+    newParent->RemoveChild(currentInstance);
+    oldParent->AddChild(currentInstance);
 }
 
 

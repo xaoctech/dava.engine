@@ -42,6 +42,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/Highlevel/SpatialTree.h"
+#include "Render/ShaderCache.h"
 
 // TODO: Move class to other place
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
@@ -53,71 +54,31 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
+    :   renderLayerManager()
+    ,   renderPassManager(this)
+    ,   camera(0)
+    ,   clipCamera(0)
 {
-    camera = 0;
-    clipCamera = 0;
-    // Register available passes & layers
-    renderPassesMap.Insert(PASS_FORWARD, new RenderPass(PASS_FORWARD));
-    renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
-	
-    renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL));
-	renderLayersMap.Insert(LAYER_AFTER_OPAQUE, new RenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL));
-    renderLayersMap.Insert(LAYER_ALPHA_TEST_LAYER, new RenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL));
-    
-    renderLayersMap.Insert(LAYER_TRANSLUCENT, new RenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_BACK_TO_FRONT));
-    renderLayersMap.Insert(LAYER_AFTER_TRANSLUCENT, new RenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL));
-    
-    renderLayersMap.Insert(LAYER_SHADOW_VOLUME, new RenderLayer(LAYER_SHADOW_VOLUME, 0));
-    
-    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
-	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_OPAQUE], LAST_LAYER);
-	forwardPass->AddRenderLayer(renderLayersMap[LAYER_ALPHA_TEST_LAYER], LAST_LAYER);
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
-	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_TRANSLUCENT], LAST_LAYER);
 
-    RenderPass * shadowVolumePass = renderPassesMap[PASS_SHADOW_VOLUME];
-    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
-
-    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
-    renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
+    renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_FORWARD));
+    renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 
 	particleEmitterSystem = new ParticleEmitterSystem();
     renderHierarchy = new QuadTree(10);
 	hierarchyInitialized = false;
-    globalBatchArray = new RenderPassBatchArray();
-	
-	for(FastNameMap<RenderLayer*>::iterator it = renderLayersMap.begin();
-		it != renderLayersMap.end();
-		++it)
-	{
-		globalBatchArray->InitLayer(it->first, it->second->GetFlags());
-	}
-	
+    globalBatchArray = new RenderPassBatchArray(this);
+
 	markedObjects.reserve(100);
 }
 
 RenderSystem::~RenderSystem()
 {
+    SafeRelease(camera);
+    SafeRelease(clipCamera);
+    
     SafeDelete(globalBatchArray);
     SafeDelete(renderHierarchy);
 	SafeDelete(particleEmitterSystem);
-    
-    FastNameMap<RenderPass*>::iterator endPasses = renderPassesMap.end();
-    for(FastNameMap<RenderPass*>::iterator it = renderPassesMap.begin(); it != endPasses; ++it)
-    {
-        RenderPass *pass = it->second;
-        SafeDelete(pass);
-    }
-    renderPassesMap.clear();
-    
-    FastNameMap<RenderLayer*>::iterator endLayers = renderLayersMap.end();
-    for(FastNameMap<RenderLayer*>::iterator it = renderLayersMap.begin(); it != endLayers; ++it)
-    {
-        RenderLayer *layer = it->second;
-        SafeDelete(layer);
-    }
-    renderLayersMap.clear();
 }
     
 
@@ -169,21 +130,58 @@ void RenderSystem::AddRenderObject(RenderObject * renderObject)
 	renderHierarchy->AddRenderObject(renderObject);
 
 	particleEmitterSystem->AddIfEmitter(renderObject);
-	renderObject->SetRenderSystem(this);	
+	renderObject->SetRenderSystem(this);
+    
+	uint32 size = renderObject->GetRenderBatchCount();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        RenderBatch *batch = renderObject->GetRenderBatch(i);
+        RegisterBatch(batch);
+    }
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
+	uint32 size = renderObject->GetRenderBatchCount();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        RenderBatch *batch = renderObject->GetRenderBatch(i);
+        UnregisterBatch(batch);
+    }
+
 	renderHierarchy->RemoveRenderObject(renderObject);
     particleEmitterSystem->RemoveIfEmitter(renderObject);
 	renderObject->SetRenderSystem(0);	
 }
-
     
-RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
+void RenderSystem::RegisterBatch(RenderBatch * batch)
 {
-	return renderPassesMap[passName];
+    NMaterial * materialInstance = batch->GetMaterial();
+    NMaterial * material = materialInstance->GetParent();
+    RegisterMaterial(materialInstance);
+    RegisterMaterial(material);
 }
+    
+void RenderSystem::UnregisterBatch(RenderBatch * batch)
+{
+    //UnregisterMaterial(batch->GetMaterial());
+}
+    
+void RenderSystem::RegisterMaterial(NMaterial * material)
+{
+    //material->AssignRenderLayerIDs(GetRenderLayerManager());
+}
+    
+void RenderSystem::UnregisterMaterial(NMaterial * material)
+{
+    
+}
+
+//
+//RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
+//{
+//	return renderPassesMap[passName];
+//}
     
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
@@ -306,6 +304,7 @@ void RenderSystem::AddLight(Light * light)
     
 void RenderSystem::RemoveLight(Light * light)
 {
+    SafeRelease(light);
     lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
 }
 
@@ -351,14 +350,19 @@ void RenderSystem::Update(float32 timeElapsed)
     }
     movedLights.clear();
     
+    visibilityArray.Clear();
+    renderHierarchy->Clip(clipCamera, &visibilityArray);
+
     globalBatchArray->Clear();
-    renderHierarchy->Clip(clipCamera, globalBatchArray);
-	
+	globalBatchArray->PrepareVisibilityArray(&visibilityArray);
+    
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
         objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
     }
+
+    ShaderCache::Instance()->ClearAllLastBindedCaches();
 }
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
@@ -370,6 +374,7 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 void RenderSystem::Render()
 {
     TIME_PROFILE("RenderSystem::Render");
+
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
@@ -379,22 +384,22 @@ void RenderSystem::Render()
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
 }
 
-RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer)
-{
-	DVASSERT(false == renderLayersMap.count(layerName));
-
-	RenderLayer * newLayer = new RenderLayer(layerName, sortingFlags);
-	renderLayersMap.Insert(layerName, newLayer);
-
-	RenderPass * inPass = renderPassesMap[passName];
-	inPass->AddRenderLayer(newLayer, afterLayer);
-
-	return newLayer;
-}
+//RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer)
+//{
+//	DVASSERT(false == renderLayersMap.count(layerName));
+//
+//	RenderLayer * newLayer = new RenderLayer(layerName, sortingFlags);
+//	renderLayersMap.Insert(layerName, newLayer);
+//
+//	RenderPass * inPass = renderPassesMap[passName];
+//	inPass->AddRenderLayer(newLayer, afterLayer);
+//
+//	return newLayer;
+//}
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
-    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
     DVASSERT(shadowVolume);
 
     ShadowRect *shadowRect = shadowVolume->GetShadowRect();
@@ -405,7 +410,7 @@ void RenderSystem::SetShadowRectColor(const Color &color)
     
 const Color & RenderSystem::GetShadowRectColor()
 {
-    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
     DVASSERT(shadowVolume);
     
     ShadowRect *shadowRect = shadowVolume->GetShadowRect();
@@ -413,4 +418,21 @@ const Color & RenderSystem::GetShadowRectColor()
     
     return shadowRect->GetColor();
 }
+	
+void RenderSystem::SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode)
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	shadowVolume->SetBlendMode(blendMode);
+}
+	
+ShadowPassBlendMode::eBlend RenderSystem::GetShadowBlendMode()
+{
+	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    DVASSERT(shadowVolume);
+
+	return shadowVolume->GetBlendMode();
+}
+
 };

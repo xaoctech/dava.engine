@@ -552,6 +552,11 @@ public:
 		return default2DRenderStateHandle;
 	}
 	
+	inline UniqueHandle GetDefault2DNoBlendStateHandle()
+	{
+		return default2DNoBlendRenderStateHandle;
+	}
+	
 	inline UniqueHandle GetDefault2DNoTextureStateHandle() const
 	{
 		return default2DNoTextureStateHandle;
@@ -602,6 +607,7 @@ public:
 	}
 
 	void SetDefault2DState();
+	void SetDefault2DNoBlendState();
 	void SetDefault2DNoTextureState();
 	void SetDefault3DState();
 	
@@ -717,6 +723,7 @@ protected:
 	
 	UniqueStateSet<RenderStateData, RenderStateDataUniqueHandler> uniqueRenderStates;
 	UniqueHandle default2DRenderStateHandle;
+	UniqueHandle default2DNoBlendRenderStateHandle;
 	UniqueHandle default2DNoTextureStateHandle;
 	UniqueHandle default3DRenderStateHandle;
 	UniqueHandle defaultHardwareState;

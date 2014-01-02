@@ -36,11 +36,11 @@
 namespace DAVA
 {
     
-ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
-    :   RenderPass(_name)
+ShadowVolumeRenderPass::ShadowVolumeRenderPass(RenderSystem * rs, const FastName & _name, RenderPassID id)
+    :   RenderPass(rs, _name, id)
 {
     shadowRect = ShadowRect::Create();
-	blendMode = MODE_BLEND_ALPHA;
+	blendMode = ShadowPassBlendMode::MODE_BLEND_ALPHA;
 	
 	RenderStateData stateData = {0};
 	
@@ -72,7 +72,7 @@ ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
     SafeRelease(shadowRect);
 }
 
-void ShadowVolumeRenderPass::SetBlendMode(eBlend _blendMode)
+void ShadowVolumeRenderPass::SetBlendMode(ShadowPassBlendMode::eBlend _blendMode)
 {
 	blendMode = _blendMode;
 }
@@ -83,7 +83,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera, RenderPassBatchArray * render
     
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW))
 	{
-		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(shadowVolumesLayer->GetName());
+		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(shadowVolumesLayer->GetRenderLayerID());
         if (renderLayerBatchArray)
         {
 			//draw shadowvolumes here. Each shadow volume has special shadow material
@@ -107,7 +107,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera, RenderPassBatchArray * render
 			//RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 			//RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 			
-			RenderManager::Instance()->SetRenderState((MODE_BLEND_ALPHA == blendMode) ? blendAlphaState : blendMultiplyState);
+			RenderManager::Instance()->SetRenderState((ShadowPassBlendMode::MODE_BLEND_ALPHA == blendMode) ? blendAlphaState : blendMultiplyState);
 			
 			/*switch(blendMode)
 			{
@@ -202,7 +202,7 @@ ShadowRect * ShadowVolumeRenderPass::GetShadowRect() const
     return shadowRect;
 }
 
-ShadowVolumeRenderPass::eBlend ShadowVolumeRenderPass::GetBlendMode() const
+ShadowPassBlendMode::eBlend ShadowVolumeRenderPass::GetBlendMode() const
 {
 	return blendMode;
 }

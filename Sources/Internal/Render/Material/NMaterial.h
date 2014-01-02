@@ -36,11 +36,13 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Material/NMaterialTemplate.h"
 #include "Render/Shader.h"
 #include "Render/RenderState.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Render/Material/RenderTechnique.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -54,7 +56,7 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-	
+class RenderLayerManager;
 class NMaterial;
 struct NMaterialTemplate;
 	
@@ -67,10 +69,19 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    void SetDefaultParams() 
+    IlluminationParams() :
+    isUsed(false),
+    castShadow(false),
+    receiveShadow(false),
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
+    {}
+
+    IlluminationParams(const IlluminationParams & params)
     {
-        isUsed = castShadow = receiveShadow = true;
-        lightmapSize = LIGHTMAP_SIZE_DEFAULT;
+        isUsed = params.isUsed;
+        castShadow = params.castShadow;
+        receiveShadow = params.receiveShadow;
+        lightmapSize = params.lightmapSize;
     }
 
     INTROSPECTION(IlluminationParams, 
@@ -88,38 +99,39 @@ public:
     uint8 size;
     uint8* data;
 	
-	virtual ~NMaterialProperty()
+	NMaterialProperty()
 	{
+		type = Shader::UT_INT;
+		size = 0;
+		data = NULL;
 	}
 	
-	virtual NMaterialProperty* Clone()
+	~NMaterialProperty()
 	{
-		return NULL;
+		if(data)
+		{
+			SafeDeleteArray(data);
+		}
+	}
+	
+	NMaterialProperty* Clone()
+	{
+		NMaterialProperty* cloneProp = new NMaterialProperty();
+		
+		cloneProp->size = size;
+		cloneProp->type = type;
+		
+		if(data)
+		{
+			size_t dataSize = Shader::GetUniformTypeSize(type) * size;
+			cloneProp->data = new uint8[dataSize];
+			memcpy(cloneProp->data, data, dataSize);
+		}
+		
+		return cloneProp;
 	}
 };
-	
-template<typename MEMMANAGER>
-class NManagedMaterialProperty : public NMaterialProperty
-{
-	
-public:
-	
-	NManagedMaterialProperty()
-	{
-		MEMMANAGER::Init(this);
-	}
 
-	virtual ~NManagedMaterialProperty()
-	{
-		MEMMANAGER::Release(this);
-	}
-	
-	virtual NMaterialProperty* Clone()
-	{
-		return MEMMANAGER::Clone(this);
-	}
-};
-		  
 class Camera;
 class SerializationContext;
 class NMaterial : public DataNode
@@ -154,6 +166,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
+	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
@@ -251,8 +265,12 @@ public:
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
 	
-	const FastNameSet& GetRenderLayers();
-	
+    //void AssignRenderLayerIDs(RenderLayerManager * manager);
+    
+    inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmask; };
+    inline uint32 GetRenderLayers() const;
+    inline void SetRenderLayers(uint32 bitmask);
+    
 	const RenderStateData* GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
 	void SubclassRenderState(RenderStateData* newState);
@@ -266,19 +284,11 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
-	
+
+	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+
 protected:
 	
-	class GenericPropertyManager
-	{
-	public:
-		static void Init(NMaterialProperty* prop);
-		static void Release(NMaterialProperty* prop);
-		static NMaterialProperty* Clone(NMaterialProperty* prop);
-	};
-		
-	typedef NManagedMaterialProperty<GenericPropertyManager> GenericMaterialProperty;
-
 	struct TextureBucket
 	{
 		TextureBucket() : texture(NULL)
@@ -364,6 +374,7 @@ protected:
 	//VI: material flags alter per-instance shader. For example, adding fog, texture animation etc
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
+    uint32                  renderLayerIDsBitmask;
 protected:
 	
 	virtual ~NMaterial();
@@ -396,6 +407,11 @@ protected:
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
 	void BindMaterialProperties(RenderPassInstance* passInstance);
+	
+	//VI: this method is for updating light. It's temporary solution hopefully
+	void UpdateLightingProperties(Light* light);
+	bool IsLightingProperty(const FastName& propName) const;
+	void SetLightInternal(int index, Light* light);
 		
 protected:
 	
@@ -404,7 +420,7 @@ protected:
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
-	void OnMaterialPropertyAdded(const FastName& propName, NMaterialProperty* prop);
+	void OnMaterialPropertyAdded(const FastName& propName);
 	void OnMaterialPropertyRemoved(const FastName& propName);
 	
 public:
@@ -418,8 +434,22 @@ public:
 		int MemberFlags(void *object, size_t index) const;
 		VariantType MemberValueGet(void *object, size_t index) const;
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
+	protected:
 	};
-	
+
+	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
+	{
+	public:
+		size_t MembersCount(void *object) const;
+		InspDesc MemberDesc(void *object, size_t index) const;
+		const char* MemberName(void *object, size_t index) const;
+		int MemberFlags(void *object, size_t index) const;
+		VariantType MemberValueGet(void *object, size_t index) const;
+		void MemberValueSet(void *object, size_t index, const VariantType &value);
+	protected:
+		FastName GetName(size_t index) const;
+	};
+
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
 	public:
@@ -445,15 +475,19 @@ public:
 			{ }
 			
 			int source;
-			NMaterialProperty property;
+			Shader::eUniformType type;
+			uint8 size;
+			uint8* data;
 		};
 		
+		bool isColor(const FastName &propName) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	
 public:
 	
 	INTROSPECTION(NMaterial,
+				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  );
@@ -469,6 +503,39 @@ public:
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
 	};
+    
+    
+    inline uint32 NMaterial::GetRenderLayers() const
+    {
+        return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
+    }
+    
+    void NMaterial::SetRenderLayers(uint32 bitmask)
+    {
+        renderLayerIDsBitmask = bitmask;
+        RenderLayerID minLayerID = RENDER_LAYER_ID_BITMASK_MAX_MASK;
+        RenderLayerID maxLayerID = 0;
+        for (uint32 k = 0; k < RENDER_LAYER_ID_COUNT; ++k)
+        {
+            if (bitmask & (1 << k))
+            {
+                RenderLayerID id = k;
+                minLayerID = Min(id, minLayerID);
+                maxLayerID = Max(id, maxLayerID);
+            }
+        }
+        
+        if (renderLayerIDsBitmask)
+        {
+            DVASSERT(minLayerID < RENDER_LAYER_ID_BITMASK_MIN_MASK);
+            DVASSERT(maxLayerID < RENDER_LAYER_ID_BITMASK_MAX_MASK);
+            renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
+            renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
+        }
+    }
+    
+    
+    
 
 };
 
