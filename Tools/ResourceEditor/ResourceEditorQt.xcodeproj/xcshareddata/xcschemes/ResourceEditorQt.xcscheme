@@ -63,7 +63,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-extract -folder /Users/a_makovii/Documents/work/temp/dds -mipmaps 3 -forceclose"
+            argument = "-extract -path /Users/a_makovii/Documents/work/temp/dds -mipmaps 3 -forceclose"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
