@@ -248,6 +248,8 @@ void LandscapeDialog::FillWidgetsWithContent()
 	{
 		actionButton->setText(CREATE_TITLE);
 	}
+	
+	openMaterEditorBtn->setVisible( innerLandscape != NULL);
 }
 
 void LandscapeDialog::showEvent ( QShowEvent * event )
@@ -353,7 +355,6 @@ void LandscapeDialog::ActionButtonClicked()
 
 		SetLandscapeEntity(NULL);
 	}
-	openMaterEditorBtn->setVisible( innerLandscape != NULL);
 }
 
 void LandscapeDialog::MaterialEditorButtonClicked()
