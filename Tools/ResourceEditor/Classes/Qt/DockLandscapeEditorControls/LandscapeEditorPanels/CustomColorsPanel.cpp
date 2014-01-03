@@ -126,8 +126,8 @@ void CustomColorsPanel::ConnectToSignals()
 {
 	connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
-	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
-			this, SLOT(SaveTextureIfNeeded(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(Request*, SceneEditor2*)),
+			this, SLOT(SaveTextureIfNeeded(Request*, SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(CustomColorsToggled(SceneEditor2*)),
 			this, SLOT(EditorToggled(SceneEditor2*)));
 
@@ -193,7 +193,7 @@ void CustomColorsPanel::SetColor(int color)
 	GetActiveScene()->customColorsSystem->SetColor(color);
 }
 
-bool CustomColorsPanel::SaveTexture()
+void CustomColorsPanel::SaveTexture(Request* saveRequest)
 {
 	SceneEditor2* sceneEditor = GetActiveScene();
 	
@@ -212,10 +212,14 @@ bool CustomColorsPanel::SaveTexture()
 	if (!selectedPathname.IsEmpty())
 	{
 		sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
-		return true;
+		saveRequest->Accept();
+	}
+	else
+	{
+		saveRequest->Cancel();
 	}
 	
-	return false;
+	return ;
 }
 
 void CustomColorsPanel::LoadTexture()
@@ -238,21 +242,25 @@ void CustomColorsPanel::LoadTexture()
 	}
 }
 
-bool CustomColorsPanel::SaveTextureIfNeeded(SceneEditor2* scene)
+void CustomColorsPanel::SaveTextureIfNeeded(Request* saveRequest, SceneEditor2* scene)
 {
 	if (scene != GetActiveScene())
 	{
-		return false;
+		return;
 	}
 
 	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
 	if(!selectedPathname.IsEmpty())
 	{
 		scene->customColorsSystem->SaveTexture(selectedPathname);
-		return true;
+		saveRequest->Accept();
+	}
+	else
+	{
+		SaveTexture(saveRequest);
 	}
 	
-	return SaveTexture();
+	return;
 }
 
 void CustomColorsPanel::ConnectToShortcuts()

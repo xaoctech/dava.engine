@@ -985,12 +985,17 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         closeRequest->Accept();
         return;
     }
-
+	Request disableRequest;
 	if (!scene->IsChanged())
 	{
 		if (scene->GetEnabledTools() != 0)
 		{
-			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
+			if(!disableRequest.IsAccepted())
+			{
+				closeRequest->Cancel();
+				return;
+			}
 		}
 		closeRequest->Accept();
         return;
@@ -1005,8 +1010,9 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 
 	if (scene->GetEnabledTools() != 0)
 	{
-		bool savingOk = scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, answer == QMessageBox::Yes);
-		if(!savingOk && answer == QMessageBox::Yes)
+		disableRequest.Cancel();
+		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest, answer == QMessageBox::Yes);
+		if(!disableRequest.IsAccepted())
 		{
 			closeRequest->Cancel();
 			return;
@@ -1975,7 +1981,7 @@ void QtMainWindow::OnCustomColorsEditor()
 	}
 	
 	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
-	{
+	{/*
 		bool changesPresent = sceneEditor->customColorsSystem->ChangesPresent();
 		bool texturePathPresent = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
 		bool needSaveChanges = false;
@@ -1992,8 +1998,15 @@ void QtMainWindow::OnCustomColorsEditor()
 		if(changesPresent && texturePathPresent)
 		{
 			needSaveChanges = true;
+		}*/
+		
+		bool saveNeeded = false;
+		if(!PrepareCustomColorsEditorDisabling(saveNeeded))
+		{
+			return;
 		}
-		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, needSaveChanges));
+		Request disableRequest;
+		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, &disableRequest, saveNeeded));
 	}
 	else
 	{
@@ -2006,6 +2019,98 @@ void QtMainWindow::OnCustomColorsEditor()
 			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
+}
+
+bool QtMainWindow::PrepareCustomColorsEditorDisabling(bool& saveNeeded)
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if (!sceneEditor)
+	{
+		return false;
+	}
+	bool changesPresent = sceneEditor->customColorsSystem->ChangesPresent();
+	//bool texturePathPresent = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
+
+	/*if(changesPresent && !texturePathPresent)
+	{
+		int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?", QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+		if(answer == QMessageBox::Cancel)
+		{
+			return;
+		}
+		
+		needSaveChanges = answer == QMessageBox::Yes;
+	}
+	if(changesPresent && texturePathPresent)
+	{
+		needSaveChanges = true;
+	}*/
+	
+	/*
+	 
+	 KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	 if (customProps)
+	 {
+	 customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(filePath));
+	 }
+	 
+	 */
+	
+	if(changesPresent)
+	{
+		int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?",
+										   QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+		if(answer == QMessageBox::Cancel)
+		{
+			return false;
+		}
+		
+		if(answer == QMessageBox::No)
+		{
+			saveNeeded = false;
+			return true;
+		}
+		
+		FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+		
+		if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
+		{
+			selectedPathname = sceneEditor->GetScenePath().GetDirectory();
+			
+			QString filePath = QtFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+															 QString(selectedPathname.GetAbsolutePathname().c_str()),
+															 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
+			selectedPathname = PathnameToDAVAStyle(filePath);
+			if (selectedPathname.IsEmpty())
+			{
+				return false;
+			}
+			Entity* landscape = FindLandscapeEntity(sceneEditor);
+			if(!landscape)
+			{
+				return false;
+			}
+			KeyedArchive* customProps = landscape->GetCustomProperties();
+			if(!customProps)
+			{
+				return false;
+			}
+			
+			String pathToSave = selectedPathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+			customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
+			saveNeeded = true;
+			return true;
+		}
+		else
+		{
+			saveNeeded = true;
+			return true;
+		}
+		
+
+	}
+	
+	return true;
 }
 
 void QtMainWindow::OnHeightmapEditor()
@@ -2478,6 +2583,7 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 						}
 					}
 
+					Request  disableRequest;
 					switch(answer)
 					{
 					case QMessageBox::YesAll:
@@ -2485,8 +2591,12 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 					case QMessageBox::Yes:
 						{
 							// turn off editor
-							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
+							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
+							if(!disableRequest.IsAccepted())
+							{
+								return false;
+							}
+							
 							// save
 							tabEditor->landscapeEditorDrawSystem->SaveTileMaskTexture();
 						}
@@ -2497,7 +2607,11 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 					case QMessageBox::No:
 						{
 							// turn off editor
-							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+							tabEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
+							if(!disableRequest.IsAccepted())
+							{
+								return false;
+							}
 						}
 						break;
 

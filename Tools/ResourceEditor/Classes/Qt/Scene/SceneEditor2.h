@@ -57,6 +57,7 @@
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/OwnersSignatureSystem.h"
+#include "Main/Request.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -149,7 +150,7 @@ public:
 
     const RenderManager::Stats & GetRenderStats() const;
 
-	bool DisableTools(int32 toolFlags, bool textureSavingNeeded = true);
+	void DisableTools(int32 toolFlags, Request* disableRequest, bool saveChanges = true);
 	bool IsToolsEnabled(int32 toolFlags);
 	int32 GetEnabledTools();
 

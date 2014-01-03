@@ -34,6 +34,7 @@
 #include "Entity/SceneSystem.h"
 #include "EditorScene.h"
 #include "LandscapeEditorDrawSystem.h"
+#include "Main/Request.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
@@ -46,7 +47,7 @@ public:
 	virtual ~CustomColorsSystem();
 	
 	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
-	bool DisableLandscapeEdititing(bool& savedOK, bool saveNeeded = true);
+	bool DisableLandscapeEdititing(Request* disableRequest, bool saveNeeded = true);
 	bool IsLandscapeEditingEnabled() const;
 	
 	void Update(DAVA::float32 timeElapsed);
