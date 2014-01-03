@@ -168,7 +168,8 @@ void UIControlSystem::ProcessScreenLogic()
 			{
 				// if we got loading transition
 				UILoadingTransition * loadingTransition = dynamic_cast<UILoadingTransition*> (transition);
-				
+                DVASSERT(loadingTransition);
+
 				// Firstly start transition
 				loadingTransition->StartTransition(currentScreen, nextScreen);
 				
@@ -450,8 +451,7 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 		{
 			if((*it).activeState == UIEvent::ACTIVITY_STATE_INACTIVE || (*it).phase == UIEvent::PHASE_CANCELLED)
 			{
-				if ((*it).phase == UIEvent::PHASE_CANCELLED)
-					CancelInput(&(*it));
+				CancelInput(&(*it));
 				totalInputs.erase(it);
 				it = totalInputs.begin();
 				if(it == totalInputs.end())

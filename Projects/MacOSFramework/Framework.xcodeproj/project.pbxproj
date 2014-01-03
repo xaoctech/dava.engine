@@ -889,6 +889,9 @@
 		A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
+		A6D82798187716F30006A5DD /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6D82797187716F30006A5DD /* Color.cpp */; };
+		A6D82799187716F30006A5DD /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6D82797187716F30006A5DD /* Color.cpp */; };
+		A6D8279A187716F30006A5DD /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6D82797187716F30006A5DD /* Color.cpp */; };
 		A6E4FE031761D96C00B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */; };
 		A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FE001761D96C00B48E41 /* ActionComponent.h */; };
 		A6E4FE051761D96C00B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -2348,6 +2351,7 @@
 		A69B7A471834CD640093AF7F /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
 		A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6B0517F17E886D8000EED68 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
+		A6D82797187716F30006A5DD /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FE001761D96C00B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -3429,6 +3433,7 @@
 		E8989B8E16BD24E400732C04 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				A6D82797187716F30006A5DD /* Color.cpp */,
 				E8989B8F16BD24E400732C04 /* AABBox2.cpp */,
 				E8989B9016BD24E400732C04 /* AABBox2.h */,
 				E8989B9116BD24E400732C04 /* AABBox3.cpp */,
@@ -5671,6 +5676,7 @@
 				176DEB22174B5561007A983B /* UIScrollBar.cpp in Sources */,
 				176DEB23174B5561007A983B /* UISlider.cpp in Sources */,
 				176DEB24174B5561007A983B /* UIStaticText.cpp in Sources */,
+				A6D8279A187716F30006A5DD /* Color.cpp in Sources */,
 				176DEB25174B5561007A983B /* UITextField.cpp in Sources */,
 				176DEB26174B5561007A983B /* UIYamlLoader.cpp in Sources */,
 				176DEB27174B5561007A983B /* HTTPDownloader.mm in Sources */,
@@ -5761,6 +5767,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */,
+				A6D82798187716F30006A5DD /* Color.cpp in Sources */,
 				E8989D9C16BD24E500732C04 /* Animation.cpp in Sources */,
 				E8989D9E16BD24E500732C04 /* AnimationManager.cpp in Sources */,
 				E8989DA016BD24E500732C04 /* BezierSplineAnimation.cpp in Sources */,
@@ -6377,6 +6384,7 @@
 				7A169341180EE618005F1FBC /* VectorSwig.cpp in Sources */,
 				E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */,
+				A6D82799187716F30006A5DD /* Color.cpp in Sources */,
 				CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */,
 				CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */,
 				CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */,

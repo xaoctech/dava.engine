@@ -67,8 +67,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     GPUFamilyDescriptor::SetupGPUParameters();
     
 //  RENDERSTATE
-//	oldColor = Color::Clear();
-//    newColor = Color::Clear();
+//	oldColor = Color::Clear;
+//    newColor = Color::Clear;
 //
 //	oldSFactor = BLEND_NONE;
 //	oldDFactor = BLEND_NONE;
