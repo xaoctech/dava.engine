@@ -117,7 +117,7 @@ protected:
     virtual QString GetUIControlClassName() { return "UIControl"; };
 	
     // Default Flags.
-    virtual bool GetInitialInputFlag() const {return false;}; // false because of DF-2944
+    virtual bool GetInitialInputEnabled() const {return false;}; // false because of DF-2944
 
 	virtual void InitializeControl(const String& controlName, const Vector2& position);
 
