@@ -145,7 +145,7 @@ Landscape::Landscape()
     
     isFogEnabled = false;
     fogDensity = 0.006f;
-    fogColor = Color::White();
+    fogColor = Color::White;
 	
 	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
 																FastName("~res:/Materials/Legacy/TileMask.material"),
