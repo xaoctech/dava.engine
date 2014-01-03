@@ -40,6 +40,7 @@ namespace DAVA
 	struct NMaterialTemplate
 	{
 		FastName name;
+		
 		HashMap<FastName, FastName> techniqueStateMap;
 		
 		NMaterialTemplate() : techniqueStateMap(4)
