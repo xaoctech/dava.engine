@@ -53,8 +53,8 @@ void ActionEnableTilemaskEditor::Redo()
 	{
 		return;
 	}
-	
-	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	Request disableRequest;// todo
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
 	
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	

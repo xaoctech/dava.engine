@@ -185,6 +185,8 @@ public slots:
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
 
+	bool PrepareCustomColorsEditorDisabling(bool& saveNeeded);
+	
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);

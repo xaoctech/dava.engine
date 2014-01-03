@@ -54,8 +54,13 @@ void ActionEnableCustomColors::Redo()
 	{
 		return;
 	}
-	
-	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+	Request disableRequest;
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
+	if(!disableRequest.IsAccepted())
+	{
+		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
+		return;
+	}
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	if (!success )
@@ -72,17 +77,17 @@ void ActionEnableCustomColors::Redo()
 	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
 }
 
-ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor, bool textureSavingNeeded)
+ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor, Request* _disableRequest, bool textureSavingNeeded)
 :	CommandAction(CMDID_CUSTOM_COLORS_DISABLE)
 ,	sceneEditor(forSceneEditor)
 ,	textureSavingNeeded(textureSavingNeeded)
-,	savedOK(false)
+,	disableRequest(_disableRequest)
 {
 }
 
 void ActionDisableCustomColors::Redo()
 {
-	if (sceneEditor == NULL)
+	if (sceneEditor == NULL || disableRequest == NULL)
 	{
 		return;
 	}
@@ -93,23 +98,12 @@ void ActionDisableCustomColors::Redo()
 		return;
 	}
 	
-	bool success = sceneEditor->customColorsSystem->DisableLandscapeEdititing(savedOK, textureSavingNeeded);
+	bool success = sceneEditor->customColorsSystem->DisableLandscapeEdititing(disableRequest, textureSavingNeeded);
 	if (!success)
 	{
 		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_DISABLE_ERROR);
 	}
-	else
-	{
-		if((savedOK && textureSavingNeeded) || !textureSavingNeeded)
-		{
-			SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
-		}
-	}
-}
-
-bool ActionDisableCustomColors::WasSavingSuccess()
-{
-	return savedOK;
+	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
 }
 
 ModifyCustomColorsCommand::ModifyCustomColorsCommand(Image* originalImage,

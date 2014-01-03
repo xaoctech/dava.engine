@@ -536,7 +536,8 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity * entity)
 		bool needRemoveBaseLandscape = sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL
 																   & ~SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR);
 
-		sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+		Request disableRequest;// todo
+		sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
 
 		if (needRemoveBaseLandscape)
 		{

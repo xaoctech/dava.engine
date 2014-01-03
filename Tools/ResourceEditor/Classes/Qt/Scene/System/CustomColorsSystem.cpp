@@ -140,7 +140,7 @@ bool CustomColorsSystem::ChangesPresent()
 	return false;
 }
 
-bool CustomColorsSystem::DisableLandscapeEdititing(bool& savedOK, bool saveNeeded)
+bool CustomColorsSystem::DisableLandscapeEdititing(Request* disableRequest, bool saveNeeded)
 {
 	if (!enabled)
 	{
@@ -149,11 +149,7 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool& savedOK, bool saveNeede
 	
 	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
 	{	
-		savedOK = SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
-		if(!savedOK)
-		{
-			return true;
-		}
+		SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(disableRequest, ((SceneEditor2 *) GetScene()));
 	}
 	FinishEditing();
 
