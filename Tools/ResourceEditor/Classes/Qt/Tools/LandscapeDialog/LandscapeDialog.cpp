@@ -361,8 +361,11 @@ void LandscapeDialog::MaterialEditorButtonClicked()
 	MaterialEditor::Instance()->show();
 }
 
-void LandscapeDialog::OnItemEdited(const QString &name, QtPropertyData *data)
+void LandscapeDialog::OnItemEdited(const QModelIndex &index)
 {
+	QtPropertyData *data = propEditor->GetProperty(index);
+	QString name = data->GetName();
+
 	SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
 	if(NULL == curScene)
 	{
