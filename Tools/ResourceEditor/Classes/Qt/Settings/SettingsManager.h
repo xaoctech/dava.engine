@@ -73,6 +73,7 @@ static const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
 	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::String(""))),
 	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("recentFiles", DAVA::VariantType(0)),
 };
 
 class SettingsManager: public DAVA::Singleton<SettingsManager>
@@ -100,19 +101,17 @@ public:
 
 	DAVA::String GetNameOfGroup(eSettingsGroups group) const;
 
-	void Save();
-	
 private:
-	
+
+	void Save();
+
 	void Load();
 
-	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize);
-	
-	static Map<DAVA::uint32, DAVA::String> MakeGroupNamesMap();
-	
-	static Map<DAVA::uint32, DAVA::String> GROUP_NAMES;
+	void InitSettingsGroup(eSettingsGroups groupID, char* groupName, const SettingRow* groupMap, DAVA::int32 mapSize);
 	
 	DAVA::KeyedArchive* settings;
+
+	static char* groupNamesArray[GROUPS_COUNT];
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_MANAGER__) */

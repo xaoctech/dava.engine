@@ -27,37 +27,36 @@
 =====================================================================================*/
 
 
+#include "RecentFilesManager.h"
+#include "Qt/Settings/SettingsManager.h"
 
-#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
-#define __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
 
-#include <QDialog.h>
-#include <QTabWidget.h>
-#include <QVBoxLayout>
-#include <QPushButton.h>
-#include <QDialogButtonBox>
-#include "DAVAEngine.h"
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Settings/SettingsManager.h"
-
-class GeneralSettingsDialog: public QDialog
+DAVA::Vector<String> RecentFileManager::GetRecentFiles()
 {
-	Q_OBJECT
+	DAVA::Vector<String> retVector;
+	VariantType recentFilesVariant = SettingsManager::Instance()->GetValue("recentFiles", SettingsManager::INTERNAL);
+	if(recentFilesVariant.GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+	{
+		KeyedArchive* archiveRecentFiles = recentFilesVariant.AsKeyedArchive();
+		DAVA::int32 size = archiveRecentFiles->Count();
+		retVector.resize(size);
+		for (DAVA::uint32 i = 0; i < size; ++i)
+		{
+			retVector[i] = archiveRecentFiles->GetString(Format("%d", i));
+		}
+		
+	}
+	return retVector;
+}
 
-public:
-
-	explicit GeneralSettingsDialog(QWidget* parent = 0);
-	
-	~GeneralSettingsDialog();
-
-protected:
-	
-	void InitSettings();
-
-	QTabWidget*						tabWidget;
-	QVBoxLayout*					mainLayout;
-	QPushButton*					btnOK;
-	DAVA::Vector<QtPropertyEditor*>	settingGroupsEditors;
-	static const SettingsManager::eSettingsGroups groupsTodisplay[];
-};
-#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__) */
+void RecentFileManager::SetFilesToRecent(DAVA::Vector<String>& fileList)
+{
+	DAVA::uint32 size = fileList.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : fileList.size();
+	KeyedArchive* archive = new KeyedArchive();
+	for (DAVA::int32 i = 0; i < size; ++i)
+	{
+		archive->SetString(Format("%d",i), fileList[i]);
+	}
+	SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
+	SafeRelease( archive);
+}

@@ -112,6 +112,7 @@
 #include "Classes/Constants.h"
 
 #include "TextureCompression/TextureConverter.h"
+#include "RecentFilesManager.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -127,7 +128,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 {
 	new Console();
 	new ProjectManager();
-	new SettingsManager();
+	new RecentFileManager();
 	ui->setupUi(this);
     
     SetupTitle();
@@ -187,9 +188,9 @@ QtMainWindow::~QtMainWindow()
 	delete ui;
 	ui = NULL;
 
-	SettingsManager::Instance()->Release();
 	ProjectManager::Instance()->Release();
 	Console::Instance()->Release();
+	RecentFileManager::Instance()->Release();
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -713,11 +714,10 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	/*int32 lastOpenedCount = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET).AsInt32();
-	for(int i = 0; i < lastOpenedCount; ++i)
+	Vector<String> filesList = RecentFileManager::Instance()->GetRecentFiles();
+
+	foreach(String path, filesList)
 	{
-		DVASSERT((0 <= i) && (i < lastOpenedCount));
-		DAVA::String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET).AsString();
 		if (path.empty())
 		{
 			continue;
@@ -726,44 +726,23 @@ void QtMainWindow::InitRecent()
 
 		action->setData(QString(path.c_str()));
 		recentScenes.push_back(action);
-	}*/
+	}
 }
 
 void QtMainWindow::AddRecent(const QString &pathString)
 {
-    /*while(recentScenes.size())
+    while(recentScenes.size())
     {
         ui->menuFile->removeAction(recentScenes[0]);
         recentScenes.removeAt(0);
     }
     
 	DAVA::FilePath pathToFile(pathString.toStdString());
-	Vector<String> filesList;
-
-	int32 count = SettingsManager::Instance()->GetValue("LastOpenedFilesCount", SettingsManager::VARIABLE_LENGTH_SET).AsInt32();
-	for(int32 i = 0; i < count; ++i)
-	{
-		String path = SettingsManager::Instance()->GetValue(Format("LastOpenedFile_%d", i), SettingsManager::VARIABLE_LENGTH_SET).AsString();
-		if(path != pathToFile.GetAbsolutePathname())
-		{
-			filesList.push_back(path);
-		}
-	}
+	Vector<String> filesList = RecentFileManager::Instance()->GetRecentFiles();
 	
 	filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
-	count =  filesList.size() > RESENT_FILES_MAX_COUNT ? RESENT_FILES_MAX_COUNT : filesList.size();
-	SettingsManager::Instance()->SetValue("LastOpenedFilesCount",
-		VariantType(count),
-		SettingsManager::VARIABLE_LENGTH_SET);
-
-	for(int i = 0; i < count; ++i)
-	{
-		SettingsManager::Instance()->SetValue(Format("LastOpenedFile_%d", i),
-											  VariantType(filesList[i]),
-											  SettingsManager::VARIABLE_LENGTH_SET);
-	}
-	
-	InitRecent();*/
+	RecentFileManager::Instance()->SetFilesToRecent(filesList);
+	InitRecent();
 }
 
 // ###################################################################################################
