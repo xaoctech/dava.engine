@@ -922,7 +922,7 @@ void Texture::DumpTextures()
 void Texture::SetDebugInfo(const String & _debugInfo)
 {
 #if defined(__DAVAENGINE_DEBUG__)
-	debugInfo = _debugInfo;	
+	debugInfo = FastName(_debugInfo.c_str());
 #endif
 }
 	

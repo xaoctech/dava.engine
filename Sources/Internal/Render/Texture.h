@@ -34,6 +34,7 @@
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
@@ -330,7 +331,7 @@ protected:
 
 public:							// properties for fast access
 
-	String		debugInfo;
+	FastName		debugInfo;
 
 	TextureInvalidater* invalidater;
     TextureDescriptor *texDescriptor;
