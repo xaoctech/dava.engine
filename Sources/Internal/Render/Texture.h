@@ -34,6 +34,7 @@
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
@@ -198,21 +199,6 @@ public:
 	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D);
 
 
-	/**
-        \brief Sets default RGBA format that is used for textures loaded from files. 
-        This functino define which format is used by default when you are loading files from disk. 
-        By default it's RGBA8888 format. But for example if you want to load something in RGBA4444 format you 
-        can use the following code
-     
-        \code
-        Texture::SetDefaultRGBAFormat(FORMAT_RGBA4444);
-        texRGBA4444 = Texture::CreateFromFile("~res:/Scenes/Textures/texture.png");
-        Texture::SetDefaultRGBAFormat(FORMAT_RGBA8888);
-        \endcode
-     */
-	static void SetDefaultRGBAFormat(PixelFormat format);
-	static PixelFormat GetDefaultRGBAFormat();
-	
 	virtual int32 Release();
 
 	static void	DumpTextures();
@@ -240,7 +226,7 @@ public:
         \brief Function to receive pathname of texture object
         \returns pathname of texture
      */
-    inline const FilePath & GetPathname() const;
+    const FilePath & GetPathname() const;
     
     Image * CreateImageFromMemory();
 
@@ -257,106 +243,67 @@ public:
 
 	inline TextureState GetState() const;
 
-public:							// properties for fast access
-
-#if defined(__DAVAENGINE_OPENGL__)
-	uint32		id;				// OpenGL id for texture
-
 #if defined(__DAVAENGINE_ANDROID__)
 	virtual void Lost();
 	virtual void Invalidate();
-#endif
-
-#elif defined(__DAVAENGINE_DIRECTX9__)
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+    
+#if defined(__DAVAENGINE_DIRECTX9__)
 	static LPDIRECT3DTEXTURE9 CreateTextureNative(Vector2 & size, PixelFormat & format, bool isRenderTarget, int32 flags);
 	void SetAsHardwareCursor(const Vector2 & hotSpot);
-	LPDIRECT3DTEXTURE9 id;
-	LPDIRECT3DTEXTURE9 saveTexture;
-	bool		 renderTargetModified;
-    bool         renderTargetAutosave;
 
 	virtual void SaveToSystemMemory();
 	virtual void Lost();
 	virtual void Invalidate();
-	
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-
-	FilePath relativePathname;
-
-	bool		isPink;
-	String		debugInfo;
-	uint32		width;			// texture width 
-	uint32		height;			// texture height
-#if defined(__DAVAENGINE_OPENGL__)
-	uint32		fboID;			// id of frame buffer object
-	uint32		rboID;
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-	PixelFormat format;			// texture format 
-	DepthFormat depthFormat;
-	bool		isRenderTarget;
-	uint32		textureType;
-	TextureInvalidater* invalidater;
-
-	void SetDebugInfo(const String & _debugInfo);
-
+#endif //#if defined(__DAVAENGINE_DIRECTX9__)
+    
+    void SetDebugInfo(const String & _debugInfo);
+    
 	static const TexturesMap & GetTextureMap();
     
     int32 GetDataSize() const;
-    
-    void ReleaseTextureData();
-	struct ReleaseTextureDataContainer
-	{
-		uint32 textureType;
-		uint32 id;
-		uint32 fboID;
-		uint32 rboID;
-	};
 
-    void GenerateID();
-    
     static void SetDefaultGPU(eGPUFamily gpuFamily);
     static eGPUFamily GetDefaultGPU();
     
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
     inline TextureDescriptor * GetDescriptor() const;
-    
-private:
 
-    static TexturesMap textureMap;
+protected:
+    
+    void ReleaseTextureData();
+    void GenerateID();
 
 	static Texture * Get(const FilePath & name);
 	static void AddToMap(Texture *tex);
     
 	static Texture * CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu);
-
-
-	Vector<Image *> images;
-	bool LoadImages(eGPUFamily gpu);
     
-	void SetParamsFromImages();
+	bool LoadImages(eGPUFamily gpu, Vector<Image *> * images);
+    
+	void SetParamsFromImages(const Vector<Image *> * images);
 	void FlushDataToRendererInternal(BaseObject * caller, void * param, void *callerData);
-	void FlushDataToRenderer();
-	void ReleaseImages();
-
+	void FlushDataToRenderer(Vector<Image *> * images);
+	void ReleaseImages(Vector<Image *> * images);
+    
     void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
 	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
-
+    
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
-
+    
     static bool CheckImageSize(const Vector<Image *> &imageSet);
     static bool IsCompressedFormat(PixelFormat format);
     
 	static uint32 ConvertToPower2FBOValue(uint32 value);
-
+    
 	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
-
-	static PixelFormat defaultRGBAFormat;
+    
 	Texture();
 	virtual ~Texture();
     
     Image * ReadDataToImage();
-
+    
 	static Texture * pinkPlaceholder;
 	static Texture * pinkCubePlaceholder;
     
@@ -368,15 +315,53 @@ private:
 	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    static eGPUFamily defaultGPU;
-    eGPUFamily loadedAsFile;
-    
     static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
 	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
+    
+    
+    struct ReleaseTextureDataContainer
+	{
+		uint32 textureType;
+		uint32 id;
+		uint32 fboID;
+		uint32 rboID;
+	};
 
-	TextureState state;
-	TextureDescriptor *texDescriptor;
+
+public:							// properties for fast access
+
+	FastName		debugInfo;
+
+	TextureInvalidater* invalidater;
+    TextureDescriptor *texDescriptor;
+
+#if defined(__DAVAENGINE_OPENGL__)
+	uint32		id;				// OpenGL id for texture
+	uint32		fboID;			// id of frame buffer object
+	uint32		rboID;
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+	
+    uint32		width:16;			// texture width
+	uint32		height:16;			// texture height
+
+	PixelFormat format:8;			// texture format
+    eGPUFamily loadedAsFile:3;
+	TextureState state:2;
+	uint32		textureType:2;
+	DepthFormat depthFormat:1;
+	bool		isRenderTarget:1;
+	bool		isPink:1;
+
+#if defined(__DAVAENGINE_DIRECTX9__)
+	LPDIRECT3DTEXTURE9 id;
+	LPDIRECT3DTEXTURE9 saveTexture;
+	bool		 renderTargetModified:1;
+    bool         renderTargetAutosave:1;
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    static TexturesMap textureMap;
+    static eGPUFamily defaultGPU;
 };
     
 // Implementation of inline functions
@@ -385,10 +370,6 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 #if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
     renderTargetAutosave = isEnabled;
 #endif //#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
-}
-inline const FilePath & Texture::GetPathname() const
-{
-	return relativePathname;
 }
     
 inline const eGPUFamily Texture::GetSourceFileGPUFamily() const

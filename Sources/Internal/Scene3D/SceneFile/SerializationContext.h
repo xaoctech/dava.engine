@@ -50,6 +50,18 @@ namespace DAVA
 	{
 	private:
 		
+		struct MaterialBinding
+		{
+			uint64 parentKey;
+			NMaterial* instanceMaterial;
+			
+			MaterialBinding()
+			{
+				parentKey = 0;
+				instanceMaterial = NULL;
+			}
+		};
+		
 		FilePath rootNodePathName;
 		FilePath scenePath;
 		bool debugLogEnabled;
@@ -58,7 +70,8 @@ namespace DAVA
 		uint32 version;
 		FastName defaultMaterialQuality;
 		Map<uint64, DataNode*> dataBlocks;
-		Map<uint64, NMaterial*> serializationMaterialMap;
+		Map<uint64, NMaterial*> importedMaterials;
+		Vector<MaterialBinding> materialBindings;
 	
 	public:
 		
@@ -125,15 +138,24 @@ namespace DAVA
 			return (it != dataBlocks.end()) ? it->second : NULL;
 		}
 		
-		inline void SetMaterial(uint64 materialId, NMaterial* material)
+		inline void SetImportedMaterial(uint64 blockId, NMaterial* data)
 		{
-			serializationMaterialMap[materialId] = material;
+			importedMaterials[blockId] = data;
 		}
 		
-		inline NMaterial* GetMaterial(uint64 materialId)
+		inline NMaterial* GetImportedMaterial(uint64 blockId)
 		{
-			Map<uint64, NMaterial*>::iterator it = serializationMaterialMap.find(materialId);
-			return (it != serializationMaterialMap.end()) ? it->second : NULL;
+			Map<uint64, NMaterial*>::iterator it = importedMaterials.find(blockId);
+			return (it != importedMaterials.end()) ? it->second : NULL;
+		}
+		
+		inline void AddBinding(uint64 parentKey, NMaterial* material)
+		{
+			MaterialBinding binding;
+			binding.instanceMaterial = material;
+			binding.parentKey = parentKey;
+			
+			materialBindings.push_back(binding);
 		}
 		
 		inline void SetLastError(uint32 error)
@@ -161,6 +183,8 @@ namespace DAVA
 												   uint64 oldMaterialId);
 		
 		Texture* PrepareTexture(uint32 textureTypeHint, Texture* tx);
+		
+		void ResolveMaterialBindings();
 	};
 };
 

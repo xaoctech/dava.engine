@@ -153,6 +153,8 @@ Landscape::Landscape()
 
 	
 	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
+	landscapeParent->AddNodeFlags(DataNode::NodeRuntimeFlag);
+	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;

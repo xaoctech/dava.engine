@@ -35,6 +35,8 @@
 namespace DAVA
 {
     
+uint16 RenderTechnique::techinqueSequenceId = 0;
+	
 RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName,
 										 const FastNameSet & _uniqueDefines,
 										 RenderState * _renderState)
@@ -65,6 +67,8 @@ RenderTechnique::RenderTechnique(const FastName & _name)
     :   name(_name)
     ,   nameIndexMap(8)
 {
+	techinqueSequenceId++;
+	techniqueId = techinqueSequenceId;
 }
     
 RenderTechnique::~RenderTechnique()
