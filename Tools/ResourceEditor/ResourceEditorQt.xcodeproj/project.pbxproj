@@ -21,6 +21,7 @@
 		62B0D98518682C3E00A60F7E /* SceneSettingsDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98218682C3E00A60F7E /* SceneSettingsDialog.cpp */; };
 		62B0D9901868359D00A60F7E /* GeneralSettingsDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98E1868359D00A60F7E /* GeneralSettingsDialog_moc.cpp */; };
 		62B0D9911868359D00A60F7E /* SceneSettingsDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98F1868359D00A60F7E /* SceneSettingsDialog_moc.cpp */; };
+		62B36CD61876B72100F7F030 /* RecentFilesManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B36CD41876B72100F7F030 /* RecentFilesManager.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
@@ -632,6 +633,8 @@
 		62B0D98318682C3E00A60F7E /* SceneSettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneSettingsDialog.h; sourceTree = "<group>"; };
 		62B0D98E1868359D00A60F7E /* GeneralSettingsDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneralSettingsDialog_moc.cpp; sourceTree = "<group>"; };
 		62B0D98F1868359D00A60F7E /* SceneSettingsDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSettingsDialog_moc.cpp; sourceTree = "<group>"; };
+		62B36CD41876B72100F7F030 /* RecentFilesManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecentFilesManager.cpp; sourceTree = "<group>"; };
+		62B36CD51876B72100F7F030 /* RecentFilesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentFilesManager.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
@@ -3194,6 +3197,8 @@
 		E8C990F2184CD0EB00AFBF3F /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				62B36CD41876B72100F7F030 /* RecentFilesManager.cpp */,
+				62B36CD51876B72100F7F030 /* RecentFilesManager.h */,
 				E8C990F3184CD0EB00AFBF3F /* davaglwidget.cpp */,
 				E8C990F4184CD0EB00AFBF3F /* davaglwidget.h */,
 				E8C990F5184CD0EB00AFBF3F /* mainwindow.cpp */,
@@ -3987,6 +3992,7 @@
 				E8BAD7301859F50300C98C8D /* QtPropertyDataInspDynamic_moc.cpp in Build Sources */,
 				E8C992E5184CD0EC00AFBF3F /* SceneTreeItemForce.cpp in Build Sources */,
 				E8BAD769185A578000C98C8D /* ConsoleWidget_moc.cpp in Build Sources */,
+				62B36CD61876B72100F7F030 /* RecentFilesManager.cpp in Build Sources */,
 				E8C99323184CD0EC00AFBF3F /* TextureListDelegate.cpp in Build Sources */,
 				E8C9930A184CD0EC00AFBF3F /* CustomColorsProxy.cpp in Build Sources */,
 				E8C99314184CD0EC00AFBF3F /* RulerToolSystem.cpp in Build Sources */,

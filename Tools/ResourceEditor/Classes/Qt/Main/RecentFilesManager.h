@@ -28,8 +28,8 @@
 
 
 
-#ifndef __RECENT_FILE_MANAGER_H__
-#define __RECENT_FILE_MANAGER_H__
+#ifndef __RECENT_FILES_MANAGER_H__
+#define __RECENT_FILES_MANAGER_H__
 
 #include "DAVAEngine.h"
 #include "Base/StaticSingleton.h"
@@ -38,7 +38,7 @@
 #include <QObject>
 
 
-class RecentFileManager : public DAVA::Singleton<RecentFileManager>
+class RecentFilesManager : public DAVA::Singleton<RecentFilesManager>
 {
 
 public:
@@ -53,4 +53,4 @@ protected:
 
 };
 
-#endif // __RECENT_FILE_MANAGER_H__
+#endif // __RECENT_FILES_MANAGER_H__

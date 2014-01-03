@@ -128,7 +128,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 {
 	new Console();
 	new ProjectManager();
-	new RecentFileManager();
+	new RecentFilesManager();
 	ui->setupUi(this);
     
     SetupTitle();
@@ -190,7 +190,7 @@ QtMainWindow::~QtMainWindow()
 
 	ProjectManager::Instance()->Release();
 	Console::Instance()->Release();
-	RecentFileManager::Instance()->Release();
+	RecentFilesManager::Instance()->Release();
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -714,7 +714,7 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	Vector<String> filesList = RecentFileManager::Instance()->GetRecentFiles();
+	Vector<String> filesList = RecentFilesManager::Instance()->GetRecentFiles();
 
 	foreach(String path, filesList)
 	{
@@ -738,10 +738,12 @@ void QtMainWindow::AddRecent(const QString &pathString)
     }
     
 	DAVA::FilePath pathToFile(pathString.toStdString());
-	Vector<String> filesList = RecentFileManager::Instance()->GetRecentFiles();
-	
-	filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
-	RecentFileManager::Instance()->SetFilesToRecent(filesList);
+	Vector<String> filesList = RecentFilesManager::Instance()->GetRecentFiles();
+	if(! ( filesList.size() && filesList[0] == pathToFile.GetAbsolutePathname()))
+	{
+		filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
+	}
+	RecentFilesManager::Instance()->SetFilesToRecent(filesList);
 	InitRecent();
 }
 

@@ -31,7 +31,7 @@
 #include "Qt/Settings/SettingsManager.h"
 
 
-DAVA::Vector<String> RecentFileManager::GetRecentFiles()
+DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
 {
 	DAVA::Vector<String> retVector;
 	VariantType recentFilesVariant = SettingsManager::Instance()->GetValue("recentFiles", SettingsManager::INTERNAL);
@@ -49,7 +49,7 @@ DAVA::Vector<String> RecentFileManager::GetRecentFiles()
 	return retVector;
 }
 
-void RecentFileManager::SetFilesToRecent(DAVA::Vector<String>& fileList)
+void RecentFilesManager::SetFilesToRecent(DAVA::Vector<String>& fileList)
 {
 	DAVA::uint32 size = fileList.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : fileList.size();
 	KeyedArchive* archive = new KeyedArchive();
