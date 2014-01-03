@@ -37,19 +37,13 @@
 #define SETTINGS_VERSION_NUMBER			1
 #define SETTINGS_VERSION_KEY			"settingsVersion"
 
-char* SettingsManager::groupNamesArray[GROUPS_COUNT];
-
 SettingsManager::SettingsManager()
 {
 	settings = new KeyedArchive();
-	for (DAVA::uint32 i = 0; i < GROUPS_COUNT; ++i)
-	{
-		groupNamesArray[i] = NULL;
-	}
 
-	InitSettingsGroup(GENERAL, "General", SETTINGS_GROUP_GENERAL_MAP, sizeof(SETTINGS_GROUP_GENERAL_MAP) / sizeof(SettingRow));
-	InitSettingsGroup(DEFAULT, "Scene default", SETTINGS_GROUP_DEFAULT_MAP, sizeof(SETTINGS_GROUP_DEFAULT_MAP) / sizeof(SettingRow));
-	InitSettingsGroup(INTERNAL, "Internal", SETTINGS_GROUP_INTERNAL_MAP, sizeof(SETTINGS_GROUP_INTERNAL_MAP) / sizeof(SettingRow));
+	InitSettingsGroup(GENERAL, SETTINGS_GROUP_GENERAL_MAP, sizeof(SETTINGS_GROUP_GENERAL_MAP) / sizeof(SettingRow));
+	InitSettingsGroup(DEFAULT, SETTINGS_GROUP_DEFAULT_MAP, sizeof(SETTINGS_GROUP_DEFAULT_MAP) / sizeof(SettingRow));
+	InitSettingsGroup(INTERNAL, SETTINGS_GROUP_INTERNAL_MAP, sizeof(SETTINGS_GROUP_INTERNAL_MAP) / sizeof(SettingRow));
 	
 	settings->SetUInt32(SETTINGS_VERSION_KEY, SETTINGS_VERSION_NUMBER);
 	
@@ -62,10 +56,8 @@ SettingsManager::~SettingsManager()
 	SafeRelease(settings);
 }
 
-void SettingsManager::InitSettingsGroup(SettingsManager::eSettingsGroups groupID, char* groupName, 
-										const SettingRow* groupMap, DAVA::int32 mapSize)
+void SettingsManager::InitSettingsGroup(SettingsManager::eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize)
 {
-	groupNamesArray[groupID] = groupName;
 	KeyedArchive* groupSettings = new KeyedArchive();
 	
 	for (uint32 i = 0; i < mapSize; ++i )
@@ -141,6 +133,29 @@ DAVA::KeyedArchive* SettingsManager::GetSettingsGroup(eSettingsGroups group)
 
 DAVA::String SettingsManager::GetNameOfGroup(eSettingsGroups group) const
 {
-	DVASSERT(groupNamesArray[group]);
-	return groupNamesArray[group];
+	static struct
+	{
+		eSettingsGroups groupKey;
+		const char* groupName;
+	}
+	groupNamesMap[] =
+	{
+		{GENERAL, "General\0"},
+		{DEFAULT, "Scene default\0"},
+		{INTERNAL, "Internal\0"}
+	};
+	
+	uint32 namesCount = COUNT_OF(groupNamesMap);
+	DVASSERT(namesCount == GROUPS_COUNT);
+	
+	for (uint32 i = 0; i < namesCount; i ++)
+	{
+		if (groupNamesMap[i].groupKey == group)
+		{
+			return groupNamesMap[i].groupName;
+		}
+	}
+	
+	DVASSERT(false);
+	return DAVA::String();
 }

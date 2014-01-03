@@ -107,11 +107,9 @@ private:
 
 	void Load();
 
-	void InitSettingsGroup(eSettingsGroups groupID, char* groupName, const SettingRow* groupMap, DAVA::int32 mapSize);
+	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize);
 	
 	DAVA::KeyedArchive* settings;
-
-	static char* groupNamesArray[GROUPS_COUNT];
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_MANAGER__) */
