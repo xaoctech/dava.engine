@@ -96,11 +96,5 @@ void GeneralSettingsDialog::InitSettings()
 		groupEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
 		tabWidget->addTab(groupEditor, groupName.c_str());
 		groupEditor->resizeColumnToContents(0);
-		connect(groupEditor, SIGNAL(PropertyEdited(const QModelIndex&)), this, SLOT(SaveChanges()));
 	}
-}
-
-void GeneralSettingsDialog::SaveChanges()
-{
-	SettingsManager::Instance()->Save();
 }

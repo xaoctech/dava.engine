@@ -28,36 +28,29 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
-#define __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
+#ifndef __RECENT_FILE_MANAGER_H__
+#define __RECENT_FILE_MANAGER_H__
 
-#include <QDialog.h>
-#include <QTabWidget.h>
-#include <QVBoxLayout>
-#include <QPushButton.h>
-#include <QDialogButtonBox>
 #include "DAVAEngine.h"
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Settings/SettingsManager.h"
+#include "Base/StaticSingleton.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-class GeneralSettingsDialog: public QDialog
+#include <QObject>
+
+
+class RecentFileManager : public DAVA::Singleton<RecentFileManager>
 {
-	Q_OBJECT
 
 public:
 
-	explicit GeneralSettingsDialog(QWidget* parent = 0);
-	
-	~GeneralSettingsDialog();
+	DAVA::Vector<String> GetRecentFiles();
+
+	void SetFilesToRecent(DAVA::Vector<String>&);
 
 protected:
 	
-	void InitSettings();
+	static const int RECENT_FILES_MAX_COUNT = 5;
 
-	QTabWidget*						tabWidget;
-	QVBoxLayout*					mainLayout;
-	QPushButton*					btnOK;
-	DAVA::Vector<QtPropertyEditor*>	settingGroupsEditors;
-	static const SettingsManager::eSettingsGroups groupsTodisplay[];
 };
-#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__) */
+
+#endif // __RECENT_FILE_MANAGER_H__
