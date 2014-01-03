@@ -48,7 +48,7 @@ public:
     UIListMetadata(QObject* parent = 0);
 
 protected:
-    virtual bool GetInitialInputFlag() const {return true;};
+    virtual bool GetInitialInputEnabled() const {return true;};
 
     // Initialize the appropriate control.
     virtual void InitializeControl(const String& controlName, const Vector2& position);

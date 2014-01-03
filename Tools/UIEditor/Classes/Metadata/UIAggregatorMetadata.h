@@ -46,7 +46,7 @@ namespace DAVA
         
     protected:
         // Default Flags.
-        virtual bool GetInitialInputFlag() const {return true;};
+        virtual bool GetInitialInputEnabled() const {return true;};
 	};
 }
 
