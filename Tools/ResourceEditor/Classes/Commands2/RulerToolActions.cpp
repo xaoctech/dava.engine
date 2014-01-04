@@ -50,9 +50,12 @@ void ActionEnableRulerTool::Redo()
 	{
 		return;
 	}
-	Request disableRequest;// todo
+	Request disableRequest;
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
-	
+	if(!disableRequest.IsAccepted())
+	{
+		return;
+	}
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 	
 	if (!success )

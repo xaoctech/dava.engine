@@ -525,6 +525,7 @@ const RenderManager::Stats & SceneEditor2::GetRenderStats() const
 
 void SceneEditor2::DisableTools(int32 toolFlags, Request* disableRequest, bool textureSavingNeeded /*= true*/)
 {
+	disableRequest->Accept();
 	if (toolFlags & LANDSCAPE_TOOL_CUSTOM_COLOR )
 	{
 		Exec(new ActionDisableCustomColors(this,disableRequest, textureSavingNeeded));
