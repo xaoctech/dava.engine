@@ -39,15 +39,17 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/EditorConfig.h"
-#include "SceneEditor/SceneValidator.h"
-#include "SceneEditor/TextureSquarenessChecker.h"
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/SceneEditor/ControlsFactory.h"
 #include "FileSystem/ResourceArchive.h"
+#include "TextureBrowser/TextureCache.h"
+
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/EditorConfig.h"
+#include "Deprecated/SceneValidator.h"
+#include "Deprecated/TextureSquarenessChecker.h"
+#include "Deprecated/ControlsFactory.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -124,6 +126,7 @@ int main(int argc, char *argv[])
 		new EditorConfig();
 		new SceneValidator();
 		new TextureSquarenessChecker();
+        new TextureCache();
 
 		LocalizationSystem::Instance()->SetCurrentLocale("en");
 		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
@@ -151,6 +154,7 @@ int main(int argc, char *argv[])
 		SceneValidator::Instance()->Release();
 		EditorConfig::Instance()->Release();
 		EditorSettings::Instance()->Release();
+        TextureCache::Instance()->Release();
 	}
 
 	BeastProxy::Instance()->Release();

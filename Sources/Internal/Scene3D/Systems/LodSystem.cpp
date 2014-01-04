@@ -38,6 +38,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Platform/SystemTimer.h"
 #include "Core/PerformanceSettings.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -46,12 +47,15 @@ LodSystem::LodSystem(Scene * scene)
 :	SceneSystem(scene)
 {
 	camera = 0;
+    
+    partialUpdateIndices.reserve(UPDATE_PART_PER_FRAME + 1);
 	UpdatePartialUpdateIndices();
 }
 
-void LodSystem::Process()
+void LodSystem::Process(float32 timeElapsed)
 {
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+    TIME_PROFILE("LodSystem::Process");
+    
 	float32 currFps = 1.0f/timeElapsed;
 
 	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
@@ -72,7 +76,7 @@ void LodSystem::Process()
 			lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 		}
 
-		UpdateLod(entity, lodOffset, lodMult);
+		UpdateLod(entity, lod, lodOffset, lodMult);
 	}
 
 	currentPartialUpdateIndex = currentPartialUpdateIndex < UPDATE_PART_PER_FRAME-1 ? currentPartialUpdateIndex+1 : 0;
@@ -155,11 +159,11 @@ void LodSystem::UpdatePartialUpdateIndices()
 	LastSlot = Max(LastSlot, size);
 }
 
-void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = GetLodComponent(entity);
+	//LodComponent * lodComponent = GetLodComponent(entity);
 	int32 oldLod = lodComponent->currentLod;
-	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
+	if(!RecheckLod(entity, lodComponent, psLodOffsetSq, psLodMultSq))
 	{
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
@@ -188,9 +192,9 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 	}
 }
 
-bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	LodComponent * lodComponent = GetLodComponent(entity);
+	//LodComponent * lodComponent = GetLodComponent(entity);
 	bool usePsSettings = (GetEmitter(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
@@ -215,7 +219,8 @@ bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 	if (usePsSettings)
 	{
 		layersCount = LodComponent::MAX_LOD_LAYERS;
-		dst = dst*psLodMultSq+psLodOffsetSq;
+		if (dst>lodComponent->GetLodLayerFarSquare(0)) //preserv lod 0 from degrade
+			dst = dst*psLodMultSq+psLodOffsetSq;
 	}
 
 	int32 layer = FindProperLayer(dst, lodComponent, layersCount);
@@ -323,6 +328,7 @@ void LodSystem::LodMerger::MergeChildLods()
 			}
 
 			uint32 nodesToCopy = fromData.nodes.size();
+            toData->nodes.reserve(nodesToCopy);
 			for(uint32 j = 0; j < nodesToCopy; ++j)
 			{
 				toData->nodes.push_back(fromData.nodes[j]); 

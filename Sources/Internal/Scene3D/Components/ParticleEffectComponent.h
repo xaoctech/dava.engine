@@ -36,6 +36,7 @@
 #include "Scene3D/Entity.h"
 #include "Base/BaseObject.h"
 #include "Base/Message.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
 {
@@ -52,8 +53,8 @@ public:
 	ParticleEffectComponent();
 
 	virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *sceneFile);
 
 	void Start();
 
@@ -145,6 +146,9 @@ private:
 
 	// Playback complete message.
 	Message playbackComplete;
+
+    // Playback complete message.
+    bool isStopped;
 
 	// Effect duration - common for all emitters.
 	float32 effectDuration;

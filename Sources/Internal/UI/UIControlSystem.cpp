@@ -168,7 +168,8 @@ void UIControlSystem::ProcessScreenLogic()
 			{
 				// if we got loading transition
 				UILoadingTransition * loadingTransition = dynamic_cast<UILoadingTransition*> (transition);
-				
+                DVASSERT(loadingTransition);
+
 				// Firstly start transition
 				loadingTransition->StartTransition(currentScreen, nextScreen);
 				
@@ -270,6 +271,7 @@ void UIControlSystem::Draw()
 //	if(currentScreen && (!currentPopup || currentPopup->isTransparent))
 	if (currentScreen)
 	{
+		RenderManager::Instance()->SetDefault2DState();
 		currentScreen->SystemDraw(baseGeometricData);
 //		currentScreen->SystemDraw(Rect(0, 0, RenderManager::Instance()->GetScreenWidth(), RenderManager::Instance()->GetScreenHeight()));
 	}

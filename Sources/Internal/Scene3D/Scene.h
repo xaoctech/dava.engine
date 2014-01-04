@@ -36,6 +36,7 @@
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
@@ -51,7 +52,6 @@ class StaticMesh;
 class AnimatedMesh;
 class SceneNodeAnimationList;
 class DataNode;
-class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
 class Light;
@@ -60,7 +60,6 @@ class QuadTree;
 class MeshInstanceNode;
 class ImposterManager;
 class ImposterNode;
-class EntityManager;
 class Component;
 class SceneSystem;
 class RenderSystem;
@@ -77,6 +76,8 @@ class SwitchSystem;
 class SoundUpdateSystem;
 class ActionUpdateSystem;
 class SkyboxSystem;
+class MaterialSystem;
+class StaticOcclusionSystem;
     
 /**
     \ingroup scene3d
@@ -106,9 +107,10 @@ public:
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
-	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
+	//virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
+    //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
     TransformSystem * transformSystem;
     RenderUpdateSystem * renderUpdateSystem;
 	LodSystem * lodSystem;
@@ -122,23 +124,13 @@ public:
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
 	SkyboxSystem* skyboxSystem;
-	
+	StaticOcclusionSystem * staticOcclusionSystem;
+    MaterialSystem *materialSystem;
+    
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
     virtual Scene * GetScene();
-
-    
-//  DataNode * GetMaterials();
-//	Material * GetMaterial(int32 index);
-//	int32	GetMaterialCount();
-	
-//    DataNode * GetStaticMeshes();
-//	StaticMesh * GetStaticMesh(int32 index);
-//	int32	GetStaticMeshCount();
-    
-    
-//    DataNode * GetScenes();
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -204,38 +196,6 @@ public:
      */
     void SetClipCamera(Camera * clipCamera);
     Camera * GetClipCamera() const;
-    
-//    /**
-//        \brief Registers LOD layer into the scene.
-//        \param[in] nearDistance near view distance fro the layer
-//        \param[in] farDistance far view distance fro the layer
-//        \returns Serial number of the layer
-//	 */
-//    int32 RegisterLodLayer(float32 nearDistance, float32 farDistance);
-//    /**
-//        \brief Sets lod layer thet would be forcely used in the whole scene.
-//        \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
-//	 */
-//    void SetForceLodLayer(int32 layer);
-//    int32 GetForceLodLayer();
-//
-//    /**
-//     \brief Registers LOD layer into the scene.
-//     \param[in] nearDistance near view distance fro the layer
-//     \param[in] farDistance far view distance fro the layer
-//     \returns Serial number of the layer
-//	 */
-//    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
-//
-//    
-//    inline int32 GetLodLayersCount();
-//    inline float32 GetLodLayerNear(int32 layerNum);
-//    inline float32 GetLodLayerFar(int32 layerNum);
-//    inline float32 GetLodLayerNearSquare(int32 layerNum);
-//    inline float32 GetLodLayerFarSquare(int32 layerNum);
-
-    //void Save(KeyedArchive * archive);
-    //void Load(KeyedArchive * archive);
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
@@ -248,40 +208,33 @@ public:
 	void CreateComponents();
 	void CreateSystems();
 
-	EntityManager * entityManager;
-
-	void SetReferenceNodeSuffix(const String & suffix);
-	const String & GetReferenceNodeSuffix();
-	bool IsReferenceNodeSuffixChanged();
-
-	EventSystem * GetEventSystem();
+	EventSystem * GetEventSystem() const;
 	RenderSystem * GetRenderSystem() const;
+    MaterialSystem * GetMaterialSystem() const;
     
-    virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
+	virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
 
-    
 protected:	
     
     void UpdateLights();
-    
-    
-    uint64 updateTime;
+
+	uint64 updateTime;
+
     uint64 drawTime;
     uint32 nodeCounter;
 
-	// Vector<Texture*> textures;
-	// Vector<StaticMesh*> staticMeshes;
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     
-    Map<String, ProxyNode*> rootNodes;
+#if defined (USE_FILEPATH_IN_MAP)
+    typedef Map<FilePath, ProxyNode*> ProxyNodeMap;
+#else //#if defined (USE_FILEPATH_IN_MAP)
+	typedef Map<String, ProxyNode*> ProxyNodeMap;
+#endif //#if defined (USE_FILEPATH_IN_MAP)
 
-//    // TODO: move to nodes
-//    Vector<LodLayer> lodLayers;
-//    int32 forceLodLayer;
+	ProxyNodeMap rootNodes;
 
-    
     Camera * currentCamera;
     Camera * clipCamera;
 
@@ -289,14 +242,10 @@ protected:
     Set<Light*> lights;
 
 	ImposterManager * imposterManager;
-
-	String referenceNodeSuffix;
-	bool referenceNodeSuffixChanged;
     
     friend class Entity;
 };
 
-// Inline implementation
 	
 int32 Scene::GetAnimationCount()
 {
@@ -311,34 +260,7 @@ int32 Scene::GetAnimatedMeshCount()
 int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
-}
-
-    
-//int32 Scene::GetLodLayersCount()
-//{
-//    return (int32)lodLayers.size();
-//}
-//
-//float32 Scene::GetLodLayerNear(int32 layerNum)
-//{
-//    return lodLayers[layerNum].nearDistance;
-//}
-//
-//float32 Scene::GetLodLayerFar(int32 layerNum)
-//{
-//    return lodLayers[layerNum].farDistance;
-//}
-//
-//float32 Scene::GetLodLayerNearSquare(int32 layerNum)
-//{
-//    return lodLayers[layerNum].nearDistanceSq;
-//}
-//
-//float32 Scene::GetLodLayerFarSquare(int32 layerNum)
-//{
-//    return lodLayers[layerNum].farDistanceSq;
-//}
-    
+}  
 
 };
 

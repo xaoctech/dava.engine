@@ -32,19 +32,21 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
-:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+	:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
+	,	index(0)
+	,	size(0)
 {
-
 }
 
-void ParticleEffectSystem::Process()
+void ParticleEffectSystem::Process(float32 timeElapsed)
 {
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+    TIME_PROFILE("ParticleEffectSystem::Process");
 
 	size = components.size();
 	for(index = 0; index < size; ++index)
@@ -54,21 +56,26 @@ void ParticleEffectSystem::Process()
 	}
 }
 
-void ParticleEffectSystem::AddEntity(Entity * entity)
+
+void ParticleEffectSystem::AddComponent(Entity * entity, Component * component)
 {
-	BaseProcessSystem::AddEntity(entity);
+	BaseProcessSystem::AddComponent(entity, component);
 	//set global externals
-	ParticleEffectComponent *comp = (ParticleEffectComponent *)entity->GetComponent(processingComponentId);
+	ParticleEffectComponent *comp = (ParticleEffectComponent *)component;
 	for (Map<String, float32>::iterator it = globalExternalValues.begin(), e = globalExternalValues.end(); it!=e; ++it)
 		comp->SetExtertnalValue((*it).first, (*it).second);
 }
 
-void ParticleEffectSystem::RemoveEntity(Entity * entity)
+void ParticleEffectSystem::RemoveComponent( Entity * entity, Component * component )
+
 {
-	BaseProcessSystem::RemoveEntity(entity);
-	--size;
+	BaseProcessSystem::RemoveComponent(entity, component);
+
+	//Effects can be deleted at EffectUpdate()
 	--index;
+	--size;
 }
+
 
 
 void ParticleEffectSystem::SetGlobalExtertnalValue(const String& name, float32 value)

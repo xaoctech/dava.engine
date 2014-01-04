@@ -310,7 +310,7 @@ Vector4 YamlNode::AsVector4() const
 
 Color YamlNode::AsColor() const
 {
-    Color result = Color::White();
+    Color result = Color::White;
     if (type == TYPE_ARRAY)
     {
         const YamlNode * r = Get(0);
@@ -929,6 +929,8 @@ void YamlNode::ProcessMatrix(const float32* array,uint32 dimension)
     for (uint32 i = 0; i < dimension; ++i)
     {
         rowNode = new YamlNode(TYPE_ARRAY);
+        rowNode->objectArray.reserve(dimension);
+        
         YamlNode* columnNode = NULL;
         for (uint32 j = 0; j < dimension; ++j)
         {
@@ -996,6 +998,8 @@ void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
     //creation array with variables
     YamlNode* arrayContentNode = new YamlNode(YamlNode::TYPE_ARRAY);
     const Map<String, VariantType*> & innerArchiveMap =  archive->GetArchieveData();
+
+    arrayContentNode->objectArray.reserve(innerArchiveMap.size());
     for (Map<String, VariantType*>::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
     {
         YamlNode* arrayElementNode = new YamlNode(TYPE_MAP);

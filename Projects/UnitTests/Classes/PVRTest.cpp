@@ -90,7 +90,7 @@ void PVRTest::LoadResources()
     compareResultText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
     compareResultText->SetMultiline(true);
     compareResultText->SetFont(font);
-    compareResultText->SetTextColor(Color::White());
+    compareResultText->SetTextColor(Color::White);
     AddControl(compareResultText);
 
     SafeRelease(font);
@@ -185,7 +185,7 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
 {
     RenderManager::Instance()->ClearWithColor(0.f, 0.0f, 0.f, 1.f);
     
-    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+//    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 
     if(pngSprite)
     {

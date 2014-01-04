@@ -59,12 +59,14 @@ REGISTER_CLASS(Landscape);
 REGISTER_CLASS(UIAggregatorControl);
 REGISTER_CLASS(Light);
 REGISTER_CLASS(Mesh);
+REGISTER_CLASS(SpeedTreeObject);
 REGISTER_CLASS(RenderBatch);
 REGISTER_CLASS(RenderObject);
 REGISTER_CLASS(ShadowVolume);
 REGISTER_CLASS(SkyboxRenderObject);
 REGISTER_CLASS(InstanceMaterialState);
 REGISTER_CLASS(Material);
+REGISTER_CLASS(NMaterial);
 REGISTER_CLASS(ImposterNode);
 REGISTER_CLASS(BillboardNode);
 REGISTER_CLASS(BoneNode);
@@ -86,5 +88,6 @@ REGISTER_CLASS(UIList);
 REGISTER_CLASS(UIListCell);
 REGISTER_CLASS(UIScrollBar);
 REGISTER_CLASS(UIScrollView);
-
+REGISTER_CLASS(StaticOcclusionComponent);
+REGISTER_CLASS(StaticOcclusionDataComponent);
 

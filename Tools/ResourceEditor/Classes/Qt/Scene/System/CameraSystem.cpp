@@ -58,7 +58,10 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	, animateToNewPosTime(0)
 	, debugCamerasCreated(false)
     , distanceToCamera(0.f)
-{ }
+{
+	renderState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+																 RenderStateData::STATE_DEPTH_WRITE);
+}
 
 SceneCameraSystem::~SceneCameraSystem()
 {
@@ -275,8 +278,10 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCameraSystem::Draw()
 {
-	int oldState = DAVA::RenderManager::Instance()->GetState();
-	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	//int oldState = DAVA::RenderManager::Instance()->GetState();
+	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	
+	DAVA::RenderManager::Instance()->SetRenderState(renderState);
 
 	SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 	if(NULL != sceneEditor)
@@ -310,7 +315,7 @@ void SceneCameraSystem::Draw()
 		}
 	}
 
-	DAVA::RenderManager::Instance()->SetState(oldState);
+	//DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void SceneCameraSystem::ProcessCommand(const Command2 *command, bool redo)
@@ -429,7 +434,7 @@ void SceneCameraSystem::CreateDebugCameras()
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-		topCameraEntity->AddComponent(DAVA::ScopedPtr<DAVA::CameraComponent> (new DAVA::CameraComponent(topCamera)));
+		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
 		scene->InsertBeforeNode(topCameraEntity, scene->GetChild(0));
 
 		// set current default camera

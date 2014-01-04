@@ -30,7 +30,7 @@
 #include "CubemapEditor/CubemapEditorDialog.h"
 #include "CubemapEditor/ClickableQLabel.h"
 #include "CubemapEditor/CubemapUtils.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Deprecated/EditorSettings.h"
 #include "Qt/Main/QtUtils.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 #include "ui_cubemapeditordialog.h"

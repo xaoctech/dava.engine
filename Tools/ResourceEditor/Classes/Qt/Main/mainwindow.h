@@ -41,10 +41,6 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
-// TODO: remove old screen -->
-#include "Classes/SceneEditor/MaterialEditor.h"
-// <---
-
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
@@ -85,6 +81,9 @@ public:
 
 signals:
     void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -135,8 +134,6 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
-	void OnUniteEntitiesWithLODs();
-	void OnAddEntityMenuAboutToShow();
 	void OnAddEntityFromSceneTree();
 
 	void OnSetSkyboxNode();
@@ -158,6 +155,8 @@ public slots:
 
 	void OnBeast();
 	void OnBeastAndSave();
+    
+    void OnBuildStaticOcclusion();
 
 	void OnConvertToShadow();
 
@@ -176,7 +175,8 @@ public slots:
 	void OnNotPassableTerrain();
 	
 	void OnAddActionComponent();
-	void OnRemoveActionComponent();
+    void OnAddStaticOcclusionComponent();
+    void OnAddModelTypeComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
@@ -184,9 +184,7 @@ public slots:
 
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
-
 	void PrepareCustomColorsEditorDisabling(bool& saveChanges, Request& disableRequest);
-	
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
@@ -202,12 +200,9 @@ protected:
 	void InitRecent();
 	void AddRecent(const QString &path);
     
-    void CreateMaterialEditorIfNeed();
-    
     void StartGlobalInvalidateTimer();
 
 	void RunBeast();
-
 
 	bool IsAnySceneChanged();
 
@@ -240,10 +235,6 @@ private:
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
-
-	// TODO: remove this old screen -->
-	MaterialEditor *materialEditor;
-	// <--
 
 	QtLabelWithActions *objectTypesLabel;
     QComboBox *objectTypesWidget;

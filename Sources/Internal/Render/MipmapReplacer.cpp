@@ -71,10 +71,12 @@ void MipMapReplacer::EnumerateTexturesRecursive(Entity * entity, Set<Texture *> 
             RenderBatch * rb = ro->GetRenderBatch(i);
             if(rb)
             {
-                Material * material = rb->GetMaterial();
+                DVASSERT(0 && "Vitaliy Borodovsky: Temporarly disabled. Need to rewrite for new materials");
+                
+                NMaterial * material = rb->GetMaterial();
                 if(material)
                 {
-                    Texture * texture = material->GetTexture(Material::TEXTURE_DIFFUSE);
+                    Texture * texture = material->GetTexture(NMaterial::TEXTURE_ALBEDO);
                     if(texture)
                         textures.insert(texture);
                 }
@@ -94,7 +96,7 @@ void MipMapReplacer::ReplaceMipMap(Texture * texture, int32 level)
     FilePath textureFilePath = GetDummyTextureFilePath(texture);
     if(!textureFilePath.IsEmpty())
     {
-        Vector<Image*> mipImg = ImageLoader::CreateFromFile(textureFilePath);
+        Vector<Image*> mipImg = ImageLoader::CreateFromFileByContent(textureFilePath);
         if(mipImg.size())
         {
             uint32 mipMapSize = texture->width / (1 << level);
