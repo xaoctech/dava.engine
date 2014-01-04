@@ -54,8 +54,12 @@ void ActionEnableHeightmapEditor::Redo()
 	{
 		return;
 	}
-	Request disableRequest;// todo
+	Request disableRequest;
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN, &disableRequest);
+	if(!disableRequest.IsAccepted())
+	{
+		return;
+	}
 
 	bool success = !sceneEditor->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL & ~SceneEditor2::LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN);
 

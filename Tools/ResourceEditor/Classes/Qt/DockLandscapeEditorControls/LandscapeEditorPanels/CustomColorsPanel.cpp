@@ -193,7 +193,7 @@ void CustomColorsPanel::SetColor(int color)
 	GetActiveScene()->customColorsSystem->SetColor(color);
 }
 
-void CustomColorsPanel::SaveTexture(Request* saveRequest)
+bool CustomColorsPanel::SaveTexture()
 {
 	SceneEditor2* sceneEditor = GetActiveScene();
 	
@@ -209,17 +209,13 @@ void CustomColorsPanel::SaveTexture(Request* saveRequest)
 													QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
 	selectedPathname = PathnameToDAVAStyle(filePath);
 	
-	if (!selectedPathname.IsEmpty())
+	if (selectedPathname.IsEmpty())
 	{
-		sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
-		saveRequest->Accept();
-	}
-	else
-	{
-		saveRequest->Cancel();
+		return false;
 	}
 	
-	return ;
+	sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
+	return true;
 }
 
 void CustomColorsPanel::LoadTexture()
@@ -257,10 +253,15 @@ void CustomColorsPanel::SaveTextureIfNeeded(Request* saveRequest, SceneEditor2* 
 	}
 	else
 	{
-		SaveTexture(saveRequest);
+		if(SaveTexture())
+		{
+			saveRequest->Accept();
+		}
+		else
+		{
+			saveRequest->Cancel();
+		}
 	}
-	
-	return;
 }
 
 void CustomColorsPanel::ConnectToShortcuts()

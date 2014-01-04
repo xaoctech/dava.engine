@@ -1980,35 +1980,7 @@ void QtMainWindow::OnCustomColorsEditor()
 		return;
 	}
 	
-	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
-	{/*
-		bool changesPresent = sceneEditor->customColorsSystem->ChangesPresent();
-		bool texturePathPresent = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
-		bool needSaveChanges = false;
-		if(changesPresent && !texturePathPresent)
-		{
-			int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?", QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-			if(answer == QMessageBox::Cancel)
-			{
-				return;
-			}
-			
-			needSaveChanges = answer == QMessageBox::Yes;
-		}
-		if(changesPresent && texturePathPresent)
-		{
-			needSaveChanges = true;
-		}*/
-		
-		bool saveNeeded = false;
-		if(!PrepareCustomColorsEditorDisabling(saveNeeded))
-		{
-			return;
-		}
-		Request disableRequest;
-		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, &disableRequest, saveNeeded));
-	}
-	else
+	if(!sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
 	{
 		if (LoadAppropriateTextureFormat())
 		{
@@ -2018,99 +1990,70 @@ void QtMainWindow::OnCustomColorsEditor()
 		{
 			OnLandscapeEditorToggled(sceneEditor);
 		}
+		return;
 	}
+	
+	bool saveChanges = false;
+	Request disableRequest;
+	PrepareCustomColorsEditorDisabling(saveChanges, disableRequest);
+	if(!disableRequest.IsAccepted())
+	{
+		ui->actionCustomColorsEditor->setChecked(true);
+		return;
+	}
+	sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, &disableRequest, saveChanges));
+	ui->actionCustomColorsEditor->setChecked(!disableRequest.IsAccepted());
 }
 
-bool QtMainWindow::PrepareCustomColorsEditorDisabling(bool& saveNeeded)
+void QtMainWindow::PrepareCustomColorsEditorDisabling(bool& saveChanges, Request& disableRequest)
 {
+	saveChanges = false;
+	disableRequest.Accept();
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	if (!sceneEditor)
+	if(!sceneEditor->customColorsSystem->ChangesPresent())
 	{
-		return false;
+		return;
 	}
-	bool changesPresent = sceneEditor->customColorsSystem->ChangesPresent();
-	//bool texturePathPresent = !sceneEditor->customColorsSystem->GetCurrentSaveFileName().IsEmpty();
-
-	/*if(changesPresent && !texturePathPresent)
+	int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?",
+										   QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	if(answer == QMessageBox::Cancel)
 	{
-		int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?", QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-		if(answer == QMessageBox::Cancel)
+		disableRequest.Cancel();
+		return;
+	}
+	else if(answer == QMessageBox::No)
+	{
+		return;
+	}
+	
+	FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+	
+	if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
+	{
+		selectedPathname = sceneEditor->GetScenePath().GetDirectory();
+			
+		QString filePath = QtFileDialog::getSaveFileName(NULL,
+														 QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+														 QString(selectedPathname.GetAbsolutePathname().c_str()),
+														 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
+		selectedPathname = PathnameToDAVAStyle(filePath);
+		Entity* landscape = FindLandscapeEntity(sceneEditor);
+		if (selectedPathname.IsEmpty() || NULL == landscape)
 		{
+			disableRequest.Cancel();
+			return;
+		}
+		KeyedArchive* customProps = landscape->GetCustomProperties();
+		if(NULL == customProps)
+		{
+			disableRequest.Cancel();
 			return;
 		}
 		
-		needSaveChanges = answer == QMessageBox::Yes;
+		String pathToSave = selectedPathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
 	}
-	if(changesPresent && texturePathPresent)
-	{
-		needSaveChanges = true;
-	}*/
-	
-	/*
-	 
-	 KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
-	 if (customProps)
-	 {
-	 customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(filePath));
-	 }
-	 
-	 */
-	
-	if(changesPresent)
-	{
-		int answer = QMessageBox::question(this, "Custom colors texture changed", "Do you want to save changes?",
-										   QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-		if(answer == QMessageBox::Cancel)
-		{
-			return false;
-		}
-		
-		if(answer == QMessageBox::No)
-		{
-			saveNeeded = false;
-			return true;
-		}
-		
-		FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
-		
-		if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
-		{
-			selectedPathname = sceneEditor->GetScenePath().GetDirectory();
-			
-			QString filePath = QtFileDialog::getSaveFileName(NULL, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
-															 QString(selectedPathname.GetAbsolutePathname().c_str()),
-															 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
-			selectedPathname = PathnameToDAVAStyle(filePath);
-			if (selectedPathname.IsEmpty())
-			{
-				return false;
-			}
-			Entity* landscape = FindLandscapeEntity(sceneEditor);
-			if(!landscape)
-			{
-				return false;
-			}
-			KeyedArchive* customProps = landscape->GetCustomProperties();
-			if(!customProps)
-			{
-				return false;
-			}
-			
-			String pathToSave = selectedPathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
-			customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
-			saveNeeded = true;
-			return true;
-		}
-		else
-		{
-			saveNeeded = true;
-			return true;
-		}
-		
-
-	}
-	
-	return true;
+	saveChanges = true;
 }
 
 void QtMainWindow::OnHeightmapEditor()

@@ -58,7 +58,6 @@ void ActionEnableCustomColors::Redo()
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, &disableRequest);
 	if(!disableRequest.IsAccepted())
 	{
-		ShowErrorDialog(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS);
 		return;
 	}
 

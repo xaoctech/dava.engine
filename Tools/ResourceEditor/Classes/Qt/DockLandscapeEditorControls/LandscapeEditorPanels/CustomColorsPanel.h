@@ -27,7 +27,7 @@ private slots:
 
 	void SetBrushSize(int brushSize);
 	void SetColor(int color);
-	void SaveTexture(Request* saveRequest);
+	bool SaveTexture();
 	void LoadTexture();
 	void SaveTextureIfNeeded(Request* saveRequest, SceneEditor2* scene);
 
