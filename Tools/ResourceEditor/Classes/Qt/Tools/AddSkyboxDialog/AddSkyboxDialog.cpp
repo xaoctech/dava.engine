@@ -32,6 +32,7 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "CubemapEditor/CubemapUtils.h"
 #include "AddSkyboxDialog.h"
+#include "Scene/SceneSignals.h"
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 
@@ -42,6 +43,7 @@ AddSkyboxDialog::AddSkyboxDialog(QWidget* parent)
 	controlButton = new QPushButton(this);
 	
 	AddButton(controlButton);
+	propEditor->setMouseTracking(true);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }

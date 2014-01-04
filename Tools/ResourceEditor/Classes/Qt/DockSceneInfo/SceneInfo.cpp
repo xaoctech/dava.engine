@@ -30,10 +30,9 @@
 
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "../../SceneEditor/EditorSettings.h"
-#include "../../EditorScene.h"
+#include "Deprecated/EditorSettings.h"
 
-#include "../../CommandLine/CommandLineManager.h"
+#include "CommandLine/CommandLineManager.h"
 
 
 #include "Main/QtUtils.h"
@@ -42,12 +41,13 @@
 
 #include "../../ImageTools/ImageTools.h"
 
-#include "../Qt/CubemapEditor/MaterialHelper.h"
+#include "CubemapEditor/MaterialHelper.h"
 
-#include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/DockLODEditor/EditorLODData.h"
-#include "Classes/Qt/Main/mainwindow.h"
+#include "Scene/SceneSignals.h"
+#include "Scene/SceneEditor2.h"
+#include "Scene/SceneHelper.h"
+#include "DockLODEditor/EditorLODData.h"
+#include "Main/mainwindow.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -59,8 +59,11 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
     , activeScene(NULL)
 	, landscape(NULL)
-    , treeStateHelper(this, this->curModel)
+    , treeStateHelper(this, curModel)
+	, isUpToDate(false)
 {
+    SetEditTracking(true);
+    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
@@ -92,10 +95,9 @@ void SceneInfo::InitializeInfo()
     
     InitializeGeneralSection();
     Initialize3DDrawSection();
-    InitializeMaterialsSection();
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
-    InitializeParticlesSection();
+    InitializeSpeedTreeInfoSelection();
 }
 
 void SceneInfo::InitializeGeneralSection()
@@ -103,8 +105,14 @@ void SceneInfo::InitializeGeneralSection()
     QtPropertyData* header = CreateInfoHeader("General Scene Info");
   
     AddChild("Entities Count", header);
-    AddChild("DataNodes Count", header);
+    AddChild("Emitters Count", header);
+
     AddChild("All Textures Size", header);
+	AddChild("Material Textures Size", header);
+    AddChild("Particles Textures Size", header);
+    
+    AddChild("Sprites Count", header);
+    AddChild("Textures Count", header);
 }
 
 void SceneInfo::RefreshSceneGeneralInfo()
@@ -112,8 +120,14 @@ void SceneInfo::RefreshSceneGeneralInfo()
     QtPropertyData* header = GetInfoHeader("General Scene Info");
 
     SetChild("Entities Count", (uint32)nodesAtScene.size(), header);
-    SetChild("DataNodes Count", (uint32)dataNodesAtScene.size(), header);
+    SetChild("Emitters Count", emittersCount, header);
+
     SetChild("All Textures Size", QString::fromStdString(SizeInBytesToString((float32)(sceneTexturesSize + particleTexturesSize))), header);
+	SetChild("Material Textures Size", QString::fromStdString(SizeInBytesToString((float32)sceneTexturesSize)), header);
+    SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
+    
+    SetChild("Sprites Count", spritesCount, header);
+    SetChild("Textures Count", (uint32)particleTextures.size(), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()
@@ -148,21 +162,33 @@ void SceneInfo::Refresh3DDrawInfo()
     SetChild("TriangleFan", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLEFAN], header);
 }
 
-void SceneInfo::InitializeMaterialsSection()
+
+void SceneInfo::InitializeSpeedTreeInfoSelection()
 {
-    QtPropertyData* header = CreateInfoHeader("Materials");
+    QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
     
-    AddChild("Materials Count", header);
-    AddChild("Textures Count", header);
-    AddChild("Textures Size", header);
+    AddChild("SpeedTree Leafs Square", header);
+    AddChild("SpeedTree Leafs Square Div X", header);
+    AddChild("SpeedTree Leafs Square Div Y", header);
 }
 
-void SceneInfo::RefreshMaterialsInfo()
+void SceneInfo::RefreshSpeedTreeInfoSelection()
 {
-    QtPropertyData* header = GetInfoHeader("Materials");
-    SetChild("Materials Count", (uint32)materialsAtScene.size(), header);
-    SetChild("Textures Count", (uint32)sceneTextures.size(), header);
-    SetChild("Textures Size", QString::fromStdString(SizeInBytesToString((float32)sceneTexturesSize)), header);
+    QtPropertyData* header = GetInfoHeader("SpeedTree Info");
+    
+    float32 speedTreeLeafSquare = 0.f, speedTreeLeafSquareDivX = 0.f, speedTreeLeafSquareDivY = 0.f;
+    int32 infoCount = speedTreeLeafInfo.size();
+    for(int32 i = 0; i < infoCount; i++)
+    {
+        SpeedTreeInfo & info = speedTreeLeafInfo[i];
+        speedTreeLeafSquare += info.leafsSquare;
+        speedTreeLeafSquareDivX += info.leafsSquareDivX;
+        speedTreeLeafSquareDivY += info.leafsSquareDivY;
+    }
+
+    SetChild("SpeedTree Leafs Square", speedTreeLeafSquare, header);
+    SetChild("SpeedTree Leafs Square Div X", speedTreeLeafSquareDivX, header);
+    SetChild("SpeedTree Leafs Square Div Y", speedTreeLeafSquareDivY, header);
 }
 
 void SceneInfo::InitializeLODSectionInFrame()
@@ -234,35 +260,15 @@ void SceneInfo::RefreshLODInfoForSelection()
 }
 
 
-void SceneInfo::InitializeParticlesSection()
-{
-    QtPropertyData* header = CreateInfoHeader("Particles");
-
-    AddChild("Emitters Count", header);
-    AddChild("Sprites Count", header);
-    AddChild("Textures Count", header);
-    AddChild("Textures Size", header);
-}
-
-void SceneInfo::RefreshParticlesInfo()
-{
-    QtPropertyData* header = GetInfoHeader("Particles");
-
-    SetChild("Emitters Count", emittersCount, header);
-    SetChild("Sprites Count", spritesCount, header);
-    SetChild("Textures Count", (uint32)particleTextures.size(), header);
-    SetChild("Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
-}
-
-uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
+uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
     KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
     String projectPath = settings->GetString("ProjectPath");
 
     uint32 textureSize = 0;
     
-    Map<String, Texture *>::const_iterator endIt = textures.end();
-    for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
+    TexturesMap::const_iterator endIt = textures.end();
+    for(TexturesMap::const_iterator it = textures.begin(); it != endIt; ++it)
     {
         FilePath pathname = it->first;
         Texture *tex = it->second;
@@ -298,28 +304,24 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
     if(scene)
     {
         scene->GetChildNodes(nodesAtScene);
-        scene->GetDataNodes(materialsAtScene);
 		//VI: remove skybox materials so they not to appear in the lists
-		MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
+		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        scene->GetDataNodes(dataNodesAtScene);
-        
-        CollectSceneTextures();
+        SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+        sceneTexturesSize = CalculateTextureSize(sceneTextures);
+
         CollectParticlesData();
+        particleTexturesSize = CalculateTextureSize(particleTextures);
         
         CollectLODDataInFrame();
         CollectLODDataForSelection();
         
-        sceneTexturesSize = CalculateTextureSize(sceneTextures);
-        particleTexturesSize = CalculateTextureSize(particleTextures);
     }
 }
 
 void SceneInfo::ClearData()
 {
     nodesAtScene.clear();
-    materialsAtScene.clear();
-    dataNodesAtScene.clear();
     sceneTextures.clear();
     particleTextures.clear();
     
@@ -331,50 +333,13 @@ void SceneInfo::ClearData()
     particleTexturesSize = 0;
     emittersCount = 0;
     spritesCount = 0;
+    
+    speedTreeLeafInfo.clear();
 }
 
 void SceneInfo::ClearSelectionData()
 {
     lodInfoSelection.Clear();
-}
-
-void SceneInfo::CollectSceneTextures()
-{
-    for(int32 n = 0; n < (int32)nodesAtScene.size(); ++n)
-    {
-        RenderObject *ro = GetRenderObject(nodesAtScene[n]);
-        if(!ro) continue;
-        
-        uint32 count = ro->GetRenderBatchCount();
-        for(uint32 b = 0; b < count; ++b)
-        {
-            RenderBatch *renderBatch = ro->GetRenderBatch(b);
-            
-            Material *material = renderBatch->GetMaterial();
-            if(material)
-            {
-                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-                {
-                    CollectTexture(sceneTextures, material->GetTextureName((Material::eTextureLevel)t), material->GetTexture((Material::eTextureLevel)t));
-                }
-            }
-            
-            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-            if(instanceMaterial)
-            {
-                CollectTexture(sceneTextures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
-            }
-        }
-        
-        if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
-        {
-            Landscape *land = static_cast<Landscape *>(ro);
-            for(int32 t = 0; t < Landscape::TEXTURE_COUNT; ++t)
-            {
-                CollectTexture(sceneTextures, land->GetTextureName((Landscape::eTextureLevel)t), land->GetTexture((Landscape::eTextureLevel)t));
-            }
-        }
-    }
 }
 
 void SceneInfo::CollectParticlesData()
@@ -492,11 +457,11 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entit
     return triangles;
 }
 
-void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
+void SceneInfo::CollectTexture(TexturesMap &textures, const FilePath &name, Texture *tex)
 {
     if(!name.IsEmpty() && tex)
 	{
-		textures[name.GetAbsolutePathname()] = tex;
+		textures[FILEPATH_MAP_KEY(name)] = tex;
 	}
 }
 
@@ -504,41 +469,40 @@ void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath 
 QtPropertyData * SceneInfo::CreateInfoHeader(const QString &key)
 {
     QtPropertyData* headerData = new QtPropertyData("");
-    headerData->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
-
-    QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(key, headerData);
-    prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-    prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-    
-    return headerData;
+    headerData->SetEditable(false);
+	headerData->SetBackground(QBrush(QColor(Qt::lightGray)));
+    AppendProperty(key, headerData);
+	return headerData;
 }
 
 QtPropertyData * SceneInfo::GetInfoHeader(const QString &key)
 {
-    QtPropertyData * header = GetPropertyData(key);
-    DVASSERT(header);
-    
-    return header;
+	QtPropertyData *header = NULL;
+    QtPropertyData *root = GetRootProperty();
+	if(NULL != root)
+	{
+		header = root->ChildGet(key);
+	}
+	return header;
 }
 
 void SceneInfo::AddChild(const QString & key, QtPropertyData *parent)
 {
     QtPropertyData *propData = new QtPropertyData(0);
-    propData->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
+	propData->SetEditable(false);
     parent->ChildAdd(key, propData);
 }
 
 void SceneInfo::SetChild(const QString & key, const QVariant &value, QtPropertyData *parent)
 {
-    for (int32 c = 0; c < parent->ChildCount(); ++c)
-    {
-        QPair<QString, QtPropertyData*> pair = parent->ChildGet(c);
-        if(pair.first == key)
-        {
-            pair.second->SetValue(value);
-            return;
-        }
-    }
+	if(NULL != parent)
+	{
+		QtPropertyData *propData = parent->ChildGet(key);
+		if(NULL != propData)
+		{
+			propData->SetValue(value);
+		}
+	}
 }
 
 void SceneInfo::SaveTreeState()
@@ -565,6 +529,12 @@ void SceneInfo::RestoreTreeState()
 
 void SceneInfo::showEvent ( QShowEvent * event )
 {
+	if(!isUpToDate)
+	{
+		isUpToDate = true;
+		RefreshAllData(activeScene);
+	}
+
     QtPropertyEditor::showEvent(event);
 }
 
@@ -586,10 +556,9 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 
 	RefreshSceneGeneralInfo();
 	Refresh3DDrawInfo();
-	RefreshMaterialsInfo();
 	RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
-	RefreshParticlesInfo();
+    RefreshSpeedTreeInfoSelection();
 
 	RestoreTreeState();
 }
@@ -598,7 +567,12 @@ void SceneInfo::SceneActivated(SceneEditor2 *scene)
 {
     activeScene = scene;
     landscape = FindLandscape(activeScene);
-    RefreshAllData(scene);
+	
+	isUpToDate = isVisible();
+	if(isUpToDate)
+	{
+		RefreshAllData(scene);
+	}
 }
 
 void SceneInfo::SceneDeactivated(SceneEditor2 *scene)
@@ -616,7 +590,12 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
     if(activeScene == scene)
     {
         landscape = FindLandscape(activeScene);
-        RefreshAllData(scene);
+
+		isUpToDate = !isVisible();
+		if(isUpToDate)
+		{
+			RefreshAllData(scene);
+		}
     }
 }
 
@@ -626,4 +605,85 @@ void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
     ClearSelectionData();
     CollectLODDataForSelection();
     RefreshLODInfoForSelection();
+
+    CollectSpeedTreeLeafsSquare(selected);
+    RefreshSpeedTreeInfoSelection();
+}
+
+void SceneInfo::CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup)
+{
+    speedTreeLeafInfo.clear();
+
+    int32 entitiesCount = forGroup->Size();
+    for(int32 i = 0; i < entitiesCount; i++)
+    {
+        RenderObject * ro = GetRenderObject(forGroup->GetEntity(i));
+        if(ro)
+            speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(ro));
+    }
+}
+
+SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *renderObject)
+{
+    SpeedTreeInfo info;
+    if(renderObject)
+    {
+		FastName speedTreeTemplateName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
+        Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
+        int32 rbCount = renderObject->GetRenderBatchCount();
+        for(int32 i = 0; i < rbCount; ++i)
+        {
+            RenderBatch * rb = renderObject->GetRenderBatch(i);
+            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == speedTreeTemplateName)
+            {
+                PolygonGroup * pg = rb->GetPolygonGroup();
+                int32 triangleCount = pg->GetIndexCount() / 3;
+                for(int32 t = 0; t < triangleCount; t++)
+                {
+                    int32 i1, i2, i3;
+                    int32 baseVertexIndex = t * 3;
+                    pg->GetIndex(baseVertexIndex, i1);
+                    pg->GetIndex(baseVertexIndex + 1, i2);
+                    pg->GetIndex(baseVertexIndex + 2, i3);
+                    
+                    Vector3 v1, v2, v3;
+                    pg->GetCoord(i1, v1);
+                    pg->GetCoord(i2, v2);
+                    pg->GetCoord(i3, v3);
+                    
+                    v1.z = 0; v2.z = 0; v3.z = 0; //ortho projection in XY-plane
+                    
+                    v2 -= v1;
+                    v3 -= v1;
+                    Vector3 vec = v2.CrossProduct(v3);
+                    float32 len = vec.Length() / 2;
+
+                    info.leafsSquare += len;
+                }
+            }
+        }
+        info.leafsSquareDivX = info.leafsSquare / (bboxSize.x * bboxSize.z);
+        info.leafsSquareDivY = info.leafsSquare / (bboxSize.y * bboxSize.z);
+    }
+    
+    return info;
+}
+
+void SceneInfo::TexturesReloaded()
+{
+    sceneTextures.clear();
+    SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+    sceneTexturesSize = CalculateTextureSize(sceneTextures);
+    
+    RefreshSceneGeneralInfo();
+}
+
+void SceneInfo::SpritesReloaded()
+{
+    particleTextures.clear();
+
+    CollectParticlesData();
+    particleTexturesSize = CalculateTextureSize(particleTextures);
+    
+    RefreshSceneGeneralInfo();
 }

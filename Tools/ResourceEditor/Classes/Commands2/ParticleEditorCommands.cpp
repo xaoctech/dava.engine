@@ -30,24 +30,10 @@
 
 #include "ParticleEditorCommands.h"
 #include "DAVAEngine.h"
-#include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../SceneEditor/EditorSettings.h"
-#include "../SceneEditor/EditorBodyControl.h"
-#include "../SceneEditor/SceneGraph.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
-#include "DockParticleEditor/ParticlesEditorController.h"
-#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
-#include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
-#include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
-#include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
-
-#include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
-
-#include "../Qt/Main/QtUtils.h"
-#include "../Qt/Main/QtMainWindowHandler.h"
-#include "../Qt/Scene/SceneData.h"
-#include "../Qt/Scene/SceneDataManager.h"
-#include "SceneEditor/EditorSettings.h"
+#include "Main/QtUtils.h"
 #include "StringConstants.h"
 
 #include <QFileDialog>
@@ -428,9 +414,8 @@ void CommandAddParticleEmitter::Redo()
 	Entity* emitterEntity = new Entity();
 	emitterEntity->SetName("Particle Emitter");
 	emitterEntity->AddComponent(renderComponent);
-	renderComponent->Release();
 
-	emitterEntity->AddComponent(ScopedPtr<LodComponent> (new LodComponent()));
+	emitterEntity->AddComponent(new LodComponent());
 	effectEntity->AddNode(emitterEntity);
 }
 

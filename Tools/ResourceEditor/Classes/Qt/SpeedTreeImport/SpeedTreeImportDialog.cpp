@@ -74,7 +74,7 @@ void SpeedTreeImportDialog::OnCancel()
 
 void SpeedTreeImportDialog::OnOk()
 {
-    QtMainWindow::Instance()->WaitStart("Importing tree", "Please wait..."); 
+	QtMainWindow::Instance()->WaitStart("Importing tree", "Please wait...");
     SpeedTreeImporter::ImportSpeedTreeFromXML(xmlFilePath, sc2FilePath, texturesDirPath);
     QtMainWindow::Instance()->WaitStop();
 

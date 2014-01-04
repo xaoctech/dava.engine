@@ -488,7 +488,7 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * root
 UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
 {
 	// Firstly try Type (Custom Control).
-	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(type));
+	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(type));
 	if (control)
 	{
 		// Everything is OK. Just update the custom control type for the control, if any.
@@ -512,7 +512,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 	// Retry with base type, if any.
 	if (!baseType.empty())
 	{
-		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(baseType));
+		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<UIControl>(baseType));
 		if (control)
 		{
 			// Even if the control of the base type was created, we have to store its custom type.
@@ -534,22 +534,25 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
         parentNode->AddNodeToMap(parentControl->GetName(), childNode);
     }
 
+    SaveChildren(parentControl, childNode, relativeDepth);
+
+    return childNode;
+}
+
+void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int relativeDepth)
+{
     // "Relative Depth" is needed to save the order of the nodes - it is important!
-    childNode->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
-
+    parentNode->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
+    
     int currentDepth = 0;
-//  const List<UIControl*>& children = parentControl->GetChildren();
-//  for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
-
+    
 	const List<UIControl*>& children = parentControl->GetRealChildren();
 	for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
     {
         UIControl* childControl = (*childIter);
-        SaveToNode(childControl, childNode, currentDepth);
+        SaveToNode(childControl, parentNode, currentDepth);
         currentDepth ++;
     }
-
-    return childNode;
 }
 
 void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)

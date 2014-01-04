@@ -34,6 +34,7 @@
 #include <QObject>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Base/StaticSingleton.h"
 
 #include "Commands2/CommandStack.h"
@@ -58,6 +59,8 @@
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/OwnersSignatureSystem.h"
 #include "Main/Request.h"
+
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -97,6 +100,7 @@ public:
 	DebugDrawSystem *debugDrawSystem;
 	BeastSystem	*beastSystem;
 	OwnersSignatureSystem *ownersSignatureSystem;
+    StaticOcclusionBuildSystem * staticOcclusionBuildSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -145,8 +149,8 @@ public:
 	const Color GetShadowColor() const;
 	void UpdateShadowColorFromLandscape();
 
-	void SetShadowBlendMode(ShadowVolumeRenderPass::eBlend blend);
-	ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
+	void SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend);
+	DAVA::ShadowPassBlendMode::eBlend GetShadowBlendMode() const;
 
     const RenderManager::Stats & GetRenderStats() const;
 

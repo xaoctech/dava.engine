@@ -29,11 +29,8 @@
 
 
 #include "SpritePackerHelper.h"
-#include "DockParticleEditor/ParticlesEditorController.h"
-
-#include "../SpritesPacker.h"
-#include "../SceneEditor/EditorSettings.h"
-#include "./Scene/SceneDataManager.h"
+#include "SpritesPacker.h"
+#include "Deprecated/EditorSettings.h"
 
 #include <QtConcurrentRun>
 
@@ -74,6 +71,7 @@ void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
 		Logger::Error("[SpritePackerHelper::Pack] inputDir is not directory (%s)", inputDir.GetAbsolutePathname().c_str());
+        DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 		return;
 	}
 
@@ -84,6 +82,7 @@ void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 	SafeDelete(resourcePacker);
 	if(!isChanged)
 	{
+        DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 		return;
 	}
 	
@@ -112,9 +111,6 @@ void SpritePackerHelper::Reload()
     {
         it->second->Reload();
     }
-    
-    if(ParticlesEditorController::Instance())
-        ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
 void SpritePackerHelper::EnumerateSpritesForReloading(Scene * scene, Map<String, Sprite *> &sprites)

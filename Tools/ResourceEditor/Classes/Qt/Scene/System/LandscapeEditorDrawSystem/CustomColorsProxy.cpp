@@ -29,7 +29,7 @@
 
 
 #include "CustomColorsProxy.h"
-#include "../SceneEditor/EditorConfig.h"
+#include "Deprecated/EditorConfig.h"
 
 CustomColorsProxy::CustomColorsProxy(int32 size)
 :	changedRect(Rect())
@@ -73,7 +73,7 @@ Rect CustomColorsProxy::GetChangedRect()
 
 void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
 {
-	Rect bounds(0.f, 0.f, size, size);
+	DAVA::Rect bounds(0.f, 0.f, size, size);
 	changedRect = rect;
 	bounds.ClampToRect(changedRect);
 

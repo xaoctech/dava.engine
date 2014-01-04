@@ -168,7 +168,7 @@ void UISlider::InitInactiveParts(Sprite* spr)
 		return;
 	}
 
-	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f));
 }
 
 void UISlider::SetThumb(UIControl *newThumb)
@@ -260,7 +260,24 @@ void UISlider::RecalcButtonPos()
 	{
 		thumbButton->relativePosition.x = Interpolation::Linear((float32)leftInactivePart, size.x - rightInactivePart, minValue, currentValue, maxValue);
 		clipPointRelative = thumbButton->relativePosition.x;
+        thumbButton->relativePosition.y = GetSize().y / 2; // thumb button pivot point is on center.
 	}
+}
+
+void UISlider::SyncThumbWithSprite()
+{
+    // Get the thumb sprite size and update the sprite size/pos according to it.
+    if (thumbButton && thumbButton->GetSprite())
+    {
+        const Vector2 spriteSize = thumbButton->GetSprite()->GetSize();
+        thumbButton->SetSize(spriteSize);
+        
+        Vector2 spriteCenter = Vector2(spriteSize.x / 2.0f, spriteSize.y / 2.0f);
+        thumbButton->SetPosition(spriteCenter);
+        thumbButton->pivotPoint = spriteCenter;
+    }
+    
+   	RecalcButtonPos();
 }
 
 void UISlider::SetValue(float32 value)
@@ -419,16 +436,6 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 	}
 }
 
-List<UIControl* >& UISlider::GetRealChildren()
-{
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME));
-
-	return realChildren;
-}
-	
 void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
@@ -516,6 +523,12 @@ void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	}
 }
 
+void UISlider::SetSize(const DAVA::Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+    RecalcButtonPos();
+}
+    
 void UISlider::LoadFromYamlNodeCompleted()
 {
 	// All the UIControls should exist at this moment - just attach to them.
@@ -530,11 +543,15 @@ void UISlider::LoadFromYamlNodeCompleted()
         bgMax->GetBackground()->SetDrawType(maxDrawType);
     }
 
-	RecalcButtonPos();
+    SyncThumbWithSprite();
 }
 	
 YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 {
+    thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+    bgMin->SetName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
+    bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
+
     YamlNode *node = UIControl::SaveToYamlNode(loader);
     
     // Control Type
@@ -551,17 +568,6 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	// Sprite max value
 	value = this->GetMaxValue();
 	node->Set("maxValue", value);
-
-	// Yuri Coder, 2013/04/24. Thumb Button and all the backgrounds are child controls now
-	// so save them under appropriate names.
-	YamlNode* thumbButtonNode = SaveToYamlNodeRecursive(loader, this->thumbButton);
-	node->AddNodeToMap(UISLIDER_THUMB_SPRITE_CONTROL_NAME, thumbButtonNode);
-
-	YamlNode* minBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMin);
-	node->AddNodeToMap(UISLIDER_MIN_SPRITE_CONTROL_NAME, minBackgroundNode);
-
-	YamlNode* maxBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMax);
-	node->AddNodeToMap(UISLIDER_MAX_SPRITE_CONTROL_NAME, maxBackgroundNode);
 
     return node;
 }

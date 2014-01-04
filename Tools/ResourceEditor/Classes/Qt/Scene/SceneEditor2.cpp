@@ -30,10 +30,9 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "Scene/SceneHelper.h"
 
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/SceneValidator.h"
+#include "Deprecated/EditorSettings.h"
+#include "Deprecated/SceneValidator.h"
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Commands2/HeightmapEditorCommands2.h"
@@ -46,6 +45,8 @@
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
+
+const FastName MATERIAL_FOR_REBIND = FastName("Global");
 
 SceneEditor2::SceneEditor2()
 	: Scene()
@@ -114,12 +115,31 @@ SceneEditor2::SceneEditor2()
 	
 	ownersSignatureSystem = new OwnersSignatureSystem(this);
 	AddSystem(ownersSignatureSystem, 0);
+    
+    staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
+    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
 
-	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
 
 	wasChanged = false;
+    
+    //RenderTechnique * technique1 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/PixelLit.Opaque.material"));
+    //FastNameSet set;
+    //technique1->GetPassByIndex(technique1->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
+
+    //RenderTechnique * technique2 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/PixelLit.Alphatest.material"));
+    //technique2->GetPassByIndex(technique2->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
+
+    //RenderTechnique * technique3 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/Textured.Opaque.material"));
+    //technique3->GetPassByIndex(technique3->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
+    
+    //RenderTechnique * technique4 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/Textured.Alphatest.material"));
+    //technique4->GetPassByIndex(technique4->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
+
+    //RenderTechnique * technique5 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/Textured.Alphablend.material"));
+    //technique5->GetPassByIndex(technique5->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
 }
 
 SceneEditor2::~SceneEditor2()
@@ -146,6 +166,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
     SceneValidator::Instance()->ValidateSceneAndShowErrors(this, path);
     
 	SceneSignals::Instance()->EmitLoaded(this);
+
 	return ret;
 }
 
@@ -345,6 +366,9 @@ void SceneEditor2::Update(float timeElapsed)
 	
 	if(editorLightSystem)
 		editorLightSystem->Process();
+
+    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
+    staticOcclusionBuildSystem->Process(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -375,8 +399,19 @@ void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
 
 void SceneEditor2::Draw()
 {
+
     RenderManager::Instance()->ClearStats();
+	
+//	NMaterial* global = renderSystem->GetMaterialSystem()->GetMaterial(MATERIAL_FOR_REBIND);
+//	DVASSERT(global);
+//	
+//	if(global)
+//	{
+//		global->Rebind();
+//	}
+	
 	Scene::Draw();
+    
     renderStats = RenderManager::Instance()->GetStats();
 
 	if(isHUDVisible)
@@ -405,6 +440,7 @@ void SceneEditor2::Draw()
 		hoodSystem->Draw();
 		textDrawSystem->Draw();
 	}
+    
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
@@ -495,27 +531,25 @@ const Color SceneEditor2::GetShadowColor() const
 	if(GetRenderSystem())
 		return GetRenderSystem()->GetShadowRectColor();
 
-	return Color::White();
+	return Color::White;
 }
 
-void SceneEditor2::SetShadowBlendMode( ShadowVolumeRenderPass::eBlend blend )
+void SceneEditor2::SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend)
 {
 	if(GetRenderSystem())
 	{
-		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
-		shadowPass->SetBlendMode(blend);
+		GetRenderSystem()->SetShadowBlendMode(blend);
 	}
 }
 
-ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
+DAVA::ShadowPassBlendMode::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
-		return shadowPass->GetBlendMode();
+		GetRenderSystem()->GetShadowBlendMode();
 	}
 
-	return ShadowVolumeRenderPass::MODE_BLEND_COUNT;
+	return DAVA::ShadowPassBlendMode::MODE_BLEND_COUNT;
 }
 
 const RenderManager::Stats & SceneEditor2::GetRenderStats() const
@@ -690,3 +724,4 @@ void SceneEditor2::MarkAsChanged()
 		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
 	}
 }
+

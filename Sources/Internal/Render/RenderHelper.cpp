@@ -128,6 +128,49 @@ void RenderHelper::DrawRect(const Rect & rect)
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 5);
 }
 
+void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Color& color)
+{
+    // TODO! review with Ivan/Victor whether it is not performance problem!
+    Vector<float32> gridVertices;
+    int32 verLinesCount = (int32)ceilf(rect.dx / gridSize.x);
+    int32 horLinesCount = (int32)ceilf(rect.dy / gridSize.y);
+    gridVertices.resize((horLinesCount + verLinesCount) * 4);
+    
+    float32 curPos = 0;
+    int32 curVertexIndex = 0;
+    for (int i = 0; i < horLinesCount; i ++)
+    {
+        gridVertices[curVertexIndex ++] = rect.x;
+        gridVertices[curVertexIndex ++] = rect.y + curPos;
+        gridVertices[curVertexIndex ++] = rect.x + rect.dx;
+        gridVertices[curVertexIndex ++] = rect.y + curPos;
+        
+        curPos += gridSize.x;
+    }
+
+    curPos = 0.0f;
+    for (int i = 0; i < verLinesCount; i ++)
+    {
+        gridVertices[curVertexIndex ++] = rect.x + curPos;
+        gridVertices[curVertexIndex ++] = rect.y;
+        gridVertices[curVertexIndex ++] = rect.x + curPos;
+        gridVertices[curVertexIndex ++] = rect.y + rect.dy;
+
+        curPos += gridSize.y;
+    }
+
+    vertexStream->Set(TYPE_FLOAT, 2, 0, gridVertices.data());
+
+    Color oldColor = RenderManager::Instance()->GetColor();
+    RenderManager::Instance()->SetColor(color);
+    
+    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+    RenderManager::Instance()->SetRenderData(renderDataObject);
+    RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINELIST, 0, curVertexIndex / 2);
+    
+    RenderManager::Instance()->SetColor(oldColor);
+}
+
 void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
 {
     vertices[0] = start.x;						
@@ -223,6 +266,7 @@ void RenderHelper::DrawCircle(const Vector2 & center, float32 radius)
     float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(2 * PI / angle) + 1;
 	
+    pts.points.reserve(ptsCount);
 	for (int k = 0; k < ptsCount; ++k)
 	{
 		float32 angle = ((float)k / (ptsCount - 1)) * 2 * PI;
@@ -242,7 +286,7 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
     float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(2 * PI / (DegToRad(angle))) + 1;
 
-
+    pts.points.reserve(ptsCount);
 	for (int k = 0; k < ptsCount; ++k)
 	{
 		float32 angle = ((float)k / (ptsCount - 1)) * 2 * PI;
@@ -261,6 +305,7 @@ void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionV
     float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(PI_2 / (DegToRad(angle))) + 1;
 
+    pts.points.reserve(ptsCount);
 	for (int k = 0; k < ptsCount; ++k)
 	{
 		float32 angleA = ((float)k / (ptsCount - 1)) * PI_2;
@@ -314,6 +359,7 @@ void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool use
 	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
 
 	Vector<Vector2> vertexes;
+    vertexes.reserve(ptsCount + 1);
 	for(int32 i = 0; i <= ptsCount; i++)
  	{
 		float32 seta = i * 360.0f / (float32)ptsCount;
@@ -323,6 +369,7 @@ void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool use
 		vertexes.push_back(Vector2(x, y));
 	}
 	
+    pts.points.reserve(ptsCount * 6);
 	for(int32 i = 0; i < ptsCount; ++i)
 	{
 		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  1) * radius) + center);
@@ -557,6 +604,7 @@ void RenderHelper::DrawStrippedLine(Polygon2 & polygon, float lineLen, float spa
 void RenderHelper::DrawBSpline(BezierSpline3 * bSpline, int segments, float ts, float te)
 {
 	Polygon3 pts;
+    pts.points.reserve(segments);
 	for (int k = 0; k < segments; ++k)
 	{
 		pts.AddPoint(bSpline->Evaluate(0, ts + (te - ts) * ((float)k / (float)(segments - 1))));
@@ -568,6 +616,7 @@ void RenderHelper::DrawInterpolationFunc(Interpolation::Func func, const Rect & 
 {
 	Polygon3 pts;
 	int segmentsCount = 20;
+    pts.points.reserve(segmentsCount);
 	for (int k = 0; k < segmentsCount; ++k)
 	{
 		Vector3 v;
@@ -891,6 +940,8 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		Vector3 p4 = c - nd;
 
 		Polygon3 poly;
+        poly.points.reserve(3);
+        
 		poly.AddPoint(p1);
 		poly.AddPoint(p3);
 		poly.AddPoint(p2);
@@ -938,6 +989,8 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		DAVA::Vector3 max = box.max;
 
 		DAVA::Polygon3 poly;
+        poly.points.reserve(4);
+        
 		poly.AddPoint(min);
 		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
@@ -982,9 +1035,11 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
 	{
+        Polygon3 poly;
+        poly.points.reserve(5);
 		for(int i = 0; i < 12; ++i)
 		{
-			Polygon3 poly;
+            poly.Clear();
 
 			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
 			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);
@@ -998,9 +1053,11 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
 	{
+        Polygon3 poly;
+        poly.points.reserve(5);
 		for(int i = 0; i < 12; ++i)
 		{
-			Polygon3 poly;
+            poly.Clear();
 
 			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
 			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);

@@ -32,6 +32,7 @@
 
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Commands2/ChangeLODDistanceCommand.h"
+#include "Classes/Commands2/CreatePlaneLODCommand.h"
 
 EditorLODData::EditorLODData()
     :   lodLayersCount(0)
@@ -266,6 +267,7 @@ void EditorLODData::GetDataFromSelection()
 DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility)
 {
     Vector<Entity *> meshes;
+    meshes.reserve(lodData->nodes.size());
     
     for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
     {
@@ -421,11 +423,71 @@ void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command
     {
 		CommandBatch *batch = (CommandBatch *)command;
 		Command2 *firstCommand = batch->GetCommand(0);
-		if(firstCommand && (firstCommand->GetId() == CMDID_LOD_DISTANCE_CHANGE))
+		if(firstCommand && (firstCommand->GetId() == CMDID_LOD_DISTANCE_CHANGE || 
+                            firstCommand->GetId() == CMDID_LOD_COPY_LAST_LOD || 
+                            firstCommand->GetId() == CMDID_LOD_CREATE_PLANE))
 		{
 			GetDataFromSelection();
 		}
     }
 }
 
+void EditorLODData::CreatePlaneLOD(DAVA::int32 fromLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath)
+{
+    DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
+    if(componentsCount && activeScene)
+    {
+        activeScene->BeginBatch("LOD Added");
 
+        for(DAVA::uint32 i = 0; i < componentsCount; ++i)
+            activeScene->Exec(new CreatePlaneLODCommand(lodData[i], fromLayer, textureSize, texturePath));
+
+        activeScene->EndBatch();
+    }
+}
+
+bool EditorLODData::CanCreatePlaneLOD()
+{
+    if(lodData.size() != 1)
+        return false;
+
+    Entity * componentOwner = lodData[0]->GetEntity();
+    if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+        return false;
+
+    return (lodData[0]->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
+}
+
+FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
+{
+    DVASSERT(lodData.size() == 1);
+    Entity * entity = lodData[0]->GetEntity();
+
+    FilePath entityPath = activeScene->GetScenePath();
+    KeyedArchive * properties = entity->GetCustomProperties();
+    if(properties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
+        entityPath = FilePath(properties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, entityPath.GetAbsolutePathname()));
+
+    String entityName = entity->GetName();
+    size_t pos = entityName.find(".sc2");
+    if(pos != String::npos)
+        entityName = entityName.substr(0, pos);
+
+    entityPath = entityPath.GetDirectory() + "images/" + entityName + "_planes.png";
+
+    return entityPath;
+}
+
+void EditorLODData::CopyLastLodToLod0()
+{
+    DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
+    if(componentsCount && activeScene)
+    {
+        activeScene->BeginBatch("LOD Added");
+
+        for(DAVA::uint32 i = 0; i < componentsCount; ++i)
+            activeScene->Exec(new CopyLastLODToLod0Command(lodData[i]));
+
+        activeScene->EndBatch();
+    }
+}
