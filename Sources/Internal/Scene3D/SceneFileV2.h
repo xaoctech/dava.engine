@@ -165,6 +165,14 @@ private:
     void LoadDataHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
     bool SaveDataNode(DataNode * node, File * file);
     void LoadDataNode(DataNode * parent, File * file);
+	
+	inline bool IsDataNodeSerializable(DataNode* node)
+	{
+		//VI: runtime nodes (such as ShadowVolume materials are not serializable)
+		return ((node->GetNodeGlags() & DataNode::NodeRuntimeFlag) == 0);
+	}
+	
+	uint32 GetSerializableDataNodesCount(List<DataNode*>& nodeList);
 
     bool SaveHierarchy(Entity * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, Entity * node, File * file, int32 level);
@@ -178,17 +186,10 @@ private:
     bool ReplaceNodeAfterLoad(Entity * node);
 
 	void ReplaceOldNodes(Entity * currentNode);
-	
-	void SaveMaterialSystem(File * file, SerializationContext* serializationContext);
-	void LoadMaterialSystem(File * file, SerializationContext* serializationContext);
-	
+		
 	void WriteDescriptor(File* file, const Descriptor& descriptor) const;
 	void ReadDescriptor(File* file, /*out*/ Descriptor& descriptor);
 	
-	void SwitchMaterialQualityOnMainThread(BaseObject * caller,
-										   void * param,
-										   void *callerData);
-
     bool isDebugLogEnabled;
     bool isSaveForGame;
     FilePath rootNodePathName;
