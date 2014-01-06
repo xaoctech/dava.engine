@@ -1309,6 +1309,8 @@ namespace DAVA
 		RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
 		RenderManager::Instance()->AttachRenderData();
 		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
+		
 		// TODO: rethink this code
 		if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 		{
@@ -1327,6 +1329,8 @@ namespace DAVA
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(renderData);
 		RenderManager::Instance()->AttachRenderData();
+		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
 		
 		// TODO: rethink this code
 		if(renderData->GetIndexBufferID() != 0)
