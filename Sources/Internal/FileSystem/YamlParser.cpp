@@ -315,7 +315,7 @@ Vector4 YamlNode::AsVector4() const
 
 Color YamlNode::AsColor() const
 {
-    Color result = Color::White();
+    Color result = Color::White;
     if (type == TYPE_ARRAY)
     {
         const YamlNode * r = Get(0);

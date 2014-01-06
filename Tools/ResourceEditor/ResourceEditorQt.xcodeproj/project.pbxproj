@@ -21,6 +21,9 @@
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
+		A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */; };
+		A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */; };
+		A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
@@ -636,6 +639,11 @@
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
+		A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog.cpp; sourceTree = "<group>"; };
+		A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLODDialog.h; sourceTree = "<group>"; };
+		A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog_moc.cpp; sourceTree = "<group>"; };
+		A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePlaneLODCommand.cpp; sourceTree = "<group>"; };
+		A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePlaneLODCommand.h; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -1687,9 +1695,28 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A6D8279B1877175E0006A5DD /* PlaneLODDialog */ = {
+			isa = PBXGroup;
+			children = (
+				A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */,
+				A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */,
+			);
+			path = PlaneLODDialog;
+			sourceTree = "<group>";
+		};
+		A6D827A6187717A60006A5DD /* PlaneLODDialog */ = {
+			isa = PBXGroup;
+			children = (
+				A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */,
+			);
+			name = PlaneLODDialog;
+			path = _GeneratedQt/PlaneLODDialog;
+			sourceTree = "<group>";
+		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				A6D827A6187717A60006A5DD /* PlaneLODDialog */,
 				E8BAD760185A545000C98C8D /* DockMaterials */,
 				E8BAD5D71859F50200C98C8D /* CubemapEditor */,
 				E8BAD5DE1859F50200C98C8D /* DockConsole */,
@@ -2880,6 +2907,8 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */,
+				A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */,
 				E8C99009184CD0EB00AFBF3F /* AddComponentCommand.cpp */,
 				E8C9900A184CD0EB00AFBF3F /* AddComponentCommand.h */,
 				E8C9900D184CD0EB00AFBF3F /* BeastAction.cpp */,
@@ -2999,6 +3028,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				A6D8279B1877175E0006A5DD /* PlaneLODDialog */,
 				E8BAD759185A471F00C98C8D /* DockMaterials */,
 				E8BAD5CA1859F48600C98C8D /* MaterialEditor */,
 				E8C99075184CD0EB00AFBF3F /* CubemapEditor */,
@@ -3938,6 +3968,7 @@
 				E8C992EC184CD0EC00AFBF3F /* QtUtils.cpp in Build Sources */,
 				E8C99291184CD0EC00AFBF3F /* KeyedArchiveCommand.cpp in Build Sources */,
 				E8C99298184CD0EC00AFBF3F /* ParticleForceRemoveCommand.cpp in Build Sources */,
+				A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */,
 				E8C99285184CD0EC00AFBF3F /* CommandNotify.cpp in Build Sources */,
 				E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */,
 				E8C9931A184CD0EC00AFBF3F /* SettingsManager.cpp in Build Sources */,
@@ -4028,6 +4059,7 @@
 				E8C99318184CD0EC00AFBF3F /* TilemaskEditorSystem.cpp in Build Sources */,
 				E8C991F8184CD0EC00AFBF3F /* btBoxBoxCollisionAlgorithm.cpp in Build Sources */,
 				E8C99326184CD0EC00AFBF3F /* TextureScrollArea.cpp in Build Sources */,
+				A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */,
 				E8BAD6EB1859F50300C98C8D /* SceneTypes_moc.cpp in Build Sources */,
 				E8C992F0184CD0EC00AFBF3F /* ProjectManager.cpp in Build Sources */,
 				E8C99253184CD0EC00AFBF3F /* btTypedConstraint.cpp in Build Sources */,
@@ -4091,6 +4123,7 @@
 				E8BAD7001859F50300C98C8D /* HoodSystem_moc.cpp in Build Sources */,
 				E8BAD7451859F50300C98C8D /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */,
 				E8C992B7184CD0EC00AFBF3F /* Console.cpp in Build Sources */,
+				A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */,
 				E8BAD6D81859F50300C98C8D /* SceneTreeModel_moc.cpp in Build Sources */,
 				E8BAD7381859F50300C98C8D /* QtPropertyItem_moc.cpp in Build Sources */,
 				E8BAD7071859F50300C98C8D /* VisibilityToolProxy_moc.cpp in Build Sources */,

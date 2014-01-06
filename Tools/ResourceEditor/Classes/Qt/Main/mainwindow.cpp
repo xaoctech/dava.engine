@@ -93,6 +93,7 @@
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/DynamicShadowCommands.h"
+#include "Classes/Commands2/InspMemberModifyCommand.h"
 
 #include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 
@@ -860,6 +861,8 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	if(scene == GetCurrentScene())
 	{
 		LoadUndoRedoState(scene);
+
+		UpdateLandscapeFog(command);
 	}
 }
 
@@ -1630,7 +1633,24 @@ void QtMainWindow::OnSaveTiledTexture()
 	{
 		FilePath pathToSave;
 		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
-		pathToSave.ReplaceExtension(".thumbnail.png");
+		if (pathToSave.IsEmpty())
+		{
+			FilePath scenePath = scene->GetScenePath().GetDirectory();
+			QString selectedPath = QtFileDialog::getSaveFileName(this, "Save landscape texture as",
+														 scenePath.GetAbsolutePathname().c_str(),
+														 "PGN Image (*.png)");
+			if (selectedPath.isEmpty())
+			{
+				SafeRelease(landscapeTexture);
+				return;
+			}
+
+			pathToSave = FilePath(selectedPath.toStdString());
+		}
+		else
+		{
+			pathToSave.ReplaceExtension(".thumbnail.png");
+		}
 
 		Image *image = landscapeTexture->CreateImageFromMemory();
 		if(image)
@@ -2504,4 +2524,21 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	sceneWidget->SetCurrentTab(lastSceneTab);
 
 	return true;
+}
+
+void QtMainWindow::UpdateLandscapeFog(const Command2* command)
+{
+	if (command->GetId() == CMDID_INSP_MEMBER_MODIFY)
+	{
+		const InspMemberModifyCommand* cmd = (const InspMemberModifyCommand*)command;
+		String name = cmd->member->Name();
+		if (name == "fogDensity" || name == "fogColor")
+		{
+			Landscape* landscape = (Landscape*)cmd->object;
+
+			bool fog = landscape->IsFogEnabled();
+			landscape->SetFog(false);
+			landscape->SetFog(fog);
+		}
+	}
 }

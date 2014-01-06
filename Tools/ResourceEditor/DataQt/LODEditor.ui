@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
+    <width>462</width>
     <height>821</height>
    </rect>
   </property>
@@ -538,6 +538,13 @@
        <widget class="QPushButton" name="lastLodToFrontButton">
         <property name="text">
          <string>Copy last LOD to lod0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QPushButton" name="createPlaneLodButton">
+        <property name="text">
+         <string>Create plane LOD</string>
         </property>
        </widget>
       </item>

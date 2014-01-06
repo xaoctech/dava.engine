@@ -265,6 +265,10 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
+
+	// to correctly handle fog settings modification
+	// TODO: remove later
+	void UpdateLandscapeFog(const Command2* command);
 };
 
 

@@ -35,10 +35,13 @@
 #include "DistanceSlider.h"
 
 #include "Scene/SceneSignals.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/PlaneLODDialog/PlaneLODDialog.h"
 
 #include <QLabel>
 #include <QWidget>
 #include <QLineEdit>
+#include <QInputDialog>
 
 
 struct DistanceWidget
@@ -117,6 +120,8 @@ void LODEditor::SetupInternalUI()
     
     SetForceLayerValues(DAVA::LodComponent::MAX_LOD_LAYERS);
     connect(ui->forceLayer, SIGNAL(activated(int)), SLOT(ForceLayerActivated(int)));
+
+    connect(ui->createPlaneLodButton, SIGNAL(clicked()), this, SLOT(CreatePlaneLODClicked()));
 
     //TODO: remove after lod editing implementation
     connect(ui->lastLodToFrontButton, SIGNAL(clicked()), this, SLOT(CopyLODToLod0Clicked()));
@@ -237,6 +242,9 @@ void LODEditor::LODDataChanged()
     }
     
     UpdateWidgetVisibility();
+
+    ui->createPlaneLodButton->setEnabled(editedLODData->CanCreatePlaneLOD());
+    ui->lastLodToFrontButton->setEnabled(editedLODData->CanCreatePlaneLOD());
 }
 
 void LODEditor::LODDistanceChangedBySlider(const QVector<int> &changedLayers, bool continuous)
@@ -358,7 +366,20 @@ void LODEditor::UpdateWidgetVisibility()
     ui->frameEditLOD->setVisible(visible);
 }
 
+void LODEditor::CreatePlaneLODClicked()
+{
+    if(editedLODData->CanCreatePlaneLOD())
+    {
+        FilePath defaultTexturePath = editedLODData->GetDefaultTexturePathForPlaneEntity();
+
+        PlaneLODDialog dialog(editedLODData->GetLayersCount(), defaultTexturePath, this);
+        if(dialog.exec() == QDialog::Accepted)
+            editedLODData->CreatePlaneLOD(dialog.GetSelectedLayer(), dialog.GetSelectedTextureSize(), dialog.GetSelectedTexturePath());
+    }
+}
+
 void LODEditor::CopyLODToLod0Clicked()
 {
-    editedLODData->CopyLastLodToLod0();
+    if(editedLODData->CanCreatePlaneLOD())
+        editedLODData->CopyLastLodToLod0();
 }
