@@ -200,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -375,6 +375,7 @@
     </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
+    <addaction name="actionConvertModifiedTextures"/>
     <addaction name="separator"/>
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
@@ -1658,7 +1659,7 @@
      <normaloff>:/QtIconsTextureDialog/convert.png</normaloff>:/QtIconsTextureDialog/convert.png</iconset>
    </property>
    <property name="text">
-    <string>Convert Modified texture's PNGs.</string>
+    <string>Convert Modified texture's PNGs</string>
    </property>
   </action>
  </widget>
