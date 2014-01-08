@@ -55,7 +55,7 @@ public:
 						RenderState * _renderState);
     ~RenderTechniquePass();
     
-    Shader * RetainShader(const FastNameSet& materialDefines);
+    Shader * CompileShader(const FastNameSet& materialDefines);
     
     inline const FastName & GetShaderName() const { return shaderName; }
     inline RenderState * GetRenderState() const { return renderState; }

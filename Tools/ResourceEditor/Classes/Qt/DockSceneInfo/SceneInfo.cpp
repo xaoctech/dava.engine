@@ -307,7 +307,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
 		//VI: remove skybox materials so they not to appear in the lists
 		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+        SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
 
         CollectParticlesData();
@@ -672,7 +672,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *
 void SceneInfo::TexturesReloaded()
 {
     sceneTextures.clear();
-    SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+    SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
     sceneTexturesSize = CalculateTextureSize(sceneTextures);
     
     RefreshSceneGeneralInfo();
