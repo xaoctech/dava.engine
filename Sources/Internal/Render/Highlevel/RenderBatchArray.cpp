@@ -141,15 +141,16 @@ void RenderLayerBatchArray::Sort(Camera * camera)
             for (uint32 k = 0; k < renderBatchCount; ++k)
             {
                 RenderBatch * batch = renderBatchArray[k];
-				pointer_size renderObjectId = (pointer_size)batch->GetRenderObject();
+				//pointer_size renderObjectId = (pointer_size)batch->GetRenderObject();
                 //RenderObject * renderObject = batch->GetRenderObject();
                 //Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
                 //float32 distance = (position - cameraPosition).Length();
                 //uint32 distanceBits = (0xFFFF - ((uint32)distance) & 0xFFFF);
-                //uint32 materialIndex = batch->GetMaterial()->GetSortingKey();
+                uint32 materialIndex = batch->GetMaterial()->GetSortingKey();
 				//VI: sorting key has the following layout: (m:8)(s:4)(d:20)
-                //batch->layerSortingKey = (pointer_size)((materialIndex << 24) | (batch->GetSortingKey() << 20) | (distanceBits));
-				batch->layerSortingKey = (pointer_size)((batch->GetMaterial()->GetSortingKey() << 20) | (batch->GetSortingKey() << 28) | (renderObjectId & 0x000FFFFF));
+                //batch->layerSortingKey = (pointer_size)((materialIndex << 20) | (batch->GetSortingKey() << 28) | (distanceBits));
+				batch->layerSortingKey = (pointer_size)(materialIndex | (batch->GetSortingKey() << 28));
+				//batch->layerSortingKey = (pointer_size)((batch->GetMaterial()->GetSortingKey() << 20) | (batch->GetSortingKey() << 28) | (renderObjectId & 0x000FFFFF));
             }
             
 			std::sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
