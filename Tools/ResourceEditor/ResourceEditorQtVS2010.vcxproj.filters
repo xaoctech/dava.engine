@@ -199,6 +199,9 @@
     <Filter Include="Classes\Qt\DockLibrary">
       <UniqueIdentifier>{2ad1d47b-09e1-4a10-b69d-f80e67a1a4c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\PlaneLODDialog">
+      <UniqueIdentifier>{768d8dcf-78c6-468b-8ce9-cb73d0566627}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1833,6 +1836,15 @@
     <ClCompile Include="_GeneratedQt\DockMaterials\MaterialDelegate_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\CreatePlaneLODCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\PlaneLODDialog\PlaneLODDialog.cpp">
+      <Filter>Classes\Qt\PlaneLODDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\PlaneLODDialog\PlaneLODDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3241,6 +3253,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockMaterials\MaterialDelegate.h">
       <Filter>Classes\Qt\DockMaterials</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\PlaneLODDialog\PlaneLODDialog.h">
+      <Filter>Classes\Qt\PlaneLODDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

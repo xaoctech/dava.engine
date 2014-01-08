@@ -35,6 +35,8 @@
 namespace DAVA
 {
     
+uint16 RenderTechnique::techinqueSequenceId = 0;
+	
 RenderTechniquePass::RenderTechniquePass(const FastName & _shaderName,
 										 const FastNameSet & _uniqueDefines,
 										 RenderState * _renderState)
@@ -49,7 +51,7 @@ RenderTechniquePass::~RenderTechniquePass()
     SafeDelete(renderState);
 }
 
-Shader * RenderTechniquePass::RetainShader(const FastNameSet & materialDefines)
+Shader * RenderTechniquePass::CompileShader(const FastNameSet & materialDefines)
 {
     FastNameSet combinedDefines = materialDefines;
     if(uniqueDefines.size() > 0)
@@ -65,6 +67,8 @@ RenderTechnique::RenderTechnique(const FastName & _name)
     :   name(_name)
     ,   nameIndexMap(8)
 {
+	techinqueSequenceId++;
+	techniqueId = techinqueSequenceId;
 }
     
 RenderTechnique::~RenderTechnique()
@@ -119,7 +123,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
 		for (int32 k = 0; k < count; ++k)
 		{
 			const YamlNode * singleLayerNode = layersNode->Get(k);
-			targetTechnique->layersSet.Insert(FastName(singleLayerNode->AsString().c_str()));
+			targetTechnique->layersSet.Insert(singleLayerNode->AsFastName());
         }
 	}
     
@@ -133,7 +137,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
             FastName renderPassName;
             if (renderPassNameNode)
             {
-                renderPassName = FastName(renderPassNameNode->AsString());
+                renderPassName = renderPassNameNode->AsFastName();
             }
             
             Logger::FrameworkDebug("- RenderPass: %s", renderPassName.c_str());
@@ -149,7 +153,7 @@ bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * 
             FastName shaderName;
             if (shaderNode)
             {
-                shaderName = FastName(shaderNode->AsString().c_str());
+                shaderName = shaderNode->AsFastName();
             }
             
             FastNameSet definesSet;
