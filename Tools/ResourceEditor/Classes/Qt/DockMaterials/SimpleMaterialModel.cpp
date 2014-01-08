@@ -59,7 +59,7 @@ void SimpleMaterialModel::SetScene(SceneEditor2 *scene)
 		DAVA::MaterialSystem *matSys = curScene->GetMaterialSystem();
 
 		DAVA::Set<DAVA::NMaterial *> materials;
-		matSys->BuildMaterialList(curScene, NMaterial::MATERIALTYPE_MATERIAL, materials);
+		matSys->BuildMaterialList(curScene, materials, NMaterial::MATERIALTYPE_MATERIAL, false);
 
         DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
         for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
@@ -139,7 +139,7 @@ void SimpleMaterialModel::SetSelection(const EntityGroup & selection)
     size_t count = selection.Size();
     for(size_t i = 0; i < count; ++i)
     {
-        matSys->BuildMaterialList(selection.GetEntity(i), NMaterial::MATERIALTYPE_MATERIAL, selectedMaterials);
+        matSys->BuildMaterialList(selection.GetEntity(i), selectedMaterials, NMaterial::MATERIALTYPE_MATERIAL, false);
     }
 }
 
