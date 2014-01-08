@@ -164,6 +164,7 @@ namespace DAVA
 		DVASSERT(NULL == parent);
 		DVASSERT(this != material);
 		
+		material->materialSortKey = (uint16)((pointer_size)this);
 		children.push_back(material);
 		
 		this->Retain();
@@ -232,6 +233,10 @@ namespace DAVA
 		   parent)
 		{
 			archive->SetUInt64("parentMaterialKey", parent->materialKey);
+			//Logger::FrameworkDebug("[NMaterial::Save] Parent: %s, Child %s, parent key% %ld",
+			//					   parent->GetName().c_str(),
+			//					   this->GetName().c_str(),
+			//					   parent->materialKey);
 		}
 		
 		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
@@ -329,6 +334,7 @@ namespace DAVA
 		materialName = FastName(archive->GetString("materialName"));
 		materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
 		materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
+		pointer = materialKey;
 		
 		DataNode::SetName(materialName.c_str());
 		
@@ -927,7 +933,7 @@ namespace DAVA
 		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
-		materialSortKey = baseTechnique->GetTechniqueId();
+		//materialSortKey = baseTechnique->GetTechniqueId();
 		
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)
