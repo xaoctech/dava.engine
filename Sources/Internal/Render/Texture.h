@@ -306,9 +306,6 @@ protected:
     
     Image * ReadDataToImage();
     
-	static Texture * pinkPlaceholder;
-	static Texture * pinkCubePlaceholder;
-    
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     

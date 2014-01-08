@@ -293,7 +293,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			SceneHelper::EnumerateTextures(scene, allScenesTextures);
+			SceneHelper::EnumerateSceneTextures(scene, allScenesTextures);
 		}
 
 		if(allScenesTextures.size() > 0)
