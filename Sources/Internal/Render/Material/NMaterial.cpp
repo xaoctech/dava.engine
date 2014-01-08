@@ -1716,7 +1716,19 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						if(!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+						Shader::eUniform uniformId = uniform->id;
+						if( //!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+							// we can't use IsAutobindUniform, because we need color to change
+							// so this is copy from IsAutobindUniform with color excluded -->
+							!(uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+							uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+							uniformId == Shader::UNIFORM_GLOBAL_TIME ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
+							uniformId == Shader::UNIFORM_MODEL_SCALE)
+							// <--
+							&&
 							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
 						{
 							FastName propName = uniform->name;
@@ -2139,7 +2151,7 @@ namespace DAVA
 		FastName name = GetName(index);
 		if(name.IsValid())
 		{
-			ret.SetBool(state->GetFlagValue(name));
+			ret.SetBool((bool) state->GetFlagValue(name));
 		}
 
 		return ret;
