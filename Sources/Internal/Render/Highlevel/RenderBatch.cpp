@@ -99,6 +99,7 @@ void RenderBatch::SetMaterial(NMaterial * _material)
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
+	Logger::FrameworkDebug("Draw RB");
 //  TIME_PROFILE("RenderBatch::Draw");
 //	if(!renderObject)return;
     DVASSERT(renderObject != 0);
