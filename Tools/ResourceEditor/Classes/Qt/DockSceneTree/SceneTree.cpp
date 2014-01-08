@@ -903,7 +903,9 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
 					if(NULL != DAVA::GetEffectComponent(entity))
 					{
-						SceneSignals::Instance()->EmitEffectSelected(curScene, GetEffectComponent(entity));
+						SceneSignals::Instance()->EmitEffectSelected(curScene, GetEffectComponent(entity));		
+						ParticleEffectComponent *effect =  DAVA::GetEffectComponent(entity);						
+						Logger::FrameworkDebug("active particles = %d", effect->GetActiveParticlesCount());
 						isParticleElements = true;
 					}					
 				}
