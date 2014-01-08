@@ -48,7 +48,19 @@ void ParticleRenderGroup::UpdateRenderBatch()
 	RenderDataObject *renderDataObject = renderBatch->GetRenderDataObject();
 	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
 	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
-	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
+	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());		
+	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[0], vertices[1], vertices[2]);
+	Logger::FrameworkDebug("T: %f,  %f", texcoords[0], texcoords[1]);
+	Logger::FrameworkDebug("C: %d", colors[0]);
+	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[3], vertices[4], vertices[5]);
+	Logger::FrameworkDebug("T: %f,  %f", texcoords[2], texcoords[3]);
+	Logger::FrameworkDebug("C: %d", colors[1]);
+	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[6], vertices[7], vertices[8]);
+	Logger::FrameworkDebug("T: %f,  %f", texcoords[4], texcoords[5]);
+	Logger::FrameworkDebug("C: %d", colors[2]);
+	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[9], vertices[10], vertices[11]);
+	Logger::FrameworkDebug("T: %f,  %f", texcoords[6], texcoords[7]);
+	Logger::FrameworkDebug("C: %d", colors[3]);
 	if (enableFrameBlend)
 	{
 		renderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &texcoords2.front());
