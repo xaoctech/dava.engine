@@ -293,7 +293,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			SceneHelper::EnumerateTextures(scene, allScenesTextures);
+			SceneHelper::EnumerateSceneTextures(scene, allScenesTextures);
 		}
 
 		if(allScenesTextures.size() > 0)
@@ -936,7 +936,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	if(!scene) return;
 
 	FilePath scenePathname = scene->GetScenePath();
-	if(scenePathname.IsEmpty() && scenePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	if(scenePathname.IsEmpty() || scenePathname.GetType() == FilePath::PATH_IN_MEMORY || !scene->IsLoaded())
 	{
 		ShowErrorDialog("Can't save not saved scene.");
 		return;

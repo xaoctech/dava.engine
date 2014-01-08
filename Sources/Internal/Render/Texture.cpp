@@ -159,8 +159,6 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 TexturesMap Texture::textureMap;
 
 
-Texture * Texture::pinkPlaceholder = NULL;
-Texture * Texture::pinkCubePlaceholder = NULL;
 static int32 textureFboCounter = 0;
 
 // Main constructors
@@ -190,7 +188,6 @@ Texture::Texture()
 :	id(0)
 ,	width(0)
 ,	height(0)
-,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
 ,   loadedAsFile(GPU_UNKNOWN)
@@ -302,6 +299,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 
+	PixelFormat format = texDescriptor->format;
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
 	
     if(FORMAT_INVALID != format)
@@ -442,7 +440,7 @@ void Texture::GenerateMipmaps()
 
 void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData)
 {
-	if(IsCompressedFormat(format))
+	if(IsCompressedFormat(texDescriptor->format))
     {
 		return;
 	}
@@ -612,7 +610,7 @@ void Texture::SetParamsFromImages(const Vector<Image *> * images)
     Image *img = *images->begin();
 	width = img->width;
 	height = img->height;
-	format = img->format;
+	texDescriptor->format = img->format;
 
 	textureType = (img->cubeFaceID != Texture::CUBE_FACE_INVALID) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
     
@@ -906,13 +904,13 @@ void Texture::DumpTextures()
 	for(TexturesMap::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->texDescriptor->pathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->texDescriptor->pathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->texDescriptor->format));
 		cnt++;
         
-        DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
-        if(FORMAT_INVALID != t->format)
+        DVASSERT((0 <= t->texDescriptor->format) && (t->texDescriptor->format < FORMAT_COUNT));
+        if(FORMAT_INVALID != t->texDescriptor->format)
         {
-            allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->format);
+            allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->texDescriptor->format);
         }
 	}
 	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize/8);
@@ -983,6 +981,8 @@ void Texture::Invalidate()
 
 Image * Texture::ReadDataToImage()
 {
+	PixelFormat format = texDescriptor->format;
+
     Image *image = Image::Create(width, height, format);
     uint8 *imageData = image->GetData();
     
@@ -1025,7 +1025,7 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
@@ -1051,29 +1051,19 @@ const TexturesMap & Texture::GetTextureMap()
 
 int32 Texture::GetDataSize() const
 {
-    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    DVASSERT((0 <= texDescriptor->format) && (texDescriptor->format < FORMAT_COUNT));
     
-    int32 allocSize = width * height * GetPixelFormatSizeInBytes(format);
+    int32 allocSize = width * height * GetPixelFormatSizeInBytes(texDescriptor->format);
     return allocSize;
 }
 
 Texture * Texture::CreatePink(TextureType requestedType)
 {
-	if(NULL == pinkPlaceholder)
-	{
-		pinkPlaceholder = new Texture();
-		pinkPlaceholder->MakePink(TEXTURE_2D);
-	}
-	
-	if(NULL == pinkCubePlaceholder)
-	{
-		pinkCubePlaceholder = new Texture();
-		pinkCubePlaceholder->MakePink(TEXTURE_CUBE);
-	}
-	
-    Texture *tex = (TEXTURE_CUBE == requestedType) ? pinkCubePlaceholder : pinkPlaceholder;
-    SafeRetain(tex);
-	
+	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
+	//pink textures at game is invalid situation
+	Texture *tex = new Texture();
+	tex->MakePink(requestedType);
+
 	return tex;
 }
 
@@ -1335,5 +1325,11 @@ const FilePath & Texture::GetPathname() const
 {
     return texDescriptor->pathname;
 }
+
+PixelFormat Texture::GetFormat() const
+{
+	return texDescriptor->format;
+}
+
 
 };

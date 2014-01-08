@@ -163,7 +163,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	clear();
 
 	DAVA::TexturesMap texturesInNode;
-	SceneHelper::EnumerateTextures(scene, texturesInNode);
+	SceneHelper::EnumerateSceneTextures(scene, texturesInNode);
 
 	for(DAVA::TexturesMap::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 	{
@@ -199,7 +199,7 @@ void TextureListModel::setHighlight(const EntityGroup *nodes)
 		{
 			DAVA::Entity *node = nodes->GetEntity(i);
 			DAVA::TexturesMap texturesInNode;
-			SceneHelper::EnumerateTextures(node, texturesInNode);
+			SceneHelper::EnumerateEntityTextures(node, texturesInNode);
 
 			for(DAVA::TexturesMap::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 			{
@@ -304,5 +304,5 @@ bool SortFnByDataSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA:
 	DAVA::Texture *tx1 = model->getTexture(t1);
 	DAVA::Texture *tx2 = model->getTexture(t2);
 
-	return (tx1->width * tx1->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx1->format)) < (tx2->width * tx2->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx2->format));
+	return (tx1->width * tx1->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx1->GetFormat())) < (tx2->width * tx2->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx2->GetFormat()));
 }
