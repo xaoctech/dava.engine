@@ -126,6 +126,8 @@ String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, File
 		// assemble command
 		command += Format(" -i \"%s\"", fileToConvert.GetAbsolutePathname().c_str());
 
+		command += " -pvrtcbest";
+
 		if(descriptor.IsCubeMap())
 		{
 			command += " -s";
@@ -172,7 +174,9 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 	// assemble command
 	args.push_back("-i");
 	args.push_back(fileToConvert.GetAbsolutePathname());
-		
+
+	args.push_back("-pvrtcbest");
+
 	if(descriptor.IsCubeMap())
 	{
 		args.push_back("-s");
