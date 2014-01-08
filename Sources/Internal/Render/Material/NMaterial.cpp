@@ -1243,6 +1243,7 @@ namespace DAVA
 		{
 			if(renderData->indexCount)
 			{
+				Logger::FrameworkDebug("Draw %d", renderData->indexCount);
 				RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
 			}
 			else
