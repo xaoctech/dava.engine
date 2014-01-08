@@ -192,6 +192,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
     size_t lineBegin	= 0;
     size_t lineComment	= 0;
     size_t lineEnd		= 0;
+    size_t lineEnding   = 0;
     
     bool lastLine = false;
     
@@ -208,7 +209,16 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         }
         
         // get next line
-        lineEnd = sourceFile.find("\n", lineBegin);
+        lineEnding = 0;
+        lineEnd = sourceFile.find("\r\n", lineBegin);
+        if (String::npos != lineEnd)
+        {
+            lineEnding = 2;
+        }else
+        {
+            lineEnd = sourceFile.find("\n", lineBegin);
+            lineEnding = 1;
+        }
         if(String::npos == lineEnd)
         {
             lastLine = true;
@@ -229,7 +239,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         String line = sourceFile.substr(lineBegin, lineLen);
         if (line == TOKEN_VERTEX_SHADER)
         {
-            vertexShaderStartPosition = (uint8*)vertexShaderData->GetPtr() + lineBegin + lineLen + 1;
+            vertexShaderStartPosition = (uint8*)vertexShaderData->GetPtr() + lineBegin + lineLen + lineEnding;
             configStarted = false;
         }
         else if (line == TOKEN_CONFIG)
@@ -256,7 +266,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
             }
         }
         //Logger::Debug("%s", line.c_str());
-        lineBegin = lineEnd + 1;
+        lineBegin = lineEnd + lineEnding;
     }
     
     asset->vertexShaderDataStart = vertexShaderStartPosition;
@@ -296,10 +306,17 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
             }
         }
          */
-
-        
         // get next line
-        lineEnd = sourceFile.find("\n", lineBegin);
+        lineEnding = 0;
+        lineEnd = sourceFile.find("\r\n", lineBegin);
+        if (String::npos != lineEnd)
+        {
+            lineEnding = 2;
+        }else
+        {
+            lineEnd = sourceFile.find("\n", lineBegin);
+            lineEnding = 1;
+        }
         if(String::npos == lineEnd)
         {
             lastLine = true;
@@ -320,7 +337,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         String line = sourceFile.substr(lineBegin, lineLen);
         if (line == TOKEN_FRAGMENT_SHADER)
         {
-            fragmentShaderStartPosition = (uint8*)fragmentShaderData->GetPtr() + lineBegin + lineLen + 1;
+            fragmentShaderStartPosition = (uint8*)fragmentShaderData->GetPtr() + lineBegin + lineLen + lineEnding;
             configStarted = false;
         }else if (line == TOKEN_CONFIG)
         {
@@ -348,7 +365,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         
         //Logger::Debug("%s", line.c_str());
 
-        lineBegin = lineEnd + 1;
+        lineBegin = lineEnd + lineEnding;
     }
     asset->fragmentShaderDataStart = fragmentShaderStartPosition;
     asset->fragmentShaderDataSize = fragmentShaderData->GetSize() - (fragmentShaderStartPosition - fragmentShaderData->GetPtr());
