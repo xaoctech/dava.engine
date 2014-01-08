@@ -245,7 +245,7 @@ bool SceneFile::ReadTexture()
     sceneFP->Read(&hasOpacity, sizeof(hasOpacity));
 	
 	DAVA::Texture * texture = DAVA::Texture::CreateFromFile(tname);//textureDef.name);//0;
-	if (debugLogEnabled)Logger::FrameworkDebug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
+	if (debugLogEnabled)Logger::FrameworkDebug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->texDescriptor->format));
     
     SafeRelease(texture);
 	return true;
