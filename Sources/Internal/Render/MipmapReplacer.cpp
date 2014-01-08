@@ -129,7 +129,8 @@ void MipMapReplacer::ReplaceMipMapFromMemory(Texture * texture, int32 level)
     uint32 dataSize = 0;
     uint8 * data = 0;
 
-    if(texture->format == FORMAT_RGB888)
+	PixelFormat format = texture->GetFormat();
+    if(format == FORMAT_RGB888)
     {
         uint32 pixelsCount = mipMapSize * mipMapSize;
         dataSize = pixelsCount * 3;
@@ -144,8 +145,8 @@ void MipMapReplacer::ReplaceMipMapFromMemory(Texture * texture, int32 level)
     }
     else
     {
-        int32 elementBytesCount = Texture::GetPixelFormatSizeInBytes(texture->format);
-        uint32 elementValue = GetReplaceValue(texture->format);
+        int32 elementBytesCount = Texture::GetPixelFormatSizeInBytes(format);
+        uint32 elementValue = GetReplaceValue(format);
 
         uint32 pixelsCount = mipMapSize * mipMapSize;
         dataSize = pixelsCount * elementBytesCount;
@@ -195,7 +196,7 @@ uint32 MipMapReplacer::GetReplaceValue(PixelFormat format)
 FilePath MipMapReplacer::GetDummyTextureFilePath(Texture * texture)
 {
     String formatFile;
-    switch (texture->format)
+    switch (texture->GetFormat())
     {
     case FORMAT_ATC_RGB:
         formatFile = "atc.dds";
