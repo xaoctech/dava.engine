@@ -270,6 +270,8 @@ public:
     inline const eGPUFamily GetSourceFileGPUFamily() const;
     inline TextureDescriptor * GetDescriptor() const;
 
+	PixelFormat GetFormat() const;
+
 protected:
     
     void ReleaseTextureData();
@@ -345,7 +347,6 @@ public:							// properties for fast access
     uint32		width:16;			// texture width
 	uint32		height:16;			// texture height
 
-	PixelFormat format:8;			// texture format
     eGPUFamily loadedAsFile:3;
 	TextureState state:2;
 	uint32		textureType:2;
