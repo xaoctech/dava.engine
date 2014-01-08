@@ -1228,6 +1228,7 @@ namespace DAVA
 	
 	void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 indexCount)
 	{
+		Logger::FrameworkDebug("Draw RDO");
 		DVASSERT(renderData);
 		
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
