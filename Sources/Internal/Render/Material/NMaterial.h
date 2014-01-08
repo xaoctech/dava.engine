@@ -70,9 +70,9 @@ struct IlluminationParams : public InspBase
     int32 lightmapSize;
 
     IlluminationParams() :
-    isUsed(false),
-    castShadow(false),
-    receiveShadow(false),
+    isUsed(true),
+    castShadow(true),
+    receiveShadow(true),
     lightmapSize(LIGHTMAP_SIZE_DEFAULT)
     {}
 
@@ -494,6 +494,7 @@ public:
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
+                  MEMBER(illuminationParams, "Illumination Params", I_SAVE | I_EDIT | I_VIEW)
 				  );
 
 };
