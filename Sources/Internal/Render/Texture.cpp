@@ -159,8 +159,6 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 TexturesMap Texture::textureMap;
 
 
-Texture * Texture::pinkPlaceholder = NULL;
-Texture * Texture::pinkCubePlaceholder = NULL;
 static int32 textureFboCounter = 0;
 
 // Main constructors
@@ -1061,21 +1059,11 @@ int32 Texture::GetDataSize() const
 
 Texture * Texture::CreatePink(TextureType requestedType)
 {
-	if(NULL == pinkPlaceholder)
-	{
-		pinkPlaceholder = new Texture();
-		pinkPlaceholder->MakePink(TEXTURE_2D);
-	}
-	
-	if(NULL == pinkCubePlaceholder)
-	{
-		pinkCubePlaceholder = new Texture();
-		pinkCubePlaceholder->MakePink(TEXTURE_CUBE);
-	}
-	
-    Texture *tex = (TEXTURE_CUBE == requestedType) ? pinkCubePlaceholder : pinkPlaceholder;
-    SafeRetain(tex);
-	
+	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
+	//pink textures at game is invalid situation
+	Texture *tex = new Texture();
+	tex->MakePink(requestedType);
+
 	return tex;
 }
 
