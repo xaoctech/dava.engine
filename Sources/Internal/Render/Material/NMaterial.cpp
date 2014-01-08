@@ -1238,6 +1238,7 @@ namespace DAVA
 		// TODO: rethink this code
 		if(renderData->GetIndexBufferID() != 0)
 		{
+			Logger::FrameworkDebug("Draw IB: %d", renderData->GetIndexBufferID());
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
 		}
 		else
@@ -1249,6 +1250,7 @@ namespace DAVA
 			}
 			else
 			{
+				Logger::FrameworkDebug("Draw IC: %d", indexCount);
 				RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, indexCount, EIF_16, indices);
 			}
 		}

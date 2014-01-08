@@ -269,6 +269,11 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			particlePos[1] = particlePosition+right+bot;
 			particlePos[2] = particlePosition+left+top;			
 			particlePos[3] = particlePosition+right+top;
+			Logger::FrameworkDebug("Frame: %d", current->frame);
+			Logger::FrameworkDebug("p0(%f, %f, %f)", particlePos[0].x, particlePos[0].y, particlePos[0].z);
+			Logger::FrameworkDebug("p1(%f, %f, %f)", particlePos[1].x, particlePos[1].y, particlePos[1].z);
+			Logger::FrameworkDebug("p2(%f, %f, %f)", particlePos[2].x, particlePos[2].y, particlePos[2].z);
+			Logger::FrameworkDebug("p3(%f, %f, %f)", particlePos[3].x, particlePos[3].y, particlePos[3].z);
 			
 			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);						
 			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);						
