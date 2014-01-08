@@ -732,6 +732,16 @@ namespace DAVA
         UITextPosition *end = [textField positionFromPosition:start offset:0];
         [textField setSelectedTextRange:[textField textRangeFromPosition:start toPosition:end]];
     }
+    
+    void UITextFieldiPhone::SetVisible(bool value)
+    {
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        if (textFieldHolder)
+        {
+            ::UITextField* textField = textFieldHolder->textField;
+            [textField setHidden: value == false];
+        }
+    }
 }
 
 #endif
