@@ -936,7 +936,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	if(!scene) return;
 
 	FilePath scenePathname = scene->GetScenePath();
-	if(scenePathname.IsEmpty() && scenePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	if(scenePathname.IsEmpty() || scenePathname.GetType() == FilePath::PATH_IN_MEMORY || !scene->IsLoaded())
 	{
 		ShowErrorDialog("Can't save not saved scene.");
 		return;
