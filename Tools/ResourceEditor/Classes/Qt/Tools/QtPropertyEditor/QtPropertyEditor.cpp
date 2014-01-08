@@ -94,7 +94,6 @@ QtPropertyData * QtPropertyEditor::GetRootProperty() const
 	return curModel->rootItem();
 }
 
-
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
 	lastHoverIndex = QModelIndex();
@@ -161,6 +160,19 @@ void QtPropertyEditor::OnUpdateTimeout()
 	}
 
 	SetUpdateTimeout(updateTimeout);
+}
+
+void QtPropertyEditor::expand(const QModelIndex & index)
+{
+	// expand only enabled items
+	QtPropertyData *data = GetProperty(index);
+	if(NULL != data)
+	{
+		if(data->IsEnabled())
+		{
+			QTreeView::expand(index);
+		}
+	}
 }
 
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
