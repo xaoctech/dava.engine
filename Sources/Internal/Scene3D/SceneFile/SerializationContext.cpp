@@ -467,6 +467,17 @@ namespace DAVA
 	Texture* SerializationContext::PrepareTexture(uint32 textureTypeHint,
 												  Texture* tx)
 	{
-		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
+		if(tx)
+		{
+			if(tx->isPink)
+			{
+				tx->Retain();
+			}
+
+			return tx;
+		}
+
+		return Texture::CreatePink((Texture::TextureType)textureTypeHint);
+//		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
 	}
 }

@@ -55,9 +55,7 @@ public:
 		
     virtual void AddEntity(Entity * entity);
     
-	void BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const;
-	void BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const;
-	void BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const;
+	void BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList, NMaterial::eMaterialType materialType = NMaterial::MATERIALTYPE_NONE, bool includeRuntime = true) const;
 	
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;

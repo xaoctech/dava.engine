@@ -75,6 +75,7 @@ public:
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
+	void expand(const QModelIndex & index);
 
 signals:
 	// void PropertyChanged(const QModelIndex &index); // SZ: not implemented because is never used. will be implemented on request

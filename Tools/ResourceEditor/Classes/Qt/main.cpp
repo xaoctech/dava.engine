@@ -133,6 +133,8 @@ int main(int argc, char *argv[])
 
 		DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
 
+		DAVA::Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
+
 		// check and unpack help documents
 		UnpackHelpDoc();
 

@@ -65,19 +65,13 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 		DAVA::MaterialSystem *matSys = scene->GetMaterialSystem();
 
 		DAVA::Set<DAVA::NMaterial *> materials;
-		matSys->BuildMaterialList(scene, DAVA::NMaterial::MATERIALTYPE_MATERIAL, materials);
+		matSys->BuildMaterialList(scene, materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
 
         DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
         for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
         {
 			DAVA::FastName materialName = (*it)->GetMaterialName();
-			if( materialName != DAVA::ShadowVolume::MATERIAL_NAME &&
-				materialName != DAVA::ParticleLayer3D::PARTICLE_MATERIAL_NAME &&
-				materialName != DAVA::ParticleLayer3D::PARTICLE_FRAMEBLEND_MATERIAL_NAME)
-			{
-				MaterialItem *item = new MaterialItem(*it);
-				root->appendRow(item);
-			}
+			root->appendRow(new MaterialItem(*it));
         }
 	}
 }
