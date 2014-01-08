@@ -196,6 +196,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 		}
 		
 	}
+	Logger::FrameworkDebug("PrepareRenderData rgc: %d, rba: %d",renderGroupCount, renderBatchArray.size());
 	
 }
 
