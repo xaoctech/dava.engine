@@ -50,15 +50,18 @@ ShadowVolume::ShadowVolume()
 {
     aabbox = AABBox3(Vector3(), Vector3());
 		
-	NMaterial* parentShadowVolume = NMaterial::CreateMaterial(MATERIAL_NAME,
+	//VI: create single instance of parent shadow volume material
+	static NMaterial* parentShadowVolume = NMaterial::CreateMaterial(MATERIAL_NAME,
 															  FastName("~res:/Materials/Legacy/ShadowVolume.material"),
 															  NMaterial::DEFAULT_QUALITY_NAME);
+	parentShadowVolume->AddNodeFlags(DataNode::NodeRuntimeFlag);
+	
 	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();
+	shadowMat->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	parentShadowVolume->AddChild(shadowMat);
 	
 	SetMaterial(shadowMat);
 	
-	SafeRelease(parentShadowVolume);
 	SafeRelease(shadowMat);
 }
 

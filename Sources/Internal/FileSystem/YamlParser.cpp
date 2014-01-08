@@ -241,6 +241,11 @@ const String & YamlNode::AsString() const
 	return nwStringValue;
 }
 
+FastName YamlNode::AsFastName() const
+{
+    return FastName(nwStringValue);
+}
+    
 bool YamlNode::AsBool() const
 {
 	return ("true" == nwStringValue);
@@ -310,7 +315,7 @@ Vector4 YamlNode::AsVector4() const
 
 Color YamlNode::AsColor() const
 {
-    Color result = Color::White();
+    Color result = Color::White;
     if (type == TYPE_ARRAY)
     {
         const YamlNode * r = Get(0);

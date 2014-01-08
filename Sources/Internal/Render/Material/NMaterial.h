@@ -199,7 +199,7 @@ public:
 	
 	inline NMaterial* GetParent() const {return parent;}
 	
-	void AddChild(NMaterial* material);
+	void AddChild(NMaterial* material, bool inheritTemlate = true);
 	void RemoveChild(NMaterial* material);
 	inline uint32 GetChildrenCount() const
 	{
@@ -264,6 +264,8 @@ public:
 	inline eMaterialType GetMaterialType() const {return materialType;}
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
+	
+	inline uint16 GetSortingKey() {return materialSortKey;}
 	
     //void AssignRenderLayerIDs(RenderLayerManager * manager);
     
@@ -358,8 +360,10 @@ protected:
 	bool materialDynamicLit;
 	//}END TODO
 
+	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;
 	HashMap<FastName, RenderPassInstance*> instancePasses;
+	HashMap<FastName, UniqueHandle> instancePassRenderStates;
 	
 	RenderPassInstance* activePassInstance;
 	RenderTechniquePass* activeRenderPass;
@@ -380,7 +384,7 @@ protected:
 	virtual ~NMaterial();
 	
 	inline void SetMaterialType(eMaterialType matType) {materialType = matType;}
-	inline void SetMaterialKey(NMaterialKey key) {materialKey = key;}
+	inline void SetMaterialKey(NMaterialKey key) {materialKey = key; pointer = key;}
 	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
 	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
@@ -415,7 +419,7 @@ protected:
 		
 protected:
 	
-	void OnParentChanged(NMaterial* newParent);
+	void OnParentChanged(NMaterial* newParent, bool inheritTemplate);
 	void OnMaterialTemplateChanged();
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();

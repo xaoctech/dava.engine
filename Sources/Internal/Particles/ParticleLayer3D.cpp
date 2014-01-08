@@ -60,6 +60,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 		ParticleLayer3D::regularMaterial = NMaterial::CreateMaterial(PARTICLE_MATERIAL_NAME,
 														 FastName("~res:/Materials/Legacy/Particles/Particles.material"),
 														 NMaterial::DEFAULT_QUALITY_NAME);
+		ParticleLayer3D::regularMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	}
 	
 	if(NULL == ParticleLayer3D::frameBlendMaterial)
@@ -68,6 +69,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 		ParticleLayer3D::frameBlendMaterial = NMaterial::CreateMaterial(PARTICLE_FRAMEBLEND_MATERIAL_NAME,
 														 FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"),
 														 NMaterial::DEFAULT_QUALITY_NAME);
+		ParticleLayer3D::frameBlendMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	}
 	
 	isLong = false;
@@ -75,6 +77,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	this->emitter = parent;
 	
 	material = NMaterial::CreateMaterialInstance();
+	material->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	ParticleLayer3D::regularMaterial->AddChild(material);
 	
 	renderBatch->SetIndices(&indices);

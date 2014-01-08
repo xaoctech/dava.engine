@@ -110,6 +110,8 @@ public:
 		uint32 renderStateSwitches;
 		uint32 renderStateFullSwitches;
 		uint32 textureStateFullSwitches;
+		
+		uint32 attachRenderDataCount;
     };
     
     static void Create(Core::eRenderer renderer);

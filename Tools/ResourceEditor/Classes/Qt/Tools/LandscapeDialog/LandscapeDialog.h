@@ -66,7 +66,7 @@ protected slots:
 
 	void MaterialEditorButtonClicked();
 
-	virtual void OnItemEdited(const QString &name, QtPropertyData *data);
+	virtual void OnItemEdited(const QModelIndex &index);
 	
 	virtual void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	

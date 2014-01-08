@@ -116,6 +116,9 @@ public:
 protected:
     virtual QString GetUIControlClassName() { return "UIControl"; };
 	
+    // Default Flags.
+    virtual bool GetInitialInputEnabled() const {return false;}; // false because of DF-2944
+
 	virtual void InitializeControl(const String& controlName, const Vector2& position);
 
     // Getters/setters.
@@ -245,6 +248,9 @@ protected:
 
     // Refresh the thumb size for UISlider.
     void UpdateThumbSizeForUIControlThumb();
+
+    // Apply the pixelization settings.
+    void ApplyPixelization(Sprite* sprite);
 
 private:
 	void ResizeScrollViewContent(UIControl *control);
