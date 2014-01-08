@@ -1228,7 +1228,6 @@ namespace DAVA
 	
 	void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 indexCount)
 	{
-		Logger::FrameworkDebug("Draw RDO");
 		DVASSERT(renderData);
 		
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
@@ -1238,19 +1237,16 @@ namespace DAVA
 		// TODO: rethink this code
 		if(renderData->GetIndexBufferID() != 0)
 		{
-			Logger::FrameworkDebug("Draw IB: %d", renderData->GetIndexBufferID());
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
 		}
 		else
 		{
 			if(renderData->indexCount)
 			{
-				Logger::FrameworkDebug("Draw %d", renderData->indexCount);
 				RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
 			}
 			else
 			{
-				Logger::FrameworkDebug("Draw IC: %d", indexCount);
 				RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, indexCount, EIF_16, indices);
 			}
 		}

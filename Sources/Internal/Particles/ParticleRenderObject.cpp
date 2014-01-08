@@ -48,19 +48,7 @@ void ParticleRenderGroup::UpdateRenderBatch()
 	RenderDataObject *renderDataObject = renderBatch->GetRenderDataObject();
 	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
 	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
-	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());		
-	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[0], vertices[1], vertices[2]);
-	Logger::FrameworkDebug("T: %f,  %f", texcoords[0], texcoords[1]);
-	Logger::FrameworkDebug("C: %d", colors[0]);
-	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[3], vertices[4], vertices[5]);
-	Logger::FrameworkDebug("T: %f,  %f", texcoords[2], texcoords[3]);
-	Logger::FrameworkDebug("C: %d", colors[1]);
-	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[6], vertices[7], vertices[8]);
-	Logger::FrameworkDebug("T: %f,  %f", texcoords[4], texcoords[5]);
-	Logger::FrameworkDebug("C: %d", colors[2]);
-	Logger::FrameworkDebug("V: %f,  %f,  %f", vertices[9], vertices[10], vertices[11]);
-	Logger::FrameworkDebug("T: %f,  %f", texcoords[6], texcoords[7]);
-	Logger::FrameworkDebug("C: %d", colors[3]);
+	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
 	if (enableFrameBlend)
 	{
 		renderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, 0, &texcoords2.front());
@@ -208,7 +196,6 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 		}
 		
 	}
-	Logger::FrameworkDebug("PrepareRenderData rgc: %d, rba: %d",renderGroupCount, renderBatchArray.size());
 	
 }
 
@@ -281,11 +268,6 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			particlePos[1] = particlePosition+right+bot;
 			particlePos[2] = particlePosition+left+top;			
 			particlePos[3] = particlePosition+right+top;
-			Logger::FrameworkDebug("Frame: %d", current->frame);
-			Logger::FrameworkDebug("p0(%f, %f, %f)", particlePos[0].x, particlePos[0].y, particlePos[0].z);
-			Logger::FrameworkDebug("p1(%f, %f, %f)", particlePos[1].x, particlePos[1].y, particlePos[1].z);
-			Logger::FrameworkDebug("p2(%f, %f, %f)", particlePos[2].x, particlePos[2].y, particlePos[2].z);
-			Logger::FrameworkDebug("p3(%f, %f, %f)", particlePos[3].x, particlePos[3].y, particlePos[3].z);
 			
 			memcpy(&renderGroup->vertices[currVerticesCount*3], &particlePos[0], sizeof(Vector3) * 4);						
 			memcpy(&renderGroup->texcoords[currVerticesCount*2], pT, sizeof(float32) * 8);						
