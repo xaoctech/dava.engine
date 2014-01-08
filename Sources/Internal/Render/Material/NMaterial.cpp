@@ -164,6 +164,7 @@ namespace DAVA
 		DVASSERT(NULL == parent);
 		DVASSERT(this != material);
 		
+		material->materialSortKey = (uint16)((pointer_size)this);
 		children.push_back(material);
 		
 		this->Retain();
@@ -932,7 +933,7 @@ namespace DAVA
 		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
-		materialSortKey = baseTechnique->GetTechniqueId();
+		//materialSortKey = baseTechnique->GetTechniqueId();
 		
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)

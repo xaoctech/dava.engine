@@ -1506,6 +1506,10 @@ namespace DAVA
 			{				
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_LOD);
+				
+				DVASSERT(renderObject);
+				DVASSERT(renderObject->GetRenderSystem());
+				
 				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
 			}

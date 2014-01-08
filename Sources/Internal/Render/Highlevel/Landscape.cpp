@@ -166,6 +166,7 @@ Landscape::Landscape()
 	
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
+	chunk->SetSortingKey(10);
 	AddRenderBatch(chunk);
 	SafeRelease(chunk);
 	SafeRelease(landscapeParent);
