@@ -344,14 +344,8 @@ bool UIControlMetadata::GetVisible() const
 
 void UIControlMetadata::SetVisible(const bool value)
 {
-    
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
-    GetActiveUIControl()->SetVisible(value, false);
+    // Don't set Visible flag hierarchically for common UI Controls.
+    SetUIControlVisible(value, false);
 }
 
 bool UIControlMetadata::GetInput() const
@@ -1013,6 +1007,16 @@ void UIControlMetadata::ApplyPixelization(Sprite* sprite)
     {
         SpritesHelper::ApplyPixelization(sprite);
     }
+}
+
+void UIControlMetadata::SetUIControlVisible(const bool value, bool hierarchic)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->SetVisible(value, hierarchic);
 }
 
 };
