@@ -61,6 +61,8 @@
 
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
 
+class FogSettingsChangedReceiver;
+
 class SceneEditor2 : public DAVA::Scene
 {
 public:
@@ -184,6 +186,8 @@ protected:
 	bool wasChanged; //deprecated
 
 private:
+	FogSettingsChangedReceiver* fogSettingsChangedReceiver;
+
 	friend struct EditorCommandNotify;
 
 	struct EditorCommandNotify : public CommandNotify
