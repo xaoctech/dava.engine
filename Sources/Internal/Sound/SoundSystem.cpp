@@ -94,6 +94,7 @@ void SoundSystem::Update()
 
 void SoundSystem::Suspend()
 {
+	/*
 #ifdef __DAVAENGINE_ANDROID__
 	for(FastNameMap<SoundGroup*>::iterator it = soundGroups.begin(); it != soundGroups.end(); ++it)
 	{
@@ -101,6 +102,7 @@ void SoundSystem::Suspend()
 		soundGroup->Stop();
 	}
 #endif
+*/
 }
 
 void SoundSystem::Resume()
