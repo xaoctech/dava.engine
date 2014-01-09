@@ -774,6 +774,8 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
         MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
+
+	texDescriptor->pathname = savedPath;
 }
 
     
@@ -930,7 +932,7 @@ void Texture::Lost()
 {
 	RenderResource::Lost();
 
-	
+	/*
 	if(RenderManager::Instance()->GetTexture() == this)
 	{//to avoid drawing deleted textures
 		RenderManager::Instance()->SetTexture(0);
@@ -949,12 +951,15 @@ void Texture::Lost()
 		RENDER_VERIFY(glDeleteTextures(1, &id));
 		id = 0;
 	}
+	*/
 }
 
 void Texture::Invalidate()
 {
 	RenderResource::Invalidate();
 	
+	/*
+
 	DVASSERT(id == 0 && "Texture always invalidated");
 	if (id)
 	{
@@ -976,6 +981,7 @@ void Texture::Invalidate()
 	{
 		MakePink((TextureType)textureType);
 	}
+	*/
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

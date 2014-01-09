@@ -312,6 +312,11 @@ void SceneEditor2::ClearCommands(int commandId)
 	commandStack.Clear(commandId);
 }
 
+void SceneEditor2::ClearAllCommands()
+{
+    commandStack.Clear();
+}
+
 const CommandStack* SceneEditor2::GetCommandStack() const
 {
 	return (&commandStack);
