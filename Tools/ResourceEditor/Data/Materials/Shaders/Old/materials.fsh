@@ -79,6 +79,7 @@ varying float varFogFactor;
 #if defined(SPEED_TREE_LEAF)
 uniform lowp vec3 treeLeafColorMul;
 uniform lowp float treeLeafOcclusionOffset;
+uniform lowp float treeLeafOcclusionMul;
 #endif
 
 #if defined(SETUP_LIGHTMAP)
@@ -229,7 +230,7 @@ void main()
 #endif
 
 #if defined(SPEED_TREE_LEAF)
-        gl_FragColor *= vec4(varVertexColor.rgb * treeLeafColorMul + vec3(treeLeafOcclusionOffset), varVertexColor.a);
+        gl_FragColor *= vec4(varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset), varVertexColor.a);
 #elif defined(VERTEX_COLOR)
         gl_FragColor *= varVertexColor;
 #endif
