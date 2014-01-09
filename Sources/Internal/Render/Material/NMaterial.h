@@ -166,7 +166,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
-	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+    static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
