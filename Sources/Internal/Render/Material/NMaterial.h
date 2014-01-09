@@ -379,6 +379,10 @@ protected:
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
     uint32                  renderLayerIDsBitmask;
+	
+	static Texture* stubCubemapTexture;
+	static Texture* stub2dTexture;
+	
 protected:
 	
 	virtual ~NMaterial();
@@ -407,6 +411,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags();
+	static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
@@ -416,6 +421,8 @@ protected:
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
 	void SetLightInternal(int index, Light* light);
+	
+	static bool IsRuntimeFlag(const FastName& flagName);
 		
 protected:
 	

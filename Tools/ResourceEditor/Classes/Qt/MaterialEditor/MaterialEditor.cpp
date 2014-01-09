@@ -222,7 +222,12 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 				// not self property (is set in parent or shader)
 				else
 				{
+					// disable property and it childs
 					dynamicMember->SetEnabled(false);
+					for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					{
+						dynamicMember->ChildGet(m)->SetEnabled(false);
+					}
 
 					QtPropertyToolButton* btn = dynamicMember->AddButton();
 					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
