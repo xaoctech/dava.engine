@@ -205,6 +205,13 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 			RemoveFromActive(component);
 			componentsCount--;
 			i--;
+			component->state = ParticleEffectComponent::STATE_STOPPED;
+			if (!component->playbackComplete.IsEmpty())
+				component->playbackComplete(component->GetEntity(), 0);
+		}
+		else
+		{
+			component->GetEntity()->GetScene()->GetRenderSystem()->MarkForUpdate(component->effectRenderObject);
 		}
 		
 		
@@ -296,7 +303,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				Vector2 pivotSize = current->currSize*group.layer->layerPivotSizeOffsets;
 				current->currRadius = pivotSize.Length();
 			}
-			AddParticleToBBox(current, bbox);
+			if (group.layer->inheritPosition)
+				AddParticleToBBox(current->position+effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
+			else
+				AddParticleToBBox(current->position, current->currRadius, bbox);
 			
 			if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
 			{
@@ -337,7 +347,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				if (!group.head)
 				{
 					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
-					AddParticleToBBox(current, bbox);
+					if (group.layer->inheritPosition)
+						AddParticleToBBox(current->position+effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
+					else
+						AddParticleToBBox(current->position, current->currRadius, bbox);
 				}
 			}else
 			{
@@ -354,7 +367,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				{
 					group.particlesToGenerate -= 1.0f;					
 					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
-					AddParticleToBBox(current, bbox);
+					if (group.layer->inheritPosition)
+						AddParticleToBBox(current->position+effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
+					else
+						AddParticleToBBox(current->position, current->currRadius, bbox);
 				}
 			}
 			
@@ -378,11 +394,11 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 	effect->effectRenderObject->SetAABBox(bbox);
 }
 
-void ParticleEffectSystem::AddParticleToBBox(Particle *particle, AABBox3& bbox)
+void ParticleEffectSystem::AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox)
 {	
-	Vector3 sz = Vector3(particle->currRadius, particle->currRadius, particle->currRadius);			
-	bbox.AddPoint(particle->position-sz);
-	bbox.AddPoint(particle->position+sz);
+	Vector3 sz = Vector3(radius,radius,radius);			
+	bbox.AddPoint(position-sz);
+	bbox.AddPoint(position+sz);
 }
 
 

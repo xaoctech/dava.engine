@@ -108,6 +108,7 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 //	}
 
 	FindAndRemoveExchangingWithLast(markedObjects, renderObject);
+	renderObject->RemoveFlag(RenderObject::MARKED_FOR_UPDATE);	
 
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;

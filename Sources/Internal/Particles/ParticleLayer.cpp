@@ -352,8 +352,16 @@ void ParticleLayer::SetPivotPoint(Vector2 pivot)
 }
 
 
-void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * node, bool preserveInheritPosition)
 {		
+	// format processing
+	int32 format = 0;
+	const YamlNode * formatNode = node->Get("effectFormat");
+	if (formatNode)
+	{
+		format = formatNode->AsInt32();
+	}
+
 	type = TYPE_PARTICLES;
 	const YamlNode * typeNode = node->Get("layerType");
 	if (typeNode)
@@ -374,10 +382,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	}
 
 	const YamlNode * pivotPointNode = node->Get("pivotPoint");
-	if(pivotPointNode)
-	{
-		SetPivotPoint(pivotPointNode->AsPoint());		
-	}
+	
 
 	const YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode && !spriteNode->AsString().empty())
@@ -389,6 +394,24 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		SetSprite(_sprite);
         SafeRelease(_sprite);
 	}
+	else
+	{
+		SetSprite(NULL);
+	}
+	if(pivotPointNode)
+	{
+		Vector2 _pivot = pivotPointNode->AsPoint();
+		if ((format == 0)&&sprite)
+		{
+			
+			float32 ny=_pivot.x/sprite->GetWidth()*2;
+			float32 nx=_pivot.y/sprite->GetHeight()*2;
+			_pivot.Set(nx, ny);
+		}
+
+		SetPivotPoint(_pivot);
+	}
+
 	const YamlNode *lodsNode = node->Get("activeLODS");
 	if (lodsNode)
 	{
@@ -609,22 +632,14 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		innerEmitter = new ParticleEmitter();       
 		// Since Inner Emitter path is stored as Relative, convert it to absolute when loading.
 		innerEmitterPath = FilePath(configPath.GetDirectory(), innerEmitterPathNode->AsString());
-		innerEmitter->LoadFromYaml(this->innerEmitterPath);
-	}	
-
-	// format processing
-	int32 format = 0;
-	const YamlNode * formatNode = node->Get("effectFormat");
-	if (formatNode)
-	{
-		format = formatNode->AsInt32();
-	}
+		innerEmitter->LoadFromYaml(this->innerEmitterPath, true);
+	}		
 	if (format == 0) //update old stuff
 	{
 		UpdateSizeLine(size.Get(), true, !isLong);
 		UpdateSizeLine(sizeVariation.Get(), true, !isLong);
 		UpdateSizeLine(sizeOverLifeXY.Get(), false, !isLong);
-		inheritPosition = false; //minimize pain
+		inheritPosition &= preserveInheritPosition;
 	}
 }
 
