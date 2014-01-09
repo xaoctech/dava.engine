@@ -1508,10 +1508,12 @@ namespace DAVA
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_LOD);
 				
 				DVASSERT(renderObject);
-				DVASSERT(renderObject->GetRenderSystem());
 				
 				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
+				{
+					DVASSERT(renderObject->GetRenderSystem());
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else
