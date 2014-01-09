@@ -234,7 +234,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			(((uint32)(currColor.g*255.f))<<8) | ((uint32)(currColor.r*255.f));
 		float32 sin_angle;
 		float32 cos_angle;
-		SinCosFast(current->angle, sin_angle, cos_angle);
+		SinCosFast(-current->angle, sin_angle, cos_angle); //- is because artists consider positive rotation to be clockwise
 
 		for (int32 i=0; i<basisCount; i++)
 		{
