@@ -77,7 +77,7 @@ struct ParticleLayer : public BaseObject
 	virtual ~ParticleLayer();		
 	virtual ParticleLayer * Clone();
 	
-	void LoadFromYaml(const FilePath & configPath, const YamlNode * node);	
+	void LoadFromYaml(const FilePath & configPath, const YamlNode * node, bool preserveInheritPosition);	
     void SaveToYamlNode(const FilePath & configPath, YamlNode* parentNode, int32 layerIndex);
 	void SaveForcesToYamlNode(YamlNode* layerNode);
 

@@ -78,7 +78,7 @@ public:
 	virtual ~ParticleEmitter();
 	ParticleEmitter * Clone();
 	
-	void LoadFromYaml(const FilePath & pathName); 
+	void LoadFromYaml(const FilePath & pathName, bool preserveInheritPosition=false); 
     void SaveToYaml(const FilePath & pathName);    	
 	
 	void AddLayer(ParticleLayer * layer);
@@ -90,7 +90,7 @@ public:
 
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);			
-	void LoadParticleLayerFromYaml(const YamlNode* yamlNode);
+	void LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool preserveInheritPosition);
 	
 	// Invert the emission vector coordinates for backward compatibility.
 	void InvertEmissionVectorCoordinates();

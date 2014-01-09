@@ -64,7 +64,7 @@ protected:
 	Particle* GenerateNewParticle(ParticleEffectComponent *effect, ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform);
 	
 	void PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform);
-	void AddParticleToBBox(Particle *particle, AABBox3& bbox);
+	void AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox);
 
 	void RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource = 0);
 	

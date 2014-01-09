@@ -285,7 +285,7 @@ YamlParser* ParticleEmitter::GetParser(const FilePath &filename)
 }
 
 
-void ParticleEmitter::LoadFromYaml(const FilePath & filename)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename, bool preserveInheritPosition)
 {
     Cleanup(true);
     
@@ -395,7 +395,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		const YamlNode * typeNode = node->Get("type");				
 		if (typeNode && typeNode->AsString() == "layer")
 		{
-			LoadParticleLayerFromYaml(node);
+			LoadParticleLayerFromYaml(node, preserveInheritPosition);
 		}
 	}
 	
@@ -519,11 +519,10 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 }
 
 
-void ParticleEmitter::LoadParticleLayerFromYaml(const YamlNode* yamlNode)
+void ParticleEmitter::LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool preserveInheritPosition)
 {
-
 	ParticleLayer* layer = new ParticleLayer();	
-	layer->LoadFromYaml(configPath, yamlNode);
+	layer->LoadFromYaml(configPath, yamlNode, preserveInheritPosition);
 	AddLayer(layer);	
 	SafeRelease(layer);
 }

@@ -85,7 +85,7 @@ void ParticleRenderGroup::ClearArrays()
 
 ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect)
 {
-	flags |= RenderObject::ALWAYS_CLIPPING_VISIBLE;
+	
 }
 
 ParticleRenderObject::~ParticleRenderObject()

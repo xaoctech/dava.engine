@@ -71,7 +71,8 @@ public:
 	
 
 	virtual void RecalcBoundingBox(){}
-	virtual void RecalculateWorldBoundingBox(){worldBBox = bbox;}
+	virtual void RecalculateWorldBoundingBox(){
+		worldBBox = bbox;}
 	
 };
 
