@@ -197,7 +197,7 @@ void SceneInfo::InitializeLODSectionInFrame()
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -212,7 +212,7 @@ void SceneInfo::InitializeLODSectionForSelection()
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -228,7 +228,7 @@ void SceneInfo::RefreshLODInfoInFrame()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoInFrame.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoInFrame.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoInFrame.trianglesOnLod[i];
     }
@@ -248,7 +248,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoSelection.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoSelection.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoSelection.trianglesOnLod[i];
     }
