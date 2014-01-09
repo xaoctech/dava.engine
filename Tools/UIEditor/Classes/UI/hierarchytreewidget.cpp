@@ -537,7 +537,9 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 	}
 	else if (selectedScreen || selectedControl)
 	{
-		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeControl)
+        // Currently don't allow to paste anything to Aggregators.
+		if ((dynamic_cast<HierarchyTreeAggregatorControlNode*>(selectedControl) == NULL) &&
+             CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeControl)
 		{
 			QAction* pasteScreenAction = new QAction(MENU_ITEM_PASTE, &menu);
 			connect(pasteScreenAction, SIGNAL(triggered()), this, SLOT(OnPasteAction()));
