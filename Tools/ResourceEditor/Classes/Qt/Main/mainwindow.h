@@ -153,7 +153,6 @@ public slots:
     
 	void OnCloseTabRequest(int tabIndex, Request *closeRequest);
 
-	void OnBeast();
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
