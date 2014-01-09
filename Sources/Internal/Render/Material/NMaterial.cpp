@@ -92,7 +92,17 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	static FastName RUNTIME_ONLY_FLAGS[] =
+	{
+		NMaterial::FLAG_LIGHTMAPONLY,
+		NMaterial::FLAG_TEXTUREONLY,
+		NMaterial::FLAG_SETUPLIGHTMAP
+	};
+	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
+	
+	Texture* NMaterial::stubCubemapTexture = NULL;
+	Texture* NMaterial::stub2dTexture = NULL;
 		
 ////////////////////////////////////////////////////////////////////////////////
 	
@@ -312,7 +322,10 @@ namespace DAVA
 			it != materialSetFlags.end();
 			++it)
 		{
-			materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			if(!IsRuntimeFlag(it->first))
+			{
+				materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			}
 		}
 		archive->SetArchive("setFlags", materialSetFlagsArchive);
 		SafeRelease(materialSetFlagsArchive);
@@ -1169,7 +1182,7 @@ namespace DAVA
 			if(NULL == textureData.textures[texIt->second])
 			{
 				//VI: this case is mostly for ResEditor
-				textureData.textures[texIt->second] = Texture::CreatePink();
+				textureData.textures[texIt->second] = GetStubTexture(texIt->first);
 			}
 		}
 		
@@ -1184,6 +1197,32 @@ namespace DAVA
 		}
 		
 		passInstance->texturesDirty = false;
+	}
+	
+	Texture* NMaterial::GetStubTexture(const FastName& uniformName)
+	{
+		Texture* stubTex = NULL;
+		
+		if(NMaterial::TEXTURE_CUBEMAP == uniformName)
+		{
+			if(NULL == stubCubemapTexture)
+			{
+				stubCubemapTexture = Texture::CreatePink(Texture::TEXTURE_CUBE);
+			}
+			
+			stubTex = stubCubemapTexture;
+		}
+		else
+		{
+			if(NULL == stub2dTexture)
+			{
+				stub2dTexture = Texture::CreatePink(Texture::TEXTURE_2D);
+			}
+			
+			stubTex = stub2dTexture;
+		}
+		
+		return stubTex;
 	}
 	
 	void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
@@ -1551,6 +1590,20 @@ namespace DAVA
 		return mat;
 	}
 
+	bool NMaterial::IsRuntimeFlag(const FastName& flagName)
+	{
+		bool result = false;
+		for(size_t i = 0; i < COUNT_OF(RUNTIME_ONLY_FLAGS); ++i)
+		{
+			if(RUNTIME_ONLY_FLAGS[i] == flagName)
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
