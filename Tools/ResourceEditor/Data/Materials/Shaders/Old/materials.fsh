@@ -44,7 +44,7 @@ uniform sampler2D lightmap; //[1]:ONCE
 #endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
-varying mediump vec2 varTexCoord1;
+varying highp vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
