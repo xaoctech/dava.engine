@@ -124,6 +124,7 @@ public:
 
 	void Exec(Command2 *command);
 	void ClearCommands(int commandId);
+    void ClearAllCommands();
 	const CommandStack* GetCommandStack() const;
 
 	// checks whether the scene changed since the last save
