@@ -93,7 +93,6 @@
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/Commands2/DynamicShadowCommands.h"
-#include "Classes/Commands2/InspMemberModifyCommand.h"
 
 #include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 
@@ -861,8 +860,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	if(scene == GetCurrentScene())
 	{
 		LoadUndoRedoState(scene);
-
-		UpdateLandscapeFog(command);
 	}
 }
 
@@ -2524,21 +2521,4 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	sceneWidget->SetCurrentTab(lastSceneTab);
 
 	return true;
-}
-
-void QtMainWindow::UpdateLandscapeFog(const Command2* command)
-{
-	if (command->GetId() == CMDID_INSP_MEMBER_MODIFY)
-	{
-		const InspMemberModifyCommand* cmd = (const InspMemberModifyCommand*)command;
-		String name = cmd->member->Name();
-		if (name == "fogDensity" || name == "fogColor")
-		{
-			Landscape* landscape = (Landscape*)cmd->object;
-
-			bool fog = landscape->IsFogEnabled();
-			landscape->SetFog(false);
-			landscape->SetFog(fog);
-		}
-	}
 }
