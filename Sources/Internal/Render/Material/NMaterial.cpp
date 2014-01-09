@@ -74,8 +74,9 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -2023,7 +2024,9 @@ namespace DAVA
 				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
 				propName == NMaterial::PARAM_FOG_COLOR ||
-				propName == NMaterial::PARAM_FLAT_COLOR);
+				propName == NMaterial::PARAM_FLAT_COLOR ||
+                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
+                );
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
