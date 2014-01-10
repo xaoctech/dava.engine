@@ -26,8 +26,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include <QDir>
-#include <QDirIterator>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
 
 #include "MaterialEditor.h"
 #include "ui_materialeditor.h"
@@ -270,8 +271,7 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 
 void MaterialEditor::ScanTemplates()
 {
-	QString materialsPath = DAVA::FilePath("~res:/Materials/Legacy/").GetAbsolutePathname().c_str();
-
+	int i = 0;
 	QtWaitDialog waitDlg;
 	waitDlg.Show("Scanning material templates", "", true, false);
 
@@ -280,27 +280,28 @@ void MaterialEditor::ScanTemplates()
 
 	// add unknown template
 	templates.append("");
-	ui->templateBox->addItem("Unknown", 0);
+	ui->templateBox->addItem("Unknown", i++);
 
-	// scan for known templates
-	int i = 1;
-	QDir materialDir(materialsPath);
-	materialDir.setNameFilters(QStringList("*.material"));
-
-	QDirIterator iterator(materialDir.absolutePath(), QDirIterator::Subdirectories);
-	while(iterator.hasNext()) 
+	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/Legacy/assignable.txt");
+	if(materialsListPath.Exists())
 	{
-		iterator.next();
-		QFileInfo fInfo = iterator.fileInfo();
+		QString materialsListDir = materialsListPath.GetDirectory().GetAbsolutePathname().c_str();
 
-		if(!fInfo.isDir()) 
+		// scan for known templates
+		QFile materialsListFile(materialsListPath.GetAbsolutePathname().c_str());
+		if(materialsListFile.open(QIODevice::ReadOnly))
 		{
-			waitDlg.SetMessage(fInfo.absoluteFilePath());
-
-			DAVA::FilePath templatePath = fInfo.absoluteFilePath().toAscii().data();
-			templates.append(templatePath.GetFrameworkPath());
-
-			ui->templateBox->addItem(fInfo.completeBaseName(), i++);
+			QTextStream in(&materialsListFile);
+			while(!in.atEnd())
+			{
+				QFileInfo materialPath(materialsListDir + in.readLine());
+				if(materialPath.exists())
+				{
+					templates.append(DAVA::FilePath(materialPath.absoluteFilePath().toAscii().data()).GetFrameworkPath());
+					ui->templateBox->addItem(materialPath.completeBaseName(), i++);
+				}
+			}
+			materialsListFile.close();
 		}
 	}
 
