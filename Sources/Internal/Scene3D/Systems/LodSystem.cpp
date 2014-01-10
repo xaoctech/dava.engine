@@ -69,11 +69,10 @@ void LodSystem::Process(float32 timeElapsed)
 	for(int32 i = partialUpdateIndices[currentPartialUpdateIndex]; i < partialUpdateIndices[currentPartialUpdateIndex+1]; ++i)
 	{
 		Entity * entity = entities[i];
-		LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
+		LodComponent * lod = GetLodComponent(entity);
 		if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 		{
 			UpdateEntityAfterLoad(entity);
-			lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 		}
 
 		UpdateLod(entity, lod, lodOffset, lodMult);
@@ -107,7 +106,12 @@ void LodSystem::RemoveEntity(Entity * entity)
 
 void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 {
-	LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
+	LodComponent * lod = GetLodComponent(entity);
+    
+    //this check is left here intentionally to protect from second call to UpdateEntityAfterLoad
+    if(!(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD))
+        return;
+        
 	for (Vector<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
 	{
 		LodComponent::LodData & ld = *it;
@@ -137,6 +141,8 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 	{
 		lod->SetCurrentLod(lod->lodLayers.size()-1);
 	}
+    
+    lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 }
 
 void LodSystem::UpdatePartialUpdateIndices()
@@ -350,7 +356,6 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{
 				LodSystem::UpdateEntityAfterLoad(fromEntity);
-				lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 			}
 
 			allLods.push_back(fromEntity);
