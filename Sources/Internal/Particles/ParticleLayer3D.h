@@ -95,6 +95,8 @@ protected:
 	
 	void UpdateBlendState();
 
+	virtual void DeleteAllParticles();
+
 	bool isLong;
 	
 	RenderDataObject * renderData;
