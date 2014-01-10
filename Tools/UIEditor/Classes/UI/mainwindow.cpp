@@ -654,7 +654,7 @@ void MainWindow::InitMenu()
 	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
         recentPojectActions[i] = new QAction(this);
-        recentPojectActions[i]->setObjectName(QString::fromUtf8(Format("recentPojectActions[%d]", i)));
+        recentPojectActions[i]->setObjectName(QString::fromStdString(Format("recentPojectActions[%d]", i)));
     }
 	
 	//Help contents dialog
