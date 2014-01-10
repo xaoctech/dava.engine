@@ -1350,6 +1350,15 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.h">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Input\GamepadManager.h">
+      <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Input\GamepadDevice.h">
+      <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2401,6 +2410,21 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Input\GamepadManager.cpp">
+      <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp">
+      <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
+      <Filter>Internal\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
