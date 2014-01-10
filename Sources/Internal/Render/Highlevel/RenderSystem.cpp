@@ -54,8 +54,7 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
-    :   renderLayerManager()
-    ,   renderPassManager(this)
+    :   renderPassManager(this)
     ,   camera(0)
     ,   clipCamera(0)
 {
