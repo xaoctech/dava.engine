@@ -43,6 +43,8 @@
 
 #include "Scene/SceneEditor2.h"
 
+#include "Scene3D/Systems/MaterialSystem.h"
+
 SceneValidator::SceneValidator()
 {
     pathForChecking = String("");
@@ -75,6 +77,7 @@ void SceneValidator::ValidateScene(Scene *scene, const DAVA::FilePath &scenePath
 		}
 
         ValidateSceneNode(scene, errorsLog);
+		ValidateMaterials(scene, errorsLog);
 
         for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
@@ -349,41 +352,45 @@ void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderB
 {
     ownerNode->RemoveFlag(Entity::NODE_INVALID);
     
-    
     NMaterial *material = renderBatch->GetMaterial();
     if(material)
     {
-        ValidateMaterial(material, errorsLog);
         ConvertIlluminationParamsFromProperty(ownerNode, material);
-    }
-    
-    PolygonGroup *polygonGroup = renderBatch->GetPolygonGroup();
-    if(polygonGroup)
-    {
-        if(material)
-        {
-//             if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
-//             {
-//                 ownerNode->AddFlag(Entity::NODE_INVALID);
-//                 errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
-//                 errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
-//             }
-        }
     }
 }
 
-void SceneValidator::ValidateMaterial(NMaterial *material, Set<String> &errorsLog)
+void SceneValidator::ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLog)
 {
-	if(NULL != material)
+	DAVA::MaterialSystem *matSystem = scene->GetMaterialSystem();
+	Set<DAVA::NMaterial *> materials;
+	matSystem->BuildMaterialList(scene, materials);
+
+	DAVA::Map<DAVA::Texture *, DAVA::String> texturesMap;
+	auto endItMaterials = materials.end();
+	for(auto it = materials.begin(); it != endItMaterials; ++it)
 	{
-		for(uint32 iTex = 0; iTex < material->GetTextureCount(); ++iTex)
+		DAVA::uint32 count = (*it)->GetTextureCount();
+		for(DAVA::uint32 t = 0; t < count; ++t)
 		{
-			Texture *texture = material->GetTexture(iTex);
-			if(texture)
+			Texture *tex = (*it)->GetTexture(t);
+			if(tex)
 			{
- 				ValidateTexture(texture, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
+				if(((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_INSTANCE) && (*it)->GetParent())
+				{
+					texturesMap[tex] = Format("Material: %s (%s). Texture %s.", (*it)->GetName().c_str(), (*it)->GetParent()->GetName().c_str(), (*it)->GetTextureName(t).c_str());
+				}
+				else
+				{
+					texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetName().c_str(), (*it)->GetTextureName(t).c_str());
+				}
 			}
 		}
+	}
+
+	auto endItTextures = texturesMap.end();
+	for(auto it = texturesMap.begin(); it != endItTextures; ++it)
+	{
+		ValidateTexture(it->first, it->second, errorsLog);
 	}
 }
 
@@ -513,13 +520,22 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &validatedOb
 
 	if(texture->IsPinkPlaceholder())
 	{
-		errorsLog.insert("Can't load texture: " + textureInfo);
+		if(texturePathname.IsEmpty())
+		{
+			errorsLog.insert("Texture not set for object: " + validatedObjectName);
+		}
+		else
+		{
+			errorsLog.insert("Can't load texture: " + textureInfo);
+		}
+		return;
 	}
 
 	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
 	if(!pathIsCorrect)
 	{
 		errorsLog.insert("Wrong path of: " + textureInfo);
+		return;
 	}
 	
 	if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
