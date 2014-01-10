@@ -41,6 +41,8 @@
 
 #include "AlignDistribute/AlignDistributeManager.h"
 
+#include "Helpers/SpritesHelper.h"
+
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
 {
@@ -670,6 +672,13 @@ void HierarchyTreeController::DistributeSelectedControls(eDistributeControlsType
 	SafeRelease(command);
 }
 
+void HierarchyTreeController::AdjustSelectedControlsSize()
+{
+	BaseCommand* command = new ControlsAdjustSizeCommand(activeControlNodes);
+    CommandsController::Instance()->ExecuteCommand(command);
+	SafeRelease(command);
+}
+
 bool HierarchyTreeController::CanPerformAlign(eAlignControlsType /*alignType*/)
 {
 	// Align is not possible if less than two controls selected.
@@ -682,9 +691,14 @@ bool HierarchyTreeController::CanPerformDistribute(eDistributeControlsType /*dis
 	return activeControlNodes.size() >= 3;
 }
 
-void HierarchyTreeController::RepackAndReloadSprites()
+void HierarchyTreeController::RepackAndReloadSprites(bool needRepack, bool pixelized)
 {
-    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
+    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode(), needRepack, pixelized);
     CommandsController::Instance()->ExecuteCommand(cmd);
     SafeRelease(cmd);
+}
+
+void HierarchyTreeController::ApplyPixelizationForAllSprites()
+{
+    SpritesHelper::ApplyPixelizationForAllSprites(hierarchyTree.GetRootNode());
 }
