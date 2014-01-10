@@ -256,7 +256,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
             {
                 ShaderAsset::DefaultValue value;
                 if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
-                    value.float32Value = atof(tokens[2].c_str());
+                    value.float32Value = (float32)atof(tokens[2].c_str());
                 else
                     value.int32Value = atoi(tokens[2].c_str());
                 FastName fastName = FastName(tokens[0]);
@@ -353,7 +353,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
             {
                 ShaderAsset::DefaultValue value;
                 if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
-                    value.float32Value = atof(tokens[2].c_str());
+                    value.float32Value = (float32)atof(tokens[2].c_str());
                 else
                     value.int32Value = atoi(tokens[2].c_str());
                 FastName fastName = FastName(tokens[0]);

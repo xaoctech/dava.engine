@@ -74,8 +74,8 @@ namespace DAVA
 	};
 	*/
 
-	#define isoX .525731112119133606 
-	#define isoZ .850650808352039932
+	#define isoX 0.525731f 
+	#define isoZ 0.850650f
 
 	static Vector3 DodecVertexes[12] = {
 		Vector3(-isoX, 0.0, isoZ),
