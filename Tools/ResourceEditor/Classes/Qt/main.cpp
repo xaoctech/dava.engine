@@ -51,6 +51,8 @@
 #include "Deprecated/TextureSquarenessChecker.h"
 #include "Deprecated/ControlsFactory.h"
 
+#include "Scene/FogSettingsChangedReceiver.h"
+
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
@@ -127,6 +129,7 @@ int main(int argc, char *argv[])
 		new SceneValidator();
 		new TextureSquarenessChecker();
         new TextureCache();
+		new FogSettingsChangedReceiver();
 
 		LocalizationSystem::Instance()->SetCurrentLocale("en");
 		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
@@ -157,6 +160,7 @@ int main(int argc, char *argv[])
 		EditorConfig::Instance()->Release();
 		EditorSettings::Instance()->Release();
         TextureCache::Instance()->Release();
+		FogSettingsChangedReceiver::Instance()->Release();
 	}
 
 	BeastProxy::Instance()->Release();

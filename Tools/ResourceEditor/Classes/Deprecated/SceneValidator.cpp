@@ -45,9 +45,6 @@
 
 SceneValidator::SceneValidator()
 {
-//    sceneTextureCount = 0;
-//    sceneTextureMemory = 0;
-
     pathForChecking = String("");
 }
 
@@ -384,42 +381,10 @@ void SceneValidator::ValidateMaterial(NMaterial *material, Set<String> &errorsLo
 			Texture *texture = material->GetTexture(iTex);
 			if(texture)
 			{
-// 				ValidateTexture(texture, texture->GetTextureMap((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
-// 
-// 				FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-// 				if(!matTexName.IsEmpty() && !IsTextureDescriptorPath(matTexName))
-// 				{
-// 					material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
-// 				}
+ 				ValidateTexture(texture, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
 			}
 		}
 	}
-}
-
-
-void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog)
-{
-    if(materialState->GetLightmap())
-    {
-        ValidateTexture(materialState->GetLightmap(), materialState->GetLightmapName(), "InstanceMaterialState, lightmap", errorsLog);
-    }
-    
-    FilePath lightmapName = materialState->GetLightmapName();
-    if(!IsTextureDescriptorPath(lightmapName))
-    {
-        Texture *lightmap = SafeRetain(materialState->GetLightmap());
-        
-        if(lightmapName.IsEmpty())
-        {
-            materialState->SetLightmap(lightmap, FilePath());
-        }
-        else
-        {
-            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
-        }
-        
-        SafeRelease(lightmap);
-    }
 }
 
 
@@ -481,7 +446,7 @@ void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::e
 		landscape->SetTextureName(texLevel, TextureDescriptor::GetDescriptorPathname(landTexName));
 	}
 
-	ValidateTexture(landscape->GetTexture(texLevel), landscape->GetTextureName(texLevel), Format("Landscape. TextureLevel %d", texLevel), errorsLog);
+	ValidateTexture(landscape->GetTexture(texLevel), Format("Landscape. TextureLevel %d", texLevel), errorsLog);
 }
 
 
@@ -529,18 +494,20 @@ bool SceneValidator::NodeRemovingDisabled(Entity *node)
 }
 
 
-void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const FilePath &textureName, const String &validatedObjectName)
+void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName)
 {
     errorMessages.clear();
 
-    ValidateTexture(texture, textureName, validatedObjectName, errorMessages);
+    ValidateTexture(texture, validatedObjectName, errorMessages);
     ShowErrorDialog(errorMessages);
 }
 
-void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePathname, const String &validatedObjectName, Set<String> &errorsLog)
+void SceneValidator::ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog)
 {
 	if(!texture) return;
 	
+	const FilePath & texturePathname = texture->GetPathname();
+
 	String path = texturePathname.GetRelativePathname(pathForChecking);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
@@ -566,54 +533,6 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 	}
 }
 
-
-
-//void SceneValidator::EnumerateSceneTextures()
-//{
-//    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-//    DVASSERT_MSG(sceneData, "Illegal situation");
-//    
-//    Map<String, Texture *> textureMap;
-//    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
-//    sceneTextureCount = textureMap.size();
-//
-//    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-//    String projectPath = settings->GetString("ProjectPath");
-//
-//    sceneTextureMemory = 0;
-//	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-//	{
-//		Texture *t = it->second;
-//        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
-//        {   // skip all textures that are not related the scene
-//            continue;
-//        }
-//
-//        
-//        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
-//        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-//            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-//            switch (t->GetSourceFileFormat())
-//            {
-//                case DAVA::PVR_FILE:
-//                {
-//                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-//                    break;
-//                }
-//                    
-//                case DAVA::DXT_FILE:
-//                {
-//                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-//                    break;
-//                }
-//                    
-//                default:
-//                    sceneTextureMemory += t->GetDataSize();
-//                    break;
-//            }
-//        }
-//	}
-//}
 
 bool SceneValidator::WasTextureChanged(Texture *texture, eGPUFamily forGPU)
 {

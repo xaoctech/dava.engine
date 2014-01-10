@@ -774,8 +774,6 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
         MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
-
-	texDescriptor->pathname = savedPath;
 }
 
     
@@ -1075,6 +1073,7 @@ Texture * Texture::CreatePink(TextureType requestedType)
 
 void Texture::MakePink(TextureType requestedType)
 {
+	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
 	SafeRelease(texDescriptor);
 
     Vector<Image *> *images = new Vector<Image *> ();
@@ -1097,7 +1096,9 @@ void Texture::MakePink(TextureType requestedType)
 		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder());
 	}
-    
+
+	texDescriptor->pathname = savePath;
+
 	SetParamsFromImages(images);
     FlushDataToRenderer(images);
 
