@@ -42,7 +42,7 @@ class QtPropertyDataIntrospection : public QtPropertyData
 {
 	Q_OBJECT
 public:
-	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info);
+	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, bool autoAddChilds = true);
 	virtual ~QtPropertyDataIntrospection();
 
 	virtual const DAVA::MetaInfo * MetaInfo() const;
