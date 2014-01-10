@@ -117,7 +117,7 @@ protected:
     virtual QString GetUIControlClassName() { return "UIControl"; };
 	
     // Default Flags.
-    virtual bool GetInitialInputFlag() const {return false;}; // false because of DF-2944
+    virtual bool GetInitialInputEnabled() const {return false;}; // false because of DF-2944
 
 	virtual void InitializeControl(const String& controlName, const Vector2& position);
 
@@ -188,7 +188,7 @@ protected:
 
     //Boolean gettes/setters
     bool GetVisible() const;
-    void SetVisible(const bool value);
+    virtual void SetVisible(const bool value);
 
     bool GetInput() const;
     void SetInput(const bool value);
@@ -251,6 +251,9 @@ protected:
 
     // Apply the pixelization settings.
     void ApplyPixelization(Sprite* sprite);
+
+    // Verify whether UIControl exists and set its visible flag.
+    void SetUIControlVisible(const bool isVisible, bool hierarchic);
 
 private:
 	void ResizeScrollViewContent(UIControl *control);

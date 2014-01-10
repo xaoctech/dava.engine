@@ -52,7 +52,7 @@ class PlatformMetadata : public BaseMetadata
     
 protected:
     // Default Flags.
-    virtual bool GetInitialInputFlag() const {return true;};
+    virtual bool GetInitialInputEnabled() const {return true;};
 
     // Accessors to the Tree Node.
     HierarchyTreePlatformNode* GetPlatformNode() const;
