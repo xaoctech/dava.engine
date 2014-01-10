@@ -70,7 +70,7 @@ void SpriteObject::Init( Sprite *spr, int32 _frame, const Vector2 &reqScale, con
 	sprite = SafeRetain(spr);
 	frame = _frame;
 
-	//SetupRenderBatch();
+	SetupRenderBatch();
 }
 
 void SpriteObject::SetupRenderBatch()
@@ -225,11 +225,4 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	}
 }
 	
-void SpriteObject::SetRenderSystem(RenderSystem * _renderSystem)
-{
-	RenderObject::SetRenderSystem(_renderSystem);
-	
-	SetupRenderBatch();
-}
-
 };
