@@ -54,7 +54,6 @@ SceneEditor2::SceneEditor2()
 	: Scene()
 	, isLoaded(false)
 	, isHUDVisible(true)
-	, fogSettingsChangedReceiver(NULL)
 {
 	renderStats.Clear();
 
@@ -143,16 +142,12 @@ SceneEditor2::SceneEditor2()
 
     //RenderTechnique * technique5 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/Textured.Alphablend.material"));
     //technique5->GetPassByIndex(technique5->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
-
-	fogSettingsChangedReceiver = new FogSettingsChangedReceiver();
 }
 
 SceneEditor2::~SceneEditor2()
 {
 	RemoveSystems();
 
-	SafeDelete(fogSettingsChangedReceiver);
-    
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
