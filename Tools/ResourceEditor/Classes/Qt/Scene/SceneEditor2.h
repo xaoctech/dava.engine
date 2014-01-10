@@ -154,7 +154,7 @@ public:
 
     const RenderManager::Stats & GetRenderStats() const;
 
-	void DisableTools(int32 toolFlags, Request* disableRequest, bool saveChanges = true);
+	void DisableTools(int32 toolFlags, bool saveChanges = true);
 	bool IsToolsEnabled(int32 toolFlags);
 	int32 GetEnabledTools();
 

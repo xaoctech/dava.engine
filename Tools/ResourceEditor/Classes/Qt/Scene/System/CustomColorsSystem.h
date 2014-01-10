@@ -47,7 +47,7 @@ public:
 	virtual ~CustomColorsSystem();
 	
 	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
-	bool DisableLandscapeEdititing(Request* disableRequest, bool saveNeeded = true);
+	bool DisableLandscapeEdititing(bool saveNeeded = true);
 	bool IsLandscapeEditingEnabled() const;
 	
 	void Update(DAVA::float32 timeElapsed);

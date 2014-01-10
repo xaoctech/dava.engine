@@ -76,17 +76,16 @@ void ActionEnableCustomColors::Redo()
 	SceneSignals::Instance()->EmitCustomColorsToggled(sceneEditor);
 }
 
-ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor, Request* _disableRequest, bool textureSavingNeeded)
+ActionDisableCustomColors::ActionDisableCustomColors(SceneEditor2* forSceneEditor, bool textureSavingNeeded)
 :	CommandAction(CMDID_CUSTOM_COLORS_DISABLE)
 ,	sceneEditor(forSceneEditor)
 ,	textureSavingNeeded(textureSavingNeeded)
-,	disableRequest(_disableRequest)
 {
 }
 
 void ActionDisableCustomColors::Redo()
 {
-	if (sceneEditor == NULL || disableRequest == NULL)
+	if (sceneEditor == NULL)
 	{
 		return;
 	}
@@ -97,7 +96,7 @@ void ActionDisableCustomColors::Redo()
 		return;
 	}
 	
-	bool success = sceneEditor->customColorsSystem->DisableLandscapeEdititing(disableRequest, textureSavingNeeded);
+	bool success = sceneEditor->customColorsSystem->DisableLandscapeEdititing(textureSavingNeeded);
 	if (!success)
 	{
 		ShowErrorDialog(ResourceEditor::CUSTOM_COLORS_DISABLE_ERROR);
