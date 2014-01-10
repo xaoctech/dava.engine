@@ -71,6 +71,10 @@ public:
     void StartTest();
 
     void Update(float32 timeElapsed);
+
+	static int Print(lua_State* L);
+	int static ReqModule(lua_State* L);
+	void static stackDump (lua_State *L);
 #endif //SWIG
     
     // autotesting system api   
@@ -134,11 +138,11 @@ protected:
     void ParsePath(const String &path, Vector<String> &parsedPath);
     
     bool LoadScript(const String &luaScript);
-    bool LoadScriptFromFile(const String &luaFilePath);
+    bool LoadScriptFromFile(const FilePath &luaFilePath);
     bool RunScript();
     
     bool RunScript(const String &luaScript);
-    bool RunScriptFromFile(const String &luaFilePath);
+    bool RunScriptFromFile(const FilePath &luaFilePath);
     bool LoadWrappedLuaObjects();
 	
 
