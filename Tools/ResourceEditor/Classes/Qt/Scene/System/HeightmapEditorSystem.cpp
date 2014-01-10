@@ -235,7 +235,10 @@ void HeightmapEditorSystem::FinishEditing()
 {
 	if (editingIsEnabled)
 	{
-		CreateHeightmapUndo();
+		if (drawingType != HEIGHTMAP_DROPPER)
+		{
+			CreateHeightmapUndo();
+		}
 		editingIsEnabled = false;
 	}
 }
