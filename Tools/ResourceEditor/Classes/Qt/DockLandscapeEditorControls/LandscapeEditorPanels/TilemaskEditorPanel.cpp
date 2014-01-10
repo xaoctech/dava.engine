@@ -610,7 +610,7 @@ void TilemaskEditorPanel::OnTileColorChanged(int32 tileNumber, Color color)
 
 void TilemaskEditorPanel::OnCommandExecuted(SceneEditor2* scene, const Command2* command, bool redo)
 {
-	if (scene != GetActiveScene() || !GetEditorEnabled() || command->GetId() != CMDID_META_OBJ_MODIFY)
+	if (scene != GetActiveScene() || !GetEditorEnabled() || command->GetId() != CMDID_SET_TILE_COLOR)
 	{
 		return;
 	}

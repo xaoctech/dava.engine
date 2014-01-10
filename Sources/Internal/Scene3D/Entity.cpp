@@ -177,7 +177,7 @@ namespace DAVA
 		{
 			Vector<Component*>* componentsVector = it->second;
 			
-			if(it->second)
+			if(NULL != componentsVector)
 			{
 				int componentCount = componentsVector->size();
 				
@@ -390,7 +390,11 @@ namespace DAVA
 				++it)
 			{
 				Vector<Component*>* componentsVector = it->second;
-				count += componentsVector->size();
+				
+				if(NULL != componentsVector)
+				{
+					count += componentsVector->size();
+				}
 			}
 		}
 
@@ -890,10 +894,14 @@ namespace DAVA
 			it != componentsMap.end(); ++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			for(Vector<Component*>::iterator compIt = componentsVector->begin();
-				compIt != componentsVector->end(); ++compIt)
+			
+			if(NULL != componentsVector)
 			{
-				dstNode->AddComponent((*compIt)->Clone(dstNode));
+				for(Vector<Component*>::iterator compIt = componentsVector->begin();
+					compIt != componentsVector->end(); ++compIt)
+				{
+					dstNode->AddComponent((*compIt)->Clone(dstNode));
+				}
 			}
 		}
 		
@@ -1103,14 +1111,18 @@ namespace DAVA
 			++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			for(Vector<Component*>::iterator compIt = componentsVector->begin();
-				compIt != componentsVector->end(); ++compIt)
+			
+			if(NULL != componentsVector)
 			{
-				KeyedArchive *compArch = new KeyedArchive();
-				(*compIt)->Serialize(compArch, serializationContext);
-				compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
-				compArch->Release();
-				savedIndex++;
+				for(Vector<Component*>::iterator compIt = componentsVector->begin();
+					compIt != componentsVector->end(); ++compIt)
+				{
+					KeyedArchive *compArch = new KeyedArchive();
+					(*compIt)->Serialize(compArch, serializationContext);
+					compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
+					compArch->Release();
+					savedIndex++;
+				}
 			}
 		}
 		
@@ -1300,10 +1312,14 @@ namespace DAVA
 			it != componentsMap.end(); ++it)
 		{
 			Vector<Component*>* componentsVector = it->second;
-			for(Vector<Component*>::iterator compIt = componentsVector->begin();
-				compIt != componentsVector->end(); ++compIt)
+			
+			if(NULL != componentsVector)
 			{
-				(*compIt)->GetDataNodes(dataNodes);
+				for(Vector<Component*>::iterator compIt = componentsVector->begin();
+					compIt != componentsVector->end(); ++compIt)
+				{
+					(*compIt)->GetDataNodes(dataNodes);
+				}
 			}
 		}
 		
@@ -1490,8 +1506,14 @@ namespace DAVA
 			{				
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_LOD);
+				
+				DVASSERT(renderObject);
+				
 				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
+				{
+					DVASSERT(renderObject->GetRenderSystem());
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else

@@ -61,6 +61,7 @@ protected slots:
 	void OnRemProperty();
 	void OnAddTexture();
 	void OnRemTexture();
+	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
 
 protected:
@@ -68,12 +69,16 @@ protected:
 
 	void FillMaterialProperties(DAVA::NMaterial *material);
 	void FillMaterialTextures(DAVA::NMaterial *material);
+	void ScanTemplates();
 
 private:
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
 	DAVA::NMaterial *curMaterial;
+
+	bool templatesScaned;
+	QVector<DAVA::FilePath> templates;
 };
 
 #endif

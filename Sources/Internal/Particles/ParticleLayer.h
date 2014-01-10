@@ -88,7 +88,6 @@ struct ParticleLayer : public BaseObject
 		
 
 	void GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables);
-	    			
 	
 	// Convert from Layer Type to its name and vice versa.
 	eType StringToLayerType(const String& layerTypeName, eType defaultLayerType);

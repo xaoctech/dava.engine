@@ -70,7 +70,7 @@ void SpriteObject::Init( Sprite *spr, int32 _frame, const Vector2 &reqScale, con
 	sprite = SafeRetain(spr);
 	frame = _frame;
 
-	//SetupRenderBatch();
+	SetupRenderBatch();
 }
 
 void SpriteObject::SetupRenderBatch()
@@ -98,6 +98,8 @@ void SpriteObject::SetupRenderBatch()
 	NMaterial* material = NMaterial::CreateMaterialInstance(FastName("SpriteObject_material"),
 															FastName("~res:/Materials/Legacy/Textured.Alphablend.material"),
 															NMaterial::DEFAULT_QUALITY_NAME);
+	material->GetParent()->AddNodeFlags(DataNode::NodeRuntimeFlag);
+	material->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	material->SetTexture(NMaterial::TEXTURE_ALBEDO, sprite->GetTexture(frame));
         
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
@@ -223,11 +225,4 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	}
 }
 	
-void SpriteObject::SetRenderSystem(RenderSystem * _renderSystem)
-{
-	RenderObject::SetRenderSystem(_renderSystem);
-	
-	SetupRenderBatch();
-}
-
 };

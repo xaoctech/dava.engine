@@ -337,11 +337,11 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 		}
 
 		// Yuri Coder, 2012/12/19. The focus is on Hierarchy Tree here, so can't ask InputSystem
-		// whether Shift is pressed. Use Qt functions instead.
+		// whether Shift is pressed. Use Qt functions instead. If Shift is pressed - select multiple
+        // items in the tree, from the one previously selected to the current selection.
 		if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
         {
-            // Yuri Coder, 2013/12/05. See please DF-2839 to get the details of this method.
-            SelectMultipleTreeWidgetItems(ui->treeWidget->selectedItems());
+            Select(ui->treeWidget->selectedItems());
         }
         else
         {
@@ -351,7 +351,7 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 	}
 }
 
-void HierarchyTreeWidget::SelectMultipleTreeWidgetItems(const QList<QTreeWidgetItem*>& selectedItems)
+void HierarchyTreeWidget::Select(const QList<QTreeWidgetItem*>& selectedItems)
 {
     HierarchyTreeControlNode* firstNode = NULL;
     bool needReselectScreen = false;

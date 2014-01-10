@@ -33,7 +33,7 @@
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
-void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
+void SceneHelper::EnumerateEntityTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
 {
     if(!forNode) return;
 
@@ -54,16 +54,16 @@ void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &te
     DAVA::int32 count = forNode->GetChildrenCount();
     for(DAVA::int32 c = 0; c < count; ++c)
     {
-        EnumerateTextures(forNode->GetChild(c), textureCollection);
+        EnumerateEntityTextures(forNode->GetChild(c), textureCollection);
     }
 }
 
-int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
+int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
 {
 	int32 retValue = 0;
 	textures.clear();
 	TexturesMap allTextures;
-	EnumerateTextures(forNode, allTextures);
+	EnumerateSceneTextures(forScene, allTextures);
 	for(TexturesMap::iterator it = allTextures.begin(); it != allTextures.end(); ++it)
 	{
 		DAVA::Texture * texture = it->second;
@@ -100,7 +100,7 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DA
 	return retValue;
 }
 
-void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
+void SceneHelper::EnumerateSceneTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
 {
     if(!forScene) return;
     
@@ -140,7 +140,7 @@ void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::Texture
         DAVA::Texture *texture = material->GetTexture(t);
         if(texture)
         {
-            const DAVA::FilePath & path = texture->relativePathname;
+            const DAVA::FilePath & path = texture->texDescriptor->pathname;
             if(!path.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(path))
             {
                 textures[FILEPATH_MAP_KEY(path)] = texture;

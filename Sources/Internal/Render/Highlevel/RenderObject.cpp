@@ -181,14 +181,6 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != batchArch)
 				{
-					Material *mat = NULL;
-					bool shouldConvertMaterial = batchArch->IsKeyExists("rb.material");
-					if(shouldConvertMaterial)
-					{
-						uint64 materialId = batchArch->GetVariant("rb.material")->AsUInt64();
-						mat = static_cast<Material*>(serializationContext->GetDataBlock(materialId));
-					}
-					
 					RenderBatch *batch = ObjectFactory::Instance()->New<RenderBatch>(batchArch->GetString("rb.classname"));
 					
 					if(NULL != batch)

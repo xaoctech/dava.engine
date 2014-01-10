@@ -47,21 +47,23 @@ namespace DAVA
     
 RenderBatch::RenderBatch()
     :   sortingKey(8)
+    ,   dataSource(0)
+    ,   renderDataObject(0)
+    ,   material(0)
+    ,   startIndex(0)
+    ,   indexCount(0)
+    ,   type(PRIMITIVETYPE_TRIANGLELIST)
+    ,   renderObject(0)
+    ,	visiblityCriteria(RenderObject::VISIBILITY_CRITERIA)
+    ,   aabbox(Vector3(), Vector3())
 {
-    dataSource = 0;
-    renderDataObject = 0;
-    material = 0;
-    startIndex = 0;
-    indexCount = 0;
-    type = PRIMITIVETYPE_TRIANGLELIST;
-	renderObject = 0;
-	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
-	aabbox = AABBox3(Vector3(), Vector3());
+	
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
     occlusionQuery = new OcclusionQuery();
-#endif
     queryRequested = -1;
+    queryRequestFrame = 0;
     lastFraemDrawn = -10;
+#endif
 }
     
 RenderBatch::~RenderBatch()
@@ -198,13 +200,13 @@ void RenderBatch::SetSortingKey(uint32 _key)
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	if(material)
+	NMaterial* curNode = material;
+	while(curNode != NULL)
 	{
-		InsertDataNode(material, dataNodes);
-		if (material->GetParent() != 0)
-			InsertDataNode(material->GetParent(), dataNodes);
+		dataNodes.insert(curNode);
+		curNode = curNode->GetParent();
 	}
-
+	
 	if(dataSource)
 	{
 		InsertDataNode(dataSource, dataNodes);
@@ -215,9 +217,9 @@ void RenderBatch::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
 {
 	dataNodes.insert(node);
 
-	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	for(int32 i = 0; i < node->GetChildrenNodeCount(); ++i)
 	{
-		InsertDataNode(node->GetChild(i), dataNodes);
+		InsertDataNode(node->GetChildNode(i), dataNodes);
 	}
 }
 
@@ -265,8 +267,8 @@ void RenderBatch::Save(KeyedArchive * archive, SerializationContext* serializati
 		NMaterial* material = GetMaterial();
 		if(material)
 		{
-			int64 matKey = (int64)material->GetMaterialKey();
-			archive->SetInt64("rb.nmatname", matKey);
+			uint64 matKey = material->GetMaterialKey();
+			archive->SetUInt64("rb.nmatname", matKey);
 		}
 		
 		//archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
@@ -310,9 +312,17 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		}
 		else
 		{
-			int64 matKey = archive->GetInt64("rb.nmatname");
+			int64 matKey = archive->GetUInt64("rb.nmatname");
 			
-			newMaterial = serializationContext->GetMaterial(matKey);
+			newMaterial = static_cast<NMaterial*>(serializationContext->GetDataBlock(matKey));
+		
+#if defined(__DAVAENGINE_DEBUG__)
+			if(NULL == GetMaterial())
+			{
+				DVASSERT(newMaterial);
+			}
+#endif
+			SafeRetain(newMaterial); //VI: material refCount should be >1 at this point
 		}
 
 		SetPolygonGroup(pg);
@@ -320,6 +330,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 		if(newMaterial)
 		{
 			SetMaterial(newMaterial);
+			DVASSERT(material->GetRetainCount() > 1);
+
 			SafeRelease(newMaterial);
 		}
 	}

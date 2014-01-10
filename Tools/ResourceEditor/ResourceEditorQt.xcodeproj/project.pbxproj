@@ -12,6 +12,8 @@
 		02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
 		02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
+		49DB9A49187D69F000D6E87A /* FogSettingsChangedReceiver.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */; };
+		49DB9A52187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB9A51187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
@@ -21,6 +23,9 @@
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
+		A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */; };
+		A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */; };
+		A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
@@ -618,6 +623,9 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogSettingsChangedReceiver.cpp; sourceTree = "<group>"; };
+		49DB9A48187D69F000D6E87A /* FogSettingsChangedReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FogSettingsChangedReceiver.h; sourceTree = "<group>"; };
+		49DB9A51187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogSettingsChangedReceiver_moc.cpp; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -636,6 +644,11 @@
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
+		A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog.cpp; sourceTree = "<group>"; };
+		A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLODDialog.h; sourceTree = "<group>"; };
+		A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog_moc.cpp; sourceTree = "<group>"; };
+		A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePlaneLODCommand.cpp; sourceTree = "<group>"; };
+		A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePlaneLODCommand.h; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -1687,9 +1700,28 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A6D8279B1877175E0006A5DD /* PlaneLODDialog */ = {
+			isa = PBXGroup;
+			children = (
+				A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */,
+				A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */,
+			);
+			path = PlaneLODDialog;
+			sourceTree = "<group>";
+		};
+		A6D827A6187717A60006A5DD /* PlaneLODDialog */ = {
+			isa = PBXGroup;
+			children = (
+				A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */,
+			);
+			name = PlaneLODDialog;
+			path = _GeneratedQt/PlaneLODDialog;
+			sourceTree = "<group>";
+		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				A6D827A6187717A60006A5DD /* PlaneLODDialog */,
 				E8BAD760185A545000C98C8D /* DockMaterials */,
 				E8BAD5D71859F50200C98C8D /* CubemapEditor */,
 				E8BAD5DE1859F50200C98C8D /* DockConsole */,
@@ -1909,6 +1941,7 @@
 		E8BAD61E1859F50200C98C8D /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				49DB9A51187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp */,
 				E8BAD61F1859F50200C98C8D /* EntityGroup_moc.cpp */,
 				E8BAD6201859F50200C98C8D /* SceneEditor2_moc.cpp */,
 				E8BAD6211859F50200C98C8D /* SceneHelper_moc.cpp */,
@@ -2880,6 +2913,8 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */,
+				A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */,
 				E8C99009184CD0EB00AFBF3F /* AddComponentCommand.cpp */,
 				E8C9900A184CD0EB00AFBF3F /* AddComponentCommand.h */,
 				E8C9900D184CD0EB00AFBF3F /* BeastAction.cpp */,
@@ -2999,6 +3034,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				A6D8279B1877175E0006A5DD /* PlaneLODDialog */,
 				E8BAD759185A471F00C98C8D /* DockMaterials */,
 				E8BAD5CA1859F48600C98C8D /* MaterialEditor */,
 				E8C99075184CD0EB00AFBF3F /* CubemapEditor */,
@@ -3255,6 +3291,8 @@
 				E8C99111184CD0EB00AFBF3F /* SceneTabWidget.cpp */,
 				E8C99112184CD0EB00AFBF3F /* SceneTabWidget.h */,
 				E8C99113184CD0EB00AFBF3F /* SceneTypes.h */,
+				49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */,
+				49DB9A48187D69F000D6E87A /* FogSettingsChangedReceiver.h */,
 				E8C99114184CD0EB00AFBF3F /* System */,
 			);
 			path = Scene;
@@ -3938,6 +3976,7 @@
 				E8C992EC184CD0EC00AFBF3F /* QtUtils.cpp in Build Sources */,
 				E8C99291184CD0EC00AFBF3F /* KeyedArchiveCommand.cpp in Build Sources */,
 				E8C99298184CD0EC00AFBF3F /* ParticleForceRemoveCommand.cpp in Build Sources */,
+				A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */,
 				E8C99285184CD0EC00AFBF3F /* CommandNotify.cpp in Build Sources */,
 				E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */,
 				E8C9931A184CD0EC00AFBF3F /* SettingsManager.cpp in Build Sources */,
@@ -3972,6 +4011,7 @@
 				E8C99313184CD0EC00AFBF3F /* OwnersSignatureSystem.cpp in Build Sources */,
 				E8C9925B184CD0EC00AFBF3F /* btAlignedAllocator.cpp in Build Sources */,
 				E8C99334184CD0EC00AFBF3F /* QtPosSaver.cpp in Build Sources */,
+				49DB9A49187D69F000D6E87A /* FogSettingsChangedReceiver.cpp in Build Sources */,
 				E8C99256184CD0EC00AFBF3F /* btRigidBody.cpp in Build Sources */,
 				E8EA8DBF185C38040064906E /* MaterialTree.cpp in Build Sources */,
 				E8C992A1184CD0EC00AFBF3F /* CameraController.cpp in Build Sources */,
@@ -4028,11 +4068,13 @@
 				E8C99318184CD0EC00AFBF3F /* TilemaskEditorSystem.cpp in Build Sources */,
 				E8C991F8184CD0EC00AFBF3F /* btBoxBoxCollisionAlgorithm.cpp in Build Sources */,
 				E8C99326184CD0EC00AFBF3F /* TextureScrollArea.cpp in Build Sources */,
+				A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */,
 				E8BAD6EB1859F50300C98C8D /* SceneTypes_moc.cpp in Build Sources */,
 				E8C992F0184CD0EC00AFBF3F /* ProjectManager.cpp in Build Sources */,
 				E8C99253184CD0EC00AFBF3F /* btTypedConstraint.cpp in Build Sources */,
 				E8C9933B184CD0EC00AFBF3F /* QtPropertyDataMetaObject.cpp in Build Sources */,
 				E8BAD75F185A480100C98C8D /* SimpleMaterialModel.cpp in Build Sources */,
+				49DB9A52187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp in Build Sources */,
 				E8BAD7491859F5F900C98C8D /* QtPropertyDataProxy.cpp in Build Sources */,
 				E8C9924E184CD0EC00AFBF3F /* btHingeConstraint.cpp in Build Sources */,
 				E8C9920A184CD0EC00AFBF3F /* btSphereTriangleCollisionAlgorithm.cpp in Build Sources */,
@@ -4091,6 +4133,7 @@
 				E8BAD7001859F50300C98C8D /* HoodSystem_moc.cpp in Build Sources */,
 				E8BAD7451859F50300C98C8D /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */,
 				E8C992B7184CD0EC00AFBF3F /* Console.cpp in Build Sources */,
+				A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */,
 				E8BAD6D81859F50300C98C8D /* SceneTreeModel_moc.cpp in Build Sources */,
 				E8BAD7381859F50300C98C8D /* QtPropertyItem_moc.cpp in Build Sources */,
 				E8BAD7071859F50300C98C8D /* VisibilityToolProxy_moc.cpp in Build Sources */,

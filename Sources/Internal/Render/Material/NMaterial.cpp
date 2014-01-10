@@ -1,4 +1,4 @@
-/*==================================================================================
+ /*==================================================================================
  Copyright (c) 2008, binaryzebra
  All rights reserved.
  
@@ -44,6 +44,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/Material/NMaterialTemplate.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA
 {
@@ -73,8 +74,9 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -91,7 +93,17 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	static FastName RUNTIME_ONLY_FLAGS[] =
+	{
+		NMaterial::FLAG_LIGHTMAPONLY,
+		NMaterial::FLAG_TEXTUREONLY,
+		NMaterial::FLAG_SETUPLIGHTMAP
+	};
+	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
+	
+	Texture* NMaterial::stubCubemapTexture = NULL;
+	Texture* NMaterial::stub2dTexture = NULL;
 		
 ////////////////////////////////////////////////////////////////////////////////
 	
@@ -110,7 +122,9 @@ namespace DAVA
 	textures(8),
 	materialDynamicLit(false),
 	materialTemplate(NULL),
-	materialProperties(16)
+	materialProperties(16),
+	instancePassRenderStates(4),
+	materialSortKey(0)
 	{
 		memset(lights, 0, sizeof(lights));
 	}
@@ -125,6 +139,13 @@ namespace DAVA
 		}
 
 		ReleaseInstancePasses();
+		
+		for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+			it != instancePassRenderStates.end();
+			++it)
+		{
+			RenderManager::Instance()->ReleaseRenderStateData(it->second);
+		}
 		
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
 			it != materialProperties.end();
@@ -148,17 +169,18 @@ namespace DAVA
 		SafeRelease(baseTechnique);
 	}
 			
-	void NMaterial::AddChild(NMaterial* material)
+	void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
 		DVASSERT(this != material);
 		
+		material->materialSortKey = (uint16)((pointer_size)this);
 		children.push_back(material);
 		
 		this->Retain();
 		
-		material->OnParentChanged(this);
+		material->OnParentChanged(this, inheritTemplate);
 		
 		this->Release();
 	}
@@ -171,7 +193,7 @@ namespace DAVA
 			this->Retain();
 			
 			children.erase(child);
-			material->OnParentChanged(NULL);
+			material->OnParentChanged(NULL, true);
 			
 			//VI: TODO: review if this call is realy needed at this point
 			//CleanupUnusedTextures();
@@ -212,16 +234,44 @@ namespace DAVA
 	void NMaterial::Save(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
 	{
+		DataNode::Save(archive, serializationContext);
+		
 		archive->SetString("materialName", (materialName.IsValid()) ? materialName.c_str() : "");
 		archive->SetInt32("materialType", (int32)materialType);
-		int64 tmpMaterialKey = (int64)materialKey;
-		archive->SetInt64("materialKey", tmpMaterialKey);
+		archive->SetUInt64("materialKey", materialKey);
 		
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType &&
 		   parent)
 		{
-			tmpMaterialKey = (int64)parent->materialKey;
-			archive->SetInt64("parentMaterialKey", tmpMaterialKey);
+			archive->SetUInt64("parentMaterialKey", parent->materialKey);
+			//Logger::FrameworkDebug("[NMaterial::Save] Parent: %s, Child %s, parent key% %ld",
+			//					   parent->GetName().c_str(),
+			//					   this->GetName().c_str(),
+			//					   parent->materialKey);
+		}
+		
+		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
+		{
+			archive->SetString("materialQuality", currentQuality.c_str());
+		}
+		
+		DVASSERT(materialTemplate);
+		archive->SetString("materialTemplate", (materialTemplate) ? materialTemplate->name.c_str() : "");
+		
+		if(instancePassRenderStates.size() > 0)
+		{
+			KeyedArchive* materialCustomStates = new KeyedArchive();
+			for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+				it != instancePassRenderStates.end();
+				++it)
+			{
+				UniqueHandle currentHandle = it->second;
+				
+				const RenderStateData* stateData = RenderManager::Instance()->GetRenderStateData(currentHandle);
+				materialCustomStates->SetByteArray(it->first.c_str(), (uint8*)stateData, sizeof(RenderStateData));
+			}
+			archive->SetArchive("materialCustomStates", materialCustomStates);
+			SafeRelease(materialCustomStates);
 		}
 		
 		KeyedArchive* materialTextures = new KeyedArchive();
@@ -231,8 +281,17 @@ namespace DAVA
 		{
 			if(it->second->texture)
 			{
-				materialTextures->SetString(it->first.c_str(),
-											it->second->path.GetRelativePathname(serializationContext->GetScenePath()));
+				String texturePath = it->second->path.GetRelativePathname(serializationContext->GetScenePath());
+				
+				if(texturePath.size() > 0)
+				{
+					materialTextures->SetString(it->first.c_str(),
+												texturePath);
+				}
+				else
+				{
+					Logger::FrameworkDebug("[NMaterial::Save] Material '%s' has empty texture '%s'! Skipping...", materialName.c_str(), it->first.c_str());
+				}
 			}
 		}
 		archive->SetArchive("textures", materialTextures);
@@ -264,7 +323,10 @@ namespace DAVA
 			it != materialSetFlags.end();
 			++it)
 		{
-			materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			if(!IsRuntimeFlag(it->first))
+			{
+				materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			}
 		}
 		archive->SetArchive("setFlags", materialSetFlagsArchive);
 		SafeRelease(materialSetFlagsArchive);
@@ -281,11 +343,51 @@ namespace DAVA
 	void NMaterial::Load(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
 	{
+		DataNode::Load(archive, serializationContext);
+		
 		materialName = FastName(archive->GetString("materialName"));
 		materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
-		materialKey = (NMaterial::NMaterialKey)archive->GetInt64("materialKey");
+		materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
+		pointer = materialKey;
 		
 		DataNode::SetName(materialName.c_str());
+		
+		if(archive->IsKeyExists("materialCustomStates"))
+		{
+			RenderStateData stateData;
+			const Map<String, VariantType*>& customRenderState = archive->GetArchive("materialCustomStates")->GetArchieveData();
+			for(Map<String, VariantType*>::const_iterator it = customRenderState.begin();
+				it != customRenderState.end();
+				++it)
+			{
+				DVASSERT(it->second->AsByteArraySize() == sizeof(RenderStateData));
+				const uint8* array = it->second->AsByteArray();
+				memcpy(&stateData, array, sizeof(RenderStateData));
+				
+				UniqueHandle currentHandle = RenderManager::Instance()->AddRenderStateData(&stateData);
+				instancePassRenderStates.insert(FastName(it->first.c_str()), currentHandle);
+			}
+		}
+		
+		if(archive->IsKeyExists("materialQuality"))
+		{
+			currentQuality = FastName(archive->GetString("materialQuality"));
+		}
+		else
+		{
+			currentQuality = serializationContext->GetDefaultMaterialQuality();
+		}
+		
+		String materialTemplateName = archive->GetString("materialTemplate");
+		if(materialTemplateName.size() > 0)
+		{
+			NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
+		}
+		else
+		{
+			//VI: will inherit from parent probably
+			materialTemplate = NULL;
+		}
 		
 		const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
 		for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
@@ -322,26 +424,19 @@ namespace DAVA
 			illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
 			illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
 		}
-		
-		serializationContext->SetMaterial((uint64)materialKey, this);
-				
-		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
-		{
-			NMaterial::NMaterialKey parentKey = (NMaterial::NMaterialKey)archive->GetInt64("parentMaterialKey");
-			NMaterial* parent = serializationContext->GetMaterial((uint64)parentKey);
-			
-			if(parent)
-			{
-				parent->AddChild(this);
-			}
-		}
-		
+						
 		const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
 		for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
 			it != flagsMap.end();
 			++it)
 		{
 			SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
+		}
+		
+		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+		{
+			uint64 parentKey = archive->GetUInt64("parentMaterialKey");
+			serializationContext->AddBinding(parentKey, this);
 		}
 	}
 		
@@ -457,9 +552,22 @@ namespace DAVA
 				
 				clonedPass->dirtyState = true;
 				clonedPass->renderState.stateHandle = currentPass->renderState.stateHandle;
-				RenderManager::Instance()->RetainRenderStateData(currentPass->renderState.stateHandle);
 			}
 		}
+		
+		for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
+			it != instancePassRenderStates.end();
+			++it)
+		{
+			clonedMaterial->instancePassRenderStates.insert(it->first, it->second);
+			RenderManager::Instance()->RetainRenderStateData(it->second);
+		}
+		
+		//DataNode properties
+		clonedMaterial->pointer = pointer;
+		clonedMaterial->scene = scene;
+		clonedMaterial->index = index;
+		clonedMaterial->nodeFlags = nodeFlags;
 
 		return clonedMaterial;
 	}
@@ -527,7 +635,7 @@ namespace DAVA
 			SafeRelease(bucket->texture);
 			
 			bucket->texture = SafeRetain(texture);
-			bucket->path = (bucket->texture) ? bucket->texture->relativePathname : FilePath();
+			bucket->path = (bucket->texture) ? bucket->texture->texDescriptor->pathname : FilePath();
 			
 			SetTexturesDirty();
 		}
@@ -713,13 +821,15 @@ namespace DAVA
 		UpdateMaterialTemplate();
 	}
 
-	void NMaterial::OnParentChanged(NMaterial* newParent)
+	void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	{
 		NMaterial* oldParent = parent;
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
 		
-		if(newParent)
+		bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
+		
+		if(newParent && useParentTemplate)
 		{
 			SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
 		}
@@ -797,12 +907,6 @@ namespace DAVA
 			//VI: TODO: make sure need to release shader
 			//SafeRelease(passInstance->renderState.shader);
 			
-			if(passInstance->dirtyState &&
-			   passInstance->renderState.stateHandle != InvalidUniqueHandle)
-			{
-				RenderManager::Instance()->ReleaseRenderStateData(passInstance->renderState.stateHandle);
-			}
-						
 			if(passInstance->renderState.textureState != InvalidUniqueHandle)
 			{
 				RenderManager::Instance()->ReleaseTextureStateData(passInstance->renderState.textureState);
@@ -843,6 +947,7 @@ namespace DAVA
 		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
+		//materialSortKey = baseTechnique->GetTechniqueId();
 		
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)
@@ -861,11 +966,20 @@ namespace DAVA
 		RenderState* parentRenderState = pass->GetRenderState();
 		
 		RenderPassInstance* passInstance = new RenderPassInstance();
-		passInstance->dirtyState = false;
-		passInstance->renderState.stateHandle = parentRenderState->stateHandle;
+		passInstance->dirtyState = (instancePassRenderStates.count(passName) != 0);
+		
+		if(passInstance->dirtyState)
+		{
+			passInstance->renderState.stateHandle = instancePassRenderStates.at(passName);
+		}
+		else
+		{
+			passInstance->renderState.stateHandle = parentRenderState->stateHandle;
+		}
+		
 		passInstance->renderState.textureState = InvalidUniqueHandle;
 		passInstance->texturesDirty = false;
-		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
+		passInstance->renderState.shader = pass->CompileShader(instanceDefines);
 		passInstance->renderState.scissorRect = parentRenderState->scissorRect;
 		passInstance->renderState.renderer = parentRenderState->renderer;
 		passInstance->renderState.color = parentRenderState->color;
@@ -1069,7 +1183,7 @@ namespace DAVA
 			if(NULL == textureData.textures[texIt->second])
 			{
 				//VI: this case is mostly for ResEditor
-				textureData.textures[texIt->second] = Texture::CreatePink();
+				textureData.textures[texIt->second] = GetStubTexture(texIt->first);
 			}
 		}
 		
@@ -1084,6 +1198,32 @@ namespace DAVA
 		}
 		
 		passInstance->texturesDirty = false;
+	}
+	
+	Texture* NMaterial::GetStubTexture(const FastName& uniformName)
+	{
+		Texture* stubTex = NULL;
+		
+		if(NMaterial::TEXTURE_CUBEMAP == uniformName)
+		{
+			if(NULL == stubCubemapTexture)
+			{
+				stubCubemapTexture = Texture::CreatePink(Texture::TEXTURE_CUBE);
+			}
+			
+			stubTex = stubCubemapTexture;
+		}
+		else
+		{
+			if(NULL == stub2dTexture)
+			{
+				stub2dTexture = Texture::CreatePink(Texture::TEXTURE_2D);
+			}
+			
+			stubTex = stub2dTexture;
+		}
+		
+		return stubTex;
 	}
 	
 	void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
@@ -1215,6 +1355,8 @@ namespace DAVA
 		RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
 		RenderManager::Instance()->AttachRenderData();
 		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
+		
 		// TODO: rethink this code
 		if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 		{
@@ -1233,6 +1375,8 @@ namespace DAVA
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(renderData);
 		RenderManager::Instance()->AttachRenderData();
+		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
 		
 		// TODO: rethink this code
 		if(renderData->GetIndexBufferID() != 0)
@@ -1350,6 +1494,8 @@ namespace DAVA
 
 		if(pass)
 		{
+			DVASSERT(!pass->dirtyState || (pass->renderState.stateHandle == instancePassRenderStates.at(passName)));
+			
 			if(pass->dirtyState)
 			{
 				RenderManager::Instance()->ReleaseRenderStateData(pass->renderState.stateHandle);
@@ -1357,6 +1503,8 @@ namespace DAVA
 			
 			pass->renderState.stateHandle = RenderManager::Instance()->AddRenderStateData(newState);
 			pass->dirtyState = true;
+			
+			instancePassRenderStates.insert(passName, pass->renderState.stateHandle);
 		}
 	}
 	
@@ -1386,7 +1534,7 @@ namespace DAVA
 				RenderPassInstance* pass = it->second;
 				RenderTechniquePass* techniquePass = baseTechnique->GetPassByName(it->first);
 				
-				pass->renderState.shader = techniquePass->RetainShader(effectiveFlags);
+				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
 		}
@@ -1443,6 +1591,20 @@ namespace DAVA
 		return mat;
 	}
 
+	bool NMaterial::IsRuntimeFlag(const FastName& flagName)
+	{
+		bool result = false;
+		for(size_t i = 0; i < COUNT_OF(RUNTIME_ONLY_FLAGS); ++i)
+		{
+			if(RUNTIME_ONLY_FLAGS[i] == flagName)
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -1614,7 +1776,19 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						if(!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+						Shader::eUniform uniformId = uniform->id;
+						if( //!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+							// we can't use IsAutobindUniform, because we need color to change
+							// so this is copy from IsAutobindUniform with color excluded -->
+							!(uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+							uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+							uniformId == Shader::UNIFORM_GLOBAL_TIME ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
+							uniformId == Shader::UNIFORM_MODEL_SCALE)
+							// <--
+							&&
 							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
 						{
 							FastName propName = uniform->name;
@@ -1850,7 +2024,9 @@ namespace DAVA
 				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
 				propName == NMaterial::PARAM_FOG_COLOR ||
-				propName == NMaterial::PARAM_FLAT_COLOR);
+				propName == NMaterial::PARAM_FLAT_COLOR ||
+                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
+                );
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
@@ -2037,7 +2213,7 @@ namespace DAVA
 		FastName name = GetName(index);
 		if(name.IsValid())
 		{
-			ret.SetBool(state->GetFlagValue(name));
+			ret.SetBool((bool) state->GetFlagValue(name));
 		}
 
 		return ret;

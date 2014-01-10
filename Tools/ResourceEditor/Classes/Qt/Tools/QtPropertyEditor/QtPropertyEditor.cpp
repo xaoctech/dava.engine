@@ -40,6 +40,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 , updateTimeout(0)
 , doUpdateOnPaintEvent(false)
+, lastHoverData(NULL)
 {
 	curModel = new QtPropertyModel(viewport());
 	setModel(curModel);
@@ -59,12 +60,13 @@ QtPropertyEditor::~QtPropertyEditor()
 
 QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, const QModelIndex &parent)
 {
+	lastHoverData = NULL;
 	return curModel->AppendProperty(name, data, parent);
 }
 
 QModelIndex QtPropertyEditor::InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent)
 {
-
+	lastHoverData = NULL;
 	return curModel->InsertProperty(name, data, row, parent);
 }
 
@@ -94,22 +96,21 @@ QtPropertyData * QtPropertyEditor::GetRootProperty() const
 	return curModel->rootItem();
 }
 
-
 void QtPropertyEditor::RemoveProperty(const QModelIndex &index)
 {
-	lastHoverIndex = QModelIndex();
+	lastHoverData = NULL;
 	curModel->RemoveProperty(index);
 }
 
 void QtPropertyEditor::RemoveProperty(QtPropertyData *data)
 {
-	lastHoverIndex = QModelIndex();
+	lastHoverData = NULL;
 	curModel->RemoveProperty(curModel->indexFromItem(data));
 }
 
 void QtPropertyEditor::RemovePropertyAll()
 {
-	lastHoverIndex = QModelIndex();
+	lastHoverData = NULL;
 	curModel->RemovePropertyAll();
 }
 
@@ -163,6 +164,19 @@ void QtPropertyEditor::OnUpdateTimeout()
 	SetUpdateTimeout(updateTimeout);
 }
 
+void QtPropertyEditor::expand(const QModelIndex & index)
+{
+	// expand only enabled items
+	QtPropertyData *data = GetProperty(index);
+	if(NULL != data)
+	{
+		if(data->IsEnabled())
+		{
+			QTreeView::expand(index);
+		}
+	}
+}
+
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
 {
 	QColor gridColor = option.palette.color(QPalette::Normal, QPalette::Window);
@@ -204,6 +218,12 @@ void QtPropertyEditor::mouseMoveEvent(QMouseEvent * event)
 	QTreeView::mouseMoveEvent(event);
 }
 
+void QtPropertyEditor::mousePressEvent(QMouseEvent * event)
+{
+	OnHover(indexAt(event->pos()));
+	QTreeView::mousePressEvent(event);
+}
+
 void QtPropertyEditor::mouseReleaseEvent(QMouseEvent * event)
 {
 	OnHover(indexAt(event->pos()));
@@ -218,18 +238,20 @@ void QtPropertyEditor::leaveEvent(QEvent * event)
 
 void QtPropertyEditor::OnHover(const QModelIndex &index)
 {
-	if(index != lastHoverIndex)
+	QtPropertyData *data = GetProperty(index);
+
+	if(data != lastHoverData)
 	{
-		QtPropertyData *data = GetProperty(index);
-		QtPropertyData *lastHoverData = GetProperty(lastHoverIndex);
+		QtPropertyData *prevData = lastHoverData;
+		lastHoverData = data;
 
 		QModelIndex dataIndex = index.sibling(index.row(), 1);
 
-		if(NULL != lastHoverData)
+		if(NULL != prevData)
 		{
-			for(int i = 0; i < lastHoverData->GetButtonsCount(); ++i)
+			for(int i = 0; i < prevData->GetButtonsCount(); ++i)
 			{
-				QtPropertyToolButton *btn = lastHoverData->GetButton(i);
+				QtPropertyToolButton *btn = prevData->GetButton(i);
 				btn->activeIndex = QModelIndex();
 				btn->hide();
 			}
@@ -247,8 +269,6 @@ void QtPropertyEditor::OnHover(const QModelIndex &index)
 			update(dataIndex);
 		}
 	}
-
-	lastHoverIndex = index;
 }
 
 void QtPropertyEditor::ApplyStyle(QtPropertyData *data, int style)
@@ -312,5 +332,6 @@ void QtPropertyEditor::OnItemClicked(const QModelIndex &index)
 
 void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
+	lastHoverData = NULL;
 	emit PropertyEdited(index);
 }
