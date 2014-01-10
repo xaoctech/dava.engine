@@ -396,7 +396,7 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 void StructureSystem::EmitChanged()
 {
 	// mark that structure was changed. real signal will be emited on next update() call
-	// this should done be to increase perfomance - on Change emit on multiple scene structure operations
+	// this should done be to increase performance - on Change emit on multiple scene structure operations
 	structureChanged = true;
 }
 
