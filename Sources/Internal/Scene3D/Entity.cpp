@@ -1474,8 +1474,11 @@ namespace DAVA
 			{
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
-				if (renderObject->GetFlags() & RenderObject::NEED_UPDATE)
+				if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
+				{
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else
@@ -1507,9 +1510,9 @@ namespace DAVA
 				
 				DVASSERT(renderObject);
 				
-				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
+				if ((renderObject->GetFlags()&RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
 				{
-					DVASSERT(renderObject->GetRenderSystem());
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
 				}
 			}
@@ -1539,8 +1542,11 @@ namespace DAVA
 			{
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_SWITCH);
-				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
-					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);				
+				if ((renderObject->GetFlags()&RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
+				{
+					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else
