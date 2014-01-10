@@ -52,8 +52,8 @@ public:
 	FMODSoundSystem(int32 maxChannels = 64);
 	virtual ~FMODSoundSystem();
 
-    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName);
-    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
+    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const String & groupName);
+    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const String & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();
@@ -64,8 +64,8 @@ public:
 	virtual void SetListenerPosition(const Vector3 & position);
 	virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left);
 
-    virtual void SetGroupVolume(const FastName & groupName, float32 volume);
-    virtual float32 GetGroupVolume(const FastName & groupName);
+    virtual void SetGroupVolume(const String & groupName, float32 volume);
+    virtual float32 GetGroupVolume(const String & groupName);
 
     //FMOD Only
     static FMODSoundSystem * GetFMODSoundSystem();
@@ -93,7 +93,7 @@ protected:
     void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
     void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
 
-    void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
+    void AddSoundEventToGroup(const String & groupName, SoundEvent * event);
     void RemoveSoundEventFromGroups(SoundEvent * event);
     
 	FMOD::System * fmodSystem;
@@ -101,8 +101,8 @@ protected:
 
     Vector<SoundEvent *> soundsToReleaseOnUpdate;
     MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback> callbackOnUpdate;
-    Map<SoundEvent *, FastName> soundGroups;
-    FastNameMap<float32> groupsVolumes;
+    Map<SoundEvent *, String> soundGroups;
+    Map<String, float32> groupsVolumes;
 
     float32 maxDistanceSq;
     Vector3 listenerPosition;
