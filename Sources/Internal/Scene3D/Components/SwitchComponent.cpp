@@ -66,12 +66,12 @@ void SwitchComponent::Serialize(KeyedArchive *archive, SerializationContext *ser
 
 void SwitchComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
+	Component::Deserialize(archive, serializationContext);
+	
 	if(NULL != archive)
 	{
 		SetSwitchIndex(archive->GetInt32("sc.switchindex"));
 	}
-
-	Component::Deserialize(archive, serializationContext);
 }
 
 void SwitchComponent::SetSwitchIndex(const int32 & _switchIndex)

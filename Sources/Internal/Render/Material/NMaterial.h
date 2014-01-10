@@ -56,7 +56,6 @@ class RenderDataObject;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
-class RenderLayerManager;
 class NMaterial;
 struct NMaterialTemplate;
 	

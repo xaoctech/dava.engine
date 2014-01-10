@@ -569,6 +569,11 @@ public:
 		return default3DRenderStateHandle;
 	}
 	
+	inline UniqueHandle GetDefaultHardwareStateHandle() const
+	{
+		return defaultHardwareState;
+	}
+	
 	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
 	{
 		const RenderStateData* parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);

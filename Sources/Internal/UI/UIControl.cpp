@@ -1618,6 +1618,7 @@ namespace DAVA
 	
 	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
 	{
+        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 
@@ -1646,6 +1647,7 @@ namespace DAVA
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
+        RenderManager::Instance()->SetDefault2DState();
 	}
 
 	void UIControl::DrawPivotPoint(const Rect &drawRect)
@@ -1663,6 +1665,7 @@ namespace DAVA
 		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
 		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
+        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
@@ -1685,6 +1688,7 @@ namespace DAVA
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
+        RenderManager::Instance()->SetDefault2DState();
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)

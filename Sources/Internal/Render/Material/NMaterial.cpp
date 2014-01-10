@@ -955,6 +955,8 @@ namespace DAVA
 			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
 			UpdateRenderPass(baseTechnique->GetPassName(i), effectiveFlags, pass);
 		}
+		
+		SetTexturesDirty();
         
         SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 	}
