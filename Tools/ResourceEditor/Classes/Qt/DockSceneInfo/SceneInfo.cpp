@@ -69,8 +69,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-    
-	connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
 
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
@@ -593,7 +591,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
     {
         landscape = FindLandscape(activeScene);
 
-		isUpToDate = !isVisible();
+		isUpToDate = isVisible();
 		if(isUpToDate)
 		{
 			RefreshAllData(scene);
@@ -688,22 +686,4 @@ void SceneInfo::SpritesReloaded()
     particleTexturesSize = CalculateTextureSize(particleTextures);
     
     RefreshSceneGeneralInfo();
-}
-
-void SceneInfo::SceneCommandExecuted( SceneEditor2 *scene, const Command2* command, bool redo )
-{
-	int commandID = command->GetId();
-	if(commandID == CMDID_BATCH)
-	{
-		CommandBatch *batch = (CommandBatch *)command;
-		Command2 *firstCommand = batch->GetCommand(0);
-		if(firstCommand && (firstCommand->GetId() == CMDID_ENTITY_ADD || firstCommand->GetId() == CMDID_ENTITY_REMOVE))
-		{
-			RefreshAllData(scene);
-		}
-	}
-	else if(commandID == CMDID_ENTITY_ADD || commandID == CMDID_ENTITY_REMOVE)
-	{
-		RefreshAllData(scene);
-	}
 }
