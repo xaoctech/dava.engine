@@ -69,7 +69,7 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-    
+
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
 	
@@ -591,7 +591,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
     {
         landscape = FindLandscape(activeScene);
 
-		isUpToDate = !isVisible();
+		isUpToDate = isVisible();
 		if(isUpToDate)
 		{
 			RefreshAllData(scene);
