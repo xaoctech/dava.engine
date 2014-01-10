@@ -76,9 +76,12 @@ protected:
 
 private:
 	QVBoxLayout* mainLayout;
+	QLineEdit* emitterNameLineEdit;
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
+
+	EventFilterDoubleSpinBox *positionXSpinBox, *positionYSpinBox, *positionZSpinBox;
 
 	QCheckBox* shortEffectCheckBox;
 

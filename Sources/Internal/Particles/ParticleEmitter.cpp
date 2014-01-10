@@ -86,10 +86,9 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 void ParticleEmitter::CleanupLayers()
 {
-    while(!layers.empty())
-    {
-        RemoveLayer(layers[0]);
-    }
+    for (int32 i=0, sz=layers.size(); i<sz; ++i)
+		SafeRelease(layers[i]);
+	layers.clear();
 }
 
 ParticleEmitter * ParticleEmitter::Clone()
@@ -135,12 +134,10 @@ ParticleEmitter * ParticleEmitter::Clone()
 	clonedEmitter->emitterType = this->emitterType;	
 	clonedEmitter->shortEffect = shortEffect;
 
-	// Now can add Layers. Need to update their parents.
-	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end(); ++iter)
-	{
-		ParticleLayer* clonedLayer = (*iter)->Clone();
-		clonedEmitter->AddLayer(clonedLayer);
-		SafeRelease(clonedLayer);
+	clonedEmitter->layers.resize(layers.size());
+	for (int32 i=0, sz=layers.size(); i<sz; ++i)
+	{		
+		clonedEmitter->layers[i] = layers[i]->Clone();		
 	}	
 
 	clonedEmitter->emitterFileName = emitterFileName;

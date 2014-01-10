@@ -44,6 +44,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
 
+	emitterNameLineEdit = new QLineEdit();
+	mainLayout->addWidget(emitterNameLineEdit);
+	connect(emitterNameLineEdit, SIGNAL(editingFinished()),this, SLOT(OnValueChanged()));
+
 	emitterYamlPath = new QLineEdit(this);
 	emitterYamlPath->setReadOnly(true);
 	mainLayout->addWidget(emitterYamlPath);
@@ -64,6 +68,43 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+
+
+
+	QHBoxLayout *positionLayout = new QHBoxLayout();
+	
+	positionLayout->addWidget(new QLabel("Position"));
+	positionLayout->addStretch();
+	positionLayout->addWidget(new QLabel("X:"));
+	positionXSpinBox = new EventFilterDoubleSpinBox();
+	positionXSpinBox->setMinimum(-100);
+	positionXSpinBox->setMaximum(100);	
+	positionXSpinBox->setSingleStep(0.1);
+	positionXSpinBox->setDecimals(3);
+	positionLayout->addWidget(positionXSpinBox);
+	connect(positionXSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+
+	positionLayout->addStretch();
+	positionLayout->addWidget(new QLabel("Y:"));
+	positionYSpinBox = new EventFilterDoubleSpinBox();
+	positionYSpinBox->setMinimum(-100);
+	positionYSpinBox->setMaximum(100);	
+	positionYSpinBox->setSingleStep(0.1);
+	positionYSpinBox->setDecimals(3);
+	positionLayout->addWidget(positionYSpinBox);
+	connect(positionYSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+
+	positionLayout->addStretch();
+	positionLayout->addWidget(new QLabel("Z:"));
+	positionZSpinBox = new EventFilterDoubleSpinBox();
+	positionZSpinBox->setMinimum(-100);
+	positionZSpinBox->setMaximum(100);	
+	positionZSpinBox->setSingleStep(0.1);
+	positionZSpinBox->setDecimals(3);
+	positionLayout->addWidget(positionZSpinBox);
+	connect(positionZSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+			
+	mainLayout->addLayout(positionLayout);	
 
 	emitterEmissionRange = new TimeLineWidget(this);
 	InitWidget(emitterEmissionRange);
@@ -144,9 +185,15 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	bool initEmittersByDef = FLOAT_EQUAL(life,currentLifeTime) ? false : true;	
 
 	bool isShortEffect = shortEffectCheckBox->isChecked();
+	Vector3 position;
+	position.x = positionXSpinBox->value();
+	position.y = positionYSpinBox->value();
+	position.z = positionZSpinBox->value();
 
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
-	commandUpdateEmitter->Init(type,
+	commandUpdateEmitter->Init(emitterNameLineEdit->text().toStdString(), 
+							   position,
+							   type,
 							   emissionRange.GetPropLine(),
 							   emissionVector.GetPropLine(),
 							   radius.GetPropLine(),
@@ -170,6 +217,7 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 
 	blockSignals = true;
 
+	emitterNameLineEdit->setText(QString::fromStdString(emitter->name));
 	shortEffectCheckBox->setChecked(emitter->shortEffect);
 
 	float32 emitterLifeTime = emitter->lifeTime;
@@ -182,6 +230,10 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 	float maxTimeLimit	= emitterLifeTime;
 	emitterYamlPath->setText(QString::fromStdString(emitter->configPath.GetAbsolutePathname()));
 	emitterType->setCurrentIndex(emitter->emitterType);
+
+	positionXSpinBox->setValue((double)emitter->position.x);
+	positionYSpinBox->setValue((double)emitter->position.y);
+	positionZSpinBox->setValue((double)emitter->position.z);
 
 	if(!needUpdateTimeLimits)
 	{

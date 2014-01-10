@@ -72,10 +72,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	
 	layerNameLineEdit = new QLineEdit();
 	mainBox->addWidget(layerNameLineEdit);
-	connect(layerNameLineEdit,
-			SIGNAL(editingFinished()),
-			this,
-			SLOT(OnValueChanged()));
+	connect(layerNameLineEdit, SIGNAL(editingFinished()),this, SLOT(OnValueChanged()));
 
 	QVBoxLayout* lodsLayout = new QVBoxLayout();
 	QLabel *lodsLabel = new QLabel("Active in LODs", this);
@@ -184,24 +181,28 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	pivotPointXSpinBoxLabel = new QLabel("X:", this);
 	pivotPointInnerLayout->addWidget(pivotPointXSpinBoxLabel);
-	pivotPointXSpinBox = new QSpinBox(this);
-	pivotPointXSpinBox->setMinimum(-9999);
-	pivotPointXSpinBox->setMaximum(9999);
+	pivotPointXSpinBox = new EventFilterDoubleSpinBox(this);
+	pivotPointXSpinBox->setMinimum(-99);
+	pivotPointXSpinBox->setMaximum(99);
+	pivotPointXSpinBox->setSingleStep(0.1);
+	pivotPointXSpinBox->setDecimals(3);
 	pivotPointInnerLayout->addWidget(pivotPointXSpinBox);
 
 	pivotPointYSpinBoxLabel = new QLabel("Y:", this);
 	pivotPointInnerLayout->addWidget(pivotPointYSpinBoxLabel);
-	pivotPointYSpinBox = new QSpinBox(this);
-	pivotPointYSpinBox->setMinimum(-9999);
-	pivotPointYSpinBox->setMaximum(9999);
+	pivotPointYSpinBox = new EventFilterDoubleSpinBox(this);
+	pivotPointYSpinBox->setMinimum(-99);
+	pivotPointYSpinBox->setMaximum(99);
+	pivotPointYSpinBox->setSingleStep(0.1);
+	pivotPointYSpinBox->setDecimals(3);
 	pivotPointInnerLayout->addWidget(pivotPointYSpinBox);
 	
 	pivotPointResetButton = new QPushButton("Reset", this);
 	pivotPointInnerLayout->addWidget(pivotPointResetButton);
 	connect(pivotPointResetButton, SIGNAL(clicked(bool)), this, SLOT(OnPivotPointReset()));
 
-	connect(pivotPointXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
-	connect(pivotPointYSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+	connect(pivotPointXSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	connect(pivotPointYSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
 
 	pivotPointLayout->addLayout(pivotPointInnerLayout);
 	mainBox->addLayout(pivotPointLayout);
@@ -773,8 +774,8 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	loopVariationSpinLabel->setVisible(isLoopedChecked);
 
 	const Vector2& layerPivotPoint = layer->layerPivotPoint;
-	pivotPointXSpinBox->setValue((int)layerPivotPoint.x);
-	pivotPointYSpinBox->setValue((int)layerPivotPoint.y);
+	pivotPointXSpinBox->setValue((double)layerPivotPoint.x);
+	pivotPointYSpinBox->setValue((double)layerPivotPoint.y);
 
 	blockSignals = false;
 }

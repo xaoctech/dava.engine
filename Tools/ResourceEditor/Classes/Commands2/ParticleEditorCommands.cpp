@@ -69,7 +69,9 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emitter = emitter;
 }
 
-void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
+	void CommandUpdateEmitter::Init(const String& name,
+								const Vector3& position,
+								ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,
 								RefPtr<PropertyLine<float32> > radius,
@@ -78,6 +80,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								float32 life,
 								bool isShortEffect)
 {
+	this->name = name;
+	this->position = position;
 	this->emitterType = emitterType;
 	this->emissionRange = emissionRange;
 	this->emissionVector = emissionVector;
@@ -91,7 +95,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 void CommandUpdateEmitter::Redo()
 {
 	DVASSERT(emitter);
-
+	emitter->name = name;
+	emitter->position = position;
 	emitter->emitterType = emitterType;
 	PropertyLineHelper::SetValueLine(emitter->emissionRange, emissionRange);
 	PropertyLineHelper::SetValueLine(emitter->emissionVector, emissionVector);
