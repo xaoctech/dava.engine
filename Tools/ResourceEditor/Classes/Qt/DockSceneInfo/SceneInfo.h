@@ -39,6 +39,7 @@
 
 class SceneEditor2;
 class EntityGroup;
+class Command2;
 
 class SceneInfo : public QtPropertyEditor
 {
@@ -89,7 +90,8 @@ protected slots:
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-    
+	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+
 protected:
     
     virtual void showEvent ( QShowEvent * event );
