@@ -629,7 +629,7 @@ void QtMainWindow::SetupActions()
 #if defined(__DAVAENGINE_BEAST__)
 	QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
 #else
-	ui->menuScene->removeAction(ui->menuBeast->menuAction());
+	//ui->menuScene->removeAction(ui->menuBeast->menuAction());
 #endif //#if defined(__DAVAENGINE_BEAST__)
 
     

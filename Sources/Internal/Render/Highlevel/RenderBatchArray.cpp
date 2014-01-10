@@ -165,12 +165,12 @@ void RenderLayerBatchArray::Sort(Camera * camera)
             {
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
-                Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+                Vector3 position = renderObject->GetWorldTransformPtr()->GetTranslationVector();
                 float32 distance = (position - cameraPosition).Length();
                 batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
-            std::sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
+            std::stable_sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
             
             flags |= SORT_REQUIRED;
         }else if (flags & SORT_BY_DISTANCE_FRONT_TO_BACK)
