@@ -104,11 +104,12 @@ public:
     void ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog);
     
     /*
-     \brief Function to validate Material errors
-     \param[in] material material for validation
+     \brief Function to validate Materials errors
+     \param[in] scene that has materials for validation
      \param[out] errorsLog set for validation errors
 	 */
-    void ValidateMaterial(NMaterial *material, Set<String> &errorsLog);
+	void ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLog);
+
 
     /*
      \brief Function sets 3d folder path for checking texture pathnames

@@ -123,6 +123,8 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
     Set<String>::const_iterator endIt = errors.end();
     for(Set<String>::const_iterator it = errors.begin(); it != endIt; ++it)
     {
+		Logger::Error((*it).c_str());
+
         errorMessage += *it + String("\n");
     }
     

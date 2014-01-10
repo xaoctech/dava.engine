@@ -114,55 +114,7 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 	return outputName;
 }
 
-String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, FilePath fileToConvert, eGPUFamily gpuFamily)
-{
-	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
-	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
 
-	if(command != "" && format != "")
-	{
-		FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
-
-		// assemble command
-		command += Format(" -i \"%s\"", fileToConvert.GetAbsolutePathname().c_str());
-
-		command += " -pvrtcbest";
-
-		if(descriptor.IsCubeMap())
-		{
-			command += " -s";
-		}
-
-		// output format
-		command += Format(" -f%s", format.c_str());
-
-		// pvr should be always flipped-y
-		command += " -yflip0";
-
-		// mipmaps
-		if(descriptor.settings.generateMipMaps)
-		{
-			command += " -m";
-		}
-
-		// base mipmap level (base resize)
-		if(0 != descriptor.compression[gpuFamily].compressToWidth && descriptor.compression[gpuFamily].compressToHeight != 0)
-		{
-			command += Format(" -x %d -y %d", descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
-		}
-
-		// output file
-		command += Format(" -o \"%s\"", outputFile.GetAbsolutePathname().c_str());
-	}
-    else
-    {
-        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file with descriptor (%s)", descriptor.pathname.GetAbsolutePathname().c_str());
-        command = "";
-    }
-
-	return command;
-}
-	
 void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 										FilePath fileToConvert,
 										eGPUFamily gpuFamily,
@@ -173,7 +125,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 		
 	// assemble command
 	args.push_back("-i");
-	args.push_back(fileToConvert.GetAbsolutePathname());
+	args.push_back(String("\"") + fileToConvert.GetAbsolutePathname() + String("\""));
 
 	args.push_back("-pvrtcbest");
 
@@ -205,7 +157,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 		
 	// output file
 	args.push_back("-o");
-	args.push_back(outputFile.GetAbsolutePathname());
+	args.push_back(String("\"") + outputFile.GetAbsolutePathname() + String("\""));
 }
 
 FilePath PVRConverter::GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
