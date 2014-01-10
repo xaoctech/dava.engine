@@ -1206,10 +1206,10 @@ namespace DAVA
 						Component *comp = Component::CreateByType(compType);
 						if(NULL != comp)
 						{
-							comp->Deserialize(compArch, serializationContext);
 							if(compType == Component::TRANSFORM_COMPONENT)
 								RemoveComponent(compType);
 							AddComponent(comp);
+							comp->Deserialize(compArch, serializationContext);
 						}
 					}
 				}
@@ -1243,16 +1243,14 @@ namespace DAVA
 					Component* comp = ObjectFactory::Instance()->New<Component>(componentType);
 					if(NULL != comp)
 					{
-						comp->Deserialize(compArch, serializationContext);
-						
 						if(comp->GetType() == Component::TRANSFORM_COMPONENT)
 						{
 							RemoveComponent(comp->GetType());
 						}
 						
 						AddComponent(comp);
+						comp->Deserialize(compArch, serializationContext);
 					}
-					
 				}
 			}
 		}
