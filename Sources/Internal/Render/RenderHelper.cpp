@@ -74,10 +74,10 @@ namespace DAVA
 	};
 	*/
 
-	#define isoX .525731112119133606 
-	#define isoZ .850650808352039932
+	#define isoX 0.525731f 
+	#define isoZ 0.850650f
 
-	static Vector3 DodecVertexes[12] = {
+	static Vector3 gDodecVertexes[12] = {
 		Vector3(-isoX, 0.0, isoZ),
 		Vector3(isoX, 0.0, isoZ),
 		Vector3(-isoX, 0.0, -isoZ),
@@ -92,7 +92,7 @@ namespace DAVA
 		Vector3(-isoZ, -isoX, 0.0)
 	};
 
-	static DAVA::uint16 DodecIndexes[60] = {
+	static DAVA::uint16 gDodecIndexes[60] = {
 		0, 4, 1,
 		0, 9, 4,
 		9, 5, 4,
@@ -115,7 +115,7 @@ namespace DAVA
 		7, 2, 11
 	};
 
-	static RenderDataObject *DodecObject;
+	static RenderDataObject *gDodecObject;
 	
 	const float32 SEGMENT_LENGTH = 15.0f;
 	
@@ -124,14 +124,14 @@ RenderHelper::RenderHelper()
     renderDataObject = new RenderDataObject();
     vertexStream = renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
 
-	DodecObject = new RenderDataObject();
-	DodecObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, DodecVertexes);
-	DodecObject->SetIndices(EIF_16, (DAVA::uint8 *) DodecIndexes, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]));
+	gDodecObject = new RenderDataObject();
+	gDodecObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, gDodecVertexes);
+	gDodecObject->SetIndices(EIF_16, (DAVA::uint8 *) gDodecIndexes, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]));
 }
 RenderHelper::~RenderHelper()
 {
     SafeRelease(renderDataObject);
-	SafeRelease(DodecObject);
+	SafeRelease(gDodecObject);
 }
     
 void RenderHelper::FillRect(const Rect & rect)
@@ -1092,16 +1092,16 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetRenderData(DodecObject);
+		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
 
-		if(DodecObject->GetIndexBufferID() != 0)
+		if(gDodecObject->GetIndexBufferID() != 0)
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, 0);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, 0);
 		}
 		else
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, DodecIndexes);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
@@ -1117,16 +1117,16 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-		RenderManager::Instance()->SetRenderData(DodecObject);
+		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
 
-		if(DodecObject->GetIndexBufferID() != 0)
+		if(gDodecObject->GetIndexBufferID() != 0)
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, 0);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, 0);
 		}
 		else
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, DodecIndexes);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);

@@ -7,7 +7,7 @@
 class SceneEditor2;
 class Command2;
 
-class FogSettingsChangedReceiver: public QObject
+class FogSettingsChangedReceiver: public QObject, public DAVA::Singleton<FogSettingsChangedReceiver>
 {
 	Q_OBJECT
 

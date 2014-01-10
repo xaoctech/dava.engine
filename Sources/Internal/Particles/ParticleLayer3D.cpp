@@ -99,6 +99,25 @@ void ParticleLayer3D::Draw(Camera * camera)
 	//DrawLayer(camera);	
 }
 
+void ParticleLayer3D::DeleteAllParticles()
+{
+	ParticleLayer::DeleteAllParticles();
+	verts.clear();
+	textures.clear();
+	colors.clear();
+
+	if (enableFrameBlend)
+	{
+		textures2.clear();
+		times.clear();
+	}		
+	Vector3 emmiterPos;
+	if (emitter->GetWorldTransformPtr())	
+		emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();			
+	renderBatch->SetTotalCount(0);	
+	renderBatch->SetLayerBoundingBox(AABBox3(emmiterPos, emmiterPos));
+}
+
 void ParticleLayer3D::PrepareRenderData(Camera* camera)
 {
 	AABBox3 bbox;

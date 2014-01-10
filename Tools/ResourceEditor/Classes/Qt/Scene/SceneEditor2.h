@@ -187,8 +187,6 @@ protected:
 	bool wasChanged; //deprecated
 
 private:
-	FogSettingsChangedReceiver* fogSettingsChangedReceiver;
-
 	friend struct EditorCommandNotify;
 
 	struct EditorCommandNotify : public CommandNotify
