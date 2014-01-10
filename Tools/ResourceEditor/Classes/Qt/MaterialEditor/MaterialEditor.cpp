@@ -26,6 +26,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include <QDir>
+#include <QDirIterator>
+
 #include "MaterialEditor.h"
 #include "ui_materialeditor.h"
 
@@ -33,11 +36,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Main/QtUtils.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
+#include "Tools/QtWaitDialog/QtWaitDialog.h"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
 , curMaterial(NULL)
+, templatesScaned(false)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -49,9 +54,11 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 
 	// ui signals
 	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
+	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
+	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
 
 	ui->materialTree->setDragEnabled(true);
 	ui->materialTree->setAcceptDrops(true);
@@ -84,13 +91,45 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 {
 	curMaterial = material;
 
-	ui->materialProperty->RemovePropertyAll();
-	ui->materialTexture->RemovePropertyAll();
+	// Don't remove properties immediately. Just extract them and remove later
+	// this should be done, because we want to remove all properties when propertyEdited signal emited
+	{
+		QtPropertyData *propRoot = ui->materialProperty->GetRootProperty();
+		while(propRoot->ChildCount() > 0)
+		{
+			QtPropertyData *child = propRoot->ChildGet(0);
+			propRoot->ChildExtract(child);
+
+			child->deleteLater();
+		}
+
+		propRoot = ui->materialTexture->GetRootProperty();
+		while(propRoot->ChildCount() > 0)
+		{
+			QtPropertyData *child = propRoot->ChildGet(0);
+			propRoot->ChildExtract(child);
+
+			child->deleteLater();
+		}
+	}
 
 	if(NULL != material)
 	{
 		FillMaterialProperties(material);
 		FillMaterialTextures(material);
+
+		// set current template
+		DAVA::FilePath curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
+		int curIndex = templates.indexOf(curMaterialTemplate);
+
+		if(-1 != curIndex)
+		{
+			ui->templateBox->setCurrentIndex(curIndex);
+		}
+		else
+		{
+			ui->templateBox->setCurrentIndex(0);
+		}
 	}
 }
 
@@ -104,6 +143,7 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
+	ui->materialTree->SetScene(NULL);
 	SetCurMaterial(NULL);
 }
 
@@ -119,6 +159,11 @@ void MaterialEditor::materialClicked(const QModelIndex &index)
 void MaterialEditor::showEvent(QShowEvent * event)
 {
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
+
+	if(!templatesScaned)
+	{
+		ScanTemplates();
+	}
 }
 
 void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
@@ -177,7 +222,12 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 				// not self property (is set in parent or shader)
 				else
 				{
+					// disable property and it childs
 					dynamicMember->SetEnabled(false);
+					for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					{
+						dynamicMember->ChildGet(m)->SetEnabled(false);
+					}
 
 					QtPropertyToolButton* btn = dynamicMember->AddButton();
 					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
@@ -218,6 +268,46 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 	}
 }
 
+void MaterialEditor::ScanTemplates()
+{
+	QString materialsPath = DAVA::FilePath("~res:/Materials/Legacy/").GetAbsolutePathname().c_str();
+
+	QtWaitDialog waitDlg;
+	waitDlg.Show("Scanning material templates", "", true, false);
+
+	templates.clear();
+	ui->templateBox->clear();
+
+	// add unknown template
+	templates.append("");
+	ui->templateBox->addItem("Unknown", 0);
+
+	// scan for known templates
+	int i = 1;
+	QDir materialDir(materialsPath);
+	materialDir.setNameFilters(QStringList("*.material"));
+
+	QDirIterator iterator(materialDir.absolutePath(), QDirIterator::Subdirectories);
+	while(iterator.hasNext()) 
+	{
+		iterator.next();
+		QFileInfo fInfo = iterator.fileInfo();
+
+		if(!fInfo.isDir()) 
+		{
+			waitDlg.SetMessage(fInfo.absoluteFilePath());
+
+			DAVA::FilePath templatePath = fInfo.absoluteFilePath().toAscii().data();
+			templates.append(templatePath.GetFrameworkPath());
+
+			ui->templateBox->addItem(fInfo.completeBaseName(), i++);
+		}
+	}
+
+	waitDlg.Reset();
+	templatesScaned = true;
+}
+
 void MaterialEditor::OnAddProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
@@ -228,11 +318,9 @@ void MaterialEditor::OnAddProperty()
 		if(NULL != data)
 		{
 			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-			//DAVA::InspInfoDynamic* dynamicInfo = data->GetDynamicInfo();
-			//dynamicInfo->
 
 			// reload material properties
-			materialClicked(ui->materialTree->currentIndex());
+			SetCurMaterial(curMaterial);
 		}
 	}
 }
@@ -248,7 +336,8 @@ void MaterialEditor::OnRemProperty()
 		{
 			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
 
-			//QString propertyName = data->GetName();
+			// reload material properties
+			SetCurMaterial(curMaterial);
 		}
 	}
 }
@@ -263,8 +352,19 @@ void MaterialEditor::OnRemTexture()
 
 }
 
+void MaterialEditor::OnTemplateChanged(int index)
+{
+	if(NULL != curMaterial && index > 0 && index < templates.size())
+	{
+		DAVA::FilePath newTemplateName = templates[index];
+		DAVA::NMaterialHelper::SwitchTemplate(curMaterial, DAVA::FastName(newTemplateName.GetFrameworkPath().c_str()));
+	}
+
+	SetCurMaterial(curMaterial);
+}
+
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 {
 	// reload material properties
-	materialClicked(ui->materialTree->currentIndex());
+	SetCurMaterial(curMaterial);
 }

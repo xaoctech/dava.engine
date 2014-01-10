@@ -55,7 +55,7 @@ public:
 						RenderState * _renderState);
     ~RenderTechniquePass();
     
-    Shader * RetainShader(const FastNameSet& materialDefines);
+    Shader * CompileShader(const FastNameSet& materialDefines);
     
     inline const FastName & GetShaderName() const { return shaderName; }
     inline RenderState * GetRenderState() const { return renderState; }
@@ -70,6 +70,7 @@ protected:
 class RenderTechnique : public BaseObject
 {
 public:
+	
     IMPLEMENT_POOL_ALLOCATOR(RenderTechnique, 64);
 
     RenderTechnique(const FastName & name);
@@ -101,12 +102,24 @@ public:
 	{
 		return renderTechniqueArray.size();
 	}
+	
+	inline uint16 GetTechniqueId()
+	{
+		return techniqueId;
+	}
     
 protected:
+	
+	static uint16 techinqueSequenceId;
+	
+protected:
+	
     FastName name;
     Vector<RenderTechniquePass*> renderTechniqueArray;
     HashMap<FastName, uint32> nameIndexMap;
 	FastNameSet layersSet;
+	uint16 techniqueId;
+	
 //    Vector<RenderLayerID> layerIDs;
     
     friend class RenderTechniqueSingleton;

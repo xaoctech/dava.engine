@@ -42,6 +42,8 @@
 
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
+#include "Scene/FogSettingsChangedReceiver.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
@@ -145,7 +147,7 @@ SceneEditor2::SceneEditor2()
 SceneEditor2::~SceneEditor2()
 {
 	RemoveSystems();
-    
+
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
@@ -303,6 +305,11 @@ void SceneEditor2::Exec(Command2 *command)
 void SceneEditor2::ClearCommands(int commandId)
 {
 	commandStack.Clear(commandId);
+}
+
+void SceneEditor2::ClearAllCommands()
+{
+    commandStack.Clear();
 }
 
 const CommandStack* SceneEditor2::GetCommandStack() const
@@ -531,7 +538,7 @@ const Color SceneEditor2::GetShadowColor() const
 	if(GetRenderSystem())
 		return GetRenderSystem()->GetShadowRectColor();
 
-	return Color::White();
+	return Color::White;
 }
 
 void SceneEditor2::SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend)

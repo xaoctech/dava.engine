@@ -159,8 +159,6 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 TexturesMap Texture::textureMap;
 
 
-Texture * Texture::pinkPlaceholder = NULL;
-Texture * Texture::pinkCubePlaceholder = NULL;
 static int32 textureFboCounter = 0;
 
 // Main constructors
@@ -179,9 +177,9 @@ Texture * Texture::Get(const FilePath & pathName)
 
 void Texture::AddToMap(Texture *tex)
 {
-    if(!tex->relativePathname.IsEmpty())
+    if(!tex->texDescriptor->pathname.IsEmpty())
     {
-		textureMap[FILEPATH_MAP_KEY(tex->relativePathname)] = tex;
+		textureMap[FILEPATH_MAP_KEY(tex->texDescriptor->pathname)] = tex;
     }
 }
 
@@ -190,7 +188,6 @@ Texture::Texture()
 :	id(0)
 ,	width(0)
 ,	height(0)
-,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
 ,   loadedAsFile(GPU_UNKNOWN)
@@ -224,9 +221,6 @@ void Texture::ReleaseTextureData()
 {
 	state = STATE_INVALID;
 
-	//release data that was loaded from file
-	ReleaseImages();
-    
 	ReleaseTextureDataContainer * container = new ReleaseTextureDataContainer();
 	container->textureType = textureType;
 	container->id = id;
@@ -283,11 +277,11 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
     
 	if (!addInfo)
     {
-        tx->relativePathname = Format("Text texture %d", textureFboCounter);
+        tx->texDescriptor->pathname = Format("Text texture %d", textureFboCounter);
     }
 	else
     {
-        tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+        tx->texDescriptor->pathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
     }
     AddToMap(tx);
     
@@ -305,6 +299,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 
+	PixelFormat format = texDescriptor->format;
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
 	
     if(FORMAT_INVALID != format)
@@ -388,10 +383,12 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 
 	Texture * texture = new Texture();
 	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
-	texture->images.push_back(image);
+    
+    Vector<Image *> *images = new Vector<Image *>();
+    images->push_back(image);
 	
-    texture->SetParamsFromImages();
-	texture->FlushDataToRenderer();
+    texture->SetParamsFromImages(images);
+	texture->FlushDataToRenderer(images);
 
 	return texture;
 }		
@@ -443,7 +440,7 @@ void Texture::GenerateMipmaps()
 
 void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData)
 {
-	if(IsCompressedFormat(format))
+	if(IsCompressedFormat(texDescriptor->format))
     {
 		return;
 	}
@@ -456,13 +453,13 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
     Image * image0 = CreateImageFromMemory();
-    images = image0->CreateMipMapsImages();
+    Vector<Image *> images = image0->CreateMipMapsImages();
     SafeRelease(image0);
 
     for(uint32 i = 1; i < (uint32)images.size(); ++i)
         TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
 
-    ReleaseImages();
+    ReleaseImages(&images);
 
     RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, GL_LINEAR));
@@ -516,25 +513,25 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 	Texture * texture = new Texture();
 	texture->texDescriptor = SafeRetain(descriptor);
 
-	bool loaded = texture->LoadImages(gpu);
+    Vector<Image *> * images = new Vector<Image *> ();
+	bool loaded = texture->LoadImages(gpu, images);
 	if(!loaded)
 	{
 		Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
 
+        SafeDelete(images);
 		SafeRelease(texture);
 		return NULL;
 	}
 
-	texture->SetParamsFromImages();
-	texture->FlushDataToRenderer();
+	texture->SetParamsFromImages(images);
+	texture->FlushDataToRenderer(images);
 
 	return texture;
 }
 
-bool Texture::LoadImages(eGPUFamily gpu)
+bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 {
-	DVASSERT(images.size() == 0);
-
 	if(!IsLoadAvailable(gpu, texDescriptor))
 		return false;
 	
@@ -550,7 +547,7 @@ bool Texture::LoadImages(eGPUFamily gpu)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
 
-				ReleaseImages();
+				ReleaseImages(images);
 				return false;
 			}
 
@@ -562,12 +559,12 @@ bool Texture::LoadImages(eGPUFamily gpu)
             if(texDescriptor->GetGenerateMipMaps())
             {
                 Vector<Image *> mipmapsImages = imageFace[0]->CreateMipMapsImages();
-                images.insert(images.end(), mipmapsImages.begin(), mipmapsImages.end());
+                images->insert(images->end(), mipmapsImages.begin(), mipmapsImages.end());
                 SafeRelease(imageFace[0]);
             }
             else
             {
-			    images.push_back(imageFace[0]);
+			    images->push_back(imageFace[0]);
             }
 		}
 	}
@@ -575,22 +572,22 @@ bool Texture::LoadImages(eGPUFamily gpu)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		images = ImageLoader::CreateFromFileByExtension(imagePathname);
-        if(images.size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
+		*images = ImageLoader::CreateFromFileByExtension(imagePathname);
+        if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
-            Image * img = images[0];
-            images = img->CreateMipMapsImages();
+            Image * img = *images->begin();
+            *images = img->CreateMipMapsImages();
             SafeRelease(img);
         }
 	}
 
-	if(0 == images.size())
+	if(0 == images->size())
 		return false;
 
-	bool isSizeCorrect = CheckImageSize(images);
+	bool isSizeCorrect = CheckImageSize(*images);
 	if(!isSizeCorrect)
 	{
-		ReleaseImages();
+		ReleaseImages(images);
 		return false;
 	}
 
@@ -600,33 +597,36 @@ bool Texture::LoadImages(eGPUFamily gpu)
 }
 
 
-void Texture::ReleaseImages()
+void Texture::ReleaseImages(Vector<Image *> *images)
 {
-	for_each(images.begin(), images.end(), SafeRelease<Image>);
-	images.clear();
+	for_each(images->begin(), images->end(), SafeRelease<Image>);
+	images->clear();
 }
 
-void Texture::SetParamsFromImages()
+void Texture::SetParamsFromImages(const Vector<Image *> * images)
 {
-	DVASSERT(images.size() != 0);
+	DVASSERT(images->size() != 0);
 
-	width = images[0]->width;
-	height = images[0]->height;
-	format = images[0]->format;
+    Image *img = *images->begin();
+	width = img->width;
+	height = img->height;
+	texDescriptor->format = img->format;
 
-	textureType = (images[0]->cubeFaceID != Texture::CUBE_FACE_INVALID) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
+	textureType = (img->cubeFaceID != Texture::CUBE_FACE_INVALID) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
     
     state = STATE_DATA_LOADED;
 }
 
-void Texture::FlushDataToRenderer()
+void Texture::FlushDataToRenderer(Vector<Image *> * images)
 {
-	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::FlushDataToRendererInternal));
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::FlushDataToRendererInternal, images));
 }
 
 void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, void *callerData)
 {
-	DVASSERT(images.size() != 0);
+    Vector<Image *> * images = static_cast< Vector<Image *> * >(param);
+    
+	DVASSERT(images->size() != 0);
 	DVASSERT(texDescriptor);
 	DVASSERT(Thread::IsMainThread());
 
@@ -636,9 +636,10 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 	id = CreateTextureNative(Vector2((float32)_width, (float32)_height), texture->format, false, 0);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
-	for(uint32 i = 0; i < (uint32)images.size(); ++i)
+	for(uint32 i = 0; i < (uint32)images->size(); ++i)
 	{
-		TexImage((images[i]->mipmapLevel != (uint32)-1) ? images[i]->mipmapLevel : i, images[i]->width, images[i]->height, images[i]->data, images[i]->dataSize, images[i]->cubeFaceID);
+        Image *img = (*images)[i];
+		TexImage((img->mipmapLevel != (uint32)-1) ? img->mipmapLevel : i, img->width, img->height, img->data, img->dataSize, img->cubeFaceID);
 	}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -660,7 +661,8 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 
 	state = STATE_VALID;
 
-	ReleaseImages();
+	ReleaseImages(images);
+    SafeDelete(images);
 }
 
 bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
@@ -702,7 +704,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHin
 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
-        texture->relativePathname = pathName;
+        texture->texDescriptor->pathname = pathName;
         
         AddToMap(texture);
 	}
@@ -727,7 +729,6 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	if(texture)
 	{
 		texture->loadedAsFile = gpuForLoading;
-        texture->relativePathname = descriptorPathname;
 		AddToMap(texture);
 	}
 
@@ -743,30 +744,38 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
-    ReleaseTextureData();
+    FilePath savedPath = texDescriptor->pathname;
     
-    if(relativePathname.Exists())
+    ReleaseTextureData();
+
+    if(savedPath.Exists())
     {
         texDescriptor->Release();
-        texDescriptor = TextureDescriptor::CreateFromFile(relativePathname);
+        texDescriptor = TextureDescriptor::CreateFromFile(savedPath);
     }
     
 	DVASSERT(NULL != texDescriptor);
     
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
-	bool loaded = LoadImages(gpuForLoading);
+    Vector<Image *> *images = new Vector<Image *> ();
+    
+	bool loaded = LoadImages(gpuForLoading, images);
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
         
-		SetParamsFromImages();
-		FlushDataToRenderer();
+		SetParamsFromImages(images);
+		FlushDataToRenderer(images);
 	}
 	else
     {
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", relativePathname.GetAbsolutePathname().c_str());
+        SafeDelete(images);
+        
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
         MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
+
+	texDescriptor->pathname = savedPath;
 }
 
     
@@ -792,7 +801,7 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-		textureMap.erase(FILEPATH_MAP_KEY(relativePathname));
+		textureMap.erase(FILEPATH_MAP_KEY(texDescriptor->pathname));
 	}
 	return BaseObject::Release();
 }
@@ -829,7 +838,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 
     tx->isRenderTarget = true;
-    tx->relativePathname = Format("FBO texture %d", textureFboCounter);
+    tx->texDescriptor->pathname = Format("FBO texture %d", textureFboCounter);
 	AddToMap(tx);
 	
 	textureFboCounter++;
@@ -897,35 +906,23 @@ void Texture::DumpTextures()
 	for(TexturesMap::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::FrameworkDebug("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->texDescriptor->pathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->texDescriptor->format));
 		cnt++;
         
-        DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
-        if(FORMAT_INVALID != t->format)
+        DVASSERT((0 <= t->texDescriptor->format) && (t->texDescriptor->format < FORMAT_COUNT));
+        if(FORMAT_INVALID != t->texDescriptor->format)
         {
-            allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->format);
+            allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->texDescriptor->format);
         }
 	}
 	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize/8);
 	Logger::FrameworkDebug("============================================================");
 }
 	
-PixelFormat Texture::defaultRGBAFormat = FORMAT_RGBA8888;
-
-void Texture::SetDefaultRGBAFormat(PixelFormat format)
-{
-	defaultRGBAFormat = format;
-}
-
-PixelFormat Texture::GetDefaultRGBAFormat()
-{
-	return defaultRGBAFormat;
-}
-
 void Texture::SetDebugInfo(const String & _debugInfo)
 {
 #if defined(__DAVAENGINE_DEBUG__)
-	debugInfo = _debugInfo;	
+	debugInfo = FastName(_debugInfo.c_str());
 #endif
 }
 	
@@ -935,7 +932,7 @@ void Texture::Lost()
 {
 	RenderResource::Lost();
 
-	
+	/*
 	if(RenderManager::Instance()->GetTexture() == this)
 	{//to avoid drawing deleted textures
 		RenderManager::Instance()->SetTexture(0);
@@ -954,12 +951,15 @@ void Texture::Lost()
 		RENDER_VERIFY(glDeleteTextures(1, &id));
 		id = 0;
 	}
+	*/
 }
 
 void Texture::Invalidate()
 {
 	RenderResource::Invalidate();
 	
+	/*
+
 	DVASSERT(id == 0 && "Texture always invalidated");
 	if (id)
 	{
@@ -981,11 +981,14 @@ void Texture::Invalidate()
 	{
 		MakePink((TextureType)textureType);
 	}
+	*/
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 Image * Texture::ReadDataToImage()
 {
+	PixelFormat format = texDescriptor->format;
+
     Image *image = Image::Create(width, height, format);
     uint8 *imageData = image->GetData();
     
@@ -1028,7 +1031,7 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
@@ -1054,46 +1057,37 @@ const TexturesMap & Texture::GetTextureMap()
 
 int32 Texture::GetDataSize() const
 {
-    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    DVASSERT((0 <= texDescriptor->format) && (texDescriptor->format < FORMAT_COUNT));
     
-    int32 allocSize = width * height * GetPixelFormatSizeInBytes(format);
+    int32 allocSize = width * height * GetPixelFormatSizeInBytes(texDescriptor->format);
     return allocSize;
 }
 
 Texture * Texture::CreatePink(TextureType requestedType)
 {
-	if(NULL == pinkPlaceholder)
-	{
-		pinkPlaceholder = new Texture();
-		pinkPlaceholder->MakePink(TEXTURE_2D);
-	}
-	
-	if(NULL == pinkCubePlaceholder)
-	{
-		pinkCubePlaceholder = new Texture();
-		pinkCubePlaceholder->MakePink(TEXTURE_CUBE);
-	}
-	
-    Texture *tex = (TEXTURE_CUBE == requestedType) ? pinkCubePlaceholder : pinkPlaceholder;
-    SafeRetain(tex);
-	
+	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
+	//pink textures at game is invalid situation
+	Texture *tex = new Texture();
+	tex->MakePink(requestedType);
+
 	return tex;
 }
 
 void Texture::MakePink(TextureType requestedType)
 {
-    DVASSERT(images.size() == 0);
-    
 	SafeRelease(texDescriptor);
-    
+
+    Vector<Image *> *images = new Vector<Image *> ();
 	if(Texture::TEXTURE_CUBE == requestedType)
 	{
 		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
-			images.push_back(Image::CreatePinkPlaceholder());
-			images[i]->cubeFaceID = i;
-			images[i]->mipmapLevel = 0;
+            Image *img = Image::CreatePinkPlaceholder();
+			img->cubeFaceID = i;
+			img->mipmapLevel = 0;
+
+			images->push_back(img);
 		}
 		
 		texDescriptor->faceDescription = 0x000000FF;
@@ -1101,11 +1095,11 @@ void Texture::MakePink(TextureType requestedType)
 	else
 	{
 		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
-		images.push_back(Image::CreatePinkPlaceholder());
+		images->push_back(Image::CreatePinkPlaceholder());
 	}
     
-	SetParamsFromImages();
-    FlushDataToRenderer();
+	SetParamsFromImages(images);
+    FlushDataToRenderer(images);
 
     isPink = true;
 
@@ -1332,5 +1326,16 @@ uint32 Texture::ConvertToPower2FBOValue(uint32 value)
 
 	return i;
 }
+
+const FilePath & Texture::GetPathname() const
+{
+    return texDescriptor->pathname;
+}
+
+PixelFormat Texture::GetFormat() const
+{
+	return texDescriptor->format;
+}
+
 
 };

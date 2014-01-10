@@ -292,7 +292,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			SceneHelper::EnumerateTextures(scene, allScenesTextures);
+			SceneHelper::EnumerateSceneTextures(scene, allScenesTextures);
 		}
 
 		if(allScenesTextures.size() > 0)
@@ -627,10 +627,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
     
 #if defined(__DAVAENGINE_BEAST__)
-	QObject::connect(ui->actionBeast, SIGNAL(triggered()), this, SLOT(OnBeast()));
 	QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
 #else
-	ui->menuScene->removeAction(ui->menuBeast->menuAction());
+	//ui->menuScene->removeAction(ui->menuBeast->menuAction());
 #endif //#if defined(__DAVAENGINE_BEAST__)
 
     
@@ -836,7 +835,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionSaveHeightmapToPNG->setEnabled(enable);
 	ui->actionSaveTiledTexture->setEnabled(enable);
 
-	ui->actionBeast->setEnabled(enable);
 	ui->actionBeastAndSave->setEnabled(enable);
 
 	ui->actionDynamicBlendModeAlpha->setEnabled(enable);
@@ -933,7 +931,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 	if(!scene) return;
 
 	FilePath scenePathname = scene->GetScenePath();
-	if(scenePathname.IsEmpty() && scenePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	if(scenePathname.IsEmpty() || scenePathname.GetType() == FilePath::PATH_IN_MEMORY || !scene->IsLoaded())
 	{
 		ShowErrorDialog("Can't save not saved scene.");
 		return;
@@ -1630,7 +1628,24 @@ void QtMainWindow::OnSaveTiledTexture()
 	{
 		FilePath pathToSave;
 		pathToSave = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
-		pathToSave.ReplaceExtension(".thumbnail.png");
+		if (pathToSave.IsEmpty())
+		{
+			FilePath scenePath = scene->GetScenePath().GetDirectory();
+			QString selectedPath = QtFileDialog::getSaveFileName(this, "Save landscape texture as",
+														 scenePath.GetAbsolutePathname().c_str(),
+														 "PGN Image (*.png)");
+			if (selectedPath.isEmpty())
+			{
+				SafeRelease(landscapeTexture);
+				return;
+			}
+
+			pathToSave = FilePath(selectedPath.toStdString());
+		}
+		else
+		{
+			pathToSave.ReplaceExtension(".thumbnail.png");
+		}
 
 		Image *image = landscapeTexture->CreateImageFromMemory();
 		if(image)
@@ -1779,20 +1794,13 @@ void QtMainWindow::EditorLightEnabled( bool enabled )
 	ui->actionEnableCameraLight->setChecked(enabled);
 }
 
-
-void QtMainWindow::OnBeast()
-{
-	if (!SaveTilemask(false))
-	{
-		return;
-	}
-	RunBeast();
-}
- 
 void QtMainWindow::OnBeastAndSave()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
+
+    int32 ret = ShowQuestion("Beast", "The operation will take a lot of time. After lightmaps are generated, scene will be saved. Do you want to proceed?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+    if(ret == MB_FLAG_NO) return;
 
 	if (!SaveTilemask(false))
 	{
@@ -1801,6 +1809,9 @@ void QtMainWindow::OnBeastAndSave()
 
 	RunBeast();
 	SaveScene(scene);
+
+    scene->ClearAllCommands();
+    LoadUndoRedoState(scene);
 }
 
 void QtMainWindow::OnCameraSpeed0()
@@ -1854,9 +1865,6 @@ void QtMainWindow::RunBeast()
 
 	SceneEditor2* scene = GetCurrentScene();
 	if(!scene) return;
-
-	int32 ret = ShowQuestion("Beast", "This operation will take a lot of time. Do you agree to wait?", MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);		
-	if(ret == MB_FLAG_NO) return;
 
 	scene->Exec(new BeastAction(scene, beastWaitDialog));
 
@@ -2346,7 +2354,6 @@ void QtMainWindow::UpdateConflictingActionsState(bool enable)
 	ui->menuTexturesForGPU->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->menuExport->setEnabled(enable);
-	ui->menuBeast->setEnabled(enable);
     ui->actionSaveToFolder->setEnabled(enable);
 }
 

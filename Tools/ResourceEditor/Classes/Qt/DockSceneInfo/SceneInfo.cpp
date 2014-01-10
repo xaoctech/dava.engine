@@ -97,6 +97,7 @@ void SceneInfo::InitializeInfo()
     Initialize3DDrawSection();
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
+    InitializeSpeedTreeInfoSelection();
 }
 
 void SceneInfo::InitializeGeneralSection()
@@ -162,13 +163,41 @@ void SceneInfo::Refresh3DDrawInfo()
 }
 
 
+void SceneInfo::InitializeSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
+    
+    AddChild("SpeedTree Leafs Square", header);
+    AddChild("SpeedTree Leafs Square Div X", header);
+    AddChild("SpeedTree Leafs Square Div Y", header);
+}
+
+void SceneInfo::RefreshSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = GetInfoHeader("SpeedTree Info");
+    
+    float32 speedTreeLeafSquare = 0.f, speedTreeLeafSquareDivX = 0.f, speedTreeLeafSquareDivY = 0.f;
+    int32 infoCount = speedTreeLeafInfo.size();
+    for(int32 i = 0; i < infoCount; i++)
+    {
+        SpeedTreeInfo & info = speedTreeLeafInfo[i];
+        speedTreeLeafSquare += info.leafsSquare;
+        speedTreeLeafSquareDivX += info.leafsSquareDivX;
+        speedTreeLeafSquareDivY += info.leafsSquareDivY;
+    }
+
+    SetChild("SpeedTree Leafs Square", speedTreeLeafSquare, header);
+    SetChild("SpeedTree Leafs Square Div X", speedTreeLeafSquareDivX, header);
+    SetChild("SpeedTree Leafs Square Div Y", speedTreeLeafSquareDivY, header);
+}
+
 void SceneInfo::InitializeLODSectionInFrame()
 {
     QtPropertyData* header = CreateInfoHeader("LOD in Frame");
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -183,7 +212,7 @@ void SceneInfo::InitializeLODSectionForSelection()
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -199,7 +228,7 @@ void SceneInfo::RefreshLODInfoInFrame()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoInFrame.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoInFrame.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoInFrame.trianglesOnLod[i];
     }
@@ -219,7 +248,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoSelection.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoSelection.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoSelection.trianglesOnLod[i];
     }
@@ -278,7 +307,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
 		//VI: remove skybox materials so they not to appear in the lists
 		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+        SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
 
         CollectParticlesData();
@@ -304,6 +333,8 @@ void SceneInfo::ClearData()
     particleTexturesSize = 0;
     emittersCount = 0;
     spritesCount = 0;
+    
+    speedTreeLeafInfo.clear();
 }
 
 void SceneInfo::ClearSelectionData()
@@ -528,6 +559,7 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 	Refresh3DDrawInfo();
 	RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
+    RefreshSpeedTreeInfoSelection();
 
 	RestoreTreeState();
 }
@@ -574,12 +606,74 @@ void SceneInfo::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
     ClearSelectionData();
     CollectLODDataForSelection();
     RefreshLODInfoForSelection();
+
+    CollectSpeedTreeLeafsSquare(selected);
+    RefreshSpeedTreeInfoSelection();
+}
+
+void SceneInfo::CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup)
+{
+    speedTreeLeafInfo.clear();
+
+    int32 entitiesCount = forGroup->Size();
+    for(int32 i = 0; i < entitiesCount; i++)
+    {
+        RenderObject * ro = GetRenderObject(forGroup->GetEntity(i));
+        if(ro)
+            speedTreeLeafInfo.push_back(GetSpeedTreeLeafsSquare(ro));
+    }
+}
+
+SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *renderObject)
+{
+    SpeedTreeInfo info;
+    if(renderObject)
+    {
+		FastName speedTreeTemplateName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
+        Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
+        int32 rbCount = renderObject->GetRenderBatchCount();
+        for(int32 i = 0; i < rbCount; ++i)
+        {
+            RenderBatch * rb = renderObject->GetRenderBatch(i);
+            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == speedTreeTemplateName)
+            {
+                PolygonGroup * pg = rb->GetPolygonGroup();
+                int32 triangleCount = pg->GetIndexCount() / 3;
+                for(int32 t = 0; t < triangleCount; t++)
+                {
+                    int32 i1, i2, i3;
+                    int32 baseVertexIndex = t * 3;
+                    pg->GetIndex(baseVertexIndex, i1);
+                    pg->GetIndex(baseVertexIndex + 1, i2);
+                    pg->GetIndex(baseVertexIndex + 2, i3);
+                    
+                    Vector3 v1, v2, v3;
+                    pg->GetCoord(i1, v1);
+                    pg->GetCoord(i2, v2);
+                    pg->GetCoord(i3, v3);
+                    
+                    v1.z = 0; v2.z = 0; v3.z = 0; //ortho projection in XY-plane
+                    
+                    v2 -= v1;
+                    v3 -= v1;
+                    Vector3 vec = v2.CrossProduct(v3);
+                    float32 len = vec.Length() / 2;
+
+                    info.leafsSquare += len;
+                }
+            }
+        }
+        info.leafsSquareDivX = info.leafsSquare / (bboxSize.x * bboxSize.z);
+        info.leafsSquareDivY = info.leafsSquare / (bboxSize.y * bboxSize.z);
+    }
+    
+    return info;
 }
 
 void SceneInfo::TexturesReloaded()
 {
     sceneTextures.clear();
-    SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+    SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
     sceneTexturesSize = CalculateTextureSize(sceneTextures);
     
     RefreshSceneGeneralInfo();

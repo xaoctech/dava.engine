@@ -34,7 +34,7 @@
 
 namespace DAVA
 {
-
+	/*
 	static Vector3 DodecVertexes[20] = {
 		Vector3( 0.607f,  0.000f,  0.795f),
 		Vector3( 0.188f,  0.577f,  0.795f),
@@ -72,6 +72,50 @@ namespace DAVA
 		19, 15, 10, 5, 14,
 		15, 16, 17, 18, 19
 	};
+	*/
+
+	#define isoX 0.525731f 
+	#define isoZ 0.850650f
+
+	static Vector3 DodecVertexes[12] = {
+		Vector3(-isoX, 0.0, isoZ),
+		Vector3(isoX, 0.0, isoZ),
+		Vector3(-isoX, 0.0, -isoZ),
+		Vector3(isoX, 0.0, -isoZ),
+		Vector3(0.0, isoZ, isoX),
+		Vector3(0.0, isoZ, -isoX),
+		Vector3(0.0, -isoZ, isoX),
+		Vector3(0.0, -isoZ, -isoX),
+		Vector3(isoZ, isoX, 0.0),
+		Vector3(-isoZ, isoX, 0.0),
+		Vector3(isoZ, -isoX, 0.0),
+		Vector3(-isoZ, -isoX, 0.0)
+	};
+
+	static DAVA::uint16 DodecIndexes[60] = {
+		0, 4, 1,
+		0, 9, 4,
+		9, 5, 4,
+		4, 5, 8,
+		4, 8, 1,
+		8, 10, 1,
+		8, 3, 10,
+		5, 3, 8,
+		5, 2, 3,
+		2, 7, 3,
+		7, 10, 3,
+		7, 6, 10,
+		7, 11, 6,
+		11, 0, 6,
+		0, 1, 6,
+		6, 1, 10,
+		9, 0, 11,
+		9, 11, 2,
+		9, 2, 5,
+		7, 2, 11
+	};
+
+	static RenderDataObject *DodecObject;
 	
 	const float32 SEGMENT_LENGTH = 15.0f;
 	
@@ -79,10 +123,15 @@ RenderHelper::RenderHelper()
 {
     renderDataObject = new RenderDataObject();
     vertexStream = renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
+
+	DodecObject = new RenderDataObject();
+	DodecObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, DodecVertexes);
+	DodecObject->SetIndices(EIF_16, (DAVA::uint8 *) DodecIndexes, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]));
 }
 RenderHelper::~RenderHelper()
 {
     SafeRelease(renderDataObject);
+	SafeRelease(DodecObject);
 }
     
 void RenderHelper::FillRect(const Rect & rect)
@@ -126,6 +175,49 @@ void RenderHelper::DrawRect(const Rect & rect)
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 5);
+}
+
+void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Color& color)
+{
+    // TODO! review with Ivan/Victor whether it is not performance problem!
+    Vector<float32> gridVertices;
+    int32 verLinesCount = (int32)ceilf(rect.dx / gridSize.x);
+    int32 horLinesCount = (int32)ceilf(rect.dy / gridSize.y);
+    gridVertices.resize((horLinesCount + verLinesCount) * 4);
+    
+    float32 curPos = 0;
+    int32 curVertexIndex = 0;
+    for (int i = 0; i < horLinesCount; i ++)
+    {
+        gridVertices[curVertexIndex ++] = rect.x;
+        gridVertices[curVertexIndex ++] = rect.y + curPos;
+        gridVertices[curVertexIndex ++] = rect.x + rect.dx;
+        gridVertices[curVertexIndex ++] = rect.y + curPos;
+        
+        curPos += gridSize.x;
+    }
+
+    curPos = 0.0f;
+    for (int i = 0; i < verLinesCount; i ++)
+    {
+        gridVertices[curVertexIndex ++] = rect.x + curPos;
+        gridVertices[curVertexIndex ++] = rect.y;
+        gridVertices[curVertexIndex ++] = rect.x + curPos;
+        gridVertices[curVertexIndex ++] = rect.y + rect.dy;
+
+        curPos += gridSize.y;
+    }
+
+    vertexStream->Set(TYPE_FLOAT, 2, 0, gridVertices.data());
+
+    Color oldColor = RenderManager::Instance()->GetColor();
+    RenderManager::Instance()->SetColor(color);
+    
+    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+    RenderManager::Instance()->SetRenderData(renderDataObject);
+    RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINELIST, 0, curVertexIndex / 2);
+    
+    RenderManager::Instance()->SetColor(oldColor);
 }
 
 void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
@@ -992,38 +1084,52 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
 	{
-        Polygon3 poly;
-        poly.points.reserve(5);
-		for(int i = 0; i < 12; ++i)
+		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+		Matrix4 drawMatrix;
+
+		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
+		drawMatrix.SetTranslationVector(center);
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		RenderManager::Instance()->SetRenderData(DodecObject);
+		RenderManager::Instance()->AttachRenderData();
+
+		if(DodecObject->GetIndexBufferID() != 0)
 		{
-            poly.Clear();
-
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][2]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][3]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][4]] * radius) + center);
-
-			DrawPolygon(poly, true);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, 0);
 		}
+		else
+		{
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, DodecIndexes);
+		}
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
 	{
-        Polygon3 poly;
-        poly.points.reserve(5);
-		for(int i = 0; i < 12; ++i)
+		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+		Matrix4 drawMatrix;
+
+		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
+		drawMatrix.SetTranslationVector(center);
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		RenderManager::Instance()->SetRenderData(DodecObject);
+		RenderManager::Instance()->AttachRenderData();
+
+		if(DodecObject->GetIndexBufferID() != 0)
 		{
-            poly.Clear();
-
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][2]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][3]] * radius) + center);
-			poly.AddPoint((DodecVertexes[DodecIndexes[i][4]] * radius) + center);
-
-			FillPolygon(poly);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, 0);
 		}
+		else
+		{
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(DodecIndexes) / sizeof(DodecIndexes[0]), EIF_16, DodecIndexes);
+		}
+
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)

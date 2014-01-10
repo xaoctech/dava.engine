@@ -213,19 +213,20 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 	if (isSaveForGame)
 		_scene->OptimizeBeforeExport();
     _scene->GetDataNodes(nodes);
-    int32 dataNodesCount = (int32)nodes.size();
-    file->Write(&dataNodesCount, sizeof(int32));
+    uint32 dataNodesCount = GetSerializableDataNodesCount(nodes);
+    file->Write(&dataNodesCount, sizeof(uint32));
     for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
 	{
-		SaveDataNode(*it, file);
+		if(IsDataNodeSerializable(*it))
+		{
+			SaveDataNode(*it, file);
+		}
 	}
     
     // save hierarchy
     if(isDebugLogEnabled)
         Logger::FrameworkDebug("+ save hierarchy");
 	
-	SaveMaterialSystem(file, &serializationContext);
-
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
         if (!SaveHierarchy(_scene->GetChild(ci), file, 1))
@@ -238,7 +239,21 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     SafeRelease(file);
     return GetError();
-};	
+}
+
+uint32 SceneFileV2::GetSerializableDataNodesCount(List<DataNode*>& nodeList)
+{
+	uint32 nodeCount = 0;
+	for (List<DataNode*>::iterator it = nodeList.begin(); it != nodeList.end(); ++it)
+	{
+		if(IsDataNodeSerializable(*it))
+		{
+			nodeCount++;
+		}
+	}
+	
+	return nodeCount;
+}
     
 SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _scene)
 {
@@ -287,17 +302,16 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         file->Read(&dataNodeCount, sizeof(int32));
         
         for (int k = 0; k < dataNodeCount; ++k)
+		{
             LoadDataNode(0, file);
+		}
+		
+		serializationContext.ResolveMaterialBindings();
     }
     
     if(isDebugLogEnabled)
         Logger::FrameworkDebug("+ load hierarchy");
-	
-	if(header.version >= 10)
-	{
-		LoadMaterialSystem(file, &serializationContext);
-	}
-    
+	   
     Entity * rootNode = new Entity();
     rootNode->SetName(rootNodePathName.GetFilename());
 	rootNode->SetScene(0);
@@ -310,11 +324,6 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 		    
     OptimizeScene(rootNode);	
     
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
-														   Message(this, &SceneFileV2::SwitchMaterialQualityOnMainThread));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
-	
 	rootNode->SceneDidLoaded();
     
     if (GetError() == ERROR_NO_ERROR)
@@ -327,14 +336,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     SafeRelease(file);
     return GetError();
 }
-	
-void SceneFileV2::SwitchMaterialQualityOnMainThread(BaseObject * caller,
-														void * param,
-														void *callerData)
-{
-	Logger::FrameworkDebug("[SceneFileV2::SwitchMaterialQualityOnMainThread] is not needed probably");
-}
-	
+
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
 {
 	file->Write(&descriptor.size, sizeof(descriptor.size));
@@ -364,12 +366,12 @@ bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
     
     
     node->Save(archive, &serializationContext);
-    archive->SetInt32("#childrenCount", node->GetChildrenCount());
+    archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
     archive->Save(file);
     
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    for (int ci = 0; ci < node->GetChildrenNodeCount(); ++ci)
     {
-        DataNode * child = node->GetChild(ci);
+        DataNode * child = node->GetChildNode(ci);
         SaveDataNode(child, file);
     }
     
@@ -421,17 +423,17 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str());
 
     node->Save(archive, &serializationContext);
     
     
-    archive->SetInt32("#childrenCount", node->GetChildrenCount());
+    archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
     archive->Save(file);
     
-	for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+	for (int ci = 0; ci < node->GetChildrenNodeCount(); ++ci)
 	{
-		DataNode * child = node->GetChild(ci);
+		DataNode * child = node->GetChildNode(ci);
 		SaveDataHierarchy(child, file, level + 1);
 	}
     
@@ -462,7 +464,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, &serializationContext);
         
@@ -497,7 +499,7 @@ bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
+        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, &serializationContext);
     
 	archive->SetInt32("#childrenCount", node->GetChildrenCount());
@@ -557,7 +559,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     if (isDebugLogEnabled)
     {
         String name = archive->GetString("name");
-        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
     }
     
     int32 childrenCount = archive->GetInt32("#childrenCount", 0);
@@ -777,7 +779,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
-                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0).c_str());
                 }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
@@ -1080,14 +1082,4 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
-
-	
-void SceneFileV2::SaveMaterialSystem(File * file, SerializationContext* serializationContext)
-{
-}
-
-void SceneFileV2::LoadMaterialSystem(File * file, SerializationContext* serializationContext)
-{
-}
-			
 };

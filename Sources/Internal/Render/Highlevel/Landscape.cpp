@@ -145,7 +145,7 @@ Landscape::Landscape()
     
     isFogEnabled = false;
     fogDensity = 0.006f;
-    fogColor = Color::White();
+    fogColor = Color::White;
 	
 	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
 																FastName("~res:/Materials/Legacy/TileMask.material"),
@@ -153,6 +153,8 @@ Landscape::Landscape()
 
 	
 	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
+	landscapeParent->AddNodeFlags(DataNode::NodeRuntimeFlag);
+	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	landscapeParent->AddChild(tileMaskMaterial);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
@@ -164,6 +166,7 @@ Landscape::Landscape()
 	
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
+	chunk->SetSortingKey(10);
 	AddRenderBatch(chunk);
 	SafeRelease(chunk);
 	SafeRelease(landscapeParent);

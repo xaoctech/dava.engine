@@ -144,25 +144,26 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 
     texturesForSave.clear();
-    SceneHelper::EnumerateTextures(scene, texturesForSave);
+    SceneHelper::EnumerateSceneTextures(scene, texturesForSave);
 
-    CopyTextures(scene, errorLog);
+    CopyTextures(scene);
 	ReleaseTextures();
 
 	Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
-        sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
+        sceneUtils.AddFile(landscape->GetHeightmapPathname());
     }
 
-	CopyReferencedObject(scene, errorLog);
-	CopyEffects(scene, errorLog);
+	CopyReferencedObject(scene);
+	CopyEffects(scene);
 	CopyCustomColorTexture(scene, fileName.GetDirectory(), errorLog);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
     tempSceneName.ReplaceExtension(".saved.sc2");
     
+    sceneUtils.CopyFiles(errorLog);
     scene->Save(tempSceneName, true);
 
     bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
@@ -175,13 +176,13 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
 }
 
 
-void SceneSaver::CopyTextures(DAVA::Scene *scene, Set<String> &errorLog)
+void SceneSaver::CopyTextures(DAVA::Scene *scene)
 {
     TexturesMap::const_iterator endIt = texturesForSave.end();
     TexturesMap::iterator it = texturesForSave.begin();
     for( ; it != endIt; ++it)
     {
-        CopyTexture(it->first, errorLog);
+        CopyTexture(it->first);
     }
 }
 
@@ -190,14 +191,14 @@ void SceneSaver::ReleaseTextures()
     texturesForSave.clear();
 }
 
-void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &errorLog)
+void SceneSaver::CopyTexture(const FilePath &texturePathname)
 {
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
 	
 	TextureDescriptor* desc = TextureDescriptor::CreateFromFile(descriptorPathname);
 	if(desc->IsCubeMap())
 	{
-		sceneUtils.CopyFile(descriptorPathname, errorLog);
+		sceneUtils.AddFile(descriptorPathname);
 		
 		Vector<FilePath> faceNames;
 		Texture::GenerateCubeFaceNames(descriptorPathname.GetAbsolutePathname().c_str(), faceNames);
@@ -205,52 +206,52 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &error
 			it != faceNames.end();
 			++it)
 		{
-			sceneUtils.CopyFile(*it, errorLog);
+			sceneUtils.AddFile(*it);
 		}
 	}
 	else
 	{
 		FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_UNKNOWN, FORMAT_RGBA8888);
 
-		sceneUtils.CopyFile(descriptorPathname, errorLog);
-		sceneUtils.CopyFile(pngPathname, errorLog);
+		sceneUtils.AddFile(descriptorPathname);
+		sceneUtils.AddFile(pngPathname);
 	}
 	
 	SafeRelease(desc);
 }
 
-void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
+void SceneSaver::CopyReferencedObject( Entity *node)
 {
 	KeyedArchive *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 	{
 		String path = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-		sceneUtils.CopyFile(path, errorLog);
+		sceneUtils.AddFile(path);
 	}
 	for (int i = 0; i < node->GetChildrenCount(); i++)
 	{
-		CopyReferencedObject(node->GetChild(i), errorLog);
+		CopyReferencedObject(node->GetChild(i));
 	}
 }
 
-void SceneSaver::CopyEffects(Entity *node, Set<String> &errorLog)
+void SceneSaver::CopyEffects(Entity *node)
 {
 	ParticleEffectComponent *effect = GetEffectComponent(node);
 	if(effect)
 	{
 		for (int32 i=0, sz=effect->GetEmittersCount(); i<sz; ++i)
-			CopyEmitter(effect->GetEmitter(i), errorLog);
+			CopyEmitter(effect->GetEmitter(i));
 	}
 
 	for (int i = 0; i < node->GetChildrenCount(); ++i)
 	{
-		CopyEffects(node->GetChild(i), errorLog);
+		CopyEffects(node->GetChild(i));
 	}
 }
 
-void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
+void SceneSaver::CopyEmitter( ParticleEmitter *emitter)
 {
-	sceneUtils.CopyFile(emitter->configPath, errorLog);
+	sceneUtils.AddFile(emitter->configPath);
 
 	const Vector<ParticleLayer*> &layers = emitter->layers;
 
@@ -259,7 +260,7 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 	{
 		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
 		{
-			CopyEmitter(layers[i]->innerEmitter, errorLog);
+			CopyEmitter(layers[i]->innerEmitter);
 		}
 		else
 		{
@@ -268,7 +269,7 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 
 			FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
 			psdPath.ReplaceExtension(".psd");
-			sceneUtils.CopyFile(psdPath, errorLog);
+			sceneUtils.AddFile(psdPath);
 		}
 	}
 }
@@ -287,18 +288,18 @@ void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFold
     FilePath projectPath = CreateProjectPathFromPath(sceneFolder);
     if(projectPath.IsEmpty())
     {
-		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
+        errorLog.insert(Format("Can't copy custom colors texture (%s)", pathname.c_str()));
         return;
     }
 
     FilePath texPathname = projectPath + pathname;
-    sceneUtils.CopyFile(texPathname, errorLog);
+    sceneUtils.AddFile(texPathname);
     
     FilePath newTexPathname = sceneUtils.GetNewFilePath(texPathname);
     FilePath newProjectPathname = CreateProjectPathFromPath(sceneUtils.dataFolder);
     if(newProjectPathname.IsEmpty())
     {
-		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't save custom colors texture (%s)", pathname.c_str());
+        errorLog.insert(Format("Can't save custom colors texture (%s)", pathname.c_str()));
         return;
     }
     
@@ -317,4 +318,3 @@ FilePath SceneSaver::CreateProjectPathFromPath(const FilePath & pathname)
     
     return FilePath();
 }
-

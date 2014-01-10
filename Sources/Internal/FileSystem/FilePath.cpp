@@ -309,6 +309,10 @@ String FilePath::ResolveResourcesPath() const
                 {
                     break;
                 }
+				else
+				{
+					path = "";
+				}
             }
         }
         

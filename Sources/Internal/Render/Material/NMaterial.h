@@ -70,9 +70,9 @@ struct IlluminationParams : public InspBase
     int32 lightmapSize;
 
     IlluminationParams() :
-    isUsed(false),
-    castShadow(false),
-    receiveShadow(false),
+    isUsed(true),
+    castShadow(true),
+    receiveShadow(true),
     lightmapSize(LIGHTMAP_SIZE_DEFAULT)
     {}
 
@@ -166,7 +166,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
-	static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
+    static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
@@ -199,7 +200,7 @@ public:
 	
 	inline NMaterial* GetParent() const {return parent;}
 	
-	void AddChild(NMaterial* material);
+	void AddChild(NMaterial* material, bool inheritTemlate = true);
 	void RemoveChild(NMaterial* material);
 	inline uint32 GetChildrenCount() const
 	{
@@ -264,6 +265,8 @@ public:
 	inline eMaterialType GetMaterialType() const {return materialType;}
 	
 	inline NMaterialKey GetMaterialKey() {return materialKey;}
+	
+	inline uint16 GetSortingKey() {return materialSortKey;}
 	
     //void AssignRenderLayerIDs(RenderLayerManager * manager);
     
@@ -358,8 +361,10 @@ protected:
 	bool materialDynamicLit;
 	//}END TODO
 
+	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;
 	HashMap<FastName, RenderPassInstance*> instancePasses;
+	HashMap<FastName, UniqueHandle> instancePassRenderStates;
 	
 	RenderPassInstance* activePassInstance;
 	RenderTechniquePass* activeRenderPass;
@@ -375,12 +380,16 @@ protected:
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
     uint32                  renderLayerIDsBitmask;
+	
+	static Texture* stubCubemapTexture;
+	static Texture* stub2dTexture;
+	
 protected:
 	
 	virtual ~NMaterial();
 	
 	inline void SetMaterialType(eMaterialType matType) {materialType = matType;}
-	inline void SetMaterialKey(NMaterialKey key) {materialKey = key;}
+	inline void SetMaterialKey(NMaterialKey key) {materialKey = key; pointer = key;}
 	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
 	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
@@ -403,6 +412,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags();
+	static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
@@ -412,10 +422,12 @@ protected:
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
 	void SetLightInternal(int index, Light* light);
+	
+	static bool IsRuntimeFlag(const FastName& flagName);
 		
 protected:
 	
-	void OnParentChanged(NMaterial* newParent);
+	void OnParentChanged(NMaterial* newParent, bool inheritTemplate);
 	void OnMaterialTemplateChanged();
 	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
@@ -490,6 +502,7 @@ public:
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
+                  MEMBER(illuminationParams, "Illumination Params", I_SAVE | I_EDIT | I_VIEW)
 				  );
 
 };

@@ -225,7 +225,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	Sprite* notPassableSprite = NULL;
 	if (notPassableTexture && texturesEnabled[TEXTURE_TYPE_NOT_PASSABLE])
 	{
-		RenderManager::Instance()->SetColor(Color::White());
+		RenderManager::Instance()->SetColor(Color::White);
 		notPassableSprite = Sprite::CreateFromTexture(notPassableTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
 		notPassableSprite->SetPosition(0.f, 0.f);
 		notPassableSprite->Draw();
@@ -240,7 +240,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 		customColorsSprite = Sprite::CreateFromTexture(customColorsTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
 		customColorsSprite->SetPosition(0.f, 0.f);
 		customColorsSprite->Draw();
-		RenderManager::Instance()->SetColor(Color::White());
+		RenderManager::Instance()->SetColor(Color::White);
 	}
 	SafeRelease(customColorsSprite);
 	
@@ -248,7 +248,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	Sprite* visibilityCheckToolSprite = NULL;
 	if (visibilityCheckToolTexture && texturesEnabled[TEXTURE_TYPE_VISIBILITY_CHECK_TOOL])
 	{
-		RenderManager::Instance()->SetColor(Color::White());
+		RenderManager::Instance()->SetColor(Color::White);
 		visibilityCheckToolSprite = Sprite::CreateFromTexture(visibilityCheckToolTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
 		visibilityCheckToolSprite->SetPosition(0.f, 0.f);
 		visibilityCheckToolSprite->Draw();
@@ -259,7 +259,7 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	Sprite* rulerToolSprite = NULL;
 	if (rulerToolTexture && texturesEnabled[TEXTURE_TYPE_RULER_TOOL])
 	{
-		RenderManager::Instance()->SetColor(Color::White());
+		RenderManager::Instance()->SetColor(Color::White);
 		rulerToolSprite = Sprite::CreateFromTexture(rulerToolTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
 		rulerToolSprite->SetPosition(0.f, 0.f);
 		rulerToolSprite->Draw();
