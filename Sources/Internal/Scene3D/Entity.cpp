@@ -1206,10 +1206,10 @@ namespace DAVA
 						Component *comp = Component::CreateByType(compType);
 						if(NULL != comp)
 						{
-							comp->Deserialize(compArch, serializationContext);
 							if(compType == Component::TRANSFORM_COMPONENT)
 								RemoveComponent(compType);
 							AddComponent(comp);
+							comp->Deserialize(compArch, serializationContext);
 						}
 					}
 				}
@@ -1243,16 +1243,14 @@ namespace DAVA
 					Component* comp = ObjectFactory::Instance()->New<Component>(componentType);
 					if(NULL != comp)
 					{
-						comp->Deserialize(compArch, serializationContext);
-						
 						if(comp->GetType() == Component::TRANSFORM_COMPONENT)
 						{
 							RemoveComponent(comp->GetType());
 						}
 						
 						AddComponent(comp);
+						comp->Deserialize(compArch, serializationContext);
 					}
-					
 				}
 			}
 		}
@@ -1476,8 +1474,11 @@ namespace DAVA
 			{
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
-				if (renderObject->GetFlags() & RenderObject::NEED_UPDATE)
+				if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
+				{
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else
@@ -1509,9 +1510,9 @@ namespace DAVA
 				
 				DVASSERT(renderObject);
 				
-				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
+				if ((renderObject->GetFlags()&RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
 				{
-					DVASSERT(renderObject->GetRenderSystem());
 					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
 				}
 			}
@@ -1541,8 +1542,11 @@ namespace DAVA
 			{
 				RenderObject * renderObject = renderComponent->GetRenderObject();
 				renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_SWITCH);
-				if (renderObject->GetFlags()&RenderObject::NEED_UPDATE)
-					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);				
+				if ((renderObject->GetFlags()&RenderObject::NEED_UPDATE) &&
+					renderObject->GetRenderSystem() != NULL)
+				{
+					renderObject->GetRenderSystem()->MarkForUpdate(renderObject);
+				}
 			}
 		}
 		else
