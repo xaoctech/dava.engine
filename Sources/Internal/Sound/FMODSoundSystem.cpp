@@ -26,7 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Base/FastName.h"
 #include "Sound/FMODSoundSystem.h"
 #include "Sound/FMODSound.h"
 #include "Sound/FMODUtils.h"
@@ -59,7 +58,7 @@ FMODSoundSystem::~FMODSoundSystem()
 	FMOD_VERIFY(fmodEventSystem->release());
 }
 
-SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, const FastName & groupName)
+SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, const String & groupName)
 {
     SoundEvent * event = new FMODSoundEvent(eventName);
     AddSoundEventToGroup(groupName, event);
@@ -67,7 +66,7 @@ SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, con
     return event;
 }
 
-SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 flags /* = SOUND_EVENT_DEFAULT */, int32 priority /* = 128 */)
+SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName, const String & groupName, uint32 flags /* = SOUND_EVENT_DEFAULT */, int32 priority /* = 128 */)
 {
     SoundEvent * event = 0;
     
@@ -312,28 +311,25 @@ void FMODSoundSystem::ReleaseFMODEventGroupData(const String & groupName)
         FMOD_VERIFY(eventGroup->freeEventData());
 }
     
-void FMODSoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
+void FMODSoundSystem::SetGroupVolume(const String & groupName, float32 volume)
 {
-    //TODO hashmap operator[]
-    if(groupsVolumes.IsKey(groupName))
-        groupsVolumes.Remove(groupName);
-    groupsVolumes.Insert(groupName, volume);
+    groupsVolumes[groupName] = volume;
     
-    Map<SoundEvent *, FastName>::const_iterator itEnd = soundGroups.end();
-    for(Map<SoundEvent *, FastName>::iterator it = soundGroups.begin(); it != itEnd; ++it)
+    Map<SoundEvent *, String>::const_iterator itEnd = soundGroups.end();
+    for(Map<SoundEvent *, String>::iterator it = soundGroups.begin(); it != itEnd; ++it)
         if(it->second == groupName)
             it->first->SetVolume(volume);
 }
 
-float32 FMODSoundSystem::GetGroupVolume(const FastName & groupName)
+float32 FMODSoundSystem::GetGroupVolume(const String & groupName)
 {
-    if(!groupsVolumes.IsKey(groupName))
-        groupsVolumes.Insert(groupName, 1.f);
+    if(groupsVolumes.find(groupName) == groupsVolumes.end())
+        groupsVolumes[groupName] = 1.f;
     
     return groupsVolumes[groupName];
 }
 
-void FMODSoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * event)
+void FMODSoundSystem::AddSoundEventToGroup(const String & groupName, SoundEvent * event)
 {
     soundGroups[event] = groupName;
     event->SetVolume(GetGroupVolume(groupName));

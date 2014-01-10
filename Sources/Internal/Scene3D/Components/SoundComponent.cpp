@@ -26,9 +26,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "SoundSystem.h"
 #include "SoundComponent.h"
-#include "SoundEvent.h"
+#include "Sound/SoundSystem.h"
+#include "Sound/SoundEvent.h"
 
 using namespace DAVA;
 

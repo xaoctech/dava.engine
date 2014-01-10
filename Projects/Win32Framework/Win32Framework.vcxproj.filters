@@ -1308,13 +1308,7 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundSystem.h">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\FMODSoundComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundEvent.h">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundGroup.h">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
@@ -1344,12 +1338,6 @@
     <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h">
       <Filter>Internal\Job</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SimpleSoundEvent.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.h">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Input\GamepadManager.h">
       <Filter>Internal\Input</Filter>
     </ClInclude>
@@ -1358,6 +1346,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSound.h">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2375,13 +2366,7 @@
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\FMODSoundComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundGroup.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
@@ -2408,9 +2393,6 @@
     <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
       <Filter>Internal\Job</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSimpleSoundEvent.cpp">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
@@ -2425,6 +2407,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSound.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
