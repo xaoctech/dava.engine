@@ -62,10 +62,6 @@ public:
     virtual ~RenderSystem();
     
     /**
-        \brief Get Render Layer Manager to have ability to get all render layers from RenderSystem.
-     */
-    const RenderLayerManager * GetRenderLayerManager() const { return &renderLayerManager; }
-    /**
         \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
      */
     const RenderPassManager * GetRenderPassManager() const { return &renderPassManager; };
@@ -160,7 +156,6 @@ private:
     Vector<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     
-    RenderLayerManager renderLayerManager;
     RenderPassManager renderPassManager;
     
     
