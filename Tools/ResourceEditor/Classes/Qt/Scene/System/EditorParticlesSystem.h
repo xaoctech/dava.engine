@@ -59,7 +59,7 @@ protected:
 private:
 	DAVA::Vector<DAVA::Entity*> entities;
 	
-	void DrawDebugInfoForEmitter(DAVA::Entity* parentEntity);
+	void DrawDebugInfoForEffect(DAVA::Entity* effectEntity);
 	
 	void DrawSizeCircle(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
 	void DrawSizeCircleShockWave(DAVA::ParticleEmitter *emitter,DAVA::Vector3 center);

@@ -71,26 +71,25 @@ void EditorParticlesSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorParticlesSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
+void EditorParticlesSystem::DrawDebugInfoForEffect(DAVA::Entity* effectEntity)
 {
 	SceneCollisionSystem *collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	
 	if (collisionSystem)
 	{		
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f));		
-		for(int i = 0; i < parentEntity->GetChildrenCount(); ++i)
+		
+		
+		if(NULL != effectEntity)
 		{
-			DAVA::Entity *entity = parentEntity->GetChild(i);
-			if(NULL != entity)
-			{
-				DAVA::AABBox3 wordBox;
-				DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(entity);
-				collBox.GetTransformedBox(entity->GetWorldTransform(), wordBox);	
-				// Get sphere radius (size) of debug effect
-				DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
-				DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
-			}
+			DAVA::AABBox3 wordBox;
+			DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(effectEntity);
+			collBox.GetTransformedBox(effectEntity->GetWorldTransform(), wordBox);	
+			// Get sphere radius (size) of debug effect
+			DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
+			DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
 		}
+		
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
 }
@@ -110,7 +109,7 @@ void EditorParticlesSystem::Draw()
 	// Draw debug information for non-selected entities
 	for(size_t i = 0; i < entities.size(); ++i)
 	{				
-		DrawDebugInfoForEmitter(entities[i]);
+		DrawDebugInfoForEffect(entities[i]);
 	}
 	
 	// Draw debug information for selected entities

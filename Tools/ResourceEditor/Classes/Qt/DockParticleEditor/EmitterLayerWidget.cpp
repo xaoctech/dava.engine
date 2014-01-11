@@ -510,11 +510,11 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		this,
 		SLOT(OnValueChanged()));	
 	disconnect(pivotPointXSpinBox,
-			   SIGNAL(valueChanged(int)),
+			   SIGNAL(valueChanged(double)),
 			   this,
 			   SLOT(OnValueChanged()));
 	disconnect(pivotPointYSpinBox,
-			SIGNAL(valueChanged(int)),
+			SIGNAL(valueChanged(double)),
 			this,
 			SLOT(OnValueChanged()));
 	for (int32 i=0; i<LodComponent::MAX_LOD_LAYERS; ++i)
