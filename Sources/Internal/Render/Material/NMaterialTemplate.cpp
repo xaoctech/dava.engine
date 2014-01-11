@@ -35,11 +35,10 @@ namespace DAVA
 {
 	const NMaterialTemplate* NMaterialTemplateCache::Get(const FastName& templateName)
 	{
-		FilePath path = templateName.c_str();
-		
 		NMaterialTemplate* matTemplate = templateCache.at(templateName);
 		if(NULL == matTemplate)
 		{
+			FilePath path = templateName.c_str();
 			matTemplate = Load(path);
 			
 			//VI: automatically create template with default quality level
