@@ -88,7 +88,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	SetValueInternal(value);
 
 	// and get what was really set
-	// it can't differ from input "value"
+	// it can differ from input "value"
 	// (example: we are trying to set 10, but accepted range is 0-5
 	//   value is 10
 	//   curValue becomes 0-5)
