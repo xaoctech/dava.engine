@@ -544,6 +544,7 @@
 		E8C9934D184CD0EC00AFBF3F /* ToolButtonWithWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991E4184CD0EC00AFBF3F /* ToolButtonWithWidget.cpp */; };
 		E8C9934E184CD0EC00AFBF3F /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991E7184CD0EC00AFBF3F /* SpritesPacker.cpp */; };
 		E8C994DE184CD6F900AFBF3F /* SpeedTreeImporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */; };
+		E8D417C5188160C800A76E21 /* EditorMaterialSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D417C3188160C800A76E21 /* EditorMaterialSystem.cpp */; };
 		E8D66030185F0FBE00E3B0A6 /* MaterialDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D6602E185F0FBE00E3B0A6 /* MaterialDelegate.cpp */; };
 		E8D66039185F263E00E3B0A6 /* MaterialDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D66038185F263E00E3B0A6 /* MaterialDelegate_moc.cpp */; };
 		E8EA8DBF185C38040064906E /* MaterialTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DBD185C38040064906E /* MaterialTree.cpp */; };
@@ -1617,6 +1618,8 @@
 		E8C991E9184CD0EC00AFBF3F /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
 		E8C994DC184CD6F900AFBF3F /* SpeedTreeImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpeedTreeImporter.cpp; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.cpp; sourceTree = "<group>"; };
 		E8C994DD184CD6F900AFBF3F /* SpeedTreeImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeedTreeImporter.h; path = ../../../dava.speedtree/Sources/SpeedTreeImporter.h; sourceTree = "<group>"; };
+		E8D417C3188160C800A76E21 /* EditorMaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorMaterialSystem.cpp; sourceTree = "<group>"; };
+		E8D417C4188160C800A76E21 /* EditorMaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorMaterialSystem.h; sourceTree = "<group>"; };
 		E8D6602E185F0FBE00E3B0A6 /* MaterialDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialDelegate.cpp; sourceTree = "<group>"; };
 		E8D6602F185F0FBE00E3B0A6 /* MaterialDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialDelegate.h; sourceTree = "<group>"; };
 		E8D66038185F263E00E3B0A6 /* MaterialDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialDelegate_moc.cpp; sourceTree = "<group>"; };
@@ -3301,6 +3304,8 @@
 		E8C99114184CD0EB00AFBF3F /* System */ = {
 			isa = PBXGroup;
 			children = (
+				E8D417C3188160C800A76E21 /* EditorMaterialSystem.cpp */,
+				E8D417C4188160C800A76E21 /* EditorMaterialSystem.h */,
 				E8C99115184CD0EB00AFBF3F /* BeastSystem.cpp */,
 				E8C99116184CD0EB00AFBF3F /* BeastSystem.h */,
 				E8C99117184CD0EB00AFBF3F /* CameraSystem.cpp */,
@@ -4149,6 +4154,7 @@
 				E8BAD7391859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp in Build Sources */,
 				E8C9932D184CD0EC00AFBF3F /* LabeledSlider.cpp in Build Sources */,
 				E8C9933D184CD0EC00AFBF3F /* QtPropertyData.cpp in Build Sources */,
+				E8D417C5188160C800A76E21 /* EditorMaterialSystem.cpp in Build Sources */,
 				E8C992C1184CD0EC00AFBF3F /* LandscapeEditorShortcutManager.cpp in Build Sources */,
 				E8C991F5184CD0EC00AFBF3F /* btSimpleBroadphase.cpp in Build Sources */,
 				E8BAD7061859F50300C98C8D /* RulerToolProxy_moc.cpp in Build Sources */,

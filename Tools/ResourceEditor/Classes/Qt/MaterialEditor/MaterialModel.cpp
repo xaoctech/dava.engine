@@ -68,7 +68,7 @@ void MaterialModel::Sync()
 {
 	if(NULL != curScene)
 	{
-		DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *>> materialsTree;
+		DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
 		curScene->materialSystem->BuildMaterialsTree(materialsTree);
 
 		// remove items, that are not in set
