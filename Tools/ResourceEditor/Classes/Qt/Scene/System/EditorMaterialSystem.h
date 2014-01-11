@@ -40,7 +40,7 @@ public:
 	EditorMaterialSystem(DAVA::Scene * scene);
 	virtual ~EditorMaterialSystem();
 
-	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *>> &in) const;
+	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
 
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
