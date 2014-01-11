@@ -363,7 +363,7 @@ void TextureBrowser::updateInfoOriginal(const DAVA::Vector<QImage> &images)
 			}
 		}
 		
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, images[0].width(), images[0].height(),
+		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, images[0].width(), images[0].height(),
 			 SizeInBytesToString(datasize).c_str(),
 			 SizeInBytesToString(filesize).c_str());
 
@@ -408,7 +408,7 @@ void TextureBrowser::updateInfoConverted()
 			datasize = ImageTools::GetTexturePhysicalSize(curDescriptor, curTextureView);
 		}
 
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, imgSize.width(), imgSize.height(),
+		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, imgSize.width(), imgSize.height(),
 			SizeInBytesToString(datasize).c_str(),
 			SizeInBytesToString(filesize).c_str());
 
