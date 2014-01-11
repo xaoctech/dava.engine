@@ -36,6 +36,7 @@ TextureListModel::TextureListModel(QObject *parent /* = 0 */)
 	: QAbstractListModel(parent)
 	, curSortMode(TextureListModel::SortByName)
 	, curFilterBySelectedNode(false)
+    , activeScene(NULL)
 {}
 
 TextureListModel::~TextureListModel()
@@ -162,6 +163,8 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 
 	clear();
 
+    activeScene = scene;
+    
 	DAVA::TexturesMap texturesInNode;
 	SceneHelper::EnumerateSceneTextures(scene, texturesInNode);
 
@@ -195,24 +198,23 @@ void TextureListModel::setHighlight(const EntityGroup *nodes)
 
 	if(NULL != nodes)
 	{
+        DAVA::TexturesMap texturesInGroup;
 		for(int i = 0; i < (int)nodes->Size(); ++i)
 		{
-			DAVA::Entity *node = nodes->GetEntity(i);
-			DAVA::TexturesMap texturesInNode;
-			SceneHelper::EnumerateEntityTextures(node, texturesInNode);
-
-			for(DAVA::TexturesMap::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
-			{
-				const DAVA::FilePath descPath = t->first;
-				for(int i = 0; i < textureDescriptorsAll.size(); ++i)
-				{
-					if(textureDescriptorsAll[i]->pathname == descPath)
-					{
-						textureDescriptorsHighlight.push_back(textureDescriptorsAll[i]);
-					}
-				}
-			}
+			SceneHelper::EnumerateEntityTextures(activeScene, nodes->GetEntity(i), texturesInGroup);
 		}
+        
+        for(DAVA::TexturesMap::iterator t = texturesInGroup.begin(); t != texturesInGroup.end(); ++t)
+        {
+            const DAVA::FilePath descPath = t->first;
+            for(int i = 0; i < textureDescriptorsAll.size(); ++i)
+            {
+                if(textureDescriptorsAll[i]->pathname == descPath)
+                {
+                    textureDescriptorsHighlight.push_back(textureDescriptorsAll[i]);
+                }
+            }
+        }
 	}
 
 	if(curFilterBySelectedNode)
@@ -225,6 +227,8 @@ void TextureListModel::setHighlight(const EntityGroup *nodes)
 
 void TextureListModel::clear()
 {
+    activeScene = NULL;
+    
 	texturesAll.clear();
 	textureDescriptorsHighlight.clear();
 	textureDescriptorsFiltredSorted.clear();
