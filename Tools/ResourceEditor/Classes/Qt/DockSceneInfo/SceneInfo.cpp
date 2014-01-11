@@ -62,8 +62,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, curModel)
 	, isUpToDate(false)
 {
-    SetEditTracking(true);
-    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
@@ -112,7 +110,7 @@ void SceneInfo::InitializeGeneralSection()
     AddChild("Particles Textures Size", header);
     
     AddChild("Sprites Count", header);
-    AddChild("Textures Count", header);
+    AddChild("Particle Textures Count", header);
 }
 
 void SceneInfo::RefreshSceneGeneralInfo()
@@ -127,7 +125,7 @@ void SceneInfo::RefreshSceneGeneralInfo()
     SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
     
     SetChild("Sprites Count", spritesCount, header);
-    SetChild("Textures Count", (uint32)particleTextures.size(), header);
+    SetChild("Particle Textures Count", (uint32)particleTextures.size(), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()

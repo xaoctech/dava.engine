@@ -35,22 +35,25 @@
 #include "QtPropertyDataInspDynamic.h"
 #include "QtPropertyDataInspColl.h"
 
-QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info)
+QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, bool autoAddChilds)
 	: object(_object)
 	, info(_info)
 {
-	while(NULL != _info && NULL != object)
+	if(autoAddChilds)
 	{
-		for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
+		while(NULL != _info && NULL != object)
 		{
-			const DAVA::InspMember *member = _info->Member(i);
-			if(NULL != member)
+			for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
 			{
-                AddMember(member);
+				const DAVA::InspMember *member = _info->Member(i);
+				if(NULL != member)
+				{
+					AddMember(member);
+				}
 			}
-		}
 
-		_info = _info->BaseInfo();
+			_info = _info->BaseInfo();
+		}
 	}
 
 	SetEnabled(false);

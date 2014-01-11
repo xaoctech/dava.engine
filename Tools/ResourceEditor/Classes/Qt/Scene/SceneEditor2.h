@@ -58,6 +58,7 @@
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/OwnersSignatureSystem.h"
+#include "Scene/System/EditorMaterialSystem.h"
 
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
 
@@ -102,6 +103,7 @@ public:
 	BeastSystem	*beastSystem;
 	OwnersSignatureSystem *ownersSignatureSystem;
     StaticOcclusionBuildSystem * staticOcclusionBuildSystem;
+	EditorMaterialSystem *materialSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);

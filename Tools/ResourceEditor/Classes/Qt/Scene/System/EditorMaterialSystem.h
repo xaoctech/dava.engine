@@ -26,55 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __EDITOR_MATERIAL_SYSTEM_H__
+#define __EDITOR_MATERIAL_SYSTEM_H__
 
-#include <QSet>
+#include "DAVAEngine.h"
 
-#include "MaterialItem.h"
-#include "MaterialModel.h"
-
-MaterialItem::MaterialItem(DAVA::NMaterial * _material)
-    : QStandardItem()
-    , material(_material)
+class Command2;
+class EditorMaterialSystem : public DAVA::SceneSystem
 {
-	static QIcon materialIcon(QString::fromUtf8(":/QtIcons/sphere.png"));
-	static QIcon instanceIcon(QString::fromUtf8(":/QtIcons/3d.png"));
+	friend class SceneEditor2;
 
-	DVASSERT(material);
-	
-	setEditable(false);
-	setText(material->GetMaterialName().c_str());
-    setData(QVariant::fromValue<DAVA::NMaterial *>(material));
-    
-	switch(material->GetMaterialType())
+public:
+	EditorMaterialSystem(DAVA::Scene * scene);
+	virtual ~EditorMaterialSystem();
+
+	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *>> &in) const;
+
+protected:
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
+	void Update(DAVA::float32 timeElapsed);
+	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
+
+	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
+	void RemMaterial(DAVA::NMaterial *material);
+
+private:
+	struct MaterialFB
 	{
-		case DAVA::NMaterial::MATERIALTYPE_MATERIAL:
-			setIcon(materialIcon);
-			setDragEnabled(true);
-			setDropEnabled(true);
-			break;
+		MaterialFB() : entity(NULL), batch(NULL) {}
 
-		case DAVA::NMaterial::MATERIALTYPE_INSTANCE:
-			setIcon(instanceIcon);
-			setDragEnabled(true);
-			setDropEnabled(false);
-			break;
+		DAVA::Entity *entity;
+		DAVA::RenderBatch *batch;
+	};
 
-		default:
-			setDragEnabled(false);
-			setDropEnabled(false);
-			break;
-	}
-}
+	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
+	DAVA::Set<DAVA::NMaterial *> ownedParents;
+};
 
-MaterialItem::~MaterialItem()
-{ }
-
-QVariant MaterialItem::data(int role) const
-{
-    return QStandardItem::data(role);
-}
-
-DAVA::NMaterial * MaterialItem::GetMaterial() const
-{
-	return material;
-}
+#endif // __EDITOR_MATERIAL_SYSTEM_H__
