@@ -26,28 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __EDITOR_MATERIAL_SYSTEM_H__
+#define __EDITOR_MATERIAL_SYSTEM_H__
 
+#include "DAVAEngine.h"
 
-#ifndef __MATERIALS_ITEM_H__
-#define __MATERIALS_ITEM_H__
-
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItem>
-
-class MaterialModel;
-class MaterialItem: public QStandardItem
+class Command2;
+class EditorMaterialSystem : public DAVA::SceneSystem
 {
-public:
-	MaterialItem(DAVA::NMaterial * material);
-    virtual ~MaterialItem();
+	friend class SceneEditor2;
 
-    QVariant data(int role = Qt::UserRole + 1) const;
-	DAVA::NMaterial * GetMaterial() const;
-    
+public:
+	EditorMaterialSystem(DAVA::Scene * scene);
+	virtual ~EditorMaterialSystem();
+
+	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *>> &in) const;
+
+protected:
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
+	void Update(DAVA::float32 timeElapsed);
+	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
+
+	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
+	void RemMaterial(DAVA::NMaterial *material);
+
 private:
-    DAVA::NMaterial * material;
+	struct MaterialFB
+	{
+		MaterialFB() : entity(NULL), batch(NULL) {}
+
+		DAVA::Entity *entity;
+		DAVA::RenderBatch *batch;
+	};
+
+	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
+	DAVA::Set<DAVA::NMaterial *> ownedParents;
 };
 
-
-#endif // __MATERIALS_ITEM_H__
+#endif // __EDITOR_MATERIAL_SYSTEM_H__
