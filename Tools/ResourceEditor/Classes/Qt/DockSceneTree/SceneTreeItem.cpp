@@ -477,31 +477,14 @@ void SceneTreeItemParticleEmitter::DoSync(QStandardItem *rootItem, DAVA::Particl
 	{
 		SceneTreeItemParticleEmitter *rootEmitterItem = (SceneTreeItemParticleEmitter *) rootItem;
 
-		DAVA::Set<DAVA::ParticleLayer *> layerSet;
-		size_t itemsCount = emitter->layers.size();
-		for (size_t i=0; i<itemsCount; i++)
-		{
-			layerSet.insert(emitter->layers[i]);
-		}
-		for(int i = 0; i < rootItem->rowCount(); ++i)
+		for(int i = 0; i < rootItem->rowCount(); )
 		{	
-			DVASSERT(((SceneTreeItem*)rootItem->child(i))->ItemType() == SceneTreeItem::EIT_Layer);
-			SceneTreeItemParticleLayer *childItem = (SceneTreeItemParticleLayer *) rootItem->child(i);
-			DAVA::Set<DAVA::ParticleLayer *>::iterator it = layerSet.find(childItem->layer);
-			if (it!=layerSet.end())
-			{
-				layerSet.erase(it);	
-				childItem->DoSync(childItem, childItem->layer);
-			}
-			else
-			{
-				rootItem->removeRow(i);
-				i--;
-			}
+			DVASSERT(((SceneTreeItem*)rootItem->child(i))->ItemType() == SceneTreeItem::EIT_Layer);			
+			rootItem->removeRow(i);						
 		}
-		for (DAVA::Set<DAVA::ParticleLayer *>::iterator it = layerSet.begin(), e=layerSet.end(); it!=e; ++it)
+		for (int i=0; i<emitter->layers.size(); ++i)
 		{
-			rootItem->appendRow(new SceneTreeItemParticleLayer(rootEmitterItem->effect, emitter, *it));
+			rootItem->appendRow(new SceneTreeItemParticleLayer(rootEmitterItem->effect, emitter, emitter->layers[i]));
 		}					
 	}
 }
