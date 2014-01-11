@@ -62,8 +62,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, curModel)
 	, isUpToDate(false)
 {
-    SetEditTracking(true);
-    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));

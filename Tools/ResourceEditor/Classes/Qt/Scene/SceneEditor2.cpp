@@ -121,6 +121,9 @@ SceneEditor2::SceneEditor2()
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
     AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
 
+	materialSystem = new EditorMaterialSystem(this);
+	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT);
+
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
@@ -376,6 +379,8 @@ void SceneEditor2::Update(float timeElapsed)
 
     staticOcclusionBuildSystem->SetCamera(GetClipCamera());
     staticOcclusionBuildSystem->Process(timeElapsed);
+
+	materialSystem->Update(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -397,6 +402,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 		structureSystem->ProcessUIEvent(event);
 
 	particlesSystem->ProcessUIEvent(event);
+	materialSystem->ProcessUIEvent(event);
 }
 
 void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
@@ -433,6 +439,8 @@ void SceneEditor2::Draw()
 
 		if(structureSystem)
 			structureSystem->Draw();
+
+		materialSystem->Draw();
 	}
 
 	tilemaskEditorSystem->Draw();
@@ -472,6 +480,8 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	
 	if(ownersSignatureSystem)
 		ownersSignatureSystem->ProcessCommand(command, redo);
+
+	materialSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )
