@@ -59,8 +59,6 @@ FMODSoundEvent::~FMODSoundEvent()
         
         FMOD_VERIFY(fmodEvent->setCallback(0, 0));
         FMOD_VERIFY(fmodEvent->stop());
-        
-        FMODSoundSystem::GetFMODSoundSystem()->CancelCallbackOnUpdate(this, SoundEvent::EVENT_END);
     }
     
     fmodEventInstances.clear();
@@ -206,8 +204,8 @@ void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
 void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback callbackType)
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
-    fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
     fmodSoundSystem->ReleaseOnUpdate(this);
+    PerformEvent(callbackType);
     
     FMOD_VERIFY(fmodEvent->setCallback(0, 0));
     

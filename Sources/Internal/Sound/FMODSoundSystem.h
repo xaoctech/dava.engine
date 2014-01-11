@@ -97,9 +97,6 @@ protected:
     
     void ReleaseOnUpdate(SoundEvent * sound);
     
-    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
-    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
-
     void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
     void RemoveSoundEventFromGroups(SoundEvent * event);
     
@@ -107,7 +104,6 @@ protected:
 	FMOD::EventSystem * fmodEventSystem;
 
     Vector<SoundEvent *> soundsToReleaseOnUpdate;
-    MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback> callbackOnUpdate;
 
     Vector<SoundGroup> soundGroups;
 
