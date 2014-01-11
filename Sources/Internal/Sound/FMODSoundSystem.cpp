@@ -58,7 +58,7 @@ FMODSoundSystem::~FMODSoundSystem()
 	FMOD_VERIFY(fmodEventSystem->release());
 }
 
-SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, const String & groupName)
+SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, const FastName & groupName)
 {
     SoundEvent * event = new FMODSoundEvent(eventName);
     AddSoundEventToGroup(groupName, event);
@@ -66,7 +66,7 @@ SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, con
     return event;
 }
 
-SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName, const String & groupName, uint32 flags /* = SOUND_EVENT_DEFAULT */, int32 priority /* = 128 */)
+SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 flags /* = SOUND_EVENT_DEFAULT */, int32 priority /* = 128 */)
 {
     SoundEvent * event = 0;
     
@@ -140,12 +140,7 @@ void FMODSoundSystem::Update(float32 timeElapsed)
     
     int32 size = soundsToReleaseOnUpdate.size();
     for(int32 i = 0; i < size; i++)
-    {
-        SoundEvent * event = soundsToReleaseOnUpdate[i];
-        if(event->GetRetainCount() == 1)
-            RemoveSoundEventFromGroups(event);
-        SafeRelease(soundsToReleaseOnUpdate[i]);
-    }
+        soundsToReleaseOnUpdate[i]->Release();
     soundsToReleaseOnUpdate.clear();
     
     if(callbackOnUpdate.size())
@@ -311,33 +306,81 @@ void FMODSoundSystem::ReleaseFMODEventGroupData(const String & groupName)
         FMOD_VERIFY(eventGroup->freeEventData());
 }
     
-void FMODSoundSystem::SetGroupVolume(const String & groupName, float32 volume)
+void FMODSoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
 {
-    groupsVolumes[groupName] = volume;
-    
-    Map<SoundEvent *, String>::const_iterator itEnd = soundGroups.end();
-    for(Map<SoundEvent *, String>::iterator it = soundGroups.begin(); it != itEnd; ++it)
-        if(it->second == groupName)
-            it->first->SetVolume(volume);
+    for(size_t i = 0; i < soundGroups.size(); ++i)
+    {
+        SoundGroup & group = soundGroups[i];
+        if(group.name == groupName)
+        {
+            group.volume = volume;
+
+            Vector<SoundEvent *> & events = group.events;
+            for(size_t i = 0; i < events.size(); ++i)
+                events[i]->SetVolume(volume);
+
+            break;
+        }
+    }
 }
 
-float32 FMODSoundSystem::GetGroupVolume(const String & groupName)
+float32 FMODSoundSystem::GetGroupVolume(const FastName & groupName)
 {
-    if(groupsVolumes.find(groupName) == groupsVolumes.end())
-        groupsVolumes[groupName] = 1.f;
-    
-    return groupsVolumes[groupName];
+    for(size_t i = 0; i < soundGroups.size(); ++i)
+    {
+        SoundGroup & group = soundGroups[i];
+        if(group.name == groupName)
+            return group.volume;
+    }
+    return -1.f;
 }
 
-void FMODSoundSystem::AddSoundEventToGroup(const String & groupName, SoundEvent * event)
+void FMODSoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * event)
 {
-    soundGroups[event] = groupName;
-    event->SetVolume(GetGroupVolume(groupName));
+    for(size_t i = 0; i < soundGroups.size(); ++i)
+    {
+        SoundGroup & group = soundGroups[i];
+        if(group.name == groupName)
+        {
+            event->SetVolume(group.volume);
+            group.events.push_back(event);
+            return;
+        }
+    }
+
+    SoundGroup group;
+    group.volume = 1.f;
+    group.name = groupName;
+    soundGroups.push_back(group);
+
+    AddSoundEventToGroup(groupName, event);
 }
     
 void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 {
-    soundGroups.erase(event);
+    Vector<SoundGroup>::iterator it = soundGroups.begin();
+    Vector<SoundGroup>::const_iterator itEnd = soundGroups.end();
+    while(it != itEnd)
+    {
+        Vector<SoundEvent *> & events = it->events;
+        Vector<SoundEvent *>::const_iterator itEv = events.begin();
+        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
+        while(itEv != itEvEnd)
+        {
+            if((*itEv) == event)
+            {
+                it->events.erase(itEv);
+                break;
+            }
+
+            ++itEv;
+        }
+
+        if(!events.size())
+            it = soundGroups.erase(it);
+        else
+            ++it;
+    }
 }
     
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)

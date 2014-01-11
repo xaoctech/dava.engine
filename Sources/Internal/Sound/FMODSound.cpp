@@ -134,6 +134,8 @@ FMODSound::~FMODSound()
     SafeDeleteArray(soundData);
 
     FMOD_VERIFY(fmodInstanceGroup->release());
+
+    FMODSoundSystem::GetFMODSoundSystem()->RemoveSoundEventFromGroups(this);
 }
 
 int32 FMODSound::Release()

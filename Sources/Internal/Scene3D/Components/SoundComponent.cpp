@@ -29,6 +29,7 @@
 #include "SoundComponent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/SoundEvent.h"
+#include "Base/FastName.h"
 
 using namespace DAVA;
 
@@ -74,6 +75,6 @@ void SoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
     //TODO
     Component::Deserialize(archive, sceneFile);
     
-    event = SoundSystem::Instance()->CreateSoundEventByID("", "FX");
+    event = SoundSystem::Instance()->CreateSoundEventByID("", FastName("FX"));
     event->Deserialize(archive);
 }
