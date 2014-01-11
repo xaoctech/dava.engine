@@ -39,7 +39,7 @@
 class SceneHelper
 {
 public:
-    static void EnumerateEntityTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection);
+    static void EnumerateEntityTextures(DAVA::Scene *forScene, DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection);
 	static void EnumerateSceneTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textures);
 
 	static void EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors);
