@@ -44,7 +44,7 @@ EditorMaterialSystem::~EditorMaterialSystem()
 	}
 }
 
-void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *>> &in) const
+void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const
 {
 	DAVA::Set<DAVA::NMaterial *> materials;
 	GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
