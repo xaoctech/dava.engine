@@ -64,6 +64,8 @@ FMODSoundEvent::~FMODSoundEvent()
     }
     
     fmodEventInstances.clear();
+
+    FMODSoundSystem::GetFMODSoundSystem()->RemoveSoundEventFromGroups(this);
 }
 
 bool FMODSoundEvent::Trigger()

@@ -47,8 +47,8 @@ class SoundSystemInstance
 public:
     virtual ~SoundSystemInstance() {};
     
-    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const String & groupName) = 0;
-    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const String & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128) = 0;
+    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName) = 0;
+    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128) = 0;
 
     virtual void Update(float32 timeElapsed);
     virtual void Suspend() = 0;
@@ -59,8 +59,8 @@ public:
     virtual void SetListenerPosition(const Vector3 & position) = 0;
     virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left) = 0;
 
-    virtual void SetGroupVolume(const String & groupName, float32 volume) = 0;
-    virtual float32 GetGroupVolume(const String & groupName) = 0;
+    virtual void SetGroupVolume(const FastName & groupName, float32 volume) = 0;
+    virtual float32 GetGroupVolume(const FastName & groupName) = 0;
 };
 
 class SoundSystem
