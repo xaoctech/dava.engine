@@ -611,10 +611,11 @@ void Scene::Draw()
 	
     if (currentCamera)
     {
-        currentCamera->Set();
+        currentCamera->SetupDynamicParameters();
     }
     
-    Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    //Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
@@ -625,14 +626,17 @@ void Scene::Draw()
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process(timeElapsed);
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
-
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+    //RenderManager::Instance()->SetMatrix(RenderManager::PARAM_VIEW, renderer2d.)
     
-//     if(imposterManager)
-// 	{
-// 		imposterManager->Draw();
-// 	}
+    //    RenderManager::Instance()->GetRenderer2D()->Setup2DMatrices();
+    
+    //     if(imposterManager)
+    // 	{
+    // 		imposterManager->Draw();
+    // 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;

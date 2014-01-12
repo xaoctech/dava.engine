@@ -166,11 +166,11 @@ bool RenderState::IsEqual(RenderState * anotherState)
 
 void RenderState::Flush(RenderState * hardwareState) const
 {
-	RenderManager::Instance()->GetStats().renderStateSwitches++;
+	RENDERER_UPDATE_STATS(renderStateSwitches++);
 	
 	if(hardwareState->stateHandle != stateHandle)
 	{
-		RenderManager::Instance()->GetStats().renderStateFullSwitches++;
+		RENDERER_UPDATE_STATS(renderStateFullSwitches++);
 		
 		const RenderStateData* currentData = RenderManager::Instance()->GetRenderStateData(stateHandle);
 		const RenderStateData* hardwareData = RenderManager::Instance()->GetRenderStateData(hardwareState->stateHandle);
@@ -305,7 +305,7 @@ void RenderState::Flush(RenderState * hardwareState) const
 			
 			hardwareState->textureState = textureState;
 			
-			RenderManager::Instance()->GetStats().textureStateFullSwitches++;
+			RENDERER_UPDATE_STATS(textureStateFullSwitches++);
 		}
     
 	

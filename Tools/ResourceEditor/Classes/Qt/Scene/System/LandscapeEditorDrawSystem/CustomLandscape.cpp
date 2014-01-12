@@ -77,7 +77,7 @@ void CustomLandscape::Draw(DAVA::Camera *camera)
 		return;
 	}
 	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 
 	landscapeRenderer->BindMaterial(textureState);
 	landscapeRenderer->DrawLandscape();

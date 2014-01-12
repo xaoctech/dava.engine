@@ -1231,6 +1231,7 @@ namespace DAVA
 			
 			if(uniformEntry.prop)
 			{
+                RENDERER_UPDATE_STATS(materialParamUniformBindCount++);
 				shader->SetUniformValueByUniform(uniform,
 												 uniform->type,
 												 uniform->size,
@@ -1326,7 +1327,6 @@ namespace DAVA
 	{
 		DVASSERT(renderData);
 		
-		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(renderData);
 		RenderManager::Instance()->AttachRenderData();
 		

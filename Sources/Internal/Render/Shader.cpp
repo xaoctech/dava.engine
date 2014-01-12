@@ -1085,7 +1085,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 	{
 		if (activeProgram != program)
 		{
-            RenderManager::Instance()->GetStats().shaderBindCount++;
+            RENDERER_UPDATE_STATS(shaderBindCount++);
 			RENDER_VERIFY(glUseProgram(program));
 			activeProgram = program;
 		}
@@ -1101,70 +1101,83 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			{
 				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
 				{
-                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0   ||
-                        lastMVPMatrixModelViewCache != modelViewMatrixCache    ||
-                        lastMVPMatrixProjectionCache != projectionMatrixCache)
+                    RenderManager::ComputeWorldViewProjMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW_PROJ);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelViewProj.data));
-                        lastMVPMatrixModelViewCache = modelViewMatrixCache;
-                        lastMVPMatrixProjectionCache = projectionMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        GLfloat * modelViewProj = (GLfloat *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW_PROJ);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelViewProj));
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
 					break;
 				}
 				case UNIFORM_MODEL_VIEW_MATRIX:
 				{
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0   ||
-                        lastModelViewMatrixCache != modelViewMatrixCache)
+                    RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelView.data));
-                        lastModelViewMatrixCache = modelViewMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        GLfloat * modelView = (GLfloat *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelView));
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
 					break;
 				}
                 case UNIFORM_MODEL_VIEW_TRANSLATE:
                 {
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0 || lastModelViewTranslateCache != modelViewMatrixCache)
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        SetUniformValueByUniform(currentUniform, modelView.GetTranslationVector());
-                        lastModelViewTranslateCache = modelViewMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
+                        SetUniformValueByUniform(currentUniform, world->GetTranslationVector());
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
                 }
                 case UNIFORM_MODEL_SCALE:
                 {
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0 || lastModelScaleCache != modelViewMatrixCache)
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+
+                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
                         //TODO: GetScaleVector() is slow
-                        SetUniformValueByUniform(currentUniform, modelView.GetScaleVector());
-                        lastModelScaleCache = modelViewMatrixCache;
+                        SetUniformValueByUniform(currentUniform, world->GetScaleVector());
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
                 }
 				case UNIFORM_PROJECTION_MATRIX:
 				{
-                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    if (lastProjectionMatrixCache != projectionMatrixCache)
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_PROJ);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, proj.data));
-                        lastProjectionMatrixCache = projectionMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+
+                        Matrix4 * proj = (Matrix4*)RenderManager::GetDynamicParam(PARAM_PROJ);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, proj->data));
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
 					break;
 				}
 				case UNIFORM_NORMAL_MATRIX:
 				{
-					const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
-					SetUniformValueByUniform(currentUniform, normalMatrix);
-					break;
+                    RenderManager::Instance()->ComputeNormalMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_NORMAL);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+
+                        Matrix3 * normalMatrix = (Matrix3*)RenderManager::GetDynamicParam(PARAM_NORMAL);
+//                        SetUniformValueByUniform(currentUniform, *normalMatrix);
+                        RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, normalMatrix->data));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
 				}
 				case UNIFORM_COLOR:
 				{

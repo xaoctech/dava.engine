@@ -32,6 +32,7 @@
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Render/Highlevel/RenderLayerManager.h"
 #include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/StaticOcclusionRenderPass.h"
 
 namespace DAVA
 {
@@ -70,6 +71,10 @@ RenderPassManager::RenderPassManager(RenderSystem * renderSystem)
     ShadowVolumeRenderPass * shadowVolumePass = new ShadowVolumeRenderPass(renderSystem, PASS_SHADOW_VOLUME, RENDER_PASS_SHADOW_VOLUME_ID);
     InsertPass(shadowVolumePass);
     shadowVolumePass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
+    
+    //StaticOcclusionRenderPass * staticOcclusionRenderPass = new StaticOcclusionRenderPass(renderSystem, PASS_STATIC_OCCLUSION, RENDER_PASS_STATIC_OCCLUSION_ID);
+    //InsertPass(staticOcclusionRenderPass);
+    
 }
 
 RenderPassManager::~RenderPassManager()

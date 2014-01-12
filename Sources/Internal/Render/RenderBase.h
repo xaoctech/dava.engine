@@ -438,6 +438,50 @@ eCmpFunc GetCmpFuncByName(const String & cmpFuncStr);
 eFace GetFaceByName(const String & faceStr);
 eStencilOp GetStencilOpByName(const String & stencilOpStr);
 eFillMode GetFillModeByName(const String & fillModeStr);
+    
+enum eShaderSemantic
+{
+    UNKNOWN_SEMANTIC = 0,
+    
+    PARAM_WORLD,
+    PARAM_INV_WORLD,
+    PARAM_VIEW,
+    PARAM_INV_VIEW,
+    PARAM_PROJ,
+    PARAM_INV_PROJ,
+    
+    PARAM_WORLD_VIEW,
+    PARAM_INV_WORLD_VIEW,
+    PARAM_NORMAL, // NORMAL MATRIX
+    
+    PARAM_VIEW_PROJ,
+    PARAM_INV_VIEW_PROJ,
+    
+    PARAM_WORLD_VIEW_PROJ,
+    PARAM_INV_WORLD_VIEW_PROJ,
+    
+    PARAM_CAMERA_POS,
+    PARAM_CAMERA_DIR,
+    PARAM_CAMERA_UP,
+    
+    PARAM_OBJECT_POS,
+    PARAM_OBJECT_SCALE,
+    
+    PARAM_LIGHT0_POSITION,
+    
+    PARAM_RT_SIZE,
+    PARAM_RT_PIXEL_SIZE,
+    PARAM_RT_HALF_PIXEL_SIZE,
+    PARAM_RT_ASPECT_RATIO,
+    
+    DYNAMIC_PARAMETERS_COUNT,
+};
+enum
+{
+    UPDATE_SEMANTIC_ALWAYS = 0,
+};
+    
+    
 
 class RenderGuard
 {

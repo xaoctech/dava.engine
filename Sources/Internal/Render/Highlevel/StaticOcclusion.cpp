@@ -228,7 +228,7 @@ uint32 StaticOcclusion::RenderFrame()
                 camera->SetDirection(directions[side]);
                 camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
                 camera->SetLeft(Vector3(1.0f, 0.0f, 1.0f));
-                camera->Set();
+                camera->SetupDynamicParameters();
                 // Do Render
                 
                 RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
@@ -262,7 +262,7 @@ uint32 StaticOcclusion::RenderFrame()
 
                 //RenderManager::Instance()->ClearDepthBuffer();
                 
-                camera->Set();
+                camera->SetupDynamicParameters();
                 
                 recordedBatches.clear();
                 

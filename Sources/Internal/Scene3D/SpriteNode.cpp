@@ -155,6 +155,7 @@ SpriteNode::eType SpriteNode::GetType()
 
 void SpriteNode::Draw()
 {
+#if 0
 	if (!(flags&Entity::NODE_VISIBLE))return;
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
@@ -311,6 +312,7 @@ void SpriteNode::Draw()
 //    }
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix, matrixCache);
+#endif
 }
 
 Sprite * SpriteNode::GetSprite() const
