@@ -36,13 +36,14 @@
 void DDSExtractorTool::PrintUsage()
 {
     printf("\n");
-    printf("-extract [-path [path to folder or file] -mipmaps [number]]\n");
-    printf("\twill extract mentioned number of mipmaps\n");
+    printf("-extract [-path [path to folder or file] -mipmap [number]]\n");
+    printf("\tif [number] argument added - one mipmap will be extractacted (counting begins for 1!),\n");
+    printf("\totherwise - all present mipmaps will be extracted\n");
     printf("\tfrom specifed file or all dds files, located in specified folder\n");
 
     printf("\n");
     printf("Sample:\n");
-    printf("-extract -path /Users/User/Project/Data/3d -mipmaps 2 -forceclose\n");
+    printf("-extract -path /Users/User/Project/Data/3d -mipmap 2 -forceclose\n");
 }
 
 DAVA::String DDSExtractorTool::GetCommandLineKey()
@@ -56,13 +57,13 @@ bool DDSExtractorTool::InitializeFromCommandLine()
 	
 	if(sourcePath.IsEmpty())
 	{
-		errors.insert(DAVA::String("Incorrect params for source path"));
+		errors.insert(DAVA::String("Incorrect param for source path"));
 		return false;
 	}
 	
-	DAVA::String mipmapsNumberStr = DAVA::CommandLineParser::GetCommandParam(DAVA::String("-mipmaps"));
+	DAVA::String mipmapNumberStr = DAVA::CommandLineParser::GetCommandParam(DAVA::String("-mipmap"));
 	
-	mipmapsNumber = atoi(mipmapsNumberStr.c_str());
+	mipmapNumber = atoi(mipmapNumberStr.c_str());
 	
 	return true;
 }
@@ -76,10 +77,12 @@ void DDSExtractorTool::Process()
 	}
 	if (!DAVA::FileSystem::Instance()->IsDirectory(sourcePath))
 	{
+        errors.insert(DAVA::String("Incorrect param for source path"));
 		return;
 	}
 	sourcePath.MakeDirectoryPathname();
-	DAVA::List<DAVA::FilePath> allFiles = GetFilesFromFolderRecursively(sourcePath);
+	DAVA::List<DAVA::FilePath> allFiles;
+    GetFilesFromFolderRecursively(sourcePath, allFiles);
 	DAVA::List<DAVA::FilePath>::const_iterator it = allFiles.begin();
 	DAVA::List<DAVA::FilePath>::const_iterator end = allFiles.end();
 	for(; it != end; ++it)
@@ -88,42 +91,46 @@ void DDSExtractorTool::Process()
 	}
 }
 
-void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& path)
+void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& pathToDDS)
 {
-	if(!path.IsEqualToExtension(".dds"))
+	if(!pathToDDS.IsEqualToExtension(".dds"))
 	{
 		return;
 	}
 	
 	DAVA::Vector<DAVA::Image *> imageSet;
 	//extracted images should have rgba format, but not DX1..DX5, even in case of dxt supporting systems(like windows)
-	DAVA::LibDxtHelper::ReadDxtFile(path, imageSet, true);
+	DAVA::LibDxtHelper::ReadDxtFile(pathToDDS, imageSet, true);
 	
-	if (mipmapsNumber == 0 && imageSet.size())
+	if (mipmapNumber == 0 && imageSet.size())
 	{
-		// if "-mipmaps" argumant was entered blank only biggest mipmap will be extracted without
-		// addition of size into file name
-		SaveImageAsPNG(path, imageSet[0], false);
+		// if "-mipmap" argumant is blank -> all mipmaps will be extracted
+		for (DAVA::uint32 i = 0; i < imageSet.size(); ++i)
+		{
+			SaveImageAsPNG(pathToDDS, imageSet[i], true);
+		}
 	}
 	else
 	{
-		DAVA::uint32 size = mipmapsNumber >= imageSet.size() ? imageSet.size() : mipmapsNumber;
-		for (DAVA::uint32 i = 0; i < size; ++i)
-		{
-			SaveImageAsPNG(path, imageSet[i], true);
-		}
-	}
+        if (mipmapNumber > imageSet.size())
+        {
+            errors.insert(DAVA::Format("Incorrect mipmap number argument: %d, size of mipmaps set in file %s : %d",
+                                       mipmapNumber, pathToDDS.GetAbsolutePathname().c_str(), imageSet.size()));
+            return;
+        }
+        SaveImageAsPNG(pathToDDS, imageSet[mipmapNumber - 1], false);
+    }
 	
 	for_each(imageSet.begin(), imageSet.end(), DAVA::SafeRelease<DAVA::Image>);
 }
 
-void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& path, DAVA::Image* imageToSave, bool addMipmapsIntoName)
+void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& pathToDDS, DAVA::Image* imageToSave, bool addHeightIntoName)
 {
-	DAVA::FilePath saveFilePath(path);
+	DAVA::FilePath saveFilePath(pathToDDS);
 	saveFilePath.ReplaceExtension(".png");
-	if(addMipmapsIntoName)
+	if(addHeightIntoName)
 	{
-		saveFilePath.ReplaceBasename(path.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
+		saveFilePath.ReplaceBasename(pathToDDS.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
 	}
 	
 	DAVA::ImageLoader::Save(imageToSave, saveFilePath);
@@ -131,9 +138,8 @@ void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& path, DAVA::Image* i
 	printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()));
 }
 
-DAVA::List<DAVA::FilePath> DDSExtractorTool::GetFilesFromFolderRecursively(const DAVA::FilePath& path)
+void DDSExtractorTool::GetFilesFromFolderRecursively(const DAVA::FilePath& path, DAVA::List<DAVA::FilePath>& outputList)
 {
-	DAVA::List<DAVA::FilePath> retList;
 	DAVA::FileList * fileList = new DAVA::FileList(path);
 	for(DAVA::int32 i = 0; i < fileList->GetCount(); ++i)
 	{
@@ -143,15 +149,13 @@ DAVA::List<DAVA::FilePath> DDSExtractorTool::GetFilesFromFolderRecursively(const
 		}
 		if(fileList->IsDirectory(i))
 		{
-			DAVA::List<DAVA::FilePath> subSet = GetFilesFromFolderRecursively(fileList->GetPathname(i));
-			retList.insert(retList.end(), subSet.begin(), subSet.end());
+            GetFilesFromFolderRecursively(fileList->GetPathname(i), outputList);
 		}
 		else
 		{
-			retList.push_back(fileList->GetPathname(i));
+			outputList.push_back(fileList->GetPathname(i));
 		}
 	}
 	SafeRelease(fileList);
-	return retList;
 }
 
