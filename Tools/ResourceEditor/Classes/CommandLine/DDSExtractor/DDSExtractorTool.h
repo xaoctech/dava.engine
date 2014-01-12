@@ -46,10 +46,10 @@ protected:
 	void ExtractImagesFromFile(const DAVA::FilePath& path);
 	void SaveImageAsPNG(const DAVA::FilePath& originalName, DAVA::Image* imageToSave, bool addMipmapsIntoName);
 	
-	DAVA::List<DAVA::FilePath> GetFilesFromFolderRecursively(const DAVA::FilePath& path);
+	void GetFilesFromFolderRecursively(const DAVA::FilePath& path, DAVA::List<DAVA::FilePath>& filesList);
 		
 	DAVA::FilePath	sourcePath;
-	DAVA::uint32	mipmapsNumber;
+	DAVA::uint32	mipmapNumber;
 };
 
 
