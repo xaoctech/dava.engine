@@ -49,6 +49,13 @@ RenderEffect * RenderManager::FLAT_COLOR = 0;
 RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
 RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 
+AutobindVariableData RenderManager::dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
+uint32  RenderManager::dynamicParamersRequireUpdate;
+Matrix4 RenderManager::worldViewMatrix;
+Matrix4 RenderManager::viewProjMatrix;
+Matrix4 RenderManager::worldViewProjMatrix;
+Matrix4 RenderManager::invWorldViewMatrix;
+Matrix3 RenderManager::normalMatrix;
     
 RenderManager::RenderManager(Core::eRenderer _renderer)
 :   renderer(_renderer),
@@ -65,31 +72,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
-    
-//  RENDERSTATE
-//	oldColor = Color::Clear;
-//    newColor = Color::Clear;
-//
-//	oldSFactor = BLEND_NONE;
-//	oldDFactor = BLEND_NONE;
-//	newSFactor = BLEND_NONE;
-//	newDFactor = BLEND_NONE;
-
-//    for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
-//        currentTexture[idx] = 0;
-
-// RENDERSTATE
-//    newTextureEnabled = 0;
-//	oldTextureEnabled = 0;
-	oldVertexArrayEnabled = 0;
-    oldNormalArrayEnabled = 0;
-    for (uint32 idx = 0; idx < RenderState::MAX_TEXTURE_LEVELS; ++idx)
-        oldTextureCoordArrayEnabled[idx] = 0;
-	oldColorArrayEnabled = 0;
-
-//	oldBlendingEnabled = 0;
-//    depthWriteEnabled = 0;
-//    depthTestEnabled = 0;
     
 	renderOrientation = 0;
 	currentRenderTarget = 0;
@@ -119,14 +101,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	
 	isInsideDraw = false;
 
-// RENDERSTATE
-//    oldAlphaTestEnabled = alphaTestEnabled = false;
-//    oldAlphaTestCmpValue = alphaTestCmpValue = 0.0f;
-//    oldAlphaFunc = CMP_ALWAYS;
-//    
-//    cullingEnabled = oldCullingEnabled = false;
-//    cullFace = oldCullFace = CULL_BACK;
-
 #if defined(__DAVAENGINE_DIRECTX9__)
 	depthStencilSurface = 0;
 	backBufferSurface = 0;
@@ -149,8 +123,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     
 	cursor = 0;
     currentRenderData = 0;
-    pointerArraysCurrentState = 0;
-    pointerArraysRendererState = 0;
     enabledAttribCount = 0;
     
     statsFrameCountToShowDebug = 0;
@@ -162,11 +134,20 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	
 	renderContextId = 0;
     
-    projectionMatrixCache = 0;
-    modelViewMatrixCache = 0;
-
 	InitDefaultRenderStates();
 	InitDefaultTextureStates();
+    
+    for (uint32 paramIndex = 0; paramIndex < DYNAMIC_PARAMETERS_COUNT; ++paramIndex)
+    {
+        dynamicParameters[paramIndex].value = 0;
+        dynamicParameters[paramIndex].updateSemantic = 0;
+    }
+    dynamicParamersRequireUpdate = 0;
+    
+    SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
+    SetDynamicParam(PARAM_VIEW, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
+    SetDynamicParam(PARAM_PROJ, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
+    
 }
 	
 RenderManager::~RenderManager()
@@ -298,22 +279,15 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 #if defined(__DAVAENGINE_OPENGL__)
 #if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)//Dizz: glDisableClientState functions are not supported by GL ES 2.0
     RENDER_VERIFY(glDisableClientState(GL_VERTEX_ARRAY));
-    oldVertexArrayEnabled = 0;                      
-
     RENDER_VERIFY(glDisableClientState(GL_NORMAL_ARRAY));
-    oldNormalArrayEnabled = 0;                      
+    RENDER_VERIFY(glDisableClientState(GL_COLOR_ARRAY));
 	for (int k = 0; k < RenderState::MAX_TEXTURE_LEVELS; ++k)
     {
         RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0 + k));
         RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
-        oldTextureCoordArrayEnabled[k] = 0;                
     }
     RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
-    
-    RENDER_VERIFY(glDisableClientState(GL_COLOR_ARRAY));
-    oldColorArrayEnabled = 0;                       
-
-#endif    
+#endif
 #endif
     
 	frameBufferWidth = _frameBufferWidth;
@@ -323,8 +297,6 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 #else
 //	Logger::FrameworkDebug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
 #endif
-    // TODO: Rethink of initialization concepts because they changed
-    pointerArraysRendererState = pointerArraysCurrentState = 0;
 }
 
 void RenderManager::Reset()
@@ -612,16 +584,16 @@ void RenderManager::IdentityDrawMatrix()
 void RenderManager::IdentityMappingMatrix()
 {
     mappingMatrixChanged = true;
-	viewMappingDrawOffset = Vector2(0, 0);
-	viewMappingDrawScale = Vector2(1, 1);
+	viewMappingDrawOffset = Vector2(0.0f, 0.0f);
+	viewMappingDrawScale = Vector2(1.0f, 1.0f);
 }
 	
 void RenderManager::IdentityModelMatrix()
 {
     mappingMatrixChanged = true;
-    RenderManager::Instance()->SetMatrix(MATRIX_MODELVIEW, Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
-	currentDrawOffset = Vector2(0, 0);
-    currentDrawScale = Vector2(1, 1);
+    SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
+	currentDrawOffset = Vector2(0.0f, 0.0f);
+    currentDrawScale = Vector2(1.0f, 1.0f);
 }
     
 	
@@ -721,44 +693,44 @@ void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 
 }
 
-const Matrix4 & RenderManager::GetMatrix(eMatrixType type)
-{
-    return matrices[type];
-}
+//const Matrix4 & RenderManager::GetMatrix(eMatrixType type)
+//{
+//    return matrices[type];
+//}
 
-const Matrix3 & RenderManager::GetNormalMatrix()
-{
-    if (uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] == 0)
-    {
-        //GetUniformMatrix(UNIFORM_MATRIX_MODELVIEWPROJECTION);
-        const Matrix4 & modelViewMatrix = GetMatrix(MATRIX_MODELVIEW);
-        
-        modelViewMatrix.GetInverse(uniformMatrices[UNIFORM_MATRIX_NORMAL]);
-        uniformMatrices[UNIFORM_MATRIX_NORMAL].Transpose();
-        uniformMatrixNormal = uniformMatrices[UNIFORM_MATRIX_NORMAL];
-        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 1; // matrix is ready
-    }
-    return uniformMatrixNormal;
-}
+//const Matrix3 & RenderManager::GetNormalMatrix()
+//{
+//    if (uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] == 0)
+//    {
+//        //GetUniformMatrix(UNIFORM_MATRIX_MODELVIEWPROJECTION);
+//        const Matrix4 & modelViewMatrix = GetMatrix(MATRIX_MODELVIEW);
+//        
+//        modelViewMatrix.GetInverse(uniformMatrices[UNIFORM_MATRIX_NORMAL]);
+//        uniformMatrices[UNIFORM_MATRIX_NORMAL].Transpose();
+//        uniformMatrixNormal = uniformMatrices[UNIFORM_MATRIX_NORMAL];
+//        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 1; // matrix is ready
+//    }
+//    return uniformMatrixNormal;
+//}
 
-const Matrix4 & RenderManager::GetUniformMatrix(eUniformMatrixType type)
-{
-    if (uniformMatrixFlags[type] == 0)
-    {
-        if (type == UNIFORM_MATRIX_MODELVIEWPROJECTION)
-        {
-            uniformMatrices[type] =  matrices[MATRIX_MODELVIEW] * matrices[MATRIX_PROJECTION];
-        }
-        uniformMatrixFlags[type] = 1; // matrix is ready
-    }
-    return uniformMatrices[type];
-}
-    
-void RenderManager::ClearUniformMatrices()
-{
-    for (int32 k = 0; k < UNIFORM_MATRIX_COUNT; ++k)
-        uniformMatrixFlags[k] = 0;
-}
+//const Matrix4 & RenderManager::GetUniformMatrix(eUniformMatrixType type)
+//{
+//    if (uniformMatrixFlags[type] == 0)
+//    {
+//        if (type == UNIFORM_MATRIX_MODELVIEWPROJECTION)
+//        {
+//            uniformMatrices[type] =  matrices[MATRIX_MODELVIEW] * matrices[MATRIX_PROJECTION];
+//        }
+//        uniformMatrixFlags[type] = 1; // matrix is ready
+//    }
+//    return uniformMatrices[type];
+//}
+//    
+//void RenderManager::ClearUniformMatrices()
+//{
+//    for (int32 k = 0; k < UNIFORM_MATRIX_COUNT; ++k)
+//        uniformMatrixFlags[k] = 0;
+//}
     
 void RenderManager::Stats::Clear()
 {
@@ -772,6 +744,8 @@ void RenderManager::Stats::Clear()
 	attachRenderDataCount = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
+    dynamicParamUniformBindCount = 0;
+    materialParamUniformBindCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)
@@ -872,5 +846,14 @@ void RenderManager::VerifyRenderContext()
 	
 #endif
 }
+    
+    
+void RenderManager::Renderer2D::Setup2DMatrices()
+{
+    RenderManager::SetDynamicParam(PARAM_VIEW, &viewMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_PROJ, &projMatrix, UPDATE_SEMANTIC_ALWAYS);
+}
+    
+
 	
 };

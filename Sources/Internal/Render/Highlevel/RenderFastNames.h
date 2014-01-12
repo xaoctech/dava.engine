@@ -45,13 +45,15 @@ typedef uint32 RenderPassID;
 static const FastName PASS_FORWARD("ForwardPass");
 static const FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
 static const FastName PASS_DEFERRED("DeferredPass");
+static const FastName PASS_STATIC_OCCLUSION("StaticOcclusionPass");
     
 enum eRenderPassID
 {
     RENDER_PASS_FORWARD_ID = 0,
-    RENDER_PASS_SHADOW_VOLUME_ID = 1,
-    RENDER_PASS_SHADOW_MAP_ID = 2,
-    RENDER_PASS_DEFERRED = 3,
+    RENDER_PASS_SHADOW_VOLUME_ID,
+    RENDER_PASS_SHADOW_MAP_ID,
+    RENDER_PASS_DEFERRED_ID,
+    RENDER_PASS_STATIC_OCCLUSION_ID,
     RENDER_PASS_ID_COUNT,
 };
 

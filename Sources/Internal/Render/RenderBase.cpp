@@ -245,71 +245,71 @@ const int32 FILLMODE_MAP[FILLMODE_COUNT] =
 };
 #endif
 
-	RenderGuard::RenderGuard()
-	{
-		wrongCall = false;
-	}
+RenderGuard::RenderGuard()
+{
+    wrongCall = false;
+}
 
-	RenderGuard::~RenderGuard()
-	{
+RenderGuard::~RenderGuard()
+{
 
-	}
+}
 
-	void RenderGuard::LowLevelRenderCall()
-	{
-		if(!Thread::IsMainThread())
-		{
-			DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");
-		}
-		if (!RenderManager::Instance()->IsInsideDraw())
-		{
-			DVASSERT(0 && "Application tried to call GL or DX not between BeginFrame / EndFrame.");
-		}
-	}
+void RenderGuard::LowLevelRenderCall()
+{
+    if(!Thread::IsMainThread())
+    {
+        DVASSERT(0 && "Application tried to call GL or DX in separate thread without lock");
+    }
+    if (!RenderManager::Instance()->IsInsideDraw())
+    {
+        DVASSERT(0 && "Application tried to call GL or DX not between BeginFrame / EndFrame.");
+    }
+}
 
-	eBlendMode GetBlendModeByName(const String & blendStr)
-	{
-		for(uint32 i = 0; i < BLEND_MODE_COUNT; i++)
-			if(blendStr == BLEND_MODE_NAMES[i])
-				return (eBlendMode)i;
+eBlendMode GetBlendModeByName(const String & blendStr)
+{
+    for(uint32 i = 0; i < BLEND_MODE_COUNT; i++)
+        if(blendStr == BLEND_MODE_NAMES[i])
+            return (eBlendMode)i;
 
-		return BLEND_MODE_COUNT;
-	}
+    return BLEND_MODE_COUNT;
+}
 
-	eCmpFunc GetCmpFuncByName(const String & cmpFuncStr)
-	{
-		for(uint32 i = 0; i < CMP_TEST_MODE_COUNT; i++)
-			if(cmpFuncStr == CMP_FUNC_NAMES[i])
-				return (eCmpFunc)i;
+eCmpFunc GetCmpFuncByName(const String & cmpFuncStr)
+{
+    for(uint32 i = 0; i < CMP_TEST_MODE_COUNT; i++)
+        if(cmpFuncStr == CMP_FUNC_NAMES[i])
+            return (eCmpFunc)i;
 
-		return CMP_TEST_MODE_COUNT;
-	}
+    return CMP_TEST_MODE_COUNT;
+}
 
-	eFace GetFaceByName(const String & faceStr)
-	{
-		for(uint32 i = 0; i < FACE_COUNT; i++)
-			if(faceStr == FACE_NAMES[i])
-				return (eFace)i;
+eFace GetFaceByName(const String & faceStr)
+{
+    for(uint32 i = 0; i < FACE_COUNT; i++)
+        if(faceStr == FACE_NAMES[i])
+            return (eFace)i;
 
-		return FACE_COUNT;
-	}
+    return FACE_COUNT;
+}
 
-	eStencilOp GetStencilOpByName(const String & stencilOpStr)
-	{
-		for(uint32 i = 0; i < STENCILOP_COUNT; i++)
-			if(stencilOpStr == STENCIL_OP_NAMES[i])
-				return (eStencilOp)i;
+eStencilOp GetStencilOpByName(const String & stencilOpStr)
+{
+    for(uint32 i = 0; i < STENCILOP_COUNT; i++)
+        if(stencilOpStr == STENCIL_OP_NAMES[i])
+            return (eStencilOp)i;
 
-		return STENCILOP_COUNT;
-	}
+    return STENCILOP_COUNT;
+}
 
-	eFillMode GetFillModeByName(const String & fillModeStr)
-	{
-		for(uint32 i = 0; i < FILLMODE_COUNT; i++)
-			if(fillModeStr == FILL_MODE_NAMES[i])
-				return (eFillMode)i;
+eFillMode GetFillModeByName(const String & fillModeStr)
+{
+    for(uint32 i = 0; i < FILLMODE_COUNT; i++)
+        if(fillModeStr == FILL_MODE_NAMES[i])
+            return (eFillMode)i;
 
-		return FILLMODE_COUNT;
-	}
+    return FILLMODE_COUNT;
+}
 
 };

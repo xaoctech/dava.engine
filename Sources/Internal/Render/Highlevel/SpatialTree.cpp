@@ -585,7 +585,8 @@ void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 		debugStateData.fillMode = FILLMODE_SOLID;		
 		debugDrawStateHandle = RenderManager::Instance()->AddRenderStateData(&debugStateData);
 	}
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, cameraMatrix);
+    
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 	RenderManager::Instance()->SetRenderState(debugDrawStateHandle);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);	
 	RenderManager::Instance()->FlushState();

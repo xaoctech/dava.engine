@@ -74,8 +74,8 @@ void DebugRenderSystem::Process(float32 timeElapsed)
         TransformComponent * transformComponent = cast_if_equal<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
         //RenderComponent * renderComponent = cast_if_equal<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
         
-        Matrix4 worldTransform = /*(*transformComponent->GetWorldTransform()) * */camera->GetMatrix();
-        RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+        //Matrix4 worldTransform = /*(*transformComponent->GetWorldTransform()) * */camera->GetMatrix();
+        RenderManager::SetDynamicParam(PARAM_VIEW, &camera->GetMatrix(), UPDATE_SEMANTIC_ALWAYS);
 
         AABBox3 debugBoundigBox = entity->GetWTMaximumBoundingBoxSlow();
         uint32 debugFlags = debugRenderComponent->GetDebugFlags();
@@ -122,9 +122,11 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 				Color dcColor(0.0f, 0.0f, 1.0f, 1.0f);
 				AABBox3 dcBox(Vector3(), 1.0f);
 
-				Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-				Matrix4 finalMatrix = transformComponent->GetWorldTransform() * prevMatrix;
-				RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+				//Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+				//Matrix4 finalMatrix = transformComponent->GetWorldTransform() * prevMatrix;
+				
+                RenderManager::SetDynamicParam(PARAM_WORLD, &transformComponent->GetWorldTransform(), UPDATE_SEMANTIC_ALWAYS);
+                RenderManager::SetDynamicParam(PARAM_VIEW, &camera->GetMatrix(), UPDATE_SEMANTIC_ALWAYS);
 
 				
 				RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
@@ -143,7 +145,7 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 
 				//RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 				RenderManager::Instance()->ResetColor();
-				RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+				//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
 				dcBox.GetTransformedBox(transformComponent->GetWorldTransform(), debugBoundigBox);
 			}

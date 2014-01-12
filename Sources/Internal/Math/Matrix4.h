@@ -153,7 +153,7 @@ struct Matrix4
 	inline bool operator != (const Matrix4 & _m) const;	
     
     
-    static const Matrix4 IDENTITY;
+    static Matrix4 IDENTITY;
 };
 
 inline Vector3 operator * (const Vector3 & _v, const Matrix4 & _m);
