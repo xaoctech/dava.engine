@@ -971,7 +971,7 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 	int32 toolsFlags = scene->GetEnabledTools();
 	if (!scene->IsChanged())
 	{
-		if (toolsFlags != 0)
+		if (toolsFlags)
 		{
 			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 		}
@@ -988,7 +988,7 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 
 	if(answer == QMessageBox::No)
 	{
-		if (toolsFlags != 0)
+		if (toolsFlags)
 		{
 			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, false);
 		}
@@ -996,12 +996,12 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 		return;
 	}
 	
-	if (toolsFlags != 0)
+	if (toolsFlags)
 	{
-		FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
+		FilePath colorSystemTexturePath = scene->customColorsSystem->GetCurrentSaveFileName();
 		if( (toolsFlags & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR) &&
-		    (selectedPathname.IsEmpty() || !selectedPathname.Exists()) &&
-		    !SetCustomColorsTextureToLandscape())
+		    (colorSystemTexturePath.IsEmpty() || !colorSystemTexturePath.Exists()) &&
+		    !SelectCustomColorsTexturePath())
 		{
 			closeRequest->Cancel();
 			return;
@@ -1010,15 +1010,13 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
 		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, true);
 	}
 
-	bool sceneWasSaved = SaveScene(scene);
-    if(sceneWasSaved)
+    if(!SaveScene(scene))
     {
-		closeRequest->Accept();
+        closeRequest->Cancel();
+        return;
     }
-	else
-	{
-		closeRequest->Cancel();
-	}
+	
+    closeRequest->Accept();
 }
 
 
@@ -1967,35 +1965,33 @@ void QtMainWindow::OnCustomColorsEditor()
 		return;
 	}
 	
-	FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+	FilePath currentTexturePath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
 	
-	if (selectedPathname.IsEmpty() || !selectedPathname.Exists())
+	if ((currentTexturePath.IsEmpty() || !currentTexturePath.Exists()) &&
+        !SelectCustomColorsTexturePath())
 	{
-		if(!SetCustomColorsTextureToLandscape())
-		{
-			ui->actionCustomColorsEditor->setChecked(true);
-			return;
-		}
+        ui->actionCustomColorsEditor->setChecked(true);
+		return;
 	}
 	
-	sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor, true));
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR, true);
 	ui->actionCustomColorsEditor->setChecked(false);
 }
 
-bool QtMainWindow::SetCustomColorsTextureToLandscape()
+bool QtMainWindow::SelectCustomColorsTexturePath()
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(!sceneEditor->customColorsSystem->ChangesPresent())
+	if(!sceneEditor)
 	{
 		return false;
 	}
-	FilePath selectedPathname = sceneEditor->GetScenePath().GetDirectory();
+	FilePath scenePath = sceneEditor->GetScenePath().GetDirectory();
 	
 	QString filePath = QtFileDialog::getSaveFileName(NULL,
 													 QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
-													 QString(selectedPathname.GetAbsolutePathname().c_str()),
+													 QString(scenePath.GetAbsolutePathname().c_str()),
 													 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
-	selectedPathname = PathnameToDAVAStyle(filePath);
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
 	Entity* landscape = FindLandscapeEntity(sceneEditor);
 	if (selectedPathname.IsEmpty() || NULL == landscape)
 	{

@@ -210,7 +210,7 @@ protected:
 
 	void DiableUIForFutureUsing();
 	
-	bool SetCustomColorsTextureToLandscape();
+	bool SelectCustomColorsTexturePath();
 	
 protected slots:
 	void ProjectOpened(const QString &path);
