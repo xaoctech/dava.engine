@@ -251,6 +251,9 @@ void TextureCache::clearInsteadThumbnails()
 void TextureCache::clearThumbnail(const DAVA::TextureDescriptor *descriptor)
 {
     RemoveFromCache(cacheThumbnail, descriptor);
+    
+    RemoveSizeFromCache(cacheOriginalSize, descriptor);
+    RemoveSizeFromCache(cacheOriginalFileSize, descriptor);
 }
 
 void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
@@ -263,6 +266,8 @@ void TextureCache::clearConverted(const DAVA::TextureDescriptor *descriptor, con
 	if(gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
         RemoveFromCache(cacheConverted[gpu], descriptor);
+        RemoveSizeFromCache(cacheConvertedSize[gpu], descriptor);
+        RemoveSizeFromCache(cacheConvertedFileSize[gpu], descriptor);
 	}
 }
 
@@ -277,6 +282,19 @@ void TextureCache::RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> 
         }
     }
 }
+
+void TextureCache::RemoveSizeFromCache(DAVA::Map<const DAVA::FilePath, DAVA::uint32> & cache, const DAVA::TextureDescriptor *descriptor)
+{
+    if(descriptor)
+    {
+        DAVA::Map<const DAVA::FilePath, DAVA::uint32>::iterator found = cache.find(descriptor->pathname);
+        if(found != cache.end())
+        {
+            cache.erase(found);
+        }
+    }
+}
+
 
 DAVA::uint32 TextureCache::getOriginalSize(const DAVA::TextureDescriptor *descriptor)
 {
