@@ -28,78 +28,29 @@
 
 
 
-#include "BeastCommandLineTool.h"
+#ifndef __RECENT_FILES_MANAGER_H__
+#define __RECENT_FILES_MANAGER_H__
 
-#include "TexturePacker/CommandLineParser.h"
+#include "DAVAEngine.h"
+#include "Base/StaticSingleton.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-#include "Scene/SceneEditor2.h"
-#include "Scene/SceneHelper.h"
-#include "Commands2/BeastAction.h"
-#include "Qt/Settings/SettingsManager.h"
+#include <QObject>
 
-using namespace DAVA;
 
-#if defined (__DAVAENGINE_BEAST__)
-
-BeastCommandLineTool::BeastCommandLineTool()
-	:	CommandLineTool()
+class RecentFilesManager : public DAVA::Singleton<RecentFilesManager>
 {
-}
 
-void BeastCommandLineTool::PrintUsage()
-{
-    printf("\n");
-    printf("-beast [-file [file]]\n");
-    printf("\twill beast scene file\n");
-    printf("\t-file - full pathname of scene for beasting \n");
-    
-    printf("\n");
-    printf("Samples:\n");
-    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
+public:
 
-}
+	DAVA::Vector<String> GetRecentFiles();
 
-DAVA::String BeastCommandLineTool::GetCommandLineKey()
-{
-    return "-beast";
-}
+	void SetFileToRecent(const DAVA::String&);
 
-bool BeastCommandLineTool::InitializeFromCommandLine()
-{
-    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
-    if(scenePathname.IsEmpty())
-    {
-        errors.insert(String("Incorrect params for beasting of the scene"));
-        return false;
-    }
-    
-    if(!scenePathname.IsEqualToExtension(".sc2"))
-    {
-        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
-        return false;
-    }
-    
-    return true;
-}
+protected:
+	
+	static const int RECENT_FILES_MAX_COUNT = 5;
 
-void BeastCommandLineTool::Process()
-{
-	SceneEditor2 *scene = new SceneEditor2();
-	if(scene->Load(scenePathname))
-	{
-		scene->Update(0.1f);
+};
 
-		scene->Exec(new BeastAction(scene, NULL));
-
-		scene->Save();
-	}
-	SafeRelease(scene);
-}
-
-const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
-{
-    return scenePathname;
-}
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
-
+#endif // __RECENT_FILES_MANAGER_H__

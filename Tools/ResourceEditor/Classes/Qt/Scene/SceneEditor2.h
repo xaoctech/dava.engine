@@ -167,6 +167,11 @@ public:
 	virtual Entity* Clone(Entity *dstNode = NULL);
 
 	DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
+	
+	INTROSPECTION(SceneEditor2, 
+		MEMBER(cameraSystem, "CameraSystem", I_VIEW | I_EDIT)
+		MEMBER(gridSystem, "GridSystem", I_VIEW | I_EDIT)
+		)
 
 protected:
 	bool isLoaded;

@@ -36,7 +36,7 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 
-#include "../Qt/Main/QtUtils.h"
+#include "Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -99,6 +99,7 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 	
     return size;
 }
+
 
 void ImageTools::ConvertImage(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU, const DAVA::PixelFormat format)
 {

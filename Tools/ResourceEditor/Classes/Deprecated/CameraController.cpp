@@ -31,7 +31,7 @@
 
 #include "CameraController.h"
 
-#include "EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "../Qt/Main/QtUtils.h"
 
 
@@ -218,29 +218,25 @@ void WASDCameraController::Input(UIEvent * event)
 
 			case DVKEY_1:
 				{
-					EditorSettings::Instance()->SetCameraSpeedIndex(0);
-					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					SetSpeed(SettingsManager::Instance()->GetValue("CameraSpeedValue_0", SettingsManager::DEFAULT).AsInt32());
 					break;
 				}
 
 			case DVKEY_2:
 				{
-					EditorSettings::Instance()->SetCameraSpeedIndex(1);
-					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					SetSpeed(SettingsManager::Instance()->GetValue("CameraSpeedValue_1", SettingsManager::DEFAULT).AsInt32());
 					break;
 				}
 
 			case DVKEY_3:
 				{
-					EditorSettings::Instance()->SetCameraSpeedIndex(2);
-					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					SetSpeed(SettingsManager::Instance()->GetValue("CameraSpeedValue_2", SettingsManager::DEFAULT).AsInt32());
 					break;
 				}
 
 			case DVKEY_4:
 				{
-					EditorSettings::Instance()->SetCameraSpeedIndex(3);
-					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					SetSpeed(SettingsManager::Instance()->GetValue("CameraSpeedValue_3", SettingsManager::DEFAULT).AsInt32());
 					break;
 				}
 

@@ -762,6 +762,7 @@ void RenderManager::ClearUniformMatrices()
     
 void RenderManager::Stats::Clear()
 {
+	//uint32 matrixMultiplicationCount = Matrix4::matrixMultiplicationCounter;
     drawArraysCalls = 0;
     drawElementsCalls = 0;
     shaderBindCount = 0;
@@ -770,6 +771,7 @@ void RenderManager::Stats::Clear()
 	renderStateFullSwitches = 0;
 	textureStateFullSwitches = 0;
 	attachRenderDataCount = 0;
+	//Matrix4::matrixMultiplicationCounter = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
 }
