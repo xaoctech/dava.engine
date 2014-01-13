@@ -58,7 +58,7 @@ ShadowVolume::ShadowVolume()
 	
 	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();
 	shadowMat->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	parentShadowVolume->AddChild(shadowMat);
+	shadowMat->SetParent(parentShadowVolume);
 	
 	SetMaterial(shadowMat);
 	
