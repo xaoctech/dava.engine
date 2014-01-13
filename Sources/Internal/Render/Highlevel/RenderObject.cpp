@@ -48,6 +48,8 @@ RenderObject::RenderObject()
     ,   debugFlags(0)
     ,   worldTransform(0)
 	,	renderSystem(0)
+	,	lodIndex(-1)
+	,	switchIndex(-1)
 {
 }
     
@@ -56,19 +58,29 @@ RenderObject::~RenderObject()
 	uint32 size = renderBatchArray.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		renderBatchArray[i]->Release();
+		renderBatchArray[i].renderBatch->Release();
 	}
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
+	AddRenderBatch(batch, -1, -1);
+}
+  
+void RenderObject::AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex)
+{
 	batch->Retain();
 	batch->SetRenderObject(this);
-    renderBatchArray.push_back(batch);
-    //batch->AttachToRenderSystem(renderSystem);
+	
+	IndexedRenderBatch ind;
+	ind.lodIndex = lodIndex;
+	ind.switchIndex = switchIndex;
+	ind.renderBatch = batch;
+    renderBatchArray.push_back(ind);
+
     if (renderSystem)
         renderSystem->RegisterBatch(batch);
-    
+            
     const AABBox3 & boundingBox = batch->GetBoundingBox();
 //    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
 //             boundingBox.min.y != AABBOX_INFINITY &&
@@ -85,7 +97,20 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
     batch->SetRenderObject(0);
 	batch->Release();
 
-    FindAndRemoveExchangingWithLast(renderBatchArray, batch);
+
+	uint32 size = (uint32)renderBatchArray.size();
+	for (uint32 k = 0; k < size; ++k)
+	{
+		if (renderBatchArray[k].renderBatch == batch)
+		{
+			renderBatchArray[k] = renderBatchArray[size - 1];
+			renderBatchArray.pop_back();
+			break;
+		}
+	}
+
+	FindAndRemoveExchangingWithLast(activeRenderBatchArray, batch);
+
     RecalcBoundingBox();
 }
     
@@ -96,7 +121,7 @@ void RenderObject::RecalcBoundingBox()
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        bbox.AddAABBox(renderBatchArray[k]->GetBoundingBox());
+        bbox.AddAABBox(renderBatchArray[k].renderBatch->GetBoundingBox());
     }
 }
     
@@ -214,6 +239,38 @@ void RenderObject::RecalculateWorldBoundingBox()
 {
 	DVASSERT(!bbox.IsEmpty());
 	bbox.GetTransformedBox(*worldTransform, worldBBox);
+}
+
+void RenderObject::SetLodIndex(int32 _lodIndex)
+{
+	if(lodIndex != _lodIndex)
+	{
+		lodIndex = _lodIndex;
+		UpdateActiveRenderBatches();
+	}
+}
+
+void RenderObject::SetSwitchIndex(int32 _switchIndex)
+{
+	if(switchIndex != _switchIndex)
+	{
+		switchIndex = _switchIndex;
+		UpdateActiveRenderBatches();
+	}
+}
+
+void RenderObject::UpdateActiveRenderBatches()
+{
+	activeRenderBatchArray.clear();
+	uint32 size = renderBatchArray.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		IndexedRenderBatch & irb = renderBatchArray[i];
+		if(irb.lodIndex == lodIndex && irb.switchIndex == switchIndex)
+		{
+			activeRenderBatchArray.push_back(irb.renderBatch);
+		}
+	}
 }
 
 };
