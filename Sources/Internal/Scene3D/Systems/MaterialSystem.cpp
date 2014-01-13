@@ -128,7 +128,7 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
     return currentMaterialQuality;
 }
 
-void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
+void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName, bool force)
 {
     Set<NMaterial*> materials;
     BuildMaterialList(GetScene(), materials, NMaterial::MATERIALTYPE_MATERIAL);
@@ -136,7 +136,10 @@ void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
     Set<NMaterial *>::const_iterator endIt = materials.end();
     for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        (*it)->SwitchQuality(qualityLevelName);
+		NMaterial* material = *it;
+		
+		material->SetQuality(qualityLevelName);
+        material->ReloadQuality(force);
     }
 }
     
