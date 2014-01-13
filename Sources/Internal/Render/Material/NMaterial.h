@@ -230,7 +230,13 @@ public:
 	virtual void Save(KeyedArchive * archive, SerializationContext * serializationContext);
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
 	
-	bool SwitchQuality(const FastName& stateName);
+	//SetQuality just sets desired quality level and does nothing more
+	void SetQuality(const FastName& stateName);
+	
+	//use ReloadQuality to apply desired quality level
+	bool ReloadQuality(bool force = false);
+	
+	//bool SwitchQuality(const FastName& stateName);
 	
 	NMaterial* Clone();
 	NMaterial* Clone(const String& newName);
@@ -368,6 +374,7 @@ protected:
 	FastName activePassName;
 	
 	FastName currentQuality;
+	FastName orderedQuality;
 			
     IlluminationParams * illuminationParams;
 	
