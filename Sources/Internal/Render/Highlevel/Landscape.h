@@ -445,7 +445,9 @@ protected:
 	uint32 drawIndices;
 	
 	void SetFogInternal(BaseObject * caller, void * param, void *callerData);
-    
+
+	void SetDefaultValues();
+
 public:
    
 #if defined(LANDSCAPE_SPECULAR_LIT)

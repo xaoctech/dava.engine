@@ -28,43 +28,29 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SETTINGS_DIALOG__
-#define __RESOURCEEDITORQT__SETTINGS_DIALOG__
+#ifndef __RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__
+#define __RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__
 
 #include <QDialog.h>
-#include <QTabWidget.h>
 #include <QVBoxLayout>
 #include <QPushButton.h>
-#include <QDialogButtonBox>
 #include "DAVAEngine.h"
-#include "GeneralSettingsEditor.h"
-#include "SystemsSettingsEditor.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 
-class DAVA::Entity;
-
-
-class SettingsDialogQt: public QDialog
+class SceneSettingsDialog: public QDialog
 {
-	Q_OBJECT
-	
 public:
-	explicit SettingsDialogQt(QWidget* parent = 0);
+	explicit SceneSettingsDialog(QWidget* parent = 0);
 	
-	~SettingsDialogQt();
+	~SceneSettingsDialog();
 
-	void AddTab(QWidget* tabContent, const QString& tabName);
-
-public	slots:
-	
-	void reject();
-	
 protected:
+
+	void InitSceneSettingsEditor();
 	
-	QTabWidget* tabWidget;
-	QVBoxLayout* mainLayout;
-	QDialogButtonBox* btnBox;
-	GeneralSettingsEditor* generalSettingsTab;
-	SystemsSettingsEditor* systemsSettingsTab;
+	QVBoxLayout*		mainLayout;
+	QPushButton*		btnOk;
+	QtPropertyEditor*	sceneSettingsEditor;
 	
 };
-#endif /* defined(__RESOURCEEDITORQT__SETTINGS_DIALOG__) */
+#endif /* defined(__RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__) */

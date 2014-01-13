@@ -27,62 +27,43 @@
 =====================================================================================*/
 
 
-
-#include "SettingsDialogQt.h"
-#include "../QtPropertyEditor/QtPropertyEditor.h"
-#include "Main/mainwindow.h"
-
-#define TAB_CONTENT_WIDTH 500
-#define TAB_CONTENT_HEIGHT 400
+#include "RecentFilesManager.h"
+#include "Qt/Settings/SettingsManager.h"
 
 
-SettingsDialogQt::SettingsDialogQt( QWidget* parent)
-		:QDialog(parent)
+DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
 {
-	setWindowTitle("Settings");
-	tabWidget = new QTabWidget;
-	
-	
-	generalSettingsTab = new GeneralSettingsEditor(this);
-	generalSettingsTab->setMinimumSize(QSize(TAB_CONTENT_WIDTH,TAB_CONTENT_HEIGHT));
-	tabWidget->addTab(generalSettingsTab, "General");
-	
-	btnBox = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);;
-	connect(btnBox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(btnBox, SIGNAL(rejected()), this, SLOT(reject()));
+	DAVA::Vector<String> retVector;
+	VariantType recentFilesVariant = SettingsManager::Instance()->GetValue("recentFiles", SettingsManager::INTERNAL);
+	if(recentFilesVariant.GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+	{
+		KeyedArchive* archiveRecentFiles = recentFilesVariant.AsKeyedArchive();
+		DAVA::int32 size = archiveRecentFiles->Count();
+		retVector.resize(size);
+		for (DAVA::uint32 i = 0; i < size; ++i)
+		{
+			retVector[i] = archiveRecentFiles->GetString(Format("%d", i));
+		}
 		
-	mainLayout = new QVBoxLayout;
-	mainLayout->addWidget(tabWidget);
-
-	systemsSettingsTab = NULL;
-	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-	if (NULL !=sceneEditor)
-	{
-		systemsSettingsTab = new SystemsSettingsEditor(this);
-		tabWidget->addTab(systemsSettingsTab, "Systems");
 	}
-	mainLayout->addWidget(btnBox);
-	setLayout(mainLayout);
+	return retVector;
 }
 
-SettingsDialogQt::~SettingsDialogQt()
+void RecentFilesManager::SetFileToRecent(const DAVA::String& file)
 {
-	if(systemsSettingsTab)
-	{
-		delete systemsSettingsTab;
-	}
-	delete generalSettingsTab;
-	delete btnBox;
-	delete tabWidget;
-}
-
-
-void SettingsDialogQt::reject()
-{
-	generalSettingsTab->RestoreInitialSettings();
-	if(systemsSettingsTab)
-	{
-		systemsSettingsTab->RestoreInitialSettings();
-	}
-	QDialog::reject();
+    DAVA::Vector<String> vectorToSave = GetRecentFiles();
+    DAVA::FilePath filePath(file);
+    DAVA::String stringToInsert = filePath.GetAbsolutePathname();
+    //check present set to avoid duplicates
+    vectorToSave.erase(std::remove(vectorToSave.begin(), vectorToSave.end(), stringToInsert), vectorToSave.end());
+    
+    vectorToSave.insert(vectorToSave.begin(), stringToInsert);
+    DAVA::uint32 size = vectorToSave.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : vectorToSave.size();
+    KeyedArchive* archive = new KeyedArchive();
+    for (DAVA::int32 i = 0; i < size; ++i)
+    {
+        archive->SetString(Format("%d",i), vectorToSave[i]);
+    }
+    SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
+    SafeRelease( archive);
 }

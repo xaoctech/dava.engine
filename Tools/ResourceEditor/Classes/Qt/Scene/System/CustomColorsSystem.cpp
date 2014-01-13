@@ -39,7 +39,7 @@
 #include "Commands2/KeyedArchiveCommand.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Scene/SceneSignals.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
@@ -110,6 +110,10 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	{
 		LoadTexture(filePath, false);
 	}
+	else
+	{
+		drawSystem->GetCustomColorsProxy()->UpdateSpriteFromConfig();
+	}
 
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
@@ -128,13 +132,26 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
 	return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
-bool CustomColorsSystem::DisableLandscapeEdititing()
+bool CustomColorsSystem::ChangesPresent()
+{
+	if(drawSystem && drawSystem->GetCustomColorsProxy())
+	{
+		return drawSystem->GetCustomColorsProxy()->GetChangesCount() > 0;
+	}
+	return false;
+}
+
+bool CustomColorsSystem::DisableLandscapeEdititing( bool saveNeeded)
 {
 	if (!enabled)
 	{
 		return true;
 	}
-
+	
+	if (drawSystem->GetCustomColorsProxy()->GetChangesCount() && saveNeeded)
+	{	
+		SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
+	}
 	FinishEditing();
 
 	selectionSystem->SetLocked(false);
@@ -145,14 +162,8 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 	
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTexture(NULL);
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTextureEnabled(false);
-	
 	enabled = false;
-
-	if (drawSystem->GetCustomColorsProxy()->GetChangesCount())
-	{
-		SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
-	}
-
+	
 	return !enabled;
 }
 
@@ -485,7 +496,7 @@ String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolute
 	if(absolutePath.IsEmpty())
 		return String();
 
-	return absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
+	return absolutePath.GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()));
 }
 
 FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
@@ -493,7 +504,7 @@ FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relati
 	if(relativePath.empty())
 		return FilePath();
 	
-	return (EditorSettings::Instance()->GetProjectPath() + relativePath);
+	return (FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()) + relativePath);
 }
 
 int32 CustomColorsSystem::GetBrushSize()

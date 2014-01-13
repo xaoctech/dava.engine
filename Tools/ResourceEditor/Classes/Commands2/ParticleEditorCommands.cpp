@@ -30,7 +30,7 @@
 
 #include "ParticleEditorCommands.h"
 #include "DAVAEngine.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"
@@ -700,7 +700,7 @@ void CommandLoadInnerEmitterFromYaml::Execute()
         return;
     }
     
-    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+    QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
                                                     projectPath, QString("YAML File (*.yaml)"));
 	if (filePath.isEmpty())
@@ -746,7 +746,7 @@ void CommandSaveInnerEmitterToYaml::Execute()
 	FilePath yamlPath = emitter->GetConfigPath();
     if (this->forceAskFilename || yamlPath.IsEmpty() )
     {
-        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+        QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL)->AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
         QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
 		
