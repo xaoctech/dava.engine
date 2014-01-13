@@ -345,17 +345,18 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
         actionConvert->setData(fileInfoAsVariant);
         actionConvertGeometry->setData(fileInfoAsVariant);
     }
-    else if(pathname.IsEqualToExtension(".tex"))
-    {
-        QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEditTextureDescriptor()));
-        actionEdit->setData(fileInfoAsVariant);
-    }
-    else if(pathname.IsEqualToExtension(".png"))
-    {
-        QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEditTextureDescriptor()));
-        actionEdit->setData(fileInfoAsVariant);
-    }
-    
+//TODO: disabled for furure realization of this code
+//    else if(pathname.IsEqualToExtension(".tex"))
+//    {
+//        QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEditTextureDescriptor()));
+//        actionEdit->setData(fileInfoAsVariant);
+//    }
+//    else if(pathname.IsEqualToExtension(".png"))
+//    {
+//        QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEditTextureDescriptor()));
+//        actionEdit->setData(fileInfoAsVariant);
+//    }
+//ENDOFTODO
     
     contextMenu.addSeparator();
     QAction * actionRevealAt = contextMenu.addAction("Reveal at folder", this, SLOT(OnRevealAtFolder()));
