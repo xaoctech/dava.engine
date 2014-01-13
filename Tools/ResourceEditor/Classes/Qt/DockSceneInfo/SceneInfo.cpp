@@ -39,7 +39,7 @@
 
 #include "Render/TextureDescriptor.h"
 
-#include "../../ImageTools/ImageTools.h"
+#include "ImageTools/ImageTools.h"
 
 #include "CubemapEditor/MaterialHelper.h"
 
