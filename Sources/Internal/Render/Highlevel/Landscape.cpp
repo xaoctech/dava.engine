@@ -155,7 +155,7 @@ Landscape::Landscape()
 	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
 	landscapeParent->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	landscapeParent->AddChild(tileMaskMaterial);
+	tileMaskMaterial->SetParent(landscapeParent);
 	
 	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_TILE_DETAIL_MASK);
@@ -166,6 +166,7 @@ Landscape::Landscape()
 	
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
+	chunk->SetSortingKey(10);
 	AddRenderBatch(chunk);
 	SafeRelease(chunk);
 	SafeRelease(landscapeParent);

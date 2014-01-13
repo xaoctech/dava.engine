@@ -95,17 +95,7 @@ void MaterialSystem::AddEntity(Entity * entity)
     }
 }
 
-void MaterialSystem::BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList) const
-{
-    if(!forEntity) return;
-
-    List<NMaterial*> materials;
-    forEntity->GetDataNodes(materials);
-
-    materialList.insert(materials.begin(), materials.end());
-}
-
-void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materialName, Set<NMaterial*>& materialList) const
+void MaterialSystem::BuildMaterialList(Entity *forEntity, Set<NMaterial*>& materialList, NMaterial::eMaterialType materialType, bool includeRuntime) const
 {
     if(!forEntity) return;
     
@@ -115,24 +105,8 @@ void MaterialSystem::BuildMaterialList(Entity *forEntity, const FastName& materi
     List<NMaterial *>::const_iterator endIt = materials.end();
     for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        if((*it)->GetMaterialName() == materialName)
-        {
-            materialList.insert(*it);
-        }
-    }
-}
-    
-void MaterialSystem::BuildMaterialList(Entity *forEntity, NMaterial::eMaterialType materialType, Set<NMaterial*>& materialList) const
-{
-    if(!forEntity) return;
-    
-    List<NMaterial*> materials;
-    forEntity->GetDataNodes(materials);
-    
-    List<NMaterial *>::const_iterator endIt = materials.end();
-    for(List<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
-    {
-        if((*it)->GetMaterialType() == materialType)
+        if( (materialType == NMaterial::MATERIALTYPE_NONE || materialType == (*it)->GetMaterialType()) && // filter by material type
+			(includeRuntime || !((*it)->GetNodeGlags() & DataNode::NodeRuntimeFlag)))
         {
             materialList.insert(*it);
         }
@@ -154,15 +128,18 @@ const FastName& MaterialSystem::GetCurrentMaterialQuality() const
     return currentMaterialQuality;
 }
 
-void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName)
+void MaterialSystem::SwitchMaterialQuality(const FastName& qualityLevelName, bool force)
 {
     Set<NMaterial*> materials;
-    BuildMaterialList(GetScene(), NMaterial::MATERIALTYPE_MATERIAL, materials);
+    BuildMaterialList(GetScene(), materials, NMaterial::MATERIALTYPE_MATERIAL);
     
     Set<NMaterial *>::const_iterator endIt = materials.end();
     for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        (*it)->SwitchQuality(qualityLevelName);
+		NMaterial* material = *it;
+		
+		material->SetQuality(qualityLevelName);
+        material->ReloadQuality(force);
     }
 }
     

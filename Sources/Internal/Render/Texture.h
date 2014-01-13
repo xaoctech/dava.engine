@@ -261,7 +261,7 @@ public:
     
 	static const TexturesMap & GetTextureMap();
     
-    int32 GetDataSize() const;
+    uint32 GetDataSize() const;
 
     static void SetDefaultGPU(eGPUFamily gpuFamily);
     static eGPUFamily GetDefaultGPU();
@@ -269,6 +269,8 @@ public:
     
     inline const eGPUFamily GetSourceFileGPUFamily() const;
     inline TextureDescriptor * GetDescriptor() const;
+
+	PixelFormat GetFormat() const;
 
 protected:
     
@@ -303,9 +305,6 @@ protected:
 	virtual ~Texture();
     
     Image * ReadDataToImage();
-    
-	static Texture * pinkPlaceholder;
-	static Texture * pinkCubePlaceholder;
     
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
@@ -345,7 +344,6 @@ public:							// properties for fast access
     uint32		width:16;			// texture width
 	uint32		height:16;			// texture height
 
-	PixelFormat format:8;			// texture format
     eGPUFamily loadedAsFile:3;
 	TextureState state:2;
 	uint32		textureType:2;

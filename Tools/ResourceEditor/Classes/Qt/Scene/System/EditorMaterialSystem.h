@@ -26,64 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __EDITOR_MATERIAL_SYSTEM_H__
+#define __EDITOR_MATERIAL_SYSTEM_H__
 
+#include "DAVAEngine.h"
 
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
-
-namespace DAVA
+class Command2;
+class EditorMaterialSystem : public DAVA::SceneSystem
 {
+	friend class SceneEditor2;
 
-REGISTER_CLASS(SwitchComponent)
+public:
+	EditorMaterialSystem(DAVA::Scene * scene);
+	virtual ~EditorMaterialSystem();
 
+	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
 
-SwitchComponent::SwitchComponent()
-:	oldSwitchIndex(-1),
-	newSwitchIndex(0)
-{
+protected:
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
 
-}
+	void Update(DAVA::float32 timeElapsed);
+	void Draw();
 
-Component * SwitchComponent::Clone(Entity * toEntity)
-{
-	SwitchComponent * newComponent = new SwitchComponent();
-	newComponent->SetEntity(toEntity);
-	GlobalEventSystem::Instance()->Event(toEntity, EventSystem::SWITCH_CHANGED);
-	return newComponent;
-}
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
 
-void SwitchComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	Component::Serialize(archive, serializationContext);
+	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
+	void RemMaterial(DAVA::NMaterial *material);
 
-	if(NULL != archive)
+private:
+	struct MaterialFB
 	{
-		archive->SetInt32("sc.switchindex", newSwitchIndex);
-	}
-}
+		MaterialFB() : entity(NULL), batch(NULL) {}
 
-void SwitchComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	Component::Deserialize(archive, serializationContext);
-	
-	if(NULL != archive)
-	{
-		SetSwitchIndex(archive->GetInt32("sc.switchindex"));
-	}
-}
+		DAVA::Entity *entity;
+		DAVA::RenderBatch *batch;
+	};
 
-void SwitchComponent::SetSwitchIndex(const int32 & _switchIndex)
-{
-	newSwitchIndex = _switchIndex;
+	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
+	DAVA::Set<DAVA::NMaterial *> ownedParents;
+};
 
-	GlobalEventSystem::Instance()->Event(entity, EventSystem::SWITCH_CHANGED);
-}
-
-int32 SwitchComponent::GetSwitchIndex() const
-{
-	return newSwitchIndex;
-}
-
-}
+#endif // __EDITOR_MATERIAL_SYSTEM_H__

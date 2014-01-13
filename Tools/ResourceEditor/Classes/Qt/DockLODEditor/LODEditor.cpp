@@ -234,7 +234,7 @@ void LODEditor::LODDataChanged()
         SetSpinboxValue(distanceWidgets[i].distance, distance);
         ui->distanceSlider->SetDistance(i, distance);
         
-        distanceWidgets[i].name->setText(Format("%d. (%d):", i, editedLODData->GetLayerTriangles(i)));
+        distanceWidgets[i].name->setText(Format("%d. (%d):", i, editedLODData->GetLayerTriangles(i)).c_str());
     }
     for (DAVA::int32 i = lodLayersCount; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -306,7 +306,7 @@ void LODEditor::SetForceLayerValues(int layersCount)
     ui->forceLayer->addItem("Auto", QVariant(DAVA::LodComponent::INVALID_LOD_LAYER));
     for(DAVA::int32 i = 0; i < layersCount; ++i)
     {
-        ui->forceLayer->addItem(Format("%d", i), QVariant(i));
+        ui->forceLayer->addItem(Format("%d", i).c_str(), QVariant(i));
     }
     
     int requestedIndex = editedLODData->GetForceLayer() + 1;

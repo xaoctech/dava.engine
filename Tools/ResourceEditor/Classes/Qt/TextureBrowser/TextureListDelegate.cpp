@@ -37,6 +37,8 @@
 #include <QPainter>
 #include <QFileInfo>
 
+#include "Main/QtUtils.h"
+
 #define TEXTURE_PREVIEW_SIZE 80
 #define TEXTURE_PREVIEW_SIZE_SMALL 24
 #define BORDER_MARGIN 1
@@ -94,7 +96,7 @@ void TextureListDelegate::textureReadyThumbnail(const DAVA::TextureDescriptor *d
 		{
 			QModelIndex index = descriptorIndexes[descriptor];
 			descriptorIndexes.remove(descriptor);
-
+            
 			// this will force item with given index to redraw
 			emit sizeHintChanged(index);
 		}
@@ -118,12 +120,12 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		QString texturePath = curTextureDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str();
 		QString textureName = QFileInfo(texturePath).fileName();
 		QSize textureDimension = QSize();
-		QVariant textureDataSize = 0;
+		QString textureDataSize = 0;
 
 		if(NULL != curTexture)
 		{
 			textureDimension = QSize(curTexture->width, curTexture->height);
-			textureDataSize = curTexture->GetDataSize();
+            textureDataSize = QString::fromStdString(SizeInBytesToString(TextureCache::Instance()->getOriginalSize(curTextureDescriptor)));
 		}
 
 		painter->save();
@@ -181,7 +183,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 			//infoText += "Dimension: ";
 			infoText += dimen;
 			infoText += "\nData size: ";
-			infoText += textureDataSize.toString();
+			infoText += textureDataSize;
 
 			painter->drawText(textRect, infoText);
 		}
