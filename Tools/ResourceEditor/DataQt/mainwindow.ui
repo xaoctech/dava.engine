@@ -350,13 +350,6 @@
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
     </widget>
-    <widget class="QMenu" name="menuBeast">
-     <property name="title">
-      <string>Beast</string>
-     </property>
-     <addaction name="actionBeast"/>
-     <addaction name="actionBeastAndSave"/>
-    </widget>
     <widget class="QMenu" name="menuObjectTypes">
      <property name="title">
       <string>Collision Type</string>
@@ -375,6 +368,7 @@
     </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
+    <addaction name="actionConvertModifiedTextures"/>
     <addaction name="separator"/>
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
@@ -391,8 +385,7 @@
     <addaction name="actionSkyboxEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
-    <addaction name="separator"/>
-    <addaction name="menuBeast"/>
+    <addaction name="actionBeastAndSave"/>
     <addaction name="separator"/>
     <addaction name="menuObjectTypes"/>
     <addaction name="actionHangingObjects"/>
@@ -1464,14 +1457,12 @@
     <string>Import SpeedTree</string>
    </property>
   </action>
-  <action name="actionBeast">
-   <property name="text">
-    <string>Beast</string>
-   </property>
-  </action>
   <action name="actionBeastAndSave">
    <property name="text">
-    <string>Beast And Save</string>
+    <string>Generate Lightmaps</string>
+   </property>
+   <property name="toolTip">
+    <string>Generate Lightmaps</string>
    </property>
   </action>
   <action name="actionAddActionComponent">
@@ -1658,7 +1649,7 @@
      <normaloff>:/QtIconsTextureDialog/convert.png</normaloff>:/QtIconsTextureDialog/convert.png</iconset>
    </property>
    <property name="text">
-    <string>Convert Modified texture's PNGs.</string>
+    <string>Convert Modified texture's PNGs</string>
    </property>
   </action>
  </widget>

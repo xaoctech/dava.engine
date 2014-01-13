@@ -125,11 +125,11 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
         RemoveEditorCustomProperties(scene);
     }
 
+    ExportDescriptors(scene, errorLog);
+
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
-
-    ExportDescriptors(scene, errorLog);
 
     ExportLandscape(scene, errorLog);
 
@@ -220,7 +220,7 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
     DAVA::TexturesMap textures;
-    SceneHelper::EnumerateTextures(scene, textures);
+    SceneHelper::EnumerateSceneTextures(scene, textures);
 
     auto endIt = textures.end();
     for(auto it = textures.begin(); it != endIt; ++it)
@@ -378,6 +378,10 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
 		eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
 		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
+        
+        DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
+        DAVA::Texture *tex = texturesMap[FILEPATH_MAP_KEY(descriptor->pathname)];
+        tex->Reload();
     }
 }
 

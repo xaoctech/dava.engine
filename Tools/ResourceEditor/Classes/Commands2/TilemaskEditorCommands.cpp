@@ -254,3 +254,35 @@ void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
 	SafeRelease(texture);
 	SafeRelease(srcSprite);
 }
+
+
+SetTileColorCommand::SetTileColorCommand(LandscapeProxy* landscapeProxy,
+										 Landscape::eTextureLevel level,
+										 const Color& color)
+:	Command2(CMDID_SET_TILE_COLOR, "Set tile color")
+,	level(level)
+,	redoColor(color)
+{
+	this->landscapeProxy = SafeRetain(landscapeProxy);
+	undoColor = landscapeProxy->GetLandscapeTileColor(level);
+}
+
+SetTileColorCommand::~SetTileColorCommand()
+{
+	SafeRelease(landscapeProxy);
+}
+
+void SetTileColorCommand::Undo()
+{
+	landscapeProxy->SetLandscapeTileColor(level, undoColor);
+}
+
+void SetTileColorCommand::Redo()
+{
+	landscapeProxy->SetLandscapeTileColor(level, redoColor);
+}
+
+Entity* SetTileColorCommand::GetEntity() const
+{
+	return NULL;
+}

@@ -54,8 +54,7 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
-    :   renderLayerManager()
-    ,   renderPassManager(this)
+    :   renderPassManager(this)
     ,   camera(0)
     ,   clipCamera(0)
 {
@@ -408,7 +407,7 @@ void RenderSystem::SetShadowRectColor(const Color &color)
     shadowRect->SetColor(color);
 }
     
-const Color & RenderSystem::GetShadowRectColor()
+const Color & RenderSystem::GetShadowRectColor() const
 {
     ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
     DVASSERT(shadowVolume);

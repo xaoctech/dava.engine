@@ -183,6 +183,9 @@ public:
 	uint8 faceDescription;
     
     bool isCompressedFile;
+
+	//moved from Texture
+	PixelFormat format:8;			// texture format
 };
     
 };

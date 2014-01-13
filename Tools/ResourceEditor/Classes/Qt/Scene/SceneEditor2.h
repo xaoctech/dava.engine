@@ -59,8 +59,11 @@
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/OwnersSignatureSystem.h"
 #include "Main/Request.h"
+#include "Scene/System/EditorMaterialSystem.h"
 
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
+
+class FogSettingsChangedReceiver;
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -101,6 +104,7 @@ public:
 	BeastSystem	*beastSystem;
 	OwnersSignatureSystem *ownersSignatureSystem;
     StaticOcclusionBuildSystem * staticOcclusionBuildSystem;
+	EditorMaterialSystem *materialSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -123,6 +127,7 @@ public:
 
 	void Exec(Command2 *command);
 	void ClearCommands(int commandId);
+    void ClearAllCommands();
 	const CommandStack* GetCommandStack() const;
 
 	// checks whether the scene changed since the last save

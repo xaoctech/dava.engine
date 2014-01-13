@@ -110,6 +110,8 @@ public:
 		uint32 renderStateSwitches;
 		uint32 renderStateFullSwitches;
 		uint32 textureStateFullSwitches;
+		
+		uint32 attachRenderDataCount;
     };
     
     static void Create(Core::eRenderer renderer);
@@ -565,6 +567,11 @@ public:
 	inline UniqueHandle GetDefault3DStateHandle() const
 	{
 		return default3DRenderStateHandle;
+	}
+	
+	inline UniqueHandle GetDefaultHardwareStateHandle() const
+	{
+		return defaultHardwareState;
 	}
 	
 	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)

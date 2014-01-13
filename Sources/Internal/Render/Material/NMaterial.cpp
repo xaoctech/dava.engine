@@ -74,8 +74,9 @@ namespace DAVA
 	const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 	const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 	const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-	const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
+    const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
@@ -92,7 +93,17 @@ namespace DAVA
 		NMaterial::TEXTURE_DECAL
 	};
 	
+	static FastName RUNTIME_ONLY_FLAGS[] =
+	{
+		NMaterial::FLAG_LIGHTMAPONLY,
+		NMaterial::FLAG_TEXTUREONLY,
+		NMaterial::FLAG_SETUPLIGHTMAP
+	};
+	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
+	
+	Texture* NMaterial::stubCubemapTexture = NULL;
+	Texture* NMaterial::stub2dTexture = NULL;
 		
 ////////////////////////////////////////////////////////////////////////////////
 	
@@ -120,12 +131,7 @@ namespace DAVA
 	
 	NMaterial::~NMaterial()
 	{
-		if(parent)
-		{
-			parent->RemoveChild(this);
-			
-			SafeRelease(parent);
-		}
+		SetParent(NULL);
 
 		ReleaseInstancePasses();
 		
@@ -158,12 +164,13 @@ namespace DAVA
 		SafeRelease(baseTechnique);
 	}
 			
-	void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
+	/*void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
 		DVASSERT(this != material);
 		
+		material->materialSortKey = (uint16)((pointer_size)this);
 		children.push_back(material);
 		
 		this->Retain();
@@ -187,6 +194,41 @@ namespace DAVA
 			//CleanupUnusedTextures();
 		
 			this->Release();
+		}
+	}*/
+	
+	void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
+	{
+		DVASSERT(this != newParent);
+		
+		if(newParent != parent &&
+		   newParent != this)
+		{
+			if(parent)
+			{
+				Vector<NMaterial*>::iterator curMaterial = std::find(parent->children.begin(),
+																	 parent->children.end(),
+																	 this);
+				
+				DVASSERT(curMaterial != parent->children.end());
+				if(curMaterial != parent->children.end())
+				{
+					parent->children.erase(curMaterial);
+				}
+				
+				SafeRelease(parent);
+			}
+			
+			if(newParent)
+			{
+				DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
+				
+				newParent->children.push_back(this);
+			}
+			
+			parent = SafeRetain(newParent);;
+			
+			OnParentChanged(newParent, inheritTemplate);
 		}
 	}
 
@@ -232,6 +274,10 @@ namespace DAVA
 		   parent)
 		{
 			archive->SetUInt64("parentMaterialKey", parent->materialKey);
+			//Logger::FrameworkDebug("[NMaterial::Save] Parent: %s, Child %s, parent key% %ld",
+			//					   parent->GetName().c_str(),
+			//					   this->GetName().c_str(),
+			//					   parent->materialKey);
 		}
 		
 		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
@@ -307,7 +353,10 @@ namespace DAVA
 			it != materialSetFlags.end();
 			++it)
 		{
-			materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			if(!IsRuntimeFlag(it->first))
+			{
+				materialSetFlagsArchive->SetInt32(it->first.c_str(), it->second);
+			}
 		}
 		archive->SetArchive("setFlags", materialSetFlagsArchive);
 		SafeRelease(materialSetFlagsArchive);
@@ -329,6 +378,7 @@ namespace DAVA
 		materialName = FastName(archive->GetString("materialName"));
 		materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
 		materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
+		pointer = materialKey;
 		
 		DataNode::SetName(materialName.c_str());
 		
@@ -509,7 +559,7 @@ namespace DAVA
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
-			parent->AddChild(clonedMaterial);
+			clonedMaterial->SetParent(parent);
 		}
 		
 		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
@@ -927,7 +977,7 @@ namespace DAVA
 		baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 		
 		DVASSERT(baseTechnique);
-		materialSortKey = baseTechnique->GetTechniqueId();
+		//materialSortKey = baseTechnique->GetTechniqueId();
 		
 		uint32 passCount = baseTechnique->GetPassCount();
 		for(uint32 i = 0; i < passCount; ++i)
@@ -935,6 +985,8 @@ namespace DAVA
 			RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
 			UpdateRenderPass(baseTechnique->GetPassName(i), effectiveFlags, pass);
 		}
+		
+		SetTexturesDirty();
         
         SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 	}
@@ -959,7 +1011,7 @@ namespace DAVA
 		
 		passInstance->renderState.textureState = InvalidUniqueHandle;
 		passInstance->texturesDirty = false;
-		passInstance->renderState.shader = pass->RetainShader(instanceDefines);
+		passInstance->renderState.shader = pass->CompileShader(instanceDefines);
 		passInstance->renderState.scissorRect = parentRenderState->scissorRect;
 		passInstance->renderState.renderer = parentRenderState->renderer;
 		passInstance->renderState.color = parentRenderState->color;
@@ -1163,7 +1215,7 @@ namespace DAVA
 			if(NULL == textureData.textures[texIt->second])
 			{
 				//VI: this case is mostly for ResEditor
-				textureData.textures[texIt->second] = Texture::CreatePink();
+				textureData.textures[texIt->second] = GetStubTexture(texIt->first);
 			}
 		}
 		
@@ -1178,6 +1230,32 @@ namespace DAVA
 		}
 		
 		passInstance->texturesDirty = false;
+	}
+	
+	Texture* NMaterial::GetStubTexture(const FastName& uniformName)
+	{
+		Texture* stubTex = NULL;
+		
+		if(NMaterial::TEXTURE_CUBEMAP == uniformName)
+		{
+			if(NULL == stubCubemapTexture)
+			{
+				stubCubemapTexture = Texture::CreatePink(Texture::TEXTURE_CUBE);
+			}
+			
+			stubTex = stubCubemapTexture;
+		}
+		else
+		{
+			if(NULL == stub2dTexture)
+			{
+				stub2dTexture = Texture::CreatePink(Texture::TEXTURE_2D);
+			}
+			
+			stubTex = stub2dTexture;
+		}
+		
+		return stubTex;
 	}
 	
 	void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
@@ -1309,6 +1387,8 @@ namespace DAVA
 		RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
 		RenderManager::Instance()->AttachRenderData();
 		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
+		
 		// TODO: rethink this code
 		if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 		{
@@ -1327,6 +1407,8 @@ namespace DAVA
 		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(renderData);
 		RenderManager::Instance()->AttachRenderData();
+		
+		//Logger::FrameworkDebug("[Material::Draw] %s", baseTechnique->GetName().c_str());
 		
 		// TODO: rethink this code
 		if(renderData->GetIndexBufferID() != 0)
@@ -1484,7 +1566,7 @@ namespace DAVA
 				RenderPassInstance* pass = it->second;
 				RenderTechniquePass* techniquePass = baseTechnique->GetPassByName(it->first);
 				
-				pass->renderState.shader = techniquePass->RetainShader(effectiveFlags);
+				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
 		}
@@ -1534,13 +1616,27 @@ namespace DAVA
 		NMaterial* parentMat = CreateMaterial(materialName, templateName, defaultQuality);
 		
 		NMaterial* mat = CreateMaterialInstance();
-		parentMat->AddChild(mat);
+		mat->SetParent(parentMat);
 		
 		SafeRelease(parentMat);
 		
 		return mat;
 	}
 
+	bool NMaterial::IsRuntimeFlag(const FastName& flagName)
+	{
+		bool result = false;
+		for(size_t i = 0; i < COUNT_OF(RUNTIME_ONLY_FLAGS); ++i)
+		{
+			if(RUNTIME_ONLY_FLAGS[i] == flagName)
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -1712,7 +1808,19 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						if(!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+						Shader::eUniform uniformId = uniform->id;
+						if( //!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
+							// we can't use IsAutobindUniform, because we need color to change
+							// so this is copy from IsAutobindUniform with color excluded -->
+							!(uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
+							uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
+							uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
+							uniformId == Shader::UNIFORM_GLOBAL_TIME ||
+							uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
+							uniformId == Shader::UNIFORM_MODEL_SCALE)
+							// <--
+							&&
 							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
 						{
 							FastName propName = uniform->name;
@@ -1948,7 +2056,9 @@ namespace DAVA
 				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
 				propName == NMaterial::PARAM_FOG_COLOR ||
-				propName == NMaterial::PARAM_FLAT_COLOR);
+				propName == NMaterial::PARAM_FLAT_COLOR ||
+                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
+                );
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
@@ -2135,7 +2245,7 @@ namespace DAVA
 		FastName name = GetName(index);
 		if(name.IsValid())
 		{
-			ret.SetBool(state->GetFlagValue(name));
+			ret.SetBool((bool) state->GetFlagValue(name));
 		}
 
 		return ret;

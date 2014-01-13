@@ -54,6 +54,8 @@ public:
     void SetScene(SceneEditor2 * scene);
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
+
+	void Sync();
 	
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
