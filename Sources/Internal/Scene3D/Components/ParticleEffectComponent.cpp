@@ -35,6 +35,8 @@
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -86,8 +88,8 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 void ParticleEffectComponent::Start()
 {
 	isPaused = false;
-	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
-	currRepeatsCont = 0;
+	GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::START_PARTICLE_EFFECT);	
+	
 }
 
 void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
@@ -97,7 +99,7 @@ void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 	{
 		ClearCurrentGroups();		
 		effectData.infoSources.resize(1);
-		GetEntity()->GetScene()->particleEffectSystem->RemoveFromActive(this);	
+		GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STOP_PARTICLE_EFFECT);		
 	}
 	else
 	{
@@ -130,8 +132,8 @@ void ParticleEffectComponent::Restart(bool isDeleteAllParticles)
 	isPaused = false;
 	if (isDeleteAllParticles)
 		ClearCurrentGroups();
-	GetEntity()->GetScene()->particleEffectSystem->RunEffect(this);
 	currRepeatsCont = 0;
+	GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::START_PARTICLE_EFFECT);		
 }
 
 void ParticleEffectComponent::StopAfterNRepeats(int32 numberOfRepeats)

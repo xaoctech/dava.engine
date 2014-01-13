@@ -621,7 +621,7 @@ void Scene::Draw()
 	particleEffectSystem->Process(timeElapsed);
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
-	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
+	renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process(timeElapsed);
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());

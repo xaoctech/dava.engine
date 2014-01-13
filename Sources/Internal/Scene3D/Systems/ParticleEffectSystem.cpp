@@ -32,10 +32,12 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
+#include "Scene3D/Systems/EventSystem.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/Random.h"
 #include "Core/PerformanceSettings.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 
 namespace DAVA
@@ -76,6 +78,7 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
 {	
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
 	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"), FastName("~res:/Materials/Legacy/Particles/Particles.material"), NMaterial::DEFAULT_QUALITY_NAME);		
 	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"), FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"), NMaterial::DEFAULT_QUALITY_NAME);	
 }
@@ -162,6 +165,17 @@ void ParticleEffectSystem::RemoveComponent(Entity * entity, Component * componen
 	ParticleEffectComponent * effect = static_cast<ParticleEffectComponent *>(component);
 	if (effect&&effect->state!=ParticleEffectComponent::STATE_STOPPED)
 		RemoveFromActive(effect);
+}
+
+void ParticleEffectSystem::ImmediateEvent(Entity * entity, uint32 event)
+{
+	ParticleEffectComponent *effect = GetEffectComponent(entity);
+	if (!effect) return;
+	if (event == EventSystem::START_PARTICLE_EFFECT)
+		RunEffect(effect);
+	else if (event = EventSystem::STOP_PARTICLE_EFFECT)
+		RemoveFromActive(effect);
+
 }
 
 void ParticleEffectSystem::Process(float32 timeElapsed)
@@ -494,7 +508,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent *eff
 }
 
 void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform)
-{	
+{		
 	//calculate position new particle position in emitter space (for point leave it V3(0,0,0))
 	if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
 	{        
@@ -517,7 +531,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 		SinCosFast(curAngle, sinAngle, cosAngle);
 		particle->position = Vector3(curRadius * cosAngle, curRadius * sinAngle, 0.0f);
 	}
-	particle->position += group.emitter->position;
+	
 	//current emission vector and it's length
 	Vector3 currEmissionVector(0,0,1);
 	if (group.emitter->emissionVector)
@@ -555,7 +569,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 		{
 			Matrix3 rotation;
 			rotation.CreateRotation(Vector3(1,0,0), PI);
-			newTransform = rotation*newTransform;
+			//newTransform = rotation*newTransform;
+			particle->position=particle->position*rotation;
+			particle->speed=particle->speed*rotation;			
 		}
 	}
 	else
@@ -565,8 +581,11 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 		float32 angle = acosf(currEmissionVector.z/currEmissionPower);
 		Matrix3 rotation;
 		rotation.CreateRotation(axis, angle);
-		newTransform = rotation*newTransform;
+		//newTransform = rotation*newTransform;
+		particle->position=particle->position*rotation;
+		particle->speed=particle->speed*rotation;
 	}
+	particle->position += group.emitter->position;
 	TransformPerserveLength(particle->speed, newTransform);
 	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)	
 }
