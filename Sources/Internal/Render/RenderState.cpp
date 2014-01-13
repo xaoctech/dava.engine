@@ -137,7 +137,7 @@ void RenderState::Reset(bool doHardwareReset)
         }
 		
 		textureState = RenderManager::Instance()->GetDefaultTextureState();
-		stateHandle = RenderManager::Instance()->GetDefault2DStateHandle();
+		stateHandle = RenderManager::Instance()->GetDefaultHardwareStateHandle();
 		
     }
 }

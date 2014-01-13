@@ -39,7 +39,7 @@
 
 #include "Render/TextureDescriptor.h"
 
-#include "../../ImageTools/ImageTools.h"
+#include "ImageTools/ImageTools.h"
 
 #include "CubemapEditor/MaterialHelper.h"
 
@@ -62,14 +62,12 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, curModel)
 	, isUpToDate(false)
 {
-    SetEditTracking(true);
-    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-    
+
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
 	
@@ -112,7 +110,7 @@ void SceneInfo::InitializeGeneralSection()
     AddChild("Particles Textures Size", header);
     
     AddChild("Sprites Count", header);
-    AddChild("Textures Count", header);
+    AddChild("Particle Textures Count", header);
 }
 
 void SceneInfo::RefreshSceneGeneralInfo()
@@ -127,7 +125,7 @@ void SceneInfo::RefreshSceneGeneralInfo()
     SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
     
     SetChild("Sprites Count", spritesCount, header);
-    SetChild("Textures Count", (uint32)particleTextures.size(), header);
+    SetChild("Particle Textures Count", (uint32)particleTextures.size(), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()
@@ -208,7 +206,7 @@ void SceneInfo::InitializeLODSectionInFrame()
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -223,7 +221,7 @@ void SceneInfo::InitializeLODSectionForSelection()
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i), header);
+        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
     }
     
     AddChild("All LOD Triangles", header);
@@ -239,7 +237,7 @@ void SceneInfo::RefreshLODInfoInFrame()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoInFrame.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoInFrame.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoInFrame.trianglesOnLod[i];
     }
@@ -259,7 +257,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfoSelection.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i).c_str(), lodInfoSelection.trianglesOnLod[i], header);
         
         lodTriangles += lodInfoSelection.trianglesOnLod[i];
     }
@@ -318,7 +316,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
 		//VI: remove skybox materials so they not to appear in the lists
 		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+        SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
 
         CollectParticlesData();
@@ -602,7 +600,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
     {
         landscape = FindLandscape(activeScene);
 
-		isUpToDate = !isVisible();
+		isUpToDate = isVisible();
 		if(isUpToDate)
 		{
 			RefreshAllData(scene);
@@ -683,7 +681,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *
 void SceneInfo::TexturesReloaded()
 {
     sceneTextures.clear();
-    SceneHelper::EnumerateTextures(activeScene, sceneTextures);
+    SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
     sceneTexturesSize = CalculateTextureSize(sceneTextures);
     
     RefreshSceneGeneralInfo();

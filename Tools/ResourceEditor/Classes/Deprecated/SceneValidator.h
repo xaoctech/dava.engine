@@ -52,21 +52,21 @@ public:
 	/*
      \brief Function to validate Particle Emitter upon loading.
      \param[in] emitter Particle Emitter to validate
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
 	bool ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog);
 	
     /*
      \brief Function to validate Scene errors
      \param[in] scene scene for validation
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
     void ValidateScene(Scene *scene, const DAVA::FilePath &scenePath, Set<String> &errorsLog);
     
     /*
      \brief Function to find Scales in models transformations
      \param[in] scene scene for validation
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
 	void ValidateScales(Scene *scene, Set<String> &errorsLog);
 
@@ -78,40 +78,41 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTextureAndShowErrors(Texture *texture, const FilePath &textureName, const String &validatedObjectName);
+    void ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
      \param[in] texture texture for validation
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
     
-    void ValidateTexture(Texture *texture, const FilePath &texturePathname, const String &validatedObjectName, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog);
 
 
     /*
      \brief Function to validate LandscapeNode errors
      \param[in] landscape landscape for validation
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
     void ValidateLandscape(Landscape *landscape, Set<String> &errorsLog);
         
     /*
      \brief Function to validate Entity errors
      \param[in] sceneNode sceneNode for validation
-     \param[out] errorsLog set for validation erros
+     \param[out] errorsLog set for validation errors
 	 */
     void ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog);
     
     /*
-     \brief Function to validate Material errors
-     \param[in] material material for validation
-     \param[out] errorsLog set for validation erros
+     \brief Function to validate Materials errors
+     \param[in] scene that has materials for validation
+     \param[out] errorsLog set for validation errors
 	 */
-    void ValidateMaterial(NMaterial *material, Set<String> &errorsLog);
+	void ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLog);
+
 
     /*
-     \brief Function sets 3d folder path for cheking texture pathnames
+     \brief Function sets 3d folder path for checking texture pathnames
      \param[in] pathname path to DataSource/3d folder
      \return old path for checking
 	 */
@@ -120,7 +121,6 @@ public:
 
     FilePath SetPathForChecking(const FilePath &pathname);
     
-//    void EnumerateSceneTextures();
     void EnumerateNodes(Scene *scene);
     
     static bool IsTextureChanged(const TextureDescriptor *descriptor, eGPUFamily forGPU);
@@ -139,7 +139,6 @@ protected:
     void ValidateParticleEmitterComponent(Entity *ownerNode, Set<String> &errorsLog);
 
     void ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
-    void ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog);
 
     
 	void ValidateLandscapeTexture(Landscape *landscape, Landscape::eTextureLevel texLevel, Set<String> &errorsLog);
@@ -168,9 +167,6 @@ protected:
 
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
-    
-//    int32 sceneTextureCount;
-//    int32 sceneTextureMemory;
     
     FilePath pathForChecking;
 };
