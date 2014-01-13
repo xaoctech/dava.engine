@@ -42,6 +42,7 @@ class QStandardItem;
 class SceneEditor2;
 class MaterialItem;
 class Command2;
+class EntityGroup;
 
 class MaterialModel: public QStandardItemModel
 {
@@ -52,6 +53,7 @@ public:
     virtual ~MaterialModel();
     
     void SetScene(SceneEditor2 * scene);
+	void SetSelection(const EntityGroup *group);
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
 
@@ -65,9 +67,25 @@ public:
 
 protected:
 	SceneEditor2 *curScene;
+};
 
-protected slots:
-	void OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
+class MaterialFilteringModel : public QSortFilterProxyModel
+{
+public:
+	MaterialFilteringModel(MaterialModel *treeModel, QObject *parent = NULL);
+
+	void Sync();
+
+	void SetScene(SceneEditor2 * scene);
+	void SetSelection(const EntityGroup *group);
+	DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
+	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const ;
+	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+protected:
+	MaterialModel *materialModel;
 };
 
 Q_DECLARE_METATYPE(DAVA::NMaterial *)

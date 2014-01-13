@@ -42,11 +42,46 @@ EditorMaterialSystem::~EditorMaterialSystem()
 	{
 		RemMaterial(materialFeedback.begin()->first);
 	}
+
+	while(ownedParents.size() > 0)
+	{
+		DAVA::NMaterial *parent = *(ownedParents.begin());
+		ownedParents.erase(parent);
+		SafeRelease(parent);
+	}
+}
+
+DAVA::Entity* EditorMaterialSystem::GetEntity(DAVA::NMaterial* material) const
+{
+	DAVA::Entity *entity = NULL;
+
+	auto it = materialFeedback.find(material);
+	if(it != materialFeedback.end())
+	{
+		entity = it->second.entity;
+	}
+
+	return entity;
+}
+
+DAVA::RenderBatch* EditorMaterialSystem::GetRenderBatch(DAVA::NMaterial* material) const
+{
+	DAVA::RenderBatch *batch = NULL;
+
+	auto it = materialFeedback.find(material);
+	if(it != materialFeedback.end())
+	{
+		batch = it->second.batch;
+	}
+
+	return batch;
 }
 
 void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const
 {
-	DAVA::Set<DAVA::NMaterial *> materials;
+	// init set with already owned materials
+	DAVA::Set<DAVA::NMaterial *> materials = ownedParents;
+
 	GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
 
 	DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
@@ -81,7 +116,23 @@ void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 			DAVA::RenderBatch *rb  = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			AddMaterial(material, entity, rb);
+			if(NULL != material)
+			{
+				MaterialFB fb;
+
+				fb.entity = entity;
+				fb.batch = rb;
+
+				materialFeedback[material] = fb;
+
+				// remember parent material, if still isn't
+				DAVA::NMaterial *parent = material->GetParent();
+				if(NULL != parent && 0 == ownedParents.count(parent))
+				{
+					ownedParents.insert(parent);
+					parent->Retain();
+				}
+			}
 		}
 	}
 }
@@ -96,7 +147,10 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 			DAVA::RenderBatch *rb = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			RemMaterial(material);
+			if(NULL != material)
+			{
+				materialFeedback.erase(material);
+			}
 		}
 	}
 }
@@ -121,35 +175,6 @@ void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb)
-{
-	if(NULL != material)
-	{
-		MaterialFB fb;
-
-		fb.entity = entity;
-		fb.batch = rb;
-
-		materialFeedback[material] = fb;
-
-		DAVA::NMaterial *parent = material->GetParent();
-		if(NULL != parent)
-		{
-			parent->Retain();
-		}
-	}
-}
-
 void EditorMaterialSystem::RemMaterial(DAVA::NMaterial *material)
 {
-	if(NULL != material)
-	{
-		materialFeedback.erase(material);
-
-		DAVA::NMaterial *parent = material->GetParent();
-		if(NULL != parent)
-		{
-			parent->Retain();
-		}
-	}
 }
