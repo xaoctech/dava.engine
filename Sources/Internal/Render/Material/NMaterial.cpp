@@ -131,12 +131,7 @@ namespace DAVA
 	
 	NMaterial::~NMaterial()
 	{
-		if(parent)
-		{
-			parent->RemoveChild(this);
-			
-			SafeRelease(parent);
-		}
+		SetParent(NULL);
 
 		ReleaseInstancePasses();
 		
@@ -169,7 +164,7 @@ namespace DAVA
 		SafeRelease(baseTechnique);
 	}
 			
-	void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
+	/*void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
@@ -199,6 +194,41 @@ namespace DAVA
 			//CleanupUnusedTextures();
 		
 			this->Release();
+		}
+	}*/
+	
+	void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
+	{
+		DVASSERT(this != newParent);
+		
+		if(newParent != parent &&
+		   newParent != this)
+		{
+			if(parent)
+			{
+				Vector<NMaterial*>::iterator curMaterial = std::find(parent->children.begin(),
+																	 parent->children.end(),
+																	 this);
+				
+				DVASSERT(curMaterial != parent->children.end());
+				if(curMaterial != parent->children.end())
+				{
+					parent->children.erase(curMaterial);
+				}
+				
+				SafeRelease(parent);
+			}
+			
+			if(newParent)
+			{
+				DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
+				
+				newParent->children.push_back(this);
+			}
+			
+			parent = SafeRetain(newParent);;
+			
+			OnParentChanged(newParent, inheritTemplate);
 		}
 	}
 
@@ -529,7 +559,7 @@ namespace DAVA
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
-			parent->AddChild(clonedMaterial);
+			clonedMaterial->SetParent(parent);
 		}
 		
 		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
@@ -1586,7 +1616,7 @@ namespace DAVA
 		NMaterial* parentMat = CreateMaterial(materialName, templateName, defaultQuality);
 		
 		NMaterial* mat = CreateMaterialInstance();
-		parentMat->AddChild(mat);
+		mat->SetParent(parentMat);
 		
 		SafeRelease(parentMat);
 		

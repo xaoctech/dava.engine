@@ -107,10 +107,7 @@ public:
 	
 	~NMaterialProperty()
 	{
-		if(data)
-		{
-			SafeDeleteArray(data);
-		}
+		SafeDeleteArray(data);
 	}
 	
 	NMaterialProperty* Clone()
@@ -199,8 +196,9 @@ public:
 	
 	inline NMaterial* GetParent() const {return parent;}
 	
-	void AddChild(NMaterial* material, bool inheritTemlate = true);
-	void RemoveChild(NMaterial* material);
+	//void AddChild(NMaterial* material, bool inheritTemlate = true);
+	//void RemoveChild(NMaterial* material);
+	void SetParent(NMaterial* newParent, bool inheritTemplate = true);
 	inline uint32 GetChildrenCount() const
 	{
 		return children.size();

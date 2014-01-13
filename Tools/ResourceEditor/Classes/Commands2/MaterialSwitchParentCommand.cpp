@@ -51,14 +51,12 @@ MaterialSwitchParentCommand::~MaterialSwitchParentCommand()
 
 void MaterialSwitchParentCommand::Redo()
 {
-    oldParent->RemoveChild(currentInstance);
-    newParent->AddChild(currentInstance);
+	currentInstance->SetParent(newParent);
 }
 
 void MaterialSwitchParentCommand::Undo()
 {
-    newParent->RemoveChild(currentInstance);
-    oldParent->AddChild(currentInstance);
+	currentInstance->SetParent(oldParent);
 }
 
 
