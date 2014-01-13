@@ -229,10 +229,10 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
 	//do not calculate nearest lights for non-lit objects
 	bool needUpdate = false;
-	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+	uint32 renderBatchCount = renderObject->GetActiveRenderBatchCount();
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
-        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        RenderBatch * batch = renderObject->GetActiveRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
         if (material && material->IsDynamicLit())
         {
@@ -277,7 +277,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
-        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        RenderBatch * batch = renderObject->GetActiveRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
         if (material)
         {
