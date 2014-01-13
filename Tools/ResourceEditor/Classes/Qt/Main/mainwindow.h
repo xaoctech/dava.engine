@@ -51,7 +51,6 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 	Q_OBJECT
 
 protected:
-    
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
 
 public:
@@ -138,8 +137,9 @@ public slots:
 
 	void OnSetSkyboxNode();
 	
-	void OnShowSettings();
+	void OnShowGeneralSettings();
 	void OnOpenHelp();
+	void OnShowCurrentSceneSettings();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();

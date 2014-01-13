@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include "ui_BaseAddEntityDialog.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Main/mainwindow.h"
 #include "Commands2/EntityAddCommand.h"
 #include "Commands2/EntityRemoveCommand.h"
@@ -140,7 +140,7 @@ SelectPathWidgetBase* LandscapeDialog::InitPathWidget(QWidget* parent, int32 wid
 		fileFilter = HEIGHTMAP_FILTER;
 	}
 
-	DAVA::String resFolder = EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname();
+	DAVA::String resFolder = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname();
 	SelectPathWidgetBase* widget = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);
 
 	if(innerLandscape)
@@ -248,6 +248,8 @@ void LandscapeDialog::FillWidgetsWithContent()
 	{
 		actionButton->setText(CREATE_TITLE);
 	}
+	
+	openMaterEditorBtn->setVisible( innerLandscape != NULL);
 }
 
 void LandscapeDialog::showEvent ( QShowEvent * event )
@@ -353,7 +355,6 @@ void LandscapeDialog::ActionButtonClicked()
 
 		SetLandscapeEntity(NULL);
 	}
-	openMaterEditorBtn->setVisible( innerLandscape != NULL);
 }
 
 void LandscapeDialog::MaterialEditorButtonClicked()

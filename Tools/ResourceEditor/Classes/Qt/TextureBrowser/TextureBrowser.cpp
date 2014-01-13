@@ -37,7 +37,7 @@
 #include "Main/mainwindow.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Scene/SceneHelper.h"
 #include "CubemapEditor/CubemapUtils.h"
 
@@ -597,7 +597,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 {
 	if(NULL != descriptor && NULL != texture)
 	{
-		DAVA::eGPUFamily curEditorImageGPUForTextures = EditorSettings::Instance()->GetTextureViewGPU();
+		DAVA::eGPUFamily curEditorImageGPUForTextures = (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32();
 
 		// reload only when editor view format is the same as given texture format
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
