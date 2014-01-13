@@ -47,6 +47,7 @@ public:
 
 	~ParticleEffectSystem();
 	virtual void Process(float32 timeElapsed);		
+	virtual void ImmediateEvent(Entity * entity, uint32 event);
 
 
 	virtual void RemoveEntity(Entity * entity);	
