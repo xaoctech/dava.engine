@@ -126,7 +126,7 @@ void BaseMetadata::InitializeControl(const String& controlName, const Vector2& p
         control->SetPosition(position);
 
         // Default Flags.
-        control->SetInputEnabled(GetInitialInputFlag());
+        control->SetInputEnabled(GetInitialInputEnabled());
 
         control->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     }

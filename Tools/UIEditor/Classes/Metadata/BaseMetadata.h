@@ -132,7 +132,7 @@ public:
 
 protected:
     // Default Flags.
-    virtual bool GetInitialInputFlag() const = 0;
+    virtual bool GetInitialInputEnabled() const = 0;
 
     // Initialization constants.
     static const Vector2 INITIAL_CONTROL_SIZE;

@@ -40,6 +40,7 @@ ScreenControl::ScreenControl()
 	bkg->SetColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
 	bkg->SetDrawType(UIControlBackground::DRAW_FILL);
 	SetBackground(bkg);
+    SafeRelease(bkg);
 }
 
 ScreenControl::~ScreenControl()

@@ -27,6 +27,8 @@
 =====================================================================================*/
 
 #include "CreatePlaneLODCommand.h"
+#include "Qt/Scene/SceneHelper.h"
+#include "SceneEditor/EditorSettings.h"
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 using namespace DAVA;
@@ -78,6 +80,9 @@ void CreatePlaneLODCommand::Undo()
     lodComponent->SetLodLayerDistance(lodData->layer, LodComponent::INVALID_DISTANCE);
     
     SafeDelete(lodData);
+
+    FileSystem::Instance()->DeleteFile(textureSavePath);
+    FileSystem::Instance()->DeleteFile(FilePath::CreateWithNewExtension(textureSavePath, ".tex"));
 }
 
 DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
@@ -232,6 +237,15 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
 
 void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport /* = DAVA::Rect(0, 0, -1, -1) */, bool clearTarget /* = true */)
 {
+    Map<String, Texture*> textures;
+    SceneHelper::EnumerateTextures(fromEntity, textures);
+    eGPUFamily currentGPU = EditorSettings::Instance()->GetTextureViewGPU();
+
+    DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator it = textures.begin();
+    DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator end = textures.end();
+    for(; it != end; ++it)
+        it->second->ReloadAs(GPU_UNKNOWN);
+
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     Rect newViewport = viewport;
 
@@ -266,4 +280,9 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
 #ifdef __DAVAENGINE_OPENGL__
     RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
+
+    it = textures.begin();
+    end = textures.end();
+    for(; it != end; ++it)
+        it->second->ReloadAs(currentGPU);
 }

@@ -37,6 +37,7 @@
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/PlaneLODDialog/PlaneLODDialog.h"
+#include "Classes/Qt/Main/mainwindow.h"
 
 #include <QLabel>
 #include <QWidget>
@@ -374,7 +375,13 @@ void LODEditor::CreatePlaneLODClicked()
 
         PlaneLODDialog dialog(editedLODData->GetLayersCount(), defaultTexturePath, this);
         if(dialog.exec() == QDialog::Accepted)
+        {
+            QtMainWindow::Instance()->WaitStart("Creating Plane LOD", "Please wait...");
+
             editedLODData->CreatePlaneLOD(dialog.GetSelectedLayer(), dialog.GetSelectedTextureSize(), dialog.GetSelectedTexturePath());
+
+            QtMainWindow::Instance()->WaitStop();
+        }
     }
 }
 
