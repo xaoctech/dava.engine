@@ -50,7 +50,7 @@ public:
     UIScrollViewMetadata(QObject* parent = 0);
 
 protected:
-    virtual bool GetInitialInputFlag() const {return true;};
+    virtual bool GetInitialInputEnabled() const {return true;};
 
     // Initialize the appropriate control.
     virtual void InitializeControl(const String& controlName, const Vector2& position);
@@ -62,6 +62,7 @@ protected:
     UIScrollView* GetActiveUIScrollView() const;
 	
     // Getters/setters.
+    virtual void SetVisible(const bool value);
     float GetHorizontalScrollPosition() const;
 	void SetHorizontalScrollPosition(float value);
     float GetVerticalScrollPosition() const;
