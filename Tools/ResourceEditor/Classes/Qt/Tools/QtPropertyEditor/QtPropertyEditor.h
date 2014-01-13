@@ -75,6 +75,7 @@ public:
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
+	void expand(const QModelIndex & index);
 
 signals:
 	// void PropertyChanged(const QModelIndex &index); // SZ: not implemented because is never used. will be implemented on request
@@ -92,6 +93,7 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 	virtual void mouseMoveEvent(QMouseEvent * event);
+	virtual void mousePressEvent(QMouseEvent * event);
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void leaveEvent(QEvent * event);
 	
@@ -104,7 +106,7 @@ protected slots:
 	virtual void OnUpdateTimeout();
 
 private:
-	QModelIndex lastHoverIndex;
+	QtPropertyData *lastHoverData;
 
 	void OnHover(const QModelIndex &index);
 };

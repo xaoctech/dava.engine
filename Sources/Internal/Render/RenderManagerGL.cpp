@@ -844,6 +844,8 @@ void RenderManager::AttachRenderData()
 
     const int DEBUG = 0;
 	Shader * shader = hardwareState.shader;
+	
+	GetStats().attachRenderDataCount++;
     
     if (!shader)
     {

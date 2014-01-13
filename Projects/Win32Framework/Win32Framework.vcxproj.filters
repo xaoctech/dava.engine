@@ -2525,5 +2525,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayerManager.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
+      <Filter>Internal\Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

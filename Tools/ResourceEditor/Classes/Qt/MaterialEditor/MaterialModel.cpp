@@ -56,29 +56,93 @@ MaterialModel::~MaterialModel()
 void MaterialModel::SetScene(SceneEditor2 *scene)
 {
 	removeRows(0, rowCount());
+	curScene = scene;
 
 	if(NULL != scene)
 	{
-		curScene = scene;
+		Sync();
+	}
+}
 
+void MaterialModel::Sync()
+{
+	if(NULL != curScene)
+	{
+		DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
+		curScene->materialSystem->BuildMaterialsTree(materialsTree);
+
+		// remove items, that are not in set
 		QStandardItem *root = invisibleRootItem();
-		DAVA::MaterialSystem *matSys = scene->GetMaterialSystem();
-
-		DAVA::Set<DAVA::NMaterial *> materials;
-		matSys->BuildMaterialList(scene, DAVA::NMaterial::MATERIALTYPE_MATERIAL, materials);
-
-        DAVA::Set<DAVA::NMaterial *>::const_iterator endIt = materials.end();
-        for(DAVA::Set<DAVA::NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
-        {
-			DAVA::FastName materialName = (*it)->GetMaterialName();
-			if( materialName != DAVA::ShadowVolume::MATERIAL_NAME &&
-				materialName != DAVA::ParticleLayer3D::PARTICLE_MATERIAL_NAME &&
-				materialName != DAVA::ParticleLayer3D::PARTICLE_FRAMEBLEND_MATERIAL_NAME)
+		for(int i = 0; i < root->rowCount(); ++i)
+		{
+			MaterialItem *item = (MaterialItem *) root->child(i);
+			if(0 == materialsTree.count(item->GetMaterial()))
 			{
-				MaterialItem *item = new MaterialItem(*it);
+				root->removeRow(i--);
+			}
+			else
+			{
+				// there is same material, so we should check it childs
+				// and remove those that are not in tree
+
+				const DAVA::Set<DAVA::NMaterial *> &childsList = materialsTree[item->GetMaterial()];
+
+				for(int j = 0; j < item->rowCount(); ++j)
+				{
+					MaterialItem *child = (MaterialItem *) item->child(j);
+					if(0 == childsList.count(child->GetMaterial()))
+					{
+						item->removeRow(j--);
+					}
+				}
+			}
+		}
+
+		// add items, that are not added yet
+		auto it = materialsTree.begin();
+		auto end = materialsTree.end();
+		for(; it != end; ++it)
+		{
+			DAVA::NMaterial *toAdd = it->first;
+			QModelIndex index = GetIndex(toAdd);
+
+			// still no such material in model?
+			if(!index.isValid())
+			{
+				MaterialItem *item = new MaterialItem(toAdd);
+
+				// and it childs
+				auto cit = it->second.begin();
+				auto cend = it->second.end();
+				for(; cit != cend; ++cit)
+				{
+					item->appendRow(new MaterialItem(*cit));
+				}
+
+				// add created item
 				root->appendRow(item);
 			}
-        }
+			else
+			{
+				// there is already such material in model
+				// we should sync it childs
+
+				MaterialItem *parent = (MaterialItem *) itemFromIndex(index);
+
+				auto cit = it->second.begin();
+				auto cend = it->second.end();
+				for(; cit != cend; ++cit)
+				{
+					DAVA::NMaterial *childMaterial = *cit;
+
+					// no such item?
+					if(!GetIndex(childMaterial, index).isValid())
+					{
+						parent->appendRow(new MaterialItem(childMaterial));
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -220,13 +284,6 @@ void MaterialModel::OnCommandExecuted(SceneEditor2 *scene, const Command2 *comma
 {
 	if(curScene == scene && command->GetId() == CMDID_MATERIAL_SWITCH_PARENT)
 	{
-		for(int i = 0; i < rowCount(); ++i)
-		{
-			MaterialItem *item = (MaterialItem *) itemFromIndex(index(i, 0));
-			if(NULL != item)
-			{
-				item->Sync();
-			}
-		}
+		Sync();
 	}
 }

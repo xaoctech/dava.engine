@@ -253,7 +253,7 @@ namespace DAVA
 			DVASSERT(parentMat);
 			if(parentMat)
 			{
-				parentMat->AddChild(binding.instanceMaterial, false);
+				binding.instanceMaterial->SetParent(parentMat, false);
 			}
 		}
 		
@@ -445,8 +445,8 @@ namespace DAVA
 		
 		if(Material::MATERIAL_SPEED_TREE_LEAF == oldMaterial->type)
 		{
-			Color color = (oldMaterial->treeLeafColor * oldMaterial->treeLeafOcclusionMul);
-			instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &color);
+            instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &(oldMaterial->treeLeafColor));
+            instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL, Shader::UT_FLOAT, 1, &(oldMaterial->treeLeafOcclusionMul));
 			instanceMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET, Shader::UT_FLOAT, 1, &(oldMaterial->treeLeafOcclusionOffset));
 		}
 		
@@ -459,7 +459,7 @@ namespace DAVA
 			}
 		}
 		
-		material->AddChild(instanceMaterial);
+		instanceMaterial->SetParent(material);
 						
 		return instanceMaterial;
 	}
@@ -467,6 +467,17 @@ namespace DAVA
 	Texture* SerializationContext::PrepareTexture(uint32 textureTypeHint,
 												  Texture* tx)
 	{
-		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
+		if(tx)
+		{
+			if(tx->isPink)
+			{
+				tx->Retain();
+			}
+
+			return tx;
+		}
+
+		return Texture::CreatePink((Texture::TextureType)textureTypeHint);
+//		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
 	}
 }
