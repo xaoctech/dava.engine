@@ -60,7 +60,7 @@ public:
 	void SetDefaultMaterialQuality(const FastName& qualityLevelName);
 	const FastName& GetDefaultMaterialQuality() const;
 	const FastName& GetCurrentMaterialQuality() const;
-	void SwitchMaterialQuality(const FastName& qualityLevelName);
+	void SwitchMaterialQuality(const FastName& qualityLevelName, bool force = false);
 			
     inline float32 GetFogDensity() const { return fogDensity; };
     inline const Color & GetFogColor() const { return fogColor; };
