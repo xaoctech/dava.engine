@@ -56,7 +56,7 @@ RenderPassManager::RenderPassManager(RenderSystem * renderSystem)
     : array(RENDER_PASS_ID_COUNT)
     , map(RENDER_PASS_ID_COUNT)
 {
-    const RenderLayerManager * renderLayerManager = renderSystem->GetRenderLayerManager();
+    const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
 
     RenderPass * forwardPass = new RenderPass(renderSystem, PASS_FORWARD, RENDER_PASS_FORWARD_ID);
     InsertPass(forwardPass);

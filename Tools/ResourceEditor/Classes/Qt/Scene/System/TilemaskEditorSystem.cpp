@@ -561,10 +561,13 @@ void TilemaskEditorSystem::SetTileColor(int32 index, const Color& color)
 		return;
 	}
 
-	if (GetTileColor(index) != color)
+	Landscape::eTextureLevel level = (Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index);
+	Color curColor = drawSystem->GetLandscapeProxy()->GetLandscapeTileColor(level);
+
+	if (curColor != color)
 	{
-		Landscape* landscape = drawSystem->GetBaseLandscape();
-		landscape->SetTileColor((Landscape::eTextureLevel)(Landscape::TEXTURE_TILE0 + index), color);
+		SceneEditor2* scene = (SceneEditor2*)(GetScene());
+		scene->Exec(new SetTileColorCommand(drawSystem->GetLandscapeProxy(), level, color));
 	}
 }
 

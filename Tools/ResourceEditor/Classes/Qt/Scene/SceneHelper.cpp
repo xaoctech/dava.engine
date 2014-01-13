@@ -33,37 +33,43 @@
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
-void SceneHelper::EnumerateTextures(DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
+void SceneHelper::EnumerateSceneTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
 {
-    if(!forNode) return;
+    EnumerateEntityTextures(forScene, forScene, textureCollection);
+}
 
-    DAVA::RenderObject *ro = GetRenderObject(forNode);
-    if(ro)
+void SceneHelper::EnumerateEntityTextures(DAVA::Scene *forScene, DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
+{
+    if(!forNode || !forScene) return;
+    
+    DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
+    
+    DAVA::Set<DAVA::NMaterial *> materials;
+    matSystem->BuildMaterialList(forNode, materials);
+    
+    Set<NMaterial *>::const_iterator endIt = materials.end();
+    for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
     {
-        DAVA::uint32 count = ro->GetRenderBatchCount();
-        for(DAVA::uint32 b = 0; b < count; ++b)
-        {
-            DAVA::RenderBatch *renderBatch = ro->GetRenderBatch(b);
-            DAVA::NMaterial *material = renderBatch->GetMaterial();
-
-            CollectTextures(material, textureCollection);
+        DAVA::NMaterial *mat = *it;
+        
+        String materialName = mat->GetMaterialName().c_str();
+        String parentName = mat->GetParent() ? mat->GetParent()->GetMaterialName().c_str() : String() ;
+        
+        if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
+        {   //because particle materials has textures only after first start, so we have different result during scene life.
+            continue;
         }
-    }
-
-
-    DAVA::int32 count = forNode->GetChildrenCount();
-    for(DAVA::int32 c = 0; c < count; ++c)
-    {
-        EnumerateTextures(forNode->GetChild(c), textureCollection);
+        
+        CollectTextures(*it, textureCollection);
     }
 }
 
-int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
+int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DAVA::Texture *, DAVA::Vector< DAVA::eGPUFamily> > &textures)
 {
 	int32 retValue = 0;
 	textures.clear();
 	TexturesMap allTextures;
-	EnumerateTextures(forNode, allTextures);
+	EnumerateSceneTextures(forScene, allTextures);
 	for(TexturesMap::iterator it = allTextures.begin(); it != allTextures.end(); ++it)
 	{
 		DAVA::Texture * texture = it->second;
@@ -100,40 +106,9 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Entity *forNode, DAVA::Map<DA
 	return retValue;
 }
 
-void SceneHelper::EnumerateTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
-{
-    if(!forScene) return;
-    
-    DAVA::MaterialSystem *matSystem = forScene->GetMaterialSystem();
-    
-    DAVA::Set<DAVA::NMaterial *> materials;
-    matSystem->BuildMaterialList(forScene, materials);
-
-    Set<NMaterial *>::const_iterator endIt = materials.end();
-    for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
-    {
-        CollectTextures(*it, textureCollection);
-    }
-}
 
 void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
 {
-    String materialName = material->GetMaterialName().c_str();
-	
-	
-    String parentName;
-	
-	if(material->GetParent())
-	{
-		parentName = material->GetParent()->GetMaterialName().c_str();
-	}
-	
-    if((parentName.find("Particle") != String::npos) || (materialName.find("Particle") != String::npos))
-    {
-        return;
-    }
-    
-    
     DAVA::uint32 texCount = material->GetTextureCount();
     for(DAVA::uint32 t = 0; t < texCount; ++t)
     {

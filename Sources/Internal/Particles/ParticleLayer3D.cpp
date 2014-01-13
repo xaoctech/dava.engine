@@ -78,7 +78,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	
 	material = NMaterial::CreateMaterialInstance();
 	material->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	ParticleLayer3D::regularMaterial->AddChild(material);
+	material->SetParent(ParticleLayer3D::regularMaterial);
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
@@ -97,6 +97,25 @@ void ParticleLayer3D::Draw(Camera * camera)
 {
 	//render data are now prepared explicitly
 	//DrawLayer(camera);	
+}
+
+void ParticleLayer3D::DeleteAllParticles()
+{
+	ParticleLayer::DeleteAllParticles();
+	verts.clear();
+	textures.clear();
+	colors.clear();
+
+	if (enableFrameBlend)
+	{
+		textures2.clear();
+		times.clear();
+	}		
+	Vector3 emmiterPos;
+	if (emitter->GetWorldTransformPtr())	
+		emmiterPos = emitter->GetWorldTransformPtr()->GetTranslationVector();			
+	renderBatch->SetTotalCount(0);	
+	renderBatch->SetLayerBoundingBox(AABBox3(emmiterPos, emmiterPos));
 }
 
 void ParticleLayer3D::PrepareRenderData(Camera* camera)
@@ -605,20 +624,14 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	if (enableFrameBlend==enable) return; 
 	ParticleLayer::SetFrameBlend(enable);
 	
-	NMaterial* curParent = material->GetParent();
-	DVASSERT(curParent);
-	if(curParent)
-	{
-		curParent->RemoveChild(material);
-	}
 	
 	if(enableFrameBlend)
 	{
-		ParticleLayer3D::frameBlendMaterial->AddChild(material);
+		material->SetParent(ParticleLayer3D::frameBlendMaterial);
 	}
 	else
 	{
-		ParticleLayer3D::regularMaterial->AddChild(material);
+		material->SetParent(ParticleLayer3D::regularMaterial);
 	}
 	
 	UpdateBlendState();
