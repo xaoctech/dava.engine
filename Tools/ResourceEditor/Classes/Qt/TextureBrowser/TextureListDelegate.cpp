@@ -125,7 +125,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		if(NULL != curTexture)
 		{
 			textureDimension = QSize(curTexture->width, curTexture->height);
-            textureDataSize = QString::fromStdString(DAVA::Format("%d", TextureCache::Instance()->getOriginalSize(curTextureDescriptor)));
+            textureDataSize = QString::fromStdString(SizeInBytesToString(TextureCache::Instance()->getOriginalSize(curTextureDescriptor)));
 		}
 
 		painter->save();
