@@ -49,14 +49,21 @@ DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
 	return retVector;
 }
 
-void RecentFilesManager::SetFilesToRecent(DAVA::Vector<String>& fileList)
+void RecentFilesManager::SetFileToRecent(const DAVA::String& file)
 {
-	DAVA::uint32 size = fileList.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : fileList.size();
-	KeyedArchive* archive = new KeyedArchive();
-	for (DAVA::int32 i = 0; i < size; ++i)
-	{
-		archive->SetString(Format("%d",i), fileList[i]);
-	}
-	SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
-	SafeRelease( archive);
+    DAVA::Vector<String> vectorToSave = GetRecentFiles();
+    DAVA::FilePath filePath(file);
+    DAVA::String stringToInsert = filePath.GetAbsolutePathname();
+    //check present set to avoid duplicates
+    vectorToSave.erase(std::remove(vectorToSave.begin(), vectorToSave.end(), stringToInsert), vectorToSave.end());
+    
+    vectorToSave.insert(vectorToSave.begin(), stringToInsert);
+    DAVA::uint32 size = vectorToSave.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : vectorToSave.size();
+    KeyedArchive* archive = new KeyedArchive();
+    for (DAVA::int32 i = 0; i < size; ++i)
+    {
+        archive->SetString(Format("%d",i), vectorToSave[i]);
+    }
+    SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
+    SafeRelease( archive);
 }

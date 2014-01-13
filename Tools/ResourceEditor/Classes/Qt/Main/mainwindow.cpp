@@ -737,13 +737,7 @@ void QtMainWindow::AddRecent(const QString &pathString)
         recentScenes.removeAt(0);
     }
     
-	DAVA::FilePath pathToFile(pathString.toStdString());
-	Vector<String> filesList = RecentFilesManager::Instance()->GetRecentFiles();
-	if(! ( filesList.size() && filesList[0] == pathToFile.GetAbsolutePathname()))
-	{
-		filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
-	}
-	RecentFilesManager::Instance()->SetFilesToRecent(filesList);
+	RecentFilesManager::Instance()->SetFileToRecent(pathString.toStdString());
 	InitRecent();
 }
 

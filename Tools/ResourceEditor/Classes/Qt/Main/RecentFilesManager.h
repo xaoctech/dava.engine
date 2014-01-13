@@ -45,7 +45,7 @@ public:
 
 	DAVA::Vector<String> GetRecentFiles();
 
-	void SetFilesToRecent(DAVA::Vector<String>&);
+	void SetFileToRecent(const DAVA::String&);
 
 protected:
 	
