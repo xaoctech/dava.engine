@@ -170,6 +170,8 @@ Landscape::Landscape()
 	AddRenderBatch(chunk);
 	SafeRelease(chunk);
 	SafeRelease(landscapeParent);
+
+	SetDefaultValues();
 }
 
 Landscape::~Landscape()
@@ -1878,6 +1880,14 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 int32 Landscape::GetDrawIndices() const
 {
     return drawIndices;
+}
+
+void Landscape::SetDefaultValues()
+{
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR0, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE0]);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR1, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE1]);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR2, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE2]);
+	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_TILE_COLOR3, Shader::UT_FLOAT_VEC3, 1, &tileColor[TEXTURE_TILE3]);
 }
 
 void Landscape::SetupMaterialProperties()

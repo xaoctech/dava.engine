@@ -41,7 +41,7 @@
 #include "TextureBrowser/TextureCache.h"
 #include "MaterialEditor/MaterialEditor.h"
 
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
 
 #include "../CubemapEditor/CubemapUtils.h"
@@ -62,7 +62,6 @@
 
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "StringConstants.h"
-#include "../Tools/SettingsDialog/SettingsDialogQt.h"
 #include "../Settings/SettingsManager.h"
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
@@ -76,12 +75,6 @@
 #include "Classes/Qt/Main/Request.h"
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
-
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/VisibilityToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/TilemaskEditorPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
 
 #include "Classes/Commands2/CustomColorsCommands2.h"
 #include "Classes/Commands2/HeightmapEditorCommands2.h"
@@ -98,6 +91,8 @@
 
 #include "Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
+#include "Tools/SettingsDialog/GeneralSettingsDialog.h"
+#include "Tools/SettingsDialog/SceneSettingsDialog.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -111,6 +106,7 @@
 #include "Classes/Constants.h"
 
 #include "TextureCompression/TextureConverter.h"
+#include "RecentFilesManager.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -126,13 +122,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 {
 	new Console();
 	new ProjectManager();
-	new SettingsManager();
+	new RecentFilesManager();
 	ui->setupUi(this);
     
     SetupTitle();
 
 	qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
+	EditorConfig::Instance()->ParseConfig(SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PROJECT_PATH, SettingsManager::INTERNAL).AsString()
+		+ "EditorConfig.yaml");
 
 	SetupMainMenu();
 	SetupToolBars();
@@ -185,9 +182,9 @@ QtMainWindow::~QtMainWindow()
 	delete ui;
 	ui = NULL;
 
-	SettingsManager::Instance()->Release();
 	ProjectManager::Instance()->Release();
 	Console::Instance()->Release();
+	RecentFilesManager::Instance()->Release();
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -277,7 +274,8 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
 {
-	return EditorSettings::Instance()->GetTextureViewGPU();
+	
+	return (eGPUFamily)SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL).AsInt32();
 }
 
 void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
@@ -285,7 +283,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	// before reloading textures we should save tilemask texture for all opened scenes
 	if(SaveTilemask())
 	{
-		EditorSettings::Instance()->SetTextureViewGPU(gpu);
+		SettingsManager::Instance()->SetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, VariantType(gpu), SettingsManager::INTERNAL);
 		DAVA::Texture::SetDefaultGPU(gpu);
 
 		DAVA::TexturesMap allScenesTextures;
@@ -613,7 +611,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
 			
-	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
+	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
+	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
 	
 	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
@@ -708,9 +707,14 @@ void QtMainWindow::SetupShortCuts()
 
 void QtMainWindow::InitRecent()
 {
-	for(int i = 0; i < EditorSettings::Instance()->GetLastOpenedCount(); ++i)
+	Vector<String> filesList = RecentFilesManager::Instance()->GetRecentFiles();
+
+	foreach(String path, filesList)
 	{
-		DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(i);
+		if (path.empty())
+		{
+			continue;
+		}
 		QAction *action = ui->menuFile->addAction(path.c_str());
 
 		action->setData(QString(path.c_str()));
@@ -718,7 +722,7 @@ void QtMainWindow::InitRecent()
 	}
 }
 
-void QtMainWindow::AddRecent(const QString &path)
+void QtMainWindow::AddRecent(const QString &pathString)
 {
     while(recentScenes.size())
     {
@@ -726,9 +730,8 @@ void QtMainWindow::AddRecent(const QString &path)
         recentScenes.removeAt(0);
     }
     
-    EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
-
-    InitRecent();
+	RecentFilesManager::Instance()->SetFileToRecent(pathString.toStdString());
+	InitRecent();
 }
 
 // ###################################################################################################
@@ -972,9 +975,10 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
     }
 
+	int32 toolsFlags = scene->GetEnabledTools();
 	if (!scene->IsChanged())
 	{
-		if (scene->GetEnabledTools() != 0)
+		if (toolsFlags)
 		{
 			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 		}
@@ -989,26 +993,37 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
     }
 
-	if (scene->GetEnabledTools() != 0)
-	{
-		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	}
-
 	if(answer == QMessageBox::No)
 	{
+		if (toolsFlags)
+		{
+			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, false);
+		}
 		closeRequest->Accept();
 		return;
 	}
-
-	bool sceneWasSaved = SaveScene(scene);
-    if(sceneWasSaved)
-    {
-		closeRequest->Accept();
-    }
-	else
+	
+	if (toolsFlags)
 	{
-		closeRequest->Cancel();
+		FilePath colorSystemTexturePath = scene->customColorsSystem->GetCurrentSaveFileName();
+		if( (toolsFlags & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR) &&
+		    (colorSystemTexturePath.IsEmpty() || !colorSystemTexturePath.Exists()) &&
+		    !SelectCustomColorsTexturePath())
+		{
+			closeRequest->Cancel();
+			return;
+		}
+		
+		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, true);
 	}
+
+    if(!SaveScene(scene))
+    {
+        closeRequest->Cancel();
+        return;
+    }
+	
+    closeRequest->Accept();
 }
 
 
@@ -1102,8 +1117,9 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 
 void QtMainWindow::OnReloadSprites()
 {
-    SpritePackerHelper::Instance()->UpdateParticleSprites(EditorSettings::Instance()->GetTextureViewGPU());
-    emit SpritesReloaded();
+    SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->
+		GetValue(ResourceEditor::SETTINGS_TEXTURE_VIEW_GPU, SettingsManager::INTERNAL).AsInt32());
+	emit SpritesReloaded();
 }
 
 void QtMainWindow::OnSelectMode()
@@ -1388,10 +1404,16 @@ void QtMainWindow::OnAddEntityFromSceneTree()
 	ui->menuAdd->exec(QCursor::pos());
 }
 
-void QtMainWindow::OnShowSettings()
+void QtMainWindow::OnShowGeneralSettings()
 {
-	SettingsDialogQt t(this);
+	GeneralSettingsDialog t(this);
 	t.exec();
+}
+
+void QtMainWindow::OnShowCurrentSceneSettings()
+{
+	SceneSettingsDialog currentSceneSettings(this);
+	currentSceneSettings.exec();
 }
 
 void QtMainWindow::OnOpenHelp()
@@ -1819,7 +1841,7 @@ void QtMainWindow::OnCameraSpeed0()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(NULL != sceneEditor)
 	{
-		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(0));
+		sceneEditor->cameraSystem->SetMoveSpeedArrayIndex(0);
 	}
 }
 
@@ -1828,7 +1850,7 @@ void QtMainWindow::OnCameraSpeed1()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(NULL != sceneEditor)
 	{
-		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(1));
+		sceneEditor->cameraSystem->SetMoveSpeedArrayIndex(1);
 	}
 }
 
@@ -1837,7 +1859,7 @@ void QtMainWindow::OnCameraSpeed2()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(NULL != sceneEditor)
 	{
-		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(2));
+		sceneEditor->cameraSystem->SetMoveSpeedArrayIndex(2);
 	}
 }
 
@@ -1846,7 +1868,7 @@ void QtMainWindow::OnCameraSpeed3()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(NULL != sceneEditor)
 	{
-		sceneEditor->cameraSystem->SetMoveSpeed(EditorSettings::Instance()->GetCameraSpeed(3));
+		sceneEditor->cameraSystem->SetMoveSpeedArrayIndex(3);
 	}
 }
 
@@ -1937,11 +1959,7 @@ void QtMainWindow::OnCustomColorsEditor()
 		return;
 	}
 	
-	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
-	{
-		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor));
-	}
-	else
+	if(!sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
 	{
 		if (LoadAppropriateTextureFormat())
 		{
@@ -1951,7 +1969,50 @@ void QtMainWindow::OnCustomColorsEditor()
 		{
 			OnLandscapeEditorToggled(sceneEditor);
 		}
+		return;
 	}
+	
+	FilePath currentTexturePath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+	
+	if ((currentTexturePath.IsEmpty() || !currentTexturePath.Exists()) &&
+        !SelectCustomColorsTexturePath())
+	{
+        ui->actionCustomColorsEditor->setChecked(true);
+		return;
+	}
+	
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR, true);
+	ui->actionCustomColorsEditor->setChecked(false);
+}
+
+bool QtMainWindow::SelectCustomColorsTexturePath()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(!sceneEditor)
+	{
+		return false;
+	}
+	FilePath scenePath = sceneEditor->GetScenePath().GetDirectory();
+	
+	QString filePath = QtFileDialog::getSaveFileName(NULL,
+													 QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+													 QString(scenePath.GetAbsolutePathname().c_str()),
+													 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
+	Entity* landscape = FindLandscapeEntity(sceneEditor);
+	if (selectedPathname.IsEmpty() || NULL == landscape)
+	{
+		return false;
+	}
+	KeyedArchive* customProps = landscape->GetCustomProperties();
+	if(NULL == customProps)
+	{
+		return false;
+	}
+	
+	String pathToSave = selectedPathname.GetRelativePathname(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
+	return true;
 }
 
 void QtMainWindow::OnHeightmapEditor()

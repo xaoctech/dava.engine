@@ -28,42 +28,29 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROXY__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROXY__
+#ifndef __RECENT_FILES_MANAGER_H__
+#define __RECENT_FILES_MANAGER_H__
 
 #include "DAVAEngine.h"
+#include "Base/StaticSingleton.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-using namespace DAVA;
+#include <QObject>
 
-class CustomColorsProxy: public BaseObject
+
+class RecentFilesManager : public DAVA::Singleton<RecentFilesManager>
 {
-protected:
-	~CustomColorsProxy();
+
 public:
-	CustomColorsProxy(int32 size);
-	
-	Sprite* GetSprite();
-	void UpdateRect(const Rect& rect);
-	
-	void ResetSpriteChanged();
-	bool IsSpriteChanged();
-	
-	Rect GetChangedRect();
 
-	int32 GetChangesCount() const;
-	void ResetChanges();
-	void IncrementChanges();
-	void DecrementChanges();
-	
-	void UpdateSpriteFromConfig();
-	
+	DAVA::Vector<String> GetRecentFiles();
+
+	void SetFileToRecent(const DAVA::String&);
+
 protected:
-	Sprite* customColorsSprite;
-	Rect changedRect;
-	bool spriteChanged;
-	int32 size;
+	
+	static const int RECENT_FILES_MAX_COUNT = 5;
 
-	int32 changes;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROXY__) */
+#endif // __RECENT_FILES_MANAGER_H__
