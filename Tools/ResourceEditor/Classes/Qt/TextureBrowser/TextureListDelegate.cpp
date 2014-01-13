@@ -96,7 +96,7 @@ void TextureListDelegate::textureReadyThumbnail(const DAVA::TextureDescriptor *d
 		{
 			QModelIndex index = descriptorIndexes[descriptor];
 			descriptorIndexes.remove(descriptor);
-
+            
 			// this will force item with given index to redraw
 			emit sizeHintChanged(index);
 		}
@@ -125,7 +125,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		if(NULL != curTexture)
 		{
 			textureDimension = QSize(curTexture->width, curTexture->height);
-			textureDataSize = QString::fromStdString(SizeInBytesToString(curTexture->GetDataSize()));
+            textureDataSize = QString::fromStdString(DAVA::Format("%d", TextureCache::Instance()->getOriginalSize(curTextureDescriptor)));
 		}
 
 		painter->save();
@@ -182,7 +182,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 			sprintf(dimen, "%dx%d", textureDimension.width(), textureDimension.height());
 			//infoText += "Dimension: ";
 			infoText += dimen;
-			infoText += "\nMip-0 size: ";
+			infoText += "\nData size: ";
 			infoText += textureDataSize;
 
 			painter->drawText(textRect, infoText);

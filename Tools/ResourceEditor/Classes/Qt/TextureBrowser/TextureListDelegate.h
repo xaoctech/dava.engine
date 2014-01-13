@@ -65,7 +65,7 @@ private:
 	QFont nameFont;
 	QFontMetrics nameFontMetrics;
 	mutable QMap<const DAVA::TextureDescriptor *, QModelIndex> descriptorIndexes;
-
+    
 	DrawRule drawRule;
 
 	void drawPreviewBig(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
