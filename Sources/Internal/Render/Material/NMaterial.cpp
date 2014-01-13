@@ -469,16 +469,29 @@ namespace DAVA
 			serializationContext->AddBinding(parentKey, this);
 		}
 	}
-		
-	bool NMaterial::SwitchQuality(const FastName& stateName)
+	
+	void NMaterial::SetQuality(const FastName& stateName)
 	{
+		DVASSERT(stateName.IsValid());
+		orderedQuality = stateName;
+	}
+	
+	bool NMaterial::ReloadQuality(bool force)
+	{
+		DVASSERT(orderedQuality.IsValid());
 		DVASSERT(materialTemplate);
 		
-		bool result = (materialTemplate->techniqueStateMap.count(stateName) > 0);
-		
-		if(result)
+		if(!orderedQuality.IsValid())
 		{
-			currentQuality = stateName;
+			orderedQuality = NMaterial::DEFAULT_QUALITY_NAME;
+		}
+		
+		bool result = (materialTemplate->techniqueStateMap.count(orderedQuality) > 0);
+		if(result &&
+		   (orderedQuality != currentQuality ||
+		   force))
+		{
+			currentQuality = orderedQuality;
 			
 			if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 			{
@@ -495,7 +508,10 @@ namespace DAVA
 				size_t childrenCount = children.size();
 				for(size_t i = 0; i < childrenCount; ++i)
 				{
-					children[i]->SwitchQuality(stateName);
+					NMaterial* child = children[i];
+					
+					child->SetQuality(currentQuality);
+					child->ReloadQuality(force);
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
@@ -508,10 +524,10 @@ namespace DAVA
 				DVASSERT(false && "Material is not initialized properly!");
 			}
 		}
-
+		
 		return result;
 	}
-		
+
 	NMaterial* NMaterial::Clone()
 	{
 		NMaterial* clonedMaterial = NULL;

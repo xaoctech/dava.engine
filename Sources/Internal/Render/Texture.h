@@ -261,7 +261,7 @@ public:
     
 	static const TexturesMap & GetTextureMap();
     
-    int32 GetDataSize() const;
+    uint32 GetDataSize() const;
 
     static void SetDefaultGPU(eGPUFamily gpuFamily);
     static eGPUFamily GetDefaultGPU();

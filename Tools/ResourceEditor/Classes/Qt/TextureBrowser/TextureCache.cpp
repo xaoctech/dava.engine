@@ -31,8 +31,11 @@
 #include "TextureCache.h"
 #include "TextureConvertor.h"
 #include "Main/mainwindow.h"
+#include "ImageTools/ImageTools.h"
+#include "CubemapEditor/CubemapUtils.h"
 
 #include <QPainter>
+#include <QFileInfo>
 
 TextureCache::TextureCache()
 {
@@ -109,11 +112,21 @@ void TextureCache::ClearCache()
 {
     clearInsteadThumbnails();
     cacheThumbnail.clear();
+    
+    cacheOriginalSize.clear();
+    cacheOriginalFileSize.clear();
+    for(DAVA::int32 i = 0; i < DAVA::GPU_FAMILY_COUNT; ++i)
+    {
+        cacheConvertedSize[i].clear();
+        cacheConvertedFileSize[i].clear();
+    }
 }
 
 void TextureCache::ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image)
 {
 	setThumbnail(descriptor, image);
+    
+    setOriginalSize(descriptor);
 }
 
 
@@ -121,11 +134,15 @@ void TextureCache::ReadyOriginal(const DAVA::TextureDescriptor *descriptor, cons
 {
     setOriginal(descriptor, image);
     setThumbnail(descriptor, image);
+    
+    setOriginalSize(descriptor);
 }
 
 void TextureCache::ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image)
 {
     setConverted(descriptor, gpu, image);
+    
+    setConvertedSize(descriptor, gpu);
 }
 
 
@@ -234,6 +251,9 @@ void TextureCache::clearInsteadThumbnails()
 void TextureCache::clearThumbnail(const DAVA::TextureDescriptor *descriptor)
 {
     RemoveFromCache(cacheThumbnail, descriptor);
+    
+    RemoveSizeFromCache(cacheOriginalSize, descriptor);
+    RemoveSizeFromCache(cacheOriginalFileSize, descriptor);
 }
 
 void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
@@ -246,6 +266,8 @@ void TextureCache::clearConverted(const DAVA::TextureDescriptor *descriptor, con
 	if(gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
         RemoveFromCache(cacheConverted[gpu], descriptor);
+        RemoveSizeFromCache(cacheConvertedSize[gpu], descriptor);
+        RemoveSizeFromCache(cacheConvertedFileSize[gpu], descriptor);
 	}
 }
 
@@ -259,5 +281,81 @@ void TextureCache::RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> 
             cache.erase(found);
         }
     }
+}
+
+void TextureCache::RemoveSizeFromCache(DAVA::Map<const DAVA::FilePath, DAVA::uint32> & cache, const DAVA::TextureDescriptor *descriptor)
+{
+    if(descriptor)
+    {
+        DAVA::Map<const DAVA::FilePath, DAVA::uint32>::iterator found = cache.find(descriptor->pathname);
+        if(found != cache.end())
+        {
+            cache.erase(found);
+        }
+    }
+}
+
+
+DAVA::uint32 TextureCache::getOriginalSize(const DAVA::TextureDescriptor *descriptor)
+{
+    return getImageSize(cacheOriginalSize, descriptor);
+}
+
+DAVA::uint32 TextureCache::getOriginalFileSize(const DAVA::TextureDescriptor *descriptor)
+{
+    return getImageSize(cacheOriginalFileSize, descriptor);
+}
+
+DAVA::uint32 TextureCache::getConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    return getImageSize(cacheConvertedSize[gpu], descriptor);
+}
+
+DAVA::uint32 TextureCache::getConvertedFileSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    return getImageSize(cacheConvertedFileSize[gpu], descriptor);
+}
+
+DAVA::uint32 TextureCache::getImageSize(const DAVA::Map<const DAVA::FilePath, DAVA::uint32> & cache, const DAVA::TextureDescriptor *descriptor)
+{
+    DAVA::Map<const DAVA::FilePath, DAVA::uint32>::const_iterator it = cache.find(descriptor->pathname);
+    if(it != cache.end())
+    {
+        return it->second;
+    }
+    
+    return 0;
+}
+
+
+void TextureCache::setOriginalSize(const DAVA::TextureDescriptor *descriptor)
+{
+    DAVA::uint32 fileSize = 0;
+    if(descriptor->IsCubeMap())
+    {
+        DAVA::Vector<DAVA::String> faceNames;
+        CubemapUtils::GenerateFaceNames(descriptor->pathname.GetAbsolutePathname(), faceNames);
+        for(size_t i = 0; i < faceNames.size(); ++i)
+        {
+            fileSize += QFileInfo(faceNames[i].c_str()).size();
+        }
+    }
+    else
+    {
+        fileSize = QFileInfo(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
+    }
+    
+    cacheOriginalSize[descriptor->pathname] = ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_UNKNOWN);
+    cacheOriginalFileSize[descriptor->pathname] = fileSize;
+}
+
+
+
+void TextureCache::setConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    cacheConvertedSize[gpu][descriptor->pathname] = ImageTools::GetTexturePhysicalSize(descriptor, gpu);
+
+    DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
+    cacheConvertedFileSize[gpu][descriptor->pathname] = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 }
 
