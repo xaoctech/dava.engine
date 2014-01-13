@@ -122,6 +122,7 @@
 		A6AFDEFD1871C3D1006E43A1 /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */; };
 		A6B5D95F185600050011D172 /* IntrospectionDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */; };
 		A6B5D960185600050011D172 /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B5D95E185600050011D172 /* IntrospectionDynamic.h */; };
+		A6D827B418771B2C0006A5DD /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6D827B318771B2C0006A5DD /* Color.cpp */; };
 		A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */; };
 		A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF01761D40200B48E41 /* ActionComponent.h */; };
 		A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -895,6 +896,7 @@
 		A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
 		A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntrospectionDynamic.cpp; path = ../../Sources/Internal/Base/IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		A6B5D95E185600050011D172 /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntrospectionDynamic.h; path = ../../Sources/Internal/Base/IntrospectionDynamic.h; sourceTree = "<group>"; };
+		A6D827B318771B2C0006A5DD /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FDF01761D40200B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -1916,6 +1918,7 @@
 		E8B3C87216B9326D002BD35F /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				A6D827B318771B2C0006A5DD /* Color.cpp */,
 				E8B3C87316B9326D002BD35F /* AABBox2.cpp */,
 				E8B3C87416B9326D002BD35F /* AABBox2.h */,
 				E8B3C87516B9326D002BD35F /* AABBox3.cpp */,
@@ -3277,6 +3280,7 @@
 				E8B3CC3E16B9326E002BD35F /* ShaderGL.cpp in Sources */,
 				021414161819851100925E51 /* DAVAClassRegistrator.cpp in Sources */,
 				E8B3CC4016B9326E002BD35F /* SharedFBO.cpp in Sources */,
+				A6D827B418771B2C0006A5DD /* Color.cpp in Sources */,
 				E8B3CC4216B9326E002BD35F /* StaticIndexBuffer.cpp in Sources */,
 				E8B3CC4416B9326E002BD35F /* StaticVertexBuffer.cpp in Sources */,
 				E8B3CC4616B9326E002BD35F /* Texture.cpp in Sources */,

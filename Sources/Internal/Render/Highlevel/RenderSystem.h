@@ -62,13 +62,9 @@ public:
     virtual ~RenderSystem();
     
     /**
-        \brief Get Render Layer Manager to have ability to get all render layers from RenderSystem.
-     */
-    RenderLayerManager * GetRenderLayerManager() { return &renderLayerManager; }
-    /**
         \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
      */
-    RenderPassManager * GetRenderPassManager() { return &renderPassManager; };
+    const RenderPassManager * GetRenderPassManager() const { return &renderPassManager; };
     /**
         \brief Get Render Hierarchy. It allow you to work with current render hierarchy and perform all main tasks with geometry on the level.
      */
@@ -139,7 +135,7 @@ public:
 	//RenderPass * GetRenderPass(const FastName & passName);
     
     void SetShadowRectColor(const Color &color);
-    const Color & GetShadowRectColor();
+    const Color & GetShadowRectColor() const;
 	void SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode);
 	ShadowPassBlendMode::eBlend GetShadowBlendMode();
 	
@@ -157,10 +153,9 @@ private:
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
     Vector<RenderObject*> markedObjects;
-    List<Light*> movedLights;
+    Vector<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     
-    RenderLayerManager renderLayerManager;
     RenderPassManager renderPassManager;
     
     

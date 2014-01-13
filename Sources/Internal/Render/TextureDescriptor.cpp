@@ -129,6 +129,8 @@ void TextureDescriptor::InitializeValues()
     exportedAsGpuFamily = GPU_UNKNOWN;
     exportedAsPixelFormat = FORMAT_INVALID;
 	faceDescription = 0;
+
+	format = FORMAT_INVALID;
 }
     
 void TextureDescriptor::SetDefaultValues()

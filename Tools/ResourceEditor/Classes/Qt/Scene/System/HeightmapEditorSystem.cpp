@@ -298,7 +298,7 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	RenderManager::Instance()->SetDefault2DState();
 	RenderManager::Instance()->FlushState();
 	
-	RenderManager::Instance()->SetColor(Color::White());
+	RenderManager::Instance()->SetColor(Color::White);
 	
 	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
 	srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,

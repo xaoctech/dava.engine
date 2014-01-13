@@ -42,6 +42,8 @@
 
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
+#include "Scene/FogSettingsChangedReceiver.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
@@ -119,6 +121,9 @@ SceneEditor2::SceneEditor2()
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
     AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
 
+	materialSystem = new EditorMaterialSystem(this);
+	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT);
+
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
 	SceneSignals::Instance()->EmitOpened(this);
@@ -145,7 +150,7 @@ SceneEditor2::SceneEditor2()
 SceneEditor2::~SceneEditor2()
 {
 	RemoveSystems();
-    
+
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
@@ -304,6 +309,11 @@ void SceneEditor2::ClearCommands(int commandId)
 	commandStack.Clear(commandId);
 }
 
+void SceneEditor2::ClearAllCommands()
+{
+    commandStack.Clear();
+}
+
 const CommandStack* SceneEditor2::GetCommandStack() const
 {
 	return (&commandStack);
@@ -368,6 +378,8 @@ void SceneEditor2::Update(float timeElapsed)
 
     staticOcclusionBuildSystem->SetCamera(GetClipCamera());
     staticOcclusionBuildSystem->Process(timeElapsed);
+
+	materialSystem->Update(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -389,6 +401,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 		structureSystem->ProcessUIEvent(event);
 
 	particlesSystem->ProcessUIEvent(event);
+	materialSystem->ProcessUIEvent(event);
 }
 
 void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
@@ -425,6 +438,8 @@ void SceneEditor2::Draw()
 
 		if(structureSystem)
 			structureSystem->Draw();
+
+		materialSystem->Draw();
 	}
 
 	tilemaskEditorSystem->Draw();
@@ -464,6 +479,8 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	
 	if(ownersSignatureSystem)
 		ownersSignatureSystem->ProcessCommand(command, redo);
+
+	materialSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )
@@ -530,7 +547,7 @@ const Color SceneEditor2::GetShadowColor() const
 	if(GetRenderSystem())
 		return GetRenderSystem()->GetShadowRectColor();
 
-	return Color::White();
+	return Color::White;
 }
 
 void SceneEditor2::SetShadowBlendMode(DAVA::ShadowPassBlendMode::eBlend blend)

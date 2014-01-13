@@ -40,7 +40,7 @@ float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.2f;
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, objectType(ResourceEditor::ESOT_NONE)
-    , objectTypeColor(Color::White())
+    , objectTypeColor(Color::White)
 	, hangingObjectsModeEnabled(false)
 {
 	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
@@ -229,7 +229,7 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 		if(light->GetType() == Light::TYPE_DIRECTIONAL)
 		{
 			DAVA::Vector3 center = worldBox.GetCenter();
-			DAVA::Vector3 direction = light->GetDirection();
+			DAVA::Vector3 direction = -light->GetDirection();
 
 			direction.Normalize();
 			direction = direction * worldBox.GetSize().x;

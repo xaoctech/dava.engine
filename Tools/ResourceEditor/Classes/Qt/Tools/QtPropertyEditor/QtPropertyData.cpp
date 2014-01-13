@@ -52,6 +52,8 @@ QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 
 QtPropertyData::~QtPropertyData()
 {
+	DVASSERT(!updatingValue && "Property can't be removed during it update process");
+
 	for(int i = 0; i < childrenData.size(); ++i)
 	{
 		delete childrenData.at(i);
@@ -149,15 +151,26 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 {
 	QVariant oldValue = curValue;
 
-	curValue = value;
-	SetValueInternal(curValue);
+	// set value
+	SetValueInternal(value);
+
+	// and get what was really set
+	// it can't differ from input "value"
+	// (example: we are trying to set 10, but accepted range is 0-5
+	//   value is 10
+	//   curValue becomes 0-5)
+	curValue = GetValueInternal();
 
 	if(curValue != oldValue)
 	{
+		updatingValue = true;
+
 		UpdateDown();
 		UpdateUp();
 
 		EmitDataChanged(reason);
+
+		updatingValue = false;
 	}
 }
 

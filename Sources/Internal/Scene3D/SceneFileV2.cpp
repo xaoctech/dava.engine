@@ -423,7 +423,7 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str());
 
     node->Save(archive, &serializationContext);
     
@@ -464,7 +464,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         if (isDebugLogEnabled)
         {
             String name = archive->GetString("name");
-            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+            Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
         }
         node->Load(archive, &serializationContext);
         
@@ -499,7 +499,7 @@ bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
-        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
+        Logger::FrameworkDebug("%s %s(%s) %d", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, &serializationContext);
     
 	archive->SetInt32("#childrenCount", node->GetChildrenCount());
@@ -524,6 +524,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     String name = archive->GetString("##name");
     
     bool removeChildren = false;
+    bool skipNode = false;
     
     Entity * node = NULL;
     if (name == "LandscapeNode")
@@ -543,7 +544,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 	}
 	else
     {
-        node = dynamic_cast<Entity*>(ObjectFactory::Instance()->New<BaseObject>(name));
+        BaseObject *obj = ObjectFactory::Instance()->New<BaseObject>(name);
+        node = dynamic_cast<Entity*>(obj);
         if(node)
         {
             node->SetScene(scene);
@@ -552,14 +554,16 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         }
         else //in case if editor class is loading in non-editor sprsoject
         {
+            SafeRelease(obj);
             node = new Entity();
+            skipNode = true;
         }
     }
 
     if (isDebugLogEnabled)
     {
         String name = archive->GetString("name");
-        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
+        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
     }
     
     int32 childrenCount = archive->GetInt32("#childrenCount", 0);
@@ -574,7 +578,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         node->RemoveAllChildren();
     }
 
-    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
     {
         parent->AddNode(node);
     }
@@ -774,7 +778,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
-                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                    Logger::FrameworkDebug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0).c_str());
                 }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
