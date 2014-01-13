@@ -31,7 +31,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
 
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/SceneValidator.h"
 #include "Commands2/VisibilityToolActions.h"
 #include "Commands2/CustomColorsCommands2.h"
@@ -241,8 +241,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 {
 	SceneExporter exporter;
 	
-	KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
+	FilePath projectPath( SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
