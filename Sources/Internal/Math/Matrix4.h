@@ -154,6 +154,8 @@ struct Matrix4
     
     
     static const Matrix4 IDENTITY;
+	
+	//static uint32 matrixMultiplicationCounter;
 };
 
 inline Vector3 operator * (const Vector3 & _v, const Matrix4 & _m);
@@ -547,6 +549,8 @@ inline bool Matrix4::Decomposition(Vector3& position, Vector3& scale, Vector3& o
     
 inline Matrix4 Matrix4::operator *(const Matrix4 & m) const
 {
+	//matrixMultiplicationCounter++;
+	
 #ifdef __DAVAENGINE_ARM_7__
     Matrix4 res;
     NEON_Matrix4Mul(this->data, m.data, res.data);
