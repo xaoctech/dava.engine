@@ -90,6 +90,8 @@ protected:
     Vector3 position;
     float32 volume;
     
+    bool is3D;
+
     FastNameMap<float32> paramsValues;
     
 friend class FMODSoundSystem;

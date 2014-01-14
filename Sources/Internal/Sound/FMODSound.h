@@ -81,7 +81,7 @@ protected:
 
 	static FMODSound * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
 
-	bool is3d;
+	bool is3D;
 	Vector3 position;
 
 	FilePath fileName;

@@ -350,8 +350,7 @@ void FMODSoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEven
 void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 {
     Vector<SoundGroup>::iterator it = soundGroups.begin();
-    Vector<SoundGroup>::const_iterator itEnd = soundGroups.end();
-    while(it != itEnd)
+    while(it != soundGroups.end())
     {
         Vector<SoundEvent *> & events = it->events;
         Vector<SoundEvent *>::const_iterator itEv = events.begin();

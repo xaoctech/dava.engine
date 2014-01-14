@@ -48,7 +48,7 @@ FMODSound * FMODSound::CreateWithFlags(const FilePath & fileName, uint32 flags, 
     
 	if(flags & SOUND_EVENT_CREATE_3D)
     {
-		sound->is3d = true;
+		sound->is3D = true;
         fmodMode |= FMOD_3D;
     }
     
@@ -102,7 +102,7 @@ FMODSound * FMODSound::CreateWithFlags(const FilePath & fileName, uint32 flags, 
         }
 
 #if !defined DONT_USE_DEFAULT_3D_SOUND_SETTINGS
-        if(sound->is3d && sound->fmodSound)
+        if(sound->is3D && sound->fmodSound)
             FMOD_VERIFY(sound->fmodSound->set3DMinMaxDistance(5.0f, 100.0f));
 #endif
 
@@ -122,7 +122,7 @@ FMODSound * FMODSound::CreateWithFlags(const FilePath & fileName, uint32 flags, 
 FMODSound::FMODSound(const FilePath & _fileName, int32 _priority) :
     fileName(_fileName),
 	priority(_priority),
-	is3d(false),
+	is3D(false),
     soundData(0),
     fmodSound(0),
     fmodInstanceGroup(0)
@@ -164,7 +164,7 @@ bool FMODSound::Trigger()
     FMOD_VERIFY(fmodInstance->setUserData(this));
     FMOD_VERIFY(fmodInstance->setChannelGroup(fmodInstanceGroup));
 
-    if(is3d)
+    if(is3D)
         FMOD_VERIFY(fmodInstance->set3DAttributes(&pos, 0));
     
     FMOD_VERIFY(fmodInstanceGroup->setPaused(false));
@@ -182,7 +182,7 @@ void FMODSound::SetPosition(const Vector3 & _position)
 
 void FMODSound::UpdateInstancesPosition()
 {
-	if(is3d)
+	if(is3D)
 	{
 		FMOD_VECTOR pos = {position.x, position.y, position.z};
 		int32 instancesCount = 0;

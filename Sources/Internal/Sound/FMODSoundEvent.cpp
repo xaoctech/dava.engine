@@ -47,6 +47,15 @@ FMODSoundEvent::FMODSoundEvent(const String & _eventName)
             eventName = _eventName.substr(1);
         else
             eventName = _eventName;
+
+        FMOD::Event * fmodEventInfo = 0;
+        FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+        if(fmodEventInfo)
+        {
+            FMOD_MODE mode = 0;
+            fmodEventInfo->getPropertyByIndex(FMOD_EVENTPROPERTY_MODE, &mode);
+            is3D = (mode == FMOD_3D);
+        }
     }
 }
 
@@ -75,17 +84,21 @@ bool FMODSoundEvent::Trigger()
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
         (*it)->setPaused(false);
     
-    if((position - fmodSoundSystem->listenerPosition).SquareLength() > fmodSoundSystem->maxDistanceSq)
-        return false;
-    
-    FMOD::Event * fmodEventInfo = 0;
-    FMOD_VECTOR pos = {position.x, position.y, position.z};
-    
-    FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
-    if(fmodEventInfo)
+    if(is3D)
     {
-        FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0));
-        ApplyParamsToEvent(fmodEventInfo);
+        if((position - fmodSoundSystem->listenerPosition).SquareLength() > fmodSoundSystem->maxDistanceSq)
+            return false;
+
+        FMOD::Event * fmodEventInfo = 0;
+        FMOD_VECTOR pos = {position.x, position.y, position.z};
+
+        FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+        if(fmodEventInfo)
+        {
+            FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0));
+            FMOD_VERIFY(fmodEventInfo->setVolume(volume));
+            ApplyParamsToEvent(fmodEventInfo);
+        }
     }
     
     FMOD::Event * fmodEvent = 0;
@@ -103,7 +116,7 @@ bool FMODSoundEvent::Trigger()
     }
     else if(result != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
     {
-        Logger::FrameworkDebug("[FMODSoundEvent::Trigger()] Failed by %d on eventID: %s", result, eventName.c_str());
+        Logger::Debug("[FMODSoundEvent::Trigger()] Failed by %d on eventID: %s", result, eventName.c_str());
     }
     
     return fmodEvent != 0;
