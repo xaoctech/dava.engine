@@ -83,6 +83,25 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         
         if(isOk)
         {
+			File * file1 = File::Create("~res:/Autotesting/Scripts/autotesting_api.lua", File::OPEN | File::READ );
+            if (file1)
+            {
+                file1->Release();
+            }
+            else
+            {
+                Logger::Debug("AutotestingSystemLua::InitFromFile file1 not opened");
+            }
+            File * file2 = File::Create("~res:/tutorial.yaml", File::OPEN | File::READ );
+            if (file2)
+            {
+                file2->Release();
+            }
+            else
+            {
+                Logger::Debug("AutotestingSystemLua::InitFromFile file2 not opened");
+            }
+
             isOk = RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
         }
         else
@@ -699,7 +718,7 @@ bool AutotestingSystemLua::LoadScript(const String &luaScript)
 bool AutotestingSystemLua::LoadScriptFromFile(const FilePath &luaFilePath)
 {
 	Logger::Debug("AutotestingSystemLua::LoadScriptFromFile: %s", luaFilePath.GetAbsolutePathname().c_str());
-	File * file = File::Create(luaFilePath.GetAbsolutePathname().c_str(), File::OPEN | File::READ );
+	File * file = File::Create(luaFilePath, File::OPEN | File::READ );
 	if (file)
 	{
 		char *data = new char[file->GetSize()];
