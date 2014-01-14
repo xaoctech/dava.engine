@@ -49,6 +49,7 @@ public:
 	~MaterialEditor();
 
 	void SelectMaterial(DAVA::NMaterial *material);
+	void SelectEntities(DAVA::NMaterial *material);
 
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
