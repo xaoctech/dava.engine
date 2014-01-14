@@ -543,6 +543,24 @@ void HierarchyTreeController::DeleteNodesInternal(const HierarchyTreeNode::HIERA
 	}
 }
 
+void HierarchyTreeController::SynchronizeSelection(const QList<HierarchyTreeControlNode*>& selectedNodes)
+{
+    SELECTEDCONTROLNODES nodesToDeselect = activeControlNodes;
+
+    foreach(HierarchyTreeControlNode* selectedNode, selectedNodes)
+    {
+        SelectControl(selectedNode);
+        nodesToDeselect.remove(selectedNode);
+    }
+
+    // In case some nodes remain in the deselected list - unselect them.
+    for (SELECTEDCONTROLNODES::iterator iter = nodesToDeselect.begin(); iter != nodesToDeselect.end();
+         iter ++)
+    {
+        UnselectControl(*iter, false);
+    }
+}
+
 void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
 {
     // Update the Active Platform.
