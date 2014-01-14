@@ -262,7 +262,7 @@ public:
 	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
 	void RemoveMaterialProperty(const FastName & keyName);
 	
-	void SetMaterialName(const String& name);
+	void SetMaterialName(const FastName& name);
 	inline const FastName& GetMaterialName() const {return materialName;}
 	
 	inline eMaterialType GetMaterialType() const {return materialType;}
@@ -502,7 +502,9 @@ public:
 	
 public:
 	
-	INTROSPECTION(NMaterial,
+	INTROSPECTION_EXTEND(NMaterial, DataNode,
+				  //(DAVA::CreateIspProp("materialName", "Material name", &NMaterial::GetMaterialName, &NMaterial::SetMaterialName, I_SAVE | I_EDIT | I_VIEW),
+				  MEMBER(materialName, "Material name", I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
