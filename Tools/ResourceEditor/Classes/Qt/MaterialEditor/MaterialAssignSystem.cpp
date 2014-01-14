@@ -46,12 +46,10 @@
 
 Q_DECLARE_METATYPE( DAVA::NMaterial * );
 
-
 void MaterialAssignSystem::AssignMaterial(SceneEditor2 *scene, DAVA::NMaterial *instance, DAVA::NMaterial *newMaterialParent)
 {
     scene->Exec(new MaterialSwitchParentCommand(instance, newMaterialParent));
 }
-
 
 void MaterialAssignSystem::AssignMaterialToGroup(SceneEditor2 *scene, const EntityGroup *group, DAVA::NMaterial *newMaterialParent)
 {
@@ -143,7 +141,6 @@ DAVA::NMaterial * MaterialAssignSystem::SelectMaterial(const DAVA::Set<DAVA::NMa
     {
         return *materials.begin();
     }
-    
     
     return NULL;
 }

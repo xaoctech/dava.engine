@@ -48,24 +48,22 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
 
-	// global scene manager signals
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-
-	// ui signals
-	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
-	QObject::connect(ui->materialTree, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialClicked(const QModelIndex &)));
-
-	// material properties
-	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
-	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
-
 	ui->materialTree->setDragEnabled(true);
 	ui->materialTree->setAcceptDrops(true);
 	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
 
 	ui->materialProperty->SetEditTracking(true);
+
+	// global scene manager signals
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	
+	// material tree
+	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &, const QModelIndex &)));
+
+	// material properties
+	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
+	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -86,6 +84,11 @@ MaterialEditor::~MaterialEditor()
 
 	posSaver.SaveState(ui->splitter);
 	posSaver.SaveState(ui->splitter_2);
+}
+
+void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
+{
+	ui->materialTree->Select(material);
 }
 
 void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
@@ -131,6 +134,9 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 		{
 			ui->templateBox->setCurrentIndex(0);
 		}
+
+		// enable template selection only for real materials, not instances
+		ui->templateBox->setEnabled(DAVA::NMaterial::MATERIALTYPE_MATERIAL == material->GetMaterialType());
 	}
 }
 
@@ -148,12 +154,9 @@ void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 	SetCurMaterial(NULL);
 }
 
-void MaterialEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
-{ }
-
-void MaterialEditor::materialClicked(const QModelIndex &index)
+void MaterialEditor::materialSelected(const QModelIndex & current, const QModelIndex & previous)
 {
-	DAVA::NMaterial *material = ui->materialTree->GetMaterial(index);
+	DAVA::NMaterial *material = ui->materialTree->GetMaterial(current);
 	SetCurMaterial(material);
 }
 

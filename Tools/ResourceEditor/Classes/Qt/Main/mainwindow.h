@@ -183,7 +183,7 @@ public slots:
 
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
-    
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
@@ -208,7 +208,9 @@ protected:
 	void SetLandscapeSettingsEnabled(bool);
 
 	void DiableUIForFutureUsing();
-
+	
+	bool SelectCustomColorsTexturePath();
+	
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();

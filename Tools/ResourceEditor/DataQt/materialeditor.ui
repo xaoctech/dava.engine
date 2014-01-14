@@ -64,6 +64,9 @@
          <property name="dragDropMode">
           <enum>QAbstractItemView::DragDrop</enum>
          </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
          <property name="uniformRowHeights">
           <bool>true</bool>
          </property>
