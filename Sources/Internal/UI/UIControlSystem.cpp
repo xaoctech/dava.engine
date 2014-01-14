@@ -508,7 +508,6 @@ void UIControlSystem::CancelInput(UIEvent *touch)
 	if(touch->touchLocker)
 	{
 		touch->touchLocker->SystemInputCancelled(touch);
-		touch->touchLocker = NULL;
 	}
 	if (touch->touchLocker != currentScreen)
 	{
@@ -528,10 +527,16 @@ void UIControlSystem::CancelInputs(UIControl *control)
 {
 	for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++) 
 	{
-		if(it->touchLocker == control)
-		{
-			CancelInput(&(*it));
-		}
+        UIControl * parentLockerControl = it->touchLocker;
+        while(parentLockerControl)
+        {
+            if(control == parentLockerControl)
+            {
+                CancelInput(&(*it));
+                break;
+            }
+            parentLockerControl = parentLockerControl->GetParent();
+        }
 	}
 }
 
