@@ -26,49 +26,31 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __EDITOR_MATERIAL_SYSTEM_H__
-#define __EDITOR_MATERIAL_SYSTEM_H__
+
+
+#ifndef __RECENT_FILES_MANAGER_H__
+#define __RECENT_FILES_MANAGER_H__
 
 #include "DAVAEngine.h"
+#include "Base/StaticSingleton.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-class Command2;
-class EditorMaterialSystem : public DAVA::SceneSystem
+#include <QObject>
+
+
+class RecentFilesManager : public DAVA::Singleton<RecentFilesManager>
 {
-	friend class SceneEditor2;
 
 public:
-	EditorMaterialSystem(DAVA::Scene * scene);
-	virtual ~EditorMaterialSystem();
 
-	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
+	DAVA::Vector<String> GetRecentFiles();
 
-	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
-	DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
+	void SetFileToRecent(const DAVA::String&);
 
 protected:
-	virtual void AddEntity(DAVA::Entity * entity);
-	virtual void RemoveEntity(DAVA::Entity * entity);
+	
+	static const int RECENT_FILES_MAX_COUNT = 5;
 
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void ProcessCommand(const Command2 *command, bool redo);
-
-	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
-	void RemMaterial(DAVA::NMaterial *material);
-
-private:
-	struct MaterialFB
-	{
-		MaterialFB() : entity(NULL), batch(NULL) {}
-
-		DAVA::Entity *entity;
-		DAVA::RenderBatch *batch;
-	};
-
-	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
-	DAVA::Set<DAVA::NMaterial *> ownedParents;
 };
 
-#endif // __EDITOR_MATERIAL_SYSTEM_H__
+#endif // __RECENT_FILES_MANAGER_H__

@@ -33,6 +33,7 @@
 
 #include "DAVAEngine.h"
 #include "LandscapeEditorDrawSystem.h"
+#include "Main/Request.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
@@ -46,7 +47,7 @@ public:
 	virtual ~CustomColorsSystem();
 	
 	LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
-	bool DisableLandscapeEdititing();
+	bool DisableLandscapeEdititing(bool saveNeeded = true);
 	bool IsLandscapeEditingEnabled() const;
 	
 	void Update(DAVA::float32 timeElapsed);
@@ -60,7 +61,9 @@ public:
 	void SaveTexture(const FilePath& filePath);
 	void LoadTexture(const FilePath& filePath, bool createUndo = true);
 	FilePath GetCurrentSaveFileName();
-
+	
+	bool ChangesPresent();
+		
 protected:
 	bool enabled;
 	

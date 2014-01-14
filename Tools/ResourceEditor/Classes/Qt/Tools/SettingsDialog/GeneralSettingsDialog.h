@@ -28,80 +28,36 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__
-#define __RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__
+#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
+#define __RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__
 
+#include <QDialog.h>
+#include <QTabWidget.h>
+#include <QVBoxLayout>
+#include <QPushButton.h>
+#include <QDialogButtonBox>
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
-#include <QPushButton>
+#include "Settings/SettingsManager.h"
 
-typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
-
-class SceneEditor2;
-
-class SystemsSettingsEditor: public QtPropertyEditor
+class GeneralSettingsDialog: public QDialog
 {
 	Q_OBJECT
-	
+
 public:
-	explicit SystemsSettingsEditor(QWidget* parent = 0);
-	
-	~SystemsSettingsEditor();
-	
-	void InitializeProperties();
-	void RestoreInitialSettings();
 
+	explicit GeneralSettingsDialog(QWidget* parent = 0);
 	
-protected slots:
-	
-	void HandleGridMax(QtPropertyData::ValueChangeReason reason);
-	void HandleGridStep(QtPropertyData::ValueChangeReason reason);
-	void HandleCollisionDrawMode(QtPropertyData::ValueChangeReason reason);
-	void HandleSelectionDrawMode(QtPropertyData::ValueChangeReason reason);
-	
-protected slots:
-
-	void ShowDialog();
+	~GeneralSettingsDialog();
 
 protected:
+	
+	void InitSettings();
 
-	struct PropertyInfo
-	{
-		QtPropertyDataDavaVariant*	property;
-		QVariant					defaultValue;
-		STATE_FLAGS_MAP *			flagsMap;
-		PropertyInfo()
-		{
-			property = NULL;
-			flagsMap = NULL;
-		}
-		PropertyInfo(QtPropertyDataDavaVariant* _property, QVariant _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
-		{
-			property = _property;
-			defaultValue = _defaultValue;
-			flagsMap = _flagsMap;
-		}
-	};
-
-	QPushButton * CreatePushBtn();
-	
-	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
-	
-	void InitMapWithFlag(STATE_FLAGS_MAP* map, DAVA::uint32 value);
-	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
-	
-	void SetAllCheckedToFalse(STATE_FLAGS_MAP* map);
-	
-	
-	DAVA::List<PropertyInfo> propertiesMap;
-
-	SceneEditor2* sceneEditor;
-
-	STATE_FLAGS_MAP selectionSysDrawStateMap;
-	STATE_FLAGS_MAP collisionSysDrawStateMap;
-
-	DAVA::Map<QPushButton * , PropertyInfo>  buttonsMap;
-	
+	QTabWidget*						tabWidget;
+	QVBoxLayout*					mainLayout;
+	QPushButton*					btnOK;
+	DAVA::Vector<QtPropertyEditor*>	settingGroupsEditors;
+	static const SettingsManager::eSettingsGroups groupsTodisplay[];
 };
-#endif /* defined(__RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__) */
+#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_DIALOG__) */

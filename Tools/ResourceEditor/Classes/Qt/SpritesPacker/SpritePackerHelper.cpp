@@ -30,7 +30,7 @@
 
 #include "SpritePackerHelper.h"
 #include "SpritesPacker.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 
 #include <QtConcurrentRun>
 
@@ -49,7 +49,7 @@ SpritePackerHelper::SpritePackerHelper()
 
 void SpritePackerHelper::UpdateParticleSprites(DAVA::eGPUFamily gpu)
 {
-	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+	FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
     if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
@@ -64,7 +64,7 @@ void SpritePackerHelper::UpdateParticleSprites(DAVA::eGPUFamily gpu)
 void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
-	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+	FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
 	FilePath inputDir = projectPath + "DataSource/Gfx/Particles/";
 	FilePath outputDir = projectPath + "Data/Gfx/Particles/";
 
