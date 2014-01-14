@@ -27,56 +27,36 @@
 =====================================================================================*/
 
 
-#include "QColorButton.h"
-#include "FileSystem/FileSystem.h"
-#include "ResourcesManageHelper.h"
-#include <QFile>
 
-using namespace DAVA;
+#ifndef __QT_BUTTON_LINE_EDIT_H__
+#define __QT_BUTTON_LINE_EDIT_H__
 
-QColorButton::QColorButton(QWidget *parent) :
-    QPushButton(parent)
+#include <QWidget>
+#include <QLineEdit>
+#include <QToolButton>
+#include <QAbstractItemDelegate>
+
+class QtColorLineEdit : public QLineEdit
 {
-    //Set default background color as white
-    SetBackgroundColor(QColor(255,255,255));
-}
+	Q_OBJECT
 
-QColor QColorButton::GetBackgroundColor() const
-{ 
-    return currentBackgroundColor;
-}
+public:
+	QtColorLineEdit(QWidget * parent);
 
-void QColorButton::SetBackgroundColor(const QColor& color)
-{
-    //Create style string for background color
-    QString style = QString("* { border: 1px solid grey; background-color: %1;} ").arg(color.name());
-    this->currentBackgroundColor = color;
-    //Reset style
-    this->setStyleSheet("");
-    this->setStyleSheet(style);
-    //Call signal each time control background color is changed
-    emit backgroundColorChanged(color);
-}
+	void SetColor(const QColor &color);
+	QColor GetColor() const;
 
-void QColorButton::SetBackgroundImage(const QString &imagePath)
-{
-    //Check if background image file realy exist  
-    if(QFile::exists(imagePath))
-    {
-        //Get current background color
-        QString currentBgColor = this->currentBackgroundColor.name();
-        //Create style string for background image. Keep current background color
-        QString style = QString("* {border: 1px solid grey; background-color: %1; background-image: url(%2);} ").arg(currentBgColor,imagePath);
-        //Reset style
-        this->setStyleSheet("");
-        this->setStyleSheet(style);
-    }    
-}
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 
-void QColorButton::SetDisplayMultipleColors(const bool needSetbackgroundImage)
-{
-    if (needSetbackgroundImage)
-    {
-        SetBackgroundImage(ResourcesManageHelper::GetButtonBackgroundImagePath());
-    }
-}
+signals:
+    void colorEditFinished();
+
+protected:
+	QColor curColor;
+    bool needEmitEditingFinished;
+
+protected slots:
+	void EditFinished();
+};
+
+#endif

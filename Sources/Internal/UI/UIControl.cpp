@@ -111,10 +111,7 @@ namespace DAVA
 	
 	UIControl::~UIControl()
 	{
-		if(totalTouches > 0)
-		{
-			UIControlSystem::Instance()->CancelInputs(this);
-		}
+        UIControlSystem::Instance()->CancelInputs(this);
 		SafeRelease(background);
 		SafeRelease(eventDispatcher);
 		RemoveAllControls();
@@ -122,12 +119,9 @@ namespace DAVA
 	
 	void UIControl::SetParent(UIControl *newParent)
 	{
-		if (!newParent) 
+		if (!newParent && parent)
 		{
-			if(totalTouches > 0)
-			{
-				UIControlSystem::Instance()->CancelInputs(this);
-			}
+            UIControlSystem::Instance()->CancelInputs(this);
 		}
 		parent = newParent;
 		if(parent && needToRecalcFromAbsoluteCoordinates)
@@ -934,14 +928,11 @@ namespace DAVA
 	
 	void UIControl::SetVisible(bool isVisible, bool hierarchic/* = true*/)
 	{
-		visible = isVisible;
-		if (!visible) 
+		if (!isVisible && visible)
 		{
-			if(totalTouches > 0)
-			{
-				UIControlSystem::Instance()->CancelInputs(this);
-			}
+            UIControlSystem::Instance()->CancelInputs(this);
 		}
+		visible = isVisible;
 		
 		if(hierarchic)
 		{	
