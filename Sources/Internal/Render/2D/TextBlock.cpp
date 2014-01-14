@@ -108,11 +108,15 @@ TextBlock::~TextBlock()
 	
 void TextBlock::SetFont(Font * _font)
 {
+    mutex.Lock();
+    
 	if (!_font || _font == font)
 	{
+        mutex.Unlock();
 		return;
 	}
 
+    
 	if (!(font && font->IsEqual(_font)))
 	{
 		needRedraw = true;
@@ -122,110 +126,165 @@ void TextBlock::SetFont(Font * _font)
 	font = SafeRetain(_font);
 
 	originalFontSize = font->GetSize();
+
+    mutex.Unlock();
 	Prepare();
 }
    
 void TextBlock::SetRectSize(const Vector2 & size)
 {
-	if (rectSize != size) 
+    mutex.Lock();
+	if (rectSize != size)
 	{
 		rectSize = size;
 		needRedraw = true;
+
+        mutex.Unlock();
 		Prepare();
+        return;
 	}
+    mutex.Unlock();
 }
 
 void TextBlock::SetText(const WideString & _string, const Vector2 &requestedTextRectSize)
 {
+    mutex.Lock();
 	if(text == _string && requestedSize == requestedTextRectSize)
 	{
+        mutex.Unlock();
 		return;
 	}
 	requestedSize = requestedTextRectSize;
 	needRedraw = true;
 	text = _string;
+    
+    mutex.Unlock();
 	Prepare();
 }
 
 void TextBlock::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 {
-	if (isMultilineEnabled != _isMultilineEnabled || isMultilineBySymbolEnabled != bySymbol) 
+    mutex.Lock();
+	if (isMultilineEnabled != _isMultilineEnabled || isMultilineBySymbolEnabled != bySymbol)
 	{
         isMultilineBySymbolEnabled = bySymbol;
 		isMultilineEnabled = _isMultilineEnabled;
 		needRedraw = true;
+
+        mutex.Unlock();
 		Prepare();
+        return;
 	}
+    mutex.Unlock();
 }
 
 void TextBlock::SetFittingOption(int32 _fittingType)
 {
-	if (fittingType != _fittingType) 
+    mutex.Lock();
+	if (fittingType != _fittingType)
 	{
 		fittingType = _fittingType;
 		needRedraw = true;
+
+        mutex.Unlock();
 		Prepare();
+        return;
 	}
+    mutex.Unlock();
 }
 	
 	
 Font * TextBlock::GetFont()
 {
+    mutex.Lock();
+    mutex.Unlock();
+    
 	return font;
 }
     
 const Vector<WideString> & TextBlock::GetMultilineStrings()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
     return multilineStrings;
 }
     
 const WideString & TextBlock::GetText()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
 	return text;
 }
 
 bool TextBlock::GetMultiline()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
 	return isMultilineEnabled;
 }
     
 bool TextBlock::GetMultilineBySymbol()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
     return isMultilineBySymbolEnabled;
 }
 
 int32 TextBlock::GetFittingOption()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
 	return fittingType;
 }
 	
 void TextBlock::SetAlign(int32 _align)
 {
+    mutex.Lock();
 	if (align != _align) 
 	{
 		align = _align;
 		needRedraw = true;
+
+        mutex.Unlock();
 		Prepare();
+        return;
 	}
+    mutex.Unlock();
 }
 
 int32 TextBlock::GetAlign()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
 	return align;
 }
 
 Sprite * TextBlock::GetSprite()
 {
+    mutex.Lock();
+
 	DVASSERT(sprite);
 	if (!sprite) 
 	{
 		sprite = Sprite::CreateAsRenderTarget(8, 8, FORMAT_RGBA4444);
 	}
-	return sprite;
+
+    mutex.Unlock();
+	
+    return sprite;
 }
 	
 bool TextBlock::IsSpriteReady()
 {
+    mutex.Lock();
+    mutex.Unlock();
+
 	return sprite != NULL;
 }
 
@@ -235,17 +294,23 @@ void TextBlock::Prepare()
 {
 	Retain();
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
-    JobInstanceWaiter waiter(job);
-    waiter.Wait();
 }
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
 {
 #if 1
+    
+    mutex.Lock();
+
+    
 	if(!font || text == L"")
 	{
 		SafeRelease(sprite);
+
+        mutex.Unlock();
+        
         Release();
+
 		return;
 	}
 	if(needRedraw)
@@ -692,6 +757,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 	}
 #endif 
 
+    mutex.Unlock();
 	Release();
 }
 
@@ -737,7 +803,7 @@ void TextBlock::DrawToBuffer(int16 *buf)
 				cacheUseJustify = false;
 			}
 			int32 xo = 0;
-			if(GetAlign() & ALIGN_RIGHT)
+			if(align & ALIGN_RIGHT)
 			{
 				xo = (int32)(cacheFinalW - stringSizes[line]);
 				if(xo < 0)
@@ -745,7 +811,7 @@ void TextBlock::DrawToBuffer(int16 *buf)
 					xo = 0;
 				}
 			}
-			else if(GetAlign() & ALIGN_HCENTER)
+			else if(align & ALIGN_HCENTER)
 			{
 				xo = (int32)(cacheFinalW - stringSizes[line]) / 2;
 				if(xo < 0)

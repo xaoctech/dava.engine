@@ -37,6 +37,7 @@
 #include "Render/Texture.h"
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Font.h"
+#include "Platform/Mutex.h"
 
 namespace DAVA
 {
@@ -128,6 +129,8 @@ protected:
 	Sprite * sprite;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
+    
+    Mutex mutex;
 };
 
 }; //end of namespace
