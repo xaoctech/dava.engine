@@ -132,7 +132,10 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 	if (effect->state==ParticleEffectComponent::STATE_STOPPED)
 	{
 		//add to active effects and to render
-		activeComponents.push_back(effect);
+		activeComponents.push_back(effect);        
+
+        for (Map<String, float32>::iterator it = globalExternalValues.begin(), e = globalExternalValues.end(); it!=e; ++it)
+            effect->SetExtertnalValue((*it).first, (*it).second);
 		Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 		effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
 		

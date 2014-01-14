@@ -82,6 +82,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->emitters.resize(emittersCount);
 	for (int32 i=0; i<emittersCount; ++i)
 		newComponent->emitters[i] = emitters[i]->Clone();
+    newComponent->RebuildEffectModifiables();
 	return newComponent;
 }
 
@@ -280,6 +281,7 @@ void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationCont
 		KeyedArchive *emitterArch = new KeyedArchive();
 		String filename = emitters[i]->configPath.GetRelativePathname(serializationContext->GetScenePath());
 		emitterArch->SetString("emitter.filename", filename);
+        emittersArch->SetVector3("emitter.position", emitters[i]->position);
 		emittersArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), emitterArch);
 		emitterArch->Release();
 	} 
@@ -305,10 +307,13 @@ void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationCo
 		for (uint32 i=0; i<emittersCount; ++i)
 		{		
 			emitters[i]=new ParticleEmitter();
-			String filename = emittersArch->GetArchive(KeyedArchive::GenKeyFromIndex(i))->GetString("emitter.filename");
+            KeyedArchive *emitterArch = emittersArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+			String filename = emitterArch->GetString("emitter.filename");
 			if (!filename.empty())
 				emitters[i]->LoadFromYaml(serializationContext->GetScenePath()+filename);			
-		} 		
+            emitters[i]->position = emittersArch->GetVector3("emitter.position");
+		} 	
+        RebuildEffectModifiables();
 	}
 }
 
@@ -317,6 +322,13 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 	Entity *entity = GetEntity();
 	bool lodDefined = false;
 	effectDuration = 0;
+    Vector3 effectScale = Vector3(1,1,1);
+    Entity *currEntity = entity;
+    while (currEntity)
+    {
+        effectScale*=currEntity->GetLocalTransform().GetScaleVector();
+        currEntity = currEntity->GetParent();
+    }
 	for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
 	{
 		Entity *child = entity->GetChild(i);
@@ -326,7 +338,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 			emitterProxy = static_cast<PartilceEmitterLoadProxy *>(renderComponent->GetRenderObject());
 		if (!emitterProxy) continue;
 		ParticleEmitter *emitter = new ParticleEmitter();
-		emitter->position = child->GetLocalTransform().GetTranslationVector();
+		emitter->position = (child->GetLocalTransform().GetTranslationVector())*effectScale;
 		if (!emitterProxy->emitterFilename.empty())
 		{			
 			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename);
@@ -347,6 +359,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 	}
 
 	entity->RemoveAllChildren();	
+    RebuildEffectModifiables();
 }
 
 int32 ParticleEffectComponent::GetEmittersCount()

@@ -51,11 +51,7 @@ void GlobalEventSystem::Event(Entity * entity, uint32 event)
             scene->GetEventSystem()->NotifyAllSystems(entity, event);
             return;
         }
-    }
-    if (EventSystem::START_PARTICLE_EFFECT == event)
-	{
-		int ttt = 3;
-	}
+    }    
 	List<uint32> & events = eventsCache[entity];
 	events.push_back(event);
 }
