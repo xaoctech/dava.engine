@@ -198,6 +198,9 @@
     </Filter>
     <Filter Include="Classes\Qt\DockLibrary">
       <UniqueIdentifier>{2ad1d47b-09e1-4a10-b69d-f80e67a1a4c7}</UniqueIdentifier>
+
+    <Filter Include="Classes\CommandLine\DDSExtractor">
+      <UniqueIdentifier>{d78a703d-f7ec-4e00-b258-a89871091844}</UniqueIdentifier>
     </Filter>
     <Filter Include="Classes\Qt\PlaneLODDialog">
       <UniqueIdentifier>{768d8dcf-78c6-468b-8ce9-cb73d0566627}</UniqueIdentifier>
@@ -1839,6 +1842,9 @@
     <ClCompile Include="Classes\Qt\Main\RecentFilesManager.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.cpp">
+      <Filter>Classes\CommandLine\DDSExtractor</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands2\CreatePlaneLODCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -3261,6 +3267,10 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
 	<ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h">
+    <ClInclude Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.h">
+      <Filter>Classes\CommandLine\DDSExtractor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\PlaneLODDialog\PlaneLODDialog.h">

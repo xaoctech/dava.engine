@@ -32,14 +32,13 @@
 #include <QString>
 #include "HierarchyTreeNode.h"
 
+#include "Render/RenderHelper.h"
+#include "Render/RenderManager.h"
 #include "Grid/GridVisualizer.h"
 
 ScreenControl::ScreenControl()
 {
-	UIControlBackground* bkg = new UIControlBackground();
-	bkg->SetColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
-	bkg->SetDrawType(UIControlBackground::DRAW_FILL);
-	SetBackground(bkg);
+
 }
 
 ScreenControl::~ScreenControl()
@@ -47,15 +46,22 @@ ScreenControl::~ScreenControl()
 	
 }
 
+void ScreenControl::SystemDraw(const UIGeometricData &geometricData)
+{
+	// DF-2969 - Draw filled rect, instead of changing control's background color
+	Rect rect = this->GetRect();
+	
+	RenderManager::Instance()->SetColor(Color(0.2f, 0.2f, 0.2f, 1.0f));
+	RenderHelper::Instance()->FillRect(rect);
+	RenderManager::Instance()->ResetColor();
+	
+	UIControl::SystemDraw(geometricData);
+	GridVisualizer::Instance()->DrawGridIfNeeded(GetRect());
+}
+
 bool ScreenControl::IsPointInside(const Vector2& /*point*/, bool/* expandWithFocus*/)
 {
 	//YZ:
 	//input must be handled by screen
 	return false;
-}
-
-void ScreenControl::SystemDraw(const UIGeometricData &geometricData)
-{
-    UIControl::SystemDraw(geometricData);
-    GridVisualizer::Instance()->DrawGridIfNeeded(GetRect());
 }
