@@ -27,16 +27,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "MaterialTree.h"
+#include "Main/mainwindow.h"
+#include "Scene/SceneSignals.h"
+
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
 
 MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 { 
-	treeModel = new MaterialModel();
-
+	treeModel = new MaterialFilteringModel(new MaterialModel());
 	setModel(treeModel);
-	//setSortingEnabled(true);
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 }
 
 MaterialTree::~MaterialTree()
@@ -45,11 +50,37 @@ MaterialTree::~MaterialTree()
 void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 {
 	treeModel->SetScene(sceneEditor);
+
+	if(NULL != sceneEditor)
+	{
+        EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
+		treeModel->SetSelection(&selection);
+	}
+	else
+	{
+		treeModel->SetSelection(NULL);
+	}
+
+	expandAll();
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
 {
 	return treeModel->GetMaterial(index);
+}
+
+void MaterialTree::Select(DAVA::NMaterial *material)
+{
+	QModelIndex index = treeModel->GetIndex(material);
+	if(index.isValid())
+	{
+		selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+		scrollTo(index, QAbstractItemView::PositionAtCenter);
+	}
+	else
+	{
+		selectionModel()->clear();
+	}
 }
 
 void MaterialTree::ShowContextMenu(const QPoint &pos)
@@ -114,5 +145,29 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 	case QAbstractItemView::OnItem:
 	case QAbstractItemView::OnViewport:
 		break;
+	}
+}
+
+void MaterialTree::OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
+{
+	if(QtMainWindow::Instance()->GetCurrentScene() == scene && command->GetId() == CMDID_MATERIAL_SWITCH_PARENT)
+	{
+		treeModel->Sync();
+	}
+}
+
+void MaterialTree::OnStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
+	treeModel->Sync();
+}
+
+void MaterialTree::OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+	if(QtMainWindow::Instance()->GetCurrentScene() == scene)
+	{
+		treeModel->SetSelection(selected);
+		treeModel->invalidate();
+
+		expandAll();
 	}
 }

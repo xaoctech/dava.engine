@@ -245,6 +245,7 @@ public:
     void ReleaseIlluminationParams();
 	
 	// Work with textures and properties
+    void RemoveTexture(const FastName& textureFastName);
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     Texture * GetTexture(const FastName& textureFastName) const;
@@ -451,6 +452,16 @@ public:
 		VariantType MemberValueGet(void *object, size_t index) const;
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 	protected:
+		struct TextureDescrInsp
+		{			
+			int flags;
+			FilePath path;
+			FastName name;
+			bool empty;
+			TextureDescrInsp():flags(I_VIEW), empty(true){}
+		};
+		static Vector<TextureDescrInsp> textureDescrInspVector;
+		void UpdateTextureDescrInspVector(NMaterial *state) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic

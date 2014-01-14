@@ -641,6 +641,10 @@ namespace DAVA
         SafeDelete(illuminationParams);
     }
 	
+    void NMaterial::RemoveTexture(const FastName& textureFastName)
+    {
+        DVASSERT(0);
+    }
     void NMaterial::SetTexture(const FastName& textureFastName,
 							   const FilePath& texturePath)
 	{
@@ -1747,13 +1751,80 @@ namespace DAVA
 	
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
+
+	Vector<NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp> NMaterial::NMaterialStateDynamicTexturesInsp::textureDescrInspVector;
+	void NMaterial::NMaterialStateDynamicTexturesInsp::UpdateTextureDescrInspVector(NMaterial *state) const
+	{
+		textureDescrInspVector.clear();
+		//collect for shader
+		if(state->instancePasses.size() > 0)
+		{			
+			for(HashMap<FastName, RenderPassInstance*>::iterator it = state->instancePasses.begin(), end = state->instancePasses.end(); it != end; ++it)
+			{
+				Shader *shader = it->second->renderState.shader;
+				if(NULL != shader)
+				{
+					int32 uniformCount = shader->GetUniformCount();
+					for(int32 i = 0; i < uniformCount; ++i)
+					{
+						Shader::Uniform *uniform = shader->GetUniform(i);
+						if (uniform->type == Shader::UT_SAMPLER_2D || uniform->type == Shader::UT_SAMPLER_CUBE) // is texture							
+						{							
+							textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
+							textureDescrInspVector[textureDescrInspVector.size()-1].name = uniform->name;
+						}
+					}
+				}
+			}
+		}
+        NMaterial *currState = state;
+		while (NULL!=currState)
+		{
+			for (int32 i=0, sz = currState->GetTextureCount(); i<sz; ++i)
+			{
+				const FastName & name = currState->GetTextureName(i);
+                bool slotFound = false;
+				for (int32 slot=0, slotCount = textureDescrInspVector.size(); slot<slotCount; ++slot)
+				{                    
+					if (textureDescrInspVector[slot].name == name)
+					{
+                        if (currState==state)
+                            textureDescrInspVector[slot].flags+=I_EDIT;
+                        textureDescrInspVector[slot].flags+=I_SAVE;                        
+                        if (textureDescrInspVector[slot].empty)
+                        {
+                            textureDescrInspVector[slot].empty = false;
+                            textureDescrInspVector[slot].path = currState->GetTexturePath(i);
+                        }
+					}
+                    slotFound = true;
+                    break;
+				}
+                if (!slotFound)
+                {
+                    //new texture slot;
+                    textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
+                    int32 slot = textureDescrInspVector.size()-1;
+                    textureDescrInspVector[slot].name = currState->GetTextureName(i);
+                    textureDescrInspVector[slot].path = currState->GetTexturePath(i);
+                    textureDescrInspVector[slot].empty = false;
+                    textureDescrInspVector[slot].flags = I_VIEW;
+                    if (currState==state)
+                        textureDescrInspVector[slot].flags+=I_EDIT;                    
+                }
+                
+			}
+            currState = currState->GetParent();
+		}
+
+	}
 	
 	size_t NMaterial::NMaterialStateDynamicTexturesInsp::MembersCount(void *object) const
 	{
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
-		
-		return state->textures.size();
+		UpdateTextureDescrInspVector(state);
+		return textureDescrInspVector.size();
 	}
 	
 	InspDesc NMaterial::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, size_t index) const
@@ -1764,19 +1835,19 @@ namespace DAVA
 	const char* NMaterial::NMaterialStateDynamicTexturesInsp::MemberName(void *object, size_t index) const
 	{
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
+        UpdateTextureDescrInspVector(state);
+		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
 		
-		return state->textures.keyByIndex(index).c_str();
+		return textureDescrInspVector[index].name.c_str();
 	}
 	
 	VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, size_t index) const
 	{
 		VariantType ret;
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
-		
-		TextureBucket* tex = state->textures.valueByIndex(index);
-		ret.SetFilePath(tex->path);
+        UpdateTextureDescrInspVector(state);
+        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());				
+		ret.SetFilePath(textureDescrInspVector[index].path);
 		
 		return ret;
 	}
@@ -1784,9 +1855,13 @@ namespace DAVA
 	void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
 	{
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
+        UpdateTextureDescrInspVector(state);
+        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+        if (value.type == VariantType::TYPE_NONE)
+            state->RemoveTexture(textureDescrInspVector[index].name);
+        else
+            state->SetTexture(textureDescrInspVector[index].name, value.AsFilePath());
 		
-		state->SetTexture(state->textures.keyByIndex(index), value.AsFilePath());
 	}
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const

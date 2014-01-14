@@ -28,50 +28,59 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__
-#define __RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__
-
-#include "DAVAEngine.h"
+#include "SceneSettingsDialog.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Main/mainwindow.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 
-class GeneralSettingsEditor: public QtPropertyEditor
+#define EDITOR_TAB_WIDTH 400
+
+SceneSettingsDialog::SceneSettingsDialog( QWidget* parent)
+		:QDialog(parent)
 {
-	Q_OBJECT
-	
-public:
-	explicit GeneralSettingsEditor(QWidget* parent = 0);
-	
-	~GeneralSettingsEditor();
-	
-	void InitializeProperties();
-	
-	void RestoreInitialSettings();
+	setWindowTitle("Scene Settings");
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+	sceneSettingsEditor = new QtPropertyEditor(this);
+	InitSceneSettingsEditor();
+	sceneSettingsEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
+	sceneSettingsEditor->resizeColumnToContents(0);
+	btnOk = new QPushButton("OK", this);
+	btnOk->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	connect(btnOk, SIGNAL(clicked()), this, SLOT(close()));
 
-protected slots:
-	
-void	OnValueChanged(QtPropertyData::ValueChangeReason reason);
-	
-protected:
-	
-	struct PropertyData
+	mainLayout = new QVBoxLayout;
+	mainLayout->addWidget(sceneSettingsEditor);
+	mainLayout->addWidget(btnOk, 0, Qt::AlignRight);
+	setLayout(mainLayout);
+}
+
+SceneSettingsDialog::~SceneSettingsDialog()
+{
+	SafeDelete(sceneSettingsEditor);
+	SafeDelete(btnOk);
+}
+
+void SceneSettingsDialog::InitSceneSettingsEditor()
+{
+	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+	if(!sceneEditor)
 	{
-		DAVA::String					configName;
-		DAVA::List<DAVA::VariantType>	argumentList;
-		DAVA::VariantType				initialValue;
-		PropertyData()
-		{
-		}
-		PropertyData(const DAVA::String& _configName, const DAVA::List<DAVA::VariantType>& _argumentList, const DAVA::VariantType& _initialValue)
-		{
-			configName = _configName;
-			argumentList = _argumentList;
-			initialValue = _initialValue;
-		}
-	};
+		return;
+	}
+	const InspInfo* inspInfo = sceneEditor->GetTypeInfo();
 
-	DAVA::Map<QtPropertyDataDavaVariant* , PropertyData > propertiesMap;
-		
-};
-#endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__) */
+	uint32 membCount = inspInfo->MembersCount();
+	for(uint32 i = 0; i < membCount; i++)
+	{
+		const InspMember* member = inspInfo->Member(i);//get to systems layer
+		const MetaInfo* memberInfo = member->Type();
+		if(NULL != memberInfo->GetIntrospection())
+		{
+			QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(sceneEditor, member);
+			sceneSettingsEditor->AppendProperty(member->Desc().text, propData);
+		}
+	}
+	
+	sceneSettingsEditor->expandAll();
+}
+

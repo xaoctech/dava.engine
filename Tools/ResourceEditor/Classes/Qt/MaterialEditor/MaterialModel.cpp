@@ -32,7 +32,7 @@
 #include "MaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
-#include "Scene/SceneSignals.h"
+#include "Scene/EntityGroup.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
 #include "Commands2/MaterialSwitchParentCommand.h"
 
@@ -46,8 +46,6 @@ MaterialModel::MaterialModel(QObject * parent)
 	QStringList headerLabels;
 	headerLabels.append("Materials hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
-
-	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 }
 
 MaterialModel::~MaterialModel()
@@ -61,6 +59,33 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 	if(NULL != scene)
 	{
 		Sync();
+	}
+}
+
+void MaterialModel::SetSelection(const EntityGroup *group)
+{
+	QStandardItem *root = invisibleRootItem();
+	for(int i = 0; i < root->rowCount(); ++i)
+	{
+		MaterialItem *topItem = (MaterialItem *) root->child(i);
+
+		for(int j = 0; j < topItem->rowCount(); ++j)
+		{
+			MaterialItem *childItem = (MaterialItem *) topItem->child(j);
+
+			if(NULL != group)
+			{
+				DAVA::NMaterial *material = childItem->GetMaterial();
+				DAVA::Entity *entity = curScene->materialSystem->GetEntity(material);
+
+				entity = curScene->selectionSystem->GetSelectableEntity(entity);
+				childItem->SetFlag(MaterialItem::IS_PART_OF_SELECTION, group->HasEntity(entity));
+			}
+			else
+			{
+				childItem->SetFlag(MaterialItem::IS_PART_OF_SELECTION, false);
+			}
+		}
 	}
 }
 
@@ -143,6 +168,13 @@ void MaterialModel::Sync()
 				}
 			}
 		}
+
+		// mark materials that can be deleted
+		for(int i = 0; i < root->rowCount(); ++i)
+		{
+			MaterialItem *item = (MaterialItem *) root->child(i);
+			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
+		}
 	}
 }
 
@@ -216,8 +248,8 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 	{
 		if(dropCanBeAccepted(data, action, row, column, parent))
 		{
-			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
 			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
+			DAVA::NMaterial *targetMaterial = targetMaterialItem->GetMaterial();
 
 			if(materials.size() > 1)
 			{
@@ -256,34 +288,91 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction acti
 		// allow only direct drop to parent
 		if(row == -1 && column == -1)
 		{
-			bool foundInacceptable = false;
 			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
 
 			// allow drop only into material, but not into instance
-			if(targetMaterial->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+			if(NULL != targetMaterial)
 			{
-				// only instance type should be in mime data
-				for(int i = 0; i < materials.size(); ++i)
+				bool foundInacceptable = false;
+				
+				if(targetMaterial->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
 				{
-					if(materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE)
+					// only instance type should be in mime data
+					for(int i = 0; i < materials.size(); ++i)
 					{
-						foundInacceptable = true;
-						break;
+						if(materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE)
+						{
+							foundInacceptable = true;
+							break;
+						}
 					}
 				}
-			}
 
-			ret = !foundInacceptable;
+				ret = !foundInacceptable;
+			}
 		}
 	}
 
 	return ret;
 }
 
-void MaterialModel::OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// MaterialFilteringModel implementation
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /* = NULL */)
+: QSortFilterProxyModel(parent)
+, materialModel(_materialModel)
 {
-	if(curScene == scene && command->GetId() == CMDID_MATERIAL_SWITCH_PARENT)
+	setSourceModel(materialModel);
+}
+
+void MaterialFilteringModel::Sync()
+{
+	materialModel->Sync();
+}
+
+void MaterialFilteringModel::SetScene(SceneEditor2 * scene)
+{
+	materialModel->SetScene(scene);
+}
+
+void MaterialFilteringModel::SetSelection(const EntityGroup *group)
+{
+	materialModel->SetSelection(group);
+}
+
+DAVA::NMaterial * MaterialFilteringModel::GetMaterial(const QModelIndex & index) const
+{
+	return materialModel->GetMaterial(mapToSource(index));
+}
+
+QModelIndex MaterialFilteringModel::GetIndex(DAVA::NMaterial *material, const QModelIndex &parent /*= QModelIndex()*/) const
+{
+	return mapFromSource(materialModel->GetIndex(material, parent));
+}
+
+bool MaterialFilteringModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+	QModelIndex target = mapToSource(index(row, column, mapToSource(parent)));
+	return materialModel->dropCanBeAccepted(data, action, target.row(), target.column(), mapToSource(parent));
+}
+
+bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	bool ret = false;
+
+	MaterialItem *childItem = (MaterialItem *) materialModel->itemFromIndex(materialModel->index(sourceRow, 0, sourceParent));
+	if(NULL != childItem)
 	{
-		Sync();
+		if(childItem->GetMaterial()->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL ||
+			childItem->GetFlag(MaterialItem::IS_PART_OF_SELECTION))
+		{
+			ret = true;
+		}
 	}
+
+	return ret;
 }
