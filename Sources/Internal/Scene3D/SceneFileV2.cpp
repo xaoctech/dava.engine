@@ -561,6 +561,11 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         String name = archive->GetString("name");
         Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
     }
+
+    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    {
+        parent->AddNode(node);
+    }
     
     int32 childrenCount = archive->GetInt32("#childrenCount", 0);
     node->children.reserve(childrenCount);
@@ -573,16 +578,12 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     if (removeChildren && childrenCount)
     {
         node->RemoveAllChildren();
-    }
-
-	ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
-	if (effect && (effect->loadedVersion == 0))
-		effect->CollapseOldEffect(&serializationContext);
-
-    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
-    {
-        parent->AddNode(node);
-    }
+    }	
+   
+    
+    ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effect && (effect->loadedVersion == 0))
+        effect->CollapseOldEffect(&serializationContext);
     
     SafeRelease(node);
     SafeRelease(archive);
