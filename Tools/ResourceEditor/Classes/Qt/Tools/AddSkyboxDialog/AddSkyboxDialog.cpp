@@ -43,7 +43,6 @@ AddSkyboxDialog::AddSkyboxDialog(QWidget* parent)
 	controlButton = new QPushButton(this);
 	
 	AddButton(controlButton);
-	propEditor->setMouseTracking(true);
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 }
