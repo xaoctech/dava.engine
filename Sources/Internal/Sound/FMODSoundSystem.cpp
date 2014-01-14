@@ -353,7 +353,7 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
     while(it != soundGroups.end())
     {
         Vector<SoundEvent *> & events = it->events;
-        Vector<SoundEvent *>::const_iterator itEv = events.begin();
+        Vector<SoundEvent *>::iterator itEv = events.begin();
         Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
         while(itEv != itEvEnd)
         {
