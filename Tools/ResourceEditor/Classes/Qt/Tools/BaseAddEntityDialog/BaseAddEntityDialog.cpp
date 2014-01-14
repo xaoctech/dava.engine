@@ -53,7 +53,6 @@ BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent, QDialogButtonBox::Stan
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow); // on top of all applications
 
 	propEditor = ui->propertyEditor;
-	propEditor->setMouseTracking(false);
 	propEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	propEditor->setTabKeyNavigation(false);
 	propEditor->setAlternatingRowColors(true);
