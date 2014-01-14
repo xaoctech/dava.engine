@@ -46,13 +46,18 @@ public:
 	void SetScene(SceneEditor2 *sceneEditor);
 	DAVA::NMaterial* GetMaterial(const QModelIndex &index) const;
 
-	void Select(DAVA::NMaterial *material);
+	void SelectMaterial(DAVA::NMaterial *material);
+	void SelectEntities(DAVA::NMaterial *material);
+
+	void Update();
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
 	void OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
 	void OnStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 	void OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
+
+	void OnSelectEntities();
 
 protected:
 	MaterialFilteringModel *treeModel;
