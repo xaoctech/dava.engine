@@ -104,6 +104,9 @@ public:
 	bool IsControlSelected(HierarchyTreeControlNode* control) const;
 	void ResetSelectedControl();
 	
+    // Synchronize the selection - select the nodes from the list, unselect the remainigns.
+    void SynchronizeSelection(const QList<HierarchyTreeControlNode*>& selectedNodes);
+
 	HierarchyTreePlatformNode* GetActivePlatform() const;
     HierarchyTreeScreenNode* GetActiveScreen() const;
 	
