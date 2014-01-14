@@ -27,6 +27,7 @@
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6796CD81885702800EB254C /* DDSExtractorTool.cpp */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
 		A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */; };
 		A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */; };
@@ -651,6 +652,8 @@
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A6796CD81885702800EB254C /* DDSExtractorTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSExtractorTool.cpp; sourceTree = "<group>"; };
+		A6796CD91885702800EB254C /* DDSExtractorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDSExtractorTool.h; sourceTree = "<group>"; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
 		A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog.cpp; sourceTree = "<group>"; };
 		A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLODDialog.h; sourceTree = "<group>"; };
@@ -1689,6 +1692,15 @@
 				5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A6796CD71885702800EB254C /* DDSExtractor */ = {
+			isa = PBXGroup;
+			children = (
+				A6796CD81885702800EB254C /* DDSExtractorTool.cpp */,
+				A6796CD91885702800EB254C /* DDSExtractorTool.h */,
+			);
+			path = DDSExtractor;
 			sourceTree = "<group>";
 		};
 		A6A617CE17CF4CD500375E11 /* Products */ = {
@@ -2831,6 +2843,7 @@
 		E8C98FE7184CD0EB00AFBF3F /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
+				A6796CD71885702800EB254C /* DDSExtractor */,
 				E8C98FE8184CD0EB00AFBF3F /* Beast */,
 				E8C98FEB184CD0EB00AFBF3F /* CommandLineManager.cpp */,
 				E8C98FEC184CD0EB00AFBF3F /* CommandLineManager.h */,
@@ -3968,6 +3981,7 @@
 				E8BAD7201859F50300C98C8D /* AddSwitchEntityDialog_moc.cpp in Build Sources */,
 				E8BAD6F01859F50300C98C8D /* CollisionLandscape_moc.cpp in Build Sources */,
 				E8C992ED184CD0EC00AFBF3F /* Request.cpp in Build Sources */,
+				A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */,
 				E8BAD71A1859F50300C98C8D /* TextureListDelegate_moc.cpp in Build Sources */,
 				E8BAD73B1859F50300C98C8D /* QtColorLineEdit_moc.cpp in Build Sources */,
 				E8C992AC184CD0EC00AFBF3F /* SceneValidator.cpp in Build Sources */,

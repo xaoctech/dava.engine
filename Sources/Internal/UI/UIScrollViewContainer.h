@@ -49,9 +49,12 @@ public:
 public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Input(UIEvent *currentTouch);
+    virtual void InputCancelled(UIEvent *currentInput);
 	virtual bool SystemInput(UIEvent *currentInput);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
+    virtual void WillDisappear();
+
 
 	// The amount of pixels user must move the finger on the button to switch from button to scrolling (default 15)
 	void SetTouchTreshold(int32 holdDelta);
