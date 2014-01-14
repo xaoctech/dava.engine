@@ -645,6 +645,7 @@ namespace DAVA
     {
         DVASSERT(0);
     }
+
     void NMaterial::SetTexture(const FastName& textureFastName,
 							   const FilePath& texturePath)
 	{
@@ -1831,7 +1832,11 @@ namespace DAVA
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
 	{
-		return I_VIEW | I_EDIT;
+		NMaterial *state = (NMaterial*) object;
+		UpdateTextureDescrInspVector(state);
+		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+
+		return textureDescrInspVector[index].flags;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

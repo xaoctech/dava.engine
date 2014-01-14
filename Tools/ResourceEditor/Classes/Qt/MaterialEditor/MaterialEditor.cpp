@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
 
@@ -88,7 +89,12 @@ MaterialEditor::~MaterialEditor()
 
 void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
 {
-	ui->materialTree->Select(material);
+	ui->materialTree->SelectMaterial(material);
+}
+
+void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
+{
+	ui->materialTree->SelectEntities(material);
 }
 
 void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
@@ -116,6 +122,9 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 			child->deleteLater();
 		}
 	}
+
+	//ui->materialProperty->RemovePropertyAll();
+	//ui->materialTexture->RemovePropertyAll();
 
 	if(NULL != material)
 	{
@@ -175,6 +184,14 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 	const DAVA::InspInfo *info = material->GetTypeInfo();
 	const DAVA::InspMember *materialProperties = info->Member("materialProperties");
 	const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
+
+	// fill material name
+	const DAVA::InspMember *nameMember = info->Member("materialName");
+	if(NULL != nameMember)
+	{
+		QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
+		ui->materialProperty->AppendProperty("Name", name);
+	}
 
 	// fill material flags
 	if(NULL != materialFlags)
@@ -259,6 +276,55 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 	// fill own material textures
 	if(NULL != materialTextures)
 	{
+		const DAVA::InspMemberDynamic* dynamicInsp = materialTextures->Dynamic();
+
+		if(NULL != dynamicInsp)
+		{
+			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+
+			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
+			for(size_t i = 0; i < count; ++i)
+			{
+				int memberFlags = dynamicInfo->MemberFlags(material, i);
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
+
+				// self property
+				if(memberFlags & DAVA::I_EDIT)
+				{
+					QtPropertyToolButton* btn = dynamicMember->AddButton();
+					btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+					btn->setIconSize(QSize(14, 14));
+					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
+
+					// isn't set in parent or shader
+					if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+					{
+						dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+					}
+				}
+				// not self property (is set in parent or shader)
+				else
+				{
+					// disable property and it childs
+					dynamicMember->SetEnabled(false);
+					for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					{
+						dynamicMember->ChildGet(m)->SetEnabled(false);
+					}
+
+					QtPropertyToolButton* btn = dynamicMember->AddButton();
+					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+					btn->setIconSize(QSize(14, 14));
+					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
+
+					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+				}
+
+				ui->materialTexture->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
+			}
+		}
+
+		/*
 		QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialTextures);
 		while(0 != data->ChildCount())
 		{
@@ -269,6 +335,7 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 		}
 
 		delete data;
+		*/
 	}
 }
 
@@ -348,12 +415,36 @@ void MaterialEditor::OnRemProperty()
 
 void MaterialEditor::OnAddTexture()
 {
-	
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn && NULL != curMaterial)
+	{
+		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+
+			// reload material properties
+			SetCurMaterial(curMaterial);
+		}
+	}
 }
 
 void MaterialEditor::OnRemTexture()
 {
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
+	if(NULL != btn && NULL != curMaterial)
+	{
+		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+
+			// reload material properties
+			SetCurMaterial(curMaterial);
+		}
+	}
 }
 
 void MaterialEditor::OnTemplateChanged(int index)
@@ -371,4 +462,5 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 {
 	// reload material properties
 	SetCurMaterial(curMaterial);
+	ui->materialTree->Update();
 }

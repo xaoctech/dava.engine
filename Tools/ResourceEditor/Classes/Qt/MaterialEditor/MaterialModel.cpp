@@ -176,6 +176,8 @@ void MaterialModel::Sync()
 			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
 		}
 	}
+
+	emit dataChanged(QModelIndex(), QModelIndex());
 }
 
 DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const

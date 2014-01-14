@@ -63,6 +63,7 @@ QtPropertyData::~QtPropertyData()
 
 	for (int i = 0; i < optionalButtons.size(); i++)
 	{
+		optionalButtons.at(i)->setParent(NULL);
 		optionalButtons.at(i)->deleteLater();
 	}
 
