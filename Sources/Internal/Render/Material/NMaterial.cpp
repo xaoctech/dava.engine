@@ -622,7 +622,7 @@ namespace DAVA
 	{
 		NMaterial* clonedMaterial = Clone();
 		clonedMaterial->SetName(newName);
-		clonedMaterial->SetMaterialName(newName);
+		clonedMaterial->SetMaterialName(FastName(newName));
 		clonedMaterial->SetMaterialKey((NMaterial::NMaterialKey)clonedMaterial);
 		
 		return clonedMaterial;
@@ -645,6 +645,7 @@ namespace DAVA
     {
         DVASSERT(0);
     }
+
     void NMaterial::SetTexture(const FastName& textureFastName,
 							   const FilePath& texturePath)
 	{
@@ -820,9 +821,9 @@ namespace DAVA
 		OnMaterialPropertyRemoved(keyName);
 	}
 	
-	void NMaterial::SetMaterialName(const String& name)
+	void NMaterial::SetMaterialName(const FastName& name)
 	{
-		materialName = FastName(name);
+		materialName = name;
 	}
 	
 	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate,
@@ -1602,7 +1603,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
-		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
+		mat->SetMaterialName(FastName(Format("Instance-%d", instanceCounter)));
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		return mat;
@@ -1617,7 +1618,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
-		mat->SetMaterialName(materialName.c_str());
+		mat->SetMaterialName(FastName(materialName.c_str()));
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
@@ -1866,7 +1867,11 @@ namespace DAVA
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
 	{
-		return I_VIEW | I_EDIT;
+		NMaterial *state = (NMaterial*) object;
+		UpdateTextureDescrInspVector(state);
+		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+
+		return textureDescrInspVector[index].flags;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -2336,11 +2341,8 @@ namespace DAVA
 		switch(index)
 		{
 			case 0: ret = FLAG_VERTEXFOG; break;
-			case 1: ret = FLAG_TEXTURESHIFT; break;
 			case 2: ret = FLAG_FLATCOLOR; break;
-			case 3: ret = FLAG_LIGHTMAPONLY; break;
-			case 4: ret = FLAG_TEXTUREONLY; break;
-			case 5: ret = FLAG_SETUPLIGHTMAP; break;
+			case 1: ret = FLAG_TEXTURESHIFT; break;
 			default: break;
 		}
 
@@ -2349,7 +2351,7 @@ namespace DAVA
 
 	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
 	{
-		return 6;
+		return 3;
 	}
 
 	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const

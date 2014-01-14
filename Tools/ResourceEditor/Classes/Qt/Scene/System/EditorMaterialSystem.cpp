@@ -95,12 +95,21 @@ void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::
 		in[parent];
 
 		// add childs
+		BuildInstancesList(parent, in[parent]);
+	}
+}
+
+void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set<DAVA::NMaterial *> &in) const
+{
+	if(NULL != parent)
+	{
+		// add childs
 		for(DAVA::uint32 j = 0; j < parent->GetChildrenCount(); ++j)
 		{
 			DAVA::NMaterial *child = parent->GetChild(j);
 			if(materialFeedback.count(child) > 0)
 			{
-				in[parent].insert(child);
+				in.insert(child);
 			}
 		}
 	}

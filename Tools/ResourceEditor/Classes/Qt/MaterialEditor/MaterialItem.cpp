@@ -42,7 +42,6 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 	DVASSERT(material);
 	
 	setEditable(false);
-	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
 	switch(material->GetMaterialType())
@@ -71,7 +70,19 @@ MaterialItem::~MaterialItem()
 
 QVariant MaterialItem::data(int role) const
 {
-    return QStandardItem::data(role);
+	QVariant ret;
+
+	switch(role)
+	{
+		case Qt::DisplayRole:
+			ret = QString(material->GetName().c_str());
+			break;
+		default:
+			ret = QStandardItem::data(role);
+			break;
+	}
+
+    return ret;
 }
 
 DAVA::NMaterial * MaterialItem::GetMaterial() const
