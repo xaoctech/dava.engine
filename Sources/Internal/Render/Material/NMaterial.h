@@ -407,7 +407,7 @@ protected:
 						  RenderTechniquePass* pass);
 	void BuildTextureParamsCache(RenderPassInstance* passInstance);
 	void BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance);
-	TextureBucket* GetTextureBucketRecursive(const FastName& textureFastName) const;
+	TextureBucket* GetEffectiveTextureBucket(const FastName& textureFastName) const;
 	
 	void LoadActiveTextures();
 	void CleanupUnusedTextures();
@@ -519,6 +519,10 @@ public:
 		static void DisableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
+		static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
+		
+		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
 	};
     
     

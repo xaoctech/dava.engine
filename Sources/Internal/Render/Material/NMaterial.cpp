@@ -1095,7 +1095,7 @@ namespace DAVA
 		}
 	}
 
-	NMaterial::TextureBucket* NMaterial::GetTextureBucketRecursive(const FastName& textureFastName) const
+	NMaterial::TextureBucket* NMaterial::GetEffectiveTextureBucket(const FastName& textureFastName) const
 	{
 		TextureBucket* bucket = NULL;
 		const NMaterial* currentMaterial = this;
@@ -1709,6 +1709,41 @@ namespace DAVA
 		
 		material->SetMaterialTemplate(matTemplate, material->currentQuality);
 	}
+	
+	Texture* NMaterialHelper::GetEffectiveTexture(const FastName& textureName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		
+		NMaterial::TextureBucket* bucket = mat->GetEffectiveTextureBucket(textureName);
+		return (bucket) ? bucket->texture : NULL;
+	}
+	
+	bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		DVASSERT(mat->baseTechnique);
+		
+		bool result = false;
+		if(mat->baseTechnique)
+		{
+			result = (mat->baseTechnique->GetLayersSet().count(DAVA::LAYER_ALPHA_TEST_LAYER) > 0);
+		}
+		
+		return result;
+	}
+	
+	bool NMaterialHelper::IsTwoSided(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		
+		bool result = false;
+		const RenderStateData* currentData = mat->GetRenderState(passName);
+		
+		result = ((currentData->state & RenderStateData::STATE_CULL) == 0);
+		
+		return result;
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation

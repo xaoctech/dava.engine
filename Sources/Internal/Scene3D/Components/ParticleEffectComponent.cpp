@@ -33,6 +33,7 @@
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/LodSystem.h"
 
 namespace DAVA
 {
@@ -68,6 +69,20 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 
 void ParticleEffectComponent::Start()
 {
+	Entity* curEntity = GetEntity();
+	if(curEntity)
+	{
+		Scene* curScene = curEntity->GetScene();
+		if(curScene)
+		{
+            //curEntity = (curEntity->GetParent()) ? curEntity->GetParent() : curEntity;
+			//curScene->lodSystem->ForceUpdate(curEntity,
+			//								 curScene->lodSystem->GetCamera(),
+			//								 1.0f/60.0f);
+            curScene->lodSystem->SetForceUpdateAll();
+		}
+	}
+	
 	if (requireRebuildEffectModifiables)
 	{
 		RebuildEffectModifiables();
