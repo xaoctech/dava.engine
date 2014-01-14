@@ -76,12 +76,6 @@
 #include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/VisibilityToolPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/TilemaskEditorPanel.h"
-#include "../DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
-
 #include "Classes/Commands2/CustomColorsCommands2.h"
 #include "Classes/Commands2/HeightmapEditorCommands2.h"
 #include "Classes/Commands2/LandscapeEditorDrawSystemActions.h"
@@ -981,9 +975,10 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
     }
 
+	int32 toolsFlags = scene->GetEnabledTools();
 	if (!scene->IsChanged())
 	{
-		if (scene->GetEnabledTools() != 0)
+		if (toolsFlags)
 		{
 			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 		}
@@ -998,26 +993,37 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
     }
 
-	if (scene->GetEnabledTools() != 0)
-	{
-		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-	}
-
 	if(answer == QMessageBox::No)
 	{
+		if (toolsFlags)
+		{
+			scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, false);
+		}
 		closeRequest->Accept();
 		return;
 	}
-
-	bool sceneWasSaved = SaveScene(scene);
-    if(sceneWasSaved)
-    {
-		closeRequest->Accept();
-    }
-	else
+	
+	if (toolsFlags)
 	{
-		closeRequest->Cancel();
+		FilePath colorSystemTexturePath = scene->customColorsSystem->GetCurrentSaveFileName();
+		if( (toolsFlags & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR) &&
+		    (colorSystemTexturePath.IsEmpty() || !colorSystemTexturePath.Exists()) &&
+		    !SelectCustomColorsTexturePath())
+		{
+			closeRequest->Cancel();
+			return;
+		}
+		
+		scene->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL, true);
 	}
+
+    if(!SaveScene(scene))
+    {
+        closeRequest->Cancel();
+        return;
+    }
+	
+    closeRequest->Accept();
 }
 
 
@@ -1953,11 +1959,7 @@ void QtMainWindow::OnCustomColorsEditor()
 		return;
 	}
 	
-	if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
-	{
-		sceneEditor->Exec(new ActionDisableCustomColors(sceneEditor));
-	}
-	else
+	if(!sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
 	{
 		if (LoadAppropriateTextureFormat())
 		{
@@ -1967,7 +1969,50 @@ void QtMainWindow::OnCustomColorsEditor()
 		{
 			OnLandscapeEditorToggled(sceneEditor);
 		}
+		return;
 	}
+	
+	FilePath currentTexturePath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+	
+	if ((currentTexturePath.IsEmpty() || !currentTexturePath.Exists()) &&
+        !SelectCustomColorsTexturePath())
+	{
+        ui->actionCustomColorsEditor->setChecked(true);
+		return;
+	}
+	
+	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR, true);
+	ui->actionCustomColorsEditor->setChecked(false);
+}
+
+bool QtMainWindow::SelectCustomColorsTexturePath()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(!sceneEditor)
+	{
+		return false;
+	}
+	FilePath scenePath = sceneEditor->GetScenePath().GetDirectory();
+	
+	QString filePath = QtFileDialog::getSaveFileName(NULL,
+													 QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
+													 QString(scenePath.GetAbsolutePathname().c_str()),
+													 QString(ResourceEditor::CUSTOM_COLORS_FILE_FILTER.c_str()));
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
+	Entity* landscape = FindLandscapeEntity(sceneEditor);
+	if (selectedPathname.IsEmpty() || NULL == landscape)
+	{
+		return false;
+	}
+	KeyedArchive* customProps = landscape->GetCustomProperties();
+	if(NULL == customProps)
+	{
+		return false;
+	}
+	
+	String pathToSave = selectedPathname.GetRelativePathname(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
+	return true;
 }
 
 void QtMainWindow::OnHeightmapEditor()

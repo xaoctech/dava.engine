@@ -42,6 +42,9 @@ public:
 
 	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
 
+	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
+	DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
+
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);

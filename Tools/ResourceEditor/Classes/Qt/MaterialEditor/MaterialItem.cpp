@@ -78,3 +78,52 @@ DAVA::NMaterial * MaterialItem::GetMaterial() const
 {
 	return material;
 }
+
+void MaterialItem::SetFlag(MaterialFlag flag, bool set)
+{
+	if((set && !(curFlag & flag)) || (!set && (curFlag & flag)))
+	{
+		bool ok = true;
+
+		switch(flag)
+		{
+			case IS_MARK_FOR_DELETE:
+				set ? setBackground(QBrush(QColor(255, 0, 0, 15))) : setBackground(QBrush());
+				break;
+
+			case IS_PART_OF_SELECTION:
+				if(set)
+				{
+					QFont curFont = font();
+					curFont.setBold(true);
+					setFont(curFont); 
+				}
+				else
+				{
+					setFont(QFont());
+				}
+				break;
+
+			default:
+				ok = false;
+				break;
+		}
+
+		if(ok)
+		{
+			if(set)
+			{
+				curFlag |= (int) flag;
+			}
+			else
+			{
+				curFlag &= ~ (int) flag;
+			}
+		}
+	}
+}
+
+bool MaterialItem::GetFlag(MaterialFlag flag)
+{
+	return (bool) (curFlag & flag);
+}
