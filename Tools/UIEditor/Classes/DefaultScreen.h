@@ -106,8 +106,8 @@ private:
 		childsSet childs;
 		HierarchyTreeNode::HIERARCHYTREENODEID id;
 	};
-	HierarchyTreeControlNode* SmartGetSelectedControl(const Vector2& point);
-	void SmartGetSelectedControl(SmartSelection* list, const HierarchyTreeNode* parent, const Vector2& point);
+	HierarchyTreeControlNode* SmartGetSelectedControl(const Vector2& point) const;
+	void SmartGetSelectedControl(SmartSelection* list, const HierarchyTreeNode* parent, const Vector2& point) const;
 	HierarchyTreeControlNode* GetSelectedControl(const Vector2& point);
 	
 	void ApplyMoveDelta(const Vector2& delta);
@@ -180,8 +180,8 @@ private:
 	int32 GetControlMoveDelta();
 
 	// Check control's visibility in a recursive way.
-	bool IsControlVisible(UIControl* uiControl);
-	void IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible);
+	bool IsControlVisible(UIControl* uiControl) const;
+	void IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible) const;
 
 private slots:
 	void ControlContextMenuTriggered(QAction* action);
