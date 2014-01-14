@@ -27,28 +27,53 @@
 =====================================================================================*/
 
 
-#ifndef QCOLORBUTTON_H
-#define QCOLORBUTTON_H
+#ifndef __QCOLORWIDGET_H__
+#define __QCOLORWIDGET_H__
 
 #include <QPushButton>
 #include <QColor>
+#include <QPushButton>
+#include "QtColorLineEdit.h"
 
-class QColorButton : public QPushButton
+class QColorButton : public QToolButton
+{
+public:
+    explicit QColorButton(QWidget *parent = 0);
+    void SetColor(const QColor& color);
+
+    virtual void paintEvent(QPaintEvent* pEvent);
+
+protected:
+    QColor buttonColor;
+};
+
+class QColorWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit QColorButton(QWidget *parent = 0);
+    explicit QColorWidget(QWidget *parent = 0);
+
     // Getters/setters.
     QColor GetBackgroundColor() const;
     void SetBackgroundColor(const QColor& color);
     void SetDisplayMultipleColors(const bool needSetbackgroundImage);
+
 signals:
-    void backgroundColorChanged(QColor color);
+    void colorChanged(const QColor& color);
+
+protected slots:
+    void onChangeColorButtonClicked();
+    void onColorEditFinished();
+
 protected:
-    void SetBackgroundImage(const QString& imagePath);
+    void SetButtonColor(const QColor& color);
+
 private:
-    QColor currentBackgroundColor;
+    QColor selectedColor;
+    
+    QColorButton* selectColorButton;
+    QtColorLineEdit* colorLineEdit;
 };
 
-#endif // QCOLORBUTTON_H
+#endif // __QCOLORWIDGET_H__
