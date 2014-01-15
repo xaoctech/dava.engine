@@ -125,7 +125,12 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 		
 	// assemble command
 	args.push_back("-i");
+    
+#if defined (__DAVAENGINE_MACOS__)
+	args.push_back(fileToConvert.GetAbsolutePathname());
+#else //defined (__DAVAENGINE_WIN32__)
 	args.push_back(String("\"") + fileToConvert.GetAbsolutePathname() + String("\""));
+#endif //MAC-WIN
 
 	args.push_back("-pvrtcbest");
 
@@ -157,7 +162,11 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 		
 	// output file
 	args.push_back("-o");
+#if defined (__DAVAENGINE_MACOS__)
+	args.push_back(outputFile.GetAbsolutePathname());
+#else //defined (__DAVAENGINE_WIN32__)
 	args.push_back(String("\"") + outputFile.GetAbsolutePathname() + String("\""));
+#endif //MAC-WIN
 }
 
 FilePath PVRConverter::GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)

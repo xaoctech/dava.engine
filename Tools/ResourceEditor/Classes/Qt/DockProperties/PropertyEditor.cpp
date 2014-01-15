@@ -327,9 +327,7 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 		// add them
         if(hasMembers)
         {
-			ret = new QtPropertyData();
-			ret->SetEnabled(false);
-
+			ret = new QtPropertyDataIntrospection(object, info, false);
 			while(NULL != baseInfo)
 			{
 				for(int i = 0; i < baseInfo->MembersCount(); ++i)
@@ -494,6 +492,8 @@ void PropertyEditor::ActionEditComponent()
 
 		editor.SetComponent((DAVA::ActionComponent*)curNode->GetComponent(DAVA::Component::ACTION_COMPONENT));
 		editor.exec();
+
+		ResetProperties();
 	}	
 }
 

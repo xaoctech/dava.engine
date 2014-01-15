@@ -131,12 +131,7 @@ namespace DAVA
 	
 	NMaterial::~NMaterial()
 	{
-		if(parent)
-		{
-			parent->RemoveChild(this);
-			
-			SafeRelease(parent);
-		}
+		SetParent(NULL);
 
 		ReleaseInstancePasses();
 		
@@ -169,7 +164,7 @@ namespace DAVA
 		SafeRelease(baseTechnique);
 	}
 			
-	void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
+	/*void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
 	{
 		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
 		DVASSERT(NULL == parent);
@@ -199,6 +194,41 @@ namespace DAVA
 			//CleanupUnusedTextures();
 		
 			this->Release();
+		}
+	}*/
+	
+	void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
+	{
+		DVASSERT(this != newParent);
+		
+		if(newParent != parent &&
+		   newParent != this)
+		{
+			if(parent)
+			{
+				Vector<NMaterial*>::iterator curMaterial = std::find(parent->children.begin(),
+																	 parent->children.end(),
+																	 this);
+				
+				DVASSERT(curMaterial != parent->children.end());
+				if(curMaterial != parent->children.end())
+				{
+					parent->children.erase(curMaterial);
+				}
+				
+				SafeRelease(parent);
+			}
+			
+			if(newParent)
+			{
+				DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
+				
+				newParent->children.push_back(this);
+			}
+			
+			parent = SafeRetain(newParent);;
+			
+			OnParentChanged(newParent, inheritTemplate);
 		}
 	}
 
@@ -439,16 +469,29 @@ namespace DAVA
 			serializationContext->AddBinding(parentKey, this);
 		}
 	}
-		
-	bool NMaterial::SwitchQuality(const FastName& stateName)
+	
+	void NMaterial::SetQuality(const FastName& stateName)
 	{
+		DVASSERT(stateName.IsValid());
+		orderedQuality = stateName;
+	}
+	
+	bool NMaterial::ReloadQuality(bool force)
+	{
+		DVASSERT(orderedQuality.IsValid());
 		DVASSERT(materialTemplate);
 		
-		bool result = (materialTemplate->techniqueStateMap.count(stateName) > 0);
-		
-		if(result)
+		if(!orderedQuality.IsValid())
 		{
-			currentQuality = stateName;
+			orderedQuality = NMaterial::DEFAULT_QUALITY_NAME;
+		}
+		
+		bool result = (materialTemplate->techniqueStateMap.count(orderedQuality) > 0);
+		if(result &&
+		   (orderedQuality != currentQuality ||
+		   force))
+		{
+			currentQuality = orderedQuality;
 			
 			if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 			{
@@ -465,7 +508,10 @@ namespace DAVA
 				size_t childrenCount = children.size();
 				for(size_t i = 0; i < childrenCount; ++i)
 				{
-					children[i]->SwitchQuality(stateName);
+					NMaterial* child = children[i];
+					
+					child->SetQuality(currentQuality);
+					child->ReloadQuality(force);
 				}
 				
 				//VI: TODO: review if this call is realy needed at this point
@@ -478,10 +524,10 @@ namespace DAVA
 				DVASSERT(false && "Material is not initialized properly!");
 			}
 		}
-
+		
 		return result;
 	}
-		
+
 	NMaterial* NMaterial::Clone()
 	{
 		NMaterial* clonedMaterial = NULL;
@@ -529,7 +575,7 @@ namespace DAVA
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
-			parent->AddChild(clonedMaterial);
+			clonedMaterial->SetParent(parent);
 		}
 		
 		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
@@ -576,7 +622,7 @@ namespace DAVA
 	{
 		NMaterial* clonedMaterial = Clone();
 		clonedMaterial->SetName(newName);
-		clonedMaterial->SetMaterialName(newName);
+		clonedMaterial->SetMaterialName(FastName(newName));
 		clonedMaterial->SetMaterialKey((NMaterial::NMaterialKey)clonedMaterial);
 		
 		return clonedMaterial;
@@ -595,6 +641,21 @@ namespace DAVA
         SafeDelete(illuminationParams);
     }
 	
+    void NMaterial::RemoveTexture(const FastName& textureFastName)
+    {
+        TextureBucket* bucket = textures.at(textureFastName);
+        DVASSERT(bucket);
+        
+        if(bucket)
+        {
+            textures.erase(textureFastName);
+            SafeRelease(bucket->texture);
+            SafeDelete(bucket);
+            
+            SetTexturesDirty();
+        }
+    }
+
     void NMaterial::SetTexture(const FastName& textureFastName,
 							   const FilePath& texturePath)
 	{
@@ -770,9 +831,9 @@ namespace DAVA
 		OnMaterialPropertyRemoved(keyName);
 	}
 	
-	void NMaterial::SetMaterialName(const String& name)
+	void NMaterial::SetMaterialName(const FastName& name)
 	{
-		materialName = FastName(name);
+		materialName = name;
 	}
 	
 	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate,
@@ -1049,7 +1110,7 @@ namespace DAVA
 		}
 	}
 
-	NMaterial::TextureBucket* NMaterial::GetTextureBucketRecursive(const FastName& textureFastName) const
+	NMaterial::TextureBucket* NMaterial::GetEffectiveTextureBucket(const FastName& textureFastName) const
 	{
 		TextureBucket* bucket = NULL;
 		const NMaterial* currentMaterial = this;
@@ -1552,7 +1613,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
-		mat->SetMaterialName(Format("Instance-%d", instanceCounter));
+		mat->SetMaterialName(FastName(Format("Instance-%d", instanceCounter)));
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		return mat;
@@ -1567,7 +1628,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
-		mat->SetMaterialName(materialName.c_str());
+		mat->SetMaterialName(FastName(materialName.c_str()));
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
@@ -1586,7 +1647,7 @@ namespace DAVA
 		NMaterial* parentMat = CreateMaterial(materialName, templateName, defaultQuality);
 		
 		NMaterial* mat = CreateMaterialInstance();
-		parentMat->AddChild(mat);
+		mat->SetParent(parentMat);
 		
 		SafeRelease(parentMat);
 		
@@ -1645,6 +1706,8 @@ namespace DAVA
 											 eBlendMode src,
 											 eBlendMode dst)
 	{
+        DVASSERT(target);
+        
 		const RenderStateData* currentData = target->GetRenderState(passName);
 		RenderStateData newData;
 		memcpy(&newData, currentData, sizeof(RenderStateData));
@@ -1664,15 +1727,139 @@ namespace DAVA
 		material->SetMaterialTemplate(matTemplate, material->currentQuality);
 	}
 	
+	Texture* NMaterialHelper::GetEffectiveTexture(const FastName& textureName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		
+		NMaterial::TextureBucket* bucket = mat->GetEffectiveTextureBucket(textureName);
+		return (bucket) ? bucket->texture : NULL;
+	}
+	
+	bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		DVASSERT(mat->baseTechnique);
+		
+		bool result = false;
+		if(mat->baseTechnique)
+		{
+			result = (mat->baseTechnique->GetLayersSet().count(DAVA::LAYER_ALPHA_TEST_LAYER) > 0);
+		}
+		
+		return result;
+	}
+	
+	bool NMaterialHelper::IsTwoSided(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+		
+		bool result = false;
+		const RenderStateData* currentData = mat->GetRenderState(passName);
+		
+		result = ((currentData->state & RenderStateData::STATE_CULL) == 0);
+		
+		return result;
+	}
+
+    void NMaterialHelper::SetFillMode(const FastName& passName,
+                                    NMaterial* mat,
+                                    eFillMode fillMode)
+    {
+        DVASSERT(mat);
+        
+        const RenderStateData* currentData = mat->GetRenderState(passName);
+        RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.fillMode = fillMode;
+		
+		mat->SubclassRenderState(passName, &newData);
+    }
+    
+    eFillMode NMaterialHelper::GetFillMode(const FastName& passName, NMaterial* mat)
+    {
+        DVASSERT(mat);
+        
+        const RenderStateData* currentData = mat->GetRenderState(passName);
+        return currentData->fillMode;
+    }
+
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
+
+	Vector<NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp> NMaterial::NMaterialStateDynamicTexturesInsp::textureDescrInspVector;
+	void NMaterial::NMaterialStateDynamicTexturesInsp::UpdateTextureDescrInspVector(NMaterial *state) const
+	{
+		textureDescrInspVector.clear();
+		//collect for shader
+		if(state->instancePasses.size() > 0)
+		{			
+			for(HashMap<FastName, RenderPassInstance*>::iterator it = state->instancePasses.begin(), end = state->instancePasses.end(); it != end; ++it)
+			{
+				Shader *shader = it->second->renderState.shader;
+				if(NULL != shader)
+				{
+					int32 uniformCount = shader->GetUniformCount();
+					for(int32 i = 0; i < uniformCount; ++i)
+					{
+						Shader::Uniform *uniform = shader->GetUniform(i);
+						if (uniform->type == Shader::UT_SAMPLER_2D || uniform->type == Shader::UT_SAMPLER_CUBE) // is texture							
+						{							
+							textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
+							textureDescrInspVector[textureDescrInspVector.size()-1].name = uniform->name;
+						}
+					}
+				}
+			}
+		}
+        NMaterial *currState = state;
+		while (NULL!=currState)
+		{
+			for (int32 i=0, sz = currState->GetTextureCount(); i<sz; ++i)
+			{
+				const FastName & name = currState->GetTextureName(i);
+                bool slotFound = false;
+				for (int32 slot=0, slotCount = textureDescrInspVector.size(); slot<slotCount; ++slot)
+				{                    
+					if (textureDescrInspVector[slot].name == name)
+					{
+                        if (currState==state)
+                            textureDescrInspVector[slot].flags+=I_EDIT;
+                        textureDescrInspVector[slot].flags+=I_SAVE;                        
+                        if (textureDescrInspVector[slot].empty)
+                        {
+                            textureDescrInspVector[slot].empty = false;
+                            textureDescrInspVector[slot].path = currState->GetTexturePath(i);
+                        }
+					}
+                    slotFound = true;
+                    break;
+				}
+                if (!slotFound)
+                {
+                    //new texture slot;
+                    textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
+                    int32 slot = textureDescrInspVector.size()-1;
+                    textureDescrInspVector[slot].name = currState->GetTextureName(i);
+                    textureDescrInspVector[slot].path = currState->GetTexturePath(i);
+                    textureDescrInspVector[slot].empty = false;
+                    textureDescrInspVector[slot].flags = I_VIEW;
+                    if (currState==state)
+                        textureDescrInspVector[slot].flags+=I_EDIT;                    
+                }
+                
+			}
+            currState = currState->GetParent();
+		}
+
+	}
 	
 	size_t NMaterial::NMaterialStateDynamicTexturesInsp::MembersCount(void *object) const
 	{
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
-		
-		return state->textures.size();
+		UpdateTextureDescrInspVector(state);
+		return textureDescrInspVector.size();
 	}
 	
 	InspDesc NMaterial::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, size_t index) const
@@ -1683,19 +1870,19 @@ namespace DAVA
 	const char* NMaterial::NMaterialStateDynamicTexturesInsp::MemberName(void *object, size_t index) const
 	{
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
+        UpdateTextureDescrInspVector(state);
+		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
 		
-		return state->textures.keyByIndex(index).c_str();
+		return textureDescrInspVector[index].name.c_str();
 	}
 	
 	VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, size_t index) const
 	{
 		VariantType ret;
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
-		
-		TextureBucket* tex = state->textures.valueByIndex(index);
-		ret.SetFilePath(tex->path);
+        UpdateTextureDescrInspVector(state);
+        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());				
+		ret.SetFilePath(textureDescrInspVector[index].path);
 		
 		return ret;
 	}
@@ -1703,14 +1890,22 @@ namespace DAVA
 	void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
 	{
 		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state && index >= 0 && index < state->textures.size());
+        UpdateTextureDescrInspVector(state);
+        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+        if (value.type == VariantType::TYPE_NONE)
+            state->RemoveTexture(textureDescrInspVector[index].name);
+        else
+            state->SetTexture(textureDescrInspVector[index].name, value.AsFilePath());
 		
-		state->SetTexture(state->textures.keyByIndex(index), value.AsFilePath());
 	}
 	
 	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
 	{
-		return I_VIEW | I_EDIT;
+		NMaterial *state = (NMaterial*) object;
+		UpdateTextureDescrInspVector(state);
+		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+
+		return textureDescrInspVector[index].flags;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -2180,11 +2375,8 @@ namespace DAVA
 		switch(index)
 		{
 			case 0: ret = FLAG_VERTEXFOG; break;
-			case 1: ret = FLAG_TEXTURESHIFT; break;
 			case 2: ret = FLAG_FLATCOLOR; break;
-			case 3: ret = FLAG_LIGHTMAPONLY; break;
-			case 4: ret = FLAG_TEXTUREONLY; break;
-			case 5: ret = FLAG_SETUPLIGHTMAP; break;
+			case 1: ret = FLAG_TEXTURESHIFT; break;
 			default: break;
 		}
 
@@ -2193,7 +2385,7 @@ namespace DAVA
 
 	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
 	{
-		return 6;
+		return 3;
 	}
 
 	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const

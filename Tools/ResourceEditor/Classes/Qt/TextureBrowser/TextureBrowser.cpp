@@ -37,11 +37,9 @@
 #include "Main/mainwindow.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Scene/SceneHelper.h"
-#include "ImageTools/ImageTools.h"
 #include "CubemapEditor/CubemapUtils.h"
-#include "ImageTools/ImageTools.h"
 
 #include "Classes/Constants.h"
 
@@ -342,28 +340,10 @@ void TextureBrowser::updateInfoOriginal(const DAVA::Vector<QImage> &images)
 
 		const char *formatStr = DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
 
-		int datasize = 0;
-		int filesize = 0;
-		for(size_t i = 0; i < images.size(); ++i)
-		{
-			datasize += images[i].width() * images[i].height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
-		}
-		
-		if(!curDescriptor->IsCubeMap())
-		{
-			filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
-		}
-		else
-		{
-			DAVA::Vector<DAVA::String> faceNames;
-			CubemapUtils::GenerateFaceNames(curDescriptor->pathname.GetAbsolutePathname(), faceNames);
-			for(size_t i = 0; i < faceNames.size(); ++i)
-			{
-				filesize += QFileInfo(faceNames[i].c_str()).size();
-			}
-		}
-		
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, images[0].width(), images[0].height(),
+		int datasize = TextureCache::Instance()->getOriginalSize(curDescriptor);
+		int filesize = TextureCache::Instance()->getOriginalFileSize(curDescriptor);
+
+		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, images[0].width(), images[0].height(),
 			 SizeInBytesToString(datasize).c_str(),
 			 SizeInBytesToString(filesize).c_str());
 
@@ -382,19 +362,16 @@ void TextureBrowser::updateInfoConverted()
 		char tmp[1024];
 		const char *formatStr = "Unknown";
 
-		int datasize = 0;
-		int filesize = 0;
+		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
+		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
 		QSize imgSize(0, 0);
 
 		if(curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID)
 		{
-			DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, curTextureView);
-			filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView].format);
 			
 			int w = curDescriptor->compression[curTextureView].compressToWidth;
 			int h = curDescriptor->compression[curTextureView].compressToHeight;
-
 			if(0 != w && 0 != h)
 			{
 				imgSize = QSize(w, h);
@@ -403,12 +380,9 @@ void TextureBrowser::updateInfoConverted()
 			{
 				imgSize = QSize(curTexture->width, curTexture->height);
 			}
-
-			// get data size
-			datasize = ImageTools::GetTexturePhysicalSize(curDescriptor, curTextureView);
 		}
 
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, imgSize.width(), imgSize.height(),
+		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, imgSize.width(), imgSize.height(),
 			SizeInBytesToString(datasize).c_str(),
 			SizeInBytesToString(filesize).c_str());
 
@@ -623,7 +597,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 {
 	if(NULL != descriptor && NULL != texture)
 	{
-		DAVA::eGPUFamily curEditorImageGPUForTextures = EditorSettings::Instance()->GetTextureViewGPU();
+		DAVA::eGPUFamily curEditorImageGPUForTextures = (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32();
 
 		// reload only when editor view format is the same as given texture format
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)

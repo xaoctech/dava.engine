@@ -78,7 +78,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	
 	material = NMaterial::CreateMaterialInstance();
 	material->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	ParticleLayer3D::regularMaterial->AddChild(material);
+	material->SetParent(ParticleLayer3D::regularMaterial);
 	
 	renderBatch->SetIndices(&indices);
 	renderBatch->SetRenderDataObject(renderData);
@@ -624,20 +624,14 @@ void ParticleLayer3D::SetFrameBlend(bool enable)
 	if (enableFrameBlend==enable) return; 
 	ParticleLayer::SetFrameBlend(enable);
 	
-	NMaterial* curParent = material->GetParent();
-	DVASSERT(curParent);
-	if(curParent)
-	{
-		curParent->RemoveChild(material);
-	}
 	
 	if(enableFrameBlend)
 	{
-		ParticleLayer3D::frameBlendMaterial->AddChild(material);
+		material->SetParent(ParticleLayer3D::frameBlendMaterial);
 	}
 	else
 	{
-		ParticleLayer3D::regularMaterial->AddChild(material);
+		material->SetParent(ParticleLayer3D::regularMaterial);
 	}
 	
 	UpdateBlendState();

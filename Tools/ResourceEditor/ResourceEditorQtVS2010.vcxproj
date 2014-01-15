@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;$(DXSDK_DIR)/include;..\..\Sources\Tools;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;../../../dava.speedtree/Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;$(DXSDK_DIR)/include;..\..\Sources\Tools;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;$(ProjectDir)/_GeneratedQt;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;../../../dava.speedtree/Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -328,6 +328,7 @@
     <ClCompile Include="Classes\CommandLine\Beast\BeastCommandLineTool.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp" />
+    <ClCompile Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.cpp" />
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp" />
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneExporter\SceneExporter.cpp" />
@@ -440,6 +441,7 @@
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
+    <ClCompile Include="Classes\Qt\Main\RecentFilesManager.cpp" />
     <ClCompile Include="Classes\Qt\Main\Request.cpp" />
     <ClCompile Include="Classes\Qt\Main\StatusBar.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.cpp" />
@@ -465,6 +467,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\CustomColorsSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\EditorMaterialSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\EditorParticlesSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HeightmapEditorSystem.cpp" />
@@ -536,9 +539,8 @@
     <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp" />
@@ -700,9 +702,7 @@
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp" />
@@ -937,6 +937,7 @@
     <ClInclude Include="Classes\CommandLine\Beast\BeastCommandLineTool.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineManager.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineTool.h" />
+    <ClInclude Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.h" />
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h" />
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneExporter\SceneExporter.h" />
@@ -1051,6 +1052,7 @@
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
+    <ClInclude Include="Classes\Qt\Main\RecentFilesManager.h" />
     <ClInclude Include="Classes\Qt\Main\Request.h" />
     <ClInclude Include="Classes\Qt\Main\StatusBar.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.h" />
@@ -1078,6 +1080,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CustomColorsSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\EditorParticlesSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HeightmapEditorSystem.h" />
@@ -1151,9 +1154,8 @@
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h" />
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h" />
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h" />

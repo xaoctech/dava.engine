@@ -36,6 +36,7 @@
 #include "UI/UIEvent.h"
 
 #include "Commands2/Command2.h"
+#include "Base/Introspection.h"
 
 class SceneCameraSystem : public DAVA::SceneSystem
 {
@@ -50,8 +51,13 @@ public:
 	DAVA::Vector3 GetCameraPosition() const;
 	DAVA::Vector3 GetCameraDirection() const;
 
-	void SetMoveSpeed(DAVA::float32 speed);
 	DAVA::float32 GetMoveSpeed();
+
+	DAVA::uint32 GetActiveSpeedIndex();
+	void SetMoveSpeedArrayIndex(DAVA::uint32 index);
+
+	void SetMoveSpeed(DAVA::float32 speed, DAVA::uint32 index);
+	DAVA::float32 GetMoveSpeed(DAVA::uint32 index);
 
 	void SetViewportRect(const DAVA::Rect &rect);
 	const DAVA::Rect GetViewportRect();
@@ -66,6 +72,10 @@ public:
 
     DAVA::float32 GetDistanceToCamera() const;
     void UpdateDistanceToCamera();
+
+	INTROSPECTION(SceneCameraSystem,
+		COLLECTION(cameraSpeedArray, "Camera speed array", DAVA::I_VIEW | DAVA::I_EDIT)
+		)
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -93,7 +103,6 @@ protected:
 	DAVA::Rect viewportRect;
 	bool debugCamerasCreated;
 
-	DAVA::float32 curSpeed;
 	DAVA::Camera* curSceneCamera;
 
 	DAVA::Vector2 rotateStartPoint;
@@ -111,7 +120,10 @@ protected:
 
     DAVA::float32 distanceToCamera;
 
-	DAVA::UniqueHandle renderState;
+    DAVA::UniqueHandle renderState;
+	DAVA::uint32				activeSpeedArrayIndex;
+	DAVA::Vector<DAVA::float32>	cameraSpeedArray;
+    
     
 };
 

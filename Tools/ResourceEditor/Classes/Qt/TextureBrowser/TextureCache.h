@@ -63,6 +63,11 @@ public:
 
     static const int THUMBNAIL_SIZE = 64;
     
+    DAVA::uint32 getOriginalSize(const DAVA::TextureDescriptor *descriptor);
+    DAVA::uint32 getOriginalFileSize(const DAVA::TextureDescriptor *descriptor);
+    DAVA::uint32 getConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+    DAVA::uint32 getConvertedFileSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+    
     DAVA::Vector<QImage> getThumbnail(const DAVA::TextureDescriptor *descriptor);
 	DAVA::Vector<QImage> getOriginal(const DAVA::TextureDescriptor *descriptor);
 	DAVA::Vector<QImage> getConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
@@ -92,9 +97,16 @@ protected:
 	void setOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images);
 	void setConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& images);
 
+    void setOriginalSize(const DAVA::TextureDescriptor *descriptor);
+	void setConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+
+    DAVA::uint32 getImageSize(const DAVA::Map<const DAVA::FilePath, DAVA::uint32> & cache, const DAVA::TextureDescriptor *descriptor);
+    
+    
     void ClearCacheTail(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const size_t currentWeight, const size_t maxWeight);
     
     void RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const DAVA::TextureDescriptor *descriptor);
+    void RemoveSizeFromCache(DAVA::Map<const DAVA::FilePath, DAVA::uint32> & cache, const DAVA::TextureDescriptor *descriptor);
     
 private:
 
@@ -106,6 +118,12 @@ private:
 	static const size_t maxOrigCount = 20;
 	static const size_t maxConvertedCount = 7; // per gpu
 
+    DAVA::Map<const DAVA::FilePath, DAVA::uint32> cacheOriginalSize;
+    DAVA::Map<const DAVA::FilePath, DAVA::uint32> cacheOriginalFileSize;
+    DAVA::Map<const DAVA::FilePath, DAVA::uint32> cacheConvertedSize[DAVA::GPU_FAMILY_COUNT];
+    DAVA::Map<const DAVA::FilePath, DAVA::uint32> cacheConvertedFileSize[DAVA::GPU_FAMILY_COUNT];
+
+    
     DAVA::Map<const DAVA::FilePath, CacheEntity> cacheThumbnail;
 	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheOriginal;
 	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheConverted[DAVA::GPU_FAMILY_COUNT];

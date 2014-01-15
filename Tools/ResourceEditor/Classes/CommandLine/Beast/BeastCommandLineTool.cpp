@@ -35,7 +35,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneHelper.h"
 #include "Commands2/BeastAction.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 
 using namespace DAVA;
 

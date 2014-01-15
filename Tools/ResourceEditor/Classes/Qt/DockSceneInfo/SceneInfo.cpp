@@ -30,8 +30,7 @@
 
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "Deprecated/EditorSettings.h"
-
+#include "../Qt/Settings/SettingsManager.h"
 #include "CommandLine/CommandLineManager.h"
 
 
@@ -39,7 +38,7 @@
 
 #include "Render/TextureDescriptor.h"
 
-#include "../../ImageTools/ImageTools.h"
+#include "ImageTools/ImageTools.h"
 
 #include "CubemapEditor/MaterialHelper.h"
 
@@ -62,8 +61,6 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     , treeStateHelper(this, curModel)
 	, isUpToDate(false)
 {
-    SetEditTracking(true);
-    
 	// global scene manager signals
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
@@ -112,7 +109,7 @@ void SceneInfo::InitializeGeneralSection()
     AddChild("Particles Textures Size", header);
     
     AddChild("Sprites Count", header);
-    AddChild("Textures Count", header);
+    AddChild("Particle Textures Count", header);
 }
 
 void SceneInfo::RefreshSceneGeneralInfo()
@@ -127,7 +124,7 @@ void SceneInfo::RefreshSceneGeneralInfo()
     SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
     
     SetChild("Sprites Count", spritesCount, header);
-    SetChild("Textures Count", (uint32)particleTextures.size(), header);
+    SetChild("Particle Textures Count", (uint32)particleTextures.size(), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()
@@ -262,9 +259,7 @@ void SceneInfo::RefreshLODInfoForSelection()
 
 uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-    String projectPath = settings->GetString("ProjectPath");
-
+	String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
     uint32 textureSize = 0;
     
     TexturesMap::const_iterator endIt = textures.end();
@@ -287,7 +282,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, EditorSettings::Instance()->GetTextureViewGPU());
+        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
         
         SafeRelease(descriptor);
     }
