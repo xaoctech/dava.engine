@@ -57,6 +57,7 @@ RenderSystem::RenderSystem()
     :   renderPassManager(this)
     ,   camera(0)
     ,   clipCamera(0)
+    ,   forceUpdateLights(false)
 {
 
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_FORWARD));
@@ -155,10 +156,13 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     
 void RenderSystem::RegisterBatch(RenderBatch * batch)
 {
-    NMaterial * materialInstance = batch->GetMaterial();
-    NMaterial * material = materialInstance->GetParent();
-    RegisterMaterial(materialInstance);
-    RegisterMaterial(material);
+    NMaterial * material = batch->GetMaterial();
+    while(material)
+    {
+        RegisterMaterial(material);
+        
+        material = material->GetParent();
+    }
 }
     
 void RenderSystem::UnregisterBatch(RenderBatch * batch)
@@ -281,7 +285,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
         NMaterial * material = batch->GetMaterial();
         if (material)
         {
-            material->SetLight(0, nearestLight);
+            material->SetLight(0, nearestLight, forceUpdateLights);
         }
     }
 }
@@ -303,13 +307,20 @@ void RenderSystem::AddLight(Light * light)
     
 void RenderSystem::RemoveLight(Light * light)
 {
-    SafeRelease(light);
     lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
+    FindNearestLights();
+    
+    SafeRelease(light);
 }
 
 Vector<Light*> & RenderSystem::GetLights()
 {
     return lights;
+}
+
+void RenderSystem::SetForceUpdateLights()
+{
+    forceUpdateLights = true;
 }
 
 void RenderSystem::Update(float32 timeElapsed)
@@ -343,9 +354,11 @@ void RenderSystem::Update(float32 timeElapsed)
 
 	renderHierarchy->Update();
 	
-    if (movedLights.size() > 0)
+    if (movedLights.size() > 0 || forceUpdateLights)
     {
         FindNearestLights();
+        
+        forceUpdateLights = false;
     }
     movedLights.clear();
     

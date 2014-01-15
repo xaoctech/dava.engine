@@ -14,6 +14,7 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		49DB9A49187D69F000D6E87A /* FogSettingsChangedReceiver.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */; };
 		49DB9A52187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49DB9A51187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp */; };
+		4FA419631886E3D400395C70 /* TextureInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FA419621886E3D400395C70 /* TextureInfo_moc.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
@@ -627,6 +628,8 @@
 		49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogSettingsChangedReceiver.cpp; sourceTree = "<group>"; };
 		49DB9A48187D69F000D6E87A /* FogSettingsChangedReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FogSettingsChangedReceiver.h; sourceTree = "<group>"; };
 		49DB9A51187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogSettingsChangedReceiver_moc.cpp; sourceTree = "<group>"; };
+		4FA4195A1886E3BD00395C70 /* TextureInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureInfo.h; sourceTree = "<group>"; };
+		4FA419621886E3D400395C70 /* TextureInfo_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureInfo_moc.cpp; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -2066,6 +2069,7 @@
 		E8BAD6551859F50300C98C8D /* TextureBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				4FA419621886E3D400395C70 /* TextureInfo_moc.cpp */,
 				E8BAD6561859F50300C98C8D /* TextureBrowser_moc.cpp */,
 				E8BAD6571859F50300C98C8D /* TextureCache_moc.cpp */,
 				E8BAD6581859F50300C98C8D /* TextureConvertor_moc.cpp */,
@@ -3451,6 +3455,7 @@
 		E8C9916C184CD0EB00AFBF3F /* TextureBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				4FA4195A1886E3BD00395C70 /* TextureInfo.h */,
 				E8C9916D184CD0EB00AFBF3F /* TextureBrowser.cpp */,
 				E8C9916E184CD0EB00AFBF3F /* TextureBrowser.h */,
 				E8C9916F184CD0EB00AFBF3F /* TextureCache.cpp */,
@@ -4113,6 +4118,7 @@
 				E8C99333184CD0EC00AFBF3F /* QtLabelWithActions.cpp in Build Sources */,
 				E8C9925D184CD0EC00AFBF3F /* btConvexHullComputer.cpp in Build Sources */,
 				E8BAD6D51859F50300C98C8D /* SceneTreeItemEntity_moc.cpp in Build Sources */,
+				4FA419631886E3D400395C70 /* TextureInfo_moc.cpp in Build Sources */,
 				E8C99336184CD0EC00AFBF3F /* QtPropertyDataDavaVariant.cpp in Build Sources */,
 				E8BAD6C91859F50300C98C8D /* ParticleTimeLineColumns_moc.cpp in Build Sources */,
 				E8C9920D184CD0EC00AFBF3F /* btBox2dShape.cpp in Build Sources */,
