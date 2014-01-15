@@ -41,6 +41,7 @@ public:
 	bool MergeSwitch(Entity * entity);
 
 private:
+    void FindRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects);
     Set<PolygonGroup*> bakedPolygonGroups;
 };
 
