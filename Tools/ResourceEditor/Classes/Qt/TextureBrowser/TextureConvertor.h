@@ -41,7 +41,10 @@
 #include "DAVAEngine.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/RenderManager.h"
-#include "TextureBrowser/TextureConvertorWork.h"
+
+#include "TextureInfo.h"
+#include "TextureConvertorWork.h"
+
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
 
 #define CONVERT_JOB_COUNT 2
@@ -67,9 +70,9 @@ public:
 	void CancelConvert();
 
 signals:
-	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
-	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
-	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image);
+	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & image);
 	void ReadyReconvert();
 
 	void ReadyConvertedAll();
@@ -84,9 +87,9 @@ private:
 	bool waitingComletion;
 	QString waitStatusText;
 
-	QFutureWatcher< DAVA::Vector<QImage> > thumbnailWatcher;
-	QFutureWatcher< DAVA::Vector<QImage> > originalWatcher;
-	QFutureWatcher< DAVA::Vector<QImage> > convertedWatcher;
+	QFutureWatcher< TextureInfo > thumbnailWatcher;
+	QFutureWatcher< TextureInfo > originalWatcher;
+	QFutureWatcher< TextureInfo > convertedWatcher;
 
 	JobStack jobStackThumbnail;
 	JobStack jobStackOriginal;
@@ -102,9 +105,9 @@ private:
 	void jobRunNextOriginal();
 	void jobRunNextThumbnail();
 
-	DAVA::Vector<QImage> GetThumbnailThread(JobItem *item);
-	DAVA::Vector<QImage> GetOriginalThread(JobItem *item);
-	DAVA::Vector<QImage> GetConvertedThread(JobItem *item);
+	TextureInfo GetThumbnailThread(JobItem *item);
+	TextureInfo GetOriginalThread(JobItem *item);
+	TextureInfo GetConvertedThread(JobItem *item);
 
 private slots:
 	
