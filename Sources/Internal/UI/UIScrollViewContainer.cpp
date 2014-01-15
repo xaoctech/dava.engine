@@ -94,14 +94,12 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 {
 	if(currentTouch->tid == mainTouch)
 	{
-        Logger::Debug("ScrollView:Input: %d", currentTouch->tid);
 		newPos = currentTouch->point;
 		
 		switch(currentTouch->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
 			{
-                Logger::Debug("ScrollView:Input: began %d", currentTouch->tid);
 				scrollStartInitialPosition = currentTouch->point;
 				scrollStartMovement = false;
 				state = STATE_SCROLL;
@@ -111,7 +109,6 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 			break;
 			case UIEvent::PHASE_DRAG:
 			{
-                Logger::Debug("ScrollView:Input: drag %d", currentTouch->tid);
 				if(state == STATE_SCROLL)
 				{
 					scrollStartMovement = true;
@@ -120,7 +117,6 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 			break;
 			case UIEvent::PHASE_ENDED:
 			{
-                Logger::Debug("ScrollView:Input: ended %d", currentTouch->tid);
 				lockTouch = false;
 				state = STATE_DECCELERATION;
 			}
@@ -136,12 +132,11 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		return false;
 	}
 
-    Logger::Debug("ScrollView: %d", currentTouch->tid);
 	bool systemInput = UIControl::SystemInput(currentTouch);
 	if (currentTouch->GetInputHandledType() == UIEvent::INPUT_HANDLED_HARD)
 	{
 		// Can't scroll - some child control already processed this input.
-        Logger::Debug("ScrollView: processed with system input %d", currentTouch->tid);
+        mainTouch = -1;
 		return systemInput;
 	}
 
@@ -149,7 +144,6 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	{
 		if(IsPointInside(currentTouch->point))
 		{
-            Logger::Debug("ScrollView: handling touch %d", currentTouch->tid);
             currentScroll = NULL;
 			mainTouch = currentTouch->tid;
 			PerformEvent(EVENT_TOUCH_DOWN);
@@ -168,19 +162,16 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
                && abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold
                && (!currentScroll || currentScroll == scrollView->GetHorizontalScroll()))
             {
-                Logger::Debug("ScrollView: enabling horizontal scroll %d", currentTouch->tid);
                 currentScroll = scrollView->GetHorizontalScroll();
             }
             else if(enableVerticalScroll
                     && (abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold)
                     && (!currentScroll || currentScroll == scrollView->GetVerticalScroll()))
             {
-                Logger::Debug("ScrollView: enabling vertical scroll %d", currentTouch->tid);
                 currentScroll = scrollView->GetVerticalScroll();
             }
             if (currentTouch->touchLocker != this && currentScroll)
             {
-                Logger::Debug("ScrollView: switching input to scroll %d", currentTouch->tid);
                 UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
             }
 			Input(currentTouch);
@@ -188,7 +179,6 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	}
 	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_ENDED)
 	{
-        Logger::Debug("ScrollView: ending input %d", currentTouch->tid);
 		Input(currentTouch);
 		mainTouch = -1;
 	}
@@ -259,7 +249,6 @@ YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
 
 void UIScrollViewContainer::InputCancelled( UIEvent *currentInput )
 {
-    Logger::Debug("ScrollView: cancel %d", currentInput->tid);
     if (currentInput->tid == mainTouch)
     {
         mainTouch = -1;
@@ -269,7 +258,6 @@ void UIScrollViewContainer::InputCancelled( UIEvent *currentInput )
 
 void UIScrollViewContainer::WillDisappear()
 {
-    Logger::Debug("ScrollView: WillDisappear %d", mainTouch);
     mainTouch = -1;
     lockTouch = false;
 }

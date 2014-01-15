@@ -289,7 +289,6 @@ void UIControlSystem::SwitchInputToControl(int32 eventID, UIControl *targetContr
 	{
 		if((*it).tid == eventID)
 		{
-            Logger::Debug("Switching input");
 			CancelInput(&(*it));
 			
 			if(targetControl->IsPointInside((*it).point))
