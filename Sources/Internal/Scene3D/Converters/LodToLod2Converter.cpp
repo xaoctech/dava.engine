@@ -75,6 +75,10 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 		else
         {
             ro = rc->GetRenderObject();
+            if(ro->GetType() != RenderObject::TYPE_MESH)
+            {
+                return false;
+            }
 		}
 
         DVASSERT(ro);
@@ -92,8 +96,22 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 				Entity * sourceEntity = data->nodes[j];
 				TransformComponent * sourceTransform = GetTransformComponent(sourceEntity);
 				RenderObject * sourceRenderObject = GetRenderObject(sourceEntity);
-				if(sourceRenderObject)
-				{
+
+                Vector<RenderObject*> sourceRenderObjects;
+                if(sourceRenderObject)
+                {
+                    sourceRenderObjects.push_back(sourceRenderObject);
+                    sourceRenderObject->Retain();
+                }
+                else
+                {
+                    FindAndEraseRenderObjectsRecursive(sourceEntity, sourceRenderObjects);
+                }
+
+                uint32 sourceRenderObjectsCount = sourceRenderObjects.size();
+                for(uint32 j = 0; j < sourceRenderObjectsCount; ++j)
+                {
+                    sourceRenderObject = sourceRenderObjects[j];
                     if (sourceTransform->GetLocalTransform() != Matrix4::IDENTITY)
                     {
                         PolygonGroup * pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : 0;
@@ -103,24 +121,23 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
                             bakedPolygonGroups.insert(pg);
                         }
                     }
-					
-					uint32 sourceRenderBatchCount = sourceRenderObject->GetRenderBatchCount();
-					for(uint32 k = 0; k < sourceRenderBatchCount; ++k)
-					{
-						RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(k);
-						ro->AddRenderBatch(sourceRenderBatch, data->layer, -1);
-					}
-				}
 
+                    uint32 sourceRenderBatchCount = sourceRenderObject->GetRenderBatchCount();
+                    for(uint32 k = 0; k < sourceRenderBatchCount; ++k)
+                    {
+                        RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(k);
+                        ro->AddRenderBatch(sourceRenderBatch, data->layer, -1);
+                    }
+                    sourceRenderObject->Release();
+                }
+
+
+
+                sourceEntity->RemoveComponent(Component::RENDER_COMPONENT);
 				if(sourceEntity->GetChildrenCount() == 0)
 				{
 #pragma message("LodToLod2Converter::MergeLod maybe merge other components")
 					entitiesToRemove.insert(sourceEntity);
-				}
-				else
-				{
-					RenderComponent * sourceRenderComponent = GetRenderComponent(sourceEntity);
-					sourceEntity->RemoveComponent(Component::RENDER_COMPONENT);
 				}
 
 				//remove!!!
@@ -146,4 +163,22 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 	}
 
 	return res;
+}
+
+void LodToLod2Converter::FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects)
+{
+    RenderObject * ro = GetRenderObject(fromEntity);
+    if(ro && ro->GetType() == RenderObject::TYPE_MESH)
+    {
+        ro->Retain();
+        renderObjects.push_back(ro);
+        fromEntity->RemoveComponent(Component::RENDER_COMPONENT);
+    }
+
+    int32 size = fromEntity->GetChildrenCount();
+    for(int32 i = 0; i < size; ++i)
+    {
+        Entity * child = fromEntity->GetChild(i);
+        FindAndEraseRenderObjectsRecursive(child, renderObjects);
+    }
 }
