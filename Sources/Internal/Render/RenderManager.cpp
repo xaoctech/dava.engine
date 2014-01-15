@@ -735,6 +735,7 @@ void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 void RenderManager::Stats::Clear()
 {
 	//uint32 matrixMultiplicationCount = Matrix4::matrixMultiplicationCounter;
+	//Matrix4::matrixMultiplicationCounter = 0;
     drawArraysCalls = 0;
     drawElementsCalls = 0;
     shaderBindCount = 0;
@@ -743,7 +744,6 @@ void RenderManager::Stats::Clear()
 	renderStateFullSwitches = 0;
 	textureStateFullSwitches = 0;
 	attachRenderDataCount = 0;
-	//Matrix4::matrixMultiplicationCounter = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
     dynamicParamUniformBindCount = 0;
@@ -852,6 +852,7 @@ void RenderManager::VerifyRenderContext()
     
 void RenderManager::Renderer2D::Setup2DMatrices()
 {
+    RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, UPDATE_SEMANTIC_ALWAYS);
     RenderManager::SetDynamicParam(PARAM_VIEW, &viewMatrix, UPDATE_SEMANTIC_ALWAYS);
     RenderManager::SetDynamicParam(PARAM_PROJ, &projMatrix, UPDATE_SEMANTIC_ALWAYS);
 }
