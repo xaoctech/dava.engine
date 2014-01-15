@@ -79,6 +79,15 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 		{
 			Entity * child = entity->GetChild(i);
 			RenderObject * sourceRenderObject = GetRenderObject(child);
+
+            if(!sourceRenderObject)
+            {
+                Vector<RenderObject*> renderObjects;
+                FindRenderObjectsRecursive(child, renderObjects);
+                DVASSERT(renderObjects.size() == 1);
+                sourceRenderObject = renderObjects[0];
+            }
+
 			if(sourceRenderObject)
 			{
                 TransformComponent * sourceTransform = GetTransformComponent(child);
@@ -121,4 +130,20 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 	}
 
 	return false;
+}
+
+void SwitchToRenerObjectConverter::FindRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects)
+{
+    RenderObject * ro = GetRenderObject(fromEntity);
+    if(ro && ro->GetType() == RenderObject::TYPE_MESH)
+    {
+        renderObjects.push_back(ro);
+    }
+
+    int32 size = fromEntity->GetChildrenCount();
+    for(int32 i = 0; i < size; ++i)
+    {
+        Entity * child = fromEntity->GetChild(i);
+        FindRenderObjectsRecursive(child, renderObjects);
+    }
 }

@@ -56,7 +56,7 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 {
 	bool res = false;
 
-	Vector<Entity*> entitiesToRemove;
+	Set<Entity*> entitiesToRemove;
 
 	LodComponent * lod = GetLodComponent(entity);
 	if(lod)
@@ -115,7 +115,7 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 				if(sourceEntity->GetChildrenCount() == 0)
 				{
 #pragma message("LodToLod2Converter::MergeLod maybe merge other components")
-					entitiesToRemove.push_back(sourceEntity);
+					entitiesToRemove.insert(sourceEntity);
 				}
 				else
 				{
@@ -134,15 +134,15 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 #pragma message("LodToLod2Converter::MergeLod removing VisualSceneNode")
 	if(entity->GetName() == "VisualSceneNode")
 	{
-		entitiesToRemove.push_back(entity);
+		entitiesToRemove.insert(entity);
 		res = true;
 	}
 
 
-	uint32 entitiesToRemoveCount = entitiesToRemove.size();
-	for(uint32 i = 0; i < entitiesToRemoveCount; ++i)
+	Set<Entity*>::iterator itEnd = entitiesToRemove.end();
+	for(Set<Entity*>::iterator it = entitiesToRemove.begin(); it != itEnd; ++it)
 	{
-		entitiesToRemove[i]->GetParent()->RemoveNode(entitiesToRemove[i]);
+        (*it)->GetParent()->RemoveNode(*it);
 	}
 
 	return res;
