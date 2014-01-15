@@ -199,6 +199,7 @@ void SceneSelectionSystem::Draw()
 		//DAVA::RenderManager::Instance()->SetState(newState);
 		//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 		
+        DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 		DAVA::RenderManager::Instance()->SetRenderState((!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState);
 		DAVA::RenderManager::Instance()->FlushState();
 

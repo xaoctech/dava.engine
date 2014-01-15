@@ -946,7 +946,7 @@ inline void RenderManager::ComputeWorldViewProjMatrixIfRequired()
     
 inline void RenderManager::ComputeInvWorldViewMatrixIfRequired()
 {
-    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_VIEW_PROJ))
+    if (dynamicParamersRequireUpdate & (1 << PARAM_INV_WORLD_VIEW))
     {
         ComputeWorldViewMatrixIfRequired();
         worldViewMatrix.GetInverse(invWorldViewMatrix);

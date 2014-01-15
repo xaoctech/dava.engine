@@ -1084,16 +1084,15 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
 	{
-		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
 		Matrix4 drawMatrix;
-
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);
 
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
+        RenderManager::Instance()->FlushState();
 
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{
@@ -1103,23 +1102,20 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
-
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
 	{
-		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
 		Matrix4 drawMatrix;
-
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);
 
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
-
+        RenderManager::Instance()->FlushState();
+        
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, 0);
@@ -1128,8 +1124,6 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
-
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
