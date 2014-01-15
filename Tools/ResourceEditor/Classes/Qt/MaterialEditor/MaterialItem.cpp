@@ -42,7 +42,6 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 	DVASSERT(material);
 	
 	setEditable(false);
-	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
 	switch(material->GetMaterialType())
@@ -71,10 +70,71 @@ MaterialItem::~MaterialItem()
 
 QVariant MaterialItem::data(int role) const
 {
-    return QStandardItem::data(role);
+	QVariant ret;
+
+	switch(role)
+	{
+		case Qt::DisplayRole:
+			ret = QString(material->GetName().c_str());
+			break;
+		default:
+			ret = QStandardItem::data(role);
+			break;
+	}
+
+    return ret;
 }
 
 DAVA::NMaterial * MaterialItem::GetMaterial() const
 {
 	return material;
+}
+
+void MaterialItem::SetFlag(MaterialFlag flag, bool set)
+{
+	if((set && !(curFlag & flag)) || (!set && (curFlag & flag)))
+	{
+		bool ok = true;
+
+		switch(flag)
+		{
+			case IS_MARK_FOR_DELETE:
+				set ? setBackground(QBrush(QColor(255, 0, 0, 15))) : setBackground(QBrush());
+				break;
+
+			case IS_PART_OF_SELECTION:
+				if(set)
+				{
+					QFont curFont = font();
+					curFont.setBold(true);
+					setFont(curFont); 
+				}
+				else
+				{
+					setFont(QFont());
+				}
+				break;
+
+			default:
+				ok = false;
+				break;
+		}
+
+		if(ok)
+		{
+			if(set)
+			{
+				curFlag |= (int) flag;
+			}
+			else
+			{
+				curFlag &= ~ (int) flag;
+			}
+		}
+	}
+}
+
+bool MaterialItem::GetFlag(MaterialFlag flag)
+{
+	return (bool) (curFlag & flag);
 }

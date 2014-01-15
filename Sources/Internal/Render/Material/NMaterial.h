@@ -245,6 +245,7 @@ public:
     void ReleaseIlluminationParams();
 	
 	// Work with textures and properties
+    void RemoveTexture(const FastName& textureFastName);
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     Texture * GetTexture(const FastName& textureFastName) const;
@@ -262,7 +263,7 @@ public:
 	NMaterialProperty* GetMaterialProperty(const FastName & keyName) const;
 	void RemoveMaterialProperty(const FastName & keyName);
 	
-	void SetMaterialName(const String& name);
+	void SetMaterialName(const FastName& name);
 	inline const FastName& GetMaterialName() const {return materialName;}
 	
 	inline eMaterialType GetMaterialType() const {return materialType;}
@@ -407,7 +408,7 @@ protected:
 						  RenderTechniquePass* pass);
 	void BuildTextureParamsCache(RenderPassInstance* passInstance);
 	void BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance);
-	TextureBucket* GetTextureBucketRecursive(const FastName& textureFastName) const;
+	TextureBucket* GetEffectiveTextureBucket(const FastName& textureFastName) const;
 	
 	void LoadActiveTextures();
 	void CleanupUnusedTextures();
@@ -451,6 +452,16 @@ public:
 		VariantType MemberValueGet(void *object, size_t index) const;
 		void MemberValueSet(void *object, size_t index, const VariantType &value);
 	protected:
+		struct TextureDescrInsp
+		{			
+			int flags;
+			FilePath path;
+			FastName name;
+			bool empty;
+			TextureDescrInsp():flags(I_VIEW), empty(true){}
+		};
+		static Vector<TextureDescrInsp> textureDescrInspVector;
+		void UpdateTextureDescrInspVector(NMaterial *state) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
@@ -502,7 +513,9 @@ public:
 	
 public:
 	
-	INTROSPECTION(NMaterial,
+	INTROSPECTION_EXTEND(NMaterial, DataNode,
+				  //(DAVA::CreateIspProp("materialName", "Material name", &NMaterial::GetMaterialName, &NMaterial::SetMaterialName, I_SAVE | I_EDIT | I_VIEW),
+				  MEMBER(materialName, "Material name", I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
@@ -519,6 +532,12 @@ public:
 		static void DisableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
+		static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
+        static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
+		
+		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
+        static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
     

@@ -66,6 +66,7 @@ protected:
 	int GetOrientation();
 	void SetOrientation(int value);
 
+    virtual void SetVisible(const bool value);
 	virtual void SetLeftAlign(int value);
 	virtual void SetHCenterAlign(int value);
 	virtual void SetRightAlign(int value);

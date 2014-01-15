@@ -30,8 +30,7 @@
 
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "Deprecated/EditorSettings.h"
-
+#include "../Qt/Settings/SettingsManager.h"
 #include "CommandLine/CommandLineManager.h"
 
 
@@ -271,9 +270,7 @@ void SceneInfo::RefreshLODInfoForSelection()
 
 uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-    String projectPath = settings->GetString("ProjectPath");
-
+	String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
     uint32 textureSize = 0;
     
     TexturesMap::const_iterator endIt = textures.end();
@@ -296,7 +293,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, EditorSettings::Instance()->GetTextureViewGPU());
+        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
         
         SafeRelease(descriptor);
     }

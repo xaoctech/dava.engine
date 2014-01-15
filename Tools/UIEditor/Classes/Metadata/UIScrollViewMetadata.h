@@ -62,6 +62,7 @@ protected:
     UIScrollView* GetActiveUIScrollView() const;
 	
     // Getters/setters.
+    virtual void SetVisible(const bool value);
     float GetHorizontalScrollPosition() const;
 	void SetHorizontalScrollPosition(float value);
     float GetVerticalScrollPosition() const;
