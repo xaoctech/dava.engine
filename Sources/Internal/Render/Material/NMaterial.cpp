@@ -2408,7 +2408,7 @@ namespace DAVA
 		FastName name = GetName(index);
 		if(name.IsValid())
 		{
-			ret.SetBool((bool) state->GetFlagValue(name));
+			ret.SetBool((state->GetFlagValue(name) != 0));
 		}
 
 		return ret;
