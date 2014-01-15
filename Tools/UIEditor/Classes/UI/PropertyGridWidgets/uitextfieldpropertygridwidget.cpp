@@ -206,6 +206,12 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
                 break;
             }
+			case Font::TYPE_DISTANCE:
+			{
+				DFFont *font = dynamic_cast<DFFont*>(fontPropertyValue);
+				buttonText = QString::fromStdString(font->GetFontPath().GetFrameworkPath());
+                break;
+			}break;
             default:
             {
                 //Do nothing if we can't determine font type

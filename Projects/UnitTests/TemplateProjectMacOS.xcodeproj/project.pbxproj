@@ -30,6 +30,7 @@
 		7497446817B3C38D00282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497446617B3C38D00282DAA /* AlignTest.cpp */; };
 		749A1B4F174A73130082B080 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C100A1551868255200173F50 /* DFFontTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C100A1531868255200173F50 /* DFFontTest.cpp */; };
 		C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C151B18E16D37E2700E09BAF /* WebKit.framework */; };
 		C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */; };
 		C177F28016D227A70036F02B /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C177F27E16D227A70036F02B /* InputTest.cpp */; };
@@ -153,6 +154,8 @@
 		749A3DCC17B8CF400008EC12 /* AlignTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignTest.cpp; path = Classes/AlignTest.cpp; sourceTree = "<group>"; };
 		749A3DCD17B8CF400008EC12 /* AlignTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignTest.h; path = Classes/AlignTest.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C100A1531868255200173F50 /* DFFontTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DFFontTest.cpp; path = Classes/DFFontTest.cpp; sourceTree = "<group>"; };
+		C100A1541868255200173F50 /* DFFontTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFFontTest.h; path = Classes/DFFontTest.h; sourceTree = "<group>"; };
 		C151B18E16D37E2700E09BAF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eMailTest.cpp; path = Classes/eMailTest.cpp; sourceTree = "<group>"; };
 		C151B1BF16D50BDA00E09BAF /* eMailTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eMailTest.h; path = Classes/eMailTest.h; sourceTree = "<group>"; };
@@ -367,6 +370,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C100A1501868250200173F50 /* DFFontTest */,
 				1770DF5217DF6CAD00000391 /* UIMovieTest */,
 				02F8B01717CF994900D5A334 /* ThreadSyncTest */,
 				749A3DC917B8CF330008EC12 /* AlignTest */,
@@ -461,6 +465,15 @@
 				749A3DCD17B8CF400008EC12 /* AlignTest.h */,
 			);
 			name = AlignTest;
+			sourceTree = "<group>";
+		};
+		C100A1501868250200173F50 /* DFFontTest */ = {
+			isa = PBXGroup;
+			children = (
+				C100A1531868255200173F50 /* DFFontTest.cpp */,
+				C100A1541868255200173F50 /* DFFontTest.h */,
+			);
+			name = DFFontTest;
 			sourceTree = "<group>";
 		};
 		C151B1BC16D50BD000E09BAF /* eMailTest */ = {
@@ -733,6 +746,7 @@
 				FEA30C331231362D00E691CC /* main.mm in Sources */,
 				FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */,
 				FEC3CA821283557F00541220 /* GameCore.cpp in Sources */,
+				C100A1551868255200173F50 /* DFFontTest.cpp in Sources */,
 				5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */,
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
