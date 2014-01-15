@@ -385,4 +385,9 @@ void ParticleEffectComponent::RemoveEmitter(ParticleEmitter *emitter)
 	emitters.erase(it);	
 }
 
+float32 ParticleEffectComponent::GetCurrTime()
+{
+    return time;
+}
+
 }

@@ -135,7 +135,7 @@ public: //mostly editor commands
 	ParticleEmitter* GetEmitter(int32 id);
 	void AddEmitter(ParticleEmitter *emitter);
 	void RemoveEmitter(ParticleEmitter *emitter);
-
+    float32 GetCurrTime();
 
 public:
 	uint32 loadedVersion;

@@ -887,6 +887,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 {
 	SceneEditor2* curScene = treeModel->GetScene();
 	bool isParticleElements = false;
+    bool emitterSelected = false;
 
 	// allow only single selected entities
 	if(selected.size() == 1) 
@@ -909,6 +910,8 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 				}
 				break;
 			case SceneTreeItem::EIT_Emitter:
+                curScene->particlesSystem->SetEmitterSelected(((SceneTreeItemParticleEmitter *) item)->effect->GetEntity(), ((SceneTreeItemParticleEmitter *) item)->emitter);
+                emitterSelected = true;
 			case SceneTreeItem::EIT_InnerEmitter:				
 				SceneSignals::Instance()->EmitEmitterSelected(curScene, ((SceneTreeItemParticleEmitter *) item)->effect, ((SceneTreeItemParticleEmitter *) item)->emitter);
 				isParticleElements = true;	
@@ -946,6 +949,8 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 		}
 	}
 
+    if (!emitterSelected)
+        curScene->particlesSystem->SetEmitterSelected(NULL, NULL);    
 	if(!isParticleElements)
 	{
 		SceneSignals::Instance()->EmitEmitterSelected(NULL, NULL, NULL);
