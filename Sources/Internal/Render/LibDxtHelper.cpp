@@ -95,7 +95,7 @@ public:
 	static bool InitDecompressor(nvtt::Decompressor & dec, File * file);
 	static bool InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size);
 	
-	static bool ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet, bool forseSoftwareConvertation);
+	static bool ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet, bool forceSoftwareConvertation);
 	
 	static PixelFormat GetPixelFormat(nvtt::Decompressor & dec);
 	
@@ -240,7 +240,7 @@ PixelFormat QualcommHeler::GetDavaFormat(int32 format)
 }
 
 	
-bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSet, bool forceSoftwareConvertation /*=false*/)
 {
 	nvtt::Decompressor dec;
 
@@ -249,10 +249,10 @@ bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSe
 		return false;
 	}
 	
-	return NvttHelper::ReadDxtFile(dec, imageSet, false);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forceSoftwareConvertation);
 }
 
-bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet, bool forceSoftwareConvertation /*=false*/)
 {
 	nvtt::Decompressor dec;
 
@@ -260,10 +260,10 @@ bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet)
 	{
 		return false;
 	}
-	return NvttHelper::ReadDxtFile(dec, imageSet, false);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forceSoftwareConvertation);
 }
 
-bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &imageSet, bool forseSoftwareConvertation)
+bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &imageSet, bool forceSoftwareConvertation)
 {
 	if(!(image.format >= FORMAT_DXT1 && image.format <= FORMAT_DXT5NM) )
 	{
@@ -308,7 +308,7 @@ bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &im
 	bool retValue = NvttHelper::InitDecompressor(dec, compressedImageBuffer, realHeaderSize + image.dataSize);
 	if(retValue)
 	{
-		retValue = NvttHelper::ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
+		retValue = NvttHelper::ReadDxtFile(dec, imageSet, forceSoftwareConvertation);
 	}
 
     SafeDeleteArray(compressedImageBuffer);
@@ -320,7 +320,7 @@ bool NvttHelper::IsAtcFormat(nvtt::Format format)
 	return (format == Format_ATC_RGB || format == Format_ATC_RGBA_EXPLICIT_ALPHA || format == Format_ATC_RGBA_INTERPOLATED_ALPHA);
 }
 	
-bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet, bool forseSoftwareConvertation)
+bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet, bool forceSoftwareConvertation)
 {
     for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	imageSet.clear();
@@ -354,7 +354,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	else
 		isHardwareSupport = RenderManager::Instance()->GetCaps().isDXTSupported;
 	
-	if (!forseSoftwareConvertation && isHardwareSupport)
+	if (!forceSoftwareConvertation && isHardwareSupport)
 	{
 		uint8* compressedImges = new uint8[info.dataSize];
 	
