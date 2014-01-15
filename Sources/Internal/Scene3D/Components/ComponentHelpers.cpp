@@ -41,10 +41,20 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
-
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
+
+RenderComponent * GetRenderComponent(const Entity *fromEntity)
+{
+	return static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+}
+
+TransformComponent * GetTransformComponent(Entity * fromEntity)
+{
+	return static_cast<TransformComponent*>(fromEntity->GetComponent(Component::TRANSFORM_COMPONENT));
+}
 
 RenderObject * GetRenderObject(const Entity * fromEntity)
 {
@@ -52,7 +62,7 @@ RenderObject * GetRenderObject(const Entity * fromEntity)
 
 	if(NULL != fromEntity)
 	{
-		RenderComponent * component = static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+		RenderComponent * component = GetRenderComponent(fromEntity);
 		if(component)
 		{
 			object = component->GetRenderObject();

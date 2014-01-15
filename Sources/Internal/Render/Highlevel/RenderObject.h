@@ -183,7 +183,7 @@ protected:
 	{
 		IndexedRenderBatch()
 		:	renderBatch(0),
-			lodIndex(-1),
+			lodIndex(-2),
 			switchIndex(-1)
 		{}
 
@@ -211,10 +211,12 @@ public:
         MEMBER(removeIndex, "Remove index", I_SAVE)
         MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
-
         MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
+		MEMBER(lodIndex, "Lod Index", I_VIEW | I_EDIT)
+		MEMBER(switchIndex, "Switch Index", I_VIEW | I_EDIT)
                  
         COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
+        COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)
     );
 };
 

@@ -81,6 +81,22 @@ void LodSystem::Process(float32 timeElapsed)
 	currentPartialUpdateIndex = currentPartialUpdateIndex < UPDATE_PART_PER_FRAME-1 ? currentPartialUpdateIndex+1 : 0;
 }
 
+void LodSystem::UpdateEntitiesAfterLoad(Entity * parentEntity)
+{
+	int32 size = parentEntity->GetChildrenCount();
+	for(int32 i = 0; i < size; ++i)
+	{
+		Entity * entity = parentEntity->GetChild(i);
+		LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
+		if(lod && lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
+		{
+			UpdateEntityAfterLoad(entity);
+			continue; //we assume there is only one lod in hoerarchy
+		}
+		UpdateEntitiesAfterLoad(entity);
+	}
+}
+
 void LodSystem::AddEntity(Entity * entity)
 {
 	entities.push_back(entity);

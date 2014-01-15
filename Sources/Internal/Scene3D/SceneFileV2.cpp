@@ -75,6 +75,9 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
+#include "Scene3D/Converters/LodToLod2Converter.h"
+#include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
+
 namespace DAVA
 {
     
@@ -1064,6 +1067,11 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     //RemoveEmptySceneNodes(rootNode);
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
+
+	LodToLod2Converter lodConverter;
+	lodConverter.ConvertLodToV2(rootNode);
+	SwitchToRenerObjectConverter switchConverter;
+	switchConverter.ConsumeSwitchedRenderObjects(rootNode);
 	
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
