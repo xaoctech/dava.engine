@@ -1797,9 +1797,10 @@ namespace DAVA
                             textureDescrInspVector[slot].empty = false;
                             textureDescrInspVector[slot].path = currState->GetTexturePath(i);
                         }
+
+						slotFound = true;
+						break;
 					}
-                    slotFound = true;
-                    break;
 				}
                 if (!slotFound)
                 {
