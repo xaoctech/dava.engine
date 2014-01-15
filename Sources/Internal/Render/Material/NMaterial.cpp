@@ -1696,6 +1696,8 @@ namespace DAVA
 											 eBlendMode src,
 											 eBlendMode dst)
 	{
+        DVASSERT(target);
+        
 		const RenderStateData* currentData = target->GetRenderState(passName);
 		RenderStateData newData;
 		memcpy(&newData, currentData, sizeof(RenderStateData));
@@ -1749,7 +1751,29 @@ namespace DAVA
 		return result;
 	}
 
-	
+    void NMaterialHelper::SetFillMode(const FastName& passName,
+                                    NMaterial* mat,
+                                    eFillMode fillMode)
+    {
+        DVASSERT(mat);
+        
+        const RenderStateData* currentData = mat->GetRenderState(passName);
+        RenderStateData newData;
+		memcpy(&newData, currentData, sizeof(RenderStateData));
+		
+		newData.fillMode = fillMode;
+		
+		mat->SubclassRenderState(passName, &newData);
+    }
+    
+    eFillMode NMaterialHelper::GetFillMode(const FastName& passName, NMaterial* mat)
+    {
+        DVASSERT(mat);
+        
+        const RenderStateData* currentData = mat->GetRenderState(passName);
+        return currentData->fillMode;
+    }
+
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
 
