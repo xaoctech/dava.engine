@@ -1,6 +1,6 @@
 <CONFIG>
 albedo = 0
-cubemap = 0
+cubemap = 1
 decal = 1
 detail = 1
 lightmap = 1
@@ -27,16 +27,22 @@ precision highp float;
 uniform sampler2D albedo;
 varying mediump vec2 varTexCoord0;
 #elif defined(MATERIAL_SKYBOX)
-uniform samplerCube cubemap; //[1]:ONCE
+uniform samplerCube cubemap;
 varying mediump vec3 varTexCoord0;
 #endif
 
+#if defined(REFLECTION)
+uniform samplerCube cubemap;
+varying mediump vec3 normalDirectionInWorldSpace;
+varying mediump vec3 viewDirectionInWorldSpace;
+#endif
+
 #if defined(MATERIAL_DECAL)
-uniform sampler2D decal; //[1]:ONCE
+uniform sampler2D decal;
 #endif
 
 #if defined(MATERIAL_DETAIL)
-uniform sampler2D detail; //[1]:ONCE
+uniform sampler2D detail;
 #endif
 
 #if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
@@ -127,7 +133,7 @@ void main()
     if (alpha < 0.5)discard;
 #endif
 #endif
-
+ 
 #if defined(MATERIAL_DECAL)
         lowp vec3 textureColor1 = texture2D(decal, varTexCoord1).rgb;
 #endif
@@ -238,7 +244,15 @@ void main()
 #if defined(FLATCOLOR)
     gl_FragColor *= flatColor;
 #endif
-        
+    
+    
+#if defined(REFLECTION)
+    vec3 reflectedDirection = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
+    lowp vec4 reflectionColor = textureCube(cubemap, reflectedDirection); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor += reflectionColor;
+#endif
+    
+    
 #if defined(VERTEX_FOG)
     gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
 #endif

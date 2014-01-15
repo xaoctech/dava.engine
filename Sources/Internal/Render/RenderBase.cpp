@@ -244,6 +244,57 @@ const int32 FILLMODE_MAP[FILLMODE_COUNT] =
 	D3DFILL_SOLID
 };
 #endif
+    
+/*
+ FastName("modelViewProjectionMatrix"),
+ FastName("modelViewMatrix"),
+ FastName("projectionMatrix"),
+ FastName("normalMatrix"),
+ FastName("flatColor"),
+ FastName("globalTime"),
+ FastName("worldTranslate"),
+ FastName("worldScale"),
+ */
+
+const FastName DYNAMIC_PARAM_NAMES[] =
+    {
+        FastName("unknownSemantic"),
+        FastName("worldMatrix"),//PARAM_WORLD,
+        FastName("invWorldMatrix"), //PARAM_INV_WORLD,
+        FastName("viewMatrix"), //PARAM_VIEW,
+        FastName("invViewMatrix"), //PARAM_INV_VIEW,
+        FastName("projectionMatrix"), //PARAM_PROJ,
+        FastName("invProjMatrix"), //PARAM_INV_PROJ,
+        
+        FastName("modelViewMatrix"), //PARAM_WORLD_VIEW,
+        FastName("invWorldViewMatrix"), //PARAM_INV_WORLD_VIEW,
+        FastName("normalMatrix"), //PARAM_NORMAL, // NORMAL MATRIX
+        
+        FastName("viewProjMatrix"), //PARAM_VIEW_PROJ,
+        FastName("invViewProjMatrix"), //PARAM_INV_VIEW_PROJ,
+        
+        FastName("modelViewProjectionMatrix"), //PARAM_WORLD_VIEW_PROJ,
+        FastName("invWorldViewProjMatrix"), //PARAM_INV_WORLD_VIEW_PROJ,
+        
+        FastName("flatColor"),
+        FastName("globalTime"),
+        FastName("worldTranslate"),
+        FastName("worldScale"),
+
+        FastName("cameraPosition"), // PARAM_CAMERA_POS,
+        FastName("cameraDirection"), // PARAM_CAMERA_DIR,
+        FastName("cameraUp"), // PARAM_CAMERA_UP,
+        
+        FastName("objectPosition"),
+        FastName("objectScale"),
+        
+        FastName("light0Position"),
+        
+        FastName("rtSize"),
+        FastName("rtPixelSize"),
+        FastName("rtHalfPixelSize"),
+        FastName("rtAspectRatio")
+    };
 
 RenderGuard::RenderGuard()
 {

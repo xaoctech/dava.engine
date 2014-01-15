@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "DAVAConfig.h"
+#include "Base/FastName.h"
 
 /**
 	\defgroup render Rendering abstraction
@@ -443,6 +444,8 @@ enum eShaderSemantic
 {
     UNKNOWN_SEMANTIC = 0,
     
+    AUTOBIND_UNIFORMS_START = 0,
+    
     PARAM_WORLD,
     PARAM_INV_WORLD,
     PARAM_VIEW,
@@ -460,22 +463,33 @@ enum eShaderSemantic
     PARAM_WORLD_VIEW_PROJ,
     PARAM_INV_WORLD_VIEW_PROJ,
     
+    PARAM_COLOR,
+    PARAM_GLOBAL_TIME,
+    PARAM_WORLD_TRANSLATE,
+    PARAM_WORLD_SCALE,
+    
     PARAM_CAMERA_POS,
     PARAM_CAMERA_DIR,
     PARAM_CAMERA_UP,
+    
+    PARAM_RT_SIZE,
+    PARAM_RT_PIXEL_SIZE,
+    PARAM_RT_HALF_PIXEL_SIZE,
+    PARAM_RT_ASPECT_RATIO,
+
+    AUTOBIND_UNIFORMS_END,
     
     PARAM_OBJECT_POS,
     PARAM_OBJECT_SCALE,
     
     PARAM_LIGHT0_POSITION,
     
-    PARAM_RT_SIZE,
-    PARAM_RT_PIXEL_SIZE,
-    PARAM_RT_HALF_PIXEL_SIZE,
-    PARAM_RT_ASPECT_RATIO,
     
     DYNAMIC_PARAMETERS_COUNT,
 };
+    
+extern const FastName DYNAMIC_PARAM_NAMES[DYNAMIC_PARAMETERS_COUNT];
+
 enum
 {
     UPDATE_SEMANTIC_ALWAYS = 0,

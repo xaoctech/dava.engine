@@ -117,6 +117,14 @@ varying lowp float varTime;
 uniform mediump vec2 texture0Shift;
 #endif 
 
+#if defined(REFLECTION) // works now only with VERTEX_LIT
+uniform vec3 cameraPosition;
+uniform mat4 invViewMatrix;
+uniform mat4 worldMatrix;
+varying mediump vec3 normalDirectionInWorldSpace;
+varying mediump vec3 viewDirectionInWorldSpace;
+#endif
+
 
 void main()
 {
@@ -130,12 +138,18 @@ void main()
 #endif
 
 #if defined(VERTEX_LIT)
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition); // view direction in view space
     vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     float attenuation = length(lightDir);
     attenuation = lightIntensity0 / (attenuation * attenuation); // use inverse distance for distance attenuation
     lightDir = normalize(lightDir);
+    
+#if defined(REFLECTION)
+    viewDirectionInWorldSpace = vec3(worldMatrix * inPosition) - cameraPosition;
+    // normalize(vec3(vec4(eyeCoordsPosition, 0.0) * invViewMatrix));
+    normalDirectionInWorldSpace = vec3(worldMatrix * vec4(inNormal, 0.0));
+#endif
     
     varDiffuseColor = max(0.0, dot(normal, lightDir));
 #if defined(DISTANCE_ATTENUATION)
