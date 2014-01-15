@@ -88,6 +88,13 @@ public:
     
     struct Caps
 	{
+		Caps() 
+		{
+			isHardwareCursorSupported = false;
+			isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+		}
+
         Core::eRenderer renderer;
 		bool isHardwareCursorSupported;
         bool isPVRTCSupported;
@@ -219,19 +226,7 @@ public:
 	 \brief 
 	 */
 	void Unlock();
-	/** 
-	 \brief 
-	 */
-	void LockNonMain();
-	/** 
-	 \brief 
-	 */
-	void UnlockNonMain();
 	
-	
-	int32 GetNonMainLockCount();
-	
-    
     /**
      === Viewport and orientation 
      */

@@ -39,14 +39,24 @@ class MaterialModel;
 class MaterialItem: public QStandardItem
 {
 public:
+	enum MaterialFlag
+	{
+		IS_MARK_FOR_DELETE		= 0x1,
+		IS_PART_OF_SELECTION	= 0x2,
+	};
+
 	MaterialItem(DAVA::NMaterial * material);
     virtual ~MaterialItem();
 
     QVariant data(int role = Qt::UserRole + 1) const;
 	DAVA::NMaterial * GetMaterial() const;
+
+	void SetFlag(MaterialFlag flag, bool set);
+	bool GetFlag(MaterialFlag flag);
     
 private:
     DAVA::NMaterial * material;
+	int curFlag;
 };
 
 
