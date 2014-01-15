@@ -533,9 +533,11 @@ public:
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
 		static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
+        static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
+        static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
     
