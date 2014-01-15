@@ -66,7 +66,6 @@ void TextBlock::ScreenResolutionChanged()
 	Logger::FrameworkDebug("Regenerate text blocks");
 	for(Vector<TextBlock *>::iterator it = registredBlocks.begin(); it != registredBlocks.end(); it++)
 	{
-		(*it)->needRedraw = true;
 		(*it)->Prepare();
 	}
 }
@@ -80,12 +79,15 @@ TextBlock * TextBlock::Create(const Vector2 & size)
 
 	
 TextBlock::TextBlock()
+    : cacheFinalSize(0.f, 0.f)
+    , cacheW(0)
+    , cacheDx(0)
+    , cacheDy(0)
 {
 	font = NULL;
 	constFont = NULL;
 	isMultilineEnabled = false;
 	fittingType = FITTING_DISABLED;
-	needRedraw = true;
 	sprite = NULL;
 	originalFontSize = 0.1f;
 	align = ALIGN_HCENTER|ALIGN_VCENTER;
@@ -116,12 +118,6 @@ void TextBlock::SetFont(Font * _font)
 		return;
 	}
 
-    
-	if (!(font && font->IsEqual(_font)))
-	{
-		needRedraw = true;
-	}
-
 	SafeRelease(font);
 	font = SafeRetain(_font);
 
@@ -137,7 +133,6 @@ void TextBlock::SetRectSize(const Vector2 & size)
 	if (rectSize != size)
 	{
 		rectSize = size;
-		needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -155,7 +150,6 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
 		return;
 	}
 	requestedSize = requestedTextRectSize;
-	needRedraw = true;
 	text = _string;
     
     mutex.Unlock();
@@ -169,7 +163,6 @@ void TextBlock::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 	{
         isMultilineBySymbolEnabled = bySymbol;
 		isMultilineEnabled = _isMultilineEnabled;
-		needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -184,7 +177,6 @@ void TextBlock::SetFittingOption(int32 _fittingType)
 	if (fittingType != _fittingType)
 	{
 		fittingType = _fittingType;
-		needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -248,7 +240,6 @@ void TextBlock::SetAlign(int32 _align)
 	if (align != _align) 
 	{
 		align = _align;
-		needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -292,31 +283,17 @@ bool TextBlock::IsSpriteReady()
 
 void TextBlock::Prepare()
 {
-	Retain();
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
-}
-
-void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
-{
-#if 1
-    
     mutex.Lock();
 
-    
-	if(!font || text == L"")
-	{
-		SafeRelease(sprite);
-
-        mutex.Unlock();
-        
-        Release();
-
-		return;
-	}
-	if(needRedraw)
-	{
-		isPredrawed = false;
-		
+    if(!font || text == L"")
+    {
+        cacheFinalSize = Vector2(0.f, 0.f);
+        cacheW = 0;
+        cacheDx = 0;
+        cacheDy = 0;
+    }
+    else
+    {
 		bool useJustify = ((align & ALIGN_HJUSTIFY) != 0);
 		font->SetSize(originalFontSize);
 		Vector2 drawSize = rectSize;
@@ -335,7 +312,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		
 		Size2i textSize;
 		stringSizes.clear();
-
+        
 		if(!isMultilineEnabled)
 		{
 			textSize = font->GetStringSize(text);
@@ -361,7 +338,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx)) 
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
@@ -386,7 +363,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
                     
                     int32 count = endPos;
                     WideString savedStr = L"";
-
+                    
                     for(int32 i = 1; i < count; ++i)
                     {
                         pointsStr.clear();
@@ -409,7 +386,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			{
 				bool isChanged = false;
 				float prevFontSize = font->GetSize();
-				while (true) 
+				while (true)
 				{
 					float yMul = 1.0f;
 					float xMul = 1.0f;
@@ -419,16 +396,16 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					bool yBigger = false;
 					bool yLower = false;
 					if(requestedSize.dy >= 0)
-					{ 
+					{
 						h = textSize.dy;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dy > drawSize.y)
 						{
-							if (prevFontSize < font->GetSize()) 
+							if (prevFontSize < font->GetSize())
 							{
 								font->SetSize(prevFontSize);
 								textSize = font->GetStringSize(text);
 								h = textSize.dy;
-								if (requestedSize.dx >= 0) 
+								if (requestedSize.dx >= 0)
 								{
 									w = textSize.dx;
 								}
@@ -453,12 +430,12 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 						w = textSize.dx;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dx > drawSize.x)
 						{
-							if (prevFontSize < font->GetSize()) 
+							if (prevFontSize < font->GetSize())
 							{
 								font->SetSize(prevFontSize);
 								textSize = font->GetStringSize(text);
 								w = textSize.dx;
-								if (requestedSize.dy >= 0) 
+								if (requestedSize.dy >= 0)
 								{
 									h = textSize.dy;
 								}
@@ -504,7 +481,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		{
 			if(fittingType && (requestedSize.dy >= 0/* || requestedSize.dx >= 0*/) && text.size() > 3)
 			{
-//				Logger::FrameworkDebug("Fitting enabled");
+                //				Logger::FrameworkDebug("Fitting enabled");
 				Vector2 rectSz = rectSize;
 				if(requestedSize.dx > 0)
 				{
@@ -519,15 +496,15 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 				textSize.dy = 0;
 				
 				int32 yOffset = font->GetVerticalSpacing();
-//				int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
-//				textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
+                //				int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
+                //				textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 				int32 fontHeight = font->GetFontHeight() + yOffset;
 				textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
 				float lastSize = font->GetSize();
 				float lastHeight = (float32)textSize.dy;
 				
 				bool isChanged = false;
-				while (true) 
+				while (true)
 				{
 					float yMul = 1.0f;
 					
@@ -566,7 +543,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 							{
 								yMul = (drawSize.y * 0.9f) / textSize.dy;
 							}
-							else 
+							else
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
@@ -585,7 +562,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					finalSize *= yMul;
 					
 					font->SetSize(finalSize);
-//					textSize = font->GetStringSize(text);
+                    //					textSize = font->GetStringSize(text);
                     
                     if(isMultilineBySymbolEnabled)
                         font->SplitTextBySymbolsToStrings(text, rectSz, multilineStrings);
@@ -595,17 +572,17 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					textSize.dy = 0;
 					
 					int32 yOffset = font->GetVerticalSpacing();
-//					int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
-//					textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
+                    //					int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
+                    //					textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 					int32 fontHeight = font->GetFontHeight() + yOffset;
 					textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
 					
 				};
 				
 			}
-//			Logger::FrameworkDebug("Font size: %.4f", font->GetSize());
-
-
+            //			Logger::FrameworkDebug("Font size: %.4f", font->GetSize());
+            
+            
 			Vector2 rectSz = rectSize;
 			if(requestedSize.dx > 0)
 			{
@@ -620,11 +597,11 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			textSize.dy = 0;
 			
 			int32 yOffset = font->GetVerticalSpacing();
-//			Logger::FrameworkDebug("yOffset = %.4d", yOffset);
-//			int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
-//			textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
+            //			Logger::FrameworkDebug("yOffset = %.4d", yOffset);
+            //			int32 fontHeight = font->GetFontHeight() + 1 + yOffset;
+            //			textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 			int32 fontHeight = font->GetFontHeight() + yOffset;
-//			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
+            //			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
 			textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
@@ -634,33 +611,33 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 				{
 					textSize.dx = Max(textSize.dx, Min(stringSize.dx, (int)drawSize.x));
 				}
-				else 
+				else
 				{
 					textSize.dx = Max(textSize.dx, stringSize.dx);
 				}
 				
-			}	
+			}
 		}
 		
 		if(requestedSize.dx == 0)
 		{
 			w = Min(w, textSize.dx);
-//			Logger::FrameworkDebug("On size not requested: w = %d", w);
+            //			Logger::FrameworkDebug("On size not requested: w = %d", w);
 		}
 		else if(requestedSize.dx < 0)
 		{
 			w = textSize.dx;
-//			Logger::FrameworkDebug("On size automated: w = %d", w);
+            //			Logger::FrameworkDebug("On size automated: w = %d", w);
 		}
 		if(requestedSize.dy == 0)
 		{
 			h = Min(h, textSize.dy);
-//			Logger::FrameworkDebug("On size not requested: h = %d", h);
+            //			Logger::FrameworkDebug("On size not requested: h = %d", h);
 		}
 		else if(requestedSize.dy < 0)
 		{
 			h = textSize.dy;
-//			Logger::FrameworkDebug("On size automated: h = %d", w);
+            //			Logger::FrameworkDebug("On size automated: h = %d", w);
 		}
 		
 		if (requestedSize.dx >= 0 && useJustify)
@@ -674,7 +651,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		int32 i;
 		int32 dx = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w);
 		float32 finalW = (float32)dx / Core::GetVirtualToPhysicalFactor();
-		if((dx != 1) && (dx & (dx - 1))) 
+		if((dx != 1) && (dx & (dx - 1)))
 		{
 			i = 1;
 			while(i < dx)
@@ -691,27 +668,69 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			dy = i;
 		}
 		
-		SafeRelease(sprite); 
-		
 		cacheUseJustify = useJustify;
 		cacheDx = dx;
 		cacheDy = dy;
 		cacheW = w;
-		cacheFinalW = finalW;
-		
+		cacheFinalSize.x = finalW;
+        cacheFinalSize.y = finalH;
+    }
+
+    mutex.Unlock();
+
+	Retain();
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal));
+}
+
+void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
+{
+#if 1
+    
+    mutex.Lock();
+
+    SafeRelease(sprite);
+	if(!font || text == L"")
+	{
+        mutex.Unlock();
+        Release();
+		return;
+	}
+    else
+	{
 		int16 * buf = 0;
 		if (font->IsTextSupportsSoftwareRendering())
 		{
-			int bsz = dx * dy;
+			int bsz = cacheDx * cacheDy;
 			buf = new int16[bsz];
-			memset(buf, 0, dx * dy * sizeof(int16));
+			memset(buf, 0, bsz * sizeof(int16));
 			
 			DrawToBuffer(buf);
+            
+            String addInfo;
+			if(!isMultilineEnabled)
+			{
+				addInfo = WStringToString(text.c_str());
+			}
+			else
+			{
+				if (multilineStrings.size() >= 1)
+				{
+					addInfo = WStringToString(multilineStrings[0].c_str());
+				}else
+				{
+					addInfo = "empty";
+				}
+			}
+			
+			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, cacheDx, cacheDy, false, addInfo.c_str());
+			delete[] buf;
+			sprite = Sprite::CreateFromTexture(tex, 0, 0, cacheFinalSize.x, cacheFinalSize.y);
+			SafeRelease(tex);
 		}
 		else 
 		{
 			//omg 8888!
-			sprite = Sprite::CreateAsRenderTarget(finalW, finalH, FORMAT_RGBA8888);
+			sprite = Sprite::CreateAsRenderTarget(cacheFinalSize.x, cacheFinalSize.y, FORMAT_RGBA8888);
 			if (sprite && sprite->GetTexture())
 			{
 				if (!isMultilineEnabled)
@@ -723,39 +742,10 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 				}
 			}				
 		}
-		
-
-		if (buf)
-		{
-			String addInfo;
-			if(!isMultilineEnabled)
-			{
-				addInfo = WStringToString(text.c_str());
-			}
-			else 
-			{
-				if (multilineStrings.size() >= 1)
-				{
-					addInfo = WStringToString(multilineStrings[0].c_str());
-				}else 
-				{
-					addInfo = "empty";
-				}
-			}
-			
-			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, false, addInfo.c_str());
-			delete[] buf;
-			sprite = Sprite::CreateFromTexture(tex, 0, 0, finalW, finalH);
-			SafeRelease(tex);
-		}
-
-		needRedraw = false;
-	}
-	else
-	{
-		
 	}
 #endif 
+
+    isPredrawed = false;
 
     mutex.Unlock();
 	Release();
@@ -805,7 +795,7 @@ void TextBlock::DrawToBuffer(int16 *buf)
 			int32 xo = 0;
 			if(align & ALIGN_RIGHT)
 			{
-				xo = (int32)(cacheFinalW - stringSizes[line]);
+				xo = (int32)(cacheFinalSize.x - stringSizes[line]);
 				if(xo < 0)
 				{
 					xo = 0;
@@ -813,7 +803,7 @@ void TextBlock::DrawToBuffer(int16 *buf)
 			}
 			else if(align & ALIGN_HCENTER)
 			{
-				xo = (int32)(cacheFinalW - stringSizes[line]) / 2;
+				xo = (int32)(cacheFinalSize.x - stringSizes[line]) / 2;
 				if(xo < 0)
 				{
 					xo = 0;
@@ -858,7 +848,7 @@ void TextBlock::DrawToBuffer(int16 *buf)
 	
 void TextBlock::PreDraw()
 {
-	if (isPredrawed) 
+	if (isPredrawed)
 	{
 		return;
 	}
@@ -893,6 +883,12 @@ TextBlock * TextBlock::Clone()
     return block;
 }
 
-	
+const Vector2 & TextBlock::GetTextSize()
+{
+    mutex.Lock();
+    mutex.Unlock();
+    
+    return cacheFinalSize;
+}
 	
 };

@@ -84,6 +84,8 @@ public:
 	
 	Sprite * GetSprite();
 	bool IsSpriteReady();
+    
+    const Vector2 & GetTextSize();
 
 	void PreDraw();
 
@@ -98,39 +100,39 @@ protected:
 	
 	void DrawToBuffer(int16 *buf);
 
-
-
 	void ProcessAlign();
 	
-	
-	bool isPredrawed;
-	
-	
-	bool cacheUseJustify;
+
+	Vector2 rectSize;
+	Vector2 requestedSize;
+
+    Vector2 cacheFinalSize;
+
+	float32 originalFontSize;
+    
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
-	float32 cacheFinalW;
-	
-	Font * font;
-	Font * constFont;
+
+    int32 fittingType;
+	int32 align;
+
 	WideString text;
     WideString pointsStr;
-	bool isMultilineEnabled;
-    bool isMultilineBySymbolEnabled;
-	int32 fittingType;
-	Vector2 rectSize;
-	int32 align;
-	
-	float32 originalFontSize;
-	bool needRedraw;
-	Vector2 requestedSize;
-	
-	Sprite * sprite;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
     
     Mutex mutex;
+
+    Font * font;
+	Font * constFont;
+	Sprite * sprite;
+
+    
+	bool isMultilineEnabled:1;
+    bool isMultilineBySymbolEnabled:1;
+	bool isPredrawed:1;
+	bool cacheUseJustify:1;
 };
 
 }; //end of namespace
