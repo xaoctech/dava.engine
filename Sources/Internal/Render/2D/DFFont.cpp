@@ -28,10 +28,10 @@
 
 #include "DFFont.h"
 
-#include "Texture.h"
-#include "RenderManager.h"
-#include "Shader.h"
-#include "YamlParser.h"
+#include "Render/Texture.h"
+#include "Render/RenderManager.h"
+#include "Render/Shader.h"
+#include "FileSystem/YamlParser.h"
 
 namespace DAVA {
 
