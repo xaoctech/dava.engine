@@ -125,11 +125,11 @@ namespace DAVA
 		FastName("inTime")
     };
     
-	Shader::eUniform Shader::GetUniformByName(const FastName & name)
+	eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)
 	{
-		for (int32 k = 0; k < UNIFORM_COUNT; ++k)
-			if (name == uniformStrings[k])return (Shader::eUniform)k;
-		return Shader::UNIFORM_NONE;
+		for (int32 k = 0; k < DYNAMIC_PARAMETERS_COUNT; ++k)
+			if (name == DYNAMIC_PARAM_NAMES[k])return (eShaderSemantic)k;
+		return UNKNOWN_SEMANTIC;
 	};
     
 	int32 Shader::GetUniformTypeSize(eUniformType type)
@@ -481,10 +481,10 @@ namespace DAVA
 			new (&uniformStruct->name) FastName(); //VI: FastName is not a POD so a constructor should be called
 			
 			FastName attrName(attributeName);
-			eUniform uniform = GetUniformByName(attrName);
+			eShaderSemantic shaderSemantic = GetShaderSemanticByName(attrName);
 			uniformStruct->name = attrName;
 			uniformStruct->location = glGetUniformLocation(program, uniformStruct->name.c_str());
-			uniformStruct->id = uniform;
+			uniformStruct->shaderSemantic = shaderSemantic;
 			uniformStruct->type = (eUniformType)type;
 			uniformStruct->size = size;
 
@@ -500,7 +500,7 @@ namespace DAVA
             uniformStruct->matrixCRC = vmovq_n_u32(0);
 #endif
 			
-			if(IsAutobindUniform(uniform))
+			if(IsAutobindUniform(shaderSemantic))
 			{
 				autobindUniformCount++;
 			}
@@ -637,7 +637,7 @@ namespace DAVA
 			for (int32 k = 0; k < activeUniforms; ++k)
 			{
 				Uniform* currentUniform = GET_UNIFORM(k);
-				if(IsAutobindUniform(currentUniform->id))
+				if(IsAutobindUniform(currentUniform->shaderSemantic))
 				{
 					autobindUniforms[autobindUniformIndex] = currentUniform;
 					autobindUniformIndex++;
@@ -1068,17 +1068,9 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 	}
 
-	bool Shader::IsAutobindUniform(Shader::eUniform uniformId)
+	bool Shader::IsAutobindUniform(eShaderSemantic semantic)
 	{
-		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-		uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-		uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-		uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-		uniformId == Shader::UNIFORM_COLOR ||
-		uniformId == Shader::UNIFORM_GLOBAL_TIME ||
-        uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
-        uniformId == Shader::UNIFORM_MODEL_SCALE
-        );
+		return ((semantic > AUTOBIND_UNIFORMS_START) && (semantic < AUTOBIND_UNIFORMS_END));
 	}
     
 	void Shader::Bind()
@@ -1097,9 +1089,9 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		{
 			Uniform* currentUniform = autobindUniforms[k];
 			
-			switch (currentUniform->id)
+			switch (currentUniform->shaderSemantic)
 			{
-				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
+				case PARAM_WORLD_VIEW_PROJ:
 				{
                     RenderManager::ComputeWorldViewProjMatrixIfRequired();
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW_PROJ);
@@ -1112,7 +1104,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
 					break;
 				}
-				case UNIFORM_MODEL_VIEW_MATRIX:
+				case PARAM_WORLD_VIEW:
 				{
                     RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
@@ -1125,7 +1117,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
 					break;
 				}
-                case UNIFORM_MODEL_VIEW_TRANSLATE:
+                case PARAM_WORLD_TRANSLATE:
                 {
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
                     if (_updateSemantic != currentUniform->updateSemantic)
@@ -1137,7 +1129,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
                     break;
                 }
-                case UNIFORM_MODEL_SCALE:
+                case PARAM_WORLD_SCALE:
                 {
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
                     if (_updateSemantic != currentUniform->updateSemantic)
@@ -1151,7 +1143,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
                     break;
                 }
-				case UNIFORM_PROJECTION_MATRIX:
+				case PARAM_PROJ:
 				{
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_PROJ);
                     if (_updateSemantic != currentUniform->updateSemantic)
@@ -1164,7 +1156,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
 					break;
 				}
-				case UNIFORM_NORMAL_MATRIX:
+				case PARAM_NORMAL:
 				{
                     RenderManager::Instance()->ComputeNormalMatrixIfRequired();
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_NORMAL);
@@ -1179,13 +1171,72 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     }
                     break;
 				}
-				case UNIFORM_COLOR:
+                case PARAM_INV_VIEW:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_VIEW);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Matrix4 * invViewMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_VIEW);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, invViewMatrix->data));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                case PARAM_INV_VIEW_PROJ:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_VIEW_PROJ);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Matrix4 * invViewMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_VIEW_PROJ);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, invViewMatrix->data));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                case PARAM_WORLD:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Matrix4 * worldMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, worldMatrix->data));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                case PARAM_CAMERA_POS:
+                case PARAM_CAMERA_DIR:
+                case PARAM_CAMERA_UP:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Vector3 * camParam = (Vector3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                        RENDER_VERIFY(glUniform3fv(currentUniform->location, 1, (float*)camParam));
+
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+
+				case PARAM_COLOR:
 				{
 					const Color & c = RenderManager::Instance()->GetColor();
 					SetUniformColor4ByUniform(currentUniform, c);
 					break;
 				}
-				case UNIFORM_GLOBAL_TIME:
+				case PARAM_GLOBAL_TIME:
 				{
 					float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
 					SetUniformValueByUniform(currentUniform, globalTime);
@@ -1220,7 +1271,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			//        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
 			//        uniformIDs[k] = uniform;
 			//        uniformTypes[k] = (eUniformType)type;
-			eUniform uniform = GetUniformByName(currentUniform->name);
+			eShaderSemantic uniform = GetShaderSemanticByName(currentUniform->name);
 			Logger::FrameworkDebug("uniform: %s(%d) type: %s", currentUniform->name.c_str(), uniform, VertexTypeStringFromEnum(currentUniform->type).c_str());
 		}
 	}

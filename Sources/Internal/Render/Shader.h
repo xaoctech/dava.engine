@@ -163,7 +163,7 @@ public:
 #endif
     struct Uniform
     {
-        eUniform        id;
+        eShaderSemantic shaderSemantic;
         //eUpdateFreq     updateFreq;
         FastName        name;
         GLint           location;
@@ -235,7 +235,7 @@ public:
 
     void Bind();
     static void Unbind();
-	static bool IsAutobindUniform(Shader::eUniform uniformId);
+	static bool IsAutobindUniform(eShaderSemantic uniformId);
 
     inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
     inline int32 GetAttributeCount();
@@ -349,7 +349,7 @@ private:
 	};
 	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
-    eUniform GetUniformByName(const FastName &name);
+    eShaderSemantic GetShaderSemanticByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);
     
     static GLuint activeProgram;

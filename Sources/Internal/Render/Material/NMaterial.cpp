@@ -1051,7 +1051,7 @@ namespace DAVA
 		for(uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
-			if(uniform->id == Shader::UNIFORM_NONE)
+			if(uniform->shaderSemantic == UNKNOWN_SEMANTIC)
 			{
 				if(uniform->type == Shader::UT_SAMPLER_2D ||
 				   uniform->type == Shader::UT_SAMPLER_CUBE)
@@ -1075,8 +1075,8 @@ namespace DAVA
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 			
-			if((Shader::UNIFORM_NONE == uniform->id ||
-			   Shader::UNIFORM_COLOR == uniform->id) &&
+			if((UNKNOWN_SEMANTIC == uniform->shaderSemantic ||
+			    PARAM_COLOR == uniform->shaderSemantic) &&
 			   (Shader::UT_SAMPLER_2D != uniform->type &&
 				Shader::UT_SAMPLER_CUBE != uniform->type)) //TODO: do something with conditional binding
 			{
@@ -1963,17 +1963,17 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						Shader::eUniform uniformId = uniform->id;
+						eShaderSemantic shaderSemantic = uniform->shaderSemantic;
 						if( //!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
 							// we can't use IsAutobindUniform, because we need color to change
 							// so this is copy from IsAutobindUniform with color excluded -->
-							!(uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-							uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-							uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-							uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-							uniformId == Shader::UNIFORM_GLOBAL_TIME ||
-							uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
-							uniformId == Shader::UNIFORM_MODEL_SCALE)
+							!(shaderSemantic == PARAM_WORLD_VIEW_PROJ ||
+							shaderSemantic == PARAM_WORLD_VIEW ||
+							shaderSemantic == PARAM_PROJ ||
+							shaderSemantic == PARAM_NORMAL ||
+							shaderSemantic == PARAM_GLOBAL_TIME ||
+							shaderSemantic == PARAM_WORLD_TRANSLATE ||
+							shaderSemantic == PARAM_WORLD_SCALE)
 							// <--
 							&&
 							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture

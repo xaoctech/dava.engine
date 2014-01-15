@@ -406,17 +406,28 @@ void Camera::SetupDynamicParameters()
     {
         RebuildProjectionMatrix();
     }
-    RenderManager::SetDynamicParam(PARAM_PROJ, &projMatrix, UPDATE_SEMANTIC_ALWAYS);
 
     if (flags & REQUIRE_REBUILD_MODEL)
     {
         RebuildViewMatrix();
     }
-	RenderManager::SetDynamicParam(PARAM_VIEW, &viewMatrix, UPDATE_SEMANTIC_ALWAYS);
     
     viewProjMatrix = viewMatrix * projMatrix;
     flags &= ~REQUIRE_REBUILD_UNIFORM_PROJ_MODEL;
+
+    viewMatrix.GetInverse(invViewMatrix);
+    viewProjMatrix.GetInverse(invViewProjMatrix);
     
+	RenderManager::SetDynamicParam(PARAM_VIEW, &viewMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_PROJ, &projMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_VIEW_PROJ, &viewProjMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_INV_VIEW, &invViewMatrix, UPDATE_SEMANTIC_ALWAYS);
+	RenderManager::SetDynamicParam(PARAM_INV_VIEW_PROJ, &invViewProjMatrix, UPDATE_SEMANTIC_ALWAYS);
+
+    RenderManager::SetDynamicParam(PARAM_CAMERA_POS, &position, UPDATE_SEMANTIC_ALWAYS);
+	RenderManager::SetDynamicParam(PARAM_CAMERA_DIR, &direction, UPDATE_SEMANTIC_ALWAYS);
+	RenderManager::SetDynamicParam(PARAM_CAMERA_UP, &up, UPDATE_SEMANTIC_ALWAYS);
+
     if (currentFrustum)
     {
         currentFrustum->Build(viewProjMatrix);

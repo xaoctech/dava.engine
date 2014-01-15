@@ -1084,6 +1084,12 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
 	{
+        if (gDodecObject->GetIndexBufferID() != 0)
+        {
+            gDodecObject->BuildVertexBuffer(sizeof(gDodecVertexes) / sizeof(gDodecVertexes[0]));
+            gDodecObject->BuildIndexBuffer();
+        }
+        
 		Matrix4 drawMatrix;
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);
@@ -1106,6 +1112,12 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
 	{
+        if (gDodecObject->GetIndexBufferID() != 0)
+        {
+            gDodecObject->BuildVertexBuffer(sizeof(gDodecVertexes) / sizeof(gDodecVertexes[0]));
+            gDodecObject->BuildIndexBuffer();
+        }
+
 		Matrix4 drawMatrix;
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);

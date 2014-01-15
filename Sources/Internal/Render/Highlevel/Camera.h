@@ -374,6 +374,8 @@ public:
     Matrix4 viewMatrix;
 	Matrix4 projMatrix;
     Matrix4 viewProjMatrix;
+    Matrix4 invViewMatrix;
+    Matrix4 invViewProjMatrix;
 
     uint32 flags;
 
