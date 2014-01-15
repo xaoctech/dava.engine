@@ -643,7 +643,17 @@ namespace DAVA
 	
     void NMaterial::RemoveTexture(const FastName& textureFastName)
     {
-        DVASSERT(0);
+        TextureBucket* bucket = textures.at(textureFastName);
+        DVASSERT(bucket);
+        
+        if(bucket)
+        {
+            textures.erase(textureFastName);
+            SafeRelease(bucket->texture);
+            SafeDelete(bucket);
+            
+            SetTexturesDirty();
+        }
     }
 
     void NMaterial::SetTexture(const FastName& textureFastName,
