@@ -198,7 +198,7 @@
     </Filter>
     <Filter Include="Classes\Qt\DockLibrary">
       <UniqueIdentifier>{2ad1d47b-09e1-4a10-b69d-f80e67a1a4c7}</UniqueIdentifier>
-
+    </Filter>
     <Filter Include="Classes\CommandLine\DDSExtractor">
       <UniqueIdentifier>{d78a703d-f7ec-4e00-b258-a89871091844}</UniqueIdentifier>
     </Filter>
@@ -3266,7 +3266,6 @@
     <ClInclude Include="Classes\Qt\Main\RecentFilesManager.h">
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
-	<ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h">
     <ClInclude Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.h">
       <Filter>Classes\CommandLine\DDSExtractor</Filter>
     </ClInclude>
