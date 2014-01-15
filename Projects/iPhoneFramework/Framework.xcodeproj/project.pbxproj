@@ -78,6 +78,8 @@
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C13E6DB6186861FA00D1B2CE /* DFFont.cpp */; };
+		C13E6DB9186861FA00D1B2CE /* DFFont.h in Headers */ = {isa = PBXBuildFile; fileRef = C13E6DB7186861FA00D1B2CE /* DFFont.h */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
@@ -795,6 +797,8 @@
 		A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C13E6DB6186861FA00D1B2CE /* DFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DFFont.cpp; sourceTree = "<group>"; };
+		C13E6DB7186861FA00D1B2CE /* DFFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFFont.h; sourceTree = "<group>"; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
@@ -2006,6 +2010,8 @@
 		E8B3C8FA16B9326D002BD35F /* 2D */ = {
 			isa = PBXGroup;
 			children = (
+				C13E6DB6186861FA00D1B2CE /* DFFont.cpp */,
+				C13E6DB7186861FA00D1B2CE /* DFFont.h */,
 				E8B3C8FB16B9326D002BD35F /* Font.cpp */,
 				E8B3C8FC16B9326D002BD35F /* Font.h */,
 				E8B3C8FD16B9326D002BD35F /* FontManager.cpp */,
@@ -2596,6 +2602,7 @@
 				E8B3CB7016B9326E002BD35F /* NetworkPacket.h in Headers */,
 				E8B3CB7116B9326E002BD35F /* TCPServer.h in Headers */,
 				E8B3CB7316B9326E002BD35F /* WFNetworkConnection.h in Headers */,
+				C13E6DB9186861FA00D1B2CE /* DFFont.h in Headers */,
 				E8B3CB7616B9326E002BD35F /* Particle.h in Headers */,
 				E8B3CB7816B9326E002BD35F /* ParticleEmitter.h in Headers */,
 				E8B3CB7A16B9326E002BD35F /* ParticleEmitter3D.h in Headers */,
@@ -2939,6 +2946,7 @@
 				E8B3CAD516B9326E002BD35F /* MongodbObject.cpp in Sources */,
 				E8B3CAD816B9326E002BD35F /* DAVAEngine.cpp in Sources */,
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
+				C13E6DB8186861FA00D1B2CE /* DFFont.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
 				E8B3CAE116B9326E002BD35F /* Replay.cpp in Sources */,
 				E8B3CAE316B9326E002BD35F /* Stats.cpp in Sources */,

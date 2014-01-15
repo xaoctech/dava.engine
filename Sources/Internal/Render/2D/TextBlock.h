@@ -41,6 +41,11 @@
 namespace DAVA
 {
 
+class TextBlockRender;
+class TextBlockSoftwareRender;
+class TextBlockGraphicsRender;
+class TextBlockDistanceRender;
+	
 /**
 	\ingroup render_2d
 	\brief Class to render text on the screen. 
@@ -64,6 +69,8 @@ public:
 	
 	virtual void SetFont(Font * font);
 	virtual void SetRectSize(const Vector2 & size);
+	virtual void SetPosition(const Vector2& position);
+	virtual void SetPivotPoint(const Vector2& pivotPoint);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
 	
@@ -85,6 +92,7 @@ public:
 	bool IsSpriteReady();
 
 	void PreDraw();
+	void Draw(const Color& textColor, const Vector2* offset = NULL);
 
     TextBlock * Clone();
     
@@ -95,41 +103,38 @@ protected:
 	void Prepare();
 	void PrepareInternal(BaseObject * caller, void * param, void *callerData);
 	
-	void DrawToBuffer(int16 *buf);
-
-
-
-	void ProcessAlign();
-	
-	
-	bool isPredrawed;
-	
-	
 	bool cacheUseJustify;
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
 	float32 cacheFinalW;
+	float32 cacheFinalH;
 	
 	Font * font;
-	Font * constFont;
 	WideString text;
     WideString pointsStr;
 	bool isMultilineEnabled;
     bool isMultilineBySymbolEnabled;
 	int32 fittingType;
 	Vector2 rectSize;
+	Vector2 position;
+	Vector2 pivotPoint;
 	int32 align;
 	
 	float32 originalFontSize;
 	bool needRedraw;
 	Vector2 requestedSize;
 	
-	Sprite * sprite;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
+	
+	friend class TextBlockRender;
+	friend class TextBlockSoftwareRender;
+	friend class TextBlockGraphicsRender;
+	friend class TextBlockDistanceRender;
+	TextBlockRender* textBlockRender;
 };
-
+    
 }; //end of namespace
 
 #endif // __DAVAENGINE_TEXTBLOCK_H__

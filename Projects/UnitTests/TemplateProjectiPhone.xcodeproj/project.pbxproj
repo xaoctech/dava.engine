@@ -31,6 +31,7 @@
 		74338641179D18CF0014FBD3 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433863E179D18CE0014FBD3 /* UIScrollViewTest.cpp */; };
 		7497447517B3D61800282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447317B3D61800282DAA /* AlignTest.cpp */; };
 		84C8F71516D3D16000FAC7DF /* DPITest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84C8F71316D3D16000FAC7DF /* DPITest.cpp */; };
+		C13E6DBC1868622400D1B2CE /* DFFontTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C13E6DBA1868622400D1B2CE /* DFFontTest.cpp */; };
 		C19E4FAA16C5488C00D0AC28 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C19E4FA816C5488C00D0AC28 /* DLCSystemTests.cpp */; };
 		CC24802616DF6CE000183D40 /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24802416DF6CE000183D40 /* InputTest.cpp */; };
 		CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */; };
@@ -121,6 +122,8 @@
 		84C8F71316D3D16000FAC7DF /* DPITest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DPITest.cpp; sourceTree = "<group>"; };
 		84C8F71416D3D16000FAC7DF /* DPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPITest.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* TemplateProjectiPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TemplateProjectiPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		C13E6DBA1868622400D1B2CE /* DFFontTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DFFontTest.cpp; sourceTree = "<group>"; };
+		C13E6DBB1868622400D1B2CE /* DFFontTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFFontTest.h; sourceTree = "<group>"; };
 		C19E4FA816C5488C00D0AC28 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystemTests.cpp; sourceTree = "<group>"; };
 		C19E4FA916C5488C00D0AC28 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystemTests.h; sourceTree = "<group>"; };
 		CC24802416DF6CE000183D40 /* InputTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputTest.cpp; sourceTree = "<group>"; };
@@ -282,6 +285,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C13E6DBA1868622400D1B2CE /* DFFontTest.cpp */,
+				C13E6DBB1868622400D1B2CE /* DFFontTest.h */,
 				7497447317B3D61800282DAA /* AlignTest.cpp */,
 				7497447417B3D61800282DAA /* AlignTest.h */,
 				7433863C179D18CE0014FBD3 /* UIListTest.cpp */,
@@ -471,6 +476,7 @@
 				FEC3CBDA1284374A00541220 /* GameCore.cpp in Sources */,
 				FEC9200F13BA2D7D006F347F /* iPhoneProjectDelegate.mm in Sources */,
 				FEC9201013BA2D7D006F347F /* main.mm in Sources */,
+				C13E6DBC1868622400D1B2CE /* DFFontTest.cpp in Sources */,
 				5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */,
 				5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */,
 				5C8B42A61589D866001B2597 /* SampleTest.cpp in Sources */,

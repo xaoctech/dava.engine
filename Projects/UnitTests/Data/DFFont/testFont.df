@@ -1,0 +1,229 @@
+font:
+  lineHeight: 74
+  padding_left: 16
+  kerning:
+    68: {89: -1}
+    70: {103: -1, 100: -1, 101: -1, 115: -1, 99: -1, 65: -1, 113: -1, 97: -1, 111: -1,
+      46: -3, 74: -2, 44: -3}
+    65: {84: -1, 86: -1, 71: -1, 81: -1, 83: -1, 67: -1, 42: -3, 79: -1, 89: -1}
+    97: {84: -1}
+    76: {119: -1, 118: -1, 84: -1, 87: -1, 86: -1, 42: -4, 89: -1}
+    75: {119: -1, 118: -1, 71: -1, 67: -1, 79: -1, 121: -1}
+    119: {46: -1, 44: -1}
+    118: {46: -1}
+    84: {103: -1, 100: -1, 101: -1, 65: -1, 99: -1, 97: -1, 110: -1, 111: -1, 109: -1,
+      46: -1, 44: -1, 74: -1, 119: -1, 118: -1, 117: -1, 115: -1, 114: -1, 113: -1,
+      112: -1, 122: -1, 121: -1}
+    87: {103: -1, 100: -1, 101: -1, 65: -1, 99: -1, 97: -1, 110: -1, 111: -1, 109: -1,
+      46: -1, 44: -1, 74: -1, 117: -1, 115: -1, 114: -1, 113: -1, 112: -1, 122: -1}
+    86: {103: -1, 100: -1, 101: -1, 65: -1, 99: -1, 97: -1, 110: -1, 111: -1, 109: -1,
+      46: -2, 44: -2, 119: -1, 118: -1, 117: -1, 115: -1, 114: -1, 113: -1, 112: -1,
+      122: -1, 121: -1, 120: -1}
+    81: {89: -1}
+    114: {103: -1, 100: -1, 115: -1, 113: -1, 46: -1}
+    80: {103: -1, 101: -1, 99: -1, 65: -1, 113: -1, 97: -1, 46: -3, 74: -2, 44: -3}
+    89: {71: -1, 65: -2, 67: -1, 79: -1, 74: -2, 81: -1, 83: -1, 103: -2, 100: -2,
+      101: -2, 99: -2, 97: -2, 110: -1, 111: -2, 109: -1, 46: -2, 44: -1, 119: -1,
+      118: -1, 117: -1, 115: -2, 114: -1, 113: -2, 112: -1, 59: -1, 58: -1, 122: -1,
+      121: -1, 120: -1}
+    88: {71: -1, 67: -1}
+    121: {46: -1, 44: -1}
+  width: 1024
+  italic: false
+  size: 32
+  bold: false
+  height: 512
+  padding_top: 16
+  name: KorinnaC-Bold
+  padding_bottop: 16
+  chars:
+    34: {v: 0.45507812, u: 0.26757812, height: 44, u2: 0.3095703, xoffset: -12, yoffset: -9,
+      v2: 0.5410156, width: 43, xadvance: 52}
+    35: {v: 0.34570312, u: 0.5751953, height: 49, u2: 0.6220703, xoffset: -14, yoffset: -6,
+      v2: 0.44140625, width: 48, xadvance: 53}
+    33: {v: 0.0, u: 0.6533203, height: 57, u2: 0.69140625, xoffset: -13, yoffset: -9,
+      v2: 0.111328125, width: 39, xadvance: 47}
+    38: {v: 0.0, u: 0.43554688, height: 57, u2: 0.49121094, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 57, xadvance: 61}
+    39: {v: 0.45507812, u: 0.23144531, height: 44, u2: 0.26757812, xoffset: -13, yoffset: -9,
+      v2: 0.5410156, width: 37, xadvance: 45}
+    36: {v: 0.0, u: 0.0, height: 64, u2: 0.049804688, xoffset: -14, yoffset: -13,
+      v2: 0.125, width: 51, xadvance: 56}
+    37: {v: 0.0, u: 0.49121094, height: 57, u2: 0.5498047, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 60, xadvance: 66}
+    42: {v: 0.45507812, u: 0.13867188, height: 46, u2: 0.18457031, xoffset: -12, yoffset: -9,
+      v2: 0.5449219, width: 47, xadvance: 56}
+    43: {v: 0.45507812, u: 0.091796875, height: 47, u2: 0.13867188, xoffset: -13,
+      yoffset: 0, v2: 0.546875, width: 48, xadvance: 56}
+    40: {v: 0.0, u: 0.17578125, height: 64, u2: 0.21777344, xoffset: -14, yoffset: -9,
+      v2: 0.125, width: 43, xadvance: 49}
+    41: {v: 0.0, u: 0.13378906, height: 64, u2: 0.17578125, xoffset: -14, yoffset: -9,
+      v2: 0.125, width: 43, xadvance: 49}
+    46: {v: 0.45507812, u: 0.4423828, height: 39, u2: 0.48046875, xoffset: -13, yoffset: 9,
+      v2: 0.53125, width: 39, xadvance: 46}
+    47: {v: 0.0, u: 0.390625, height: 62, u2: 0.43554688, xoffset: -16, yoffset: -9,
+      v2: 0.12109375, width: 46, xadvance: 49}
+    44: {v: 0.45507812, u: 0.3095703, height: 43, u2: 0.34765625, xoffset: -14, yoffset: 9,
+      v2: 0.5390625, width: 39, xadvance: 45}
+    45: {v: 0.45507812, u: 0.5205078, height: 37, u2: 0.5605469, xoffset: -14, yoffset: 4,
+      v2: 0.52734375, width: 41, xadvance: 48}
+    51: {v: 0.0, u: 0.9404297, height: 57, u2: 0.9902344, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    50: {v: 0.125, u: 0.6542969, height: 56, u2: 0.70410156, xoffset: -14, yoffset: -9,
+      v2: 0.234375, width: 51, xadvance: 56}
+    49: {v: 0.125, u: 0.70410156, height: 56, u2: 0.7480469, xoffset: -11, yoffset: -9,
+      v2: 0.234375, width: 45, xadvance: 56}
+    48: {v: 0.0, u: 0.69140625, height: 57, u2: 0.74121094, xoffset: -15, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    55: {v: 0.125, u: 0.5546875, height: 56, u2: 0.6035156, xoffset: -14, yoffset: -9,
+      v2: 0.234375, width: 50, xadvance: 56}
+    54: {v: 0.0, u: 0.8408203, height: 57, u2: 0.890625, xoffset: -15, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    53: {v: 0.0, u: 0.890625, height: 57, u2: 0.9404297, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    52: {v: 0.125, u: 0.6035156, height: 56, u2: 0.6542969, xoffset: -15, yoffset: -9,
+      v2: 0.234375, width: 52, xadvance: 56}
+    59: {v: 0.34570312, u: 0.21289062, height: 54, u2: 0.25097656, xoffset: -13, yoffset: -2,
+      v2: 0.45117188, width: 39, xadvance: 46}
+    58: {v: 0.34570312, u: 0.25097656, height: 50, u2: 0.2890625, xoffset: -13, yoffset: -2,
+      v2: 0.44335938, width: 39, xadvance: 46}
+    57: {v: 0.0, u: 0.74121094, height: 57, u2: 0.7910156, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    56: {v: 0.0, u: 0.7910156, height: 57, u2: 0.8408203, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 51, xadvance: 56}
+    63: {v: 0.0, u: 0.6044922, height: 57, u2: 0.6533203, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 50, xadvance: 54}
+    62: {v: 0.45507812, u: 0.0, height: 48, u2: 0.045898438, xoffset: -12, yoffset: -4,
+      v2: 0.5488281, width: 47, xadvance: 56}
+    61: {v: 0.45507812, u: 0.34765625, height: 41, u2: 0.39453125, xoffset: -13, yoffset: 3,
+      v2: 0.53515625, width: 48, xadvance: 56}
+    60: {v: 0.45507812, u: 0.045898438, height: 48, u2: 0.091796875, xoffset: -12,
+      yoffset: -4, v2: 0.5488281, width: 47, xadvance: 56}
+    68: {v: 0.34570312, u: 0.05078125, height: 56, u2: 0.10449219, xoffset: -14, yoffset: -9,
+      v2: 0.45507812, width: 55, xadvance: 60}
+    69: {v: 0.34570312, u: 0.0, height: 56, u2: 0.05078125, xoffset: -14, yoffset: -9,
+      v2: 0.45507812, width: 52, xadvance: 56}
+    70: {v: 0.23632812, u: 0.9296875, height: 56, u2: 0.98046875, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 52, xadvance: 56}
+    71: {v: 0.125, u: 0.41210938, height: 57, u2: 0.4658203, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 55, xadvance: 60}
+    64: {v: 0.0, u: 0.5498047, height: 57, u2: 0.6044922, xoffset: -14, yoffset: -9,
+      v2: 0.111328125, width: 56, xadvance: 61}
+    65: {v: 0.34570312, u: 0.15722656, height: 56, u2: 0.21289062, xoffset: -16, yoffset: -9,
+      v2: 0.45507812, width: 57, xadvance: 60}
+    66: {v: 0.34570312, u: 0.10449219, height: 56, u2: 0.15722656, xoffset: -14, yoffset: -9,
+      v2: 0.45507812, width: 54, xadvance: 59}
+    67: {v: 0.125, u: 0.4658203, height: 57, u2: 0.5185547, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 54, xadvance: 58}
+    76: {v: 0.23632812, u: 0.7324219, height: 56, u2: 0.78222656, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 51, xadvance: 54}
+    77: {v: 0.23632812, u: 0.6738281, height: 56, u2: 0.7324219, xoffset: -16, yoffset: -9,
+      v2: 0.34570312, width: 60, xadvance: 62}
+    78: {v: 0.23632812, u: 0.6201172, height: 56, u2: 0.6738281, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 55, xadvance: 60}
+    79: {v: 0.125, u: 0.30566406, height: 57, u2: 0.3623047, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 58, xadvance: 62}
+    72: {v: 0.23632812, u: 0.87597656, height: 56, u2: 0.9296875, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 55, xadvance: 60}
+    73: {v: 0.23632812, u: 0.8359375, height: 56, u2: 0.87597656, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 41, xadvance: 46}
+    74: {v: 0.125, u: 0.3623047, height: 57, u2: 0.41210938, xoffset: -16, yoffset: -9,
+      v2: 0.23632812, width: 51, xadvance: 55}
+    75: {v: 0.23632812, u: 0.78222656, height: 56, u2: 0.8359375, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 55, xadvance: 59}
+    85: {v: 0.23632812, u: 0.41210938, height: 56, u2: 0.46484375, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 54, xadvance: 59}
+    84: {v: 0.23632812, u: 0.46484375, height: 56, u2: 0.51660156, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 53, xadvance: 56}
+    87: {v: 0.23632812, u: 0.29785156, height: 56, u2: 0.35839844, xoffset: -16, yoffset: -9,
+      v2: 0.34570312, width: 62, xadvance: 64}
+    86: {v: 0.23632812, u: 0.35839844, height: 56, u2: 0.41210938, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 55, xadvance: 59}
+    81: {v: 0.125, u: 0.24804688, height: 57, u2: 0.30566406, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 59, xadvance: 64}
+    80: {v: 0.23632812, u: 0.56933594, height: 56, u2: 0.6201172, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 52, xadvance: 56}
+    83: {v: 0.125, u: 0.1953125, height: 57, u2: 0.24804688, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 54, xadvance: 59}
+    82: {v: 0.23632812, u: 0.51660156, height: 56, u2: 0.56933594, xoffset: -14, yoffset: -9,
+      v2: 0.34570312, width: 54, xadvance: 59}
+    93: {v: 0.0, u: 0.21777344, height: 63, u2: 0.25585938, xoffset: -15, yoffset: -9,
+      v2: 0.123046875, width: 39, xadvance: 45}
+    92: {v: 0.0, u: 0.3466797, height: 62, u2: 0.390625, xoffset: -15, yoffset: -9,
+      v2: 0.12109375, width: 45, xadvance: 49}
+    95: {v: 0.45507812, u: 0.5605469, height: 36, u2: 0.60839844, xoffset: -16, yoffset: 16,
+      v2: 0.5253906, width: 49, xadvance: 52}
+    94: {v: 0.45507812, u: 0.18457031, height: 46, u2: 0.23144531, xoffset: -13, yoffset: -9,
+      v2: 0.5449219, width: 48, xadvance: 56}
+    89: {v: 0.23632812, u: 0.19042969, height: 56, u2: 0.24316406, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 54, xadvance: 57}
+    88: {v: 0.23632812, u: 0.24316406, height: 56, u2: 0.29785156, xoffset: -16, yoffset: -9,
+      v2: 0.34570312, width: 56, xadvance: 59}
+    91: {v: 0.0, u: 0.25585938, height: 63, u2: 0.29492188, xoffset: -14, yoffset: -9,
+      v2: 0.123046875, width: 40, xadvance: 45}
+    90: {v: 0.23632812, u: 0.140625, height: 56, u2: 0.19042969, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 51, xadvance: 56}
+    102: {v: 0.23632812, u: 0.048828125, height: 56, u2: 0.091796875, xoffset: -15,
+      yoffset: -9, v2: 0.34570312, width: 44, xadvance: 47}
+    103: {v: 0.125, u: 0.09667969, height: 57, u2: 0.14648438, xoffset: -15, yoffset: -2,
+      v2: 0.23632812, width: 51, xadvance: 54}
+    100: {v: 0.125, u: 0.14648438, height: 57, u2: 0.1953125, xoffset: -15, yoffset: -9,
+      v2: 0.23632812, width: 50, xadvance: 54}
+    101: {v: 0.34570312, u: 0.43359375, height: 50, u2: 0.48046875, xoffset: -15,
+      yoffset: -2, v2: 0.44335938, width: 48, xadvance: 53}
+    98: {v: 0.23632812, u: 0.091796875, height: 56, u2: 0.140625, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 50, xadvance: 54}
+    99: {v: 0.34570312, u: 0.48046875, height: 50, u2: 0.52734375, xoffset: -15, yoffset: -2,
+      v2: 0.44335938, width: 48, xadvance: 53}
+    96: {v: 0.45507812, u: 0.48046875, height: 39, u2: 0.5205078, xoffset: -14, yoffset: -9,
+      v2: 0.53125, width: 41, xadvance: 46}
+    97: {v: 0.34570312, u: 0.52734375, height: 50, u2: 0.5751953, xoffset: -15, yoffset: -2,
+      v2: 0.44335938, width: 49, xadvance: 54}
+    110: {v: 0.34570312, u: 0.8623047, height: 49, u2: 0.9111328, xoffset: -15, yoffset: -2,
+      v2: 0.44140625, width: 50, xadvance: 54}
+    111: {v: 0.34570312, u: 0.38476562, height: 50, u2: 0.43359375, xoffset: -15,
+      yoffset: -2, v2: 0.44335938, width: 50, xadvance: 54}
+    108: {v: 0.125, u: 0.83984375, height: 56, u2: 0.87890625, xoffset: -15, yoffset: -9,
+      v2: 0.234375, width: 40, xadvance: 45}
+    109: {v: 0.34570312, u: 0.9111328, height: 49, u2: 0.96972656, xoffset: -15, yoffset: -2,
+      v2: 0.44140625, width: 60, xadvance: 64}
+    106: {v: 0.0, u: 0.29492188, height: 63, u2: 0.3466797, xoffset: -22, yoffset: -9,
+      v2: 0.123046875, width: 53, xadvance: 44}
+    107: {v: 0.125, u: 0.87890625, height: 56, u2: 0.92871094, xoffset: -15, yoffset: -9,
+      v2: 0.234375, width: 51, xadvance: 54}
+    104: {v: 0.23632812, u: 0.0, height: 56, u2: 0.048828125, xoffset: -15, yoffset: -9,
+      v2: 0.34570312, width: 50, xadvance: 54}
+    105: {v: 0.125, u: 0.92871094, height: 56, u2: 0.96777344, xoffset: -15, yoffset: -9,
+      v2: 0.234375, width: 40, xadvance: 44}
+    119: {v: 0.34570312, u: 0.7158203, height: 49, u2: 0.7714844, xoffset: -15, yoffset: -2,
+      v2: 0.44140625, width: 57, xadvance: 60}
+    118: {v: 0.34570312, u: 0.7714844, height: 49, u2: 0.81933594, xoffset: -16, yoffset: -2,
+      v2: 0.44140625, width: 49, xadvance: 52}
+    117: {v: 0.34570312, u: 0.2890625, height: 50, u2: 0.33789062, xoffset: -15, yoffset: -2,
+      v2: 0.44335938, width: 50, xadvance: 54}
+    116: {v: 0.125, u: 0.796875, height: 56, u2: 0.83984375, xoffset: -15, yoffset: -8,
+      v2: 0.234375, width: 44, xadvance: 48}
+    115: {v: 0.34570312, u: 0.33789062, height: 50, u2: 0.38476562, xoffset: -15,
+      yoffset: -2, v2: 0.44335938, width: 48, xadvance: 53}
+    114: {v: 0.34570312, u: 0.81933594, height: 49, u2: 0.8623047, xoffset: -15, yoffset: -2,
+      v2: 0.44140625, width: 44, xadvance: 48}
+    113: {v: 0.125, u: 0.0, height: 57, u2: 0.047851562, xoffset: -15, yoffset: -2,
+      v2: 0.23632812, width: 49, xadvance: 54}
+    112: {v: 0.125, u: 0.047851562, height: 57, u2: 0.09667969, xoffset: -15, yoffset: -2,
+      v2: 0.23632812, width: 50, xadvance: 54}
+    126: {v: 0.45507812, u: 0.39453125, height: 39, u2: 0.4423828, xoffset: -14, yoffset: -7,
+      v2: 0.53125, width: 49, xadvance: 56}
+    125: {v: 0.0, u: 0.049804688, height: 64, u2: 0.091796875, xoffset: -14, yoffset: -9,
+      v2: 0.125, width: 43, xadvance: 49}
+    124: {v: 0.125, u: 0.5185547, height: 56, u2: 0.5546875, xoffset: -13, yoffset: -9,
+      v2: 0.234375, width: 37, xadvance: 46}
+    123: {v: 0.0, u: 0.091796875, height: 64, u2: 0.13378906, xoffset: -14, yoffset: -9,
+      v2: 0.125, width: 43, xadvance: 49}
+    122: {v: 0.34570312, u: 0.6220703, height: 49, u2: 0.6669922, xoffset: -15, yoffset: -2,
+      v2: 0.44140625, width: 46, xadvance: 51}
+    121: {v: 0.125, u: 0.7480469, height: 56, u2: 0.796875, xoffset: -16, yoffset: -2,
+      v2: 0.234375, width: 50, xadvance: 52}
+    120: {v: 0.34570312, u: 0.6669922, height: 49, u2: 0.7158203, xoffset: -16, yoffset: -2,
+      v2: 0.44140625, width: 50, xadvance: 53}
+  padding_right: 16
+  spread: 16.0
