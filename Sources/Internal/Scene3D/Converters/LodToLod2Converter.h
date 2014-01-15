@@ -40,6 +40,7 @@ public:
 	bool MergeLod(Entity * entity);
 
 private:
+    void FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects);
     Set<PolygonGroup*> bakedPolygonGroups;
 };
 
