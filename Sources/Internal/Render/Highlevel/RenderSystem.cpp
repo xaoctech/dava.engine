@@ -155,10 +155,13 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     
 void RenderSystem::RegisterBatch(RenderBatch * batch)
 {
-    NMaterial * materialInstance = batch->GetMaterial();
-    NMaterial * material = materialInstance->GetParent();
-    RegisterMaterial(materialInstance);
-    RegisterMaterial(material);
+    NMaterial * material = batch->GetMaterial();
+    while(material)
+    {
+        RegisterMaterial(material);
+        
+        material = material->GetParent();
+    }
 }
     
 void RenderSystem::UnregisterBatch(RenderBatch * batch)

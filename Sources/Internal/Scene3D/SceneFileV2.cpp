@@ -527,6 +527,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     String name = archive->GetString("##name");
     
     bool removeChildren = false;
+    bool skipNode = false;
     
     Entity * node = NULL;
     if (name == "LandscapeNode")
@@ -546,7 +547,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 	}
 	else
     {
-        node = dynamic_cast<Entity*>(ObjectFactory::Instance()->New<BaseObject>(name));
+        BaseObject *obj = ObjectFactory::Instance()->New<BaseObject>(name);
+        node = dynamic_cast<Entity*>(obj);
         if(node)
         {
             node->SetScene(scene);
@@ -555,7 +557,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         }
         else //in case if editor class is loading in non-editor sprsoject
         {
+            SafeRelease(obj);
             node = new Entity();
+            skipNode = true;
         }
     }
 
@@ -577,7 +581,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         node->RemoveAllChildren();
     }
 
-    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
     {
         parent->AddNode(node);
     }

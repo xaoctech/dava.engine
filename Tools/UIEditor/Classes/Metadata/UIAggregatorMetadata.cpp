@@ -67,3 +67,9 @@ QString UIAggregatorMetadata::GetUIControlClassName()
 	
 	return UIControlMetadata::GetUIControlClassName();
 }
+
+void UIAggregatorMetadata::SetVisible(const bool value)
+{
+    // UIAggregator must update its children hierarchically.
+    SetUIControlVisible(value, true);
+}

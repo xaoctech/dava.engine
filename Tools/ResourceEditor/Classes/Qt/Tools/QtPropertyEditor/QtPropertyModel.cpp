@@ -314,16 +314,16 @@ void QtPropertyModel::UpdateStructureInternal(const QModelIndex &i)
 
 void QtPropertyModel::DataChanged(QtPropertyData *data, int reason)
 {
-	if(trackEdit)
+	QModelIndex index = indexFromItem(data);
+	if(index.isValid())
 	{
-		QModelIndex index = indexFromItem(data);
-		if(index.isValid())
+		if(reason != QtPropertyData::VALUE_EDITED)
 		{
-			if(reason != QtPropertyData::VALUE_EDITED)
-			{
-				emit dataChanged(index.sibling(index.row(), 0), index);
-			}
+			emit dataChanged(index.sibling(index.row(), 0), index);
+		}
 
+		if(trackEdit)
+		{
 			emit PropertyChanged(index);
 
 			if(reason == QtPropertyData::VALUE_EDITED)
