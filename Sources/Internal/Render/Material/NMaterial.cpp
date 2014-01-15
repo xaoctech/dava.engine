@@ -1459,33 +1459,33 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::SetLight(uint32 index, Light * light)
+	void NMaterial::SetLight(uint32 index, Light * light, bool forceUpdate)
 	{
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			if(parent)
 			{
-				parent->SetLight(index, light);
+				parent->SetLight(index, light, forceUpdate);
 			}
 			else
 			{
-				SetLightInternal(index, light);
+				SetLightInternal(index, light, forceUpdate);
 			}
 		}
 		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
-			SetLightInternal(index, light);
+			SetLightInternal(index, light, forceUpdate);
 
 			for(size_t i = 0; i < children.size(); ++i)
 			{
-				children[i]->SetLightInternal(index, light);
+				children[i]->SetLightInternal(index, light, forceUpdate);
 			}
 		}
 	}
 	
-	void NMaterial::SetLightInternal(int index, Light* light)
+	void NMaterial::SetLightInternal(int index, Light* light, bool forceUpdate)
 	{
-		bool changed = (light != lights[index]);
+		bool changed = forceUpdate || (light != lights[index]);
 		lights[index] = light;
 		
 		if(changed && materialDynamicLit)
@@ -1628,7 +1628,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
-		mat->SetMaterialName(FastName(materialName.c_str()));
+		mat->SetMaterialName(materialName);
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
