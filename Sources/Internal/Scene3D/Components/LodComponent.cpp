@@ -30,6 +30,8 @@
 
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
@@ -325,14 +327,22 @@ void LodComponent::SetLayerVisibility(int32 layerNum, bool visible)
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 
-	if((int32)lodLayers.size() > layerNum)
-	{
-		int32 size = lodLayers[layerNum].nodes.size();
-		for (int32 i = 0; i < size; i++) 
-		{
-			lodLayers[layerNum].nodes[i]->SetLodVisible(visible);
-		}
-	}
+
+//Dizz: this was old lod system
+ 	if(visible && (int32)lodLayers.size() > layerNum)
+ 	{
+        int32 lodINumber = lodLayers[layerNum].layer;
+        RenderObject * ro = GetRenderObject(entity);
+        if(ro)
+        {
+            ro->SetLodIndex(lodINumber);
+        }
+// 		int32 size = lodLayers[layerNum].nodes.size();
+// 		for (int32 i = 0; i < size; i++) 
+// 		{
+// 			lodLayers[layerNum].nodes[i]->SetLodVisible(visible);
+// 		}
+ 	}
 }
 
 void LodComponent::CopyLODSettings(const LodComponent * fromLOD)

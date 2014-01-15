@@ -26,68 +26,22 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_LODTOLOD2CONVERTER_H__
+#define __DAVAENGINE_LODTOLOD2CONVERTER_H__
 
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-#ifndef __DAVAENGINE_SCENE3D_LODSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_LODSYSTEM_H__
-
-#include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
-
-namespace DAVA
-{
-
-class Camera;
-class LodComponent;
-
-class LodSystem : public SceneSystem
+class LodToLod2Converter
 {
 public:
-	LodSystem(Scene * scene);
-
-	virtual void Process(float32 timeElapsed);
-	virtual void AddEntity(Entity * entity);
-	virtual void RemoveEntity(Entity * entity);
-
-	virtual void SetCamera(Camera * camera);
-
-	static void UpdateEntitiesAfterLoad(Entity * entity);
-	static void UpdateEntityAfterLoad(Entity * entity);
-
-	static void MergeChildLods(Entity * toEntity);
-
-	class LodMerger
-	{
-	public:
-		LodMerger(Entity * toEntity);
-		void MergeChildLods();
-
-	private:
-		void GetLodComponentsRecursive(Entity * fromEntity, Vector<Entity*> & allLods);
-		Entity * toEntity;
-	};
-
-	
+	void ConvertLodToV2(Entity *scene);
+	void SearchForLod(Entity * currentNode);
+	bool MergeLod(Entity * entity);
 
 private:
-	//partial update per frame
-	static const int32 UPDATE_PART_PER_FRAME = 1;
-	Vector<int32> partialUpdateIndices;
-	int32 currentPartialUpdateIndex;
-	void UpdatePartialUpdateIndices();
-
-	
-	Vector<Entity*> entities;
-
-	void UpdateLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq);
-	bool RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq);
-
-	float32 CalculateDistanceToCamera(const Entity * entity, const LodComponent *lodComponent) const;
-	int32 FindProperLayer(float32 distance, const LodComponent *lodComponent, int32 requestedLayersCount);
-
-	Camera * camera;
+    Set<PolygonGroup*> bakedPolygonGroups;
 };
 
-}
+#endif //__DAVAENGINE_LODTOLOD2CONVERTER_H__
 
-#endif //__DAVAENGINE_SCENE3D_LODSYSTEM_H__

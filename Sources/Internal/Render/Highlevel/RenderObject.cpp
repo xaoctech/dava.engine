@@ -31,6 +31,7 @@
 #include "Base/ObjectFactory.h"
 #include "Debug/DVAssert.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -65,18 +66,24 @@ RenderObject::~RenderObject()
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
 	AddRenderBatch(batch, -1, -1);
+    activeRenderBatchArray.push_back(batch);
 }
   
-void RenderObject::AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex)
+void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)
 {
 	batch->Retain();
 	batch->SetRenderObject(this);
 	
 	IndexedRenderBatch ind;
-	ind.lodIndex = lodIndex;
-	ind.switchIndex = switchIndex;
+	ind.lodIndex = _lodIndex;
+	ind.switchIndex = _switchIndex;
 	ind.renderBatch = batch;
     renderBatchArray.push_back(ind);
+
+    if(_lodIndex == lodIndex && _switchIndex == switchIndex)
+    {
+        activeRenderBatchArray.push_back(batch);
+    }
 
     if (renderSystem)
         renderSystem->RegisterBatch(batch);
@@ -148,8 +155,9 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
     newObject->renderBatchArray.reserve(size);
 	for(uint32 i = 0; i < size; ++i)
 	{
-        RenderBatch *batch = GetRenderBatch(i)->Clone();
-		newObject->AddRenderBatch(batch);
+        int32 batchLodIndex, batchSwitchIndex;
+        RenderBatch *batch = GetRenderBatch(i, batchLodIndex, batchSwitchIndex)->Clone();
+		newObject->AddRenderBatch(batch, batchLodIndex, batchSwitchIndex);
         batch->Release();
 	}
     newObject->ownerDebugInfo = ownerDebugInfo;
@@ -175,6 +183,8 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
 			RenderBatch *batch = GetRenderBatch(i);
 			if(NULL != batch)
 			{
+                archive->SetInt32(Format("rb%d.lodIndex", i), renderBatchArray[i].lodIndex);
+                archive->SetInt32(Format("rb%d.switchIndex", i), renderBatchArray[i].switchIndex);
 				KeyedArchive *batchArch = new KeyedArchive();
 				batch->Save(batchArch, serializationContext);
 				if(batchArch->Count() > 0)
@@ -203,6 +213,9 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
         KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
         for(uint32 i = 0; i < roBatchCount; ++i)
 			{
+                int32 batchLodIndex = archive->GetInt32(Format("rb%d.lodIndex", i), -1);
+                int32 batchSwitchIndex = archive->GetInt32(Format("rb%d.switchIndex", i), -1);
+
 				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != batchArch)
 				{
@@ -211,7 +224,7 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 					if(NULL != batch)
 					{
 						batch->Load(batchArch, serializationContext);
-						AddRenderBatch(batch);
+						AddRenderBatch(batch, batchLodIndex, switchIndex);
 						batch->Release();
 					}
 				}

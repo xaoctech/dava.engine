@@ -70,10 +70,10 @@ void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityAr
         RenderObject * renderObject = visibilityArray->visibilityArray[ro];
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
-        uint32 batchCount = renderObject->GetRenderBatchCount();
+        uint32 batchCount = renderObject->GetActiveRenderBatchCount();
 		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 		{
-			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+			RenderBatch * batch = renderObject->GetActiveRenderBatch(batchIndex);
             //batch->SetCameraWorldTransformPtr(&cameraWorldMatrices[ro]);
 
 			NMaterial * material = batch->GetMaterial();
