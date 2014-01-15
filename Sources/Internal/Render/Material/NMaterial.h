@@ -213,7 +213,7 @@ public:
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
     uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light);
+    void SetLight(uint32 index, Light * light, bool forceUpdate);
     Light * GetLight(uint32 index) { return lights[index]; };
 	inline bool IsDynamicLit() {return materialDynamicLit;}
 	//}END TODO
@@ -426,7 +426,7 @@ protected:
 	//VI: this method is for updating light. It's temporary solution hopefully
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
-	void SetLightInternal(int index, Light* light);
+	void SetLightInternal(int index, Light* light, bool forceUpdate);
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
 		
