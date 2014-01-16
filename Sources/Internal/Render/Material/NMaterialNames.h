@@ -42,7 +42,7 @@ namespace DAVA
         static const FastName PIXELLIT_SPECULARMAP_ALPHATEST;
         static const FastName TEXTURED_ALPHABLEND;
         static const FastName DECAL_ALPHATEST;
-        static const FastName PIXELLIT_SPECUALRMAP_OPAQUE;
+        static const FastName PIXELLIT_SPECULARMAP_OPAQUE;
         static const FastName TEXTURED_ALPHATEST;
         static const FastName DECAL_OPAQUE;
         static const FastName SHADOWRECT_ALPHA;

@@ -32,6 +32,8 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include <Render/TextureDescriptor.h>
 
+#include "Render/Material/NMaterialNames.h"
+
 namespace DAVA
 {
 
@@ -86,7 +88,7 @@ namespace DAVA
 			RenderDataObject* renderDataObj = new RenderDataObject();
 							
 			NMaterial* skyboxMaterial = NMaterial::CreateMaterialInstance(FastName("Skybox_material"),
-																		  FastName("~res:/Materials/Legacy/Skybox.material"),
+																		  NMaterialName::SKYBOX,
 																		  NMaterial::DEFAULT_QUALITY_NAME);
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
