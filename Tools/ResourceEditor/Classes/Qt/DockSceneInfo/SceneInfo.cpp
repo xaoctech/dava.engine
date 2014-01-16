@@ -277,16 +277,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathname);
-        if(!descriptor)
-        {
-            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.GetAbsolutePathname().c_str());
-            continue;
-        }
-        
-        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
-        
-        SafeRelease(descriptor);
+        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
     }
 
     return textureSize;

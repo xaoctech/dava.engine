@@ -727,7 +727,7 @@ bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, eGPUFamil
     if(descriptor)
     {
         isChanged = IsTextureChanged(descriptor, forGPU);
-        SafeRelease(descriptor);
+		delete descriptor;
     }
 
     return isChanged;

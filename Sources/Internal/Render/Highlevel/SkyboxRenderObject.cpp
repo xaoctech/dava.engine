@@ -192,20 +192,8 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-            DAVA::Texture* tx = NULL;
-            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePath);
-            if(descriptor && descriptor->IsCubeMap())
-            {
-                tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-            }
-            else
-            {
-				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
-            }
-            
+            DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
 			skyboxMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
-
-            SafeRelease(descriptor);
 			SafeRelease(tx);
 		}
 	}

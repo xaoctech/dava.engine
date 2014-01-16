@@ -232,10 +232,7 @@ void TextureConvertor::CancelConvert()
 	while (NULL != item)
 	{
 		TextureDescriptor* desc = (TextureDescriptor*) item->data;
-		if(NULL != desc)
-		{
-			SafeRelease(desc);
-		}
+		SafeDelete(desc);
 
 		delete item;
 		item = jobStackConverted.pop();
@@ -347,7 +344,7 @@ void TextureConvertor::threadThumbnailFinished()
 		TextureInfo watcherResult = thumbnailWatcher.result();
 		emit ReadyThumbnail(thumbnailDescriptor, watcherResult);
 
-		SafeRelease(descriptor);
+		SafeDelete(descriptor);
 		delete curJobThumbnail;
 		curJobThumbnail = NULL;
 	}
@@ -366,7 +363,7 @@ void TextureConvertor::threadOriginalFinished()
 		TextureInfo watcherResult = originalWatcher.result();
 		emit ReadyOriginal(originalDescriptor, watcherResult);
 
-		SafeRelease(descriptor);
+		SafeDelete(descriptor);
 		delete curJobOriginal;
 		curJobOriginal = NULL;
 	}
@@ -384,7 +381,7 @@ void TextureConvertor::threadConvertedFinished()
 		TextureInfo watcherResult = convertedWatcher.result();
 		emit ReadyConverted(convertedDescriptor, (DAVA::eGPUFamily) curJobConverted->type, watcherResult);
 
-		SafeRelease(descriptor);
+		SafeDelete(descriptor);
 		delete curJobConverted;
 		curJobConverted = NULL;
 	}
