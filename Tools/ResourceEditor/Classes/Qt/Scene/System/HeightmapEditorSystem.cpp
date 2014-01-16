@@ -38,7 +38,6 @@
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Commands2/HeightmapEditorCommands2.h"
 #include "Main/QtUtils.h"
-#include "Deprecated/EditorSettings.h"
 #include "HoodSystem.h"
 
 #include <QApplication>
@@ -233,7 +232,10 @@ void HeightmapEditorSystem::FinishEditing()
 {
 	if (editingIsEnabled)
 	{
-		CreateHeightmapUndo();
+		if (drawingType != HEIGHTMAP_DROPPER)
+		{
+			CreateHeightmapUndo();
+		}
 		editingIsEnabled = false;
 	}
 }

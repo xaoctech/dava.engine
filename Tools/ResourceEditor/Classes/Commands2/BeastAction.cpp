@@ -33,7 +33,7 @@
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Beast/BeastProxy.h"
 #include "Beast/LightmapsPacker.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 
 #include "DAVAEngine.h"
 

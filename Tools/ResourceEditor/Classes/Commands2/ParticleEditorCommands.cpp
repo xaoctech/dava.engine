@@ -30,7 +30,7 @@
 
 #include "ParticleEditorCommands.h"
 #include "DAVAEngine.h"
-#include "Deprecated/EditorSettings.h"
+#include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"

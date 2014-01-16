@@ -469,13 +469,18 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
         entityPath = FilePath(properties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, entityPath.GetAbsolutePathname()));
 
     String entityName = entity->GetName();
-    size_t pos = entityName.find(".sc2");
-    if(pos != String::npos)
-        entityName = entityName.substr(0, pos);
+    FilePath textureFolder = entityPath.GetDirectory() + "images/";
 
-    entityPath = entityPath.GetDirectory() + "images/" + entityName + "_planes.png";
+    String texturePostfix = "_planes.png";
+    FilePath texturePath = textureFolder + entityName + texturePostfix;
+    int32 i = 0;
+    while(texturePath.Exists())
+    {
+        i++;
+        texturePath = textureFolder + Format("%s_%d%s", entityName.c_str(), i, texturePostfix.c_str());
+    }
 
-    return entityPath;
+    return texturePath;
 }
 
 void EditorLODData::CopyLastLodToLod0()

@@ -199,6 +199,9 @@
     <Filter Include="Classes\Qt\DockLibrary">
       <UniqueIdentifier>{2ad1d47b-09e1-4a10-b69d-f80e67a1a4c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\CommandLine\DDSExtractor">
+      <UniqueIdentifier>{d78a703d-f7ec-4e00-b258-a89871091844}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Classes\Qt\PlaneLODDialog">
       <UniqueIdentifier>{768d8dcf-78c6-468b-8ce9-cb73d0566627}</UniqueIdentifier>
     </Filter>
@@ -1035,12 +1038,6 @@
     <ClCompile Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.cpp">
       <Filter>Classes\Qt\Tools\LabeledSlider</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\MetaObjModifyCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -1052,15 +1049,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\StatusBar.cpp">
       <Filter>Classes\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp">
       <Filter>Classes\Qt\Settings</Filter>
@@ -1306,9 +1294,6 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.cpp">
@@ -1794,14 +1779,23 @@
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp">
+    <ClCompile Include="Classes\Commands2\CreatePlaneLODCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\PlaneLODDialog\PlaneLODDialog.cpp">
+      <Filter>Classes\Qt\PlaneLODDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\PlaneLODDialog\PlaneLODDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp">
+    <ClCompile Include="Classes\Qt\Scene\FogSettingsChangedReceiver.cpp">
+      <Filter>Classes\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\FogSettingsChangedReceiver_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp">
-      <Filter>QtGenerated</Filter>
+    <ClCompile Include="Classes\Qt\Scene\System\EditorMaterialSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
@@ -1836,6 +1830,21 @@
     <ClCompile Include="_GeneratedQt\DockMaterials\MaterialDelegate_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\RecentFilesManager.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.cpp">
+      <Filter>Classes\CommandLine\DDSExtractor</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands2\CreatePlaneLODCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -1850,6 +1859,9 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Scene\FogSettingsChangedReceiver_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\EditorMaterialSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ParticleEmitterMoveCommands.cpp">
       <Filter>Classes\Commands2</Filter>
@@ -2927,26 +2939,11 @@
     <ClInclude Include="Classes\Commands2\SaveEntityAsAction.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h">
       <Filter>Classes\Qt\Settings</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\StatusBar.h">
       <Filter>Classes\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h">
       <Filter>Classes\Qt\Settings</Filter>
@@ -3263,6 +3260,18 @@
     <ClInclude Include="Classes\Qt\DockMaterials\MaterialDelegate.h">
       <Filter>Classes\Qt\DockMaterials</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\RecentFilesManager.h">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\DDSExtractor\DDSExtractorTool.h">
+      <Filter>Classes\CommandLine\DDSExtractor</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3271,6 +3280,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\FogSettingsChangedReceiver.h">
       <Filter>Classes\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h">
       <Filter>Classes\Commands2</Filter>

@@ -774,8 +774,6 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
         MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
-
-	texDescriptor->pathname = savedPath;
 }
 
     
@@ -1055,11 +1053,11 @@ const TexturesMap & Texture::GetTextureMap()
     return textureMap;
 }
 
-int32 Texture::GetDataSize() const
+uint32 Texture::GetDataSize() const
 {
     DVASSERT((0 <= texDescriptor->format) && (texDescriptor->format < FORMAT_COUNT));
     
-    int32 allocSize = width * height * GetPixelFormatSizeInBytes(texDescriptor->format);
+    uint32 allocSize = width * height * GetPixelFormatSizeInBits(texDescriptor->format) / 8;
     return allocSize;
 }
 
@@ -1075,6 +1073,7 @@ Texture * Texture::CreatePink(TextureType requestedType)
 
 void Texture::MakePink(TextureType requestedType)
 {
+	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
 	SafeRelease(texDescriptor);
 
     Vector<Image *> *images = new Vector<Image *> ();
@@ -1097,7 +1096,9 @@ void Texture::MakePink(TextureType requestedType)
 		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder());
 	}
-    
+
+	texDescriptor->pathname = savePath;
+
 	SetParamsFromImages(images);
     FlushDataToRenderer(images);
 
@@ -1219,7 +1220,14 @@ int32 Texture::GetPixelFormatSizeInBits(PixelFormat format)
 
 int32 Texture::GetPixelFormatSizeInBytes(PixelFormat format)
 {
-    return GetPixelFormatSizeInBits(format) / 8;
+    int32 bits = GetPixelFormatSizeInBits(format);
+    
+    if(bits < 8)
+    {   // To detect wrong situations
+        Logger::Warning("[Texture::GetPixelFormatSizeInBytes] format takes less than byte");
+    }
+    
+    return  bits / 8;
 }
 
 
