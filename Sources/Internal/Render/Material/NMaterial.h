@@ -168,6 +168,7 @@ public:
 	
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
+	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_FLATCOLOR;
 	static const FastName FLAG_LIGHTMAPONLY;
 	static const FastName FLAG_TEXTUREONLY;
