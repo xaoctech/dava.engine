@@ -16,18 +16,18 @@
 
 #include "QtPropertyDataInspDynamic.h"
 
-QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, int _index)
+QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, DAVA::FastName _name)
 	: QtPropertyDataDavaVariant(DAVA::VariantType())
 	, object(_object)
 	, dynamicInfo(_dynamicInfo)
-	, index(_index)
+	, name(_name)
 	, inspFlags(0)
 	//, lastCommand(NULL)
 {
 	if(NULL != dynamicInfo)
 	{
-		SetVariantValue(dynamicInfo->MemberValueGet(object, index));
-		inspFlags = dynamicInfo->MemberFlags(object, index);
+		SetVariantValue(dynamicInfo->MemberValueGet(object, name));
+		inspFlags = dynamicInfo->MemberFlags(object, name);
 	}
 }
 
@@ -67,7 +67,7 @@ void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 		//DAVA::SafeDelete(lastCommand);
 		//lastCommand = new InspMemberModifyCommand(member, object, newValue);
 
-		dynamicInfo->MemberValueSet(object, index, newValue);
+		dynamicInfo->MemberValueSet(object, name, newValue);
 	}
 }
 
@@ -79,7 +79,7 @@ bool QtPropertyDataInspDynamic::UpdateValueInternal()
 	// we should do this because member may change at any time
 	if(NULL != dynamicInfo)
 	{
-		DAVA::VariantType v = dynamicInfo->MemberValueGet(object, index);
+		DAVA::VariantType v = dynamicInfo->MemberValueGet(object, name);
 
 		// if current variant value not equal to the real member value
 		// we should update current variant value
@@ -101,7 +101,7 @@ bool QtPropertyDataInspDynamic::EditorDoneInternal(QWidget *editor)
 	// we should save them into meta-object
 	if(ret && NULL != dynamicInfo)
 	{
-		dynamicInfo->MemberValueSet(object, index, QtPropertyDataDavaVariant::GetVariantValue());
+		dynamicInfo->MemberValueSet(object, name, QtPropertyDataDavaVariant::GetVariantValue());
 	}
 
 	return ret;
