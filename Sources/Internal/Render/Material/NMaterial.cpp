@@ -80,6 +80,7 @@ namespace DAVA
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
+    const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 	const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 	const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 	const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
@@ -1883,7 +1884,6 @@ namespace DAVA
         UpdateTextureDescrInspVector(state);
         DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());				
 		ret.SetFilePath(textureDescrInspVector[index].path);
-		
 		return ret;
 	}
 	
@@ -2377,6 +2377,7 @@ namespace DAVA
 			case 0: ret = FLAG_VERTEXFOG; break;
 			case 2: ret = FLAG_FLATCOLOR; break;
 			case 1: ret = FLAG_TEXTURESHIFT; break;
+            case 3: ret = FLAG_TEXTURE0_ANIMATION_SHIFT; break;
 			default: break;
 		}
 
@@ -2385,7 +2386,7 @@ namespace DAVA
 
 	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
 	{
-		return 3;
+		return 4;
 	}
 
 	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const
