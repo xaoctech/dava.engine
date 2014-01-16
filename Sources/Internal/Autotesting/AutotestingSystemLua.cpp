@@ -83,25 +83,6 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         
         if(isOk)
         {
-			File * file1 = File::Create("~res:/Autotesting/Scripts/autotesting_api.lua", File::OPEN | File::READ );
-            if (file1)
-            {
-                file1->Release();
-            }
-            else
-            {
-                Logger::Debug("AutotestingSystemLua::InitFromFile file1 not opened");
-            }
-            File * file2 = File::Create("~res:/tutorial.yaml", File::OPEN | File::READ );
-            if (file2)
-            {
-                file2->Release();
-            }
-            else
-            {
-                Logger::Debug("AutotestingSystemLua::InitFromFile file2 not opened");
-            }
-
             isOk = RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
         }
         else
@@ -180,49 +161,6 @@ int AutotestingSystemLua::ReqModule(lua_State* L)
 	lua_pushcfunction(L, lua_tocfunction(AutotestingSystemLua::Instance()->luaState, -1));
 	lua_pushstring(L, path.GetBasename().c_str());
 	return 2;
-	/*
-	FilePath path = lua_tostring(L, 1);
-	lua_pop(L, 1);
-	//FilePath path = module;
-
-	Logger::Debug("AutotestingSystemLua::ReqModule: load %s", path.GetBasename().c_str());
-	File * file = File::Create(path.GetAbsolutePathname().c_str(), File::OPEN | File::READ );
-	if (file)
-	{
-		char *data = new char[file->GetSize()];
-		file->Read(data, file->GetSize());
-		if (luaL_loadbuffer(L, data, file->GetSize(), path.GetBasename().c_str()) == LUA_OK)
-		{
-			lua_pushstring(L, path.GetBasename().c_str());
-			lua_CFunction table = lua_tocfunction(L, -1);
-			if (lua_pcall(L, 1, 1, 0))
-			{
-				const char* err = lua_tostring(L, -1);
-
-				Logger::Debug("AutotestingSystemLua::RunScript error %s", err);
-
-				return 0;
-			}
-			//luaL_loadbuffer(L, data, file->GetSize(), module);
-			lua_pushcfunction(L, table);
-			lua_pushstring(L, path.GetBasename().c_str());
-			return 2;
-		}
-		else
-		{
-			String error = "AutotestingSystemLua::ReqModule: couldn't load buffer " + path.GetAbsolutePathname();
-			AutotestingSystem::Instance()->ForceQuit(error);
-			//lua_pushnil(L);
-			return 0;
-		}
-
-	} else {
-		String error = "AutotestingSystemLua::ReqModule: couldn't open " + path.GetAbsolutePathname();
-		AutotestingSystem::Instance()->ForceQuit(error);
-		//lua_pushnil(L);
-		return 0;
-	}
-	*/
 }
 
 void AutotestingSystemLua::stackDump(lua_State *L) {
@@ -527,22 +465,6 @@ void AutotestingSystemLua::KeyPress(int32 keyChar)
 			}
 		}
 	}
-
-	/*
-	UIEvent keyPress;
-	keyPress.tid = keyChar;
-	keyPress.phase = UIEvent::PHASE_KEYCHAR;
-	keyPress.tapCount = 1;
-	keyPress.keyChar = keyChar;
-
-	Logger::Debug("AutotestingSystemLua::KeyPress %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c", keyPress.tid, keyPress.phase, keyPress.tapCount, keyPress.point.x, keyPress.point.y, keyPress.physPoint.x, keyPress.physPoint.y, keyPress.keyChar);
-
-	Vector<UIEvent> emptyTouches;
-	Vector<UIEvent> touches;
-	touches.push_back(keyPress);
-	UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-	AutotestingSystem::Instance()->OnInput(keyPress);
-	*/
 }
 
 String AutotestingSystemLua::GetText(UIControl *control)
@@ -723,8 +645,10 @@ bool AutotestingSystemLua::LoadScriptFromFile(const FilePath &luaFilePath)
 	{
 		char *data = new char[file->GetSize()];
 		file->Read(data, file->GetSize());
-
-		if (luaL_loadbuffer(luaState, data, file->GetSize(), luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK)
+		bool result = luaL_loadbuffer(luaState, data, file->GetSize(), luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK;
+		file->Release();
+		delete data;
+		if (result)
 		{
 			return true;
 		}
