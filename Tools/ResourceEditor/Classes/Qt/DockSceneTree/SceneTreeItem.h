@@ -108,6 +108,7 @@ public:
 	~SceneTreeItemParticleEmitter();
 
 	static DAVA::ParticleEmitter* GetEmitter(SceneTreeItem *item);
+    static DAVA::ParticleEmitter* GetEmitterStrict(SceneTreeItem *item);
 	static void DoSync(QStandardItem *rootItem, DAVA::ParticleEmitter *layer);
 
 	virtual QString ItemName() const;

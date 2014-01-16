@@ -464,12 +464,24 @@ DAVA::ParticleEmitter* SceneTreeItemParticleEmitter::GetEmitter(SceneTreeItem *i
 {
 	DAVA::ParticleEmitter *ret = NULL;
 
-	if(NULL != item && item->ItemType() == SceneTreeItem::EIT_Emitter)
+	if(NULL != item && ((item->ItemType() == SceneTreeItem::EIT_Emitter)||(item->ItemType() == SceneTreeItem::EIT_InnerEmitter)))
 	{
 		SceneTreeItemParticleEmitter *itemEmitter = (SceneTreeItemParticleEmitter *) item;
 		ret = itemEmitter->emitter;
 	}
 	return ret;
+}
+
+DAVA::ParticleEmitter* SceneTreeItemParticleEmitter::GetEmitterStrict(SceneTreeItem *item)
+{
+    DAVA::ParticleEmitter *ret = NULL;
+
+    if(NULL != item && (item->ItemType() == SceneTreeItem::EIT_Emitter))
+    {
+        SceneTreeItemParticleEmitter *itemEmitter = (SceneTreeItemParticleEmitter *) item;
+        ret = itemEmitter->emitter;
+    }
+    return ret;
 }
 void SceneTreeItemParticleEmitter::DoSync(QStandardItem *rootItem, DAVA::ParticleEmitter *emitter)
 {

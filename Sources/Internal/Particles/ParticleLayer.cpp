@@ -418,7 +418,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	{
 		const Vector<YamlNode*> & vec = lodsNode->AsVector();
 		for (uint32 i=0; i<(uint32)vec.size(); ++i)
-			SetLodActive(i, (bool)vec[i]->AsInt()); //as AddToArray has no override for bool, flags are stored as int
+			SetLodActive(i, (bool)(vec[i]->AsInt())); //as AddToArray has no override for bool, flags are stored as int
 	}
 
 
