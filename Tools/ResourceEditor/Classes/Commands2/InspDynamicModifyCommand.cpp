@@ -14,54 +14,36 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
-#define __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
-
-#include "Base/Introspection.h"
-#include "Base/FastName.h"
-
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
 #include "Commands2/InspDynamicModifyCommand.h"
 
-class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
+InspDynamicModifyCommand::InspDynamicModifyCommand(DAVA::InspInfoDynamic *_dynamicInfo, void *_object, DAVA::FastName _key, const DAVA::VariantType &_newValue)
+	: Command2(CMDID_INSP_DYNAMIC_MODIFY, "Modify dynamic value")
+	, dynamicInfo(_dynamicInfo)
+	, object(_object)
+	, key(_key)
+	, newValue(_newValue)
 {
-public:
-	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, DAVA::FastName name);
-	virtual ~QtPropertyDataInspDynamic();
-
-	int InspFlags() const;
-
-	virtual const DAVA::MetaInfo * MetaInfo() const;
-	virtual void* CreateLastCommand() const;
-
-	DAVA::InspInfoDynamic* GetDynamicInfo() const 
-	{ 
-		return dynamicInfo; 
-	}
-
-	DAVA::VariantType GetVariant() const
+	if(NULL != dynamicInfo && NULL != object)
 	{
-		return dynamicInfo->MemberValueGet(object, name);
+		oldValue = dynamicInfo->MemberValueGet(object, key);
 	}
+}
 
-	DAVA::VariantType GetAliasVariant() const
-	{ 
-		return dynamicInfo->MemberAliasGet(object, name); 
+InspDynamicModifyCommand::~InspDynamicModifyCommand()
+{ }
+
+void InspDynamicModifyCommand::Undo()
+{
+	if(NULL != dynamicInfo && NULL != object)
+	{
+		dynamicInfo->MemberValueSet(object, key, oldValue);
 	}
+}
 
-protected:
-	int inspFlags;
-	void *object;
-	DAVA::FastName name;
-	DAVA::InspInfoDynamic *dynamicInfo;
-
-	InspDynamicModifyCommand* lastCommand;
-
-	virtual QVariant GetValueAlias() const;
-	virtual void SetValueInternal(const QVariant &value);
-	virtual bool UpdateValueInternal();
-	virtual bool EditorDoneInternal(QWidget *editor);
-};
-
-#endif // __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
+void InspDynamicModifyCommand::Redo()
+{
+	if(NULL != dynamicInfo && NULL != object)
+	{
+		dynamicInfo->MemberValueSet(object, key, newValue);
+	}
+}

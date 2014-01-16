@@ -54,6 +54,7 @@ public:
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
+	void commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
 	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:

@@ -72,7 +72,7 @@ protected slots:
 	void AllowedOWPressed();
 	void AllowedSelected(int index);
 
-private:
+protected:
 	struct AllowedValue
 	{
 		DAVA::VariantType realValue;

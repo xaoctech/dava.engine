@@ -22,7 +22,7 @@ QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspIn
 	, dynamicInfo(_dynamicInfo)
 	, name(_name)
 	, inspFlags(0)
-	//, lastCommand(NULL)
+	, lastCommand(NULL)
 {
 	if(NULL != dynamicInfo)
 	{
@@ -33,7 +33,7 @@ QtPropertyDataInspDynamic::QtPropertyDataInspDynamic(void *_object, DAVA::InspIn
 
 QtPropertyDataInspDynamic::~QtPropertyDataInspDynamic()
 {
-	// DAVA::SafeDelete(lastCommand);
+	DAVA::SafeDelete(lastCommand);
 }
 
 const DAVA::MetaInfo * QtPropertyDataInspDynamic::MetaInfo() const
@@ -51,6 +51,18 @@ int QtPropertyDataInspDynamic::InspFlags() const
 	return inspFlags;
 }
 
+QVariant QtPropertyDataInspDynamic::GetValueAlias() const
+{
+	QVariant ret;
+
+	if(NULL != dynamicInfo)
+	{
+		ret = FromDavaVariant(dynamicInfo->MemberAliasGet(object, name));
+	}
+
+	return ret;
+}
+
 void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 {
 	QtPropertyDataDavaVariant::SetValueInternal(value);
@@ -64,8 +76,8 @@ void QtPropertyDataInspDynamic::SetValueInternal(const QVariant &value)
 	// also save value to meta-object
 	if(NULL != dynamicInfo)
 	{
-		//DAVA::SafeDelete(lastCommand);
-		//lastCommand = new InspMemberModifyCommand(member, object, newValue);
+		DAVA::SafeDelete(lastCommand);
+		lastCommand = new InspDynamicModifyCommand(dynamicInfo, object, name, newValue);
 
 		dynamicInfo->MemberValueSet(object, name, newValue);
 	}
@@ -83,7 +95,7 @@ bool QtPropertyDataInspDynamic::UpdateValueInternal()
 
 		// if current variant value not equal to the real member value
 		// we should update current variant value
-		if(v != GetVariantValue())
+		if(v.GetType() != DAVA::VariantType::TYPE_NONE && v != GetVariantValue())
 		{
 			QtPropertyDataDavaVariant::SetVariantValue(v);
 			ret = true;
@@ -107,14 +119,14 @@ bool QtPropertyDataInspDynamic::EditorDoneInternal(QWidget *editor)
 	return ret;
 }
 
-// void* QtPropertyDataInspDynamic::CreateLastCommand() const
-// {
-// 	Command2 *command = NULL;
-// 
-// 	if(NULL != lastCommand)
-// 	{
-// 		command = new InspDynamicModifyCommand(*lastCommand);
-// 	}
-// 
-// 	return command;
-// }
+void* QtPropertyDataInspDynamic::CreateLastCommand() const
+ {
+ 	Command2 *command = NULL;
+ 
+ 	if(NULL != lastCommand)
+ 	{
+ 		command = new InspDynamicModifyCommand(*lastCommand);
+ 	}
+ 
+ 	return command;
+}

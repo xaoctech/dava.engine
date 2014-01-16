@@ -448,6 +448,7 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 
@@ -488,6 +489,7 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
@@ -512,6 +514,7 @@ public:
 		};
 		
 		bool isColor(const FastName &propName) const;
+		VariantType getVariant(const FastName &propName, const PropData &propData) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	

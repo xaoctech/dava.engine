@@ -14,54 +14,27 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
-#define __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
+#ifndef __INSP_DYNAMIC_MODIFY_COMMAND_H__
+#define __INSP_DYNAMIC_MODIFY_COMMAND_H__
 
-#include "Base/Introspection.h"
-#include "Base/FastName.h"
+#include "Commands2/Command2.h"
 
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
-#include "Commands2/InspDynamicModifyCommand.h"
-
-class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
+class InspDynamicModifyCommand : public Command2
 {
 public:
-	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, DAVA::FastName name);
-	virtual ~QtPropertyDataInspDynamic();
+	InspDynamicModifyCommand(DAVA::InspInfoDynamic *dynamicInfo, void *object, DAVA::FastName key, const DAVA::VariantType &value);
+	~InspDynamicModifyCommand();
 
-	int InspFlags() const;
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const { return NULL; };
 
-	virtual const DAVA::MetaInfo * MetaInfo() const;
-	virtual void* CreateLastCommand() const;
-
-	DAVA::InspInfoDynamic* GetDynamicInfo() const 
-	{ 
-		return dynamicInfo; 
-	}
-
-	DAVA::VariantType GetVariant() const
-	{
-		return dynamicInfo->MemberValueGet(object, name);
-	}
-
-	DAVA::VariantType GetAliasVariant() const
-	{ 
-		return dynamicInfo->MemberAliasGet(object, name); 
-	}
-
-protected:
-	int inspFlags;
-	void *object;
-	DAVA::FastName name;
 	DAVA::InspInfoDynamic *dynamicInfo;
+	DAVA::FastName key;
+	void *object;
 
-	InspDynamicModifyCommand* lastCommand;
-
-	virtual QVariant GetValueAlias() const;
-	virtual void SetValueInternal(const QVariant &value);
-	virtual bool UpdateValueInternal();
-	virtual bool EditorDoneInternal(QWidget *editor);
+	DAVA::VariantType oldValue;
+	DAVA::VariantType newValue;
 };
 
-#endif // __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
+#endif // __INSP_DYNAMIC_MODIFY_COMMAND_H__
