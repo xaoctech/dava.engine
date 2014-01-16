@@ -73,7 +73,7 @@ public:
     void SetCustomBackgroundFrameColor(const Color& color);
 
 protected:
-    Color GetColor(const String& colorName) const;
+    Color GetColor(const String& colorName, const Color& defaultColor) const;
     void SetColor(const String& colorName, const Color& color);
 
 private:
