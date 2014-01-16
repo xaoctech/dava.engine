@@ -132,7 +132,7 @@ bool EditorSettings::IsPixelized()
 
 Color EditorSettings::GetCurrentBackgroundFrameColor() const
 {
-    return GetColor("editor.currentBackgroundFrameColor");
+    return GetColor("editor.currentBackgroundFrameColor", Color::Black);
 }
 
 void EditorSettings::SetCurrentBackgroundFrameColor(const Color& color)
@@ -142,7 +142,7 @@ void EditorSettings::SetCurrentBackgroundFrameColor(const Color& color)
 
 Color EditorSettings::GetCustomBackgroundFrameColor() const
 {
-    return GetColor("editor.customBackgroundFrameColor");
+    return GetColor("editor.customBackgroundFrameColor", Color::Black);
 }
 
 void EditorSettings::SetCustomBackgroundFrameColor(const Color& color)
@@ -150,9 +150,10 @@ void EditorSettings::SetCustomBackgroundFrameColor(const Color& color)
     SetColor("editor.customBackgroundFrameColor", color);
 }
 
-Color EditorSettings::GetColor(const String& colorName) const
+Color EditorSettings::GetColor(const String& colorName, const Color& defaultColor) const
 {
-    Vector4 colorValues = settings->GetVector4(colorName);
+    Vector4 defaultValue(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a);
+    Vector4 colorValues = settings->GetVector4(colorName, defaultValue);
     return Color(colorValues.x, colorValues.y, colorValues.z, colorValues.w);
 }
 
