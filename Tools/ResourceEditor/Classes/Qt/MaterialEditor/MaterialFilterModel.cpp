@@ -43,7 +43,7 @@
 MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /* = NULL */)
     : QSortFilterProxyModel(parent)
     , materialModel(_materialModel)
-    , filterType( SHOW_ONLY_INSTANCES )
+    , filterType( SHOW_ALL )
 {
 	setSourceModel(materialModel);
 }
@@ -79,13 +79,18 @@ bool MaterialFilteringModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAc
 	return materialModel->dropCanBeAccepted(data, action, target.row(), target.column(), mapToSource(parent));
 }
 
-void MaterialFilteringModel::setFilterType(eFilterType type)
+void MaterialFilteringModel::setFilterType(int type)
 {
     if ( type == filterType )
         return ;
 
-    filterType = type;
+    filterType = static_cast< eFilterType >( type );
     invalidateFilter();
+}
+
+int MaterialFilteringModel::getFilterType() const
+{
+    return filterType;
 }
 
 bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
@@ -100,14 +105,13 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
     switch ( filterType )
     {
     case SHOW_ALL:
-        {
-            return true;
-        }
+        return true;
+
+    case SHOW_NOTHING:
+        return false;
 
     case SHOW_INSTANCES_AND_MATERIALS:
-        {
-            return isMaterial || isSelected;
-        }
+        return isMaterial || isSelected;
 
     case SHOW_ONLY_INSTANCES:
         {
@@ -126,6 +130,7 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
 
             return false;
         }
+
 
     default:
         break;

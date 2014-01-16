@@ -46,6 +46,10 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+
+    expandMap[MaterialFilteringModel::SHOW_ALL] = false;
+    expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
+    expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
 }
 
 MaterialTree::~MaterialTree()
@@ -65,7 +69,7 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 		treeModel->SetSelection(NULL);
 	}
 
-	expandAll();
+    autoExpand();
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
@@ -225,29 +229,7 @@ void MaterialTree::OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
 	{
 		treeModel->SetSelection(selected);
 		treeModel->invalidate();
-
-		expandAll();
-
-        //const auto nEntities = selected->Size();
-        //if ( nEntities == 1 )
-        //{
-        //    Entity *entity = selected->GetEntity( 0 );
-        //}
-        //    //entity->get
-        //    const auto nMaterials = treeModel->rowCount();
-        //    for ( auto i = 0; i < nMaterials; i++ )
-        //    {
-        //        QModelIndex index = treeModel->index( i, 0 );
-        //        NMaterial *material = treeModel->GetMaterial( index );
-        //        if ( selected->HasEntity( entity ) )
-        //        {
-        //            scrollTo( index, QAbstractItemView::PositionAtCenter );
-        //            break;
-        //        }
-        //    }
-        //QModelIndex index = treeModel->GetIndex( material );
-        //scrollTo(index, QAbstractItemView::PositionAtCenter);
-        //}
+        autoExpand();
 	}
 }
 
@@ -255,4 +237,27 @@ void MaterialTree::OnSelectEntities()
 {
 	DAVA::NMaterial *currentMaterial = treeModel->GetMaterial(currentIndex());
 	SelectEntities(currentMaterial);
+}
+
+void MaterialTree::onCurrentExpandModeChange( bool setOn )
+{
+    const int filterType = treeModel->getFilterType();
+    expandMap[filterType] = setOn;
+    if ( setOn )
+        expandAll();
+    else
+        collapseAll();
+}
+
+void MaterialTree::autoExpand()
+{
+    const int filterType = treeModel->getFilterType();
+    if ( expandMap[filterType] )
+        expandAll();
+}
+
+bool MaterialTree::currentExpandMode() const
+{
+    const int filterType = treeModel->getFilterType();
+    return expandMap[filterType];
 }
