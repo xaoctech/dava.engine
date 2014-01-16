@@ -60,9 +60,9 @@ namespace DAVA
 	const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 	
 	const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
-	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("prop_ambientColor");
-	const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("prop_diffuseColor");
-	const FastName NMaterial::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
+	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("ambientColor");
+	const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("diffuseColor");
+	const FastName NMaterial::PARAM_PROP_SPECULAR_COLOR("specularColor");
 	const FastName NMaterial::PARAM_LIGHT_AMBIENT_COLOR("materialLightAmbientColor");
 	const FastName NMaterial::PARAM_LIGHT_DIFFUSE_COLOR("materialLightDiffuseColor");
 	const FastName NMaterial::PARAM_LIGHT_SPECULAR_COLOR("materialLightSpecularColor");
@@ -1783,7 +1783,7 @@ namespace DAVA
         const RenderStateData* currentData = mat->GetRenderState(passName);
         return currentData->fillMode;
     }
-
+        
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
 
