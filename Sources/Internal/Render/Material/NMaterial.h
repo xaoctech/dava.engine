@@ -213,7 +213,7 @@ public:
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
     uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light);
+    void SetLight(uint32 index, Light * light, bool forceUpdate);
     Light * GetLight(uint32 index) { return lights[index]; };
 	inline bool IsDynamicLit() {return materialDynamicLit;}
 	//}END TODO
@@ -426,7 +426,7 @@ protected:
 	//VI: this method is for updating light. It's temporary solution hopefully
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
-	void SetLightInternal(int index, Light* light);
+	void SetLightInternal(int index, Light* light, bool forceUpdate);
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
 		
@@ -445,47 +445,51 @@ public:
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
+
 	protected:
-		struct TextureDescrInsp
-		{			
-			int flags;
+		struct PropData
+		{
+			enum PropSource
+			{
+				SOURCE_UNKNOWN = 0x0,
+				SOURCE_SELF = 0x1,
+				SOURCE_PARENT = 0x2,
+				SOURCE_SHADER = 0x4
+			};
+
+			PropData() : source(SOURCE_UNKNOWN)
+			{ }
+
+			int source;
 			FilePath path;
-			FastName name;
-			bool empty;
-			TextureDescrInsp():flags(I_VIEW), empty(true){}
 		};
-		static Vector<TextureDescrInsp> textureDescrInspVector;
-		void UpdateTextureDescrInspVector(NMaterial *state) const;
+
+		const FastNameMap<PropData>* FindMaterialTextures(NMaterial *state) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
-	protected:
-		FastName GetName(size_t index) const;
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 	};
 
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
 	protected:
 		struct PropData
@@ -533,9 +537,11 @@ public:
 		static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
 		static void SwitchTemplate(NMaterial* material, const FastName& templateName);
 		static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
+        static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
+        static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
     

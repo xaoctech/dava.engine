@@ -75,7 +75,7 @@ QVariant MaterialItem::data(int role) const
 	switch(role)
 	{
 		case Qt::DisplayRole:
-			ret = QString(material->GetName().c_str());
+			ret = QString(material->GetMaterialName().c_str());
 			break;
 		default:
 			ret = QStandardItem::data(role);

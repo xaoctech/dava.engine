@@ -3290,6 +3290,9 @@
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialFilterModel.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">

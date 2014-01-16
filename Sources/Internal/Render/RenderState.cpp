@@ -134,6 +134,8 @@ void RenderState::Reset(bool doHardwareReset)
         for (uint32 textureLevel = 0; textureLevel < MAX_TEXTURE_LEVELS; ++textureLevel)
         {
             SetTextureLevelInHW(textureLevel, NULL);
+            RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
+            RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
         }
 		
 		textureState = RenderManager::Instance()->GetDefaultTextureState();

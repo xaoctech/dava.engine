@@ -18,6 +18,8 @@
 #define __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
 
 #include "Base/Introspection.h"
+#include "Base/FastName.h"
+
 #include "../QtPropertyData.h"
 #include "QtPropertyDataDavaVariant.h"
 //#include "Commands2/InspMemberModifyCommand.h"
@@ -25,7 +27,7 @@
 class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
 {
 public:
-	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, int _index);
+	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, DAVA::FastName name);
 	virtual ~QtPropertyDataInspDynamic();
 
 	int InspFlags() const;
@@ -36,16 +38,16 @@ public:
 	DAVA::InspInfoDynamic* GetDynamicInfo() const 
 	{ return dynamicInfo; }
 
-	int GetIndex() const 
-	{ return index; }
-	
-	void* GetObject() const 
-	{ return object; }
+// 	 GetIndex() const 
+// 	{ return index; }
+// 	
+// 	void* GetObject() const 
+// 	{ return object; }
 
 protected:
-	int index;
 	int inspFlags;
 	void *object;
+	DAVA::FastName name;
 	DAVA::InspInfoDynamic *dynamicInfo;
 
 	// InspDynamicModifyCommand* lastCommand;
