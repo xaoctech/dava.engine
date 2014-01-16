@@ -303,6 +303,8 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 			ShowErrorDialog("Failed to load cubemap texture " + path.toStdString() + ". Seems this is not a cubemap texture.");
 		}
 	}
+
+	SafeDelete(texDescriptor);
 }
 
 void CubemapEditorDialog::SaveCubemap(const QString& path)
@@ -380,7 +382,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 	descriptor->faceDescription = faceMask;
 	    
     descriptor->Save(filePath);
-	SafeRelease(descriptor);
+	delete descriptor;
 	
 	QMessageBox::information(this, "Cubemap texture save result", "Cubemap texture was saved successfully!");
 }
