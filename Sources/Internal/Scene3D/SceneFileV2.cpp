@@ -566,7 +566,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
     }
 
-    if(QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
     {
         parent->AddNode(node);
     }
@@ -578,25 +578,15 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         LoadHierarchy(scene, node, file, level + 1);
     }
 
-
     if (removeChildren && childrenCount)
     {
         node->RemoveAllChildren();
-<<<<<<< HEAD
-    }	
-   
+
+    }	   
     
     ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     if (effect && (effect->loadedVersion == 0))
-        effect->CollapseOldEffect(&serializationContext);
-=======
-    }
-
-    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
-    {
-        parent->AddNode(node);
-    }
->>>>>>> feature-integration-new-materials
+        effect->CollapseOldEffect(&serializationContext);   
     
     SafeRelease(node);
     SafeRelease(archive);

@@ -38,6 +38,7 @@
 #include "Core/PerformanceSettings.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/LodSystem.h"
 
 
 namespace DAVA
@@ -65,9 +66,9 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 	{
 		NMaterial *material = NMaterial::CreateMaterialInstance();
 		if (enableFrameBlend)
-			particleFrameBlendMaterial->AddChild(material);
+			material->SetParent(particleFrameBlendMaterial);
 		else
-			particleRegularMaterial->AddChild(material);		
+			material->SetParent(particleRegularMaterial);		
 		material->SetTexture(NMaterial::TEXTURE_ALBEDO, texture);
 		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcFactor, dstFactor);
 		materialMap[materialKey] = material;
@@ -121,6 +122,8 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleE
 
 void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 {	
+    effect->GetEntity()->GetScene()->lodSystem->ForceUpdate(effect->GetEntity(), effect->GetEntity()->GetScene()->GetClipCamera(), 1.0f/60.0f);
+
 	if (effect->effectData.groups.empty()) //clean position sources
 		effect->effectData.infoSources.resize(1);
 	//create particle groups
