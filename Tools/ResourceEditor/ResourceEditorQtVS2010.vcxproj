@@ -1118,6 +1118,7 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertor.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertorWork.h" />
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureList.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListDelegate.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h" />

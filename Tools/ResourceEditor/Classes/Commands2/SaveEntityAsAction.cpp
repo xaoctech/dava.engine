@@ -53,6 +53,7 @@ void SaveEntityAsAction::Redo()
 		{
 			DAVA::Entity *entity = entities->GetEntity(i);
 			DAVA::Entity *clone = entity->Clone();
+            clone->SetLocalTransform(Matrix4::IDENTITY);
 
             DAVA::KeyedArchive *props = clone->GetCustomProperties();
             props->DeleteKey(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);

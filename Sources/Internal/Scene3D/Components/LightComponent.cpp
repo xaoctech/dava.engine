@@ -29,6 +29,8 @@
 
 
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Scene.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 namespace DAVA 
 {
@@ -97,6 +99,174 @@ void LightComponent::Deserialize(KeyedArchive *archive, SerializationContext *se
 	}
 
 	Component::Deserialize(archive, serializationContext);
+}
+
+const bool LightComponent::IsDynamic()
+{
+    return (light) ? light->IsDynamic() : false;
+}
+
+void LightComponent::SetDynamic(const bool & isDynamic)
+{
+    if(light)
+    {
+        light->SetDynamic(isDynamic);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+    
+void LightComponent::SetLightType(const uint32 & _type)
+{
+    if(light)
+    {
+        light->SetType((Light::eType)_type);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::SetAmbientColor(const Color & _color)
+{
+    if(light)
+    {
+        light->SetAmbientColor(_color);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::SetDiffuseColor(const Color & _color)
+{
+    if(light)
+    {
+        light->SetDiffuseColor(_color);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::SetSpecularColor(const Color & _color)
+{
+    if(light)
+    {
+        light->SetSpecularColor(_color);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::SetIntensity(const float32& intensity)
+{
+    if(light)
+    {
+        light->SetIntensity(intensity);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+    
+const uint32 LightComponent::GetLightType()
+{
+    if(light)
+    {
+        return light->GetType();
+    }
+
+    return Light::TYPE_SKY;
+}
+
+const Color LightComponent::GetAmbientColor()
+{
+    if(light)
+    {
+        return light->GetAmbientColor();
+    }
+
+    return Color();
+}
+
+const Color LightComponent::GetDiffuseColor()
+{
+    if(light)
+    {
+        return light->GetDiffuseColor();
+    }
+    
+    return Color();
+}
+
+const Color LightComponent::GetSpecularColor()
+{
+    if(light)
+    {
+        return light->GetSpecularColor();
+    }
+    
+    return Color();
+
+}
+
+const float32 LightComponent::GetIntensity()
+{
+    if(light)
+    {
+        return light->GetIntensity();
+    }
+    
+    return 0.0f;
+}
+    
+const Vector3 LightComponent::GetPosition() const
+{
+    if(light)
+    {
+        return light->GetPosition();
+    }
+    
+    return Vector3();
+}
+
+const Vector3 LightComponent::GetDirection() const
+{
+    if(light)
+    {
+        return light->GetDirection();
+    }
+    
+    return Vector3();
+}
+
+void LightComponent::SetPosition(const Vector3 & position)
+{
+    if(light)
+    {
+        light->SetPosition(position);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::SetDirection(const Vector3& direction)
+{
+    if(light)
+    {
+        light->SetDirection(direction);
+        
+        NotifyRenderSystemLightChanged();
+    }
+}
+
+void LightComponent::NotifyRenderSystemLightChanged()
+{
+    if(entity)
+    {
+        Scene* curScene = entity->GetScene();
+        if(curScene)
+        {
+            curScene->renderSystem->SetForceUpdateLights();
+        }
+    }
 }
 
 

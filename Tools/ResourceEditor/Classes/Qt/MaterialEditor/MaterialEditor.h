@@ -54,7 +54,7 @@ public:
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
-	void materialSelected(const QModelIndex & current, const QModelIndex & previous);
+	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
 	void OnAddProperty();

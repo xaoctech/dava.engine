@@ -52,6 +52,9 @@ public:
 
 	void Update();
 
+signals:
+
+
 public slots:
 	void ShowContextMenu(const QPoint &pos);
 	void OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
