@@ -229,6 +229,7 @@ namespace DAVA
 		virtual Vector<FastName> MembersList(void *object) const = 0;
 		virtual InspDesc MemberDesc(void *object, const FastName &member) const = 0;
 		virtual int MemberFlags(void *object, const FastName &member) const = 0;
+		virtual VariantType MemberAliasGet(void *object, const FastName &member) const { return VariantType(); };
 		virtual VariantType MemberValueGet(void *object, const FastName &member) const = 0;
 		virtual void MemberValueSet(void *object, const FastName &member, const VariantType &value) = 0;
 

@@ -175,7 +175,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	}
 }
 
-bool QtPropertyData::UpdateValue()
+bool QtPropertyData::UpdateValue(bool force)
 {
 	bool ret = false;
 
@@ -183,7 +183,7 @@ bool QtPropertyData::UpdateValue()
 	{
 		updatingValue = true;
 
-		if(UpdateValueInternal())
+		if(UpdateValueInternal() || force)
 		{
 			curValue = GetValueInternal();
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
