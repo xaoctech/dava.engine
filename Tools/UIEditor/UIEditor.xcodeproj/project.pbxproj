@@ -526,6 +526,7 @@
 		17C5CCD816F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spinnerpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		17C5CCDA16F323E900FB90B4 /* spinnerpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spinnerpropertygridwidget.cpp; path = PropertyGridWidgets/spinnerpropertygridwidget.cpp; sourceTree = "<group>"; };
 		17C5CCDB16F323E900FB90B4 /* spinnerpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spinnerpropertygridwidget.h; path = PropertyGridWidgets/spinnerpropertygridwidget.h; sourceTree = "<group>"; };
+		17CAF56718869CE0006DE56D /* ColorHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorHelper.h; path = Helpers/ColorHelper.h; sourceTree = "<group>"; };
 		17CED76B163ABD3B00F9B02D /* propertygridcontainerwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = propertygridcontainerwidget.cpp; path = PropertyGridWidgets/propertygridcontainerwidget.cpp; sourceTree = "<group>"; };
 		17CED79A163E829600F9B02D /* statepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = statepropertygridwidget.cpp; path = PropertyGridWidgets/statepropertygridwidget.cpp; sourceTree = "<group>"; };
 		17CED79B163E829600F9B02D /* statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = statepropertygridwidget.h; path = PropertyGridWidgets/statepropertygridwidget.h; sourceTree = "<group>"; };
@@ -985,6 +986,7 @@
 				174D916D184E15EC00A30453 /* UIControlResizeHelper.h */,
 				176B4EFD186845A70020798C /* SpritesHelper.cpp */,
 				176B4EFE186845A70020798C /* SpritesHelper.h */,
+				17CAF56718869CE0006DE56D /* ColorHelper.h */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
