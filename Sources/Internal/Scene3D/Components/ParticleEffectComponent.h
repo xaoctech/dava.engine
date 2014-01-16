@@ -134,6 +134,8 @@ public: //mostly editor commands
 	int32 GetEmittersCount();
 	ParticleEmitter* GetEmitter(int32 id);
 	void AddEmitter(ParticleEmitter *emitter);
+    int32 GetEmitterId(ParticleEmitter *emitter);
+    void InsertEmitterAt(ParticleEmitter *emitter, int32 position);
 	void RemoveEmitter(ParticleEmitter *emitter);
     float32 GetCurrTime();
 

@@ -364,17 +364,35 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 
 int32 ParticleEffectComponent::GetEmittersCount()
 {
-	return emitters.size();
+	return (int32)emitters.size();
 }
 ParticleEmitter* ParticleEffectComponent::GetEmitter(int32 id)
 {
-	DVASSERT(id<emitters.size());
+	DVASSERT((id>=0)&&(id<(int32)emitters.size()));
 	return emitters[id];
 }
 
 void ParticleEffectComponent::AddEmitter(ParticleEmitter *emitter)
 {
+    SafeRetain(emitter);
 	emitters.push_back(emitter);
+}
+
+
+int32 ParticleEffectComponent::GetEmitterId(ParticleEmitter *emitter)
+{
+    for (int32 i=0, sz=emitters.size(); i<sz; ++i)
+        if (emitters[i]==emitter)
+            return i;
+    return -1;
+}
+
+void ParticleEffectComponent::InsertEmitterAt(ParticleEmitter *emitter, int32 position)
+{
+    Vector<ParticleEmitter*>::iterator it = emitters.begin();
+    std::advance(it, Min(position, GetEmittersCount()));
+    SafeRetain(emitter);
+    emitters.insert(it, emitter);
 }
 
 void ParticleEffectComponent::RemoveEmitter(ParticleEmitter *emitter)

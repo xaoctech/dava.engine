@@ -130,7 +130,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	basisVectors[6] = ey; basisVectors[7] = ex;	
 
 	NMaterial *currMaterial = NULL;
-	int32 renderGroupCount = 0;	
+	uint32 renderGroupCount = 0;	
 	ParticleRenderGroup *currRenderGroup = NULL;	
 	for (List<ParticleGroup>::iterator it = effectData->groups.begin(), e=effectData->groups.end(); it!=e; ++it)
 	{
@@ -164,7 +164,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	}
 
 	int32 maxParticlesPerBatch = 0;
-	for (int32 i=0; i<renderGroupCount; ++i)
+	for (uint32 i=0; i<renderGroupCount; ++i)
 	{
 		if (renderGroupCache[i]->currParticlesCount>maxParticlesPerBatch)
 			maxParticlesPerBatch = renderGroupCache[i]->currParticlesCount;
@@ -185,7 +185,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			indices[currParticleIndices*INDICES_PER_PARTICLE+5] = currParticleIndices*POINTS_PER_PARTICLE+3; //preserve order
 		}
 	}
-	for (int32 i=0; i<renderGroupCount; ++i)
+	for (uint32 i=0; i<renderGroupCount; ++i)
 	{
 		if (renderGroupCache[i]->currParticlesCount)
 		{
@@ -206,7 +206,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 	//prepare basis indexes
 	int32 basisCount = 0;
 	int32 basises[4]; //4 basises max per particle
-	bool worldAlign = group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+	bool worldAlign = (bool)(group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
 	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING)
 		basises[basisCount++] = 0;
 	if (group.layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_X_FACING)

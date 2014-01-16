@@ -219,6 +219,11 @@ QModelIndex SceneTreeModel::GetIndex(DAVA::ParticleLayer *layer) const
 	return indexesCacheLayers.value(layer, QModelIndex());
 }
 
+QModelIndex SceneTreeModel::GetIndex(DAVA::ParticleEmitter *emitter) const
+{
+    return indexesCacheEmitters.value(emitter, QModelIndex());
+}
+
 QModelIndex SceneTreeModel::GetIndex(DAVA::ParticleForce *force) const
 {
 	return indexesCacheForces.value(force, QModelIndex());
@@ -258,6 +263,17 @@ QMimeData * SceneTreeModel::mimeData(const QModelIndexList & indexes) const
 						ret = MimeDataHelper2<DAVA::Entity>::EncodeMimeData(data);
 					}
 					break;
+                case SceneTreeItem::EIT_Emitter:
+                    {
+                        QVector<DAVA::ParticleEmitter *> data;
+                        foreach(QModelIndex index, indexes)
+                        {
+                            data.push_back(SceneTreeItemParticleEmitter::GetEmitterStrict(GetItem(index)));
+                        }
+
+                        ret = MimeDataHelper2<DAVA::ParticleEmitter>::EncodeMimeData(data);
+                    }
+                    break;
 				case SceneTreeItem::EIT_Layer:
 					{
 						QVector<DAVA::ParticleLayer *> data;
@@ -300,7 +316,8 @@ QStringList SceneTreeModel::mimeTypes() const
 	QStringList types;
 
 	types << MimeDataHelper2<DAVA::Entity>::GetMimeType();
-	types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
+	types << MimeDataHelper2<DAVA::ParticleEmitter>::GetMimeType();
+    types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
 	types << MimeDataHelper2<DAVA::ParticleForce>::GetMimeType();
 
 	return types;
@@ -340,6 +357,32 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 			}
 		}
 		break;
+
+    case DropingEmitter:
+        {
+
+            DAVA::ParticleEffectComponent *effect = GetEffectComponent(SceneTreeItemEntity::GetEntity(parentItem));                
+            QVector<DAVA::ParticleEmitter *> emittersV = MimeDataHelper2<DAVA::ParticleEmitter>::DecodeMimeData(data);
+            if(NULL != effect && emittersV.size() > 0)
+            {                
+                DAVA::Vector<DAVA::ParticleEmitter*> emittersGroup;
+                DAVA::Vector<DAVA::ParticleEffectComponent*> effectsGroup;
+                emittersGroup.reserve(emittersV.size());
+                effectsGroup.reserve(emittersV.size());
+                for(int i = 0; i < emittersV.size(); ++i)
+                {
+                    emittersGroup.push_back((DAVA::ParticleEmitter *) emittersV[i]);
+                    QModelIndex emitterIndex = GetIndex((DAVA::ParticleEmitter *) emittersV[i]);                    
+                    DAVA::ParticleEffectComponent *oldEffect = GetEffectComponent(SceneTreeItemEntity::GetEntity(GetItem(emitterIndex.parent())));
+                    effectsGroup.push_back(oldEffect);
+                }
+
+                curScene->structureSystem->MoveEmitter(emittersGroup, effectsGroup, effect, row);
+                ret = true;
+            }
+        }
+        break;
+
 	case DropingLayer:
 		{
 			
@@ -361,13 +404,18 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				}
 
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
+                DAVA::Vector<DAVA::ParticleEmitter*> emittersGroup;
                 layersGroup.reserve(layersV.size());
+                emittersGroup.reserve(layersV.size());
 				for(int i = 0; i < layersV.size(); ++i)
 				{
 					layersGroup.push_back((DAVA::ParticleLayer *) layersV[i]);
+                    QModelIndex emitterIndex = GetIndex((DAVA::ParticleLayer *) layersV[i]);
+                    DAVA::ParticleEmitter *oldEmitter = SceneTreeItemParticleEmitter::GetEmitter(GetItem(emitterIndex.parent()));                    
+                    emittersGroup.push_back(oldEmitter);
 				}
 
-				curScene->structureSystem->MoveLayer(layersGroup, emitter, beforeLayer);
+				curScene->structureSystem->MoveLayer(layersGroup, emittersGroup, emitter, beforeLayer);
 				ret = true;
 			}
 		}
@@ -493,6 +541,19 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 			}
 		}
 		break;
+    case DropingEmitter:
+        {
+            // accept layer to be dropped only to entity with particle emitter
+            if(NULL != parentItem) 
+            {
+                if (GetEffectComponent(SceneTreeItemEntity::GetEntity(parentItem)))
+                {
+                    ret = true;
+                }
+            }
+
+        }
+        break;
 	case DropingLayer:
 		{
 			// accept layer to be dropped only to entity with particle emitter
@@ -568,7 +629,8 @@ void SceneTreeModel::ResyncStructure(QStandardItem *item, DAVA::Entity *entity)
 void SceneTreeModel::RebuildIndexesCache()
 {
 	indexesCacheEntities.clear();
-	indexesCacheForces.clear();
+	indexesCacheEmitters.clear();
+    indexesCacheLayers.clear();
 	indexesCacheForces.clear();
 
 	for(int i = 0; i < rowCount(); ++i)
@@ -591,6 +653,14 @@ void SceneTreeModel::AddIndexesCache(SceneTreeItem *item)
 			}
 		}
 		break;
+    case SceneTreeItem::EIT_Emitter:
+    case SceneTreeItem::EIT_InnerEmitter:
+        {
+            DAVA::ParticleEmitter *emitter = SceneTreeItemParticleEmitter::GetEmitter(item);
+            if (emitter)
+                indexesCacheEmitters.insert(emitter, item->index());
+        }
+        break;
 	case SceneTreeItem::EIT_Layer:
 		{
 			DAVA::ParticleLayer *layer = SceneTreeItemParticleLayer::GetLayer(item);
@@ -669,6 +739,10 @@ int SceneTreeModel::GetDropType(const QMimeData *data) const
         if(MimeDataHelper2<DAVA::Entity>::IsValid(data))
         {
 			ret = DropingEntity;
+        }
+        else if(MimeDataHelper2<DAVA::ParticleEmitter>::IsValid(data))
+        {
+            ret = DropingEmitter;
         }
         else if(MimeDataHelper2<DAVA::ParticleLayer>::IsValid(data))
         {

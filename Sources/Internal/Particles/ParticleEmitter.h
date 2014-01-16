@@ -74,8 +74,7 @@ public:
 		STATE_STOPPED   //emitter is completely stopped - no processing at all
 	};
 
-	ParticleEmitter();
-	virtual ~ParticleEmitter();
+	ParticleEmitter();	
 	ParticleEmitter * Clone();
 	
 	void LoadFromYaml(const FilePath & pathName, bool preserveInheritPosition=false); 
@@ -121,6 +120,8 @@ public:
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<Vector3> > size;	
 
+protected:
+    virtual ~ParticleEmitter();
 
 private:
 	struct EmitterYamlCacheEntry
