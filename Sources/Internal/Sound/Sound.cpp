@@ -207,6 +207,8 @@ Sound::eType Sound::GetType() const
 
 void Sound::SetVolume(float32 volume)
 {
+    DVASSERT(volume >= 0.f && volume <= 1.f);
+
 	FMOD_VERIFY(fmodInstanceGroup->setVolume(volume));
 }
 
