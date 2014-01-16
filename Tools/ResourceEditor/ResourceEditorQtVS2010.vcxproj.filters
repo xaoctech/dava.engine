@@ -3281,6 +3281,9 @@
     <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">

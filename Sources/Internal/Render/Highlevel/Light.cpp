@@ -122,7 +122,17 @@ const Vector3 & Light::GetDirection() const
 {
     return direction;
 }
-   
+
+void Light::SetPosition(const Vector3 & _position)
+{
+    position = _position;
+}
+
+void Light::SetDirection(const Vector3 & _direction)
+{
+    direction = _direction;
+}
+
 const Color & Light::GetAmbientColor() const
 {
     return ambientColor;

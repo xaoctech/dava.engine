@@ -34,6 +34,8 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/TextureDescriptor.h"
 
+#include "TextureBrowser/TextureInfo.h"
+
 #include <QAbstractItemDelegate>
 
 class QSortFilterProxyModel;
@@ -63,7 +65,7 @@ public:
 
 private slots:
 
-    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image);
+    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
 
 private:
     QRect GetBackgroundRect(const QStyleOptionViewItem & option) const;
