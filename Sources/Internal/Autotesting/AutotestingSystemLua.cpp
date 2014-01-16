@@ -551,12 +551,12 @@ String AutotestingSystemLua::GetText(UIControl *control)
 	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
 	if(uiStaticText)
 	{
-		return WStringToString(uiStaticText->GetText());
+		return UTF8Utils::EncodeToUTF8(uiStaticText->GetText());
 	}
 	UITextField *uiTextField = dynamic_cast<UITextField*>(control);
 	if(uiTextField)
 	{
-		return WStringToString(uiTextField->GetText());
+		return UTF8Utils::EncodeToUTF8(uiTextField->GetText());
 	}
 	return "";
 }
@@ -723,6 +723,7 @@ bool AutotestingSystemLua::LoadScriptFromFile(const FilePath &luaFilePath)
 	{
 		char *data = new char[file->GetSize()];
 		file->Read(data, file->GetSize());
+
 		if (luaL_loadbuffer(luaState, data, file->GetSize(), luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK)
 		{
 			return true;
