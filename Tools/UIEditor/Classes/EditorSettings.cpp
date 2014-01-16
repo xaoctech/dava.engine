@@ -129,3 +129,36 @@ bool EditorSettings::IsPixelized()
 {
     return settings->GetBool("editor.pixelized");
 }
+
+Color EditorSettings::GetCurrentBackgroundFrameColor() const
+{
+    return GetColor("editor.currentBackgroundFrameColor");
+}
+
+void EditorSettings::SetCurrentBackgroundFrameColor(const Color& color)
+{
+    SetColor("editor.currentBackgroundFrameColor", color);
+}
+
+Color EditorSettings::GetCustomBackgroundFrameColor() const
+{
+    return GetColor("editor.customBackgroundFrameColor");
+}
+
+void EditorSettings::SetCustomBackgroundFrameColor(const Color& color)
+{
+    SetColor("editor.customBackgroundFrameColor", color);
+}
+
+Color EditorSettings::GetColor(const String& colorName) const
+{
+    Vector4 colorValues = settings->GetVector4(colorName);
+    return Color(colorValues.x, colorValues.y, colorValues.z, colorValues.w);
+}
+
+void EditorSettings::SetColor(const String& colorName, const Color& color)
+{
+    Vector4 colorValues(color.r, color.g, color.b, color.a);
+    settings->SetVector4(colorName, colorValues);
+    Save();
+}
