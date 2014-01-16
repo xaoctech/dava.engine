@@ -34,7 +34,7 @@ namespace DAVA
     const FastName NMaterialName::PIXELLIT_SPECULARMAP_ALPHATEST = FastName("~res:/Materials/Legacy/PixelLit.SpecularMap.Alphatest.material");
     const FastName NMaterialName::TEXTURED_ALPHABLEND = FastName("~res:/Materials/Legacy/Textured.Alphablend.material");
     const FastName NMaterialName::DECAL_ALPHATEST = FastName("~res:/Materials/Legacy/Decal.Alphatest.material");
-    const FastName NMaterialName::PIXELLIT_SPECUALRMAP_OPAQUE = FastName("~res:/Materials/Legacy/PixelLit.SpecularMap.Opaque.material");
+    const FastName NMaterialName::PIXELLIT_SPECULARMAP_OPAQUE = FastName("~res:/Materials/Legacy/PixelLit.SpecularMap.Opaque.material");
     const FastName NMaterialName::TEXTURED_ALPHATEST = FastName("~res:/Materials/Legacy/Textured.Alphatest.material");
     const FastName NMaterialName::DECAL_OPAQUE = FastName("~res:/Materials/Legacy/Decal.Opaque.material");
     const FastName NMaterialName::SHADOWRECT_ALPHA = FastName("~res:/Materials/Legacy/ShadowRectAlpha.material");

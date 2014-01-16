@@ -52,6 +52,8 @@
 #include <QTimer>
 #include <QPalette>
 
+#include "Render/Material/NMaterialNames.h"
+
 using namespace DAVA;
 
 SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
@@ -623,13 +625,12 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *
     SpeedTreeInfo info;
     if(renderObject)
     {
-		FastName speedTreeTemplateName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
         Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
         int32 rbCount = renderObject->GetRenderBatchCount();
         for(int32 i = 0; i < rbCount; ++i)
         {
             RenderBatch * rb = renderObject->GetRenderBatch(i);
-            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == speedTreeTemplateName)
+            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == NMaterialName::SPEEDTREE_LEAF)
             {
                 PolygonGroup * pg = rb->GetPolygonGroup();
                 int32 triangleCount = pg->GetIndexCount() / 3;
