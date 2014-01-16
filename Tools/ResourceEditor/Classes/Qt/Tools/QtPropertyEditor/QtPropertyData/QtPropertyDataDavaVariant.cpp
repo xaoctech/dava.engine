@@ -45,8 +45,6 @@
 #include <QCoreApplication>
 #include <QKeyEvent>
 
-#include "Deprecated/EditorSettings.h"
-
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
 	, allowedValuesLocked(false)

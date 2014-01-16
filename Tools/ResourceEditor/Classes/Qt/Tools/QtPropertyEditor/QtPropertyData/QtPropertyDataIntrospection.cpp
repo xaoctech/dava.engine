@@ -35,22 +35,25 @@
 #include "QtPropertyDataInspDynamic.h"
 #include "QtPropertyDataInspColl.h"
 
-QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info)
+QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, bool autoAddChilds)
 	: object(_object)
 	, info(_info)
 {
-	while(NULL != _info && NULL != object)
+	if(autoAddChilds)
 	{
-		for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
+		while(NULL != _info && NULL != object)
 		{
-			const DAVA::InspMember *member = _info->Member(i);
-			if(NULL != member)
+			for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
 			{
-                AddMember(member);
+				const DAVA::InspMember *member = _info->Member(i);
+				if(NULL != member)
+				{
+					AddMember(member);
+				}
 			}
-		}
 
-		_info = _info->BaseInfo();
+			_info = _info->BaseInfo();
+		}
 	}
 
 	SetEnabled(false);
@@ -115,19 +118,19 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
 				DAVA::InspInfoDynamic *dynamicInfo = member->Dynamic()->GetDynamicInfo();
 				if(NULL != dynamicInfo)
 				{
-					size_t count = dynamicInfo->MembersCount(_object); // this function can be slow
-					for(size_t i = 0; i < count; ++i)
+					DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(_object); // this function can be slow
+					for(size_t i = 0; i < membersList.size(); ++i)
 					{
-						int memberFlags = dynamicInfo->MemberFlags(_object, i);
+						int memberFlags = dynamicInfo->MemberFlags(_object, membersList[i]);
 						if(memberFlags & DAVA::I_VIEW)
 						{
-							QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(_object, dynamicInfo, i);
+							QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(_object, dynamicInfo, membersList[i]);
 							if(!(memberFlags & DAVA::I_EDIT))
 							{
 								dynamicMember->SetEnabled(false);
 							}
 
-							retData->ChildAdd(dynamicInfo->MemberName(_object, i), dynamicMember);
+							retData->ChildAdd(membersList[i].c_str(), dynamicMember);
 						}
 					}
 				}

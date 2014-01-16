@@ -42,7 +42,6 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 	DVASSERT(material);
 	
 	setEditable(false);
-	setText(material->GetMaterialName().c_str());
     setData(QVariant::fromValue<DAVA::NMaterial *>(material));
     
 	switch(material->GetMaterialType())
@@ -64,8 +63,6 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 			setDropEnabled(false);
 			break;
 	}
-
-	Sync();
 }
 
 MaterialItem::~MaterialItem()
@@ -73,7 +70,19 @@ MaterialItem::~MaterialItem()
 
 QVariant MaterialItem::data(int role) const
 {
-    return QStandardItem::data(role);
+	QVariant ret;
+
+	switch(role)
+	{
+		case Qt::DisplayRole:
+			ret = QString(material->GetMaterialName().c_str());
+			break;
+		default:
+			ret = QStandardItem::data(role);
+			break;
+	}
+
+    return ret;
 }
 
 DAVA::NMaterial * MaterialItem::GetMaterial() const
@@ -81,107 +90,51 @@ DAVA::NMaterial * MaterialItem::GetMaterial() const
 	return material;
 }
 
-void MaterialItem::Sync()
+void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 {
-	QSet<DAVA::NMaterial *> materialsSet;
-
-	// remember all entity childs
-	for(int i = 0; i < material->GetChildrenCount(); ++i)
+	if((set && !(curFlag & flag)) || (!set && (curFlag & flag)))
 	{
-		materialsSet.insert(material->GetChild(i));
-	}
+		bool ok = true;
 
-	// remove items, that are not in set
-	for(int i = 0; i < rowCount(); ++i)
-	{
-		MaterialItem *childItem = (MaterialItem *)child(i);
-		if(!materialsSet.contains(childItem->GetMaterial()))
+		switch(flag)
 		{
-			removeRow(i);
-			i--;
-		}
-	}
+			case IS_MARK_FOR_DELETE:
+				set ? setBackground(QBrush(QColor(255, 0, 0, 15))) : setBackground(QBrush());
+				break;
 
-	materialsSet.clear();
-
-	// add items, that are not in childs
-	for(int row = 0, i = 0; i < material->GetChildrenCount(); ++i)
-	{
-		bool repeatStep;
-		DAVA::NMaterial *childMaterial = material->GetChild(i);
-
-		do
-		{
-			MaterialItem *item = (MaterialItem *)child(i);
-			DAVA::NMaterial *itemMaterial = NULL;
-
-			if(NULL != item)
-			{
-				item->GetMaterial();
-			}
-
-			repeatStep = false;
-
-			// remove items that we already add
-			while(materialsSet.contains(itemMaterial))
-			{
-				removeRow(row);
-
-				item = (MaterialItem *)child(row);
-				itemMaterial = item->GetMaterial();
-			}
-
-			// append entity that isn't in child items list
-			if(NULL == item)
-			{
-				appendRow(new MaterialItem(childMaterial));
-			}
-			else if(childMaterial != itemMaterial)
-			{
-				// now we should decide what to do: remove item or insert it
-
-				// calculate len until itemMaterial will be found in real entity childs
-				int lenUntilRealEntity = 0;
-				for(int j = i; j < material->GetChildrenCount(); ++j)
+			case IS_PART_OF_SELECTION:
+				if(set)
 				{
-					if(material->GetChild(j) == itemMaterial)
-					{
-						lenUntilRealEntity = j - i;
-						break;
-					}
-				}
-
-				// calculate len until current real entity child will be found in current item childs
-				int lenUntilItem = 0;
-				for(int j = i; j < rowCount(); ++j)
-				{
-					MaterialItem *itm = (MaterialItem *)child(j);
-
-					if(NULL != itm && childMaterial == itm->GetMaterial())
-					{
-						lenUntilItem = j - i;
-						break;
-					}
-				}
-
-				if(lenUntilRealEntity >= lenUntilItem)
-				{
-					removeRow(row);
-					repeatStep = true;
+					QFont curFont = font();
+					curFont.setBold(true);
+					setFont(curFont); 
 				}
 				else
 				{
-					insertRow(row, new MaterialItem(childMaterial));
+					setFont(QFont());
 				}
+				break;
+
+			default:
+				ok = false;
+				break;
+		}
+
+		if(ok)
+		{
+			if(set)
+			{
+				curFlag |= (int) flag;
 			}
 			else
 			{
-				item->Sync();
+				curFlag &= ~ (int) flag;
 			}
-		} while(repeatStep);
-
-		// remember that we add that entity
-		materialsSet.insert(childMaterial);
-		row++;
+		}
 	}
+}
+
+bool MaterialItem::GetFlag(MaterialFlag flag)
+{
+	return (bool) (curFlag & flag);
 }

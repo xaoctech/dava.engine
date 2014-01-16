@@ -38,6 +38,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
+
 namespace DAVA
 {
     
@@ -90,7 +91,6 @@ void ParticleEffectComponent::Start()
 {
 	isPaused = false;
 	GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::START_PARTICLE_EFFECT);	
-	
 }
 
 void ParticleEffectComponent::Stop(bool isDeleteAllParticles)

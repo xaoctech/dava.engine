@@ -72,7 +72,9 @@ public:
 
 	inline iterator begin() const;
 	inline iterator end() const;
-	
+
+	inline iterator find(const K &key);
+
 	V& valueByIndex(size_t index);
 	const V& valueByIndex(size_t index) const;
 	
@@ -388,6 +390,25 @@ inline typename HashMap<K, V>::iterator HashMap<K, V>::end() const
 {
 	iterator i(this);
 	return i.GoEnd();
+}
+
+template <typename K, typename V>
+inline typename HashMap<K, V>::iterator HashMap<K, V>::find(const K &key)
+{
+	HashMap<K, V>::iterator i(this);
+	HashMapItem *item = GetItem(key);
+
+	if(NULL != item)
+	{
+		i.current_item = item;
+		i.current_index = GetIndex(key);
+	}
+	else
+	{
+		i.GoEnd();
+	}
+
+	return i;
 }
 
 template <typename K, typename V>

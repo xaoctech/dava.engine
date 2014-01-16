@@ -89,7 +89,7 @@ protected slots:
 	void SceneDeactivated(SceneEditor2 *scene);
     void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-    
+
 protected:
     
     virtual void showEvent ( QShowEvent * event );

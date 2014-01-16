@@ -56,7 +56,7 @@ namespace DAVA
 			minmaxTextureIndex = src.minmaxTextureIndex;
 			memcpy(textures, src.textures, sizeof(textures));
 			
-			RetainAll();
+			//RetainAll();
 		}
 		
 		TextureStateData& operator=(const TextureStateData& src)

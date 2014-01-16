@@ -62,10 +62,6 @@ public:
     virtual ~RenderSystem();
     
     /**
-        \brief Get Render Layer Manager to have ability to get all render layers from RenderSystem.
-     */
-    const RenderLayerManager * GetRenderLayerManager() const { return &renderLayerManager; }
-    /**
         \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
      */
     const RenderPassManager * GetRenderPassManager() const { return &renderPassManager; };
@@ -134,6 +130,7 @@ public:
     void AddLight(Light * light);
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
+    void SetForceUpdateLights();
 
 	//RenderLayer * AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer);
 	//RenderPass * GetRenderPass(const FastName & passName);
@@ -160,12 +157,12 @@ private:
     Vector<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     
-    RenderLayerManager renderLayerManager;
     RenderPassManager renderPassManager;
     
     
     Vector<RenderObject*> renderObjectArray;	
     Vector<Light*> lights;
+    bool forceUpdateLights;
     
     RenderHierarchy * renderHierarchy;
 	bool hierarchyInitialized;

@@ -36,6 +36,7 @@
 #include <QFont>
 #include <QFontMetrics>
 
+#include "TextureInfo.h"
 #include "DAVAEngine.h"
 
 class QPainter;
@@ -59,13 +60,13 @@ public:
 	void setDrawRule(DrawRule rule);
 
 private slots:
-	void textureReadyThumbnail(const DAVA::TextureDescriptor *descriptor,  const DAVA::Vector<QImage>& images);
+	void textureReadyThumbnail(const DAVA::TextureDescriptor *descriptor,  const TextureInfo & images);
 
 private:
 	QFont nameFont;
 	QFontMetrics nameFontMetrics;
-	mutable QMap<const DAVA::TextureDescriptor *, QModelIndex> descriptorIndexes;
-
+	mutable QMap<DAVA::FilePath, QModelIndex> descriptorIndexes;
+    
 	DrawRule drawRule;
 
 	void drawPreviewBig(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;

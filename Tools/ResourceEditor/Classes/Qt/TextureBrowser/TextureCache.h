@@ -35,6 +35,8 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FilePath.h"
 
+#include "TextureInfo.h"
+
 #include <QImage>
 
 class TextureCache : public QObject, public DAVA::Singleton<TextureCache>
@@ -48,11 +50,11 @@ private:
         : weight(0)
 		{ }
         
-		CacheEntity(const DAVA::Vector<QImage> & _images, const size_t _weight)
-        : images(_images), weight(_weight)
+		CacheEntity(const TextureInfo & _info, const size_t _weight)
+        : info(_info), weight(_weight)
 		{ }
         
-		DAVA::Vector<QImage> images;
+		TextureInfo info;
 		size_t weight;
 	};
     
@@ -62,6 +64,12 @@ public:
     ~TextureCache();
 
     static const int THUMBNAIL_SIZE = 64;
+    
+	DAVA::uint32 getThumbnailSize(const DAVA::TextureDescriptor *descriptor);
+    DAVA::uint32 getOriginalSize(const DAVA::TextureDescriptor *descriptor);
+    DAVA::uint32 getOriginalFileSize(const DAVA::TextureDescriptor *descriptor);
+    DAVA::uint32 getConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+    DAVA::uint32 getConvertedFileSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
     
     DAVA::Vector<QImage> getThumbnail(const DAVA::TextureDescriptor *descriptor);
 	DAVA::Vector<QImage> getOriginal(const DAVA::TextureDescriptor *descriptor);
@@ -74,26 +82,25 @@ public:
 
 signals:
 
-    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image);
-    void OriginalLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image);
-    void ConvertedLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage> & image);
+    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+    void OriginalLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+    void ConvertedLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & image);
     
 protected slots:
     
     void ClearCache();
     
-	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
-    void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& image);
-	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& image);
+	void ReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+    void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
+	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & image);
 
 protected:
     
-    void setThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images);
-	void setOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images);
-	void setConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& images);
+    void setThumbnail(const DAVA::TextureDescriptor *descriptor, const TextureInfo & images);
+	void setOriginal(const DAVA::TextureDescriptor *descriptor, const TextureInfo & images);
+	void setConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & images);
 
     void ClearCacheTail(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const size_t currentWeight, const size_t maxWeight);
-    
     void RemoveFromCache(DAVA::Map<const DAVA::FilePath, CacheEntity> & cache, const DAVA::TextureDescriptor *descriptor);
     
 private:

@@ -524,6 +524,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     String name = archive->GetString("##name");
     
     bool removeChildren = false;
+    bool skipNode = false;
     
     Entity * node = NULL;
     if (name == "LandscapeNode")
@@ -543,7 +544,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 	}
 	else
     {
-        node = dynamic_cast<Entity*>(ObjectFactory::Instance()->New<BaseObject>(name));
+        BaseObject *obj = ObjectFactory::Instance()->New<BaseObject>(name);
+        node = dynamic_cast<Entity*>(obj);
         if(node)
         {
             node->SetScene(scene);
@@ -552,7 +554,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         }
         else //in case if editor class is loading in non-editor sprsoject
         {
+            SafeRelease(obj);
             node = new Entity();
+            skipNode = true;
         }
     }
 
@@ -578,12 +582,21 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     if (removeChildren && childrenCount)
     {
         node->RemoveAllChildren();
+<<<<<<< HEAD
     }	
    
     
     ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     if (effect && (effect->loadedVersion == 0))
         effect->CollapseOldEffect(&serializationContext);
+=======
+    }
+
+    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    {
+        parent->AddNode(node);
+    }
+>>>>>>> feature-integration-new-materials
     
     SafeRelease(node);
     SafeRelease(archive);
