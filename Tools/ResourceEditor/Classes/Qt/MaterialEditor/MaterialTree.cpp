@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "MaterialTree.h"
+#include "MaterialFilterModel.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneSignals.h"
 
@@ -112,6 +113,7 @@ void MaterialTree::SelectEntities(DAVA::NMaterial *material)
 				curScene->selectionSystem->AddSelection(curScene->selectionSystem->GetSelectableEntity(entity));
 			}
 		}
+
 	}
 }
 
@@ -225,6 +227,27 @@ void MaterialTree::OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
 		treeModel->invalidate();
 
 		expandAll();
+
+        //const auto nEntities = selected->Size();
+        //if ( nEntities == 1 )
+        //{
+        //    Entity *entity = selected->GetEntity( 0 );
+        //}
+        //    //entity->get
+        //    const auto nMaterials = treeModel->rowCount();
+        //    for ( auto i = 0; i < nMaterials; i++ )
+        //    {
+        //        QModelIndex index = treeModel->index( i, 0 );
+        //        NMaterial *material = treeModel->GetMaterial( index );
+        //        if ( selected->HasEntity( entity ) )
+        //        {
+        //            scrollTo( index, QAbstractItemView::PositionAtCenter );
+        //            break;
+        //        }
+        //    }
+        //QModelIndex index = treeModel->GetIndex( material );
+        //scrollTo(index, QAbstractItemView::PositionAtCenter);
+        //}
 	}
 }
 

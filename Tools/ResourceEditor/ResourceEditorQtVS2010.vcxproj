@@ -446,6 +446,7 @@
     <ClCompile Include="Classes\Qt\Main\StatusBar.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialEditor.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialItem.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialModel.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialTree.cpp" />
@@ -606,6 +607,7 @@
     <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialAssignSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialFilterModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialTree_moc.cpp" />
@@ -1057,6 +1059,7 @@
     <ClInclude Include="Classes\Qt\Main\StatusBar.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialEditor.h" />
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialFilterModel.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialItem.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialModel.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTree.h" />

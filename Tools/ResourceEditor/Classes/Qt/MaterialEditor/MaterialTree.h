@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MaterialModel.h"
 
 class EntityGroup;
+class MaterialFilteringModel;
 
 class MaterialTree : public QTreeView
 {
