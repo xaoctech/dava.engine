@@ -724,9 +724,11 @@ void MainWindow::SetupViewMenu()
         QString colorName;
     } colorsMap[] =
     {
-        { Qt::white, "White" },
         { Qt::black, "Black" },
-        { Qt::green, "Green" }
+        { QColor(0x33, 0x33, 0x33, 0xFF), "Default" },
+        { QColor(0x53, 0x53, 0x53, 0xFF), "Dark Gray" },
+        { QColor(0xB8, 0xB8, 0xB8, 0xFF), "Medium Gray" },
+        { QColor(0xD6, 0xD6, 0xD6, 0xFF), "Light Gray" },
     };
     
     Color curBackgroundColor = EditorSettings::Instance()->GetCurrentBackgroundFrameColor();
