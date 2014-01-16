@@ -52,6 +52,8 @@
 #include <QTimer>
 #include <QPalette>
 
+#include "Render/Material/NMaterialNames.h"
+
 using namespace DAVA;
 
 SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
@@ -275,16 +277,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathname);
-        if(!descriptor)
-        {
-            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.GetAbsolutePathname().c_str());
-            continue;
-        }
-        
-        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
-        
-        SafeRelease(descriptor);
+        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
     }
 
     return textureSize;
@@ -623,13 +616,12 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *
     SpeedTreeInfo info;
     if(renderObject)
     {
-		FastName speedTreeTemplateName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
         Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
         int32 rbCount = renderObject->GetRenderBatchCount();
         for(int32 i = 0; i < rbCount; ++i)
         {
             RenderBatch * rb = renderObject->GetRenderBatch(i);
-            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == speedTreeTemplateName)
+            if(rb->GetMaterial() && rb->GetMaterial()->GetMaterialTemplate()->name == NMaterialName::SPEEDTREE_LEAF)
             {
                 PolygonGroup * pg = rb->GetPolygonGroup();
                 int32 triangleCount = pg->GetIndexCount() / 3;

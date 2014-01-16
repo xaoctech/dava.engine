@@ -37,6 +37,8 @@
 
 #include "Utils/StringFormat.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 namespace DAVA
 {
 	class MaterialNameMapper
@@ -53,15 +55,15 @@ namespace DAVA
 				{
 					if(mat->GetAlphablend())
                     {
-                        name = FastName("~res:/Materials/Legacy/Textured.Alphablend.material");
+                        name = NMaterialName::TEXTURED_ALPHABLEND;
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/Textured.Alphatest.material");
+                        name = NMaterialName::TEXTURED_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/Textured.Opaque.material");
+                        name = NMaterialName::TEXTURED_OPAQUE;
                     }
                     
 					break;
@@ -71,11 +73,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/TextureLightmap.Alphatest.material");
+                        name = NMaterialName::TEXTURE_LIGHTMAP_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/TextureLightmap.Opaque.material");
+                        name = NMaterialName::TEXTURE_LIGHTMAP_OPAQUE;
                     }
 
 					break;
@@ -85,15 +87,15 @@ namespace DAVA
 				{
 					if(mat->GetAlphablend())
                     {
-                        name = FastName("~res:/Materials/Legacy/Decal.Alphablend.material");
+                        name = NMaterialName::DECAL_ALPHABLEND;
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/Decal.Alphatest.material");
+                        name = NMaterialName::DECAL_ALPHATEST;
                     }
 					else
 					{
-						name = FastName("~res:/Materials/Legacy/Decal.Opaque.material");
+						name = NMaterialName::DECAL_OPAQUE;
 					}
 
 					break;
@@ -103,15 +105,15 @@ namespace DAVA
 				{
 					if(mat->GetAlphablend())
                     {
-                        name = FastName("~res:/Materials/Legacy/Detail.Alphablend.material");
+                        name = NMaterialName::DETAIL_ALPHABLEND;
                     }
                     else if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/Detail.Alphatest.material");
+                        name = NMaterialName::DETAIL_ALPHATEST;
                     }
 					else
 					{
-						name = FastName("~res:/Materials/Legacy/Detail.Opaque.material");
+						name = NMaterialName::DETAIL_OPAQUE;
 					}
                     
 					break;
@@ -121,11 +123,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexLit.Alphatest.material");
+                        name = NMaterialName::VERTEXLIT_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexLit.Opaque.material");
+                        name = NMaterialName::VERTEXLIT_OPAQUE;
                     }
 					break;
 				}
@@ -134,11 +136,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.Alphatest.material");
+                        name = NMaterialName::PIXELLIT_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.Opaque.material");
+                        name = NMaterialName::PIXELLIT_OPAQUE;
                     }
 
 					break;
@@ -148,11 +150,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.Specular.Alphatest.material");
+                        name = NMaterialName::PIXELLIT_SPECULAR_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.Specular.Opaque.material");
+                        name = NMaterialName::PIXELLIT_SPECULAR_OPAQUE;
                     }
 
 					break;
@@ -162,11 +164,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphatest())
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.SpecularMap.Alphatest.material");
+                        name = NMaterialName::PIXELLIT_SPECULARMAP_ALPHATEST;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/PixelLit.SpecularMap.Opaque.material");
+                        name = NMaterialName::PIXELLIT_SPECULARMAP_OPAQUE;
                     }
 
 					break;
@@ -176,11 +178,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphablend())
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexColor.Alphablend.material");
+                        name = NMaterialName::VERTEXCOLOR_ALPHABLEND;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexColor.Opaque.material");
+                        name = NMaterialName::VERTEXCOLOR_OPAQUE;
                     }
 
 					break;
@@ -190,11 +192,11 @@ namespace DAVA
 				{
 					if(mat->GetAlphablend())
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexColor.FrameBlend.Alphablend.material");
+                        name = NMaterialName::VERTEXCOLOR_FRAMEBLEND_ALPHABLEND;
                     }
                     else
                     {
-                        name = FastName("~res:/Materials/Legacy/VertexColor.FrameBlend.Opaque.material");
+                        name = NMaterialName::VERTEXCOLOR_FRAMEBLEND_OPAQUE;
                     }
 					
 					break;
@@ -203,13 +205,13 @@ namespace DAVA
 					
 				case Material::MATERIAL_SPEED_TREE_LEAF:
 				{
-					name = FastName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
+					name = NMaterialName::SPEEDTREE_LEAF;
 					break;
 				}
 					
 				case Material::MATERIAL_SKYBOX:
 				{
-					name = FastName("~res:/Materials/Legacy/Skybox.material");
+					name = NMaterialName::SKYBOX;
 					break;
 				}
 					

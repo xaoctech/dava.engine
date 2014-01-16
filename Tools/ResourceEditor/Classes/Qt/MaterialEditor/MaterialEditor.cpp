@@ -359,7 +359,7 @@ void MaterialEditor::ScanTemplates()
 	templates.append("");
 	ui->templateBox->addItem("Unknown", i++);
 
-	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/Legacy/assignable.txt");
+	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/assignable.txt");
 	if(materialsListPath.Exists())
 	{
 		QString materialsListDir = materialsListPath.GetDirectory().GetAbsolutePathname().c_str();

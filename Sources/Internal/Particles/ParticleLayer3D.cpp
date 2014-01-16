@@ -39,6 +39,8 @@
 #include "ParticleEmitter3D.h"
 #include "Render/Highlevel/RenderFastNames.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 #define MAKE_BLEND_KEY(SRC, DST) (SRC | DST << 16)
 
 namespace DAVA
@@ -58,8 +60,8 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
 		ParticleLayer3D::regularMaterial = NMaterial::CreateMaterial(PARTICLE_MATERIAL_NAME,
-														 FastName("~res:/Materials/Legacy/Particles/Particles.material"),
-														 NMaterial::DEFAULT_QUALITY_NAME);
+														             NMaterialName::PARTICLES,
+                                                                     NMaterial::DEFAULT_QUALITY_NAME);
 		ParticleLayer3D::regularMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	}
 	
@@ -67,8 +69,8 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	{
 		//VI: do not call release on this material. It should be alive even with no children
 		ParticleLayer3D::frameBlendMaterial = NMaterial::CreateMaterial(PARTICLE_FRAMEBLEND_MATERIAL_NAME,
-														 FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"),
-														 NMaterial::DEFAULT_QUALITY_NAME);
+                                                                        NMaterialName::PARTICLES_FRAMEBLEND,
+														                NMaterial::DEFAULT_QUALITY_NAME);
 		ParticleLayer3D::frameBlendMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	}
 	
