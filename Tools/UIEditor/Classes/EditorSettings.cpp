@@ -32,6 +32,8 @@
 #include "ResourcesManageHelper.h"
 #include <QString>
 
+static const Color DEFAULT_BACKGROUND_FRAME_COLOR(0.2f, 0.2f, 0.2f, 1.0f);
+
 EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();    
@@ -132,7 +134,7 @@ bool EditorSettings::IsPixelized()
 
 Color EditorSettings::GetCurrentBackgroundFrameColor() const
 {
-    return GetColor("editor.currentBackgroundFrameColor", Color::Black);
+    return GetColor("editor.currentBackgroundFrameColor", DEFAULT_BACKGROUND_FRAME_COLOR);
 }
 
 void EditorSettings::SetCurrentBackgroundFrameColor(const Color& color)
@@ -142,7 +144,7 @@ void EditorSettings::SetCurrentBackgroundFrameColor(const Color& color)
 
 Color EditorSettings::GetCustomBackgroundFrameColor() const
 {
-    return GetColor("editor.customBackgroundFrameColor", Color::Black);
+    return GetColor("editor.customBackgroundFrameColor", DEFAULT_BACKGROUND_FRAME_COLOR);
 }
 
 void EditorSettings::SetCustomBackgroundFrameColor(const Color& color)
