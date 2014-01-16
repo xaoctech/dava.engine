@@ -57,7 +57,7 @@ MaterialDelegate::MaterialDelegate(QSortFilterProxyModel * model, QObject *paren
 	, drawRule(DRAW_TEXT)
     , proxyModel(model)
 {
-	QObject::connect(TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage> &)), this, SLOT(ThumbnailLoaded(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage> &)));
+	QObject::connect(TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)), this, SLOT(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)));
 };
 
 QSize MaterialDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -76,7 +76,7 @@ void MaterialDelegate::SetDrawRule(DrawRule rule)
 	drawRule = rule;
 }
 
-void MaterialDelegate::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage> & image)
+void MaterialDelegate::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image)
 {
 	if(NULL != descriptor)
 	{
