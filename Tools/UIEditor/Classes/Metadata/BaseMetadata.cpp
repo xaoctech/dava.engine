@@ -269,16 +269,6 @@ UIControl::eControlState BaseMetadata::GetReferenceState()
     return UIControl::STATE_NORMAL;
 }
 
-Color BaseMetadata::QTColorToDAVAColor(const QColor& qtColor) const
-{
-    return Color(qtColor.redF(), qtColor.greenF(), qtColor.blueF(), qtColor.alphaF());
-}
-
-QColor BaseMetadata::DAVAColorToQTColor(const Color& davaColor) const
-{
-    return QColor(davaColor.r * 0xFF, davaColor.g * 0xFF, davaColor.b * 0xFF, davaColor.a * 0xFF);
-}
-
 void BaseMetadata::SetActiveStateIndex(int32 index)
 {
 	if (index >= STATE_INDEX_DEFAULT && index < (int32)GetStatesCount())
