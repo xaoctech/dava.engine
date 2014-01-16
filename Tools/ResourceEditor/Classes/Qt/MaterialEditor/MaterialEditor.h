@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QDialog>
 #include "DAVAEngine.h"
 
-#include "MaterialModel.h"
 #include "Scene/SceneSignals.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
@@ -63,6 +62,7 @@ protected slots:
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
+    void onFilterChanged();
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -73,6 +73,8 @@ protected:
 	void ScanTemplates();
 
 private:
+    void initActions();
+
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 

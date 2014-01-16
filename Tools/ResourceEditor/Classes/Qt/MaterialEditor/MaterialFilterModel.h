@@ -56,6 +56,7 @@ public:
         SHOW_ALL,
         SHOW_ONLY_INSTANCES,
         SHOW_INSTANCES_AND_MATERIALS,
+        SHOW_NOTHING,
     };
 
 public:
@@ -68,7 +69,8 @@ public:
 	DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const ;
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-    void setFilterType( eFilterType type );
+    void setFilterType( int type );
+    int getFilterType() const;
 	
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 
