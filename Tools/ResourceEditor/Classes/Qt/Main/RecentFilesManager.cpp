@@ -38,7 +38,7 @@ DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
 	if(recentFilesVariant.GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
 	{
 		KeyedArchive* archiveRecentFiles = recentFilesVariant.AsKeyedArchive();
-		DAVA::int32 size = archiveRecentFiles->Count();
+		DAVA::uint32 size = archiveRecentFiles->Count();
 		retVector.resize(size);
 		for (DAVA::uint32 i = 0; i < size; ++i)
 		{
@@ -60,7 +60,7 @@ void RecentFilesManager::SetFileToRecent(const DAVA::String& file)
     vectorToSave.insert(vectorToSave.begin(), stringToInsert);
     DAVA::uint32 size = vectorToSave.size() > RECENT_FILES_MAX_COUNT ? RECENT_FILES_MAX_COUNT : vectorToSave.size();
     KeyedArchive* archive = new KeyedArchive();
-    for (DAVA::int32 i = 0; i < size; ++i)
+    for (DAVA::uint32 i = 0; i < size; ++i)
     {
         archive->SetString(Format("%d",i), vectorToSave[i]);
     }
