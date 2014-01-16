@@ -28,8 +28,8 @@
 
 
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
+#ifndef __MATERIALS_FILTER_MODEL_H__
+#define __MATERIALS_FILTER_MODEL_H__
 
 #include "Render/Material/NMaterial.h"
 
@@ -43,33 +43,41 @@ class SceneEditor2;
 class MaterialItem;
 class Command2;
 class EntityGroup;
+class MaterialModel;
 
-class MaterialModel: public QStandardItemModel
+class MaterialFilteringModel
+    : public QSortFilterProxyModel
 {
     Q_OBJECT
-    
+
 public:
-    MaterialModel(QObject *parent = 0);
-    virtual ~MaterialModel();
-    
-    void SetScene(SceneEditor2 * scene);
-	void SetSelection(const EntityGroup *group);
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
+    enum eFilterType
+    {
+        SHOW_ALL,
+        SHOW_ONLY_INSTANCES,
+        SHOW_INSTANCES_AND_MATERIALS,
+    };
+
+public:
+	MaterialFilteringModel(MaterialModel *treeModel, QObject *parent = NULL);
 
 	void Sync();
-	
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+	void SetScene(SceneEditor2 * scene);
+	void SetSelection(const EntityGroup *group);
+	DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
+	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const ;
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+    void setFilterType( eFilterType type );
+	
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 
 protected:
-	SceneEditor2 *curScene;
+	MaterialModel *materialModel;
+
+private:
+    eFilterType filterType;
 };
 
 
-Q_DECLARE_METATYPE(DAVA::NMaterial *)
-
-#endif // __MATERIALS_MODEL_H__
+#endif // __MATERIALS_FILTER_MODEL_H__
