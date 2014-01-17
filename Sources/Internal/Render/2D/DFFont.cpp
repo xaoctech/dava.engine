@@ -152,7 +152,7 @@ namespace DAVA {
 				}
 			}
 			
-			float32 width = (charDescription.xAdvance) * sizeScale;
+			float32 width = (charDescription.width) * sizeScale;
 			
 			float32 startHeight = charDescription.yOffset * sizeScale;
 			float32 fullHeight = (charDescription.height + charDescription.yOffset) * sizeScale;
