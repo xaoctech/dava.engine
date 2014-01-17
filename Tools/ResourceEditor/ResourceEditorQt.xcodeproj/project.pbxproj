@@ -36,6 +36,7 @@
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8BAD5AB185213A600C98C8D /* QtPropertyDataInspDynamic.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */; };
 		E8BAD5D31859F48600C98C8D /* MaterialAssignSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5CB1859F48600C98C8D /* MaterialAssignSystem.cpp */; };
@@ -666,6 +667,8 @@
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspDynamicModifyCommand.cpp; sourceTree = "<group>"; };
+		E881535018883A630028AFD3 /* InspDynamicModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspDynamicModifyCommand.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataInspDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AA185213A600C98C8D /* QtPropertyDataInspDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataInspDynamic.h; sourceTree = "<group>"; };
@@ -2930,6 +2933,8 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */,
+				E881535018883A630028AFD3 /* InspDynamicModifyCommand.h */,
 				A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */,
 				A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */,
 				E8C99009184CD0EB00AFBF3F /* AddComponentCommand.cpp */,
@@ -4219,6 +4224,7 @@
 				E8C992E6184CD0EC00AFBF3F /* SceneTreeItemLayer.cpp in Build Sources */,
 				E8C99345184CD0EC00AFBF3F /* SelectPathWidgetBase.cpp in Build Sources */,
 				E8BAD7311859F50300C98C8D /* QtPropertyDataInspMember_moc.cpp in Build Sources */,
+				E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */,
 				E8BAD71C1859F50300C98C8D /* TextureProperties_moc.cpp in Build Sources */,
 				E8BAD6B31859F50300C98C8D /* ConsoleView_moc.cpp in Build Sources */,
 				E8C992BD184CD0EC00AFBF3F /* RulerToolPanel.cpp in Build Sources */,
