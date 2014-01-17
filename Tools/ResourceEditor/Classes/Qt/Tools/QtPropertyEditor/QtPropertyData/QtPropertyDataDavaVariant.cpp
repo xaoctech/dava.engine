@@ -268,8 +268,8 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 	case DAVA::VariantType::TYPE_FILEPATH:
 		curVariantValue.SetFilePath(value.toString().toStdString());
 		break;
-
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
+		break;
 	default:
 		break;
 	}

@@ -594,7 +594,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
 
-    SafeRelease(descriptor);
+	delete descriptor;
 }
 
 
@@ -605,7 +605,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
     descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
 	
-	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps);
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED);
 	descriptor->settings.minFilter = ftItem.minFilter;
 	descriptor->settings.magFilter = ftItem.magFilter;
 	

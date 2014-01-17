@@ -217,7 +217,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 		sceneUtils.AddFile(pngPathname);
 	}
 	
-	SafeRelease(desc);
+	delete desc;
 }
 
 void SceneSaver::CopyReferencedObject( Entity *node)

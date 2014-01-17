@@ -1404,6 +1404,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VisibilityArray.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2506,6 +2509,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
