@@ -40,7 +40,7 @@ static Vector3 basisVectors[7*2] = {Vector3(), Vector3(),
 									Vector3(), Vector3(), 
 									Vector3(), Vector3(), 
 									Vector3(0,1,0), Vector3(0,0,1), 
-									Vector3(0,0,1), Vector3(1,0,0), 
+									Vector3(1,0,0), Vector3(0,0,1), 
 									Vector3(0,1,0), Vector3(1,0,0)};
 
 void ParticleRenderGroup::UpdateRenderBatch()
@@ -126,7 +126,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	ey.Normalize();
 	ez.Normalize();
 	basisVectors[2] = ey; basisVectors[3] = ez;
-	basisVectors[4] = ez; basisVectors[5] = ex;
+	basisVectors[4] = ex; basisVectors[5] = ez;
 	basisVectors[6] = ey; basisVectors[7] = ex;	
 
 	NMaterial *currMaterial = NULL;
