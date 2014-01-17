@@ -60,21 +60,8 @@ void SwitchSystem::Process(float32 timeElapsed)
 
 		if(sw->oldSwitchIndex != sw->newSwitchIndex)
 		{
-            //Dizz: lodsystem2 code
-            RenderObject * ro = GetRenderObject(entity);
-            if(ro)
-            {
-                ro->SetSwitchIndex(sw->newSwitchIndex);
-            }
+            SetSwitchHierarchy(entity, sw->newSwitchIndex);
 
-			int32 childrenCount = entity->GetChildrenCount();
-
-			sw->newSwitchIndex = Clamp(sw->newSwitchIndex, 0, (childrenCount - 1));//start counting from zero
-
-			for(int32 i = 0; i < childrenCount; ++i)
-			{
-				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
-			}
 			sw->oldSwitchIndex = sw->newSwitchIndex;
 			
 			ActionComponent* actionComponent = cast_if_equal<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));
@@ -96,14 +83,18 @@ void SwitchSystem::ImmediateEvent(Entity * entity, uint32 event)
 	}
 }
 
-void SwitchSystem::SetVisibleHierarchy(Entity * entity, bool visible)
+void SwitchSystem::SetSwitchHierarchy(Entity * entity, int32 switchIndex)
 {
-	entity->SetSwitchVisible(visible);
+    RenderObject * ro = GetRenderObject(entity);
+	if(ro)
+    {
+        ro->SetSwitchIndex(switchIndex);
+    }
 
 	uint32 size = entity->GetChildrenCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		SetVisibleHierarchy(entity->GetChild(i), visible);
+		SetSwitchHierarchy(entity->GetChild(i), switchIndex);
 	}
 }
 
