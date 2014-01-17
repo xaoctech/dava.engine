@@ -315,5 +315,10 @@ namespace DAVA {
 	{
 		return configPath;
 	}
+    
+    String DFFont::GetRawHashString()
+    {
+        return configPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
+    }
 	
 }

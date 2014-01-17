@@ -102,6 +102,10 @@ namespace DAVA
 								  Vector<int32> *charSizes = NULL) const;
 		float32 GetSpread() const;
 		
+    protected:
+        // Get the raw hash string (identical for identical fonts).
+        virtual String GetRawHashString();
+        
 	private:		
 		bool LoadConfig(const FilePath& path);
 		float32 GetSizeScale() const;
