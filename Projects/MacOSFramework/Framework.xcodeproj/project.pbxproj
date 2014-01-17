@@ -690,6 +690,9 @@
 		1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */; };
 		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1799E52716CCEC030058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		17B0616F1889264B00FD8007 /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
+		17B061701889264F00FD8007 /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC5FFE17DE11650075813E /* UIMovieView.cpp */; };
+		17B061711889276B00FD8007 /* WebViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17B16D3755000E09BAF /* WebViewControlMacOS.mm */; };
 		17DC600017DE11650075813E /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC5FFE17DE11650075813E /* UIMovieView.cpp */; };
 		17DC600117DE11650075813E /* UIMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC5FFF17DE11650075813E /* UIMovieView.h */; };
 		17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */; };
@@ -5810,6 +5813,7 @@
 				02E9E429173961DE00C501BC /* VolumeAnimatedObject.cpp in Sources */,
 				E898A19B16BD265400732C04 /* AnimatedObject.cpp in Sources */,
 				E898A19C16BD265400732C04 /* Animation.cpp in Sources */,
+				17B0616F1889264B00FD8007 /* UIWebView.cpp in Sources */,
 				E898A19D16BD265400732C04 /* AnimationManager.cpp in Sources */,
 				E898A19E16BD265400732C04 /* BezierSplineAnimation.cpp in Sources */,
 				E898A19F16BD265400732C04 /* Interpolation.cpp in Sources */,
@@ -5831,6 +5835,7 @@
 				E898A1B116BD265400732C04 /* Observable.cpp in Sources */,
 				E898A1B216BD265400732C04 /* Radix.cpp in Sources */,
 				E898A1B316BD265400732C04 /* CollisionObject2.cpp in Sources */,
+				17B061701889264F00FD8007 /* UIMovieView.cpp in Sources */,
 				E898A1B416BD265400732C04 /* CollisionPolygons.cpp in Sources */,
 				E898A1B516BD265400732C04 /* Collisions.cpp in Sources */,
 				E898A1B616BD265400732C04 /* ApplicationCore.cpp in Sources */,
@@ -6084,6 +6089,7 @@
 				7A16933F180EE618005F1FBC /* RectSwig.cpp in Sources */,
 				CCC7A46816F1D6170061EA5D /* ShadowRect.cpp in Sources */,
 				CCC7A46C16F1D6170061EA5D /* ShadowVolume.cpp in Sources */,
+				17B061711889276B00FD8007 /* WebViewControlMacOS.mm in Sources */,
 				CCC7A47016F1D6170061EA5D /* ShadowVolumeRenderPass.cpp in Sources */,
 				CCC7A47416F1D6170061EA5D /* SpriteObject.cpp in Sources */,
 				CCC7A47816F1D6170061EA5D /* SpriteRenderBatch.cpp in Sources */,
