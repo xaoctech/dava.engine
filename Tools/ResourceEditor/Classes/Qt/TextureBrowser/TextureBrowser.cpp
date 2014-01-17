@@ -630,6 +630,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
 		{
+			descriptor->Save(); //TODO: it's kostil for broken logic. We need to remove this code during refactoring of texture browser
 			texture->ReloadAs(curEditorImageGPUForTextures);
 		}
 	}
