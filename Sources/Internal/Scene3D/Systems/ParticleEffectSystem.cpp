@@ -39,6 +39,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/LodSystem.h"
+#include "Render/Material/NMaterialNames.h"
 
 
 namespace DAVA
@@ -80,8 +81,8 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
 {	
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
-	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"), FastName("~res:/Materials/Legacy/Particles/Particles.material"), NMaterial::DEFAULT_QUALITY_NAME);		
-	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"), FastName("~res:/Materials/Legacy/Particles/ParticlesFrameBlend.material"), NMaterial::DEFAULT_QUALITY_NAME);	
+	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"),  NMaterialName::PARTICLES, NMaterial::DEFAULT_QUALITY_NAME);		
+	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"),  NMaterialName::PARTICLES_FRAMEBLEND, NMaterial::DEFAULT_QUALITY_NAME);	
 }
 ParticleEffectSystem::~ParticleEffectSystem()
 {
