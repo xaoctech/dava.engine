@@ -305,11 +305,11 @@ void UIControlSystem::SwitchInputToControl(int32 eventID, UIControl *targetContr
 			targetControl->currentInputID = eventID;
 			if(targetControl->GetExclusiveInput())
 			{
-				SetExclusiveInputLocker(targetControl);
+				SetExclusiveInputLocker(targetControl, eventID);
 			}
 			else 
 			{
-				SetExclusiveInputLocker(NULL);
+				SetExclusiveInputLocker(NULL, -1);
 			}
 
 			targetControl->totalTouches++;
@@ -579,9 +579,20 @@ const Vector<UIEvent> & UIControlSystem::GetAllInputs()
 	return totalInputs;
 }
 	
-void UIControlSystem::SetExclusiveInputLocker(UIControl *locker)
+void UIControlSystem::SetExclusiveInputLocker(UIControl *locker, int32 lockEventId)
 {
 	SafeRelease(exclusiveInputLocker);
+    if (locker != NULL)
+    {
+        for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++)
+        {
+            if (it->tid != lockEventId && it->touchLocker != locker)
+            {//cancel all inputs excepts current input and inputs what allready handles by this locker.
+                CancelInput(&(*it));
+            }
+        }
+    }
+
 	exclusiveInputLocker = SafeRetain(locker);
 }
 	

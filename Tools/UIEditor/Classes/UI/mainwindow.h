@@ -89,6 +89,8 @@ private slots:
 	void FileMenuTriggered(QAction *resentScene);
 	void MenuFileWillShow();
 
+    void SetBackgroundColorMenuTriggered(QAction* action);
+
 	void OnUndoRequested();
 	void OnRedoRequested();
 	
@@ -136,8 +138,10 @@ private:
 	void UpdateScreenPosition();
 	
 	void InitMenu();
+    void SetupViewMenu();
 	void UpdateMenu();
 	void UpdateProjectSettings(const QString& filename);
+
 	// Save/restore positions of DockWidgets and main window geometry
 	void SaveMainWindowState();
 	void RestoreMainWindowState();
@@ -167,7 +171,12 @@ private:
 private:
     Ui::MainWindow *ui;
 	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
-	
+
+    // Background Frame Color menu actions.
+    QList<QAction*> backgroundFramePredefinedColorActions;
+    QAction* backgroundFrameUseCustomColorAction;
+    QAction* backgroundFrameSelectCustomColorAction;
+
 	bool screenChangeUpdate;
 };
 

@@ -32,7 +32,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 
-
+#include "Render/Material/NMaterialNames.h"
 
 namespace DAVA 
 {
@@ -96,7 +96,7 @@ void SpriteObject::SetupRenderBatch()
 //	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
 	NMaterial* material = NMaterial::CreateMaterialInstance(FastName("SpriteObject_material"),
-															FastName("~res:/Materials/Legacy/Textured.Alphablend.material"),
+															NMaterialName::TEXTURED_ALPHABLEND,
 															NMaterial::DEFAULT_QUALITY_NAME);
 	material->GetParent()->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	material->AddNodeFlags(DataNode::NodeRuntimeFlag);

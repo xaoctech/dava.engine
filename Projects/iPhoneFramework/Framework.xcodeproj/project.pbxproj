@@ -95,8 +95,6 @@
 		A6919536183A6E9B00D598AE /* RenderStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919533183A6E9B00D598AE /* RenderStateData.h */; };
 		A6919537183A6E9B00D598AE /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919534183A6E9B00D598AE /* RenderStateDataUniqueHandler.h */; };
 		A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919535183A6E9B00D598AE /* UniqueStateSet.h */; };
-		A6919544183A70D600D598AE /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */; };
-		A6919545183A70D600D598AE /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = A6919543183A70D600D598AE /* AutotestingSystemYaml.h */; };
 		A695E5221811317E008A0F20 /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */; };
 		A695E52518113195008A0F20 /* ShaderCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A695E52318113195008A0F20 /* ShaderCache.cpp */; };
 		A695E52618113195008A0F20 /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = A695E52418113195008A0F20 /* ShaderCache.h */; };
@@ -123,6 +121,8 @@
 		A6B5D95F185600050011D172 /* IntrospectionDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */; };
 		A6B5D960185600050011D172 /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B5D95E185600050011D172 /* IntrospectionDynamic.h */; };
 		A6D827B418771B2C0006A5DD /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6D827B318771B2C0006A5DD /* Color.cpp */; };
+		A6DBFA7E1887E3D5006BE11C /* NMaterialNames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6DBFA7C1887E3D5006BE11C /* NMaterialNames.cpp */; };
+		A6DBFA7F1887E3D5006BE11C /* NMaterialNames.h in Headers */ = {isa = PBXBuildFile; fileRef = A6DBFA7D1887E3D5006BE11C /* NMaterialNames.h */; };
 		A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */; };
 		A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF01761D40200B48E41 /* ActionComponent.h */; };
 		A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -869,8 +869,6 @@
 		A6919533183A6E9B00D598AE /* RenderStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateData.h; sourceTree = "<group>"; };
 		A6919534183A6E9B00D598AE /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6919535183A6E9B00D598AE /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
-		A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
-		A6919543183A70D600D598AE /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
 		A695E51F1811317E008A0F20 /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
 		A695E52318113195008A0F20 /* ShaderCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderCache.cpp; sourceTree = "<group>"; };
 		A695E52418113195008A0F20 /* ShaderCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderCache.h; sourceTree = "<group>"; };
@@ -897,6 +895,8 @@
 		A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntrospectionDynamic.cpp; path = ../../Sources/Internal/Base/IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		A6B5D95E185600050011D172 /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntrospectionDynamic.h; path = ../../Sources/Internal/Base/IntrospectionDynamic.h; sourceTree = "<group>"; };
 		A6D827B318771B2C0006A5DD /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
+		A6DBFA7C1887E3D5006BE11C /* NMaterialNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialNames.cpp; sourceTree = "<group>"; };
+		A6DBFA7D1887E3D5006BE11C /* NMaterialNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterialNames.h; sourceTree = "<group>"; };
 		A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FDF01761D40200B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -1677,8 +1677,6 @@
 		E8B3C7B116B9326D002BD35F /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
-				A6919542183A70D600D598AE /* AutotestingSystemYaml.cpp */,
-				A6919543183A70D600D598AE /* AutotestingSystemYaml.h */,
 				7A8F772517E73E720048A43D /* AutotestingDB.cpp */,
 				7A8F772617E73E720048A43D /* AutotestingDB.h */,
 				7A8F772717E73E720048A43D /* GameAPI.cpp */,
@@ -2272,6 +2270,8 @@
 		E8B3C95716B9326E002BD35F /* Material */ = {
 			isa = PBXGroup;
 			children = (
+				A6DBFA7C1887E3D5006BE11C /* NMaterialNames.cpp */,
+				A6DBFA7D1887E3D5006BE11C /* NMaterialNames.h */,
 				A69C9393186C377C00EAC8BC /* NMaterialTemplate.cpp */,
 				A69C9394186C377C00EAC8BC /* NMaterialTemplate.h */,
 				A69C9395186C377C00EAC8BC /* RenderTechnique.cpp */,
@@ -2806,6 +2806,7 @@
 				E8B3CBC516B9326E002BD35F /* GridSprite.h in Headers */,
 				E8B3CBC716B9326E002BD35F /* Sprite.h in Headers */,
 				E8B3CBC916B9326E002BD35F /* TextBlock.h in Headers */,
+				A6DBFA7F1887E3D5006BE11C /* NMaterialNames.h in Headers */,
 				E8B3CBCB16B9326E002BD35F /* AnimatedMesh.h in Headers */,
 				50C7D603186082D600D8936D /* StaticOcclusion.h in Headers */,
 				505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */,
@@ -3041,7 +3042,6 @@
 				A6919536183A6E9B00D598AE /* RenderStateData.h in Headers */,
 				A6919537183A6E9B00D598AE /* RenderStateDataUniqueHandler.h in Headers */,
 				A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */,
-				A6919545183A70D600D598AE /* AutotestingSystemYaml.h in Headers */,
 				A670F2E818479DD20030E075 /* TextureStateData.h in Headers */,
 				A670F2EA1847A33F0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 				9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */,
@@ -3413,6 +3413,7 @@
 				E8FC1307186972C80095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */,
 				A6AFDEFC1871C3D1006E43A1 /* SpeedTreeObject.cpp in Sources */,
+				A6DBFA7E1887E3D5006BE11C /* NMaterialNames.cpp in Sources */,
 				E8CBDFC716EE10EE00F70C8F /* UTF8UtilsMac.mm in Sources */,
 				E9E7982F16F0B45100745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A49F16F1D80C0061EA5D /* Frustum.cpp in Sources */,
@@ -3459,7 +3460,6 @@
 				A695E52B18113315008A0F20 /* RenderBatchArray.cpp in Sources */,
 				A695E52D18113315008A0F20 /* RenderHierarchy.cpp in Sources */,
 				A695E53218113327008A0F20 /* SerializationContext.cpp in Sources */,
-				A6919544183A70D600D598AE /* AutotestingSystemYaml.cpp in Sources */,
 				CC84B03E18211BCE00934482 /* Job.cpp in Sources */,
 				9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */,
 				9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */,

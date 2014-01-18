@@ -526,6 +526,9 @@ void Material::RebuildShader()
     uniformTreeLeafColorMul = -1;
     uniformTreeLeafOcclusionOffset = -1;
     
+    //VI: don't build old shader for new materials
+    
+    /*
     String shaderCombileCombo = "";
     
     switch (type)
@@ -628,6 +631,8 @@ void Material::RebuildShader()
         shaderCombileCombo = shaderCombileCombo + ";VERTEX_FOG";
 
     // Get shader if combo unavailable compile it
+    
+    
     shader = uberShader->GetShader(shaderCombileCombo);
     
     switch (type) {
@@ -702,6 +707,7 @@ void Material::RebuildShader()
 
 
     //RetrieveTextureSlotNames();
+    */
 }
 
 void Material::RetrieveTextureSlotNames()

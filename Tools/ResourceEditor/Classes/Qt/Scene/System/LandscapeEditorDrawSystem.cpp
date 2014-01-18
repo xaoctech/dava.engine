@@ -40,6 +40,8 @@
 
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 :	SceneSystem(scene)
 ,	customDrawRequestCount(0)
@@ -600,16 +602,7 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 			SafeRelease(image);
 		}
 
-		FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
-		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-		if(!descriptor)
-		{
-			descriptor = new TextureDescriptor();
-			descriptor->pathname = descriptorPathname;
-			descriptor->Save();
-		}
-
-		SafeRelease(descriptor);
+		TextureDescriptorUtils::CreateDescriptorIfNeed(texturePathname);
 
 		GetLandscapeProxy()->ResetTilemaskChanged();
 	}

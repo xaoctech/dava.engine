@@ -75,7 +75,7 @@ public:
 
 	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
-	bool UpdateValue();
+	bool UpdateValue(bool force = false);
 
 	QVariant GetAlias() const;
 

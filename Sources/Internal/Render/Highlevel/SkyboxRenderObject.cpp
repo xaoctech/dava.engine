@@ -32,6 +32,8 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include <Render/TextureDescriptor.h>
 
+#include "Render/Material/NMaterialNames.h"
+
 namespace DAVA
 {
 
@@ -87,7 +89,7 @@ namespace DAVA
 			RenderDataObject* renderDataObj = new RenderDataObject();
 							
 			NMaterial* skyboxMaterial = NMaterial::CreateMaterialInstance(FastName("Skybox_material"),
-																		  FastName("~res:/Materials/Legacy/Skybox.material"),
+																		  NMaterialName::SKYBOX,
 																		  NMaterial::DEFAULT_QUALITY_NAME);
 			
 			RenderBatch* skyboxRenderBatch = new RenderBatch();
@@ -169,20 +171,8 @@ namespace DAVA
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
 			
-            DAVA::Texture* tx = NULL;
-            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePath);
-            if(descriptor && descriptor->IsCubeMap())
-            {
-                tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-            }
-            else
-            {
-				tx = Texture::CreatePink(Texture::TEXTURE_CUBE);
-            }
-            
+            DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
 			skyboxMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
-
-            SafeRelease(descriptor);
 			SafeRelease(tx);
 		}
 	}

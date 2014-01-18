@@ -194,7 +194,7 @@ Texture::Texture()
 ,	textureType(Texture::TEXTURE_2D)
 ,	isPink(false)
 ,	state(STATE_INVALID)
-,	texDescriptor(NULL)
+,	invalidater(NULL)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -208,13 +208,13 @@ Texture::Texture()
 	rboID = -1;
 #endif
 
-	invalidater = NULL;
+	texDescriptor = new TextureDescriptor();
 }
 
 Texture::~Texture()
 {
     ReleaseTextureData();
-	SafeRelease(texDescriptor);
+	SafeDelete(texDescriptor);
 }
     
 void Texture::ReleaseTextureData()
@@ -382,7 +382,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	if(!image) return NULL;
 
 	Texture * texture = new Texture();
-	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
+	texture->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, generateMipMaps);
     
     Vector<Image *> *images = new Vector<Image *>();
     images->push_back(image);
@@ -511,7 +511,7 @@ void Texture::GeneratePixelesationInternal(BaseObject * caller, void * param, vo
 Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu)
 {
 	Texture * texture = new Texture();
-	texture->texDescriptor = SafeRetain(descriptor);
+	texture->texDescriptor->Initialize(descriptor);
 
     Vector<Image *> * images = new Vector<Image *> ();
 	bool loaded = texture->LoadImages(gpu, images);
@@ -627,7 +627,6 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
     Vector<Image *> * images = static_cast< Vector<Image *> * >(param);
     
 	DVASSERT(images->size() != 0);
-	DVASSERT(texDescriptor);
 	DVASSERT(Thread::IsMainThread());
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -732,7 +731,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 		AddToMap(texture);
 	}
 
-	descriptor->Release();
+	delete descriptor;
 	return texture;
 }
     
@@ -750,8 +749,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 
     if(savedPath.Exists())
     {
-        texDescriptor->Release();
-        texDescriptor = TextureDescriptor::CreateFromFile(savedPath);
+        texDescriptor->Initialize(savedPath);
     }
     
 	DVASSERT(NULL != texDescriptor);
@@ -777,7 +775,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 }
 
     
-bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
+bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor) const
 {
     if(descriptor->IsCompressedFile())
     {
@@ -1074,12 +1072,11 @@ Texture * Texture::CreatePink(TextureType requestedType)
 void Texture::MakePink(TextureType requestedType)
 {
 	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
-	SafeRelease(texDescriptor);
 
     Vector<Image *> *images = new Vector<Image *> ();
 	if(Texture::TEXTURE_CUBE == requestedType)
 	{
-		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_REPEAT, true);
+		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
             Image *img = Image::CreatePinkPlaceholder();
@@ -1093,7 +1090,7 @@ void Texture::MakePink(TextureType requestedType)
 	}
 	else
 	{
-		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
+		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder());
 	}
 
