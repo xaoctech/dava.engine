@@ -261,6 +261,8 @@ const FastName DYNAMIC_PARAM_NAMES[] =
         FastName("unknownSemantic"),
         FastName("worldMatrix"),//PARAM_WORLD,
         FastName("invWorldMatrix"), //PARAM_INV_WORLD,
+        FastName("worldInvTransposeMatrix"), //PARAM_WORLD_INV_TRANSPOSE,
+        
         FastName("viewMatrix"), //PARAM_VIEW,
         FastName("invViewMatrix"), //PARAM_INV_VIEW,
         FastName("projectionMatrix"), //PARAM_PROJ,

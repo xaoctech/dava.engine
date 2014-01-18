@@ -448,6 +448,7 @@ enum eShaderSemantic
     
     PARAM_WORLD,
     PARAM_INV_WORLD,
+    PARAM_WORLD_INV_TRANSPOSE,
     PARAM_VIEW,
     PARAM_INV_VIEW,
     PARAM_PROJ,

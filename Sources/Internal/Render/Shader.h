@@ -366,13 +366,6 @@ private:
     uint8 * fragmentShaderDataStart;
     uint32 vertexShaderDataSize;
     uint32 fragmentShaderDataSize;
-    
-    uint32 lastProjectionMatrixCache;
-    uint32 lastModelViewMatrixCache;
-    uint32 lastMVPMatrixModelViewCache;
-    uint32 lastMVPMatrixProjectionCache;
-    uint32 lastModelViewTranslateCache;
-    uint32 lastModelScaleCache;
 };
 
 //

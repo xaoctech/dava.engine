@@ -35,6 +35,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/Utils.h"
+#include "FileSystem/Logger.h"
 #include "Utils/StringFormat.h"
 #include "Math/Math2D.h"
 #ifdef USE_CRC_COMPARE
@@ -72,13 +73,6 @@ namespace DAVA
 		vertexShaderData = 0;
 		fragmentShaderData = 0;
         
-        lastProjectionMatrixCache = 0;
-        lastModelViewMatrixCache = 0;
-        lastMVPMatrixModelViewCache = 0;
-        lastMVPMatrixProjectionCache = 0;
-        lastModelViewTranslateCache = 0;
-        lastModelScaleCache = 0;
-		
 		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		//    relativeFileName = "";
 		//#endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -241,12 +235,11 @@ namespace DAVA
 
     void Shader::ClearLastBindedCaches()
     {
-        lastProjectionMatrixCache = 0;
-        lastModelViewMatrixCache = 0;
-        lastMVPMatrixModelViewCache = 0;
-        lastMVPMatrixProjectionCache = 0;
-        lastModelViewTranslateCache = 0;
-        lastModelScaleCache = 0;
+        for (uint32 k = 0; k < autobindUniformCount; ++k)
+        {
+            Uniform * currentUniform = autobindUniforms[k];
+            currentUniform->updateSemantic = 0;
+        }
     }
 
 	int32 Shader::FindUniformIndexByName(const FastName & name)
@@ -502,6 +495,7 @@ namespace DAVA
 			
 			if(IsAutobindUniform(shaderSemantic))
 			{
+                Logger::Debug(Format("%s %d", attrName.c_str(), shaderSemantic).c_str());
 				autobindUniformCount++;
 			}
 			
@@ -1164,13 +1158,28 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     {
                         RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
 
-                        Matrix3 * normalMatrix = (Matrix3*)RenderManager::GetDynamicParam(PARAM_NORMAL);
-//                        SetUniformValueByUniform(currentUniform, *normalMatrix);
-                        RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, normalMatrix->data));
+                        GLfloat * normalMatrix = (GLfloat*)RenderManager::GetDynamicParam(PARAM_NORMAL);
+                        RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, normalMatrix));
                         currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
 				}
+                
+                case PARAM_WORLD_INV_TRANSPOSE:
+				{
+                    RenderManager::Instance()->ComputeWorldInvTransposeMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_INV_TRANSPOSE);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        GLfloat * matrix = (GLfloat*)RenderManager::GetDynamicParam(PARAM_WORLD_INV_TRANSPOSE);
+                        RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, matrix));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
                 case PARAM_INV_VIEW:
 				{
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_VIEW);
@@ -1200,14 +1209,20 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				}
                 
                 case PARAM_WORLD:
+                case PARAM_VIEW:
 				{
-                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
                     if (_updateSemantic != currentUniform->updateSemantic)
                     {
                         RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                        
-                        Matrix4 * worldMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, worldMatrix->data));
+                        GLfloat * worldMatrix = (GLfloat*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+//                        if (currentUniform->shaderSemantic == PARAM_WORLD)
+//                        {
+//                            for (uint32 k = 0; k < 4; ++k)
+//                                Logger::Debug(Format("%f %f %f %f", worldMatrix[k * 4 + 0], worldMatrix[k * 4 + 1], worldMatrix[k * 4 + 2], worldMatrix[k * 4 + 3]).c_str());
+//                            Logger::Debug("");
+//                        }
+                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, worldMatrix));
                         currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
@@ -1238,11 +1253,14 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				}
 				case PARAM_GLOBAL_TIME:
 				{
-					float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
-					SetUniformValueByUniform(currentUniform, globalTime);
+                    if (currentUniform->updateSemantic != Core::Instance()->GetGlobalFrameIndex())
+                    {
+                        float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
+                        SetUniformValueByUniform(currentUniform, globalTime);
+                        currentUniform->updateSemantic = Core::Instance()->GetGlobalFrameIndex();
+                    }
 				};
 				default:
-					
 					break;
 			}
 		}
