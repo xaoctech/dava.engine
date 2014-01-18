@@ -36,6 +36,7 @@
 
 #include "EditorSettings.h"
 #include "Helpers/SpritesHelper.h"
+#include "Helpers/ColorHelper.h"
 
 #include <QtGlobal>
 
@@ -428,7 +429,7 @@ QColor UIControlMetadata::GetColor()
         return QColor();
     }
 
-    return DAVAColorToQTColor(GetActiveUIControl()->GetBackground()->color);
+    return ColorHelper::DAVAColorToQTColor(GetActiveUIControl()->GetBackground()->color);
 }
     
 void UIControlMetadata::SetColor(const QColor& value)
@@ -438,7 +439,7 @@ void UIControlMetadata::SetColor(const QColor& value)
         return;
     }
 
-    GetActiveUIControl()->GetBackground()->SetColor(QTColorToDAVAColor(value));
+    GetActiveUIControl()->GetBackground()->SetColor(ColorHelper::QTColorToDAVAColor(value));
 }
     
 int UIControlMetadata::GetDrawType()

@@ -54,16 +54,19 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
 
 	ui->materialProperty->SetEditTracking(true);
+	ui->materialTexture->SetEditTracking(true);
 
 	// global scene manager signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
 	
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
+	QObject::connect(ui->materialTexture, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
 
 	posSaver.Attach(this);
@@ -173,6 +176,16 @@ void MaterialEditor::materialSelected(const QItemSelection & selected, const QIt
 	else
 	{
 		SetCurMaterial(NULL);
+	}
+}
+
+void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
+{
+	if( command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
+		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
+		command->GetId() == CMDID_META_OBJ_MODIFY)
+	{
+		SetCurMaterial(curMaterial);
 	}
 }
 
@@ -346,7 +359,7 @@ void MaterialEditor::ScanTemplates()
 	templates.append("");
 	ui->templateBox->addItem("Unknown", i++);
 
-	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/Legacy/assignable.txt");
+	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/assignable.txt");
 	if(materialsListPath.Exists())
 	{
 		QString materialsListDir = materialsListPath.GetDirectory().GetAbsolutePathname().c_str();
@@ -382,7 +395,9 @@ void MaterialEditor::OnAddProperty()
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
+			data->SetVariantValue(data->GetAliasVariant());
 			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
 			SetCurMaterial(curMaterial);
@@ -416,7 +431,9 @@ void MaterialEditor::OnAddTexture()
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
+			data->SetVariantValue(data->GetAliasVariant());
 			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
 			SetCurMaterial(curMaterial);
@@ -454,7 +471,24 @@ void MaterialEditor::OnTemplateChanged(int index)
 
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 {
-	// reload material properties
-	SetCurMaterial(curMaterial);
+	QtPropertyEditor *editor = dynamic_cast<QtPropertyEditor *>(QObject::sender());
+	if(NULL != editor)
+	{
+		QtPropertyData *propData = editor->GetProperty(index);
+
+		if(NULL != propData)
+		{
+			Command2 *command = (Command2 *) propData->CreateLastCommand();
+			if(NULL != command)
+			{
+				SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+				if(NULL != curScene)
+				{
+					QtMainWindow::Instance()->GetCurrentScene()->Exec(command);
+				}
+			}
+		}
+	}
+
 	ui->materialTree->Update();
 }

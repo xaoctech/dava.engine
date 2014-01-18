@@ -124,8 +124,9 @@ void LightmapsPacker::CreateDescriptors()
 			continue;
 		}
 
-		ScopedPtr<TextureDescriptor> descriptor( new TextureDescriptor() );
-        descriptor->Save(TextureDescriptor::GetDescriptorPathname(filePath));
+		TextureDescriptor *descriptor = new TextureDescriptor();
+		descriptor->Save(TextureDescriptor::GetDescriptorPathname(filePath));
+		delete descriptor;
 	}
 
 	fileList->Release();
