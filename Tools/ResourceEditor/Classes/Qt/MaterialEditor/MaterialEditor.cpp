@@ -60,7 +60,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
 	
 	// material tree
-	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &, const QModelIndex &)));
+	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
@@ -163,10 +163,17 @@ void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 	SetCurMaterial(NULL);
 }
 
-void MaterialEditor::materialSelected(const QModelIndex & current, const QModelIndex & previous)
+void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	DAVA::NMaterial *material = ui->materialTree->GetMaterial(current);
-	SetCurMaterial(material);
+	if(1 == selected.indexes().size())
+	{
+		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selected.indexes().at(0));
+		SetCurMaterial(material);
+	}
+	else
+	{
+		SetCurMaterial(NULL);
+	}
 }
 
 void MaterialEditor::showEvent(QShowEvent * event)
@@ -201,12 +208,12 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 		if(NULL != dynamicInsp)
 		{
 			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
-			for(size_t i = 0; i < count; ++i)
+			for(size_t i = 0; i < membersList.size(); ++i)
 			{
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
-				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+				ui->materialProperty->AppendProperty(membersList[i].c_str(), dynamicMember);
 			}
 		}
 	}
@@ -219,12 +226,12 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 		if(NULL != dynamicInsp)
 		{
 			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
-			for(size_t i = 0; i < count; ++i)
+			for(size_t i = 0; i < membersList.size(); ++i)
 			{
-				int memberFlags = dynamicInfo->MemberFlags(material, i);
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
+				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
 				// self property
 				if(memberFlags & DAVA::I_EDIT)
@@ -262,7 +269,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 					//{	}
 				}
 
-				ui->materialProperty->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
+				ui->materialProperty->AppendProperty(membersList[i].c_str(), dynamicMember);
 			}
 		}
 	}
@@ -281,12 +288,12 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 		if(NULL != dynamicInsp)
 		{
 			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-			size_t count = dynamicInfo->MembersCount(material); // this function can be slow
-			for(size_t i = 0; i < count; ++i)
+			for(size_t i = 0; i < membersList.size(); ++i)
 			{
-				int memberFlags = dynamicInfo->MemberFlags(material, i);
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, i);
+				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
+				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
 				// self property
 				if(memberFlags & DAVA::I_EDIT)
@@ -320,22 +327,9 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
 				}
 
-				ui->materialTexture->AppendProperty(dynamicInfo->MemberName(material, i), dynamicMember);
+				ui->materialTexture->AppendProperty(membersList[i].c_str(), dynamicMember);
 			}
 		}
-
-		/*
-		QtPropertyData *data = QtPropertyDataIntrospection::CreateMemberData(material, materialTextures);
-		while(0 != data->ChildCount())
-		{
-			QtPropertyData *c = data->ChildGet(0);
-			data->ChildExtract(c);
-
-			ui->materialTexture->AppendProperty(c->GetName(), c);
-		}
-
-		delete data;
-		*/
 	}
 }
 
@@ -353,7 +347,6 @@ void MaterialEditor::ScanTemplates()
 	ui->templateBox->addItem("Unknown", i++);
 
 	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/Legacy/assignable.txt");
-    //String str = materialsListPath.GetAbsolutePathname();
 	if(materialsListPath.Exists())
 	{
 		QString materialsListDir = materialsListPath.GetDirectory().GetAbsolutePathname().c_str();

@@ -446,47 +446,51 @@ public:
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
+
 	protected:
-		struct TextureDescrInsp
-		{			
-			int flags;
+		struct PropData
+		{
+			enum PropSource
+			{
+				SOURCE_UNKNOWN = 0x0,
+				SOURCE_SELF = 0x1,
+				SOURCE_PARENT = 0x2,
+				SOURCE_SHADER = 0x4
+			};
+
+			PropData() : source(SOURCE_UNKNOWN)
+			{ }
+
+			int source;
 			FilePath path;
-			FastName name;
-			bool empty;
-			TextureDescrInsp():flags(I_VIEW), empty(true){}
 		};
-		static Vector<TextureDescrInsp> textureDescrInspVector;
-		void UpdateTextureDescrInspVector(NMaterial *state) const;
+
+		const FastNameMap<PropData>* FindMaterialTextures(NMaterial *state) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
-	protected:
-		FastName GetName(size_t index) const;
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 	};
 
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
 	protected:
 		struct PropData
