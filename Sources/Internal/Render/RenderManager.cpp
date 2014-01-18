@@ -56,6 +56,9 @@ Matrix4 RenderManager::viewProjMatrix;
 Matrix4 RenderManager::worldViewProjMatrix;
 Matrix4 RenderManager::invWorldViewMatrix;
 Matrix3 RenderManager::normalMatrix;
+Matrix4 RenderManager::invWorldMatrix;
+Matrix3 RenderManager::worldInvTransposeMatrix;
+
     
 RenderManager::RenderManager(Core::eRenderer _renderer)
 :   renderer(_renderer),

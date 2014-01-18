@@ -479,7 +479,8 @@ public:
     static Matrix4 worldViewProjMatrix;
     static Matrix4 invWorldViewMatrix;
     static Matrix3 normalMatrix;
-    
+    static Matrix4 invWorldMatrix;
+    static Matrix3 worldInvTransposeMatrix;
 
     static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 updateSemantic);
     
@@ -494,6 +495,9 @@ public:
     static inline void ComputeInvWorldViewMatrixIfRequired();
     static inline void ComputeNormalMatrixIfRequired();
     
+    static inline void ComputeInvWorldMatrixIfRequired();
+    static inline void ComputeWorldInvTransposeMatrixIfRequired();
+
     
     //const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
     //const Matrix3 & GetNormalMatrix();
@@ -889,7 +893,7 @@ inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const
         {
             case PARAM_WORLD:
                 dynamicParamersRequireUpdate |= ((1 << PARAM_INV_WORLD) | ( 1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW)
-                                                 | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_NORMAL));
+                                                 | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_NORMAL) | (1 << PARAM_WORLD_INV_TRANSPOSE));
             break;
             case PARAM_VIEW:
                 dynamicParamersRequireUpdate |= ((1 << PARAM_INV_VIEW) | (1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW) |
@@ -957,6 +961,28 @@ inline void RenderManager::ComputeNormalMatrixIfRequired()
         normalMatrix = invWorldViewMatrix;
         normalMatrix.Transpose();
         SetDynamicParam(PARAM_NORMAL, &normalMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+    
+inline void RenderManager::ComputeInvWorldMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_INV_WORLD))
+    {
+        const Matrix4 & worldMatrix = GetDynamicParamMatrix(PARAM_WORLD);
+        worldMatrix.GetInverse(invWorldMatrix);
+        SetDynamicParam(PARAM_INV_WORLD, &invWorldMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+inline void RenderManager::ComputeWorldInvTransposeMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_INV_TRANSPOSE))
+    {
+        ComputeInvWorldMatrixIfRequired();
+        worldInvTransposeMatrix = invWorldMatrix;
+        worldInvTransposeMatrix.Transpose();
+        SetDynamicParam(PARAM_WORLD_INV_TRANSPOSE, &worldInvTransposeMatrix, UPDATE_SEMANTIC_ALWAYS);
     }
 }
  
