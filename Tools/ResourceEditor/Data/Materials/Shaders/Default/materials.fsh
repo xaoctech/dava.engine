@@ -1,6 +1,6 @@
 <CONFIG>
 albedo = 0
-cubemap = 1
+cubemap = 2
 decal = 1
 detail = 1
 lightmap = 1
@@ -33,8 +33,13 @@ varying mediump vec3 varTexCoord0;
 
 #if defined(REFLECTION)
 uniform samplerCube cubemap;
-varying mediump vec3 normalDirectionInWorldSpace;
-varying mediump vec3 viewDirectionInWorldSpace;
+#if defined(VERTEX_LIT)
+varying mediump vec3 reflectionDirectionInWorldSpace;
+#elif defined(PIXEL_LIT)
+uniform mat3 worldInvTransposeMatrix;
+varying mediump vec3 cameraToPointInTangentSpace;
+varying mediump mat3 tbnToWorldMatrix;
+#endif
 #endif
 
 #if defined(MATERIAL_DECAL)
@@ -247,9 +252,15 @@ void main()
     
     
 #if defined(REFLECTION)
-    vec3 reflectedDirection = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
-    lowp vec4 reflectionColor = textureCube(cubemap, reflectedDirection); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor += reflectionColor;
+#if defined(VERTEX_LIT)
+    lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor = reflectionColor * 0.9;
+#elif defined(PIXEL_LIT)
+    mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
+    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * reflectionVectorInTangentSpace;
+    lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor = reflectionColor;
+#endif
 #endif
     
     

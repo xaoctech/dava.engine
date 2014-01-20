@@ -33,7 +33,7 @@ attribute vec4 inColor;
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(MATERIAL_SPEED_TREE_LEAF)
+#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF)
 attribute vec3 inTangent;
 #endif
 
@@ -43,10 +43,12 @@ attribute float inTime;
 
 // UNIFORMS
 uniform mat4 modelViewProjectionMatrix;
-uniform mat4 projectionMatrix;
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
 uniform mat4 modelViewMatrix;
+#endif
+
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT)
 uniform mat3 normalMatrix;
 uniform vec3 lightPosition0;
 uniform float lightIntensity0; 
@@ -65,9 +67,10 @@ uniform mediump vec2 uvOffset;
 uniform mediump vec2 uvScale;
 #endif
 
-#if defined(MATERIAL_SPEED_TREE_LEAF)
+#if defined(SPEED_TREE_LEAF)
 uniform vec3 worldTranslate;
 uniform vec3 worldScale;
+uniform mat4 projectionMatrix;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -114,25 +117,47 @@ varying lowp float varTime;
 uniform mediump vec2 texture0Shift;
 #endif 
 
+#if defined(REFLECTION) // works now only with VERTEX_LIT
+uniform vec3 cameraPosition;
+uniform mat4 invViewMatrix;
+uniform mat4 worldMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat3 worldInvTransposeMatrix;
+varying mediump vec3 reflectionDirectionInWorldSpace;
+#endif
+
+#if defined(TEXTURE0_ANIMATION_SHIFT)
+uniform float globalTime;
+uniform vec2 tex0ShiftPerSecond;
+#endif
+
 
 void main()
 {
 #if defined(MATERIAL_SKYBOX)
 	vec4 vecPos = (modelViewProjectionMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
-#elif defined(MATERIAL_SPEED_TREE_LEAF)
+#elif defined(SPEED_TREE_LEAF)
 	gl_Position = projectionMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
 #else
+    //mat4 mvp = projectionMatrix * viewMatrix * worldMatrix;
 	gl_Position = modelViewProjectionMatrix * inPosition;
 #endif
 
 #if defined(VERTEX_LIT)
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition); // view direction in view space
     vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     float attenuation = length(lightDir);
     attenuation = lightIntensity0 / (attenuation * attenuation); // use inverse distance for distance attenuation
     lightDir = normalize(lightDir);
+    
+#if defined(REFLECTION)
+    vec3 viewDirectionInWorldSpace = vec3(worldMatrix * inPosition) - cameraPosition;
+    vec3 normalDirectionInWorldSpace = normalize(vec3(worldInvTransposeMatrix * inNormal));
+    reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
+#endif
     
     varDiffuseColor = max(0.0, dot(normal, lightDir));
 #if defined(DISTANCE_ATTENUATION)
@@ -162,7 +187,7 @@ void main()
 #if defined(PIXEL_LIT)
 	vec3 n = normalize (normalMatrix * inNormal);
 	vec3 t = normalize (normalMatrix * inTangent);
-	vec3 b = -cross (n, t);
+	vec3 b = cross (n, t);
 
     vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
     
@@ -209,6 +234,7 @@ void main()
     #endif
     varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+	//varFogFactor = 1.0;
 #endif
 
 #if defined(VERTEX_COLOR)
@@ -219,6 +245,10 @@ void main()
 	
 #if defined(TEXTURE0_SHIFT_ENABLED)
 	varTexCoord0 += texture0Shift;
+#endif
+    
+#if defined(TEXTURE0_ANIMATION_SHIFT)
+    varTexCoord0 += tex0ShiftPerSecond * globalTime;
 #endif
 		
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
