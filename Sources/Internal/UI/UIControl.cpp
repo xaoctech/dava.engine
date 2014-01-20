@@ -1771,7 +1771,7 @@ namespace DAVA
 						currentInput->touchLocker = this;
 						if(exclusiveInput)
 						{
-							UIControlSystem::Instance()->SetExclusiveInputLocker(this);
+							UIControlSystem::Instance()->SetExclusiveInputLocker(this, currentInput->tid);
 						}
 
    						PerformEventWithData(EVENT_TOUCH_DOWN, currentInput);
@@ -1892,7 +1892,7 @@ namespace DAVA
 								controlState |= STATE_NORMAL;
 								if(UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
 								{
-									UIControlSystem::Instance()->SetExclusiveInputLocker(NULL);
+									UIControlSystem::Instance()->SetExclusiveInputLocker(NULL, -1);
 								}
 							}
 							else if(touchesInside <= 0)
@@ -1989,7 +1989,7 @@ namespace DAVA
 			controlState |= STATE_NORMAL;
 			if(UIControlSystem::Instance()->GetExclusiveInputLocker() == this)
 			{
-				UIControlSystem::Instance()->SetExclusiveInputLocker(NULL);
+				UIControlSystem::Instance()->SetExclusiveInputLocker(NULL, -1);
 			}
 		}
 		
