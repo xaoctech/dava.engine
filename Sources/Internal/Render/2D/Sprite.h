@@ -41,6 +41,8 @@
 
 #include "FileSystem/FilePath.h"
 
+#include "Platform/Mutex.h"
+
 namespace DAVA
 {
 
@@ -297,6 +299,7 @@ protected:
 	void ReloadExistingTextures();
 //private:
 
+    static Mutex spriteMapMutex;
 
 	enum eSpriteTransform
 	{
