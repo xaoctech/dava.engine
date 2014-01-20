@@ -464,8 +464,14 @@ bool FTInternalFont::IsCharAvaliable(char16 ch) const
 
 uint32 FTInternalFont::GetFontHeight(float32 size) const
 {
+    drawStringMutex.Lock();
+
 	SetFTCharSize(size);
-	return (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale)))/64.f);
+	uint32 height = (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale)))/64.f);
+    
+    drawStringMutex.Unlock();
+
+    return height;
 }
 	
 void FTInternalFont::SetFTCharSize(float32 size) const
@@ -585,8 +591,11 @@ int32 FTInternalFont::LoadString(const WideString& str)
 
 		Glyph glyph;
 		glyph.index = FT_Get_Char_Index(face, str[i]);
-		if (!FT_Load_Glyph( face, glyph.index, FT_LOAD_DEFAULT | FT_LOAD_NO_HINTING)  &&
-			!FT_Get_Glyph(face->glyph, &glyph.image))
+        
+        FT_Error loadGlyphError = 0;
+        FT_Error getGlyphError = 0;
+		if (!(loadGlyphError = FT_Load_Glyph( face, glyph.index, FT_LOAD_DEFAULT | FT_LOAD_NO_HINTING))  &&
+			!(getGlyphError = FT_Get_Glyph(face->glyph, &glyph.image)))
 		{
 			//FT_Glyph_Metrics*  metrics = &face->glyph->metrics;
 
@@ -600,7 +609,8 @@ int32 FTInternalFont::LoadString(const WideString& str)
         else
         {
 #if defined(__DAVAENGINE_DEBUG__)
-            DVASSERT(false); //This situation can be unnormal. Check it
+//            DVASSERT(false); //This situation can be unnormal. Check it
+            Logger::Warning("[FTInternalFont::LoadString] loadError = %d, getGlyphError = %d, str = %s", loadGlyphError, getGlyphError, WStringToString(str).c_str());
 #endif //__DAVAENGINE_DEBUG__
         }
 
@@ -608,9 +618,9 @@ int32 FTInternalFont::LoadString(const WideString& str)
 	}
 
 #if defined(__DAVAENGINE_DEBUG__)
-    Set<Glyph> tmp;
-    tmp.insert(glyphs.begin(), glyphs.end());
-    DVASSERT(tmp.size() == glyphs.size()); //This situation can be unnormal. Check it
+//    Set<Glyph> tmp;
+//    tmp.insert(glyphs.begin(), glyphs.end());
+//    DVASSERT(tmp.size() == glyphs.size()); //This situation can be unnormal. Check it
 #endif //__DAVAENGINE_DEBUG__
     
     
