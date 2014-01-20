@@ -133,20 +133,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="handleWidth">
-          <number>3</number>
-         </property>
-         <widget class="QtPropertyEditor" name="materialProperty"/>
-         <widget class="QtPropertyEditor" name="materialTexture">
-          <attribute name="headerVisible">
-           <bool>false</bool>
-          </attribute>
-         </widget>
-        </widget>
+        <widget class="QtPropertyEditor" name="materialProperty"/>
        </item>
       </layout>
      </widget>

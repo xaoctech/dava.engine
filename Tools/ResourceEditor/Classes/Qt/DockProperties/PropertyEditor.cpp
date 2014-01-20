@@ -37,10 +37,13 @@
 #include <QTextStream>
 
 #include "DockProperties/PropertyEditor.h"
+#include "MaterialEditor/MaterialEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataProxy.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspColl.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 #include "Commands2/MetaObjModifyCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
 
@@ -277,7 +280,7 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == meta)
 			{
 				// Add optional button to edit action component
-				QToolButton *editActions = data->AddButton();
+				QtPropertyToolButton *editActions = data->AddButton();
 				editActions->setIcon(QIcon(":/QtIcons/settings.png"));
 				editActions->setAutoRaise(true);
 
@@ -286,13 +289,24 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
-				QToolButton *bakeButton = data->AddButton();
+				QtPropertyToolButton *bakeButton = data->AddButton();
 				bakeButton->setToolTip("Bake Transform");
 				bakeButton->setIcon(QIcon(":/QtIcons/transform_bake.png"));
 				bakeButton->setIconSize(QSize(12, 12));
 				bakeButton->setAutoRaise(true);
 
 				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::NMaterial>() == meta)
+			{
+				// Add optional button to bake transform render object
+				QtPropertyToolButton *goToMaterialButton = data->AddButton();
+				goToMaterialButton->setToolTip("Edit material");
+				goToMaterialButton->setIcon(QIcon(":/QtIcons/3d.png"));
+				goToMaterialButton->setIconSize(QSize(12, 12));
+				goToMaterialButton->setAutoRaise(true);
+
+				QObject::connect(goToMaterialButton, SIGNAL(pressed()), this, SLOT(ActionEditMaterial()));
 			}
 		}
 
@@ -313,21 +327,29 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 		bool hasMembers = false;
 		const InspInfo *baseInfo = info;
 
-		// check if there are any members in introspection
-		while (NULL != baseInfo)
+		if(ExcludeMembers(info))
 		{
-			if(baseInfo->MembersCount() > 0)
+			hasMembers = false;
+		}
+		else
+		{
+			// check if there are any members in introspection
+			while(NULL != baseInfo)
 			{
-				hasMembers = true;
-				break;
+				if(baseInfo->MembersCount() > 0)
+				{
+					hasMembers = true;
+					break;
+				}
+				baseInfo = baseInfo->BaseInfo();
 			}
-			baseInfo = baseInfo->BaseInfo();
 		}
 
-		// add them
-        if(hasMembers)
-        {
-			ret = new QtPropertyDataIntrospection(object, info, false);
+		ret = new QtPropertyDataIntrospection(object, info, false);
+
+		// add members is we can
+		if(hasMembers)
+		{
 			while(NULL != baseInfo)
 			{
 				for(int i = 0; i < baseInfo->MembersCount(); ++i)
@@ -354,15 +376,74 @@ QtPropertyData* PropertyEditor::CreateInspMember(void *object, const DAVA::InspM
 	{
 		void *momberObject = member->Data(object);
 		const DAVA::InspInfo *memberIntrospection = member->Type()->GetIntrospection(momberObject);
+		bool isKeyedArchive = (member->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive*>());
 
-		if(NULL != memberIntrospection && 
-			member->Type() != DAVA::MetaInfo::Instance<DAVA::KeyedArchive*>())
+		if(NULL != memberIntrospection && !isKeyedArchive)
 		{
 			ret = CreateInsp(momberObject, memberIntrospection);
 		}
 		else
 		{
-			ret = QtPropertyDataIntrospection::CreateMemberData(object, member);
+			if(member->Collection() && !isKeyedArchive)
+			{
+				ret = CreateInspCollection(momberObject, member->Collection());
+			}
+			else
+			{
+				ret = QtPropertyDataIntrospection::CreateMemberData(object, member);
+			}
+		}
+	}
+
+	return ret;
+}
+
+QtPropertyData* PropertyEditor::CreateInspCollection(void *object, const DAVA::InspColl *collection)
+{
+	QtPropertyData *ret = new QtPropertyDataInspColl(object, collection, false);
+
+	if(NULL != collection && collection->Size(object) > 0)
+	{
+		int index = 0;
+		DAVA::MetaInfo *valueType = collection->ItemType();
+		DAVA::InspColl::Iterator i = collection->Begin(object);
+		while(NULL != i)
+		{
+			if(NULL != valueType->GetIntrospection())
+			{
+				void * itemObject = collection->ItemData(i);
+				const DAVA::InspInfo *itemInfo = valueType->GetIntrospection(itemObject);
+
+				QtPropertyData *inspData = CreateInsp(itemObject, itemInfo);
+				ret->ChildAdd(QString::number(index), inspData);
+			}
+			else
+			{
+				if(!valueType->IsPointer())
+				{
+					QtPropertyDataMetaObject *childData = new QtPropertyDataMetaObject(collection->ItemPointer(i), valueType);
+					ret->ChildAdd(QString::number(index), childData);
+				}
+				else
+				{
+					QString s;
+					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", collection->ItemData(i)));
+					childData->SetEnabled(false);
+
+					if(collection->ItemKeyType() == DAVA::MetaInfo::Instance<DAVA::FastName>())
+					{
+						const DAVA::FastName *fname = (const DAVA::FastName *) collection->ItemKeyData(i);
+						ret->ChildAdd(fname->operator*(), childData);
+					}
+					else
+					{
+						ret->ChildAdd(QString::number(index), childData);
+					}
+				}
+			}
+
+			index++;
+			i = collection->Next(i);
 		}
 	}
 
@@ -506,6 +587,21 @@ void PropertyEditor::ActionBakeTransform()
 		{
 			ro->BakeTransform(curNode->GetLocalTransform());
 			curNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+		}
+	}
+}
+
+void PropertyEditor::ActionEditMaterial()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			QtMainWindow::Instance()->OnMaterialEditor();
+			MaterialEditor::Instance()->SelectMaterial((DAVA::NMaterial *) data->GetObject());
 		}
 	}
 }
@@ -659,4 +755,16 @@ void PropertyEditor::SaveScheme(const DAVA::FilePath &path)
 		}
 		file.close();
 	}
+}
+
+bool PropertyEditor::ExcludeMembers(const DAVA::InspInfo *info)
+{
+	bool exclude = false;
+
+	if(info->Type() == DAVA::MetaInfo::Instance<DAVA::NMaterial>())
+	{
+		exclude = true;
+	}
+
+	return exclude;
 }
