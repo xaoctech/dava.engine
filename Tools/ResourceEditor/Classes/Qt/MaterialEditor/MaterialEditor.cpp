@@ -204,6 +204,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 	const DAVA::InspInfo *info = material->GetTypeInfo();
 	const DAVA::InspMember *materialProperties = info->Member("materialProperties");
 	const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
+	const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
 
 	// fill material name
 	const DAVA::InspMember *nameMember = info->Member("materialName");
@@ -229,6 +230,13 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 				ui->materialProperty->AppendProperty(membersList[i].c_str(), dynamicMember);
 			}
 		}
+	}
+
+	// fill illumination params
+	if(NULL != materialIllumination)
+	{
+		QtPropertyData *illumParams = QtPropertyDataIntrospection::CreateMemberData(material, materialIllumination);
+		ui->materialProperty->AppendProperty(materialIllumination->Name(), illumParams);
 	}
 
 	// fill material properties
