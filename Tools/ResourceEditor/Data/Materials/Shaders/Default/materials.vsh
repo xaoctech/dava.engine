@@ -119,10 +119,20 @@ uniform mediump vec2 texture0Shift;
 
 #if defined(REFLECTION) // works now only with VERTEX_LIT
 uniform vec3 cameraPosition;
-uniform mat4 invViewMatrix;
 uniform mat4 worldMatrix;
-varying mediump vec3 normalDirectionInWorldSpace;
-varying mediump vec3 viewDirectionInWorldSpace;
+uniform mat3 worldInvTransposeMatrix;
+#if defined(VERTEX_LIT)
+varying mediump vec3 reflectionDirectionInWorldSpace;
+#elif defined(PIXEL_LIT)
+varying mediump vec3 cameraToPointInTangentSpace;
+varying mediump mat3 tbnToWorldMatrix;
+#endif
+
+#endif
+
+#if defined(TEXTURE0_ANIMATION_SHIFT)
+uniform float globalTime;
+uniform vec2 tex0ShiftPerSecond;
 #endif
 
 
@@ -134,6 +144,7 @@ void main()
 #elif defined(SPEED_TREE_LEAF)
 	gl_Position = projectionMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
 #else
+    //mat4 mvp = projectionMatrix * viewMatrix * worldMatrix;
 	gl_Position = modelViewProjectionMatrix * inPosition;
 #endif
 
@@ -146,9 +157,9 @@ void main()
     lightDir = normalize(lightDir);
     
 #if defined(REFLECTION)
-    viewDirectionInWorldSpace = vec3(worldMatrix * inPosition) - cameraPosition;
-    // normalize(vec3(vec4(eyeCoordsPosition, 0.0) * invViewMatrix));
-    normalDirectionInWorldSpace = vec3(worldMatrix * vec4(inNormal, 0.0));
+    vec3 viewDirectionInWorldSpace = vec3(worldMatrix * inPosition) - cameraPosition;
+    vec3 normalDirectionInWorldSpace = normalize(vec3(worldInvTransposeMatrix * inNormal));
+    reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
 #endif
     
     varDiffuseColor = max(0.0, dot(normal, lightDir));
@@ -214,6 +225,18 @@ void main()
 	// No need to normalize, t,b,n and halfVector are normal vectors.
 	//normalize (v);
 	varHalfVec = v;
+    
+#if defined(REFLECTION)
+    v.x = dot (eyeCoordsPosition, t);
+	v.y = dot (eyeCoordsPosition, b);
+	v.z = dot (eyeCoordsPosition, n);
+	cameraToPointInTangentSpace = normalize (v);
+    
+    vec3 binormTS = cross(inNormal, inTangent);
+    tbnToWorldMatrix = mat3(vec3(t.x, b.x, n.x),
+                            vec3(t.y, b.y, n.y),
+                            vec3(t.z, b.z, n.z));
+#endif
 #endif
 
 #if defined(VERTEX_FOG)
@@ -237,6 +260,10 @@ void main()
 	
 #if defined(TEXTURE0_SHIFT_ENABLED)
 	varTexCoord0 += texture0Shift;
+#endif
+    
+#if defined(TEXTURE0_ANIMATION_SHIFT)
+    varTexCoord0 += tex0ShiftPerSecond * globalTime;
 #endif
 		
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)

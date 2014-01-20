@@ -405,13 +405,13 @@ namespace DAVA
 		
 		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderDataSize, (GLchar*)vertexShaderDataStart, vertexShaderDefines))
 		{
-			Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
+			Logger::Error("Failed to compile vertex shader: %s", assetName.c_str());
 			return;
 		}
 		
 		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderDataSize, (GLchar*)fragmentShaderDataStart, fragmentShaderDefines))
 		{
-			Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
+			Logger::Error("Failed to compile fragment shader: %s", assetName.c_str());
 			return ;
 		}
 		
