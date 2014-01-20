@@ -146,13 +146,7 @@ void FMODSoundSystem::Update(float32 timeElapsed)
 
 void FMODSoundSystem::Suspend()
 {
-#ifdef __DAVAENGINE_ANDROID__
-	for(FastNameMap<SoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
-	{
-		SoundGroup * soundGroup = it.GetValue();
-		soundGroup->Stop();
-	}
-#endif
+
 }
     
 uint32 FMODSoundSystem::GetMemoryUsageBytes()
