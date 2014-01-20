@@ -610,7 +610,14 @@ ResizeType DefaultScreen::GetResizeType(const HierarchyTreeControlNode* selected
     {
         horLeft = true;
     }
-    
+
+    // If at least one coord is less than zero and more than SIZE_CURSOR_DELTA - we are outside the control.
+    if ((distancesToBounds.x < 0 || distancesToBounds.y < 0 || distancesToBounds.z < 0 || distancesToBounds.w < 0) &&
+        (verTop || verBottom || horLeft || horRight))
+    {
+        return ResizeTypeNoResize;
+    }
+
 	if (horLeft && verTop)
 		return ResizeTypeLeftTop;
 	if (horRight && verBottom)
