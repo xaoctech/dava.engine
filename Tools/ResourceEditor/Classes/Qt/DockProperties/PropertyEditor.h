@@ -84,6 +84,7 @@ public slots:
 
 	void ActionEditComponent();
 	void ActionBakeTransform();
+	void ActionEditMaterial();
 
 protected:
 	eViewMode viewMode;
@@ -100,11 +101,14 @@ protected:
 
 	QtPropertyData* CreateInsp(void *object, const DAVA::InspInfo *info);
 	QtPropertyData* CreateInspMember(void *object, const DAVA::InspMember *member);
+	QtPropertyData* CreateInspCollection(void *object, const DAVA::InspColl *collection);
 
 	void ResetProperties();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
 	void ApplyCustomButtons(QtPropertyData *data);
+
+	bool ExcludeMembers(const DAVA::InspInfo *info);
 
 	virtual void OnItemEdited(const QModelIndex &index);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;

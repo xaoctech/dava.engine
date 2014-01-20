@@ -74,15 +74,13 @@ DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
 
 void MaterialTree::SelectMaterial(DAVA::NMaterial *material)
 {
+	selectionModel()->clear();
+
 	QModelIndex index = treeModel->GetIndex(material);
 	if(index.isValid())
 	{
 		selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 		scrollTo(index, QAbstractItemView::PositionAtCenter);
-	}
-	else
-	{
-		selectionModel()->clear();
 	}
 }
 
