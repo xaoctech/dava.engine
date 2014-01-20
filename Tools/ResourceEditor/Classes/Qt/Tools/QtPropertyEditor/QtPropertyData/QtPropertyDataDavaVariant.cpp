@@ -654,20 +654,58 @@ void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ToVector4(const QVariant &value)
 {
-	// TODO:
-	// ...
+	DAVA::Vector4 v;
+	QString str = value.toString();
+
+	if(4 == ParseFloatList(str, 4, v.data))
+	{
+		curVariantValue.SetVector4(v);
+	}
 }
 
 void QtPropertyDataDavaVariant::ToVector3(const QVariant &value)
 {
-	// TODO:
-	// ...
+	DAVA::Vector3 v;
+	QString str = value.toString();
+
+	if(3 == ParseFloatList(str, 3, v.data))
+	{
+		curVariantValue.SetVector3(v);
+	}
 }
 
 void QtPropertyDataDavaVariant::ToVector2(const QVariant &value)
 {
-	// TODO:
-	// ...
+	DAVA::Vector2 v;
+	QString str = value.toString();
+
+	if(2 == ParseFloatList(str, 2, v.data))
+	{
+		curVariantValue.SetVector2(v);
+	}
+}
+
+int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, DAVA::float32 *dest)
+{
+	int index = 0;
+
+	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
+	{
+		int pos = 0;
+		QRegExp rx("(-?\\d+([\\.,]\\d+){0,1})");
+
+		while(index < maxCount && 
+			  (pos = rx.indexIn(str, pos)) != -1)
+		{
+			QString s = rx.cap();
+			pos += rx.matchedLength();
+
+			dest[index] = s.toFloat();
+			index++;
+		}
+	}
+
+	return index;
 }
 
 void QtPropertyDataDavaVariant::ToMatrix4(const QVariant &value)
