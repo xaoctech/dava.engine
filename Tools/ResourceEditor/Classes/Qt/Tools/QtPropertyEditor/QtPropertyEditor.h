@@ -72,6 +72,8 @@ public:
 	void SetUpdateTimeout(int ms);
 	int GetUpdateTimeout();
 
+	virtual void ApplyStyle(QtPropertyData *data, int style);
+
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
@@ -102,7 +104,6 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void leaveEvent(QEvent * event);
 	
-	virtual void ApplyStyle(QtPropertyData *data, int style);
 	virtual QToolButton* GetButton(QMouseEvent * event);
 
 protected slots:

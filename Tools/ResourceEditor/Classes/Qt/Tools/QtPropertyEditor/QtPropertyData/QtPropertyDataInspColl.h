@@ -37,7 +37,7 @@
 class QtPropertyDataInspColl : public QtPropertyData
 {
 public:
-	QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection);
+	QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection, bool autoAddChilds = true);
 	virtual ~QtPropertyDataInspColl();
 
 	virtual const DAVA::MetaInfo * MetaInfo() const;
