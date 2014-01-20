@@ -50,6 +50,7 @@
 #include "Platform/TemplateAndroid/DPIHelperAndroid.h"
 #include "Platform/TemplateAndroid/AndroidCrashReport.h"
 #include "Platform/TemplateAndroid/MovieViewControlAndroid.h"
+#include "FileSystem/LocalizationAndroid.h"
 
 extern "C"
 {
@@ -114,6 +115,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNICrashReporter", &DAVA::JniCrashReporter::gJavaClass, &DAVA::JniCrashReporter::gJavaClassName);
 	DAVA::JniExtension::SetJavaClass(env, "java/lang/String", &DAVA::JniCrashReporter::gStringClass, NULL);
 	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIMovieViewControl", &DAVA::JniMovieViewControl::gJavaClass, &DAVA::JniMovieViewControl::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNILocalization", &DAVA::JniLocalization::gJavaClass, &DAVA::JniLocalization::gJavaClassName);
 	DAVA::Thread::InitMainThread();
 
 
