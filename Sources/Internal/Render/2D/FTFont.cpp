@@ -80,6 +80,11 @@ private:
 
 	struct Glyph
 	{
+        Glyph(): index(0), image(0), delta(0) {};
+        
+        bool operator < (const Glyph& right) const { return image < right.image; };
+
+        
 		FT_UInt		index;
 		FT_Glyph	image;    /* the glyph image */
 
@@ -540,14 +545,26 @@ void FTInternalFont::Prepare(FT_Vector * advances)
 
 void FTInternalFont::ClearString()
 {
-	int32 size = glyphs.size();
-	for(int32 i = 0; i < size; ++i)
+    //TODO: temporary fix for
+    Set<Glyph> clearedGlyphs;
+    clearedGlyphs.insert(glyphs.begin(), glyphs.end());
+	for(Set<Glyph>::iterator it = clearedGlyphs.begin(), endIt = clearedGlyphs.end(); it != endIt; ++it)
 	{
-		if(glyphs[i].image)
+		if(it->image)
 		{
-			FT_Done_Glyph(glyphs[i].image);
+			FT_Done_Glyph(it->image);
 		}
 	}
+    clearedGlyphs.clear();
+    
+//	int32 size = glyphs.size();
+//	for(int32 i = 0; i < size; ++i)
+//	{
+//		if(glyphs[i].image)
+//		{
+//			FT_Done_Glyph(glyphs[i].image);
+//		}
+//	}
 
 	glyphs.clear();
 }
@@ -580,10 +597,23 @@ int32 FTInternalFont::LoadString(const WideString& str)
 			else
 				glyph.delta = 0;
 		}
+        else
+        {
+#if defined(__DAVAENGINE_DEBUG__)
+            DVASSERT(false); //This situation can be unnormal. Check it
+#endif //__DAVAENGINE_DEBUG__
+        }
 
 		glyphs.push_back(glyph);
 	}
 
+#if defined(__DAVAENGINE_DEBUG__)
+    Set<Glyph> tmp;
+    tmp.insert(glyphs.begin(), glyphs.end());
+    DVASSERT(tmp.size() == glyphs.size()); //This situation can be unnormal. Check it
+#endif //__DAVAENGINE_DEBUG__
+    
+    
 	return spacesCount;
 }
 
