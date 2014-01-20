@@ -76,6 +76,7 @@ DefaultScreen::DefaultScreen()
 	lastSelectedControl = NULL;
 	
 	selectorControl = new UISelectorControl();
+    screenControl = NULL;
 	
 	copyControlsInProcess = false;
 	mouseAlreadyPressed = false;
@@ -132,11 +133,19 @@ Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint) const
 void DefaultScreen::SetScale(const Vector2& scale)
 {
 	this->scale = scale;
+    if (screenControl)
+    {
+        screenControl->SetScale(scale);
+    }
 }
 
 void DefaultScreen::SetPos(const Vector2& pos)
 {
 	this->pos = pos;
+    if (screenControl)
+    {
+        screenControl->SetPos(pos);
+    }
 }
 
 void DefaultScreen::Input(DAVA::UIEvent* event)
@@ -1303,3 +1312,7 @@ void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& 
 	}
 }
 
+void DefaultScreen::SetScreenControl(ScreenControl* control)
+{
+    screenControl = control;
+}
