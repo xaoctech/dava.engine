@@ -129,10 +129,10 @@ public:
 	void AdjustSelectedControlsSize();
 
     // Repack and reload sprites.
-    void RepackAndReloadSprites(bool needRepack, bool pixelized);
+    void RepackAndReloadSprites();
 
-    // Apply the pixelization.
-    void ApplyPixelizationForAllSprites();
+    // Set the pixelization value.
+    void SetPixelization(bool value);
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
