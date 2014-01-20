@@ -109,6 +109,7 @@ protected:
 	void ToMatrix2(const QVariant &value);
 	void ToColor(const QVariant &value);
 	void ToAABBox3(const QVariant &value);
+	int ParseFloatList(const QString &str, int maxCount, DAVA::float32 *dest);
 
 	void SubValueAdd(const QString &key, const QVariant &value);
 	void SubValueSet(const QString &key, const QVariant &value);
