@@ -374,6 +374,15 @@ void QtPropertyModel::DataRemoved()
 	endRemoveRows();
 }
 
+void QtPropertyModel::ExpandStateChanged(QtPropertyData *data)
+{
+	if(NULL != data)
+	{
+		QModelIndex index = indexFromItem(data);
+		emit PropertyExpanded(index, data->IsExpanded());
+	}
+}
+
 void QtPropertyModel::SetEditTracking(bool enabled)
 {
 	trackEdit = enabled;
