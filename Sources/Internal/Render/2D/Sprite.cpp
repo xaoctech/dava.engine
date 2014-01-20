@@ -43,8 +43,13 @@
 
 namespace DAVA
 {
+#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<FilePath, Sprite *> SpriteMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<String, Sprite *> SpriteMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+	SpriteMap spriteMap;
 
-Map<String, Sprite*> spriteMap;
 static int32 fboCounter = 0;
 Vector<Vector2> Sprite::clippedTexCoords;
 Vector<Vector2> Sprite::clippedVertices;
@@ -146,7 +151,7 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 	SafeRelease(fp);
 
 //	Logger::FrameworkDebug("Adding to map for key: %s", spr->relativePathname.c_str());
-	spriteMap[spr->relativePathname.GetAbsolutePathname()] = spr;
+	spriteMap[FILEPATH_MAP_KEY(spr->relativePathname)] = spr;	
 //	Logger::FrameworkDebug("Resetting sprite");
 	spr->Reset();
 //	Logger::FrameworkDebug("Returning pointer");
@@ -156,8 +161,7 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 
 Sprite* Sprite::GetSpriteFromMap(const FilePath &pathname)
 {
-	Map<String, Sprite*>::iterator it;
-	it = spriteMap.find(pathname.GetAbsolutePathname());
+	SpriteMap::iterator it = spriteMap.find(FILEPATH_MAP_KEY(pathname));
 	if (it != spriteMap.end())
 	{
 		Sprite *spr = it->second;
@@ -238,6 +242,8 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		textureNames[k] = tp;
 		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
 	}
+	
+	RegisterTextureStates();
 
 	resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(resourceSizeIndex);
 	resourceToPhysicalFactor = Core::Instance()->GetResourceToPhysicalFactor(resourceSizeIndex);
@@ -515,9 +521,12 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 
 	// DF-1984 - Set available sprite relative path name here. Use FBO sprite name only if sprite name is empty.
 	this->relativePathname = spriteName.IsEmpty() ? Format("FBO sprite %d", fboCounter) : spriteName;
-	spriteMap[this->relativePathname.GetAbsolutePathname()] = this;
+	spriteMap[FILEPATH_MAP_KEY(this->relativePathname)] = this;
+
 	fboCounter++;
 	this->Reset();
+	
+	RegisterTextureStates();
 }
 
 void Sprite::PrepareForTiling()
@@ -563,8 +572,8 @@ int32 Sprite::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-		SafeRelease(spriteRenderObject);
-		spriteMap.erase(relativePathname.GetAbsolutePathname());
+        	SafeRelease(spriteRenderObject);
+		spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
 	}
 
 	return BaseObject::Release();
@@ -572,6 +581,7 @@ int32 Sprite::Release()
 
 void Sprite::Clear()
 {
+	UnregisterTextureStates();
 	for (int32 k = 0; k < textureCount; ++k)
 	{
 		SafeRelease(textures[k]);
@@ -602,6 +612,7 @@ void Sprite::Clear()
 	SafeDeleteArray(texCoords);
 	SafeDeleteArray(rectsAndOffsets);
 	SafeDeleteArray(frameTextureIndex);
+	textureCount = 0;
 }
 
 Sprite::~Sprite()
@@ -621,6 +632,12 @@ Texture* Sprite::GetTexture(int32 frameNumber)
 //	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
 	frame = Clamp(frameNumber, 0, frameCount - 1);
 	return textures[frameTextureIndex[frame]];
+}
+	
+UniqueHandle Sprite::GetTextureHandle(int32 frameNumber)
+{
+	frame = Clamp(frameNumber, 0, frameCount - 1);
+	return textureHandles[frameTextureIndex[frame]];
 }
 
 float32 *Sprite::GetTextureVerts(int32 frame)
@@ -1061,7 +1078,10 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 	else
 	{
 		clippedVertices.clear();
+        clippedVertices.reserve(clipPolygon->GetPointCount());
 		clippedTexCoords.clear();
+        clippedTexCoords.reserve(clipPolygon->GetPointCount());
+        
 		Texture * t = GetTexture(frame);
 		float32 adjWidth = 1.f / t->width / resourceToVirtualFactor;
 		float32 adjHeight = 1.f / t->height / resourceToVirtualFactor;
@@ -1112,43 +1132,44 @@ void Sprite::Draw()
 		return;
 	}
 
-	PrepareSpriteRenderData(0);
+    PrepareSpriteRenderData(0);
 
-	if( clipPolygon )
-	{
-		RenderManager::Instance()->ClipPush();
-		Rect clipRect;
-		if( flags & EST_SCALE )
-		{
-			float32 x = drawCoord.x - pivotPoint.x * scale.x;
-			float32 y = drawCoord.y - pivotPoint.y * scale.y;
-			clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) * scale.x + x
-						   , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) * scale.y + y
-						   , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH  ) * scale.x
-						   , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) * scale.y );
-		}
-		else
-		{
-			float32 x = drawCoord.x - pivotPoint.x;
-			float32 y = drawCoord.y - pivotPoint.y;
-			clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) + x
-						   , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) + y
-						   , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH )
-						   , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) );
-		}
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPush();
+        Rect clipRect;
+        if( flags & EST_SCALE )
+        {
+            float32 x = drawCoord.x - pivotPoint.x * scale.x;
+            float32 y = drawCoord.y - pivotPoint.y * scale.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) * scale.x + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) * scale.y + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH  ) * scale.x
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) * scale.y );
+        }
+        else
+        {
+            float32 x = drawCoord.x - pivotPoint.x;
+            float32 y = drawCoord.y - pivotPoint.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH )
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) );
+        }
 
-		RenderManager::Instance()->ClipRect( clipRect );
-	}
+        RenderManager::Instance()->ClipRect( clipRect );
+    }
 
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
-	RenderManager::Instance()->SetRenderData(spriteRenderObject);
-	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
+    RenderManager::Instance()->SetRenderData(spriteRenderObject);
+    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+    RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 
-	if( clipPolygon )
-	{
-		RenderManager::Instance()->ClipPop();
-	}
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPop();
+    }
 
 	Reset();
 }
@@ -1191,7 +1212,8 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->ClipRect( clipRect );
 	}
 
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	//RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
@@ -1383,23 +1405,24 @@ void Sprite::DrawPoints(Vector2 *verticies)
 
 	if(flags & EST_ROTATE)
 	{
-		// Optimized code
-		float32 sinA = sinf(rotateAngle);
-		float32 cosA = cosf(rotateAngle);
-		for(int32 k = 0; k < 4; ++k)
-		{
-			float32 x = tempVertices[(k << 1)] - drawCoord.x;
-			float32 y = tempVertices[(k << 1) + 1] - drawCoord.y;
+        // Optimized code
+        float32 sinA = sinf(rotateAngle);
+        float32 cosA = cosf(rotateAngle);
+        for(int32 k = 0; k < 4; ++k)
+        {
+            float32 x = tempVertices[(k << 1)] - drawCoord.x;
+            float32 y = tempVertices[(k << 1) + 1] - drawCoord.y;
+            
+            float32 nx = (x) * cosA  - (y) * sinA + drawCoord.x;
+            float32 ny = (x) * sinA  + (y) * cosA + drawCoord.y;
+            
+            tempVertices[(k << 1)] = nx;
+            tempVertices[(k << 1) + 1] = ny;
+        }
+    }	
 
-			float32 nx = (x) * cosA  - (y) * sinA + drawCoord.x;
-			float32 ny = (x) * sinA  + (y) * cosA + drawCoord.y;
-
-			tempVertices[(k << 1)] = nx;
-			tempVertices[(k << 1) + 1] = ny;
-		}
-	}
-
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
@@ -1446,7 +1469,9 @@ void Sprite::PrepareForNewSize()
 
 	Clear();
 	Logger::FrameworkDebug("erasing from sprite from map");
-	spriteMap.erase(relativePathname.GetAbsolutePathname());
+
+	spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
+
 	textures = 0;
 	textureNames = 0;
 
@@ -1469,11 +1494,11 @@ void Sprite::PrepareForNewSize()
 	clipPolygon = 0;
 
 	resourceToVirtualFactor = 1.0f;
-	resourceToPhysicalFactor = 1.0f;
 
-
-	String path = relativePathname.GetAbsolutePathname();
-	PureCreate(path.substr(0, path.length() - 4), this);
+    resourceToPhysicalFactor = 1.0f;
+    
+    
+	PureCreate(pathname.substr(0, pathname.length() - 4), this);
 //TODO: следующая строка кода написада здесь только до тех времен
 //		пока defaultPivotPoint не начнет задаваться прямо в спрайте,
 //		но возможно это навсегда.
@@ -1484,7 +1509,7 @@ void Sprite::ValidateForSize()
 {
 	Logger::FrameworkDebug("--------------- Sprites validation for new resolution ----------------");
 	List<Sprite*> spritesToReload;
-	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+	for(SpriteMap::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
 		Sprite *sp = it->second;
 		if (sp->type == SPRITE_FROM_FILE && Core::Instance()->GetDesirableResourceIndex() != sp->GetResourceSizeIndex())
@@ -1505,7 +1530,7 @@ void Sprite::DumpSprites()
 {
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated sprites ----------------");
-	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+	for(SpriteMap::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
 		Sprite *sp = it->second; //[spriteDict objectForKey:[txKeys objectAtIndex:i]];
 		Logger::FrameworkDebug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
@@ -1633,6 +1658,32 @@ void Sprite::ReloadExistingTextures()
 		else
 		{
 			Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
+		}
+	}
+}
+	
+void Sprite::RegisterTextureStates()
+{
+	textureHandles.resize(textureCount, InvalidUniqueHandle);
+	for(int32 i = 0; i < textureCount; ++i)
+    {
+        if(textures[i])
+        {
+			TextureStateData data;
+			data.textures[0] = textures[i];
+			
+			textureHandles[i] = RenderManager::Instance()->AddTextureStateData(&data);
+		}
+	}
+}
+
+void Sprite::UnregisterTextureStates()
+{
+	for(int32 i = 0; i < textureCount; ++i)
+    {
+		if(textureHandles[i] != InvalidUniqueHandle)
+		{
+			RenderManager::Instance()->ReleaseTextureStateData(textureHandles[i]);
 		}
 	}
 }

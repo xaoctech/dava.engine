@@ -45,8 +45,12 @@
 
 namespace DAVA
 {
-
-Map<String,FTInternalFont*> fontMap;
+#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<FilePath, FTInternalFont *> FontMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<String, FTInternalFont *> FontMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+	FontMap fontMap;
 
 class FTInternalFont : public BaseObject
 {
@@ -109,7 +113,8 @@ FTFont::~FTFont()
 FTFont * FTFont::Create(const FilePath& path)
 {
 	FTInternalFont * iFont = 0;
-	Map<String,FTInternalFont*>::iterator it = fontMap.find(path.GetAbsolutePathname());
+
+	FontMap::iterator it = fontMap.find(path);
 	if (it != fontMap.end())
 	{
 		iFont = it->second;
@@ -124,7 +129,7 @@ FTFont * FTFont::Create(const FilePath& path)
             return NULL;
         }
 
-		fontMap[path.GetAbsolutePathname()] = iFont;
+		fontMap[FILEPATH_MAP_KEY(path)] = iFont;
 	}
 	
 	FTFont * font = new FTFont(iFont);

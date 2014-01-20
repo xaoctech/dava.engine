@@ -603,6 +603,8 @@ void TextBlock::Prepare()
 			int32 fontHeight = font->GetFontHeight() + yOffset;
             //			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
 			textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
+
+            stringSizes.reserve(multilineStrings.size());
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
 				Size2i stringSize = font->GetStringSize(multilineStrings[line]);
