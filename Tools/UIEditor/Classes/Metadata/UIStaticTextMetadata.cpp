@@ -136,6 +136,8 @@ void UIStaticTextMetadata::InitializeControl(const String& controlName, const Ve
         // Static text is not state-aware.
         activeNode->GetExtraData().SetLocalizationKey(controlText, this->GetReferenceState());
     }
+
+    UpdatePixelization();
 }
 
 void UIStaticTextMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
@@ -318,5 +320,15 @@ void UIStaticTextMetadata::SetMultilineBySymbol(const bool value)
 
 void UIStaticTextMetadata::UpdatePixelization()
 {
-    SpritesHelper::SetPixelization(GetActiveStaticText(), EditorSettings::Instance()->IsPixelized());
+    UIStaticText* activeText = GetActiveStaticText();
+    if (!activeText && treeNodeParams.size() > 0)
+    {
+        // We are during initialization, so active index is not set yet. Take the first one.
+        activeText = dynamic_cast<UIStaticText*>(treeNodeParams[0].GetUIControl());
+    }
+
+    if (activeText)
+    {
+        SpritesHelper::SetPixelization(activeText, EditorSettings::Instance()->IsPixelized());
+    }
 }
