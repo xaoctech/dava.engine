@@ -33,10 +33,12 @@
 #include "EditorFontManager.h"
 #include "UIControlStateHelper.h"
 #include "ColorHelper.h"
+#include "SpritesHelper.h"
 
 #include "PropertyNames.h"
 #include "StringUtils.h"
 #include "StringConstants.h"
+#include "EditorSettings.h"
 
 using namespace DAVA;
 
@@ -69,6 +71,7 @@ void UIButtonMetadata::SetLocalizedTextKey(const QString& value)
 	}
 
     UpdatePropertyDirtyFlagForLocalizedText();
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForLocalizedText()
@@ -113,6 +116,8 @@ void UIButtonMetadata::SetFont(Font * font)
 		}
         UpdatePropertyDirtyFlagForFont();
     }
+    
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForFont()
@@ -176,6 +181,7 @@ void UIButtonMetadata::SetFontSize(float fontSize)
 	}
 
     UpdatePropertyDirtyFlagForFontSize();
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForFontSize()
@@ -227,7 +233,9 @@ void UIButtonMetadata::SetFontColor(const QColor& value)
 	{
 		GetActiveUIButton()->SetStateFontColor(this->uiControlStates[i], ColorHelper::QTColorToDAVAColor(value));
 	}
+
     UpdatePropertyDirtyFlagForFontColor();
+    UpdatePixelization();
 }
 
 float UIButtonMetadata::GetShadowOffsetX() const
@@ -390,12 +398,13 @@ void UIButtonMetadata::SetSprite(const QString& value)
 		else
 		{
 			GetActiveUIButton()->SetStateSprite(this->uiControlStates[i], value.toStdString());
-            Sprite* newSprite = GetActiveUIButton()->GetStateSprite(this->uiControlStates[i]);
-            ApplyPixelization(newSprite);
+//          Sprite* newSprite = GetActiveUIButton()->GetStateSprite(this->uiControlStates[i]);
+//          ApplyPixelization(newSprite);
 		}
 	}
 
     UpdatePropertyDirtyFlagForSpriteName();
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForSpriteName()
@@ -457,6 +466,7 @@ void UIButtonMetadata::SetSpriteFrame(int value)
 	}
 
     UpdatePropertyDirtyFlagForSpriteFrame();
+    UpdatePixelization();
 }
 
 int UIButtonMetadata::GetSpriteFrame()
@@ -515,7 +525,9 @@ void UIButtonMetadata::SetColor(const QColor& value)
 	{
 		GetActiveUIButton()->SetStateColor(this->uiControlStates[i], ColorHelper::QTColorToDAVAColor(value));
 	}
+    
     UpdatePropertyDirtyFlagForColor();
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForColor()
@@ -648,7 +660,9 @@ void UIButtonMetadata::SetAlign(int value)
 	{
 		GetActiveUIButton()->SetStateAlign(this->uiControlStates[i], value);
 	}
+
     UpdatePropertyDirtyFlagForAlign();
+    UpdatePixelization();
 }
 
 int UIButtonMetadata::GetAlignForState(UIControl::eControlState state) const
@@ -699,6 +713,7 @@ void UIButtonMetadata::SetTextAlign(int align)
 	
 	GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex())->SetTextAlign(align);
 	UpdatePropertyDirtyFlagForTextAlign();
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::SetSpriteModification(int value)
@@ -712,7 +727,9 @@ void UIButtonMetadata::SetSpriteModification(int value)
 	{
 		GetActiveUIButton()->SetStateModification(this->uiControlStates[i],(UIControlBackground::eColorInheritType)value);
 	}
+
 	UpdatePropertyDirtyFlagForSpriteModification();
+    UpdatePixelization();
 }
 
 int UIButtonMetadata::GetSpriteModificationForState(UIControl::eControlState state) const
@@ -814,4 +831,9 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForDrawType();
     UpdatePropertyDirtyFlagForColorInheritType();
     UpdatePropertyDirtyFlagForAlign();
+}
+
+void UIButtonMetadata::UpdatePixelization()
+{
+    SpritesHelper::SetPixelization(GetActiveUIButton(), EditorSettings::Instance()->IsPixelized());
 }

@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MaterialModel.h"
 #include "Scene/SceneSignals.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
+#include "DockProperties/PropertyEditorStateHelper.h"
 
 namespace Ui {
 	class MaterialEditor;
@@ -81,6 +82,8 @@ private:
 
 	bool templatesScaned;
 	QVector<DAVA::FilePath> templates;
+
+	PropertyEditorStateHelper *treeStateHelper;
 };
 
 #endif

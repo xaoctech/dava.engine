@@ -48,6 +48,8 @@ public:
 	virtual const DAVA::MetaInfo * MetaInfo() const;
 	static QtPropertyData * CreateMemberData(void *_object, const DAVA::InspMember *member);
 
+	void* GetObject() const;
+
 protected:
 	void *object;
 	const DAVA::InspInfo *info;

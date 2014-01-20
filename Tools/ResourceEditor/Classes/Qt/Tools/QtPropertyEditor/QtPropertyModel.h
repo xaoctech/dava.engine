@@ -76,6 +76,7 @@ public:
 signals:
 	void PropertyEdited(const QModelIndex &index);
 	void PropertyChanged(const QModelIndex &index);
+	void PropertyExpanded(const QModelIndex &index, bool expanded);
 
 protected:
 	QtPropertyData *root;
@@ -88,6 +89,7 @@ protected:
 	void DataAdded();
 	void DataAboutToBeRemoved(QtPropertyData *parent, int first, int last);
 	void DataRemoved();
+	void ExpandStateChanged(QtPropertyData *data);
 
 	void UpdateStructureInternal(const QModelIndex &index);
 };

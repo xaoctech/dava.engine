@@ -31,9 +31,11 @@
 
 #include "UIStaticTextMetadata.h"
 #include "EditorFontManager.h"
+#include "EditorSettings.h"
 
 #include "StringUtils.h"
 #include "ColorHelper.h"
+#include "SpritesHelper.h"
 
 using namespace DAVA;
 
@@ -66,6 +68,7 @@ void UIStaticTextMetadata::SetFont(Font * font)
     {
         font->SetSize(GetFontSize());
         GetActiveStaticText()->SetFont(font);
+        UpdatePixelization();
     }
 }
 
@@ -76,6 +79,7 @@ void UIStaticTextMetadata::SetLocalizedTextKey(const QString& value)
     // Update the control with the value.
     WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(value));
     GetActiveStaticText()->SetText(localizationValue);
+    UpdatePixelization();
 }
 
 float UIStaticTextMetadata::GetFontSize() const
@@ -105,6 +109,8 @@ void UIStaticTextMetadata::SetFontSize(float fontSize)
         newFont->SetSize(fontSize);
         GetActiveStaticText()->SetFont(newFont);
         newFont->Release();
+
+        UpdatePixelization();
     }
 }
 
@@ -284,6 +290,7 @@ void UIStaticTextMetadata::SetMultiline(const bool value)
     // Have to keep current MultilineBySymbol value.
     bool curMultilineBySymbolValue = GetActiveStaticText()->GetMultilineBySymbol();
     GetActiveStaticText()->SetMultiline(value, curMultilineBySymbolValue);
+    UpdatePixelization();
 }
 
 bool UIStaticTextMetadata::GetMultilineBySymbol() const
@@ -306,4 +313,10 @@ void UIStaticTextMetadata::SetMultilineBySymbol(const bool value)
     // Have to keep current Multiline value.
     bool curMultilineValue = GetActiveStaticText()->GetMultiline();
     GetActiveStaticText()->SetMultiline(curMultilineValue, value);
+    UpdatePixelization();
+}
+
+void UIStaticTextMetadata::UpdatePixelization()
+{
+    SpritesHelper::SetPixelization(GetActiveStaticText(), EditorSettings::Instance()->IsPixelized());
 }
