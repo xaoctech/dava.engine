@@ -76,6 +76,7 @@ DefaultScreen::DefaultScreen()
 	lastSelectedControl = NULL;
 	
 	selectorControl = new UISelectorControl();
+    screenControl = NULL;
 	
 	copyControlsInProcess = false;
 	mouseAlreadyPressed = false;
@@ -102,6 +103,11 @@ void DefaultScreen::Draw(const UIGeometricData &geometricData)
 
 void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
+    Color oldColor = RenderManager::Instance()->GetColor();
+    RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
+    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
+    RenderManager::Instance()->SetColor(oldColor);
+
 	UIScreen::SystemDraw(geometricData);
 	
 	if (inputState == InputStateSelectorControl)
@@ -127,11 +133,19 @@ Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint) const
 void DefaultScreen::SetScale(const Vector2& scale)
 {
 	this->scale = scale;
+    if (screenControl)
+    {
+        screenControl->SetScale(scale);
+    }
 }
 
 void DefaultScreen::SetPos(const Vector2& pos)
 {
 	this->pos = pos;
+    if (screenControl)
+    {
+        screenControl->SetPos(pos);
+    }
 }
 
 void DefaultScreen::Input(DAVA::UIEvent* event)
@@ -313,7 +327,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetNext(Hi
 	return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 }
 
-void DefaultScreen::SmartGetSelectedControl(SmartSelection* list, const HierarchyTreeNode* parent, const Vector2& point)
+void DefaultScreen::SmartGetSelectedControl(SmartSelection* list, const HierarchyTreeNode* parent, const Vector2& point) const
 {
 	if (!parent)
 		return;
@@ -377,7 +391,7 @@ HierarchyTreeControlNode* DefaultScreen::GetSelectedControl(const Vector2& point
 	return NULL;
 }
 
-HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& point)
+HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& point) const
 {
 	SmartSelection root(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
 	SmartGetSelectedControl(&root, HierarchyTreeController::Instance()->GetActiveScreen(), point);
@@ -1180,9 +1194,13 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 bool DefaultScreen::IsDropEnable(const DAVA::Vector2 &position) const
 {
 	Vector2 pos = LocalToInternal(position);
-	HierarchyTreeAggregatorControlNode* newSelectedNode = dynamic_cast<HierarchyTreeAggregatorControlNode*>(GetSelectedControl(pos, HierarchyTreeController::Instance()->GetActiveScreen()));
+	HierarchyTreeAggregatorControlNode* newSelectedNode = dynamic_cast<HierarchyTreeAggregatorControlNode*>(SmartGetSelectedControl(pos));
 	if (newSelectedNode)
+	{
+		// Don't allow to drop anything to Aggregators.
 		return false;
+	}
+
 	return true;
 }
 
@@ -1269,7 +1287,7 @@ void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 	}
 }
 
-bool DefaultScreen::IsControlVisible(UIControl* uiControl)
+bool DefaultScreen::IsControlVisible(UIControl* uiControl) const
 {
 	bool isVisible = false;
 	IsControlVisibleRecursive(uiControl, isVisible);
@@ -1277,7 +1295,7 @@ bool DefaultScreen::IsControlVisible(UIControl* uiControl)
 	return isVisible;
 }
 
-void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible)
+void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible) const
 {
 	if (!uiControl)
 	{
@@ -1294,3 +1312,7 @@ void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& 
 	}
 }
 
+void DefaultScreen::SetScreenControl(ScreenControl* control)
+{
+    screenControl = control;
+}
