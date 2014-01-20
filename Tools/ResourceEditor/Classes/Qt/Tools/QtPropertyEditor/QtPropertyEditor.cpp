@@ -50,6 +50,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
 	QObject::connect(curModel, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnItemEdited(const QModelIndex &)));
+	QObject::connect(curModel, SIGNAL(PropertyExpanded(const QModelIndex &, bool)), this, SLOT(OnItemExpanded(const QModelIndex &, bool)));
 	QObject::connect(&updateTimer, SIGNAL(timeout()), this, SLOT(OnUpdateTimeout()));
 
 	setMouseTracking(true);
@@ -166,15 +167,42 @@ void QtPropertyEditor::OnUpdateTimeout()
 
 void QtPropertyEditor::expand(const QModelIndex & index)
 {
-	// expand only enabled items
+	QTreeView::expand(index);
+
 	QtPropertyData *data = GetProperty(index);
 	if(NULL != data)
 	{
-		if(data->IsEnabled())
-		{
-			QTreeView::expand(index);
-		}
+		data->SetExpanded(true);
 	}
+}
+
+void QtPropertyEditor::expandAll()
+{
+	QTreeView::expandAll();
+	UpdateExpandState(rootIndex());
+}
+
+void QtPropertyEditor::expandToDepth(int depth)
+{
+	QTreeView::expandToDepth(depth);
+	UpdateExpandState(rootIndex());
+}
+
+void QtPropertyEditor::collapse(const QModelIndex & index)
+{
+	QTreeView::expand(index);
+
+	QtPropertyData *data = GetProperty(index);
+	if(NULL != data)
+	{
+		data->SetExpanded(true);
+	}
+}
+
+void QtPropertyEditor::collapseAll()
+{
+	QTreeView::collapseAll();
+	UpdateExpandState(rootIndex());
 }
 
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
@@ -220,8 +248,35 @@ void QtPropertyEditor::mouseMoveEvent(QMouseEvent * event)
 
 void QtPropertyEditor::mousePressEvent(QMouseEvent * event)
 {
-	OnHover(indexAt(event->pos()));
-	QTreeView::mousePressEvent(event);
+	bool isExpandCase = false;
+	bool allowExpand = false;
+
+	QModelIndex index = indexAt(event->pos());
+	QtPropertyData *data = GetProperty(index);
+
+	OnHover(index);
+
+	if(style()->styleHint(QStyle::SH_Q3ListViewExpand_SelectMouseType, 0, this) == QEvent::MouseButtonPress)
+	{
+		isExpandCase = true;
+
+		if(NULL != data)
+		{
+			allowExpand = data->IsExpandable();
+		}
+	}
+
+	if(!isExpandCase || (isExpandCase && allowExpand))
+	{
+		QTreeView::mousePressEvent(event);
+	}
+	
+	if(isExpandCase && allowExpand)
+	{
+		// is this case expand/collapse user action was handled by tree view
+		// we should update expanded state to item
+		data->SetExpanded(isExpanded(index));
+	}
 }
 
 void QtPropertyEditor::mouseReleaseEvent(QMouseEvent * event)
@@ -334,4 +389,28 @@ void QtPropertyEditor::OnItemEdited(const QModelIndex &index)
 {
 	lastHoverData = NULL;
 	emit PropertyEdited(index);
+}
+
+void QtPropertyEditor::OnItemExpanded(const QModelIndex &index, bool state)
+{
+	if(isExpanded(index) != state)
+	{
+		setExpanded(index, state);
+	}
+}
+
+void QtPropertyEditor::UpdateExpandState(const QModelIndex &parent)
+{
+	int rowCount = model()->rowCount(parent);
+	for(int i = 0; i < rowCount; ++i)
+	{
+		QModelIndex child = model()->index(i, 0, parent);
+		QtPropertyData *data = GetProperty(child);
+		if(NULL != data)
+		{
+			data->SetExpanded(isExpanded(child));
+		}
+
+		UpdateExpandState(child);
+	}
 }

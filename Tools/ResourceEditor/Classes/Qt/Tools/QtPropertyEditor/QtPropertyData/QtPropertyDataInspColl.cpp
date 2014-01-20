@@ -32,11 +32,11 @@
 #include "QtPropertyDataIntrospection.h"
 #include "QtPropertyDataMetaObject.h"
 
-QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection)
+QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection, bool autoAddChilds)
 	: object(_object)
 	, collection(_collection)
 {
-	if(NULL != collection && collection->Size(object) > 0)
+	if(NULL != collection && collection->Size(object) > 0 && autoAddChilds)
 	{
 		int index = 0;
 		DAVA::MetaInfo *valueType = collection->ItemType();
