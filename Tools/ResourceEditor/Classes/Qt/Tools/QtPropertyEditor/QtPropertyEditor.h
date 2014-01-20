@@ -72,10 +72,17 @@ public:
 	void SetUpdateTimeout(int ms);
 	int GetUpdateTimeout();
 
+	virtual void ApplyStyle(QtPropertyData *data, int style);
+
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
+
 	void expand(const QModelIndex & index);
+	void expandAll();
+	void expandToDepth(int depth);
+	void collapse(const QModelIndex & index);
+	void collapseAll();
 
 signals:
 	// void PropertyChanged(const QModelIndex &index); // SZ: not implemented because is never used. will be implemented on request
@@ -97,18 +104,20 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void leaveEvent(QEvent * event);
 	
-	virtual void ApplyStyle(QtPropertyData *data, int style);
 	virtual QToolButton* GetButton(QMouseEvent * event);
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
 	virtual void OnItemEdited(const QModelIndex &);
+	virtual void OnItemExpanded(const QModelIndex &, bool);
 	virtual void OnUpdateTimeout();
 
 private:
 	QtPropertyData *lastHoverData;
 
 	void OnHover(const QModelIndex &index);
+	void UpdateExpandState(const QModelIndex &parent);
+
 };
 
 #endif // __QT_PROPERTY_VIEW_H__
