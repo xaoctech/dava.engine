@@ -29,6 +29,7 @@
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6796CD81885702800EB254C /* DDSExtractorTool.cpp */; };
+		A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A69D4042188940CF0093F7AA /* WebKit.framework */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
 		A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */; };
 		A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */; };
@@ -658,6 +659,7 @@
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A6796CD81885702800EB254C /* DDSExtractorTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSExtractorTool.cpp; sourceTree = "<group>"; };
 		A6796CD91885702800EB254C /* DDSExtractorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDSExtractorTool.h; sourceTree = "<group>"; };
+		A69D4042188940CF0093F7AA /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
 		A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog.cpp; sourceTree = "<group>"; };
 		A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLODDialog.h; sourceTree = "<group>"; };
@@ -1641,6 +1643,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */,
 				A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */,
 				02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */,
 				02E9E4111739612300C501BC /* libfmodex.dylib in Frameworks & Libraries */,
@@ -1665,6 +1668,7 @@
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
+				A69D4042188940CF0093F7AA /* WebKit.framework */,
 				A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */,
 				02E9E40E1739612300C501BC /* libfmodevent.dylib */,
 				02E9E40F1739612300C501BC /* libfmodex.dylib */,
