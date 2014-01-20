@@ -23,4 +23,5 @@ VertexColor.FrameBlend.Opaque.material
 VertexColor.Opaque.material
 VertexLit.Alphatest.material
 VertexLit.Opaque.material
-VertexLitReflection.Opaque.material
+VertexLit.Reflection.Opaque.material
+PixelLit.SpecularMap.Reflection.Opaque.material
