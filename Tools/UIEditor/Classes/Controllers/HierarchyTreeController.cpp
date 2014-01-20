@@ -709,14 +709,14 @@ bool HierarchyTreeController::CanPerformDistribute(eDistributeControlsType /*dis
 	return activeControlNodes.size() >= 3;
 }
 
-void HierarchyTreeController::RepackAndReloadSprites(bool needRepack, bool pixelized)
+void HierarchyTreeController::RepackAndReloadSprites()
 {
-    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode(), needRepack, pixelized);
+    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
     CommandsController::Instance()->ExecuteCommand(cmd);
     SafeRelease(cmd);
 }
 
-void HierarchyTreeController::ApplyPixelizationForAllSprites()
+void HierarchyTreeController::SetPixelization(bool value)
 {
-    SpritesHelper::ApplyPixelizationForAllSprites(hierarchyTree.GetRootNode());
+    SpritesHelper::SetPixelization(hierarchyTree.GetRootNode(), value);
 }
