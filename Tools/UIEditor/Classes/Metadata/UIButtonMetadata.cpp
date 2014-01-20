@@ -786,6 +786,8 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
         // Define some properties for the reference state.
         button->SetStateDrawType(GetReferenceState(), UIControlBackground::DRAW_SCALE_TO_RECT);
     }
+
+    UpdatePixelization();
 }
 
 void UIButtonMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
@@ -835,5 +837,15 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
 
 void UIButtonMetadata::UpdatePixelization()
 {
-    SpritesHelper::SetPixelization(GetActiveUIButton(), EditorSettings::Instance()->IsPixelized());
+    UIButton* activeButton = GetActiveUIButton();
+    if (!activeButton && treeNodeParams.size() > 0)
+    {
+        // We are during initialization, so active index is not set yet. Take the first one.
+        activeButton = dynamic_cast<UIButton*>(treeNodeParams[0].GetUIControl());
+    }
+
+    if (activeButton)
+    {
+        SpritesHelper::SetPixelization(activeButton, EditorSettings::Instance()->IsPixelized());
+    }
 }
