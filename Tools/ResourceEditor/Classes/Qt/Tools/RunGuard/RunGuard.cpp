@@ -1,78 +1,76 @@
-#include "Common/common.h"
 #include "RunGuard.h"
+
+#include <QCryptographicHash>
 
 
 namespace
 {
 	
-    QString generateKeyHash( const QString& key, const QString& salt )
-    {
-        QByteArray data;
+QString generateKeyHash( const QString& key, const QString& salt )
+{
+    QByteArray data;
 
-        data.append( key.toUtf8() );
-        data.append( salt.toUtf8() );
-        data = QCryptographicHash::hash( data, QCryptographicHash::Sha1 ).toHex();
+    data.append( key.toUtf8() );
+    data.append( salt.toUtf8() );
+    data = QCryptographicHash::hash( data, QCryptographicHash::Sha1 ).toHex();
 
-        return data;
-    }
+    return data;
+}
 
 }
 
 
-namespace UTILS
+RunGuard::RunGuard( const QString& key )
+    : key( key )
+    , memLockKey( generateKeyHash( key, "_memLockKey" ) )
+	, sharedmemKey( generateKeyHash( key, "_sharedmemKey" ) )
+	, sharedMem( sharedmemKey )
+	, memLock( memLockKey, 1 )
 {
+        QSharedMemory fix( sharedmemKey );    // Fix for *nix: http://habrahabr.ru/post/173281/
+        fix.attach();
+}
 
-    RunGuard::RunGuard( const QString& key )
-        : m_key( key )
-        , m_memLockKey( generateKeyHash( key, "_memLockKey" ) )
-		, m_sharedmemKey( generateKeyHash( key, "_sharedmemKey" ) )
-		, m_sharedMem( m_sharedmemKey )
-		, m_memLock( m_memLockKey, 1 )
+RunGuard::~RunGuard()
+{
+    release();
+}
+
+bool RunGuard::isAnotherRunning()
+{
+	if ( sharedMem.isAttached() )
+		return false;
+
+	memLock.acquire();
+	const bool isRunning = sharedMem.attach();
+	if ( isRunning )
+		sharedMem.detach();
+	memLock.release();
+
+    return isRunning;
+}
+
+bool RunGuard::tryToRun()
+{
+	if ( isAnotherRunning() )	// Extra check
+		return false;
+
+    memLock.acquire();
+    const bool result = sharedMem.create( sizeof( quint64 ) );
+	memLock.release();
+    if ( !result )
     {
+		release();
+        return false;
     }
 
-    RunGuard::~RunGuard()
-    {
-        release();
-    }
+    return true;
+}
 
-    bool RunGuard::isAnotherRunning()
-    {
-		if ( m_sharedMem.isAttached() )
-			return false;
-
-		m_memLock.acquire();
-		const bool isRunning = m_sharedMem.attach();
-		if ( isRunning )
-			m_sharedMem.detach();
-		m_memLock.release();
-
-        return isRunning;
-    }
-
-    bool RunGuard::tryToRun()
-    {
-		if ( isAnotherRunning() )	// Extra check
-			return false;
-
-        m_memLock.acquire();
-        const bool result = m_sharedMem.create( sizeof( quint64 ) );
-		m_memLock.release();
-        if ( !result )
-        {
-			release();
-            return false;
-        }
-
-        return true;
-    }
-
-	void RunGuard::release()
-    {
-		m_memLock.acquire();
-		if ( m_sharedMem.isAttached() )
-			m_sharedMem.detach();
-		m_memLock.release();
-    }
-
+void RunGuard::release()
+{
+	memLock.acquire();
+	if ( sharedMem.isAttached() )
+		sharedMem.detach();
+	memLock.release();
 }
