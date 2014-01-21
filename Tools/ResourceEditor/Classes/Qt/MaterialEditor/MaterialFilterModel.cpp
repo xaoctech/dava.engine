@@ -39,6 +39,8 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 
+#include <QTimer>
+
 
 MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QObject *parent /* = NULL */)
     : QSortFilterProxyModel(parent)
@@ -70,13 +72,13 @@ DAVA::NMaterial * MaterialFilteringModel::GetMaterial(const QModelIndex & index)
 
 QModelIndex MaterialFilteringModel::GetIndex(DAVA::NMaterial *material, const QModelIndex &parent /*= QModelIndex()*/) const
 {
-	return mapFromSource(materialModel->GetIndex(material, parent));
+	return mapFromSource(materialModel->GetIndex(material, mapFromSource(parent)));
 }
 
 bool MaterialFilteringModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-	QModelIndex target = mapToSource(index(row, column, mapToSource(parent)));
-	return materialModel->dropCanBeAccepted(data, action, target.row(), target.column(), mapToSource(parent));
+	QModelIndex target = mapToSource(index(row, column, parent));
+    return materialModel->dropCanBeAccepted(data, action, target.row(), target.column(), target.parent());
 }
 
 void MaterialFilteringModel::setFilterType(int type)
@@ -138,4 +140,13 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
 
 
 	return false;
+}
+
+bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction action, int row, int column, QModelIndex const& parent)
+{
+    const bool ret = QSortFilterProxyModel::dropMimeData( data, action, row, column, parent );
+    if ( ret )
+        QTimer::singleShot( 0, this, SLOT( invalidate() ) );
+
+    return ret;
 }

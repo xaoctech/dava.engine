@@ -72,7 +72,11 @@ public:
     void setFilterType( int type );
     int getFilterType() const;
 	
+    // QSortFilterProxyModel
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+    // QStandardItemModel
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
 protected:
 	MaterialModel *materialModel;

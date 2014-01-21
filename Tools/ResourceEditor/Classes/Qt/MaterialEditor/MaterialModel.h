@@ -43,6 +43,7 @@ class SceneEditor2;
 class MaterialItem;
 class Command2;
 class EntityGroup;
+struct TextureInfo;
 
 class MaterialModel: public QStandardItemModel
 {
@@ -65,8 +66,19 @@ public:
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
+    // 
+
 protected:
 	SceneEditor2 *curScene;
+
+private:
+    void setPreview( QStandardItem *item, const DAVA::NMaterial * material );
+    QImage GetPreview( const DAVA::NMaterial * material ) const;
+    QModelIndex FindItemIndex(const DAVA::TextureDescriptor *descriptor) const;
+    QModelIndex FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const;
+
+private slots:
+    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
 };
 
 

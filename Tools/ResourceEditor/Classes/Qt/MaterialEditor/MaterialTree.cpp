@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
 
+
 MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 : QTreeView(parent)
 { 
