@@ -29,9 +29,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QAction>
+#include <QVariant>
 
 #include "MaterialEditor.h"
 #include "ui_materialeditor.h"
+
+#include "MaterialModel.h"
+#include "MaterialFilterModel.h"
 
 #include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
@@ -76,6 +81,8 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	DAVA::VariantType v2 = posSaver.LoadValue("splitPosPreview");
 	if(v1.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(0, v1.AsInt32());
 	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(1, v2.AsInt32());
+
+    initActions();
 }
 
 MaterialEditor::~MaterialEditor()
@@ -88,6 +95,44 @@ MaterialEditor::~MaterialEditor()
 	posSaver.SaveValue("splitPosPreview", v2);
 
 	posSaver.SaveState(ui->splitter);
+}
+
+void MaterialEditor::initActions()
+{
+    MaterialFilteringModel *model = qobject_cast< MaterialFilteringModel * >( ui->materialTree->model() );
+    Q_ASSERT( model );
+    if ( !model )
+        return ;
+
+    ui->actionShowAll->setData( MaterialFilteringModel::SHOW_ALL );
+    ui->actionInstances->setData( MaterialFilteringModel::SHOW_ONLY_INSTANCES );
+    ui->actionMaterialsInstances->setData( MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS );
+
+    const int filterType =  model->getFilterType();
+    foreach( QAction *action, ui->filterType->actions() )
+    {
+        connect( action, SIGNAL( triggered() ), SLOT( onFilterChanged() ) );
+        if ( action->data().toInt() == filterType )
+            action->activate( QAction::Trigger );
+    }
+
+    connect( ui->actionAutoExpand, SIGNAL( triggered( bool ) ), ui->materialTree, SLOT( onCurrentExpandModeChange( bool ) ) );
+}
+
+void MaterialEditor::onFilterChanged()
+{
+    MaterialFilteringModel *model = qobject_cast< MaterialFilteringModel * >( ui->materialTree->model() );
+    Q_ASSERT( model );
+    if ( !model )
+        return ;
+
+    QAction *action = ui->filterType->checkedAction();
+    if ( action == NULL )
+        return ;
+    const int filterType = action->data().toInt();
+    model->setFilterType( filterType );
+
+    ui->actionAutoExpand->setChecked( ui->materialTree->currentExpandMode() );
 }
 
 void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
@@ -117,7 +162,7 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 
 			child->deleteLater();
 		}
-	}
+		}
 
 	if(NULL != material)
 	{
