@@ -56,6 +56,10 @@ public:
 
     virtual void Draw(Camera * camera, RenderPassBatchArray * renderBatchArray);
     
+    inline uint32 GetRenderLayerCount() const;
+    inline RenderLayer * GetRenderLayer(uint32 index) const;
+    
+    
 protected:
     // TODO: add StaticVector container
     Vector<RenderLayer*> renderLayers;
@@ -82,7 +86,17 @@ inline const FastName & RenderPass::GetName() const
 {
     return name;
 }
+
+inline uint32 RenderPass::GetRenderLayerCount() const
+{
+    return (uint32)renderLayers.size();
+}
     
+inline RenderLayer * RenderPass::GetRenderLayer(uint32 index) const
+{
+    return renderLayers[index];
+}
+
 
 } // ns
 

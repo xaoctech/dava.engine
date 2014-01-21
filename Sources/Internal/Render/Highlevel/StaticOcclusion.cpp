@@ -40,6 +40,10 @@
 namespace DAVA
 {
     
+static const uint32 RENDER_TARGET_WIDTH = 2048;
+static const uint32 RENDER_TARGET_HEIGHT = 1024;
+    
+    
 StaticOcclusion::StaticOcclusion()
     : manager(5000)
 {
@@ -64,13 +68,29 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
 {
     staticOcclusionRenderPass = new StaticOcclusionRenderPass(renderSystem, PASS_FORWARD, this, RENDER_PASS_FORWARD_ID);
     
-//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_OPAQUE_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_OPAQUE_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_ALPHA_TEST_LAYER_ID), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_TRANSLUCENT_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_TRANSLUCENT_ID), LAST_LAYER);
 
     renderPassBatchArray = new RenderPassBatchArray(renderSystem);
+    renderPassBatchArray->InitPassLayers(staticOcclusionRenderPass);
     
     
     currentData = _currentData;
@@ -88,14 +108,14 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
     for (uint32 k = 0; k < 6; ++k)
     {
         cameras[k] = new Camera();
-        cameras[k]->SetupPerspective(120.0f, 1.0, 1.0f, 2500.0f);
+        cameras[k]->SetupPerspective(90.0f, 1.0, 1.0f, 2500.0f);
     }
     
     
     if (!renderTargetTexture)
-        renderTargetTexture = Texture::CreateFBO(1024, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+        renderTargetTexture = Texture::CreateFBO(RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
     if (!renderTargetSprite)
-        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, 1024, 512);
+        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT);
     
     for (uint32 k = 0; k < renderObjects.size(); ++k)
         renderObjects[k]->SetStaticOcclusionIndex((uint16)k);
@@ -232,7 +252,7 @@ uint32 StaticOcclusion::RenderFrame()
                 // Do Render
                 
                 RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
-                RenderManager::Instance()->SetViewport(Rect(0, 0, 1024, 512), false);
+                RenderManager::Instance()->SetViewport(Rect(0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT), false);
                 //RenderManager::Instance()->ClearDepthBuffer();
                 //RenderManager::Instance()->ClearStencilBuffer(0);
                 
@@ -296,12 +316,12 @@ uint32 StaticOcclusion::RenderFrame()
                 
 
                 //renderTargetTexture->
-//                if ((stepX == 0) && (stepY == 0))
-//                {
-//                    Image * image = renderTargetTexture->CreateImageFromMemory();
-//                    ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
-//                    SafeRelease(image);
-//                }
+                if ((stepX == 0) && (stepY == 0))
+                {
+                    Image * image = renderTargetTexture->CreateImageFromMemory();
+                    ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+                    SafeRelease(image);
+                }
             }
         
     }

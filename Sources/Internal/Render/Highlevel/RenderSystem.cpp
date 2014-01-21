@@ -67,7 +67,6 @@ RenderSystem::RenderSystem()
     renderHierarchy = new QuadTree(10);
 	hierarchyInitialized = false;
     globalBatchArray = new RenderPassBatchArray(this);
-
 	markedObjects.reserve(100);
 }
 
