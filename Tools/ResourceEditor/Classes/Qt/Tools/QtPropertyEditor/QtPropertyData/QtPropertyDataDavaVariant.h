@@ -72,7 +72,7 @@ protected slots:
 	void AllowedOWPressed();
 	void AllowedSelected(int index);
 
-private:
+protected:
 	struct AllowedValue
 	{
 		DAVA::VariantType realValue;
@@ -109,6 +109,7 @@ private:
 	void ToMatrix2(const QVariant &value);
 	void ToColor(const QVariant &value);
 	void ToAABBox3(const QVariant &value);
+	int ParseFloatList(const QString &str, int maxCount, DAVA::float32 *dest);
 
 	void SubValueAdd(const QString &key, const QVariant &value);
 	void SubValueSet(const QString &key, const QVariant &value);

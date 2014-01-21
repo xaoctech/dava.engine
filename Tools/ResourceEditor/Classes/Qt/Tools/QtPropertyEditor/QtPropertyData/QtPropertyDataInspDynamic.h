@@ -22,7 +22,7 @@
 
 #include "../QtPropertyData.h"
 #include "QtPropertyDataDavaVariant.h"
-//#include "Commands2/InspMemberModifyCommand.h"
+#include "Commands2/InspDynamicModifyCommand.h"
 
 class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
 {
@@ -33,16 +33,22 @@ public:
 	int InspFlags() const;
 
 	virtual const DAVA::MetaInfo * MetaInfo() const;
-	// virtual void* CreateLastCommand() const;
+	virtual void* CreateLastCommand() const;
 
 	DAVA::InspInfoDynamic* GetDynamicInfo() const 
-	{ return dynamicInfo; }
+	{ 
+		return dynamicInfo; 
+	}
 
-// 	 GetIndex() const 
-// 	{ return index; }
-// 	
-// 	void* GetObject() const 
-// 	{ return object; }
+	DAVA::VariantType GetVariant() const
+	{
+		return dynamicInfo->MemberValueGet(object, name);
+	}
+
+	DAVA::VariantType GetAliasVariant() const
+	{ 
+		return dynamicInfo->MemberAliasGet(object, name); 
+	}
 
 protected:
 	int inspFlags;
@@ -50,8 +56,9 @@ protected:
 	DAVA::FastName name;
 	DAVA::InspInfoDynamic *dynamicInfo;
 
-	// InspDynamicModifyCommand* lastCommand;
+	InspDynamicModifyCommand* lastCommand;
 
+	virtual QVariant GetValueAlias() const;
 	virtual void SetValueInternal(const QVariant &value);
 	virtual bool UpdateValueInternal();
 	virtual bool EditorDoneInternal(QWidget *editor);

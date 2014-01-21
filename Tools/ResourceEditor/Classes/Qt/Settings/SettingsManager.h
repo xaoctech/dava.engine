@@ -107,7 +107,7 @@ private:
 
 	void Load();
 
-	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize);
+	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::uint32 mapSize);
 	
 	DAVA::KeyedArchive* settings;
 };

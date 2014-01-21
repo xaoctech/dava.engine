@@ -31,6 +31,8 @@
 #include "Qt/Settings/SettingsManager.h"
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 using namespace DAVA;
 
 CreatePlaneLODCommand::CreatePlaneLODCommand(DAVA::LodComponent * _lodComponent, int32 _fromLodLayer, uint32 _textureSize, const DAVA::FilePath & texturePath)
@@ -228,7 +230,7 @@ DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntit
     material->SetTexture(Material::TEXTURE_DIFFUSE, textureSavePath);*/
 	
 	NMaterial* material = NMaterial::CreateMaterialInstance(FastName(Format("%s_planes", fromEntity->GetName().c_str())),
-															FastName("~res:/Materials/Legacy/Textured.Alphatest.material"),
+															NMaterialName::TEXTURED_ALPHATEST,
 															NMaterial::DEFAULT_QUALITY_NAME);
 	material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
 	NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_CULL);

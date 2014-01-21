@@ -55,7 +55,8 @@ public:
 	{
 		VALUE_SOURCE_CHANGED,
 		VALUE_SET,
-		VALUE_EDITED
+		VALUE_EDITED,
+		STATE_CHANGED,
 	};
 
 	struct UserData
@@ -75,7 +76,7 @@ public:
 
 	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
-	bool UpdateValue();
+	bool UpdateValue(bool force = false);
 
 	QVariant GetAlias() const;
 
@@ -138,6 +139,12 @@ public:
 	void ChildRemove(int i);
 	void ChildRemoveAll();
 
+	// expand/collapse
+	void SetExpanded(bool expanded);
+	bool IsExpanded() const;
+	void SetExpandable(bool expandable);
+	bool IsExpandable() const;
+
 	// Optional widgets
 	int GetButtonsCount() const;
 	QtPropertyToolButton* GetButton(int index = 0);
@@ -162,6 +169,9 @@ protected:
 	QtPropertyModel *model;
 	QtPropertyData *parent;
 	UserData* userData;
+
+	bool expanded;
+	bool expandable;
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;

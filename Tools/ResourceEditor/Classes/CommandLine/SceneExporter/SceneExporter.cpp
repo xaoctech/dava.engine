@@ -254,7 +254,7 @@ bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String
     {
         errorLog.insert(Format("Not selected export format for pathname %s", pathname.GetAbsolutePathname().c_str()));
         
-        SafeRelease(descriptor);
+		delete descriptor;
         return false;
     }
     
@@ -268,8 +268,7 @@ bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String
         descriptor->Export(sceneUtils.dataFolder + workingPathname);
     }
     
-    SafeRelease(descriptor);
-    
+	delete descriptor;
     return isExported;
 }
 

@@ -56,7 +56,7 @@ SettingsManager::~SettingsManager()
 	SafeRelease(settings);
 }
 
-void SettingsManager::InitSettingsGroup(SettingsManager::eSettingsGroups groupID, const SettingRow* groupMap, DAVA::int32 mapSize)
+void SettingsManager::InitSettingsGroup(SettingsManager::eSettingsGroups groupID, const SettingRow* groupMap, DAVA::uint32 mapSize)
 {
 	KeyedArchive* groupSettings = new KeyedArchive();
 	
