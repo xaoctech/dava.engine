@@ -152,8 +152,12 @@ void main()
     vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition); // view direction in view space
     vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
-    float attenuation = length(lightDir);
-    attenuation = lightIntensity0 / (attenuation * attenuation); // use inverse distance for distance attenuation
+    
+    float attenuation = lightIntensity0;
+#if defined(DISTANCE_ATTENUATION)
+    float distAttenuation = length(lightDir);
+    attenuation /= (distAttenuation * distAttenuation); // use inverse distance for distance attenuation
+#endif
     lightDir = normalize(lightDir);
     
 #if defined(REFLECTION)
@@ -162,10 +166,7 @@ void main()
     reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
 #endif
     
-    varDiffuseColor = max(0.0, dot(normal, lightDir));
-#if defined(DISTANCE_ATTENUATION)
-    varDiffuseColor *= attenuation;
-#endif
+    varDiffuseColor = max(0.0, dot(normal, lightDir)) * attenuation;
 
     // Blinn-phong reflection
     vec3 E = normalize(-eyeCoordsPosition);
@@ -180,11 +181,7 @@ void main()
         float nDotHV = max(0.0, dot(E, R));
     */
     
-    varSpecularColor = pow(nDotHV, materialSpecularShininess);
-#if defined(DISTANCE_ATTENUATION)
-    varSpecularColor *= attenuation;
-#endif
-
+    varSpecularColor = pow(nDotHV, materialSpecularShininess) * attenuation;
 #endif
 
 #if defined(PIXEL_LIT)
@@ -233,9 +230,10 @@ void main()
 	cameraToPointInTangentSpace = normalize (v);
     
     vec3 binormTS = cross(inNormal, inTangent);
-    tbnToWorldMatrix = mat3(vec3(t.x, b.x, n.x),
-                            vec3(t.y, b.y, n.y),
-                            vec3(t.z, b.z, n.z));
+//    tbnToWorldMatrix = mat3(vec3(inTangent.x, binormTS.x, inNormal.x),
+//                            vec3(inTangent.y, binormTS.y, inNormal.y),
+//                            vec3(inTangent.z, binormTS.z, inNormal.z));
+    tbnToWorldMatrix = mat3(inTangent, binormTS, inNormal);
 #endif
 #endif
 
