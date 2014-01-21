@@ -517,6 +517,21 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
         // Any of the Force Parameters might be NULL, and this is acceptable.
 		RefPtr< PropertyLine<Vector3> > force = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("force%d", k) ));		
 		RefPtr< PropertyLine<float32> > forceOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get(Format("forceOverLife%d", k)));
+        
+        if (force&&(!format)) //as no forceVariation anymore - add it directly to force
+        {
+             RefPtr< PropertyLine<Vector3> > forceVariation = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("forceVariation%d", k)));
+             if (forceVariation)
+             {
+                 Vector3 varriationToAdd = forceVariation->GetValue(0);
+                 Vector<typename PropertyLine<Vector3>::PropertyKey> &keys = force->GetValues();		                 
+                 for (int i=0, sz = keys.size(); i<sz; ++i)
+                 {			
+                     keys[i].value+=varriationToAdd;
+                 }
+             }
+             
+        }
 
 		ParticleForce* particleForce = new ParticleForce(force, forceOverLife);
 		AddForce(particleForce);
