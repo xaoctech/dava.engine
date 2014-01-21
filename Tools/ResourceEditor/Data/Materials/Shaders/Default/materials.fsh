@@ -187,35 +187,31 @@ void main()
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-        vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0.rgb + varSpecularColor * textureColor0.a * materialLightSpecularColor;
+    vec3 color = materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor
+                                           + (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
+    color *= textureColor0.rgb;
 #elif defined(PIXEL_LIT)
         // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
 
-    
-    float finalAtt = lightIntensity0 / (varPerPixelAttenuation * varPerPixelAttenuation);
-
-    // compute diffuse lighting
-    float lambertFactor = max (dot (varLightVec, normal), 0.0);// * finalAtt;
+    float attenuation = lightIntensity0;
 #if defined(DISTANCE_ATTENUATION)
-
+    attenuation /= (varPerPixelAttenuation * varPerPixelAttenuation);
 #endif
+    
+    // compute diffuse lighting
+    float lambertFactor = max (dot (varLightVec, normal), 0.0);
     // compute ambient
-    vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor;        
-        color *= textureColor0.rgb;
+    vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor * attenuation;
 
 #if defined(SPECULAR)
-        //if (lambertFactor > 0.0)
-        {
-                // In doom3, specular value comes from a texture 
-                float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);// * finalAtt;
-                #if defined(GLOSS)
-                    color += materialLightSpecularColor * (shininess * textureColor0.a);
-            #else 
-                    color += materialLightSpecularColor * shininess;
-            #endif
-        }
+    if (lambertFactor > 0.0)
+    {
+        float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
+        color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
+    }
+    color *= textureColor0.rgb;
 #endif
 
 #elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)        
@@ -257,7 +253,7 @@ void main()
     gl_FragColor = reflectionColor * 0.9;
 #elif defined(PIXEL_LIT)
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
-    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * reflectionVectorInTangentSpace;
+    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor;
 #endif

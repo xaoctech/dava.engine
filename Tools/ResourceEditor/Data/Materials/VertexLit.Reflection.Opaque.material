@@ -2,7 +2,7 @@ RenderTechnique:
     Layers: ["OpaqueRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
-        Shader: "~res:/Materials/Shaders/Old/materials"
+        Shader: "~res:/Materials/Shaders/Default/materials"
         UniqueDefines: ["MATERIAL_TEXTURE", "VERTEX_LIT", "REFLECTION"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
