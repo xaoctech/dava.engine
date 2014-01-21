@@ -711,7 +711,12 @@ void UIButtonMetadata::SetTextAlign(int align)
         return;
     }
 	
-	GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex())->SetTextAlign(align);
+    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex());
+    if (buttonText)
+    {
+        buttonText->SetTextAlign(align);
+    }
+
 	UpdatePropertyDirtyFlagForTextAlign();
     UpdatePixelization();
 }
