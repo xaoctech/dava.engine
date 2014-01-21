@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Scene/SceneSignals.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
+#include "DockProperties/PropertyEditorStateHelper.h"
 
 namespace Ui {
 	class MaterialEditor;
@@ -53,6 +54,7 @@ public:
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
+	void commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
 	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
@@ -82,6 +84,8 @@ private:
 
 	bool templatesScaned;
 	QVector<DAVA::FilePath> templates;
+
+	PropertyEditorStateHelper *treeStateHelper;
 };
 
 #endif

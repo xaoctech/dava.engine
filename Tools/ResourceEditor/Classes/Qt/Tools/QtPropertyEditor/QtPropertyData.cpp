@@ -38,6 +38,8 @@ QtPropertyData::QtPropertyData()
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+	, expanded(false)
+	, expandable(true)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
@@ -48,6 +50,8 @@ QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+	, expanded(false)
+	, expandable(true)
 { }
 
 QtPropertyData::~QtPropertyData()
@@ -175,7 +179,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	}
 }
 
-bool QtPropertyData::UpdateValue()
+bool QtPropertyData::UpdateValue(bool force)
 {
 	bool ret = false;
 
@@ -183,7 +187,7 @@ bool QtPropertyData::UpdateValue()
 	{
 		updatingValue = true;
 
-		if(UpdateValueInternal())
+		if(UpdateValueInternal() || force)
 		{
 			curValue = GetValueInternal();
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
@@ -595,6 +599,30 @@ void QtPropertyData::ChildRemoveAll()
 			model->DataRemoved();
 		}
 	}
+}
+
+void QtPropertyData::SetExpanded(bool _expanded)
+{
+	if(expanded != _expanded)
+	{
+		expanded = _expanded;
+		model->ExpandStateChanged(this);
+	}
+}
+
+bool QtPropertyData::IsExpanded() const
+{
+	return expanded;
+}
+
+void QtPropertyData::SetExpandable(bool _expandable)
+{
+	expandable = _expandable;
+}
+
+bool QtPropertyData::IsExpandable() const
+{
+	return expandable;
 }
 
 int QtPropertyData::GetButtonsCount() const

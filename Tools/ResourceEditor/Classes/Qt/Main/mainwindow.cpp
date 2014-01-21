@@ -1645,7 +1645,6 @@ void QtMainWindow::OnSaveTiledTexture()
     if(!landscape) return;
 
 	Texture* landscapeTexture = landscape->CreateLandscapeTexture();
-
 	if (landscapeTexture)
 	{
 		FilePath pathToSave;
@@ -1674,17 +1673,6 @@ void QtMainWindow::OnSaveTiledTexture()
 		{
 			ImageLoader::Save(image, pathToSave);
 			SafeRelease(image);
-
-			FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToSave);
-			TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-			if(!descriptor)
-			{
-				descriptor = new TextureDescriptor();
-				descriptor->pathname = descriptorPathname;
-				descriptor->Save();
-			}
-
-			SafeRelease(descriptor);
 		}
 
 		SafeRelease(landscapeTexture);
