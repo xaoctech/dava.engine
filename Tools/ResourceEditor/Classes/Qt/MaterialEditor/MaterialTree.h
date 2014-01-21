@@ -31,13 +31,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <QWidget>
 #include <QTreeView>
+#include <QMap>
+
 #include "MaterialModel.h"
 
 class EntityGroup;
+class MaterialFilteringModel;
 
 class MaterialTree : public QTreeView
 {
 	Q_OBJECT
+
+private:
+    typedef QMap< int, bool > ExpandMap;
 
 public:
 	MaterialTree(QWidget *parent = 0);
@@ -51,16 +57,17 @@ public:
 
 	void Update();
 
-signals:
+    bool currentExpandMode() const;
 
+signals:
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
 	void OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
 	void OnStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 	void OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
-
 	void OnSelectEntities();
+    void onCurrentExpandModeChange( bool setOn );
 
 protected:
 	MaterialFilteringModel *treeModel;
@@ -71,6 +78,11 @@ protected:
 
 	void dragTryAccepted(QDragMoveEvent *event);
 	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
+
+private:
+    void autoExpand();
+
+    ExpandMap expandMap;
 };
 
 #endif // __MATERIALS_TREE_H__
