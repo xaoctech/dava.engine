@@ -1866,6 +1866,12 @@
     <ClCompile Include="Classes\Commands2\InspDynamicModifyCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialFilterModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3283,6 +3289,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialFilterModel.h">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
