@@ -245,16 +245,22 @@ void MaterialTree::onCurrentExpandModeChange( bool setOn )
     const int filterType = treeModel->getFilterType();
     expandMap[filterType] = setOn;
     if ( setOn )
+    {
         expandAll();
+    }
     else
+    {
         collapseAll();
+    }
 }
 
 void MaterialTree::autoExpand()
 {
     const int filterType = treeModel->getFilterType();
     if ( expandMap[filterType] )
+    {
         expandAll();
+    }
 }
 
 bool MaterialTree::currentExpandMode() const
