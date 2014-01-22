@@ -78,9 +78,15 @@ public:
     //TODO: remove after lod editing implementation
     DAVA_DEPRECATED(void CopyLastLodToLod0());
 
+    bool CanDeleteLod();
+
 signals:
     
     void DataChanged();
+    
+public slots:
+    void DeleteFirstLOD();
+    void DeleteLastLOD();
     
 protected slots:
     void SceneActivated(SceneEditor2 *scene);

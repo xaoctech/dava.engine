@@ -569,6 +569,7 @@
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8A1091817944416007FF496 /* EditorLightSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A1091617944416007FF496 /* EditorLightSystem.cpp */; };
 		E8A34A6017F966AF00B0649E /* CollisionBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */; };
+		E8AC6B88188FCFFF003829A6 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8AC6B86188FCFFF003829A6 /* DeleteLODCommand.cpp */; };
 		E8B6214017E1FD6400C5678E /* Request.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B6213E17E1FD6400C5678E /* Request.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8BD39CF17B4BA8E00C63420 /* LabeledSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BD39CD17B4BA8E00C63420 /* LabeledSlider.cpp */; };
@@ -1765,6 +1766,8 @@
 		E8A1091717944416007FF496 /* EditorLightSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightSystem.h; sourceTree = "<group>"; };
 		E8A34A5E17F966AF00B0649E /* CollisionBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionBox.cpp; sourceTree = "<group>"; };
 		E8A34A5F17F966AF00B0649E /* CollisionBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionBox.h; sourceTree = "<group>"; };
+		E8AC6B86188FCFFF003829A6 /* DeleteLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteLODCommand.cpp; sourceTree = "<group>"; };
+		E8AC6B87188FCFFF003829A6 /* DeleteLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteLODCommand.h; sourceTree = "<group>"; };
 		E8B6213E17E1FD6400C5678E /* Request.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Request.cpp; sourceTree = "<group>"; };
 		E8B6213F17E1FD6400C5678E /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
 		E8B836241740FCC800D11EAE /* ImageTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTools.cpp; sourceTree = "<group>"; };
@@ -2612,6 +2615,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8AC6B86188FCFFF003829A6 /* DeleteLODCommand.cpp */,
+				E8AC6B87188FCFFF003829A6 /* DeleteLODCommand.h */,
 				02A03D50186C1A5100FA72CE /* CreatePlaneLODCommand.cpp */,
 				02A03D51186C1A5100FA72CE /* CreatePlaneLODCommand.h */,
 				62A7AD24180BDD2100282F2E /* LandscapeSetTexturesCommands.cpp */,
@@ -4927,6 +4932,7 @@
 				A69AA3B01796F1A60008B683 /* CubeListItemDelegate_moc.cpp in Build Sources */,
 				A69AA3B11796F1A60008B683 /* CubemapEditorDialog_moc.cpp in Build Sources */,
 				A69AA3B21796F1A60008B683 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
+				E8AC6B88188FCFFF003829A6 /* DeleteLODCommand.cpp in Build Sources */,
 				E8EF3BE6180832EA00494E24 /* ToolButtonWithWidget_moc.cpp in Build Sources */,
 				A69AA3B31796F1A60008B683 /* CubemapUtils_moc.cpp in Build Sources */,
 				A69AA3B41796F1A60008B683 /* MaterialHelper_moc.cpp in Build Sources */,

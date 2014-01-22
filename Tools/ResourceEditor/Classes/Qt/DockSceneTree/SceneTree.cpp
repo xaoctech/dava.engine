@@ -366,7 +366,11 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 
 			// add/remove
 			contextMenu.addSeparator();
-			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+            
+            if(GetLodComponent(entity->GetParent()) == NULL)
+            {
+                contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+            }
 
 			// lock/unlock
 			contextMenu.addSeparator();
@@ -524,7 +528,18 @@ void SceneTree::RemoveSelection()
 	if(NULL != sceneEditor)
 	{
 		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Remove(selection);
+        for(size_t i = 0; i < selection.Size(); ++i)
+        {
+            DAVA::Entity *entity = selection.GetEntity(i);
+            if(GetLodComponent(entity->GetParent()))
+            {
+                selection.Rem(entity);
+                --i;
+            }
+        }
+        
+        if(selection.Size())
+            sceneEditor->structureSystem->Remove(selection);
 	}
 }
 
