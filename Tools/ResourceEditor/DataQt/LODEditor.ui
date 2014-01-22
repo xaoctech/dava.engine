@@ -14,9 +14,6 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>6</number>
-   </property>
    <property name="margin">
     <number>5</number>
    </property>
@@ -545,6 +542,20 @@
        <widget class="QPushButton" name="createPlaneLodButton">
         <property name="text">
          <string>Create plane LOD</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QPushButton" name="buttonDeleteFirstLOD">
+        <property name="text">
+         <string>Delete First LOD</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="2">
+       <widget class="QPushButton" name="buttonDeleteLastLOD">
+        <property name="text">
+         <string>Delete Last LOD</string>
         </property>
        </widget>
       </item>

@@ -104,8 +104,6 @@ private:
     QtPosSaver posSaver;
     
     EditorLODData *editedLODData;
-    
-    
 };
 
 #endif //#ifndef __LOD_EDITOR_H__
