@@ -400,38 +400,25 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
 bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-	bool ret = false;
-	QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
+	const QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
 
-	if(materials.size() > 0)
-	{
-		// allow only direct drop to parent
-		if(row == -1 && column == -1)
-		{
-			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
+    if ( materials.size() <= 0 )
+        return false;
 
-			// allow drop only into material, but not into instance
-			if(NULL != targetMaterial)
-			{
-				bool foundInacceptable = false;
-				
-				if(targetMaterial->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
-				{
-					// only instance type should be in mime data
-					for(int i = 0; i < materials.size(); ++i)
-					{
-						if(materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE)
-						{
-							foundInacceptable = true;
-							break;
-						}
-					}
-				}
+    QModelIndex targetIndex = index(row, column, parent);
+    if ( !targetIndex.isValid() )
+        return false;
 
-				ret = !foundInacceptable;
-			}
-		}
-	}
+    DAVA::NMaterial *targetMaterial = GetMaterial(targetIndex);
+    if ( targetMaterial == NULL )
+        return false;
 
-	return ret;
+    if( targetMaterial->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_MATERIAL )
+        return false;
+
+	for( int i = 0; i < materials.size(); i++ )
+		if ( materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE )
+            return false;
+
+    return true;
 }
