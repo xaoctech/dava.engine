@@ -709,9 +709,7 @@ void DefaultScreen::ApplySizeDelta(const Vector2& delta)
 	}
 
 	// The helper will calculate both resize (taking rotation into account) and clamp.
-    Rect rect = UIControlResizeHelper::ResizeControl(resizeType, lastSelectedControl->GetUIObject(), resizeRect,  delta);
-	
-	lastSelectedControl->GetUIObject()->SetRect(rect);
+    UIControlResizeHelper::ResizeControl(resizeType, lastSelectedControl->GetUIObject(), resizeRect,  delta);
 }
 
 void DefaultScreen::ResetSizeDelta()
