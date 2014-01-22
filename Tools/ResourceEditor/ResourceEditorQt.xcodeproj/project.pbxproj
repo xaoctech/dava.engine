@@ -21,6 +21,7 @@
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
 		5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B315B45FC200DA83EB /* libbz2.dylib */; };
+		626D3C7F18900B3300E2B744 /* ProjectPathValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626D3C7B18900B3300E2B744 /* ProjectPathValidator.cpp */; };
 		62B0D98418682C3E00A60F7E /* GeneralSettingsDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98018682C3E00A60F7E /* GeneralSettingsDialog.cpp */; };
 		62B0D98518682C3E00A60F7E /* SceneSettingsDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98218682C3E00A60F7E /* SceneSettingsDialog.cpp */; };
 		62B0D9901868359D00A60F7E /* GeneralSettingsDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B0D98E1868359D00A60F7E /* GeneralSettingsDialog_moc.cpp */; };
@@ -646,6 +647,9 @@
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
+		626D3C7B18900B3300E2B744 /* ProjectPathValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectPathValidator.cpp; path = QtPropertyDataValidator/ProjectPathValidator.cpp; sourceTree = "<group>"; };
+		626D3C7C18900B3300E2B744 /* ProjectPathValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectPathValidator.h; path = QtPropertyDataValidator/ProjectPathValidator.h; sourceTree = "<group>"; };
+		626D3C7E18900B3300E2B744 /* QtPropertyDataValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataValidator.h; path = QtPropertyDataValidator/QtPropertyDataValidator.h; sourceTree = "<group>"; };
 		62B0D98018682C3E00A60F7E /* GeneralSettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneralSettingsDialog.cpp; sourceTree = "<group>"; };
 		62B0D98118682C3E00A60F7E /* GeneralSettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneralSettingsDialog.h; sourceTree = "<group>"; };
 		62B0D98218682C3E00A60F7E /* SceneSettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSettingsDialog.cpp; sourceTree = "<group>"; };
@@ -1716,6 +1720,16 @@
 				5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		626D3C7318900B2200E2B744 /* QtPropertyDataValidator */ = {
+			isa = PBXGroup;
+			children = (
+				626D3C7B18900B3300E2B744 /* ProjectPathValidator.cpp */,
+				626D3C7C18900B3300E2B744 /* ProjectPathValidator.h */,
+				626D3C7E18900B3300E2B744 /* QtPropertyDataValidator.h */,
+			);
+			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
 		};
 		A6796CD71885702800EB254C /* DDSExtractor */ = {
@@ -3663,6 +3677,7 @@
 		E8C991AB184CD0EB00AFBF3F /* QtPropertyEditor */ = {
 			isa = PBXGroup;
 			children = (
+				626D3C7318900B2200E2B744 /* QtPropertyDataValidator */,
 				E8C991AC184CD0EB00AFBF3F /* QtPropertyData */,
 				E8C991BD184CD0EB00AFBF3F /* QtPropertyData.cpp */,
 				E8C991BE184CD0EB00AFBF3F /* QtPropertyData.h */,
@@ -4215,6 +4230,7 @@
 				E8BAD6D01859F50300C98C8D /* PropertyEditorStateHelper_moc.cpp in Build Sources */,
 				E8C99299184CD0EC00AFBF3F /* ParticleLayerMoveCommand.cpp in Build Sources */,
 				E8BAD7261859F50300C98C8D /* MimeDataHelper2_moc.cpp in Build Sources */,
+				626D3C7F18900B3300E2B744 /* ProjectPathValidator.cpp in Build Sources */,
 				E8C99310184CD0EC00AFBF3F /* VisibilityToolProxy.cpp in Build Sources */,
 				E8C992B3184CD0EC00AFBF3F /* CubemapEditorDialog.cpp in Build Sources */,
 				E8BAD7431859F50300C98C8D /* SliderWidget_moc.cpp in Build Sources */,

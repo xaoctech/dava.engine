@@ -26,9 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include <QPushButton>
 #include "QtPropertyData.h"
 
 QtPropertyData::QtPropertyData()
