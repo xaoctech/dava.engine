@@ -403,6 +403,11 @@ bool HierarchyTreeController::NewProject(const QString& projectPath)
 HierarchyTreePlatformNode* HierarchyTreeController::AddPlatform(const QString& name, const Vector2& size)
 {
 	HierarchyTreePlatformNode* platformNode = hierarchyTree.AddPlatform(name, size);
+	if (platformNode)
+	{
+		UpdateSelection(platformNode, NULL);
+	}
+
 	EmitHierarchyTreeUpdated();
 	
 	return platformNode;
