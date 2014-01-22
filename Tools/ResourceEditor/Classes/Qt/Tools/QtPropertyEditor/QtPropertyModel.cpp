@@ -199,11 +199,6 @@ QtPropertyData* QtPropertyModel::itemFromIndex(const QModelIndex & index) const
 		if(NULL != parent)
 		{
 			ret = parent->ChildGet(index.row());
-
-			if(NULL != ret)
-			{
-				ret = ret->GetProxyOriginal();
-			}
 		}
 	}
 
@@ -372,15 +367,6 @@ void QtPropertyModel::DataAboutToBeRemoved(QtPropertyData *parent, int first, in
 void QtPropertyModel::DataRemoved()
 {
 	endRemoveRows();
-}
-
-void QtPropertyModel::ExpandStateChanged(QtPropertyData *data)
-{
-	if(NULL != data)
-	{
-		QModelIndex index = indexFromItem(data);
-		emit PropertyExpanded(index, data->IsExpanded());
-	}
 }
 
 void QtPropertyModel::SetEditTracking(bool enabled)

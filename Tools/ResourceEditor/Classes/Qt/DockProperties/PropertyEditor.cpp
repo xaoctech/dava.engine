@@ -38,11 +38,13 @@
 
 #include "DockProperties/PropertyEditor.h"
 #include "MaterialEditor/MaterialEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyDataProxy.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspColl.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 #include "Commands2/MetaObjModifyCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
@@ -171,8 +173,8 @@ void PropertyEditor::ResetProperties()
 			}
 		}
 
-		ApplyModeFilter(root);
 		ApplyFavorite(root);
+		ApplyModeFilter(root);
 		ApplyCustomButtons(root);
 
 		// add not empty rows from root
@@ -228,27 +230,30 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 			// show only favorite items
 			else if(viewMode == VIEW_FAVORITES_ONLY)
 			{
-				toBeRemove = true;
-			}
+				PropEditorUserData *userData = GetUserData(data);
+				if(userData->type == PropEditorUserData::ORIGINAL)
+				{
+					toBeRemove = true;
 
-			// apply mode to data childs
-			ApplyModeFilter(data);
+					// remove from favorite data back link to the original data
+					// because original data will be removed from properties
+					QtPropertyData *favorite = userData->associatedData;
+					if(NULL != favorite)
+					{
+						GetUserData(favorite)->associatedData = NULL;
+					}
+				}
+			}
 
 			if(toBeRemove)
 			{
-				if(scheme.contains(data->GetPath()))
-				{
-					parent->ChildExtract(data);
-
-					GetUserData(data)->isOriginalFavorite = true;
-					SetFavorite(data, true);
-				}
-				else
-				{
-					parent->ChildRemove(data);
-				}
-
+				parent->ChildRemove(data);
 				i--;
+			}
+			else
+			{
+				// apply mode to data childs
+				ApplyModeFilter(data);
 			}
 		}
 	}
@@ -329,22 +334,15 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 		bool hasMembers = false;
 		const InspInfo *baseInfo = info;
 
-		if(ExcludeMembers(info))
+		// check if there are any members in introspection
+		while(NULL != baseInfo)
 		{
-			hasMembers = false;
-		}
-		else
-		{
-			// check if there are any members in introspection
-			while(NULL != baseInfo)
+			if(baseInfo->MembersCount() > 0)
 			{
-				if(baseInfo->MembersCount() > 0)
-				{
-					hasMembers = true;
-					break;
-				}
-				baseInfo = baseInfo->BaseInfo();
+				hasMembers = true;
+				break;
 			}
+			baseInfo = baseInfo->BaseInfo();
 		}
 
 		ret = new QtPropertyDataIntrospection(object, info, false);
@@ -357,9 +355,12 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 				for(int i = 0; i < baseInfo->MembersCount(); ++i)
 				{
 					const DAVA::InspMember *member = baseInfo->Member(i);
-					QtPropertyData *memberData = CreateInspMember(object, member);
 
-					ret->ChildAdd(member->Name(), memberData);
+					if(!ExcludeMember(baseInfo, member))
+					{
+						QtPropertyData *memberData = CreateInspMember(object, member);
+						ret->ChildAdd(member->Name(), memberData);
+					}
 				}
 
 				baseInfo = baseInfo->BaseInfo();
@@ -452,6 +453,53 @@ QtPropertyData* PropertyEditor::CreateInspCollection(void *object, const DAVA::I
 	return ret;
 }
 
+QtPropertyData* PropertyEditor::CreateClone(QtPropertyData *original)
+{
+	QtPropertyDataIntrospection *inspData = dynamic_cast<QtPropertyDataIntrospection *>(original);
+	if(NULL != inspData)
+	{
+		return CreateInsp(inspData->object, inspData->info);
+	}
+
+	QtPropertyDataInspMember *memberData = dynamic_cast<QtPropertyDataInspMember *>(original);
+	if(NULL != memberData)
+	{
+		return CreateInspMember(memberData->object, memberData->member);
+	}
+
+	QtPropertyDataInspDynamic *memberDymanic = dynamic_cast<QtPropertyDataInspDynamic *>(original);
+	if(NULL != memberData)
+	{
+		return CreateInspMember(memberDymanic->object, memberDymanic->dynamicInfo->GetMember());
+	}
+
+	QtPropertyDataMetaObject *metaData  = dynamic_cast<QtPropertyDataMetaObject *>(original);
+	if(NULL != metaData)
+	{
+		return new QtPropertyDataMetaObject(metaData->object, metaData->meta);
+	}
+
+	QtPropertyDataInspColl *memberCollection = dynamic_cast<QtPropertyDataInspColl *>(original);
+	if(NULL != memberCollection)
+	{
+		return CreateInspCollection(memberCollection->object, memberCollection->collection);
+	}
+
+	QtPropertyDataDavaKeyedArcive *memberArch = dynamic_cast<QtPropertyDataDavaKeyedArcive *>(original);
+	if(NULL != memberArch)
+	{
+		return new QtPropertyDataDavaKeyedArcive(memberArch->archive);
+	}
+
+	QtPropertyKeyedArchiveMember *memberArchMem = dynamic_cast<QtPropertyKeyedArchiveMember *>(original);
+	if(NULL != memberArchMem)
+	{
+		return new QtPropertyKeyedArchiveMember(memberArchMem->archive, memberArchMem->key);
+	}
+
+	return new QtPropertyData(original->GetName(), original->GetFlags());
+}
+
 void PropertyEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(NULL != scene)
@@ -481,10 +529,13 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_COMPONENT_REMOVE:
 	case CMDID_CONVERT_TO_SHADOW:
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
-		ResetProperties();
+		if(command->GetEntity() == curNode)
+		{
+			ResetProperties();
+		}
 		break;
 	default:
-		Update();
+		OnUpdateTimeout();
 		break;
 	}
 }
@@ -505,6 +556,22 @@ void PropertyEditor::OnItemEdited(const QModelIndex &index)
 			{
 				curScene->Exec(command);
 			}
+		}
+
+		// go top, unit we find property item, that has other associated
+		// and we should update it to ensure that 
+		// new/old items was also added/removed for that associated data
+		QtPropertyData *parent = propData;
+		while(NULL != parent)
+		{
+			PropEditorUserData *userData = GetUserData(parent);
+			if(NULL != userData->associatedData)
+			{
+				userData->associatedData->UpdateValue(true);
+				break;
+			}
+
+			parent = parent->Parent();
 		}
 	}
 }
@@ -603,7 +670,7 @@ void PropertyEditor::ActionEditMaterial()
 		if(NULL != data)
 		{
 			QtMainWindow::Instance()->OnMaterialEditor();
-			MaterialEditor::Instance()->SelectMaterial((DAVA::NMaterial *) data->GetObject());
+			MaterialEditor::Instance()->SelectMaterial((DAVA::NMaterial *) data->object);
 		}
 	}
 }
@@ -651,58 +718,72 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 
 	if(NULL != data)
 	{
-		QtPropertyData *original = data->GetProxyOriginal();
-		PropEditorUserData *originalUserData = GetUserData(original);
+		PropEditorUserData *userData = GetUserData(data);
 
-		// original data
-		if(data == original)
+		switch(userData->type)
 		{
-			originalUserData->isFavorite = favorite;
-
-			// this original data is already in favorite group or should be added there
-			// (happens, when data is marked as favorite, but it shouldn't be displayed due
-			// to current view mode filtering)
-			if(originalUserData->isOriginalFavorite)
-			{
-				if(favorite)
+			case PropEditorUserData::ORIGINAL:
+				if(userData->isFavorite != favorite)
 				{
-					favoriteGroup->ChildAdd(original->GetName(), original);
+					// it is in favorite no, so we are going to remove it from favorites
+					if(userData->isFavorite)
+					{
+						DVASSERT(NULL != userData->associatedData);
+
+						QtPropertyData *favorite = userData->associatedData;
+						favoriteGroup->ChildRemove(favorite);
+						userData->associatedData = NULL;
+						userData->isFavorite = false;
+
+						scheme.remove(data->GetPath());
+					}
+					// new item should be added to favorites list
+					else
+					{
+						DVASSERT(NULL == userData->associatedData);
+
+						QtPropertyData *favorite = CreateClone(data);
+						ApplyCustomButtons(favorite);
+
+						favoriteGroup->ChildAdd(data->GetName(), favorite);
+						userData->associatedData = favorite;
+						userData->isFavorite = true;
+
+						// create user data for added favorite, that will have COPY type,
+						// and associatedData will point to the original property
+						favorite->SetUserData(new PropEditorUserData(PropEditorUserData::COPY, data, true));
+
+						scheme.insert(data->GetPath());
+					}
+
+					data->EmitDataChanged(QtPropertyData::VALUE_SET);
 				}
-				else
+				break;
+
+			case PropEditorUserData::COPY:
+				if(userData->isFavorite != favorite)
 				{
-					favoriteGroup->ChildRemove(original);
+					// copy of the original data can only be removed
+					DVASSERT(!favorite);
+					
+					QtPropertyData *original = userData->associatedData;
+
+					// copy of the original data should always have a pointer to the original property data
+					if(NULL != original)
+					{
+						PropEditorUserData *originalUserData = GetUserData(original);
+						originalUserData->associatedData = NULL;
+						originalUserData->isFavorite = false;
+					}
+
+					scheme.remove(data->GetPath());
+					favoriteGroup->ChildRemove(data);
 				}
-			}
-			// original data should have proxy to be displayed in favorites
-			else
-			{
-				if(favorite)
-				{
-					QtPropertyData* proxy = new QtPropertyDataProxy(original);
-					PropEditorUserData *proxyUserData = GetUserData(proxy);
+				break;
 
-					proxyUserData->isFavorite = true;
-					originalUserData->favoriteProxy = proxy;
-
-					favoriteGroup->ChildAdd(original->GetName(), proxy);
-					scheme.insert(original->GetPath());
-				}
-				else
-				{
-					favoriteGroup->ChildRemove(originalUserData->favoriteProxy);
-					scheme.remove(original->GetPath());
-				}
-
-				original->EmitDataChanged(QtPropertyData::VALUE_SET);
-			}
-		}
-		// proxy data (can only be removed)
-		else
-		{
-			originalUserData->isFavorite = false;
-
-			favoriteGroup->ChildRemove(data);
-			scheme.remove(original->GetPath());
+			default:
+				DVASSERT(false && "Unknown userData type");
+				break;
 		}
 	}
 
@@ -719,7 +800,7 @@ PropEditorUserData* PropertyEditor::GetUserData(QtPropertyData *data) const
 	PropEditorUserData *userData = (PropEditorUserData*) data->GetUserData();
 	if(NULL == userData)
 	{
-		userData = new PropEditorUserData();
+		userData = new PropEditorUserData(PropEditorUserData::ORIGINAL);
 		data->SetUserData(userData);
 	}
 
@@ -759,12 +840,13 @@ void PropertyEditor::SaveScheme(const DAVA::FilePath &path)
 	}
 }
 
-bool PropertyEditor::ExcludeMembers(const DAVA::InspInfo *info)
+bool PropertyEditor::ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member)
 {
 	bool exclude = false;
 
 	if(info->Type() == DAVA::MetaInfo::Instance<DAVA::NMaterial>())
 	{
+		// don't show material properties. they should be edited in materialEditor
 		exclude = true;
 	}
 

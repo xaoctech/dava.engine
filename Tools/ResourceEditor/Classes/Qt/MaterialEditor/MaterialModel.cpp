@@ -234,7 +234,7 @@ void MaterialModel::setPreview( QStandardItem *item, const DAVA::NMaterial * mat
 
     const QImage& preview = GetPreview( material );
     if ( !preview.isNull() )
-        item->setData( preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::FastTransformation ), Qt::DecorationRole );
+        item->setData( preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::SmoothTransformation ), Qt::DecorationRole );
 }
 
 void MaterialModel::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image)
@@ -249,10 +249,7 @@ void MaterialModel::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, c
         if ( !item )
             return ;
         DAVA::NMaterial* material = item->GetMaterial();
-        const DAVA::Vector<QImage>& images = image.images;
-        if ( images.size() > 0 )
-            item->setData( images[0], Qt::DecorationRole );
-        //setPreview( item, material );
+        setPreview( item, material );
 	}
 }
 
@@ -262,7 +259,6 @@ QModelIndex MaterialModel::FindItemIndex(const DAVA::TextureDescriptor *descript
     for(int i = 0; i < nRows; ++i)
     {
         const QModelIndex idx = index(i, 0);
-
         const QModelIndex found = FindItemIndex(idx, descriptor);
         if(found.isValid())
             return found;
@@ -273,16 +269,15 @@ QModelIndex MaterialModel::FindItemIndex(const DAVA::TextureDescriptor *descript
 
 QModelIndex MaterialModel::FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const
 {
-    if(parent.isValid() == false) return QModelIndex();
+    if(parent.isValid() == false)
+        return QModelIndex();
     
     const DAVA::NMaterial *material = GetMaterial(parent);
     if(material)
     {
         DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
         if(t && t->GetDescriptor() == descriptor)
-        {
             return parent;
-        }
     }
     
     int nRows = rowCount(parent);
@@ -336,12 +331,16 @@ QModelIndex MaterialModel::GetIndex(DAVA::NMaterial *material, const QModelIndex
 
 QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
 {
-	if(indexes.size() > 0)
+	if (indexes.size() > 0)
 	{
         QVector<DAVA::NMaterial*> data;
         foreach(QModelIndex index, indexes)
         {
-            data.push_back(GetMaterial(index));
+            DAVA::NMaterial *material = GetMaterial(index);
+            if ( material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL )
+            {
+                data.push_back(material);
+            }
         }
         
         return MimeDataHelper2<DAVA::NMaterial>::EncodeMimeData(data);
@@ -353,7 +352,6 @@ QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
 QStringList MaterialModel::mimeTypes() const
 {
 	QStringList types;
-    
 	types << MimeDataHelper2<DAVA::NMaterial>::GetMimeType();
     
 	return types;
@@ -361,77 +359,67 @@ QStringList MaterialModel::mimeTypes() const
 
 bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-	bool ret = false;
+    QModelIndex targetIndex = parent;
+    if ( !targetIndex.isValid() )
+        return false;
+
 	QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
+	if ( materials.size() <= 0 )
+        return false;
 
-	if(materials.size() > 0)
-	{
-		if(dropCanBeAccepted(data, action, row, column, parent))
+    if ( dropCanBeAccepted(data, action, targetIndex.row(), targetIndex.column(), targetIndex.parent()) )
+    {
+		MaterialItem *targetMaterialItem = (MaterialItem *)itemFromIndex(targetIndex);
+		DAVA::NMaterial *targetMaterial = targetMaterialItem->GetMaterial();
+
+		if ( materials.size() > 1 )
 		{
-			MaterialItem *targetMaterialItem = (MaterialItem *) itemFromIndex(parent);
-			DAVA::NMaterial *targetMaterial = targetMaterialItem->GetMaterial();
-
-			if(materials.size() > 1)
-			{
-				curScene->BeginBatch("Change materials parent");
-			}
-
-			// change parent material
-			// NOTE: model synchronization will be done in OnCommandExecuted handler
-			for(int i = 0; i < materials.size(); ++i)
-			{
-				MaterialItem *sourceMaterialItem = (MaterialItem *) itemFromIndex(GetIndex(materials[i]));
-				if(NULL != sourceMaterialItem)
-				{
-					curScene->Exec(new MaterialSwitchParentCommand(materials[i], targetMaterial));
-				}
-			}
-
-			if(materials.size() > 1)
-			{
-				curScene->EndBatch();
-			}
-		
+			curScene->BeginBatch("Change materials parent");
 		}
-	}
 
-	return ret;
+		// change parent material
+		// NOTE: model synchronization will be done in OnCommandExecuted handler
+		for(int i = 0; i < materials.size(); ++i)
+		{
+			MaterialItem *sourceMaterialItem = (MaterialItem *) itemFromIndex(GetIndex(materials[i]));
+			if (NULL != sourceMaterialItem)
+			{
+				curScene->Exec(new MaterialSwitchParentCommand(materials[i], targetMaterial));
+			}
+		}
+
+		if ( materials.size() > 1 )
+        {
+			curScene->EndBatch();
+        }
+    }
+
+	return true;
 }
 
 bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-	bool ret = false;
-	QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
+	const QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
 
-	if(materials.size() > 0)
+    if ( materials.size() <= 0 )
+        return false;
+
+    QModelIndex targetIndex = index(row, column, parent);
+    if ( !targetIndex.isValid() )
+        return false;
+
+    DAVA::NMaterial *targetMaterial = GetMaterial(targetIndex);
+    if ( targetMaterial == NULL )
+        return false;
+
+    if( targetMaterial->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_MATERIAL )
+        return false;
+
+	for( int i = 0; i < materials.size(); i++ )
 	{
-		// allow only direct drop to parent
-		if(row == -1 && column == -1)
-		{
-			DAVA::NMaterial *targetMaterial = GetMaterial(parent);
-
-			// allow drop only into material, but not into instance
-			if(NULL != targetMaterial)
-			{
-				bool foundInacceptable = false;
-				
-				if(targetMaterial->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
-				{
-					// only instance type should be in mime data
-					for(int i = 0; i < materials.size(); ++i)
-					{
-						if(materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE)
-						{
-							foundInacceptable = true;
-							break;
-						}
-					}
-				}
-
-				ret = !foundInacceptable;
-			}
-		}
+		if ( materials[i]->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_INSTANCE )
+            return false;
 	}
 
-	return ret;
+    return true;
 }

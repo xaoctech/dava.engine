@@ -177,6 +177,7 @@ void MaterialTree::dragTryAccepted(QDragMoveEvent *event)
 	{
 		event->setDropAction(Qt::MoveAction);
 		event->accept();
+        treeModel->invalidate();
 	}
 	else
 	{
@@ -193,6 +194,7 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 
 	switch(dropIndicatorPosition())
 	{
+	case QAbstractItemView::OnItem:
 	case QAbstractItemView::AboveItem:
 		row = index.row();
 		col = index.column();
@@ -203,8 +205,8 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 		col = index.column();
 		index = index.parent();
 		break;
-	case QAbstractItemView::OnItem:
 	case QAbstractItemView::OnViewport:
+        index = QModelIndex();
 		break;
 	}
 }
@@ -243,16 +245,22 @@ void MaterialTree::onCurrentExpandModeChange( bool setOn )
     const int filterType = treeModel->getFilterType();
     expandMap[filterType] = setOn;
     if ( setOn )
+    {
         expandAll();
+    }
     else
+    {
         collapseAll();
+    }
 }
 
 void MaterialTree::autoExpand()
 {
     const int filterType = treeModel->getFilterType();
     if ( expandMap[filterType] )
+    {
         expandAll();
+    }
 }
 
 bool MaterialTree::currentExpandMode() const

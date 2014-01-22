@@ -264,198 +264,6 @@
     <ClCompile Include="Classes\GameCore.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\LightmapsPacker.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneNodeUserData.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIFileTree.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIFileTreeCell.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UIScrollView.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\UISpriteEditor.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\VertexOctTree.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DraggableDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SettingsDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h">
-      <Filter>Classes\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ColorPicker.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ComboBox.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DataGraph.h">
-      <Filter>Classes\SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\GraphBase.h">
-      <Filter>Classes\SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneGraph.h">
-      <Filter>Classes\SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeTool.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h">
-      <Filter>Classes\SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyList.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCell.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
-      <Filter>Classes\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\FogControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UIZoomControl.h">
-      <Filter>Classes\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\BeastProxy.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LightmapAtlasingData.h">
-      <Filter>Classes\SceneEditor\Beast</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Constants.h">
       <Filter>Classes</Filter>
     </ClInclude>
@@ -1503,9 +1311,6 @@
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialEditor.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockMaterials\MaterialsWidget.cpp">
       <Filter>Classes\Qt\DockMaterials</Filter>
     </ClCompile>
@@ -2025,15 +1830,6 @@
     <ClCompile Include="_GeneratedQt\DockMaterials\MaterialDelegate_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\SoundBrowser\FMODSoundBrowser_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp">
-      <Filter>Classes\Qt\SpeedTree</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp">
       <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
     </ClCompile>
@@ -2139,27 +1935,6 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\GameCore.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LightmapsPacker.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneNodeUserData.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIFileTree.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIFileTreeCell.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UIScrollView.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\UISpriteEditor.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\VertexOctTree.h">
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
@@ -3305,12 +3080,6 @@
     <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate.h">
       <Filter>Classes\Qt\Tools\TileTexturePreviewWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_soundbrowser.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h">
       <Filter>Classes\Qt\SpeedTree</Filter>
     </ClInclude>
@@ -3433,9 +3202,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialEditor.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockMaterials\MaterialsWidget.h">
       <Filter>Classes\Qt\DockMaterials</Filter>
