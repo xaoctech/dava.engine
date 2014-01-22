@@ -664,7 +664,7 @@ void MainWindow::InitMenu()
 	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
         recentPojectActions[i] = new QAction(this);
-        recentPojectActions[i]->setObjectName(QString::fromUtf8(Format("recentPojectActions[%d]", i)));
+        recentPojectActions[i]->setObjectName(QString::fromStdString(Format("recentPojectActions[%d]", i)));
     }
 	
 	//Help contents dialog
@@ -1113,11 +1113,8 @@ void MainWindow::UpdateProjectSettings(const QString& projectPath)
 	// Update window title
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
     
-    // Apply the pixelization, if needed.
-    if (EditorSettings::Instance()->IsPixelized())
-    {
-        HierarchyTreeController::Instance()->ApplyPixelizationForAllSprites();
-    }
+    // Apply the pixelization value.
+    HierarchyTreeController::Instance()->SetPixelization(EditorSettings::Instance()->IsPixelized());
 }
 
 void MainWindow::OnUndoRequested()
@@ -1292,8 +1289,7 @@ void MainWindow::OnDistributeEqualDistanceBetweenY()
 
 void MainWindow::OnRepackAndReloadSprites()
 {
-    // Force repack and reload here.
-    RepackAndReloadSprites(true);
+    RepackAndReloadSprites();
 }
 
 void MainWindow::NotifyScaleUpdated(float32 newScale)
@@ -1310,15 +1306,15 @@ void MainWindow::OnPixelizationStateChanged()
     bool isPixelized = ui->actionPixelized->isChecked();
     EditorSettings::Instance()->SetPixelized(isPixelized);
 
-    // No repack is needed here - reload only.
-    RepackAndReloadSprites(false);
+    ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
+    HierarchyTreeController::Instance()->SetPixelization(isPixelized);
+    ScreenWrapper::Instance()->RestoreApplicationCursor();
 }
 
-void MainWindow::RepackAndReloadSprites(bool needRepack)
+void MainWindow::RepackAndReloadSprites()
 {
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-
-    HierarchyTreeController::Instance()->RepackAndReloadSprites(needRepack, EditorSettings::Instance()->IsPixelized());
+    HierarchyTreeController::Instance()->RepackAndReloadSprites();
     ScreenWrapper::Instance()->RestoreApplicationCursor();
 }
 
