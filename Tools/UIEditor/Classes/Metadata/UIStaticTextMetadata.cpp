@@ -270,6 +270,7 @@ void UIStaticTextMetadata::SetTextAlign(int value)
     }
     
     GetActiveStaticText()->SetTextAlign((eAlign)value);
+    UpdatePixelization();
 }
 
 bool UIStaticTextMetadata::GetMultiline() const
@@ -326,9 +327,10 @@ void UIStaticTextMetadata::UpdatePixelization()
         // We are during initialization, so active index is not set yet. Take the first one.
         activeText = dynamic_cast<UIStaticText*>(treeNodeParams[0].GetUIControl());
     }
-
-    if (activeText)
+    
+    if (activeText && activeText->GetTextBlock())
     {
+        activeText->PreDraw();
         SpritesHelper::SetPixelization(activeText, EditorSettings::Instance()->IsPixelized());
     }
 }
