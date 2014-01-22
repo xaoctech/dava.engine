@@ -1308,9 +1308,6 @@
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialEditor.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockMaterials\MaterialsWidget.cpp">
       <Filter>Classes\Qt\DockMaterials</Filter>
     </ClCompile>
@@ -3199,9 +3196,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialEditor.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockMaterials\MaterialsWidget.h">
       <Filter>Classes\Qt\DockMaterials</Filter>
