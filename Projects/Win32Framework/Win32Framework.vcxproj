@@ -464,7 +464,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
